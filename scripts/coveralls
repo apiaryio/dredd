@@ -1,0 +1,3 @@
+#!/bin/sh
+
+./scripts/cov mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js
