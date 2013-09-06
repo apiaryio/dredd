@@ -2,7 +2,10 @@
   "name": "dredd",
   "version": "0.0.1",
   "description": "API Blueprint testing tool",
-  "main": "lib/npm-boilerplate.js",
+  "main": "lib/dredd.js",
+  "bin": {
+    "dredd": "bin/dredd"
+  },
   "scripts": {
     "test": "scripts/test",
     "prepublish": "scripts/prepublish"
@@ -12,6 +15,8 @@
     "url": "https://github.com/apiaryio/npm-boilerplate"
   },
   "dependencies": {
+    "gavel": "~0.2.0",
+    "commander": "~2.0.0"
   },
   "devDependencies": {
     "coffee-script": "1.6.3",
@@ -20,16 +25,16 @@
     "coffee-coverage": "0.1.4",
     "jscoverage": "0.3.8",
     "coveralls": "2.2.0",
-    "mocha-lcov-reporter": "0.0.1"
-    "codo", "1.7.0"
+    "mocha-lcov-reporter": "0.0.1",
+    "codo": "1.7.0"
   },
   "keywords": [
     "api",
-    "test"
+    "test",
     "testing",
     "documenation",
-    "acceptance",
-    "integration
+    "integration",
+    "acceptance"
   ],
   "author": "Adam Kliment <adam@apiary.io>",
   "license": "MIT"

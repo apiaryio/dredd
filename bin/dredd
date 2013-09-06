@@ -1,0 +1,54 @@
+#!/usr/bin/env node
+
+var cmd = require('commander');
+var curl = require('../lib/parser');
+var http = require('http-string-parser');
+var bf = require('api-blueprint-http-formatter')
+
+var stdin = "";
+
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+
+cmd.command('curl-trace-parser')
+   .description('Parse output form curl --trace option') 
+   .version('0.0.8')
+   .option('-r, --raw', 'Output raw data (Default)')
+   .option('-b, --blueprint', 'Output in API blueprint format')
+   .parse(process.argv);
+
+process.stdin.on('data', function(data) {
+  stdin += data;
+});
+
+process.stdin.on('end', function() {
+  //TODO commander options does not work here :(
+  var option = process.argv[2];
+
+  if(option == '-r' || option == '--raw' || option == undefined){
+    var parserOutput = curl.parseToString(stdin);
+    process.stdout.write(parserOutput);
+  }
+  if(option == 'b' || option == '--blueprint'){
+    var rawPair = curl.parse(stdin);
+    parsedPair = {
+      'request': http.parseRequest(rawPair['request']),
+      'response': http.parseResponse(rawPair['response'])
+    }
+    var blueprint = bf.format(parsedPair);
+    process.stdout.write(blueprint);
+  }
+  process.exit(0)
+});
+
+// do not end unit stdin end
+var busyLoop = function() {
+  setTimeout( function() {
+    if(stdin == ""){
+      process.stderr.write("ERROR: No input on stdin after 1s. Exiting. \n");
+      process.exit(1)
+    }
+    busyLoop();
+  }, 1000);
+};
+busyLoop();
