@@ -17,7 +17,7 @@
   "dependencies": {
     "gavel": "~0.2.0",
     "commander": "~2.0.0",
-    "protagonist": "~0.2.0",
+    "protagonist": "~0.3.0",
     "uri-template": "~0.4.1"
   },
   "devDependencies": {
