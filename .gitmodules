@@ -1,3 +1,0 @@
-[submodule "test/fixtures/dredd-example"]
-	path = test/fixtures/dredd-example
-	url = git@github.com:apiaryio/dredd-example.git

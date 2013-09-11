@@ -16,7 +16,9 @@
   },
   "dependencies": {
     "gavel": "~0.2.0",
-    "commander": "~2.0.0"
+    "commander": "~2.0.0",
+    "protagonist": "~0.2.0",
+    "uri-template": "~0.4.1"
   },
   "devDependencies": {
     "coffee-script": "1.6.3",

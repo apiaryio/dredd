@@ -1,37 +1,40 @@
 # Changelog
 
-## TODO
-
-##0.0.1
-- allways passing test skeleton as package
-- test application in Travis-CI
-
 ##0.1
 
-- Sample backend
-- Sample blueprints
-- Cli integration test
-- Parse blueprint
-- Fill AST
-- Try to interpolate uri and query parameters
-- Identify ambigous transaction
+X Sample backend
+X Sample blueprints
 
-- Warn if ambigous transaction
+- Javascript API integration test
+  
+  Create Runtime(configuration)
+    - if blueprint path exits
+  
+    - parse url
+      - if hostname not found
+  - if bleuprint not found
+
+- Parse blueprint
+  - Mock parameters
+  - Try to interpolate uri and query parameters
+
+- Identify ambigous transactions (steps)
+  - Warn if ambigous transactions
+
 - It returns exit code 1 if any error
 - It returns exit code 0 if no error
+
 - Statistics: 
-  Scenarios:
-    - Total scenarios
-    - Scenarios passed
-    - Scenarios failed
-    - Scenarios skipped
   Steps:
     - Total steps
     - Steps passed
     - Steps failed
     - Steps skipped
 
+- It should exit 2 and return to stderr if no blueprint or
+  host given
 - It should parse the blueprint
+
 
 - AST
   - Scenarios
@@ -41,34 +44,28 @@
         - Dredd Test Result
         - Gavel Data
 
-
-what next:
- Scenarios
- DRY Backgrounds
-
-
-## 0.2
-- Ascii / Color output for all validators
---skip Do not halt on Failure
-
---format/reporter
-
 - Progress:
- .....F...
+Testing host: http://localhost:3000
+
+.....F...
 
 1)
 POST /machines [FAIL]
-  Body
-    Error: Missing id key.
-    {
-      "kind": "bulldozer",
-      "name": "willy"
-    }
+  Request:
+    Method: GET
+    URI: /
+  Response:
+    Body:
+      Error: Missing id key.
+      {
+        "kind": "bulldozer",
+        "name": "willy"
+      }
 
-  Status code
-    Error: Status code does not match.
-    201
-    200
+    Status code
+      Error: Status code does not match.
+      201
+      200
 
 - Pretty:
 GET /machine_types/{id} [SKIP]
@@ -98,3 +95,16 @@ DELETE /machines/1 [FAIL]
     Error: Status code doues not match.
     204
     200
+
+
+Next version:
+ Scenarios
+ DRY Backgrounds
+
+Output
+  Scenarios:
+    - Total scenarios
+    - Scenarios passed
+    - Scenarios failed
+    - Scenarios skipped
+- Ascii / Color output for all validators
