@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - 0.8
+  - 0.10
+notifications:
+  email:
+    recipients:
+      - adam@apiary.io
+    on_success: change
+    on_failure: always
+#after_success:
+#  - ./scripts/coveralls
+
