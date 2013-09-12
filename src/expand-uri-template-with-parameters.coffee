@@ -8,14 +8,10 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
   try  
     parsed = ut.parse uriTemplate
   catch e
-    if e['name'] == 'SyntaxError'
-      text = 'SyntaxError in URI template'
-      result['errors'].push text
-      return result
-    else
-      throw e
-  
- 
+    text = 'Failed to parse URI template'
+    result['errors'].push text
+    return result
+
   # get parameters from expression object
   uriParameters = []
   for expression in parsed['expressions']
