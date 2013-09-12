@@ -1,0 +1,175 @@
+{
+  "_version": "1.0",
+  "metadata": {
+    "FORMAT": {
+      "value": "X-1A"
+    }
+  },
+  "name": "Machines API",
+  "description": "",
+  "resourceGroups": [
+    {
+      "name": "Machines",
+      "description": "",
+      "resources": [
+        {
+          "name": "Machines collection",
+          "description": "",
+          "uriTemplate": "/machines",
+          "model": {},
+          "parameters": {},
+          "headers": {},
+          "actions": [
+            {
+              "name": "Create a Machine",
+              "description": "",
+              "method": "POST",
+              "parameters": {},
+              "headers": {},
+              "examples": [
+                {
+                  "name": "",
+                  "description": "",
+                  "requests": [
+                    {
+                      "name": "",
+                      "description": "",
+                      "headers": {
+                        "Content-Type": {
+                          "value": "application/json"
+                        }
+                      },
+                      "body": "{\n  \"type\": \"bulldozer\",\n  \"name\": \"willy\",\n}\n",
+                      "schema": ""
+                    }
+                  ],
+                  "responses": [
+                    {
+                      "name": "202",
+                      "description": "",
+                      "headers": {
+                        "Content-Type": {
+                          "value": "application/json"
+                        }
+                      },
+                      "body": "{\n  \"type\": \"bulldozer\",\n  \"name\": \"willy\",\n  \"id\": \"5229c6e8e4b0bd7dbb07e29c\"\n}\n",
+                      "schema": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Machine",
+          "description": "",
+          "uriTemplate": "/machines/{name}",
+          "model": {},
+          "parameters": {
+            "name": {
+              "description": "",
+              "type": "",
+              "required": false,
+              "default": "",
+              "example": "willy",
+              "values": []
+            }
+          },
+          "headers": {},
+          "actions": [
+            {
+              "name": "Update a Machine",
+              "description": "",
+              "method": "PUT",
+              "parameters": {},
+              "headers": {},
+              "examples": [
+                {
+                  "name": "",
+                  "description": "",
+                  "requests": [
+                    {
+                      "name": "",
+                      "description": "",
+                      "headers": {
+                        "Content-Type": {
+                          "value": "application/json"
+                        }
+                      },
+                      "body": "{\n  \"name\": \"waldo\"\n}\n",
+                      "schema": ""
+                    }
+                  ],
+                  "responses": [
+                    {
+                      "name": "200",
+                      "description": "",
+                      "headers": {
+                        "Content-Type": {
+                          "value": "application/json"
+                        }
+                      },
+                      "body": "{\n  \"type\": \"bulldozer\",\n  \"name\": \"waldo\",\n  \"id\": \"5229c6e8e4b0bd7dbb07e29c\"\n}\n",
+                      "schema": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Retrieve a Machine",
+              "description": "",
+              "method": "GET",
+              "parameters": {},
+              "headers": {},
+              "examples": [
+                {
+                  "name": "",
+                  "description": "",
+                  "requests": [],
+                  "responses": [
+                    {
+                      "name": "200",
+                      "description": "",
+                      "headers": {
+                        "Content-Type": {
+                          "value": "text/plain"
+                        }
+                      },
+                      "body": "{\n  \"type\": \"bulldozer\",\n  \"name\": \"waldo\",\n  \"id\": \"5229c6e8e4b0bd7dbb07e29c\"\n}\n",
+                      "schema": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Delete Message",
+              "description": "",
+              "method": "DELETE",
+              "parameters": {},
+              "headers": {},
+              "examples": [
+                {
+                  "name": "",
+                  "description": "",
+                  "requests": [],
+                  "responses": [
+                    {
+                      "name": "204",
+                      "description": "",
+                      "headers": {},
+                      "body": "",
+                      "schema": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

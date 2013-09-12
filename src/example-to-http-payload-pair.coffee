@@ -22,18 +22,25 @@ exampleToHttpPayloadPair = (example, inheritingHeaders = {}) ->
 
   if example['responses'].length == 0
     text = "No response available. Can't create HTTP transaction."
-    result['warnings'].push text 
+    result['warnings'].push text
   else
     selectedRequest = example['requests'][0]
     selectedResponse = example['responses'][0]
 
+    if example['requests'].length == 0
+      selectedRequest = 
+        body: ""
+        headers: {}
+    
     request['body'] = selectedRequest['body']
     request['headers'] = inheritHeaders selectedRequest['headers'], inheritingHeaders
 
     response['body'] = selectedResponse['body']
     response['headers'] = inheritHeaders selectedResponse['headers'], inheritingHeaders
     response['status'] = selectedResponse['name']
-    
+    if selectedResponse['schema'] != ""
+      response['schema'] = selectedResponse['schema']
+      
     result['pair']['request'] = request
     result['pair']['response'] = response
 

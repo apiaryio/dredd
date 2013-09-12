@@ -59,6 +59,23 @@ describe 'exampleToHttpPayloadPair()', () ->
     it 'should return example request and response pair', () ->
       assert.notEqual Object.keys(data['pair']), 0
 
+    describe 'when response schema is empty string', () ->
+      before () ->
+        example['responses'][0]['schema'] = ""
+        data = exampleToHttpPayloadPairs example, inheritingHeaders      
+      
+      it 'should remove schema key from response', () ->
+        assert.isUndefined data['pair']['response']['schema']
+    
+    describe 'when response schema is not empty string', () ->
+      before () ->
+        example['responses'][0]['schema'] = "{}"
+        data = exampleToHttpPayloadPairs example, inheritingHeaders      
+      
+      it 'should add schema key to response', () ->
+        assert.isDefined data['pair']['response']['schema']
+
+
   describe 'when multiple requests per example', () ->
     before () -> 
       example = 
@@ -158,7 +175,42 @@ describe 'exampleToHttpPayloadPair()', () ->
       it 'should contain first response', () ->
         assert.equal example['responses'][0]['body'], data['pair']['response']['body']
        
-        
+  describe 'when no request', () ->
+    before () -> 
+      inheritingHeaders =
+        'Content-Type': 'application/json'
+      example = 
+        name: "Simple name"
+        description: "Very clear description"
+        requests: []
+        responses: [
+          {
+            name: '200'
+            headers:
+              'Content-Type': 'application/json'
+            body: '{"foo": "bar"}'
+          }        
+        ]
+
+      data = exampleToHttpPayloadPairs example, inheritingHeaders
+
+    it 'should return no error', () ->
+      assert.equal data['errors'].length, 0    
+    
+    it 'should return no warnings', () ->
+      assert.equal data['warnings'].length, 0
+
+    describe 'returned payload pair request', () ->
+      request = {}
+      before () ->
+        request = data['pair']['request']
+      
+      it 'should have inherited headers', () ->
+        assert.include Object.keys(request['headers']), 'Content-Type'
+      
+      it 'should have body with empty string', () ->
+        assert.equal request['body'], ''
+
   describe 'when no response', () ->
     before () -> 
       example = 

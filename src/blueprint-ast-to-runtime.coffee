@@ -1,3 +1,6 @@
+inheritHeaders = require './inherit-headers'
+expandUriTemplateWithParameters = require './expand-uri-template-with-parameters'
+exampleToHttpPayloadPair = require './example-to-http-payload-pair'
 blueprintAstToRuntime = (blueprintAst) ->
   runtime = 
     transactions: []
@@ -5,34 +8,60 @@ blueprintAstToRuntime = (blueprintAst) ->
     warnings: []
   
   origin = {}
-
-  blueprintAst['resouceGroups'].forEach (resourceGroup) ->
+  
+  for resourceGroup in blueprintAst['resourceGroups']
     origin['rescourceGroupName'] = resourceGroup['name']
 
-    resourceGroup['resources'].forEach (resource) ->
+    for resource in resourceGroup['resources']
       origin['resourceName'] = resource['name']
 
-      resource['actions'].forEach (action) ->
+      for action in resource['actions']
         origin['actionName'] = action['name']
 
         action['headers'] = inheritHeaders action['headers']
-        action['parameters'] = inheritParameters action['parameters'], resource['parameters']
-
-        uriResult = expandUriTemplateWithParamters resource['uriTempalte'], action['parameters']
+        #action['parameters'] = inheritParameters action['parameters'], resource['parameters']
         
-        if uriResult['uri'] != null        
-          action['examples'].forEach (example) ->
+        uriResult = expandUriTemplateWithParameters resource['uriTemplate'], resource['parameters']
+        
+        for message in uriResult['warnings']
+          runtime['warnings'].push {
+            origin: JSON.parse(JSON.stringify(origin))
+            message: message
+          }
+
+        for message in uriResult['errors']
+          runtime['errors'].push {
+            origin: JSON.parse(JSON.stringify(origin))
+            message: message
+          }
+
+        
+        if uriResult['uri'] != null      
+          for example in action['examples']
             origin['exampleName'] = example['name']
             
-            payloadPair = exampleToHttpPayloadPair example, action['headers']
+            result = exampleToHttpPayloadPair example, action['headers']
             
-            payloadPair['request']['uri'] = uriResult['uri']
+            for message in result['warnings']
+              runtime['warnings'].push {
+                origin: JSON.parse(JSON.stringify(origin))
+                message: message
+              }
+
+            # Errors in pair selecting should not happen
+            # for message in result['errors']
+            #   runtime['errors'].push {
+            #     origin: JSON.parse(JSON.stringify(origin))
+            #     message: message
+            #   }
+
+            transaction = result['pair']
+            transaction['origin'] = origin 
+            transaction['request']['uri'] = uriResult['uri']
+            transaction['request']['method'] = action['method']
             
-            transaction = payloadPair
-            transactions.push {
-              origin: origin
-              transaction: transaction
-            }
+            runtime['transactions'].push transaction
 
   return runtime
 
+module.exports = blueprintAstToRuntime
