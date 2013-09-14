@@ -4,12 +4,16 @@ inheritHeaders = require '../../src/inherit-headers'
 
 describe 'inheritHeaders()', () ->
   actual = 
-    'Accept': 'application/json'
-    'Content-Type': 'application/json'
+    'Accept':
+      value: 'application/json'
+    'Content-Type':
+      value: 'application/json'
   
   inheriting = 
-    'Accept': '*/*'
-    'Cache-Control': 'max-age=3600'
+    'Accept':
+      value: '*/*'
+    'Cache-Control':
+      value: 'max-age=3600'
   
   data = null
 
@@ -21,4 +25,4 @@ describe 'inheritHeaders()', () ->
       assert.include Object.keys(data), 'Cache-Control' 
 
     it 'actual values should not be overwriten by inheriting', () ->
-      assert.equal data['Accept'], 'application/json'
+      assert.equal data['Accept']['value'], 'application/json'

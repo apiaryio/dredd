@@ -2,7 +2,7 @@
 blueprintAstToRuntime = require '../../src/blueprint-ast-to-runtime'
 
 describe "blueprintAstToRuntime()", () ->
-  blueprintAst = require '../fixtures/blueprint-asts/no-warnings-no-errors'
+  blueprintAst = require '../fixtures/blueprint-ast'
   data = {}
   before () -> 
     data = blueprintAstToRuntime blueprintAst
@@ -73,22 +73,19 @@ describe "blueprintAstToRuntime()", () ->
               assert.isDefined transaction['response'][key], 'Transaction index ' + index
 
   describe 'when some warning in URI expanding appear', () ->
-    before () ->
-      blueprintAst = require '../fixtures/blueprint-asts/no-warnings-no-errors'
+    it 'should have piped all warnings from expandUriTemplate', () ->
+      blueprintAst = require '../fixtures/blueprint-ast'
       blueprintAst['resourceGroups'][0]['resources'][1]['parameters'] = {}
+      blueprintAst['resourceGroups'][0]['resources'][1]['actions'][0]['parameters'] = {}
 
       data = blueprintAstToRuntime blueprintAst
-    
-    it 'should have piped all warnings from expandUriTemplate', () ->
       assert.notEqual data['warnings'].length, 0  
 
   describe 'when some error in URI expanding appear', () ->
-    before () ->
-      blueprintAst = require '../fixtures/blueprint-asts/no-warnings-no-errors'
+    it 'should have piped all errors from expandUriTemplate', () ->
+      blueprintAst = require '../fixtures/blueprint-ast'
       blueprintAst['resourceGroups'][0]['resources'][1]['uriTemplate'] = '/machines{{/name}'
       data = blueprintAstToRuntime blueprintAst
-    
-    it 'should have piped all errors from expandUriTemplate', () ->
       assert.notEqual data['errors'].length, 0       
 
   describe 'when some warning in example selecting appear', () ->
