@@ -134,6 +134,26 @@ describe 'cli()', () ->
         assert.ok cliUtilsStub.exit.calledWith(1)
         done()     
   
+  describe 'when runtime contains any warning', () ->
+    before () ->
+      configuration =
+        blueprintPath: './test/fixtures/warning-ambigous.apib'
+        server: 'http://localhost:3000/'      
+      
+      executeTransactionStub.reset()
+
+    it 'should execute some transaction', (done) ->     
+      cli configuration, () ->
+        assert.ok executeTransactionStub.called
+        done()  
+
+    it 'should print runtime warnings to stdout'
+    
+    it 'should not exit', (done) ->
+       cli configuration, () ->
+        assert.ok cliUtilsStub.exit.calledWith(0)
+        done()     
+
   describe 'when runtime is without errors and warnings', () ->
     beforeEach () ->
       executeTransactionStub.reset()

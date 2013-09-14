@@ -19,19 +19,8 @@ cli = (configuration, callback) ->
           callback()
         else
           runtime = blueprintAstToRuntime result['ast']
-          if runtime['errors'].length > 0
-            cliUtils.exit 1
-            for error in runtime['errors']
-              message = error['message']
-              origin = error['origin']
 
-              cliUtils.log "Runtime compilation error: \"" + error['message'] + "\" on " + \
-                origin['resourceGroupName'] + \
-                ' > ' + origin['resourceName'] + \
-                ' > ' + origin['actionName'] 
-          
           if runtime['warnings'].length > 0
-            cliUtils.exit 1
             for warning in runtime['warnings']
               message = warning['message']
               origin = warning['origin']
@@ -40,6 +29,17 @@ cli = (configuration, callback) ->
                 origin['resourceGroupName'] + \
                 ' > ' + origin['resourceName'] + \
                 ' > ' + origin['actionName'] 
+          
+          if runtime['errors'].length > 0
+            for error in runtime['errors']
+              message = error['message']
+              origin = error['origin']
+
+              cliUtils.log "Runtime compilation error: \"" + error['message'] + "\" on " + \
+                origin['resourceGroupName'] + \
+                ' > ' + origin['resourceName'] + \
+                ' > ' + origin['actionName'] 
+            cliUtils.exit 1
           
           tranasctionsWithConfigutration = []
           
