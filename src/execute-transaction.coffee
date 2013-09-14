@@ -48,6 +48,7 @@ executeTransaction = (transaction, callback) ->
 
 
   if configuration['dryRun'] == true
+    cliUtils.log indent + "Dry run, skipping..."
     callback()
   else
     buffer = ""

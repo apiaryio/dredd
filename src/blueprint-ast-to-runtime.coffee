@@ -57,7 +57,7 @@ blueprintAstToRuntime = (blueprintAst) ->
             #   }
 
             transaction = result['pair']
-            transaction['origin'] = origin 
+            transaction['origin'] = JSON.parse(JSON.stringify(origin)) 
             transaction['request']['uri'] = uriResult['uri']
             transaction['request']['method'] = action['method']
             

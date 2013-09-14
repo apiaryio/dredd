@@ -25,11 +25,22 @@ cli = (configuration, callback) ->
               message = error['message']
               origin = error['origin']
 
-              cliUtils.log "Error: \"" + error['message'] + "\" on " + \
+              cliUtils.log "Runtime compilation error: \"" + error['message'] + "\" on " + \
                 origin['resourceGroupName'] + \
                 ' > ' + origin['resourceName'] + \
                 ' > ' + origin['actionName'] 
+          
+          if runtime['warnings'].length > 0
+            cliUtils.exit 1
+            for warning in runtime['warnings']
+              message = warning['message']
+              origin = warning['origin']
 
+              cliUtils.log "Runtime compilation warning: \"" + warning['message'] + "\" on " + \
+                origin['resourceGroupName'] + \
+                ' > ' + origin['resourceName'] + \
+                ' > ' + origin['actionName'] 
+          
           tranasctionsWithConfigutration = []
           
           for transaction in runtime['transactions']

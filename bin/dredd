@@ -4,7 +4,7 @@ var cli = require('../lib/cli')
 configuration = {
   blueprintPath: process.argv[2],
   server: process.argv[3],
-  dryRun: true
+  dryRun: false
 }
 
 cli(configuration, function() {
