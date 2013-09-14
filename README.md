@@ -1,5 +1,3 @@
-# WARNING! NOT STABLE, UNDER STRONG DEVELOPMENT
-
 # Dredd—API Blueprint Testing Tool
 
 [![Build Status](https://travis-ci.org/apiaryio/dredd.png?branch=master)](https://travis-ci.org/apiaryio/dredd)

@@ -1,7 +1,7 @@
 inheritHeaders = (actualHeaders, inheritingHeaders) -> 
-  for name, value of inheritingHeaders
+  for name, params of inheritingHeaders
     if actualHeaders[name] == undefined
-      actualHeaders[name] = value
+      actualHeaders[name] = params
 
   return actualHeaders
 
