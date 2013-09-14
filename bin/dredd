@@ -1,2 +1,12 @@
 #!/usr/bin/env node
-process.exit(0)
+var cli = require('../lib/cli')
+
+configuration = {
+  blueprintPath: process.argv[2],
+  server: process.argv[3],
+  dryRun: true
+}
+
+cli(configuration, function() {
+  process.exit(0);
+})

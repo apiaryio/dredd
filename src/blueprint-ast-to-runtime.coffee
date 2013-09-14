@@ -1,4 +1,5 @@
 inheritHeaders = require './inherit-headers'
+inheritParameters = require './inherit-parameters'
 expandUriTemplateWithParameters = require './expand-uri-template-with-parameters'
 exampleToHttpPayloadPair = require './example-to-http-payload-pair'
 blueprintAstToRuntime = (blueprintAst) ->
@@ -10,7 +11,7 @@ blueprintAstToRuntime = (blueprintAst) ->
   origin = {}
   
   for resourceGroup in blueprintAst['resourceGroups']
-    origin['rescourceGroupName'] = resourceGroup['name']
+    origin['resourceGroupName'] = resourceGroup['name']
 
     for resource in resourceGroup['resources']
       origin['resourceName'] = resource['name']
@@ -18,10 +19,10 @@ blueprintAstToRuntime = (blueprintAst) ->
       for action in resource['actions']
         origin['actionName'] = action['name']
 
-        action['headers'] = inheritHeaders action['headers']
-        #action['parameters'] = inheritParameters action['parameters'], resource['parameters']
+        action['headers'] = inheritHeaders action['headers'], resource['headers']
+        action['parameters'] = inheritParameters action['parameters'], resource['parameters']
         
-        uriResult = expandUriTemplateWithParameters resource['uriTemplate'], resource['parameters']
+        uriResult = expandUriTemplateWithParameters resource['uriTemplate'], action['parameters']
         
         for message in uriResult['warnings']
           runtime['warnings'].push {

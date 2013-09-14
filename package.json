@@ -17,8 +17,9 @@
   "dependencies": {
     "gavel": "~0.2.0",
     "commander": "~2.0.0",
-    "protagonist": "~0.3.0",
-    "uri-template": "~0.4.1"
+    "protagonist": "~0.4.0",
+    "uri-template": "~0.4.1",
+    "async": "~0.2.9"
   },
   "devDependencies": {
     "coffee-script": "1.6.3",
@@ -28,7 +29,10 @@
     "jscoverage": "0.3.8",
     "coveralls": "2.2.0",
     "mocha-lcov-reporter": "0.0.1",
-    "codo": "1.7.0"
+    "codo": "1.7.0",
+    "sinon": "~1.7.3",
+    "proxyquire": "~0.5.1",
+    "nock": "~0.22.1"
   },
   "keywords": [
     "api",
