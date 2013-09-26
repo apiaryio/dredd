@@ -9,43 +9,43 @@ executeTransaction = proxyquire  '../../src/execute-transaction', {
 }
 
 
-describe 'executeTransaction(transaction, callback)', () ->  
-  transaction = 
-    request: 
+describe 'executeTransaction(transaction, callback)', () ->
+  transaction =
+    request:
       body: "{\n  \"type\": \"bulldozer\",\n  \"name\": \"willy\"}\n"
-      headers: 
-        "Content-Type": 
+      headers:
+        "Content-Type":
           value: "application/json"
       uri: "/machines",
       method: "POST"
-    response: 
+    response:
       body: "{\n  \"type\": \"bulldozer\",\n  \"name\": \"willy\",\n  \"id\": \"5229c6e8e4b0bd7dbb07e29c\"\n}\n"
       headers:
         "content-type":
           value: "application/json"
       status: "202"
-    origin: 
+    origin:
       resourceGroupName: "Group Machine"
       resourceName: "Machine"
       actionNames: "Delete Message"
       exampleName: "Bogus example name"
     configuration:
       server: 'http://localhost:3000'
-  
+
   beforeEach () ->
     sinon.stub cliUtilsStub, 'exit'
     sinon.stub cliUtilsStub, 'log'
     sinon.stub cliUtilsStub, 'error'
     nock.disableNetConnect()
 
-  afterEach () -> 
+  afterEach () ->
     cliUtilsStub.exit.restore()
     cliUtilsStub.log.restore()
-    cliUtilsStub.error.restore()   
+    cliUtilsStub.error.restore()
     nock.enableNetConnect()
     nock.cleanAll()
 
-  
+
   data = {}
   server = {}
 
@@ -67,7 +67,7 @@ describe 'executeTransaction(transaction, callback)', () ->
       executeTransaction transaction, () ->
         assert.notOk cliUtilsStub.exit.called
         done()
-  
+
   describe 'backend responds with non valid response', () ->
     beforeEach () ->
       server = nock('http://localhost:3000').
@@ -86,10 +86,10 @@ describe 'executeTransaction(transaction, callback)', () ->
       executeTransaction transaction, () ->
         assert.ok cliUtilsStub.exit.calledWith(1)
         done()
-        
+
   describe 'when dry run', () ->
     before () ->
-      transaction['configuration']['dryRun'] = true
+      transaction['configuration']['args'] = ['--dry-run']
       server = nock('http://localhost:3000').
         post('/machines', {"type":"bulldozer","name":"willy"}).
         reply 202, "Accepted"
@@ -97,6 +97,6 @@ describe 'executeTransaction(transaction, callback)', () ->
     it 'should not perform any HTTP request', (done) ->
       executeTransaction transaction, () ->
         assert.notOk server.isDone()
-        done()      
-      
+        done()
+
 

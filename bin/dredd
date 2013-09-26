@@ -4,20 +4,20 @@ var cli = require('../lib/cli')
 if(process.argv[2] == undefined || process.argv[3] == undefined){
   text = "Dredd - API Blueprint testing tool"
   text = text + "\n" + "usage:"
-  text = text + "\n" + "  dredd <path to blueprint> <api_endpoint>"
+  text = text + "\n" + "  dredd <path to blueprint> <api_endpoint> [options]"
   text = text + "\n"
   text = text + "\n" + "example:"
-  text = text + "\n" + "  dredd ./apiary.apib http://localhost:3000"
+  text = text + "\n" + "  dredd ./apiary.apib http://localhost:3000  --dry-run"
   text = text + "\n"
-  
+
   console.log(text)
-  process.exit(1)	
+  process.exit(1)
 }
 
 configuration = {
   blueprintPath: process.argv[2],
   server: process.argv[3],
-  dryRun: false
+  args: process.argv.slice(4)
 }
 
 cli(configuration, function() {
