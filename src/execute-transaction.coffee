@@ -51,6 +51,7 @@ executeTransaction = (transaction, callback) ->
     cliUtils.log indent + "Dry run, skipping..."
     callback()
   else
+    reporter = configuration['reporter'] if configuration['reporter']?
     buffer = ""
     req = http.request options, (res) ->
       res.on 'data', (chunk) ->
@@ -79,8 +80,11 @@ executeTransaction = (transaction, callback) ->
             cliUtils.exit 1
             callback()
           if isValid == true
-            if '--junitreport' in configuration.args
-              cliUtils.log indent + "LOG TO JUNIT"
+            if reporter?
+              reporter.addTest {
+                status: "pass",
+                title: options['method'] + ' ' + options['path']
+              }
             cliUtils.log indent + "PASS"
             callback()
           else if isValid == false
@@ -91,10 +95,13 @@ executeTransaction = (transaction, callback) ->
                 cliUtils.exit 1
               for entity, data of result
                 for entityResult in data['results']
-                  if '--junitreport' in configuration.args
-                    cliUtils.log indent + "LOG TO JUNIT"
+                  if reporter?
+                    reporter.addTest {
+                      status: "pass",
+                      title: options['method'] + ' ' + options['path'],
+                      errorMessage: entity + ": " + entityResult['message']
+                    }
                   cliUtils.log indent + entity + ": " + entityResult['message']
-
               cliUtils.exit 1
               callback()
 

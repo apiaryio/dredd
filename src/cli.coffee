@@ -4,14 +4,16 @@ executeTransaction = require './execute-transaction'
 fs = require 'fs'
 protagonist = require 'protagonist'
 blueprintAstToRuntime = require './blueprint-ast-to-runtime'
+xUnitReporter = require './x-unit-reporter'
 
 cli = (configuration, callback) ->
+  configuration.args = [] if not configuration.args?
   fs.readFile configuration['blueprintPath'], 'utf8', (error, data) ->
     if error
       cliUtils.error error
       cliUtils.exit 1
       callback()
-    else 
+    else
       protagonist.parse data, (error, result) ->
         if error
           cliUtils.error error
@@ -28,8 +30,8 @@ cli = (configuration, callback) ->
               cliUtils.log "Runtime compilation warning: \"" + warning['message'] + "\" on " + \
                 origin['resourceGroupName'] + \
                 ' > ' + origin['resourceName'] + \
-                ' > ' + origin['actionName'] 
-          
+                ' > ' + origin['actionName']
+
           if runtime['errors'].length > 0
             for error in runtime['errors']
               message = error['message']
@@ -38,24 +40,30 @@ cli = (configuration, callback) ->
               cliUtils.log "Runtime compilation error: \"" + error['message'] + "\" on " + \
                 origin['resourceGroupName'] + \
                 ' > ' + origin['resourceName'] + \
-                ' > ' + origin['actionName'] 
+                ' > ' + origin['actionName']
             cliUtils.exit 1
-          
+
           tranasctionsWithConfigutration = []
-          
+
+          reporter = null
+          if '--junitreport' in configuration.args
+            reporter = new xUnitReporter(null)
+            configuration['reporter'] = reporter
+
           for transaction in runtime['transactions']
             transaction['configuration'] = configuration
             tranasctionsWithConfigutration.push transaction
-          
-          async.eachSeries tranasctionsWithConfigutration, executeTransaction, (err) ->
+
+          async.eachSeries tranasctionsWithConfigutration, executeTransaction, (errror) ->
             if error
               cliUtils.error error
               cliUtils.exit 1
               callback()
             else
+              reporter.createReport() if reporter?
               cliUtils.exit 0
               callback()
 
-          
+
 
 module.exports = cli
