@@ -15,10 +15,12 @@ Dredd is a command-line tool for testing API documentation written in [API Bluep
     $ dredd blueprint.md http://api.myservice.tld
    
 ## Installation
-Node.JS and NPM is required.
+[Node.js][] and [NPM][] is required.
 
     $ npm install -g dredd
 
+[Node.js]: https://npmjs.org/ 
+[NPM]: https://npmjs.org/
 ## API Blueprint testability
 Dredd can test only API resources specified by *well defined transaction*. Any Non specific resources in the Blueprint e. g. with URI template or query parameters without default or example values are considered as *ambiguous transaction* thus they are resulting in a *warning* during the test run and are skipped.
 
