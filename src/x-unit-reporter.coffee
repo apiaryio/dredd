@@ -1,4 +1,5 @@
 fs = require 'fs'
+cli = require 'cli'
 
 class xUnitReporter
   constructor: (path) ->
@@ -14,6 +15,7 @@ class xUnitReporter
     fs.unlinkSync(@path) if fs.existsSync(@path)
 
   addTest: (test) =>
+    cli.debug "Adding test to junit reporter: " + JSON.stringify(test)
     @tests.push(test)
     @stats.tests += 1
     switch test.status
@@ -24,6 +26,7 @@ class xUnitReporter
     return this
 
   createReport: =>
+    cli.debug "Writing junit tests to file: " + @path
     appendLine @path, toTag('testsuite', {
         name: 'Dredd Tests'
       , tests: @stats.tests
