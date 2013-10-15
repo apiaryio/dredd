@@ -39,7 +39,7 @@ executeTransaction = (transaction, callback) ->
     method: request['method']
     headers: flatHeaders
 
-  cli.info origin['resourceGroupName'] + \
+  description = origin['resourceGroupName'] + \
               ' > ' + origin['resourceName'] + \
               ' > ' + origin['actionName'] + \
               ' > ' + origin['exampleName'] + \
@@ -82,11 +82,10 @@ executeTransaction = (transaction, callback) ->
               reporter.addTest {
                 status: "pass",
                 title: options['method'] + ' ' + options['path']
-              }
-            cli.ok indent + "PASS"
+                message: description
+              } if reporter?
             callback()
           else
-            cli.error indent + "FAIL"
             gavel.validate real, expected, 'response', (error, result) ->
               if error
                 cli.fatal
@@ -96,9 +95,8 @@ executeTransaction = (transaction, callback) ->
                     reporter.addTest {
                       status: "pass",
                       title: options['method'] + ' ' + options['path'],
-                      errorMessage: entity + ": " + entityResult['message']
-                    }
-                  cli.info indent + entity + ": " + entityResult['message']
+                      message: entity + ": " + entityResult['message']
+                    } if reporter.addTest?
               callback()
 
     req.write request['body'] if request['body'] != ''

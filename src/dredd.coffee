@@ -5,6 +5,7 @@ cli = require 'cli'
 executeTransaction = require './execute-transaction'
 blueprintAstToRuntime = require './blueprint-ast-to-runtime'
 xUnitReporter = require './x-unit-reporter'
+cliReporter = require './cli-reporter'
 
 options =
   'dry-run': ['d', 'Run without performing tests.'],
@@ -17,7 +18,7 @@ class dredd
     @configuration =
       blueprintPath: null,
       server: null,
-      reporters: config.reporters || [],
+      reporters: config.reporters || [new cliReporter()],
       options:
         'dry-run': false,
         silent: false,
@@ -28,7 +29,6 @@ class dredd
       @configuration["#{key}"] = value
 
   run: (callback) ->
-    cli.debug "Configuration: " + JSON.stringify @configuration
     fs.readFile @configuration.blueprintPath, 'utf8', (error, data) ->
       if error
         cli.fatal error
@@ -66,8 +66,9 @@ class dredd
 
             cli.debug "Configuration: " + JSON.stringify @configuration
 
+            @configuration.reporters = [new cliReporter] unless @configuration.options.silent
+
             if @configuration.options.reporter is 'junit'
-              @configuration.reporters = [] unless @configuration.reporters?
               cli.debug "Configuration: " + JSON.stringify @configuration
               @configuration.reporters.push new xUnitReporter(@configuration.options.output)
 
@@ -83,7 +84,7 @@ class dredd
                 callback()
               else
                 for reporter in @configuration.reporters
-                  reporter.createReport()
+                  reporter.createReport() if reporter.createReport?
                 callback()
 
 

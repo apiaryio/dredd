@@ -47,7 +47,7 @@ class xUnitReporter
       time: test.duration ? test.duration / 1000 : 0
 
     if 'fail' is test.status
-      attrs.message = test.errorMessage
+      attrs.message = test.message
       appendLine(path, toTag('testcase', attrs, false, toTag('failure', attrs, false, cdata(test.errorMessage))))
     else
       appendLine(path, toTag('testcase', attrs, true) )
