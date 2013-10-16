@@ -89,7 +89,6 @@ describe 'executeTransaction(transaction, callback)', () ->
   describe 'when dry run', () ->
     before () ->
       transaction['configuration']['options'] = {'dry-run' : true}
-      console.log "CONFIG " + JSON.stringify transaction['configuration']['options']
       server = nock('http://localhost:3000').
         post('/machines', {"type":"bulldozer","name":"willy"}).
         reply 202, "Accepted"

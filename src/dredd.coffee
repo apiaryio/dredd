@@ -18,7 +18,7 @@ class dredd
     @configuration =
       blueprintPath: null,
       server: null,
-      reporters: config.reporters || [new cliReporter()],
+      reporters: [new cliReporter()],
       options:
         'dry-run': false,
         silent: false,
@@ -29,7 +29,8 @@ class dredd
       @configuration["#{key}"] = value
 
   run: (callback) ->
-    fs.readFile @configuration.blueprintPath, 'utf8', (error, data) ->
+    config = @configuration
+    fs.readFile config.blueprintPath, 'utf8', (error, data) ->
       throw error if error
       protagonist.parse data, (error, result) ->
         throw error if error
@@ -58,15 +59,14 @@ class dredd
 
         transactionsWithConfiguration = []
 
-        cli.debug "Configuration: " + JSON.stringify @configuration
+        cli.info JSON.stringify config
 
-        @configuration.reporters = if @configuration.options.silent then [] else [new cliReporter]
+        config.reporters = if config.options.silent then [] else [new cliReporter]
 
-        if @configuration.options.reporter is 'junit'
-          cli.debug "Configuration: " + JSON.stringify @configuration
-          @configuration.reporters.push new xUnitReporter(@configuration.options.output)
+        if config.options.reporter is 'junit'
+          config.reporters.push new xUnitReporter(@configuration.options.output)
 
-        cli.debug "Reporters: " + JSON.stringify(@configuration.reporters)
+        cli.debug "Configuration: " + JSON.stringify config
 
         for transaction in runtime['transactions']
           transaction['configuration'] = @configuration
@@ -75,7 +75,7 @@ class dredd
         async.eachSeries transactionsWithConfiguration, executeTransaction, (error) ->
           throw error if error
 
-          for reporter in @configuration.reporters
+          for reporter in config.reporters
             reporter.createReport() if reporter.createReport?
           callback()
 

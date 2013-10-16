@@ -5,7 +5,8 @@ proxyquire = require('proxyquire').noCallThru()
 fsStub = require 'fs'
 protagonistStub = require 'protagonist'
 
-cliLib = require 'cli'
+cliStub = require 'cli'
+
 
 
 executeTransaction = (transaction, callback) ->
@@ -21,6 +22,7 @@ dredd = proxyquire '../../src/dredd', {
   './blueprint-ast-to-runtime': blueprintAstToRuntimeStub
   './execute-transaction': executeTransactionStub
   'fs': fsStub
+  'cli': cliStub
 }
 
 describe 'dredd()', () ->
@@ -48,12 +50,14 @@ describe 'dredd()', () ->
         server: 'http://localhost:3000/'
 
     it 'should load the file on given path', (done) ->
-      dredd configuration, () ->
+      runner = new dredd(configuration)
+      runner.run () ->
         assert.ok fsStub.readFile.calledWith configuration['blueprintPath']
         done()
 
     it 'should parse blueprint to ast', (done) ->
-      dredd configuration, () ->
+      runner = new dredd(configuration)
+      runner.run () ->
         assert.ok protagonistStub.parse.called
         done()
 
@@ -63,7 +67,8 @@ describe 'dredd()', () ->
     #     done()
 
     it 'should convert ast to runtime', (done) ->
-      dredd configuration, () ->
+      runner = new dredd(configuration)
+      runner.run () ->
         assert.ok blueprintAstToRuntimeStub.called
         done()
 
@@ -123,7 +128,8 @@ describe 'dredd()', () ->
       executeTransactionStub.reset()
 
     it 'should NOT execute any transaction', (done) ->
-      dredd configuration, () ->
+      runner = new dredd(configuration)
+      runner.run () ->
         assert.notOk executeTransactionStub.called
         done()
 
@@ -159,7 +165,8 @@ describe 'dredd()', () ->
       executeTransactionStub.reset()
 
     it 'should execute the runtime', (done) ->
-      dredd configuration, () ->
+      runner = new dredd(configuration)
+      runner.run () ->
         assert.ok blueprintAstToRuntimeStub.called
         done()
 
