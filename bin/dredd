@@ -32,7 +32,12 @@ cli.main( function (args, options) {
 
   runner = new dredd(configuration);
 
-  runner.run(function(){
-    process.exit(0);
-  });
+  try {
+        runner.run(function(){
+          process.exit(0);
+        });
+    } catch (error) {
+        cli.fatal(error);
+    }
+
 });

@@ -30,62 +30,54 @@ class dredd
 
   run: (callback) ->
     fs.readFile @configuration.blueprintPath, 'utf8', (error, data) ->
-      if error
-        cli.fatal error
-        callback()
-      else
-        protagonist.parse data, (error, result) ->
-          if error
-            cli.fatal error
-            callback()
-          else
-            runtime = blueprintAstToRuntime result['ast']
+      throw error if error
+      protagonist.parse data, (error, result) ->
+        throw error if error
+        runtime = blueprintAstToRuntime result['ast']
 
-            if runtime['warnings'].length > 0
-              for warning in runtime['warnings']
-                message = warning['message']
-                origin = warning['origin']
+        if runtime['warnings'].length > 0
+          for warning in runtime['warnings']
+            message = warning['message']
+            origin = warning['origin']
 
-                cli.info "Runtime compilation warning: \"" + warning['message'] + "\" on " + \
-                  origin['resourceGroupName'] + \
-                  ' > ' + origin['resourceName'] + \
-                  ' > ' + origin['actionName']
+            cli.info "Runtime compilation warning: \"" + warning['message'] + "\" on " + \
+              origin['resourceGroupName'] + \
+              ' > ' + origin['resourceName'] + \
+              ' > ' + origin['actionName']
 
-            if runtime['errors'].length > 0
-              for error in runtime['errors']
-                message = error['message']
-                origin = error['origin']
+        if runtime['errors'].length > 0
+          for error in runtime['errors']
+            message = error['message']
+            origin = error['origin']
 
-                cli.error "Runtime compilation error: \"" + error['message'] + "\" on " + \
-                  origin['resourceGroupName'] + \
-                  ' > ' + origin['resourceName'] + \
-                  ' > ' + origin['actionName']
-              cli.fatal
+            cli.error "Runtime compilation error: \"" + error['message'] + "\" on " + \
+              origin['resourceGroupName'] + \
+              ' > ' + origin['resourceName'] + \
+              ' > ' + origin['actionName']
+          cli.fatal
 
-            transactionsWithConfiguration = []
+        transactionsWithConfiguration = []
 
-            cli.debug "Configuration: " + JSON.stringify @configuration
+        cli.debug "Configuration: " + JSON.stringify @configuration
 
-            @configuration.reporters = [new cliReporter] unless @configuration.options.silent
+        @configuration.reporters = if @configuration.options.silent then [] else [new cliReporter]
 
-            if @configuration.options.reporter is 'junit'
-              cli.debug "Configuration: " + JSON.stringify @configuration
-              @configuration.reporters.push new xUnitReporter(@configuration.options.output)
+        if @configuration.options.reporter is 'junit'
+          cli.debug "Configuration: " + JSON.stringify @configuration
+          @configuration.reporters.push new xUnitReporter(@configuration.options.output)
 
-            cli.debug "Reporters: " + JSON.stringify(@configuration.reporters)
+        cli.debug "Reporters: " + JSON.stringify(@configuration.reporters)
 
-            for transaction in runtime['transactions']
-              transaction['configuration'] = @configuration
-              transactionsWithConfiguration.push transaction
+        for transaction in runtime['transactions']
+          transaction['configuration'] = @configuration
+          transactionsWithConfiguration.push transaction
 
-            async.eachSeries transactionsWithConfiguration, executeTransaction, (error) ->
-              if error
-                cli.error error
-                callback()
-              else
-                for reporter in @configuration.reporters
-                  reporter.createReport() if reporter.createReport?
-                callback()
+        async.eachSeries transactionsWithConfiguration, executeTransaction, (error) ->
+          throw error if error
+
+          for reporter in @configuration.reporters
+            reporter.createReport() if reporter.createReport?
+          callback()
 
 
 module.exports = dredd

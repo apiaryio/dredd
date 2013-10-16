@@ -48,7 +48,7 @@ executeTransaction = (transaction, callback) ->
               ' ' + JSON.stringify(request['body']).trunc(20)
 
   if configuration.options['dry-run']
-    cli.info indent + "Dry run, skipping..."
+    cli.info "Dry run, skipping..."
     callback()
   else
     buffer = ""
@@ -57,8 +57,7 @@ executeTransaction = (transaction, callback) ->
         buffer = buffer + chunk
 
       req.on 'error', (error) ->
-        cli.fatal error
-        callback()
+        throw error
 
       res.on 'end', () ->
         real =
@@ -73,9 +72,7 @@ executeTransaction = (transaction, callback) ->
           statusCode: response['status']
 
         gavel.isValid real, expected, 'response', (error, isValid) ->
-          if error
-            cli.fatal error
-            callback()
+          throw error if error
 
           if isValid
             for reporter in configuration.reporters
@@ -83,20 +80,21 @@ executeTransaction = (transaction, callback) ->
                 status: "pass",
                 title: options['method'] + ' ' + options['path']
                 message: description
-              } if reporter?
+              } if reporter.addTest?
             callback()
           else
             gavel.validate real, expected, 'response', (error, result) ->
-              if error
-                cli.fatal
+              throw error if error
+              message = description + "\n"
               for entity, data of result
                 for entityResult in data['results']
-                  for reporter in configuration.reporters
-                    reporter.addTest {
-                      status: "pass",
-                      title: options['method'] + ' ' + options['path'],
-                      message: entity + ": " + entityResult['message']
-                    } if reporter.addTest?
+                  message += entity + ": " + entityResult['message'] + "\n"
+              for reporter in configuration.reporters
+                reporter.addTest {
+                  status: "fail",
+                  title: options['method'] + ' ' + options['path'],
+                  message: message
+                } if reporter.addTest?
               callback()
 
     req.write request['body'] if request['body'] != ''

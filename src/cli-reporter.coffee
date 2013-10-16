@@ -14,8 +14,6 @@ class cliReporter
     @tests.push(test)
     @stats.tests += 1
 
-    cli.info test.message
-
     switch test.status
       when 'pass'
         @stats.passes += 1
@@ -23,6 +21,9 @@ class cliReporter
       when 'fail'
         @stats.failures += 1
         cli.error test.title
+
+    cli.info test.message
+
     return this
 
   createReport: =>
