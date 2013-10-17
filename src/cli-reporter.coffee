@@ -1,6 +1,6 @@
 cli = require 'cli'
 
-class cliReporter
+class CliReporter
   constructor: ->
     @tests = []
     @stats =
@@ -27,13 +27,14 @@ class cliReporter
     return this
 
   createReport: =>
-    cli.info "Tests Complete\n" \
-      + "tests:  #{@stats.tests} \n" \
-      + "failures: #{@stats.failures} \n" \
-      + "errors: #{@stats.failures} \n" \
-      + "skip: #{@stats.tests - @stats.failures - @stats.passes} \n" \
-      + "timestamp: #{(new Date).toUTCString()} \n" \
-      + "time: #{@stats.duration / 1000} \n"
+    if @stats.tests > 0
+      cli.info "Tests Complete\n" \
+        + "tests:  #{@stats.tests} \n" \
+        + "failures: #{@stats.failures} \n" \
+        + "errors: #{@stats.failures} \n" \
+        + "skip: #{@stats.tests - @stats.failures - @stats.passes} \n" \
+        + "timestamp: #{(new Date).toUTCString()} \n" \
+        + "time: #{@stats.duration / 1000} \n"
     return this
 
-module.exports = cliReporter
+module.exports = CliReporter

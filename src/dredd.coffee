@@ -4,8 +4,8 @@ protagonist = require 'protagonist'
 cli = require 'cli'
 executeTransaction = require './execute-transaction'
 blueprintAstToRuntime = require './blueprint-ast-to-runtime'
-xUnitReporter = require './x-unit-reporter'
-cliReporter = require './cli-reporter'
+XUnitReporter = require './x-unit-reporter'
+CliReporter = require './cli-reporter'
 
 options =
   'dry-run': ['d', 'Run without performing tests.'],
@@ -13,12 +13,12 @@ options =
   reporter: ['r', 'Output additional report format. Options: junit', 'string'],
   output: ['o', 'Specifies output file when using additional reporter', 'file']
 
-class dredd
+class Dredd
   constructor: (config) ->
     @configuration =
       blueprintPath: null,
       server: null,
-      reporters: [new cliReporter()],
+      reporters: [],
       options:
         'dry-run': false,
         silent: false,
@@ -26,23 +26,29 @@ class dredd
         output: null
 
     for own key, value of config
-      @configuration["#{key}"] = value
+      @configuration[key] = value
+
+    ## buildReporters
+    @configuration.reporters = if @configuration.options.silent then [] else [new CliReporter]
+
+    if @configuration.options.reporter is 'junit'
+      @configuration.reporters.push new XUnitReporter(@configuration.options.output)
+    ##
 
   run: (callback) ->
     config = @configuration
 
     fs.readFile config.blueprintPath, 'utf8', (error, data) ->
       if error
-        callback(error)
-        return this
+        return callback(error)
 
       protagonist.parse data, (error, result) ->
         if error
-          callback(error)
-          return this
+          return callback(error)
 
         runtime = blueprintAstToRuntime result['ast']
 
+        ## handleRuntimeProblems
         if runtime['warnings'].length > 0
           for warning in runtime['warnings']
             message = warning['message']
@@ -62,31 +68,28 @@ class dredd
               origin['resourceGroupName'] + \
               ' > ' + origin['resourceName'] + \
               ' > ' + origin['actionName']
-          if error
-            callback(new Error("Error parsing ast to blueprint."))
-            return this
+          return callback(new Error("Error parsing ast to blueprint."))
+        ##
 
+        ## transactionsWithConfiguration()
         transactionsWithConfiguration = []
-
-        config.reporters = if config.options.silent then [] else [new cliReporter]
-
-        if config.options.reporter is 'junit'
-          config.reporters.push new xUnitReporter(config.options.output)
 
         for transaction in runtime['transactions']
           transaction['configuration'] = config
           transactionsWithConfiguration.push transaction
+        ##
 
         async.eachSeries transactionsWithConfiguration, executeTransaction, (error) ->
           if error
-            callback(error)
-            return this
+            return callback(error)
 
+          ## createReports
           for reporter in config.reporters
             reporter.createReport() if reporter.createReport?
-          callback() if typeof callback is 'function'
-    return this
+          ##
+
+          return callback() if typeof callback is 'function'
 
 
-module.exports = dredd
+module.exports = Dredd
 module.exports.options = options

@@ -17,7 +17,7 @@ executeTransactionStub = sinon.spy executeTransaction
 blueprintAstToRuntime = require '../../src/blueprint-ast-to-runtime'
 blueprintAstToRuntimeStub = sinon.spy blueprintAstToRuntime
 
-dredd = proxyquire '../../src/dredd', {
+Dredd = proxyquire '../../src/dredd', {
   'protagonist': protagonistStub
   './blueprint-ast-to-runtime': blueprintAstToRuntimeStub
   './execute-transaction': executeTransactionStub
@@ -25,7 +25,7 @@ dredd = proxyquire '../../src/dredd', {
   'cli': cliStub
 }
 
-describe 'dredd()', () ->
+describe 'dredd', () ->
 
   configuration = {}
 
@@ -45,29 +45,44 @@ describe 'dredd()', () ->
         options:
           silent: true
 
+    it 'should copy configuration on creation', () ->
+      runner = new Dredd(configuration)
+      assert.ok(runner.configuration.options.silent)
+      assert.notOk(runner.configuration.options['dry-run'])
+
     it 'should load the file on given path', (done) ->
-      runner = new dredd(configuration)
+      runner = new Dredd(configuration)
       runner.run (error) ->
         assert.ok fsStub.readFile.calledWith configuration['blueprintPath']
         done()
 
     it 'should parse blueprint to ast', (done) ->
-      runner = new dredd(configuration)
+      runner = new Dredd(configuration)
       runner.run (error) ->
         assert.ok protagonistStub.parse.called
         done()
 
     it 'should exit without throwing an error', (done) ->
-      runner = new dredd(configuration)
+      runner = new Dredd(configuration)
       runner.run (error) ->
         assert.notOk(error)
       done()
 
     it 'should convert ast to runtime', (done) ->
-      runner = new dredd(configuration)
+      runner = new Dredd(configuration)
       runner.run (error) ->
         assert.ok blueprintAstToRuntimeStub.called
         done()
+
+  describe 'when junit reporter is added', () ->
+    before () ->
+      configuration =
+        options:
+          reporter: 'junit'
+
+    it 'should have two reporters', () ->
+      runner = new Dredd(configuration)
+      assert.equal runner.configuration.reporters.length , 2
 
   describe 'when Blueprint parsing error', () ->
     beforeEach () ->
@@ -81,14 +96,14 @@ describe 'dredd()', () ->
           silent: true
 
     it 'should exit with an error', (done) ->
-      runner = new dredd(configuration)
+      runner = new Dredd(configuration)
       runner.run (error) ->
         assert.ok error
         done()
 
 
     it 'should NOT execute any transaction', (done) ->
-      runner = new dredd(configuration)
+      runner = new Dredd(configuration)
       runner.run () ->
         assert.notOk executeTransactionStub.called
         done()
@@ -108,13 +123,13 @@ describe 'dredd()', () ->
         url: 'http://localhost:3000/'
 
     it 'should exit with an error', (done) ->
-      runner = new dredd(configuration)
+      runner = new Dredd(configuration)
       runner.run (error) ->
         assert.ok error
         done()
 
     it 'should NOT execute any transaction', (done) ->
-      runner = new dredd(configuration)
+      runner = new Dredd(configuration)
       runner.run (error) ->
         assert.notOk executeTransactionStub.called
         done()
@@ -129,7 +144,7 @@ describe 'dredd()', () ->
       executeTransactionStub.reset()
 
     it 'should NOT execute any transaction', (done) ->
-      runner = new dredd(configuration)
+      runner = new Dredd(configuration)
       runner.run (error) ->
         assert.notOk executeTransactionStub.called
         done()
@@ -137,7 +152,7 @@ describe 'dredd()', () ->
     it 'should print runtime errors to stdout'
 
     it 'should exit with an error', (done) ->
-      runner = new dredd(configuration)
+      runner = new Dredd(configuration)
       runner.run (error) ->
         assert.ok error
         done()
@@ -151,7 +166,7 @@ describe 'dredd()', () ->
       executeTransactionStub.reset()
 
     it 'should execute some transaction', (done) ->
-      runner = new dredd(configuration)
+      runner = new Dredd(configuration)
       runner.run (error) ->
         assert.ok executeTransactionStub.called
         done()
@@ -159,7 +174,7 @@ describe 'dredd()', () ->
     it 'should print runtime warnings to stdout'
 
     it 'should not exit', (done) ->
-      runner = new dredd(configuration)
+      runner = new Dredd(configuration)
       runner.run (error) ->
         assert.notOk error
         done()
@@ -169,7 +184,7 @@ describe 'dredd()', () ->
       executeTransactionStub.reset()
 
     it 'should execute the runtime', (done) ->
-      runner = new dredd(configuration)
+      runner = new Dredd(configuration)
       runner.run (error) ->
         assert.ok blueprintAstToRuntimeStub.called
         done()

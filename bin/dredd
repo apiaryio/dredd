@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 var cli = require('cli');
-var dredd = require('../lib/dredd');
+var Dredd = require('../lib/dredd');
 
 cli.enable('version', 'status');
 cli.setApp('./package.json');
 cli.setUsage("dredd <path to blueprint> <api_endpoint> [OPTIONS]"
      + "\n\nExample: \n  " + "dredd ./apiary.md http://localhost:3000 --dry-run");
 
-cli.parse(dredd.options);
+cli.parse(Dredd.options);
 
 cli.main( function (args, options) {
   var argError = false;
@@ -30,7 +30,7 @@ cli.main( function (args, options) {
     'options': options
   }
 
-  runner = new dredd(configuration);
+  runner = new Dredd(configuration);
 
   runner.run(function(error){
     if (error) {

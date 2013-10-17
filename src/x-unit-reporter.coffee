@@ -1,7 +1,7 @@
 fs = require 'fs'
 cli = require 'cli'
 
-class xUnitReporter
+class XUnitReporter
   constructor: (path) ->
     @tests = []
     @path = process.cwd() + "/report.xml" unless path?
@@ -68,4 +68,4 @@ class xUnitReporter
     tag += content + "</" + name + end  if content
     tag
 
-module.exports = xUnitReporter
+module.exports = XUnitReporter
