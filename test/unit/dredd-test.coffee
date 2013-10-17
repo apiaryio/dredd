@@ -32,15 +32,9 @@ describe 'dredd()', () ->
   beforeEach () ->
     sinon.spy protagonistStub, 'parse'
     sinon.spy fsStub, 'readFile'
-    # sinon.stub cliUtilsStub, 'exit'
-    # sinon.stub cliUtilsStub, 'log'
-    # sinon.stub cliUtilsStub, 'error'
 
   afterEach () ->
     protagonistStub.parse.restore()
-    # cliUtilsStub.exit.restore()
-    # cliUtilsStub.log.restore()
-    # cliUtilsStub.error.restore()
     fsStub.readFile.restore()
 
   describe 'with valid configuration', () ->
@@ -48,27 +42,30 @@ describe 'dredd()', () ->
       configuration =
         blueprintPath: './test/fixtures/apiary.apib'
         server: 'http://localhost:3000/'
+        options:
+          silent: true
 
     it 'should load the file on given path', (done) ->
       runner = new dredd(configuration)
-      runner.run () ->
+      runner.run (error) ->
         assert.ok fsStub.readFile.calledWith configuration['blueprintPath']
         done()
 
     it 'should parse blueprint to ast', (done) ->
       runner = new dredd(configuration)
-      runner.run () ->
+      runner.run (error) ->
         assert.ok protagonistStub.parse.called
         done()
 
-    # it 'should exit with status 0', (done) ->
-    #   cli configuration, () ->
-    #     assert.ok cliUtilsStub.exit.calledWith(0)
-    #     done()
+    it 'should exit without throwing an error', (done) ->
+      runner = new dredd(configuration)
+      runner.run (error) ->
+        assert.notOk(error)
+      done()
 
     it 'should convert ast to runtime', (done) ->
       runner = new dredd(configuration)
-      runner.run () ->
+      runner.run (error) ->
         assert.ok blueprintAstToRuntimeStub.called
         done()
 
@@ -80,23 +77,26 @@ describe 'dredd()', () ->
       configuration =
         blueprintPath: './test/fixtures/error-blueprint.apib'
         url: 'http://localhost:3000/'
+        options:
+          silent: true
 
-    # it 'should exit with status 1', (done) ->
-    #   dredd configuration, () ->
-    #     assert.ok cliUtilsStub.exit.calledWith(1)
-    #     done()
+    it 'should exit with an error', (done) ->
+      runner = new dredd(configuration)
+      runner.run (error) ->
+        assert.ok error
+        done()
 
-    it 'should return error to stdout'
 
-    # it 'should NOT execute any transaction', (done) ->
-    #   dredd configuration, () ->
-    #     assert.notOk executeTransactionStub.called
-    #     done()
+    it 'should NOT execute any transaction', (done) ->
+      runner = new dredd(configuration)
+      runner.run () ->
+        assert.notOk executeTransactionStub.called
+        done()
 
   describe 'when Blueprint parsing warning', () ->
     it 'should execute the runtime'
 
-    it 'should exit with status 0', () ->
+    it 'should exit with status 0'
 
   describe 'when non existing Blueprint path', () ->
     beforeEach () ->
@@ -107,15 +107,17 @@ describe 'dredd()', () ->
         blueprintPath: './balony/path.apib'
         url: 'http://localhost:3000/'
 
-    # it 'should exit with status 1', (done) ->
-    #   cli configuration, () ->
-    #     assert.ok cliUtilsStub.exit.calledWith(1)
-    #     done()
+    it 'should exit with an error', (done) ->
+      runner = new dredd(configuration)
+      runner.run (error) ->
+        assert.ok error
+        done()
 
-    # it 'should NOT execute any transaction', (done) ->
-    #   dredd configuration, () ->
-    #     assert.notOk executeTransactionStub.called
-    #     done()
+    it 'should NOT execute any transaction', (done) ->
+      runner = new dredd(configuration)
+      runner.run (error) ->
+        assert.notOk executeTransactionStub.called
+        done()
 
     it 'should return error to stdout'
 
@@ -124,21 +126,21 @@ describe 'dredd()', () ->
       configuration =
         blueprintPath: './test/fixtures/error-uri-template.apib'
         server: 'http://localhost:3000/'
-
       executeTransactionStub.reset()
 
     it 'should NOT execute any transaction', (done) ->
       runner = new dredd(configuration)
-      runner.run () ->
+      runner.run (error) ->
         assert.notOk executeTransactionStub.called
         done()
 
     it 'should print runtime errors to stdout'
 
-    # it 'should exit with status 1', (done) ->
-    #    cli configuration, () ->
-    #     assert.ok cliUtilsStub.exit.calledWith(1)
-    #     done()
+    it 'should exit with an error', (done) ->
+      runner = new dredd(configuration)
+      runner.run (error) ->
+        assert.ok error
+        done()
 
   describe 'when runtime contains any warning', () ->
     before () ->
@@ -148,17 +150,19 @@ describe 'dredd()', () ->
 
       executeTransactionStub.reset()
 
-    # it 'should execute some transaction', (done) ->
-    #   cliStub configuration, () ->
-    #     assert.ok executeTransactionStub.called
-    #     done()
+    it 'should execute some transaction', (done) ->
+      runner = new dredd(configuration)
+      runner.run (error) ->
+        assert.ok executeTransactionStub.called
+        done()
 
     it 'should print runtime warnings to stdout'
 
-    # it 'should not exit', (done) ->
-    #    cliStub configuration, () ->
-    #     assert.ok cliUtilsStub.exit.calledWith(0)
-    #     done()
+    it 'should not exit', (done) ->
+      runner = new dredd(configuration)
+      runner.run (error) ->
+        assert.notOk error
+        done()
 
   describe 'when runtime is without errors and warnings', () ->
     beforeEach () ->
@@ -166,7 +170,7 @@ describe 'dredd()', () ->
 
     it 'should execute the runtime', (done) ->
       runner = new dredd(configuration)
-      runner.run () ->
+      runner.run (error) ->
         assert.ok blueprintAstToRuntimeStub.called
         done()
 

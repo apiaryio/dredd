@@ -30,10 +30,17 @@ class dredd
 
   run: (callback) ->
     config = @configuration
+
     fs.readFile config.blueprintPath, 'utf8', (error, data) ->
-      throw error if error
+      if error
+        callback(error)
+        return this
+
       protagonist.parse data, (error, result) ->
-        throw error if error
+        if error
+          callback(error)
+          return this
+
         runtime = blueprintAstToRuntime result['ast']
 
         if runtime['warnings'].length > 0
@@ -55,29 +62,30 @@ class dredd
               origin['resourceGroupName'] + \
               ' > ' + origin['resourceName'] + \
               ' > ' + origin['actionName']
-          cli.fatal
+          if error
+            callback(new Error("Error parsing ast to blueprint."))
+            return this
 
         transactionsWithConfiguration = []
-
-        cli.info JSON.stringify config
 
         config.reporters = if config.options.silent then [] else [new cliReporter]
 
         if config.options.reporter is 'junit'
-          config.reporters.push new xUnitReporter(@configuration.options.output)
-
-        cli.debug "Configuration: " + JSON.stringify config
+          config.reporters.push new xUnitReporter(config.options.output)
 
         for transaction in runtime['transactions']
-          transaction['configuration'] = @configuration
+          transaction['configuration'] = config
           transactionsWithConfiguration.push transaction
 
         async.eachSeries transactionsWithConfiguration, executeTransaction, (error) ->
-          throw error if error
+          if error
+            callback(error)
+            return this
 
           for reporter in config.reporters
             reporter.createReport() if reporter.createReport?
-          callback()
+          callback() if typeof callback is 'function'
+    return this
 
 
 module.exports = dredd

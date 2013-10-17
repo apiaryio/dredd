@@ -57,7 +57,7 @@ executeTransaction = (transaction, callback) ->
         buffer = buffer + chunk
 
       req.on 'error', (error) ->
-        throw error
+        callback error
 
       res.on 'end', () ->
         real =
@@ -72,7 +72,7 @@ executeTransaction = (transaction, callback) ->
           statusCode: response['status']
 
         gavel.isValid real, expected, 'response', (error, isValid) ->
-          throw error if error
+          callback error if error
 
           if isValid
             for reporter in configuration.reporters
@@ -84,7 +84,7 @@ executeTransaction = (transaction, callback) ->
             callback()
           else
             gavel.validate real, expected, 'response', (error, result) ->
-              throw error if error
+              callback(error) if error
               message = description + "\n"
               for entity, data of result
                 for entityResult in data['results']
