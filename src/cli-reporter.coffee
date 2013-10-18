@@ -1,32 +1,29 @@
 cli = require 'cli'
+Reporter = require './reporter'
 
-class CliReporter
-  constructor: ->
-    @tests = []
-    @stats =
-      tests: 0
-      failures: 0
-      passes: 0
-      timestamp: (new Date).toUTCString()
-      duration: 0
+class CliReporter extends Reporter
+  constructor: (path) ->
+    super()
+    @type = "cli"
 
-  addTest: (test) =>
-    @tests.push(test)
-    @stats.tests += 1
+  addTest: (test, callback) =>
+    super test, (error) ->
+      return callback(error) if error
 
     switch test.status
       when 'pass'
-        @stats.passes += 1
         cli.ok test.title
       when 'fail'
-        @stats.failures += 1
         cli.error test.title
 
     cli.info test.message
 
-    return this
+    return callback()
 
-  createReport: =>
+  createReport: (callback) =>
+    super (error) ->
+      return callback(error) if error
+
     if @stats.tests > 0
       cli.info "Tests Complete\n" \
         + "tests:  #{@stats.tests} \n" \
@@ -35,6 +32,6 @@ class CliReporter
         + "skip: #{@stats.tests - @stats.failures - @stats.passes} \n" \
         + "timestamp: #{(new Date).toUTCString()} \n" \
         + "time: #{@stats.duration / 1000} \n"
-    return this
+    return callback()
 
 module.exports = CliReporter

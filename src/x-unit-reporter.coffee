@@ -1,31 +1,25 @@
 fs = require 'fs'
 cli = require 'cli'
+Reporter = require './reporter'
 
-class XUnitReporter
+class XUnitReporter extends Reporter
   constructor: (path) ->
-    @tests = []
+    super()
+    @type = "xUnit"
     @path = process.cwd() + "/report.xml" unless path?
-    @stats =
-      tests: 0
-      failures: 0
-      passes: 0
-      timestamp: (new Date).toUTCString()
-      duration: 0
     #delete old results
     fs.unlinkSync(@path) if fs.existsSync(@path)
 
-  addTest: (test) =>
+  addTest: (test, callback) =>
+    super test, (error) ->
+      return callback(error) if error
     cli.debug "Adding test to junit reporter: " + JSON.stringify(test)
-    @tests.push(test)
-    @stats.tests += 1
-    switch test.status
-      when 'pass'
-        @stats.passes += 1
-      when 'fail'
-        @stats.failures += 1
-    return this
+    return callback()
 
-  createReport: =>
+  createReport: (callback) =>
+    super (error) ->
+      return callback(error) if error
+
     cli.debug "Writing junit tests to file: " + @path
     appendLine @path, toTag('testsuite', {
         name: 'Dredd Tests'
@@ -38,7 +32,8 @@ class XUnitReporter
     }, false)
     doTest @path, test for test in @tests
     appendLine(@path, '</testsuite>')
-    return this
+
+    return callback()
 
   doTest = (path, test) ->
     attrs =

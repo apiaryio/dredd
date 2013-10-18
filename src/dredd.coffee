@@ -4,6 +4,7 @@ protagonist = require 'protagonist'
 cli = require 'cli'
 executeTransaction = require './execute-transaction'
 blueprintAstToRuntime = require './blueprint-ast-to-runtime'
+Reporter = require './reporter'
 XUnitReporter = require './x-unit-reporter'
 CliReporter = require './cli-reporter'
 
@@ -18,7 +19,7 @@ class Dredd
     @configuration =
       blueprintPath: null,
       server: null,
-      reporters: [],
+      reporter: new Reporter(),
       options:
         'dry-run': false,
         silent: false,
@@ -29,18 +30,17 @@ class Dredd
       @configuration[key] = value
 
     ## buildReporters
-    @configuration.reporters = if @configuration.options.silent then [] else [new CliReporter]
+    @configuration.reporter.addReporter new CliReporter unless @configuration.options.silent
 
     if @configuration.options.reporter is 'junit'
-      @configuration.reporters.push new XUnitReporter(@configuration.options.output)
+      @configuration.reporter.addReporter new XUnitReporter(@configuration.options.output)
     ##
 
   run: (callback) ->
     config = @configuration
 
     fs.readFile config.blueprintPath, 'utf8', (error, data) ->
-      if error
-        return callback(error)
+      return callback(error) if error
 
       protagonist.parse data, (error, result) ->
         if error
@@ -84,8 +84,10 @@ class Dredd
             return callback(error)
 
           ## createReports
-          for reporter in config.reporters
-            reporter.createReport() if reporter.createReport?
+          ## TODO: factor into a Reporters container
+          config.reporter.createReport (error) ->
+            if error
+              return callback(error)
           ##
 
           return callback() if typeof callback is 'function'

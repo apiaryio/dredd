@@ -30,9 +30,9 @@ cli.main( function (args, options) {
     'options': options
   }
 
-  runner = new Dredd(configuration);
+  dredd = new Dredd(configuration);
 
-  runner.run(function(error){
+  dredd.run(function(error){
     if (error) {
       cli.fatal(error);
     };

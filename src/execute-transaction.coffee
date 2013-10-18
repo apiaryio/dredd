@@ -9,7 +9,7 @@ cli = require 'cli'
 
 indent = '  '
 
-String.prototype.trunc = (n) ->
+String::trunc = (n) ->
   if this.length>n
     return this.substr(0,n-1)+'...'
   else
@@ -75,12 +75,13 @@ executeTransaction = (transaction, callback) ->
           callback error if error
 
           if isValid
-            for reporter in configuration.reporters
-              reporter.addTest {
-                status: "pass",
-                title: options['method'] + ' ' + options['path']
-                message: description
-              } if reporter.addTest?
+            test =
+              status: "pass",
+              title: options['method'] + ' ' + options['path']
+              message: description
+            cli.debug "CONFIGURATION " + JSON.stringify configuration
+            configuration.reporter.addTest test, (error) ->
+              callback error if error
             callback()
           else
             gavel.validate real, expected, 'response', (error, result) ->
@@ -89,12 +90,12 @@ executeTransaction = (transaction, callback) ->
               for entity, data of result
                 for entityResult in data['results']
                   message += entity + ": " + entityResult['message'] + "\n"
-              for reporter in configuration.reporters
-                reporter.addTest {
-                  status: "fail",
-                  title: options['method'] + ' ' + options['path'],
-                  message: message
-                } if reporter.addTest?
+              test =
+                status: "fail",
+                title: options['method'] + ' ' + options['path'],
+                message: message
+              configuration.reporter.addTest test, (error) ->
+                callback error if error
               callback()
 
     req.write request['body'] if request['body'] != ''

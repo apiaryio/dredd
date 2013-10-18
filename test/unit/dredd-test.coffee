@@ -82,7 +82,7 @@ describe 'dredd', () ->
 
     it 'should have two reporters', () ->
       runner = new Dredd(configuration)
-      assert.equal runner.configuration.reporters.length , 2
+      assert.equal runner.configuration.reporter.reporters.length , 1
 
   describe 'when Blueprint parsing error', () ->
     beforeEach () ->

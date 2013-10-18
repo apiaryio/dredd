@@ -17,17 +17,17 @@ describe 'CliReporter', () ->
         status: 'pass'
         title: 'Passing Test'
 
-    it 'should add to the list of passing tests', () ->
-      cliReporter = new CliReporter()
-      cliReporter.addTest(test)
-      assert.includeMembers(cliReporter.tests, [test])
+    beforeEach () ->
+       sinon.spy cliStub, 'ok'
 
-    it 'should increment the correct counters', () ->
+    afterEach () ->
+      cliStub.ok.restore()
+
+    it 'should write pass to the console', (done) ->
       cliReporter = new CliReporter()
-      cliReporter.addTest(test)
-      assert.equal(cliReporter.stats.tests, 1)
-      assert.equal(cliReporter.stats.passes, 1)
-      assert.equal(cliReporter.stats.failures, 0)
+      cliReporter.addTest test, () ->
+        assert.ok cliStub.ok.calledOnce
+        done()
 
   describe 'when adding failing test', () ->
     before () ->
@@ -35,17 +35,17 @@ describe 'CliReporter', () ->
         status: 'fail'
         title: 'Failing Test'
 
-    it 'should add to the list of failing tests', () ->
-      cliReporter = new CliReporter()
-      cliReporter.addTest(test)
-      assert.includeMembers(cliReporter.tests, [test])
+    beforeEach () ->
+      sinon.spy cliStub, 'error'
 
-    it 'should increment the correct counters', () ->
+    afterEach () ->
+      cliStub.error.restore()
+
+    it 'should write fail to the console', (done) ->
       cliReporter = new CliReporter()
-      cliReporter.addTest(test)
-      assert.equal(cliReporter.stats.tests, 1)
-      assert.equal(cliReporter.stats.passes, 0)
-      assert.equal(cliReporter.stats.failures, 1)
+      cliReporter.addTest test, ()->
+        assert.ok cliStub.error.calledOnce
+        done()
 
 
   describe 'when creating report', () ->
@@ -57,18 +57,20 @@ describe 'CliReporter', () ->
 
     describe 'when there is at least one test', () ->
 
-      it 'should write to the console', () ->
+      it 'should write to the console', (done) ->
         cliReporter = new CliReporter()
-        cliReporter.addTest(test)
-        cliReporter.createReport()
-        assert.ok cliStub.info.calledTwice
+        cliReporter.addTest test, () ->
+          cliReporter.createReport () ->
+            assert.ok cliStub.info.calledTwice
+            done()
 
     describe 'when there are no tests', () ->
 
-      it 'should write to the console', () ->
+      it 'should write to the console', (done) ->
         cliReporter = new CliReporter()
-        cliReporter.createReport()
-        assert.notOk cliStub.info.calledOnce
+        cliReporter.createReport () ->
+          assert.notOk cliStub.info.calledOnce
+          done()
 
 
 

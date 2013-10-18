@@ -28,7 +28,6 @@ describe 'executeTransaction(transaction, callback)', () ->
       exampleName: "Bogus example name"
     configuration:
       server: 'http://localhost:3000'
-      reporters: []
       options: []
 
   beforeEach () ->
@@ -49,7 +48,7 @@ describe 'executeTransaction(transaction, callback)', () ->
         reply transaction['response']['status'],
           transaction['response']['body'],
           {'Content-Type': 'application/json'}
-      transaction['configuration']['reporters'] = [new CliReporter()]
+      transaction['configuration'].reporter = new CliReporter()
 
 
     it 'should perform the request', (done) ->
