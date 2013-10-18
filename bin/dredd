@@ -1,25 +1,42 @@
 #!/usr/bin/env node
-var cli = require('../lib/cli')
+var cli = require('cli');
+var Dredd = require('../lib/dredd');
 
-if(process.argv[2] == undefined || process.argv[3] == undefined){
-  text = "Dredd - API Blueprint testing tool"
-  text = text + "\n" + "usage:"
-  text = text + "\n" + "  dredd <path to blueprint> <api_endpoint>"
-  text = text + "\n"
-  text = text + "\n" + "example:"
-  text = text + "\n" + "  dredd ./apiary.apib http://localhost:3000"
-  text = text + "\n"
-  
-  console.log(text)
-  process.exit(1)	
-}
+cli.enable('version', 'status');
+cli.setApp('./package.json');
+cli.setUsage("dredd <path to blueprint> <api_endpoint> [OPTIONS]"
+     + "\n\nExample: \n  " + "dredd ./apiary.md http://localhost:3000 --dry-run");
 
-configuration = {
-  blueprintPath: process.argv[2],
-  server: process.argv[3],
-  dryRun: false
-}
+cli.parse(Dredd.options);
 
-cli(configuration, function() {
-  process.exit(0);
-})
+cli.main( function (args, options) {
+  var argError = false;
+
+  if (args[0] == undefined) {
+    cli.error("Must specify path to blueprint file.\n");
+    argError = true;
+  }
+  if (args[1] == undefined) {
+    cli.error("Must specify api endpoint.\n");
+    argError = true;
+  }
+  if (argError) {
+    cli.getUsage();
+  };
+
+  configuration = {
+    'blueprintPath': args[0],
+    'server': args[1],
+    'options': options
+  }
+
+  dredd = new Dredd(configuration);
+
+  dredd.run(function(error){
+    if (error) {
+      cli.fatal(error);
+    };
+    process.exit(0);
+  });
+
+});

@@ -1,19 +1,20 @@
-cliUtils = require './cli-utils'
 flattenHeaders = require './flatten-headers'
 gavel = require 'gavel'
 http = require 'http'
 url = require 'url'
 os = require 'os'
 packageConfig = require './../package.json'
+cli = require 'cli'
+
 
 indent = '  '
 
-String.prototype.trunc = (n) ->
+String::trunc = (n) ->
   if this.length>n
     return this.substr(0,n-1)+'...'
   else
     return this
-  
+
 executeTransaction = (transaction, callback) ->
   configuration = transaction['configuration']
   origin = transaction['origin']
@@ -23,7 +24,7 @@ executeTransaction = (transaction, callback) ->
   parsedUrl = url.parse configuration['server']
 
   flatHeaders = flattenHeaders request['headers']
-    
+
   # Add Dredd user agent if no User-Agent present
   if flatHeaders['User-Agent'] == undefined
     system = os.type() + ' ' + os.release() + '; ' + os.arch()
@@ -31,14 +32,14 @@ executeTransaction = (transaction, callback) ->
       packageConfig['version'] + \
       " ("+ system + ")"
 
-  options = 
+  options =
     host: parsedUrl['hostname']
     port: parsedUrl['port']
     path: request['uri']
     method: request['method']
     headers: flatHeaders
-  
-  cliUtils.log origin['resourceGroupName'] + \
+
+  description = origin['resourceGroupName'] + \
               ' > ' + origin['resourceName'] + \
               ' > ' + origin['actionName'] + \
               ' > ' + origin['exampleName'] + \
@@ -46,27 +47,24 @@ executeTransaction = (transaction, callback) ->
               ' ' + options['path'] + \
               ' ' + JSON.stringify(request['body']).trunc(20)
 
-
-  if configuration['dryRun'] == true
-    cliUtils.log indent + "Dry run, skipping..."
-    callback()
+  if configuration.options['dry-run']
+    cli.info "Dry run, skipping..."
+    return callback()
   else
     buffer = ""
-    req = http.request options, (res) -> 
+    req = http.request options, (res) ->
       res.on 'data', (chunk) ->
         buffer = buffer + chunk
-      
+
       req.on 'error', (error) ->
-        cliUtils.error error
-        cliUtils.exit 1
-        callback()
+        return callback error
 
       res.on 'end', () ->
-        real = 
+        real =
           headers: res.headers
           body: buffer
           status: res.statusCode
-        
+
         expected =
           headers: flattenHeaders response['headers']
           body: response['body']
@@ -74,27 +72,32 @@ executeTransaction = (transaction, callback) ->
           statusCode: response['status']
 
         gavel.isValid real, expected, 'response', (error, isValid) ->
-          if error
-            cliUtils.error error
-            cliUtils.exit 1
-            callback()
-          if isValid == true
-            cliUtils.log indent + "PASS"
-            callback()
-          else if isValid == false
-            cliUtils.log indent + "FAIL"
+          return callback error if error
+
+          if isValid
+            test =
+              status: "pass",
+              title: options['method'] + ' ' + options['path']
+              message: description
+            configuration.reporter.addTest test, (error) ->
+              return callback error if error
+            return callback()
+          else
             gavel.validate real, expected, 'response', (error, result) ->
-              if error
-                cliUtils.error error
-                cliUtils.exit 1
+              return callback(error) if error
+              message = description + "\n"
               for entity, data of result
                 for entityResult in data['results']
-                  cliUtils.log indent + entity + ": " + entityResult['message']
-                  
-              cliUtils.exit 1
-              callback()  
+                  message += entity + ": " + entityResult['message'] + "\n"
+              test =
+                status: "fail",
+                title: options['method'] + ' ' + options['path'],
+                message: message
+              configuration.reporter.addTest test, (error) ->
+                return callback error if error
+              return callback()
 
     req.write request['body'] if request['body'] != ''
     req.end()
-    
+
 module.exports = executeTransaction
