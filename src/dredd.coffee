@@ -4,9 +4,7 @@ protagonist = require 'protagonist'
 cli = require 'cli'
 executeTransaction = require './execute-transaction'
 blueprintAstToRuntime = require './blueprint-ast-to-runtime'
-Reporter = require './reporter'
-XUnitReporter = require './x-unit-reporter'
-CliReporter = require './cli-reporter'
+configureReporters = require './configure-reporters'
 
 options =
   'dry-run': ['d', 'Run without performing tests.'],
@@ -19,7 +17,7 @@ class Dredd
     @configuration =
       blueprintPath: null,
       server: null,
-      reporter: new Reporter(),
+      reporter: null,
       options:
         'dry-run': false,
         silent: false,
@@ -29,68 +27,62 @@ class Dredd
     for own key, value of config
       @configuration[key] = value
 
-    ## buildReporters
-    @configuration.reporter.addReporter new CliReporter unless @configuration.options.silent
-
-    if @configuration.options.reporter is 'junit'
-      @configuration.reporter.addReporter new XUnitReporter(@configuration.options.output)
-    ##
+    configureReporters(@configuration)
 
   run: (callback) ->
     config = @configuration
 
     fs.readFile config.blueprintPath, 'utf8', (error, data) ->
-      return callback(error) if error
+      return callback error if error
 
       protagonist.parse data, (error, result) ->
-        if error
-          return callback(error)
+        return callback error if error
 
         runtime = blueprintAstToRuntime result['ast']
 
-        ## handleRuntimeProblems
-        if runtime['warnings'].length > 0
-          for warning in runtime['warnings']
-            message = warning['message']
-            origin = warning['origin']
+        runtimeError = handleRuntimeProblems runtime
+        return callback runtimeError if runtimeError
 
-            cli.info "Runtime compilation warning: \"" + warning['message'] + "\" on " + \
-              origin['resourceGroupName'] + \
-              ' > ' + origin['resourceName'] + \
-              ' > ' + origin['actionName']
+        async.eachSeries configuredTransactions(runtime, config), executeTransaction, (error) ->
+          return callback error if error
 
-        if runtime['errors'].length > 0
-          for error in runtime['errors']
-            message = error['message']
-            origin = error['origin']
-
-            cli.error "Runtime compilation error: \"" + error['message'] + "\" on " + \
-              origin['resourceGroupName'] + \
-              ' > ' + origin['resourceName'] + \
-              ' > ' + origin['actionName']
-          return callback(new Error("Error parsing ast to blueprint."))
-        ##
-
-        ## transactionsWithConfiguration()
-        transactionsWithConfiguration = []
-
-        for transaction in runtime['transactions']
-          transaction['configuration'] = config
-          transactionsWithConfiguration.push transaction
-        ##
-
-        async.eachSeries transactionsWithConfiguration, executeTransaction, (error) ->
-          if error
-            return callback(error)
-
-          ## createReports
-          ## TODO: factor into a Reporters container
           config.reporter.createReport (error) ->
-            if error
-              return callback(error)
-          ##
+            return callback error if error
 
-          return callback() if typeof callback is 'function'
+          return callback()
+
+  handleRuntimeProblems = (runtime) ->
+    if runtime['warnings'].length > 0
+      for warning in runtime['warnings']
+        message = warning['message']
+        origin = warning['origin']
+
+        cli.info "Runtime compilation warning: \"" + warning['message'] + "\" on " + \
+          origin['resourceGroupName'] + \
+          ' > ' + origin['resourceName'] + \
+          ' > ' + origin['actionName']
+
+    if runtime['errors'].length > 0
+      for error in runtime['errors']
+        message = error['message']
+        origin = error['origin']
+
+        cli.error "Runtime compilation error: \"" + error['message'] + "\" on " + \
+          origin['resourceGroupName'] + \
+          ' > ' + origin['resourceName'] + \
+          ' > ' + origin['actionName']
+
+      return new Error "Error parsing ast to blueprint."
+
+  configuredTransactions = (runtime, config) ->
+    transactionsWithConfiguration = []
+
+    for transaction in runtime['transactions']
+      transaction['configuration'] = config
+      transactionsWithConfiguration.push transaction
+
+    return transactionsWithConfiguration
+
 
 
 module.exports = Dredd

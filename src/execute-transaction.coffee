@@ -49,7 +49,7 @@ executeTransaction = (transaction, callback) ->
 
   if configuration.options['dry-run']
     cli.info "Dry run, skipping..."
-    callback()
+    return callback()
   else
     buffer = ""
     req = http.request options, (res) ->
@@ -57,7 +57,7 @@ executeTransaction = (transaction, callback) ->
         buffer = buffer + chunk
 
       req.on 'error', (error) ->
-        callback error
+        return callback error
 
       res.on 'end', () ->
         real =
@@ -72,20 +72,19 @@ executeTransaction = (transaction, callback) ->
           statusCode: response['status']
 
         gavel.isValid real, expected, 'response', (error, isValid) ->
-          callback error if error
+          return callback error if error
 
           if isValid
             test =
               status: "pass",
               title: options['method'] + ' ' + options['path']
               message: description
-            cli.debug "CONFIGURATION " + JSON.stringify configuration
             configuration.reporter.addTest test, (error) ->
-              callback error if error
-            callback()
+              return callback error if error
+            return callback()
           else
             gavel.validate real, expected, 'response', (error, result) ->
-              callback(error) if error
+              return callback(error) if error
               message = description + "\n"
               for entity, data of result
                 for entityResult in data['results']
@@ -95,8 +94,8 @@ executeTransaction = (transaction, callback) ->
                 title: options['method'] + ' ' + options['path'],
                 message: message
               configuration.reporter.addTest test, (error) ->
-                callback error if error
-              callback()
+                return callback error if error
+              return callback()
 
     req.write request['body'] if request['body'] != ''
     req.end()
