@@ -16,7 +16,7 @@ describe 'XUnitReporter', () ->
 
   describe 'when creating report', () ->
     beforeEach () ->
-       sinon.spy fsStub, 'appendFileSync'
+      sinon.spy fsStub, 'appendFileSync'
 
     afterEach () ->
       fsStub.appendFileSync.restore()
@@ -29,6 +29,7 @@ describe 'XUnitReporter', () ->
           xUnitReporter.addTest { status: 'pass', title: 'Passing Test' }, () ->
             xUnitReporter.createReport () ->
               assert.ok fsStub.appendFileSync.called
+              fsStub.unlinkSync(xUnitReporter.path)
               done()
 
     describe 'when there are no tests', () ->
@@ -37,4 +38,5 @@ describe 'XUnitReporter', () ->
         xUnitReporter = new XUnitReporter()
         xUnitReporter.createReport () ->
           assert.ok fsStub.appendFileSync.calledTwice
+          fsStub.unlinkSync(xUnitReporter.path)
           done()
