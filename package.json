@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "gavel": "~0.2.0",
-    "commander": "~2.0.0",
+    "winston": "~0.7.2",
     "protagonist": "~0.5.0",
     "uri-template": "~0.4.1",
     "async": "~0.2.9",
@@ -44,5 +44,11 @@
     "acceptance"
   ],
   "author": "Adam Kliment <adam@apiary.io>",
+  "contributors": [
+    {
+      "name": "Evan Cordell",
+      "email": "cordell.evan@gmail.com"
+    }
+  ],
   "license": "MIT"
 }

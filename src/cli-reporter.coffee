@@ -1,4 +1,4 @@
-cli = require 'cli'
+logger = require './logger'
 Reporter = require './reporter'
 
 class CliReporter extends Reporter
@@ -12,11 +12,11 @@ class CliReporter extends Reporter
 
     switch test.status
       when 'pass'
-        cli.ok test.title
+        logger.pass test.title
       when 'fail'
-        cli.error test.title
+        logger.fail test.title
 
-    cli.info test.message
+    logger.info test.message
 
     return callback()
 
@@ -25,7 +25,7 @@ class CliReporter extends Reporter
       return callback(error) if error
 
     if @stats.tests > 0
-      cli.info "Tests Complete\n" \
+      logger.complete "Tests Complete\n" \
         + "tests:  #{@stats.tests} \n" \
         + "failures: #{@stats.failures} \n" \
         + "errors: #{@stats.failures} \n" \

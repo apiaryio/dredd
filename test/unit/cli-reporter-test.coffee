@@ -2,9 +2,9 @@
 sinon = require 'sinon'
 proxyquire = require('proxyquire').noCallThru()
 
-cliStub = require 'cli'
+loggerStub = require '../../src/logger'
 CliReporter = proxyquire '../../src/cli-reporter', {
-  'cli' : cliStub
+  'winston' : loggerStub
 }
 
 describe 'CliReporter', () ->
@@ -18,15 +18,15 @@ describe 'CliReporter', () ->
         title: 'Passing Test'
 
     beforeEach () ->
-       sinon.spy cliStub, 'ok'
+       sinon.spy loggerStub, 'pass'
 
     afterEach () ->
-      cliStub.ok.restore()
+      loggerStub.pass.restore()
 
     it 'should write pass to the console', (done) ->
       cliReporter = new CliReporter()
       cliReporter.addTest test, () ->
-        assert.ok cliStub.ok.calledOnce
+        assert.ok loggerStub.pass.calledOnce
         done()
 
   describe 'when adding failing test', () ->
@@ -36,24 +36,24 @@ describe 'CliReporter', () ->
         title: 'Failing Test'
 
     beforeEach () ->
-      sinon.spy cliStub, 'error'
+      sinon.spy loggerStub, 'fail'
 
     afterEach () ->
-      cliStub.error.restore()
+      loggerStub.fail.restore()
 
     it 'should write fail to the console', (done) ->
       cliReporter = new CliReporter()
       cliReporter.addTest test, ()->
-        assert.ok cliStub.error.calledOnce
+        assert.ok loggerStub.fail.calledOnce
         done()
 
 
   describe 'when creating report', () ->
     beforeEach () ->
-       sinon.spy cliStub, 'info'
+       sinon.spy loggerStub, 'complete'
 
     afterEach () ->
-      cliStub.info.restore()
+      loggerStub.complete.restore()
 
     describe 'when there is at least one test', () ->
 
@@ -61,7 +61,7 @@ describe 'CliReporter', () ->
         cliReporter = new CliReporter()
         cliReporter.addTest test, () ->
           cliReporter.createReport () ->
-            assert.ok cliStub.info.calledTwice
+            assert.ok loggerStub.complete.calledOnce
             done()
 
     describe 'when there are no tests', () ->
@@ -69,7 +69,7 @@ describe 'CliReporter', () ->
       it 'should write to the console', (done) ->
         cliReporter = new CliReporter()
         cliReporter.createReport () ->
-          assert.notOk cliStub.info.calledOnce
+          assert.notOk loggerStub.complete.calledOnce
           done()
 
 

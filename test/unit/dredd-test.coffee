@@ -79,10 +79,11 @@ describe 'dredd', () ->
       configuration =
         options:
           reporter: 'junit'
+          silent: true
 
     it 'should have two reporters', () ->
       runner = new Dredd(configuration)
-      assert.equal runner.configuration.reporter.reporters.length , 2
+      assert.equal runner.configuration.reporter.reporters.length , 1
 
   describe 'when Blueprint parsing error', () ->
     beforeEach () ->
@@ -121,6 +122,8 @@ describe 'dredd', () ->
       configuration =
         blueprintPath: './balony/path.apib'
         url: 'http://localhost:3000/'
+        options:
+          silent: true
 
     it 'should exit with an error', (done) ->
       runner = new Dredd(configuration)
@@ -141,6 +144,7 @@ describe 'dredd', () ->
       configuration =
         blueprintPath: './test/fixtures/error-uri-template.apib'
         server: 'http://localhost:3000/'
+        silent: true
       executeTransactionStub.reset()
 
     it 'should NOT execute any transaction', (done) ->
@@ -162,6 +166,8 @@ describe 'dredd', () ->
       configuration =
         blueprintPath: './test/fixtures/warning-ambigous.apib'
         server: 'http://localhost:3000/'
+        options:
+          silent: true
 
       executeTransactionStub.reset()
 
