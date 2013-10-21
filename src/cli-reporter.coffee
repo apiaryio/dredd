@@ -15,8 +15,9 @@ class CliReporter extends Reporter
         logger.pass test.title
       when 'fail'
         logger.fail test.title
-
-    logger.info test.message
+        logger.fail test.message
+        logger.expected "\n" + (JSON.stringify test.expected, null, 4) + "\n"
+        logger.actual "\n" + (JSON.stringify test.actual, null, 4) + "\n\n"
 
     return callback()
 
@@ -25,13 +26,7 @@ class CliReporter extends Reporter
       return callback(error) if error
 
     if @stats.tests > 0
-      logger.complete "Tests Complete\n" \
-        + "tests:  #{@stats.tests} \n" \
-        + "failures: #{@stats.failures} \n" \
-        + "errors: #{@stats.failures} \n" \
-        + "skip: #{@stats.tests - @stats.failures - @stats.passes} \n" \
-        + "timestamp: #{(new Date).toUTCString()} \n" \
-        + "time: #{@stats.duration / 1000} \n"
+      logger.complete "#{@stats.passes} passing, #{@stats.failures} failing, #{@stats.tests - @stats.failures - @stats.passes} skipped"
     return callback()
 
 module.exports = CliReporter
