@@ -44,7 +44,7 @@ describe 'CliReporter', () ->
     it 'should write fail to the console', (done) ->
       cliReporter = new CliReporter()
       cliReporter.addTest test, ()->
-        assert.ok loggerStub.fail.calledOnce
+        assert.ok loggerStub.fail.called
         done()
 
 

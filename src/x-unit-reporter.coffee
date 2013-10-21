@@ -39,10 +39,11 @@ class XUnitReporter extends Reporter
     attrs =
       classname: test.title
       name: test.title
-      time: test.duration ? test.duration / 1000 : 0
 
     if 'fail' is test.status
       attrs.message = test.message
+      attrs.expected = JSON.stringify test.expected
+      attrs.actual = JSON.stringify test.actual
       appendLine(path, toTag('testcase', attrs, false, toTag('failure', attrs, false, cdata(test.errorMessage))))
     else
       appendLine(path, toTag('testcase', attrs, true) )

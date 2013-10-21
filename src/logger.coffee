@@ -2,17 +2,24 @@ winston = require 'winston'
 
 config =
   levels:
-    test: 0,
-    info: 1,
-    pass: 2,
-    fail: 3,
+    test: 0
+    info: 1
+    pass: 2
+    fail: 3
     complete: 4
+    actual: 5
+    expected: 6
+    diff: 7
   colors:
-    test: 'yellow',
-    info: 'blue',
-    pass: 'green',
-    fail: 'red',
+    test: 'yellow'
+    info: 'blue'
+    pass: 'green'
+    fail: 'red'
     complete: 'green'
+    actual: 'red'
+    expected: 'red'
+    diff: 'red'
+
 
 logger = new (winston.Logger) ({
   transports: [
