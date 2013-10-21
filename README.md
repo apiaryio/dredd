@@ -14,6 +14,8 @@ Dredd is a command-line tool for testing API documentation written in [API Bluep
 
     $ dredd blueprint.md http://api.myservice.tld
 
+See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-life example.
+
 ## Installation
 [Node.js][] and [NPM][] is required.
 
