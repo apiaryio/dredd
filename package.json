@@ -17,13 +17,15 @@
   "dependencies": {
     "gavel": "~0.2.2",
     "commander": "~2.0.0",
+    "winston": "~0.7.2",
     "protagonist": "~0.5.0",
     "uri-template": "~0.4.1",
-    "async": "~0.2.9"
+    "async": "~0.2.9",
+    "cli": "~0.4.5"
   },
   "devDependencies": {
     "coffee-script": "1.6.3",
-    "mocha": "1.11.0",
+    "mocha": "1.13.0",
     "chai": "1.7.1",
     "coffee-coverage": "0.1.4",
     "jscoverage": "0.3.8",
@@ -43,5 +45,11 @@
     "acceptance"
   ],
   "author": "Adam Kliment <adam@apiary.io>",
+  "contributors": [
+    {
+      "name": "Evan Cordell",
+      "email": "cordell.evan@gmail.com"
+    }
+  ],
   "license": "MIT"
 }
