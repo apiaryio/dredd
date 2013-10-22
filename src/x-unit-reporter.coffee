@@ -44,12 +44,12 @@ class XUnitReporter extends Reporter
       attrs.message = test.message
       attrs.expected = JSON.stringify test.expected
       attrs.actual = JSON.stringify test.actual
-      appendLine(path, toTag('testcase', attrs, false, toTag('failure', attrs, false, cdata(test.errorMessage))))
+      appendLine(path, toTag('testcase', attrs, false, toTag('failure', attrs, false, cdata(test.message))))
     else
       appendLine(path, toTag('testcase', attrs, true) )
 
   cdata = (str) ->
-    return '<![CDATA[' + escape(str) + ']]>'
+    return '<![CDATA[' + str + ']]>'
 
   appendLine = (path, line) ->
     fs.appendFileSync(path, line + "\n")
@@ -59,7 +59,7 @@ class XUnitReporter extends Reporter
     pairs = []
     tag = undefined
     for key of attrs
-      pairs.push key + "=\"" + escape(attrs[key]) + "\""
+      pairs.push key + "=\"" + attrs[key] + "\""
     tag = "<" + name + ((if pairs.length then " " + pairs.join(" ") else "")) + end
     tag += content + "</" + name + end  if content
     tag
