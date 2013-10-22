@@ -1,6 +1,7 @@
 flattenHeaders = require './flatten-headers'
 gavel = require 'gavel'
 http = require 'http'
+https = require 'https'
 url = require 'url'
 os = require 'os'
 packageConfig = require './../package.json'
@@ -14,6 +15,9 @@ String::trunc = (n) ->
     return this.substr(0,n-1)+'...'
   else
     return this
+
+String::startsWith = (str) ->
+    return this.slice(0, str.length) is str
 
 executeTransaction = (transaction, callback) ->
   configuration = transaction['configuration']
@@ -56,7 +60,8 @@ executeTransaction = (transaction, callback) ->
     return callback()
   else
     buffer = ""
-    req = http.request options, (res) ->
+
+    handleRequest = (res) ->
       res.on 'data', (chunk) ->
         buffer = buffer + chunk
 
@@ -103,6 +108,11 @@ executeTransaction = (transaction, callback) ->
               configuration.reporter.addTest test, (error) ->
                 return callback error if error
               return callback()
+
+    if configuration.server.startsWith 'https'
+      req = https.request options, handleRequest
+    else
+      req = http.request options, handleRequest
 
     req.write request['body'] if request['body'] != ''
     req.end()
