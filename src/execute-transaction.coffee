@@ -32,6 +32,10 @@ executeTransaction = (transaction, callback) ->
       packageConfig['version'] + \
       " ("+ system + ")"
 
+  if configuration.request?.headers?
+    for header, value of configuration['request']['headers']
+      flatHeaders[header] = value
+
   options =
     host: parsedUrl['hostname']
     port: parsedUrl['port']
