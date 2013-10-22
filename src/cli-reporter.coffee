@@ -16,6 +16,7 @@ class CliReporter extends Reporter
       when 'fail'
         logger.fail test.title
         logger.fail test.message
+        logger.request "\n" + (JSON.stringify test.request, null, 4) + "\n"
         logger.expected "\n" + (JSON.stringify test.expected, null, 4) + "\n"
         logger.actual "\n" + (JSON.stringify test.actual, null, 4) + "\n\n"
 

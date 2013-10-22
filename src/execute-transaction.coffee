@@ -95,9 +95,7 @@ executeTransaction = (transaction, callback) ->
                 message: message
                 actual: real
                 expected: expected
-              cli.debug "REAL: "  + JSON.stringify real
-              cli.debug "EXPECTED: " + JSON.stringify expected
-              cli.debug "RESULT: " + JSON.stringify result
+                request: options
               configuration.reporter.addTest test, (error) ->
                 return callback error if error
               return callback()
