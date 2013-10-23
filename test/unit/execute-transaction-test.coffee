@@ -1,9 +1,13 @@
+require 'coffee-errors'
 {assert} = require 'chai'
 nock = require 'nock'
 proxyquire = require 'proxyquire'
 sinon = require 'sinon'
+htmlStub = require 'html'
 
-executeTransaction = require  '../../src/execute-transaction'
+executeTransaction = proxyquire  '../../src/execute-transaction', {
+  'html': htmlStub
+}
 CliReporter = require '../../src/cli-reporter'
 
 describe 'executeTransaction(transaction, callback)', () ->
@@ -74,6 +78,62 @@ describe 'executeTransaction(transaction, callback)', () ->
       executeTransaction transaction, () ->
         assert.ok server.isDone()
         done()
+
+  describe 'when there are global headers in the configuration', () ->
+    beforeEach () ->
+      server = nock('http://localhost:3000').
+        post('/machines', {"type":"bulldozer","name":"willy"}).
+        matchHeader('X-Header', 'foo').
+        reply transaction['response']['status'],
+          transaction['response']['body'],
+          {'Content-Type': 'application/json'}
+
+      transaction['configuration']['request'] =
+        headers:
+          'X-Header' : 'foo'
+
+    it 'should include the global headers in the request', (done) ->
+      executeTransaction transaction, () ->
+        assert.ok server.isDone()
+        done()
+
+  describe 'when server uses https', () ->
+    beforeEach () ->
+      server = nock('https://localhost:3000').
+        post('/machines', {"type":"bulldozer","name":"willy"}).
+        reply transaction['response']['status'],
+          transaction['response']['body'],
+          {'Content-Type': 'application/json'}
+      transaction.configuration.server = 'https://localhost:3000'
+
+    it 'should make the request with https', (done) ->
+      executeTransaction transaction, () ->
+        assert.ok  server.isDone()
+        done()
+
+  describe 'when server responds with html', () ->
+    beforeEach () ->
+      nock('https://localhost:3000').
+        post('/machines', {"type":"bulldozer","name":"willy"}).
+        reply transaction['response']['status'],
+          transaction['response']['body'],
+          {'Content-Type': 'application/json'}
+      sinon.spy htmlStub, 'prettyPrint'
+      transaction.response.headers =
+        "content-type":
+          value: "text/html"
+
+    afterEach () ->
+      htmlStub.prettyPrint.restore()
+      transaction.response.headers =
+        "content-type":
+          value: "application/json"
+
+    it 'should prettify the html for reporting', (done) ->
+      executeTransaction transaction, () ->
+        assert.ok htmlStub.prettyPrint.called
+        done()
+
 
   describe 'when dry run', () ->
     before () ->
