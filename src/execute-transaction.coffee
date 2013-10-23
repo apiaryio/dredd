@@ -2,6 +2,7 @@ flattenHeaders = require './flatten-headers'
 gavel = require 'gavel'
 http = require 'http'
 https = require 'https'
+html = require 'html'
 url = require 'url'
 os = require 'os'
 packageConfig = require './../package.json'
@@ -18,6 +19,20 @@ String::trunc = (n) ->
 
 String::startsWith = (str) ->
     return this.slice(0, str.length) is str
+
+prettify = (transaction) ->
+  type = transaction?.headers['Content-Type'] || transaction?.headers['content-type']
+  switch type
+    when 'application/json'
+      try
+        parsed = JSON.parse transaction.body
+      catch e
+        cli.error "Error parsing body as json: " + transaction.body
+        parsed = transaction.body
+      transaction.body = parsed
+    when 'text/html'
+      transaction.body = html.prettyPrint(transaction.body, {indent_size: 2})
+  return transaction
 
 executeTransaction = (transaction, callback) ->
   configuration = transaction['configuration']
@@ -94,7 +109,7 @@ executeTransaction = (transaction, callback) ->
           else
             gavel.validate real, expected, 'response', (error, result) ->
               return callback(error) if error
-              message = description + "\n"
+              message = ''
               for entity, data of result
                 for entityResult in data['results']
                   message += entity + ": " + entityResult['message'] + "\n"
@@ -102,8 +117,8 @@ executeTransaction = (transaction, callback) ->
                 status: "fail",
                 title: options['method'] + ' ' + options['path'],
                 message: message
-                actual: real
-                expected: expected
+                actual: prettify real
+                expected: prettify expected
                 request: options
               configuration.reporter.addTest test, (error) ->
                 return callback error if error
