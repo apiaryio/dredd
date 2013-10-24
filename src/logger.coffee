@@ -10,6 +10,7 @@ config =
     actual: 5
     expected: 6
     diff: 7
+    request: 8
   colors:
     test: 'yellow'
     info: 'blue'
@@ -19,6 +20,7 @@ config =
     actual: 'red'
     expected: 'red'
     diff: 'red'
+    request: 'green'
 
 
 logger = new (winston.Logger) ({
