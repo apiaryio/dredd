@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 var cli = require('cli');
+var path = require('path');
 var Dredd = require('../lib/dredd');
 
 cli.enable('version', 'status');
