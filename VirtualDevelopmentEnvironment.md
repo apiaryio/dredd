@@ -22,6 +22,7 @@ It's recomended to use [Vagrant][] and [VirtualBox][] in order to achieve consis
     ```
     $ vagrant up
     ```
+Please notice that you may be promted to enter your root password due to exporting shared folder over NFS to the virtual machine.
 - SSH to the virtual development environment:
     
     ```

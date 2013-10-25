@@ -50,7 +50,7 @@ Dredd can test only API resources specified by *well defined transaction*. Any N
 
 ## Contribution
 
-Any contribution is more then welcome. Let's start with creating your own [virtual development environment][vde], then Fork & Pull Request.
+Any contribution is more then welcome! Let's start with creating your own [virtual development environment][vde], then fork, write the tests, write the code, use `scripts/bdd`, keep the coverage and give a pull request. :)
 
 Make sure to follow Dredd [issues page][issues].
 
