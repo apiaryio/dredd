@@ -38,3 +38,6 @@ It's recomended to use [Vagrant][] and [VirtualBox][] in order to achieve consis
     $ npm install && npm test
     ```
 
+
+[Vagrant]: http://www.vagrantup.com/
+[VirtualBox]: https://www.virtualbox.org/
