@@ -48,9 +48,47 @@ See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-lif
 ## API Blueprint testability
 Dredd can test only API resources specified by *well defined transaction*. Any Non specific resources in the Blueprint e. g. with URI template or query parameters without default or example values are considered as *ambiguous transaction* thus they are resulting in a *warning* during the test run and are skipped.
 
+
+## Virtual development environment
+
+It's recomended to use [Vagrant][] with [VirtualBox][] in order to achieve consistent development environment across all contributors.
+
+### Installation
+
+- Download and install latest [VirtualBox][]
+- Download and install latest [Vagrant][]
+- Clone GitHub repo:
+    ```
+    $ git clone git@github.com:apiaryio/dredd.git
+    $ cd dredd
+    ```
+- Import the vagrant box:
+    ```
+    $ vagrant box add precise64 http://files.vagrantup.com/precise64.box
+    ```
+- Start virtual development environment:
+    ```
+    $ vagrant up
+    ```
+- SSH to the virtual development environment:
+    ```
+    $ vagrant ssh
+    ```
+- You will find your project shared in `/vagrant` inside the virtual envinronment
+    ```
+    $ cd /vagrant
+    ```
+- Use your favorite local editor in your local folder to edit the code and run tests in the virtual environment
+    ```
+    $ npm install && npm test
+    ```
+
+
+
 [API Blueprint]: http://apiblueprint.org/
 [Travis CI]: https://travis-ci.org/
 [Jenkins]: http://jenkins-ci.org/
 [Gavel]: http://blog.apiary.io/2013/07/24/Bam-this-is-Gavel/
 [behavior specification]: https://www.relishapp.com/apiary/gavel/docs
-
+[Vagrant]: http://www.vagrantup.com/
+[VirtualBox]: https://www.virtualbox.org/
