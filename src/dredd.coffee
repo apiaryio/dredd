@@ -7,10 +7,11 @@ blueprintAstToRuntime = require './blueprint-ast-to-runtime'
 configureReporters = require './configure-reporters'
 
 options =
-  'dry-run': ['d', 'Run without performing tests.'],
-  silent: ['s', 'Suppress all command line output'],
-  reporter: ['r', 'Output additional report format. Options: junit', 'string'],
+  'dry-run': ['d', 'Run without performing tests.']
+  silent: ['s', 'Suppress all command line output']
+  reporter: ['r', 'Output additional report format. Options: junit', 'string']
   output: ['o', 'Specifies output file when using additional reporter', 'file']
+  debug: [null, 'Display debug information']
 
 class Dredd
   constructor: (config) ->
@@ -18,11 +19,13 @@ class Dredd
       blueprintPath: null,
       server: null,
       reporter: null,
+      request: null,
       options:
         'dry-run': false,
         silent: false,
         reporter: null,
-        output: null
+        output: null,
+        debug: false
 
     for own key, value of config
       @configuration[key] = value
@@ -57,7 +60,7 @@ class Dredd
         message = warning['message']
         origin = warning['origin']
 
-        cli.info "Runtime compilation warning: \"" + warning['message'] + "\" on " + \
+        cli.info "Runtime compilation warning: " + warning['message'] + "\n on " + \
           origin['resourceGroupName'] + \
           ' > ' + origin['resourceName'] + \
           ' > ' + origin['actionName']
@@ -67,7 +70,7 @@ class Dredd
         message = error['message']
         origin = error['origin']
 
-        cli.error "Runtime compilation error: \"" + error['message'] + "\" on " + \
+        cli.error "Runtime compilation error: " + error['message'] + "\n on " + \
           origin['resourceGroupName'] + \
           ' > ' + origin['resourceName'] + \
           ' > ' + origin['actionName']

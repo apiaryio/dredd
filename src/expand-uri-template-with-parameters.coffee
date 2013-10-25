@@ -5,10 +5,11 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
     errors: []
     warnings: []
     uri: null
-  try  
+  try
     parsed = ut.parse uriTemplate
   catch e
-    text = 'Failed to parse URI template'
+    text = "\n Failed to parse URI template: #{uriTemplate}"
+    text += "\n Error: #{e}"
     result['errors'].push text
     return result
 
@@ -21,7 +22,7 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
   # check if all parameters have an expression in URI
   for parameter in Object.keys(parameters)
     if uriParameters.indexOf(parameter) == -1
-      text = "URI template doesn\'t contain expression for parameter" + \
+      text = "\nURI template: #{uriTemplate}\nDoesn\'t contain expression for parameter" + \
              " '" + parameter + "'"
       result['warnings'].push text
 
@@ -29,15 +30,15 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
     result['uri'] = uriTemplate
   else
     ambigous = false
-    
+
     for uriParameter in uriParameters
       if Object.keys(parameters).indexOf(uriParameter) == -1
         ambigous = true
-        text = "Ambigous URI template. " + \
-               "Parameter not defined:" + \
+        text = "\nAmbigous URI template: #{uriTemplate} " + \
+               "\nParameter not defined:" + \
                "'" + uriParameter + "'"
         result['warnings'].push text
-    
+
     if ambigous == false
       toExpand = {}
       for uriParameter in uriParameters
@@ -45,21 +46,21 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
         if param['required'] == true
           if param['example'] == undefined
             ambigous = true
-            text = "Ambigous URI template. " + \
-                   "No example value for parameter:" + \
+            text = "\nAmbigous URI template: #{uriTemplate} " + \
+                   "\nNo example value for parameter:" + \
                    "'" + uriParameter + "'"
             result['warnings'].push text
           else
             toExpand[uriParameter] = param['example']
         else
           if param['example'] != undefined
-            toExpand[uriParameter] = param['example']          
+            toExpand[uriParameter] = param['example']
           else if param['default'] != undefined
             toExpand[uriParameter] = param['default']
 
     if ambigous == false
       result['uri'] = parsed.expand toExpand
-      
+
   return result
 
 module.exports = expandUriTemplateWithParameters

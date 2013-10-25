@@ -48,9 +48,16 @@ See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-lif
 ## API Blueprint testability
 Dredd can test only API resources specified by *well defined transaction*. Any Non specific resources in the Blueprint e. g. with URI template or query parameters without default or example values are considered as *ambiguous transaction* thus they are resulting in a *warning* during the test run and are skipped.
 
+## Contribution
+
+Any contribution is more then welcome! Let's start with creating your own [virtual development environment][vde], then fork, write the tests, write the code, use `scripts/bdd`, keep the coverage and give a pull request. :)
+
+Make sure to follow Dredd [issues page][issues].
+
 [API Blueprint]: http://apiblueprint.org/
 [Travis CI]: https://travis-ci.org/
 [Jenkins]: http://jenkins-ci.org/
 [Gavel]: http://blog.apiary.io/2013/07/24/Bam-this-is-Gavel/
 [behavior specification]: https://www.relishapp.com/apiary/gavel/docs
-
+[vde]: https://github.com/apiaryio/dredd/blob/master/VirtualDevelopmentEnvironment.md
+[issues]: https://github.com/apiaryio/dredd/issues?state=open

@@ -1,6 +1,7 @@
 fs = require 'fs'
 cli = require 'cli'
 Reporter = require './reporter'
+htmlencode = require 'htmlencode'
 
 class XUnitReporter extends Reporter
   constructor: (path) ->
@@ -37,19 +38,17 @@ class XUnitReporter extends Reporter
 
   doTest = (path, test) ->
     attrs =
-      classname: test.title
-      name: test.title
+      name: htmlencode.htmlEncode test.title
+      time: 0
 
     if 'fail' is test.status
-      attrs.message = test.message
-      attrs.expected = JSON.stringify test.expected
-      attrs.actual = JSON.stringify test.actual
-      appendLine(path, toTag('testcase', attrs, false, toTag('failure', attrs, false, cdata(test.errorMessage))))
+      diff = "Message: \n" + test.message + "\nExpected: \n" +  (JSON.stringify test.expected, null, 4) + "\nActual:\n" + (JSON.stringify test.actual, null, 4)
+      appendLine(path, toTag('testcase', attrs, false, toTag('failure', null, false, cdata(diff))))
     else
       appendLine(path, toTag('testcase', attrs, true) )
 
   cdata = (str) ->
-    return '<![CDATA[' + escape(str) + ']]>'
+    return '<![CDATA[' + str + ']]>'
 
   appendLine = (path, line) ->
     fs.appendFileSync(path, line + "\n")
@@ -59,7 +58,7 @@ class XUnitReporter extends Reporter
     pairs = []
     tag = undefined
     for key of attrs
-      pairs.push key + "=\"" + escape(attrs[key]) + "\""
+      pairs.push key + "=\"" + attrs[key] + "\""
     tag = "<" + name + ((if pairs.length then " " + pairs.join(" ") else "")) + end
     tag += content + "</" + name + end  if content
     tag

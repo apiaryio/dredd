@@ -6,7 +6,7 @@ describe 'expandUriTemplateWithParameters', () ->
   data = null
   uriTemplate = ''
   parameters = ''
-  
+
   before () ->
     uriTemplate = '/machines{/name}'
     parameters =
@@ -16,11 +16,11 @@ describe 'expandUriTemplateWithParameters', () ->
         required: true
         example: 'waldo'
 
-    data = expandUriTemplateWithParameters uriTemplate, parameters    
-  
+    data = expandUriTemplateWithParameters uriTemplate, parameters
+
   it 'should return an object', () ->
     assert.isObject data
-  
+
   describe 'returned obejct', () ->
     [
       'errors'
@@ -29,7 +29,7 @@ describe 'expandUriTemplateWithParameters', () ->
     ].forEach (key) ->
       it 'should have key "' + key + '"', () ->
         assert.include Object.keys(data), key
-    
+
     describe 'when not parseable uri templeate privided', () ->
       before () ->
         uriTemplate = '/machines{{/name}'
@@ -40,29 +40,29 @@ describe 'expandUriTemplateWithParameters', () ->
             required: true
             example: 'waldo'
 
-        data = expandUriTemplateWithParameters uriTemplate, parameters    
-    
+        data = expandUriTemplateWithParameters uriTemplate, parameters
+
       it 'it should return some errror', () ->
         assert.notEqual data['errors'].length, 0
 
-        
+
     describe 'when URI with no URI template expression given', () ->
       before () ->
         uriTemplate = '/machines/waldo'
         parameters = {}
-        data = expandUriTemplateWithParameters uriTemplate, parameters    
+        data = expandUriTemplateWithParameters uriTemplate, parameters
 
       describe 'with no parameters given', () ->
         it 'should return no error', () ->
           assert.equal data['errors'].length, 0
-        
+
         it 'should return no warning', () ->
           assert.equal data['warnings'].length, 0
-        
+
         it 'should return URI as it is', () ->
           assert.equal data['uri'], uriTemplate
 
-      
+
       describe 'with some parameters given', () ->
         before () ->
           uriTemplate = '/machines/waldo'
@@ -73,24 +73,24 @@ describe 'expandUriTemplateWithParameters', () ->
               required: true
               example: 'waldo'
 
-          data = expandUriTemplateWithParameters uriTemplate, parameters    
+          data = expandUriTemplateWithParameters uriTemplate, parameters
 
         it 'should return no error', () ->
           assert.equal data['errors'].length, 0
 
         it 'should return some warning', () ->
           assert.notEqual data['warnings'].length, 0
-        
+
         describe 'returned warning', () ->
           warning = ''
           before () ->
             warning = data['warnings'][data['warnings'].length - 1]
-          
+
           it 'should contain paramter name', () ->
             assert.include warning, Object.keys(parameters)[0]
-          
+
           it 'sohuld contain proper text', () ->
-            text = 'URI template doesn\'t contain expression for parameter'
+            text = 'Doesn\'t contain expression for parameter'
             assert.include warning, text
 
         it 'should return URI as it is', () ->
@@ -111,17 +111,17 @@ describe 'expandUriTemplateWithParameters', () ->
           warning = ''
           before () ->
             warning = data['warnings'][data['warnings'].length - 1]
-                         
+
           it 'sohuld contain proper text', () ->
-            text =  "Ambigous URI template. Parameter not defined"
+            text =  "Parameter not defined"
             assert.include warning, text
-        
+
         it 'should return no error', () ->
           assert.equal data['errors'].length, 0
-        
+
         it 'should return no URI', () ->
           assert.equal data['uri'], null
-      
+
       describe 'with defined some parameters not matching any expression', () ->
         before () ->
           uriTemplate = '/machines/{name}'
@@ -138,14 +138,14 @@ describe 'expandUriTemplateWithParameters', () ->
               required: true
               example: 'wild'
 
-          data = expandUriTemplateWithParameters uriTemplate, parameters        
-        
+          data = expandUriTemplateWithParameters uriTemplate, parameters
+
         it 'should return no error', () ->
           assert.equal data['errors'].length, 0
 
         it 'should return some warning', () ->
           assert.equal data['warnings'].length, 1
-        
+
         it 'should return expandend URI', () ->
           assert.equal data['uri'], '/machines/waldo'
 
@@ -159,26 +159,26 @@ describe 'expandUriTemplateWithParameters', () ->
                 type: 'string'
                 required: true
 
-            data = expandUriTemplateWithParameters uriTemplate, parameters 
-          
+            data = expandUriTemplateWithParameters uriTemplate, parameters
+
           it 'should return no error', () ->
             assert.equal data['errors'].length, 0
-          
+
           it 'should return some warning', () ->
-            assert.equal data['warnings'].length, 1       
-          
+            assert.equal data['warnings'].length, 1
+
           it 'should return no URI', () ->
             assert.isNull data['uri']
 
           describe 'returned warning', () ->
             warning = ''
             before () ->
-              warning = data['warnings'][data['warnings'].length - 1]          
-            
+              warning = data['warnings'][data['warnings'].length - 1]
+
             it 'sohuld contain proper text', () ->
-              text = "Ambigous URI template. No example value for parameter"
+              text = "No example value for parameter"
               assert.include warning, text
-        
+
         describe 'when example value is given', () ->
           before () ->
             uriTemplate = '/machines/{name}'
@@ -189,11 +189,11 @@ describe 'expandUriTemplateWithParameters', () ->
                 required: true
                 example: 'example-one'
 
-            data = expandUriTemplateWithParameters uriTemplate, parameters 
-          
+            data = expandUriTemplateWithParameters uriTemplate, parameters
+
           it 'should return no error', () ->
             assert.equal data['errors'].length, 0
-          
+
           it 'should return no warning', () ->
             assert.equal data['warnings'].length, 0
 
@@ -202,7 +202,7 @@ describe 'expandUriTemplateWithParameters', () ->
 
           it 'should return URI', () ->
             assert.isNotNull data['uri']
-   
+
         describe 'when example and default value is given', () ->
           before () ->
             uriTemplate = '/machines/{name}'
@@ -214,11 +214,11 @@ describe 'expandUriTemplateWithParameters', () ->
                 example: 'example-one'
                 default: 'default-one'
 
-            data = expandUriTemplateWithParameters uriTemplate, parameters 
-          
+            data = expandUriTemplateWithParameters uriTemplate, parameters
+
           it 'should return no error', () ->
             assert.equal data['errors'].length, 0
-          
+
           it 'should return no warning', () ->
             assert.equal data['warnings'].length, 0
 
@@ -238,11 +238,11 @@ describe 'expandUriTemplateWithParameters', () ->
                 required: false
                 example: 'example-one'
 
-            data = expandUriTemplateWithParameters uriTemplate, parameters 
-          
+            data = expandUriTemplateWithParameters uriTemplate, parameters
+
           it 'should return no error', () ->
             assert.equal data['errors'].length, 0
-          
+
           it 'should return no warning', () ->
             assert.equal data['warnings'].length, 0
 
@@ -262,11 +262,11 @@ describe 'expandUriTemplateWithParameters', () ->
                 required: false
                 default: 'default-one'
 
-            data = expandUriTemplateWithParameters uriTemplate, parameters 
-          
+            data = expandUriTemplateWithParameters uriTemplate, parameters
+
           it 'should return no error', () ->
             assert.equal data['errors'].length, 0
-          
+
           it 'should return no warning', () ->
             assert.equal data['warnings'].length, 0
 
@@ -287,11 +287,11 @@ describe 'expandUriTemplateWithParameters', () ->
                 example: 'example-one'
                 default: 'default-one'
 
-            data = expandUriTemplateWithParameters uriTemplate, parameters 
-          
+            data = expandUriTemplateWithParameters uriTemplate, parameters
+
           it 'should return no error', () ->
             assert.equal data['errors'].length, 0
-          
+
           it 'should return no warning', () ->
             assert.equal data['warnings'].length, 0
 
@@ -312,13 +312,13 @@ describe 'expandUriTemplateWithParameters', () ->
                 required: false
 
             data = expandUriTemplateWithParameters uriTemplate, parameters
-          
+
           it 'should return no error', () ->
             assert.equal data['errors'].length, 0
-          
+
           it 'should return no warning', () ->
             assert.equal data['warnings'].length, 0
-          
+
           it 'should return some URI', () ->
             assert.isNotNull data['uri']
 
