@@ -58,27 +58,33 @@ It's recomended to use [Vagrant][] with [VirtualBox][] in order to achieve consi
 - Download and install latest [VirtualBox][]
 - Download and install latest [Vagrant][]
 - Clone GitHub repo:
+    
     ```
     $ git clone git@github.com:apiaryio/dredd.git
     $ cd dredd
     ```
 - Import the vagrant box:
+    
     ```
     $ vagrant box add precise64 http://files.vagrantup.com/precise64.box
     ```
 - Start virtual development environment:
+    
     ```
     $ vagrant up
     ```
 - SSH to the virtual development environment:
+    
     ```
     $ vagrant ssh
     ```
 - You will find your project shared in `/vagrant` inside the virtual envinronment
+    
     ```
     $ cd /vagrant
     ```
 - Use your favorite local editor in your local folder to edit the code and run tests in the virtual environment
+    
     ```
     $ npm install && npm test
     ```
