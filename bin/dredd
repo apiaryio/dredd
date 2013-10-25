@@ -3,7 +3,7 @@ var cli = require('cli');
 var Dredd = require('../lib/dredd');
 
 cli.enable('version', 'status');
-cli.setApp('./package.json');
+cli.setApp(path.join(__dirname, '../package.json'));
 cli.setUsage("dredd <path to blueprint> <api_endpoint> [OPTIONS]"
      + "\n\nExample: \n  " + "dredd ./apiary.md http://localhost:3000 --dry-run");
 
