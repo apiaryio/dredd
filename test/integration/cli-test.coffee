@@ -1,22 +1,22 @@
 {assert} = require('chai')
 {exec} = require('child_process')
 express = require 'express'
-request = require 'request'
+
 
 
 PORT = '3333'
 
 describe.only "Command line interface", () ->
-  stderr = ''
-  stdout = ''
-  exitStatus = ''
-  requests = []
+
 
   describe "Arguments with existing bleurpint and responding server", () ->    
     describe "when executing the command and the server is responding as specified in the blueprint", () ->
+      stderr = ''
+      stdout = ''
+      exitStatus = null
+      requests = []
       
       before (done) ->
-
         cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT}"
         
         app = express()
@@ -36,11 +36,12 @@ describe.only "Command line interface", () ->
             stderr = err
 
             if error
-              exitStatus = error.status
+              exitStatus = error.code
           
           eventName = if process.version.split('.')[1] is '6' then 'exit' else 'close'
           
-          cli.on eventName, (code) ->        
+          cli.on eventName, (code) ->
+            exitStatus = code if exitStatus == null and code != undefined
             server.close()
         
         server.on 'close', done
@@ -49,8 +50,12 @@ describe.only "Command line interface", () ->
         assert.equal exitStatus, 0
     
     describe "when executing the command and the server is sending different response", () ->
-      before (done) ->
+      stderr = ''
+      stdout = ''
+      exitStatus = null
+      requests = []
 
+      before (done) ->
         cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT}"
         
         app = express()
@@ -70,11 +75,12 @@ describe.only "Command line interface", () ->
             stderr = err
 
             if error
-              exitStatus = error.status
+              exitStatus = error.code
           
           eventName = if process.version.split('.')[1] is '6' then 'exit' else 'close'
           
-          cli.on eventName, (code) ->        
+          cli.on eventName, (code) -> 
+            exitStatus = code if exitStatus == null and code != undefined        
             server.close()
         
         server.on 'close', done
