@@ -37,7 +37,8 @@
     "codo": "1.7.0",
     "sinon": "~1.7.3",
     "proxyquire": "~0.5.1",
-    "nock": "~0.22.1"
+    "nock": "~0.22.1",
+    "express": "~3.4.3"
   },
   "keywords": [
     "api",
