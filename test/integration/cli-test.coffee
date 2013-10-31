@@ -5,9 +5,8 @@ express = require 'express'
 
 
 PORT = '3333'
-
-describe.only "Command line interface", () ->
-
+CMD_PREFIX = ''
+describe "Command line interface", () ->
 
   describe "Arguments with existing bleurpint and responding server", () ->    
     describe "when executing the command and the server is responding as specified in the blueprint", () ->
@@ -30,7 +29,7 @@ describe.only "Command line interface", () ->
           res.send 200, response
         
         server = app.listen PORT, () ->          
-          cli = exec cmd, (error, out, err) -> 
+          cli = exec CMD_PREFIX + cmd, (error, out, err) -> 
             cli = exec cmd, (error, out, err) -> 
             stdout = out
             stderr = err
@@ -69,7 +68,7 @@ describe.only "Command line interface", () ->
           res.send 201, response
         
         server = app.listen PORT, () ->          
-          cli = exec cmd, (error, out, err) -> 
+          cli = exec CMD_PREFIX + cmd, (error, out, err) -> 
             cli = exec cmd, (error, out, err) -> 
             stdout = out
             stderr = err
@@ -81,6 +80,7 @@ describe.only "Command line interface", () ->
           
           cli.on eventName, (code) -> 
             exitStatus = code if exitStatus == null and code != undefined        
+
             server.close()
         
         server.on 'close', done
