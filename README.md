@@ -45,6 +45,47 @@ See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-lif
       -v, --version          Display the current version
       -h, --help             Display help and usage details
 
+## Node example usage
+
+Dredd has a javascript API as well. Below is an example usage (Coffeescript)
+
+    ```coffee
+    Dredd = require 'dredd'
+
+    dredd = new Dredd {
+      blueprintPath : './example-api.md'
+      server: 'https://example.com/'
+      request:
+        headers:
+          'X-Api-Key' : '111-222-333-444-555'
+      options:
+        reporter: 'junit'
+        debug: false
+    }
+
+    dredd.run (error) ->
+      if error
+        console.log error
+        process.exit 1
+      process.exit 0
+    ```
+### Configuration options
+
+Dredd accepts a configuration object of the following form (only `blueprintPath` and `server` are reqired).
+
+    blueprintPath : string
+    server: string
+    request:
+      headers:
+        <header_name> : string
+    options:
+      reporter: string
+      output: string
+      debug: boolean
+      silent: boolean
+      'dry-run': boolean
+
+
 ## API Blueprint testability
 Dredd can test only API resources specified by *well defined transaction*. Any Non specific resources in the Blueprint e. g. with URI template or query parameters without default or example values are considered as *ambiguous transaction* thus they are resulting in a *warning* during the test run and are skipped.
 
