@@ -25,7 +25,7 @@ Dredd = proxyquire '../../src/dredd', {
   'cli': cliStub
 }
 
-describe 'dredd', () ->
+describe 'Dredd class', () ->
 
   configuration = {}
 
@@ -62,11 +62,17 @@ describe 'dredd', () ->
         assert.ok protagonistStub.parse.called
         done()
 
-    it 'should exit without throwing an error', (done) ->
+    it 'should not pass any error to the caclback function', (done) ->
       runner = new Dredd(configuration)
       runner.run (error) ->
-        assert.notOk(error)
-      done()
+        assert.isUndefined(error)
+        done()
+
+    it 'should pass the reporter as second argument', (done) ->
+      runner = new Dredd(configuration)
+      runner.run (error, reporter) ->
+        assert.isDefined reporter 
+        done()
 
     it 'should convert ast to runtime', (done) ->
       runner = new Dredd(configuration)
@@ -125,7 +131,7 @@ describe 'dredd', () ->
         options:
           silent: true
 
-    it 'should exit with an error', (done) ->
+    it 'should pass the error to the callback function', (done) ->
       runner = new Dredd(configuration)
       runner.run (error) ->
         assert.ok error
@@ -194,6 +200,7 @@ describe 'dredd', () ->
       runner.run (error) ->
         assert.ok blueprintAstToRuntimeStub.called
         done()
+
 
 
 

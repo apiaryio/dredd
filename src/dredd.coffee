@@ -35,24 +35,23 @@ class Dredd
   run: (callback) ->
     config = @configuration
 
-    fs.readFile config.blueprintPath, 'utf8', (error, data) ->
-      return callback error if error
+    fs.readFile config.blueprintPath, 'utf8', (parseError, data) ->
+      return callback(parseError, config.reporter) if parseError
 
-      protagonist.parse data, (error, result) ->
-        return callback error if error
+      protagonist.parse data, (protagonistError, result) ->
+        return callback(protagonistError, config.reporter) if protagonistError
 
         runtime = blueprintAstToRuntime result['ast']
 
         runtimeError = handleRuntimeProblems runtime
-        return callback runtimeError if runtimeError
+        return callback(runtimeError, config.reporter) if runtimeError
 
         async.eachSeries configuredTransactions(runtime, config), executeTransaction, (error) ->
-          return callback error if error
+          if error
+            return callback error, config.reporter
 
-          config.reporter.createReport (error) ->
-            return callback error if error
-
-          return callback()
+          config.reporter.createReport (reporterError) ->
+            return callback reporterError, config.reporter
 
   handleRuntimeProblems = (runtime) ->
     if runtime['warnings'].length > 0

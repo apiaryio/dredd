@@ -33,11 +33,11 @@ cli.main( function (args, options) {
 
   dredd = new Dredd(configuration);
 
-  dredd.run(function(error){
-    if (error) {
-      cli.fatal(error);
+  dredd.run(function(error, reporter){    
+    if(reporter['stats']['failures'] > 0){
+      process.exit(1);
+    } else {
+      process.exit(0);
     };
-    process.exit(0);
   });
-
 });
