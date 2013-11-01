@@ -51,6 +51,14 @@ executeTransaction = (transaction, callback) ->
       packageConfig['version'] + \
       " ("+ system + ")"
 
+  # Add length of body if no Content-Length present
+  caseInsensitiveMap = {}
+  for key, value of flatHeaders
+    caseInsensitiveMap[key.toLowerCase()] = key
+  
+  if caseInsensitiveMap['content-length'] == undefined and request['body'] != ''
+    flatHeaders['Content-Length'] = request['body'].length
+
   if configuration.request?.headers?
     for header, value of configuration['request']['headers']
       flatHeaders[header] = value
@@ -81,7 +89,7 @@ executeTransaction = (transaction, callback) ->
         buffer = buffer + chunk
 
       req.on 'error', (error) ->
-        return callback error
+        return callback error, req, res
 
       res.on 'end', () ->
         real =
@@ -96,7 +104,7 @@ executeTransaction = (transaction, callback) ->
           statusCode: response['status']
 
         gavel.isValid real, expected, 'response', (error, isValid) ->
-          return callback error if error
+          return callback error, req, res if error
 
           if isValid
             test =
@@ -104,11 +112,11 @@ executeTransaction = (transaction, callback) ->
               title: options['method'] + ' ' + options['path']
               message: description
             configuration.reporter.addTest test, (error) ->
-              return callback error if error
-            return callback()
+              return callback error, req, res if error
+            return callback(undefined, req, res)
           else
             gavel.validate real, expected, 'response', (error, result) ->
-              return callback(error) if error
+              return callback(error, req, res) if error
               message = ''
               for entity, data of result
                 for entityResult in data['results']
@@ -121,8 +129,8 @@ executeTransaction = (transaction, callback) ->
                 expected: prettify expected
                 request: options
               configuration.reporter.addTest test, (error) ->
-                return callback error if error
-              return callback()
+                return callback error, req, res if error
+              return callback(undefined, req, res)
 
     if configuration.server.startsWith 'https'
       req = https.request options, handleRequest
