@@ -51,6 +51,10 @@ executeTransaction = (transaction, callback) ->
       packageConfig['version'] + \
       " ("+ system + ")"
 
+  # Add length of body if no Content-Length present
+  if flatHeaders['Content-Length'] == undefined and request['body'] != ''
+    flatHeaders['Content-Length'] = request['body'].length
+
   if configuration.request?.headers?
     for header, value of configuration['request']['headers']
       flatHeaders[header] = value
