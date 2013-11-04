@@ -62,7 +62,7 @@ describe 'Dredd class', () ->
         assert.ok protagonistStub.parse.called
         done()
 
-    it 'should not pass any error to the caclback function', (done) ->
+    it 'should not pass any error to the callback function', (done) ->
       runner = new Dredd(configuration)
       runner.run (error) ->
         assert.isUndefined(error)
