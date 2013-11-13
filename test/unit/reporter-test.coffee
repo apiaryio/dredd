@@ -7,6 +7,85 @@ describe 'Reporter', () ->
 
   test = {}
 
+  describe 'when starting', (done) ->
+    reporter = null
+    blueprint = "My Api \n#My resource [/resource]\n# Action [GET]"
+
+    before (done) ->
+      reporter = new Reporter
+      reporter.start rawBlueprint: blueprint, done
+
+    it 'should generate set UUID', () ->
+      assert.isDefined reporter.uuid
+    
+    it 'should set start time', () ->
+      assert.isNumber reporter.startedAt
+
+    it 'should set raw blueprint to the report', () ->
+      assert.isDefined reporter.rawBlueprint
+
+    it 'should pass error to callback if endedAt is defined', (done) ->
+      reporter = new Reporter 
+      reporter.endedAt = new Date().getTime() / 1000
+      reporter.start rawBlueprint: blueprint, (err) ->
+        assert.instanceOf err, Error
+        done()
+      
+    it 'should pass error to callback if booleanResult is defined', (done) ->
+      reporter = new Reporter 
+      reporter.booleanResult = false
+      reporter.start rawBlueprint: blueprint, (err) ->
+        assert.instanceOf err, Error
+        done()
+
+    
+  describe 'when creating report', () ->
+    reporter = null
+    
+    before (done) ->
+      reporter = new Reporter
+      reporter.stats =
+        failures: 666
+      reporter.createReport(done)
+
+    it 'should set end time', () ->
+      assert.isNumber reporter.endedAt
+    
+    it 'should set boolean result', () ->
+      assert.isBoolean reporter.booleanResult
+
+  describe 'booleanResult', () ->
+    reporter = null
+
+    before () ->
+      reporter = new Reporter
+    
+    describe 'when any step failure occurs', () ->  
+      it 'should set false', () ->
+        reporter.stats = 
+          failures: 666
+        assert.isFalse reporter._booleanResult()
+
+
+    describe 'when no step failure', () ->
+      it 'shuold set true', () ->
+        reporter.stats =
+          failures: 0
+        assert.isTrue reporter._booleanResult()
+
+  describe 'when trying to add test after report created', () ->
+    it 'should pass error to callback', (done) ->
+      test =
+        status: 'pass'
+        title: 'Passing Test'
+      reporter = new Reporter 
+      reporter.booleanResult = false
+      
+      reporter.addTest test, (err) ->
+        assert.instanceOf err, Error
+        done()      
+
+
   describe 'when adding passing test', () ->
     before () ->
       test =
@@ -66,8 +145,16 @@ describe 'Reporter', () ->
         status: 'pass'
 
       child = new Reporter()
+      sinon.spy child, 'start'
       sinon.spy child, 'addTest'
       sinon.spy child, 'createReport'
+
+    it 'should run start on children', (done) ->
+      reporter = new Reporter()
+      reporter.addReporter(child)
+      reporter.start rawBlueprint: 'blueprint source', () ->
+        assert.ok child.start.calledOnce
+        done()
 
     it 'should add tests to children', (done) ->
       reporter = new Reporter()
@@ -82,8 +169,4 @@ describe 'Reporter', () ->
       reporter.createReport () ->
         assert.ok child.createReport.calledOnce
         done()
-
-
-  describe 'when creating report', () ->
-    describe 'when there is at least one test', () ->
 

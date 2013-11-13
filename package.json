@@ -23,7 +23,8 @@
     "async": "~0.2.9",
     "cli": "~0.4.5",
     "html": "~0.0.7",
-    "htmlencode": "~0.0.3"
+    "htmlencode": "~0.0.3",
+    "node-uuid": "~1.4.1"
   },
   "devDependencies": {
     "coffee-script": "1.6.3",

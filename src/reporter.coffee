@@ -1,3 +1,6 @@
+uuid = require 'node-uuid'
+async = require 'async'
+
 class Reporter
   constructor: ->
     @reporters = []
@@ -10,10 +13,37 @@ class Reporter
       timestamp: (new Date).toUTCString()
       duration: 0
 
+  _booleanResult: () =>
+    ! (@stats['failures'] > 0)
+
+  start: (opts, callback) => 
+
+    if @endedAt  != undefined or @booleanResult != undefined
+      err = new Error "Can't start ended test run. Reporter property 'endedAt' or 'booleanResult' is not null"
+      return callback(err)
+    
+    @rawBlueprint = opts['rawBlueprint']
+    @uuid = uuid.v4()
+    @startedAt = new Date().getTime() / 1000
+
+    iterator = (childReporter, callback) ->
+      childReporter.start opts, (error) ->
+        if error
+          callback error
+        else
+          callback()
+
+    async.eachSeries @reporters, iterator, (error) =>
+      if error
+        callback error
+      else
+        callback()
+
   addTest: (test, callback) =>
-    for reporter in @reporters
-      reporter.addTest test, (error) ->
-        return callback error if error
+    if @endedAt  != undefined or @booleanResult != undefined
+      err = new Error "Can't start ended test run. Reporter property 'endedAt' or 'booleanResult' is not null"
+      return callback(err)
+    
 
     @tests.push(test)
     @stats.tests += 1
@@ -25,13 +55,36 @@ class Reporter
         @stats.failures += 1
       else
         return callback(new Error "Error adding test: must have status of pass or fail.")
-    return callback()
+
+    iterator = (childReporter, callback) ->
+      childReporter.addTest test, (error) ->
+        if error
+          callback error
+        else
+          callback()
+
+    async.eachSeries @reporters, iterator, (error) =>
+      if error
+        callback error
+      else
+        callback()
 
   createReport: (callback) =>
-    for reporter in @reporters
+    @endedAt = new Date().getTime() / 1000
+    @booleanResult = @_booleanResult()
+
+    iterator = (reporter, callback) ->
       reporter.createReport (error) ->
-        return callback error if error
-    return callback()
+        if error
+          callback error
+        else
+          callback()
+
+    async.eachSeries @reporters, iterator, (error) ->
+      if error 
+        return callback error
+      else
+        return callback()
 
   addReporter: (reporter) =>
     @reporters.push reporter

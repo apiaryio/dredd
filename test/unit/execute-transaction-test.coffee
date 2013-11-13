@@ -8,6 +8,7 @@ htmlStub = require 'html'
 executeTransaction = proxyquire  '../../src/execute-transaction', {
   'html': htmlStub
 }
+
 CliReporter = require '../../src/cli-reporter'
 
 describe 'executeTransaction(transaction, callback)', () ->
@@ -174,23 +175,25 @@ describe 'executeTransaction(transaction, callback)', () ->
         done()
 
   describe 'when server responds with html', () ->
-    beforeEach () ->
-      transaction['configuration'].reporter = new CliReporter()
-      nock('http://localhost:3000').
-        post('/machines', {"type":"bulldozer","name":"willy"}).
-        reply transaction['response']['status'],
-          transaction['response']['body'],
-          {'Content-Type': 'text/html'}
-      sinon.spy htmlStub, 'prettyPrint'
+    # beforeEach () ->
+    #   transaction['configuration'].reporter = new CliReporter()
+    #   nock('http://localhost:3000').
+    #     post('/machines', {"type":"bulldozer","name":"willy"}).
+    #     reply transaction['response']['status'],
+    #       transaction['response']['body'],
+    #       {'Content-Type': 'text/html'}
+    #   sinon.spy htmlStub, 'prettyPrint'
 
-    afterEach () ->
-      htmlStub.prettyPrint.restore()
+    # afterEach () ->
+    #   htmlStub.prettyPrint.restore()
 
-    it 'should prettify the html for reporting', (done) ->
-      executeTransaction transaction, () ->
-        assert.ok htmlStub.prettyPrint.called
-        done()
-
+    # it 'should prettify the html for reporting', (done) ->
+    #   executeTransaction transaction, () ->
+    #     assert.ok htmlStub.prettyPrint.called
+    #     done()
+    
+    it 'TODO: extract this from execute transaction and and move this to the reporters: should prettify the html for reporting'
+  
   describe 'when dry run', () ->
     beforeEach () ->
       transaction['configuration'].reporter = new CliReporter()

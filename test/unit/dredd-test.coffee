@@ -50,6 +50,9 @@ describe 'Dredd class', () ->
       assert.ok(runner.configuration.options.silent)
       assert.notOk(runner.configuration.options['dry-run'])
 
+    it 'should call start on the reporter', () ->
+      
+
     it 'should load the file on given path', (done) ->
       runner = new Dredd(configuration)
       runner.run (error) ->
@@ -73,7 +76,7 @@ describe 'Dredd class', () ->
       runner.run (error, reporter) ->
         assert.isDefined reporter 
         done()
-
+    
     it 'should convert ast to runtime', (done) ->
       runner = new Dredd(configuration)
       runner.run (error) ->
@@ -101,6 +104,8 @@ describe 'Dredd class', () ->
         url: 'http://localhost:3000/'
         options:
           silent: true
+    
+    it 'should report via reporter'
 
     it 'should exit with an error', (done) ->
       runner = new Dredd(configuration)
@@ -116,6 +121,8 @@ describe 'Dredd class', () ->
         done()
 
   describe 'when Blueprint parsing warning', () ->
+    it 'should report via reporter'
+
     it 'should execute the runtime'
 
     it 'should exit with status 0'
@@ -130,6 +137,8 @@ describe 'Dredd class', () ->
         url: 'http://localhost:3000/'
         options:
           silent: true
+    
+    it 'should report via reporter'
 
     it 'should pass the error to the callback function', (done) ->
       runner = new Dredd(configuration)
@@ -152,6 +161,8 @@ describe 'Dredd class', () ->
         server: 'http://localhost:3000/'
         silent: true
       executeTransactionStub.reset()
+
+    it 'should report via reporter'
 
     it 'should NOT execute any transaction', (done) ->
       runner = new Dredd(configuration)
@@ -177,6 +188,8 @@ describe 'Dredd class', () ->
 
       executeTransactionStub.reset()
 
+    it 'should report via reporter'
+
     it 'should execute some transaction', (done) ->
       runner = new Dredd(configuration)
       runner.run (error) ->
@@ -194,7 +207,7 @@ describe 'Dredd class', () ->
   describe 'when runtime is without errors and warnings', () ->
     beforeEach () ->
       executeTransactionStub.reset()
-
+    
     it 'should execute the runtime', (done) ->
       runner = new Dredd(configuration)
       runner.run (error) ->

@@ -39,10 +39,10 @@ executeTransaction = (transaction, callback) ->
   origin = transaction['origin']
   request = transaction['request']
   response = transaction['response']
-
   parsedUrl = url.parse configuration['server']
-
   flatHeaders = flattenHeaders request['headers']
+  
+  startedAt = 0
 
   # Add Dredd user agent if no User-Agent present
   if flatHeaders['User-Agent'] == undefined
@@ -103,35 +103,52 @@ executeTransaction = (transaction, callback) ->
           bodySchema: response['schema']
           statusCode: response['status']
 
+        test =
+          status: "pass",
+          title: options['method'] + ' ' + options['path']
+          message: description
+          request: options
+          realResponse: real
+          expectedResponse: expected
+          origin: transaction['origin']
+          duration: (new Date().getTime() / 1000) - startedAt
+
+
+        test['request']['body'] = transaction['request']['body']
+
         gavel.isValid real, expected, 'response', (error, isValid) ->
           return callback error, req, res if error
+          
+          gavel.validate real, expected, 'response', (error, result) ->
+            return callback(error, req, res) if error
 
-          if isValid
-            test =
-              status: "pass",
-              title: options['method'] + ' ' + options['path']
-              message: description
-            configuration.reporter.addTest test, (error) ->
-              return callback error, req, res if error
-            return callback(undefined, req, res)
-          else
-            gavel.validate real, expected, 'response', (error, result) ->
-              return callback(error, req, res) if error
-              message = ''
+            # Will be eradicated when reporters API match blueprint API
+            # and pretrifying will be moved under proper reporter
+            test['actual'] = prettify real
+            test['expected'] = prettify expected
+            
+            test['result'] = result
+            
+            if ! isValid
+
+              message = message + '\n'
               for entity, data of result
                 for entityResult in data['results']
                   message += entity + ": " + entityResult['message'] + "\n"
-              test =
-                status: "fail",
-                title: options['method'] + ' ' + options['path'],
-                message: message
-                actual: prettify real
-                expected: prettify expected
-                request: options
-              configuration.reporter.addTest test, (error) ->
-                return callback error, req, res if error
-              return callback(undefined, req, res)
 
+              test['message'] = message
+              test['status'] = 'fail'
+            
+            else
+              test['status'] = 'pass'
+
+            configuration.reporter.addTest test, (error) ->
+              if error 
+                return callback error, req, res 
+              else
+                return callback(undefined, req, res)
+
+    startedAt = new Date().getTime() / 1000
     if configuration.server.startsWith 'https'
       req = https.request options, handleRequest
     else
