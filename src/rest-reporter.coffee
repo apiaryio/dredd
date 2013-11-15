@@ -103,7 +103,8 @@ class RestReporter extends Reporter
     
     handleRequest = (res) ->
       res.on 'data', (chunk) ->
-        logger.info 'REST Reporter HTTPS Response chunk: ' + chunk
+        if verbose
+          logger.info 'REST Reporter HTTPS Response chunk: ' + chunk
         buffer = buffer + chunk
   
       res.on 'error', (error) ->

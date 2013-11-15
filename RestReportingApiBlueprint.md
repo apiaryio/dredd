@@ -45,7 +45,6 @@ HOST: http://api.apiary.io/
 
         ```
         Authentication: Token aff888af9993db9ef70edf3c878ab521
-        Accpept: application/json
         ```
   
     - Body
@@ -214,6 +213,14 @@ HOST: http://api.apiary.io/
         ```
 
 ### Retreive [GET]
+
+- Request
+
+    - Headers
+
+        ```
+        Authentication: Token aff888af9993db9ef70edf3c878ab521
+        ```
 
 - Response 200
 
