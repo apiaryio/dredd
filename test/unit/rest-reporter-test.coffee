@@ -68,6 +68,7 @@ describe 'RestReporter', () ->
       call = nock(opts['apiUrl']).
         post(uri).
         matchHeader('Authentication', 'Token ' + opts['apiToken']).
+        matchHeader('Content-Type', 'application/json').
         reply(201, {"_id": stepId })
 
       reporter = new RestReporter conf      
@@ -102,7 +103,7 @@ describe 'RestReporter', () ->
 
         done()
     
-      
+
   describe 'when creating report', () ->
     
     call = null
