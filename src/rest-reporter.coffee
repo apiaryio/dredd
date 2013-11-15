@@ -135,7 +135,7 @@ class RestReporter extends Reporter
         'User-Agent': "Dredd REST Reporter/" + packageConfig['version'] + " ("+ system + ")"
 
     if verbose
-      info:
+      info =
         options: options
         body: body
 
