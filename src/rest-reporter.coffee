@@ -1,3 +1,4 @@
+cli = require 'cli'
 http = require 'http'
 https = require 'https'
 logger = require './logger'
@@ -8,6 +9,8 @@ packageConfig = require './../package.json'
 
 String::startsWith = (str) ->
     return this.slice(0, str.length) is str
+
+verbose = process.env['DREDD_REST_DEBUG']
 
 class RestReporter extends Reporter
 
@@ -98,7 +101,7 @@ class RestReporter extends Reporter
 
   _performRequest: (path, method, body, callback) =>
     buffer = ""
-
+    
     handleRequest = (res) ->
       res.on 'data', (chunk) ->
         buffer = buffer + chunk
@@ -107,7 +110,16 @@ class RestReporter extends Reporter
         return callback error, req, res
 
       res.on 'end', () =>
-        parsedBody = JSON.parse buffer
+        parsedBody = JSON.parse buffer        
+
+        if verbose
+          info = 
+            eaders: res.headers
+            statusCode: res.statusCode
+            body: parsedBody     
+
+          cli.debug 'Dredd Rest Reporter Response:', JSON.stringify(info, null, 2)
+
         return callback(undefined, res, parsedBody)
     
     parsedUrl = url.parse @configuration['apiUrl']
@@ -121,6 +133,13 @@ class RestReporter extends Reporter
       headers:
         'Authentication': 'Token ' + @configuration['apiToken']
         'User-Agent': "Dredd REST Reporter/" + packageConfig['version'] + " ("+ system + ")"
+
+    if verbose
+      info:
+        options: options
+        body: body
+
+      cli.debug 'Dredd Rest Reporter Request:', JSON.stringify(info, null, 2)
 
     if @configuration.apiUrl.startsWith 'https'
       req = https.request options, handleRequest
