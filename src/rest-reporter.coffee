@@ -1,4 +1,3 @@
-cli = require 'cli'
 http = require 'http'
 https = require 'https'
 logger = require './logger'
@@ -10,7 +9,7 @@ packageConfig = require './../package.json'
 String::startsWith = (str) ->
     return this.slice(0, str.length) is str
 
-verbose = process.env['DREDD_REST_DEBUG']
+verbose = process.env['DREDD_REST_DEBUG']?
 
 class RestReporter extends Reporter
 
@@ -114,11 +113,11 @@ class RestReporter extends Reporter
 
         if verbose
           info = 
-            eaders: res.headers
+            headers: res.headers
             statusCode: res.statusCode
             body: parsedBody     
 
-          cli.debug 'Dredd Rest Reporter Response:', JSON.stringify(info, null, 2)
+          logger.info 'Dredd Rest Reporter Response:', JSON.stringify(info, null, 2)
 
         return callback(undefined, res, parsedBody)
     
@@ -139,7 +138,7 @@ class RestReporter extends Reporter
         options: options
         body: body
 
-      cli.debug 'Dredd Rest Reporter Request:', JSON.stringify(info, null, 2)
+      logger.info 'Dredd Rest Reporter Request:', JSON.stringify(info, null, 2)
 
     if @configuration.apiUrl.startsWith 'https'
       req = https.request options, handleRequest
