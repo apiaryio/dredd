@@ -136,6 +136,7 @@ class RestReporter extends Reporter
       headers:
         'Authentication': 'Token ' + @configuration['apiToken']
         'User-Agent': "Dredd REST Reporter/" + packageConfig['version'] + " ("+ system + ")"
+        'Content-Type': 'application/json'
 
     if verbose
       info =
