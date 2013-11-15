@@ -103,12 +103,17 @@ class RestReporter extends Reporter
     
     handleRequest = (res) ->
       res.on 'data', (chunk) ->
+        logger.info 'REST Reporter HTTPS Response chunk: ' + chunk
         buffer = buffer + chunk
   
-      req.on 'error', (error) ->
+      res.on 'error', (error) ->
+        if verbose
+          logger.info 'REST Reporter HTTPS Response error.'
         return callback error, req, res
 
       res.on 'end', () =>
+        if verbose
+          logger.info 'Rest Reporter Response ended'
         parsedBody = JSON.parse buffer        
 
         if verbose
@@ -116,8 +121,7 @@ class RestReporter extends Reporter
             headers: res.headers
             statusCode: res.statusCode
             body: parsedBody     
-
-          logger.info 'Dredd Rest Reporter Response:', JSON.stringify(info, null, 2)
+          logger.info 'Rest Reporter Response:', JSON.stringify(info, null, 2)
 
         return callback(undefined, res, parsedBody)
     
@@ -137,12 +141,15 @@ class RestReporter extends Reporter
       info =
         options: options
         body: body
-
-      logger.info 'Dredd Rest Reporter Request:', JSON.stringify(info, null, 2)
+      logger.info 'Rest Reporter Request:', JSON.stringify(info, null, 2)
 
     if @configuration.apiUrl.startsWith 'https'
+      if verbose
+        logger.info 'Starting REST Reporter HTTPS Request'
       req = https.request options, handleRequest
     else
+      if verbose
+        logger.info 'Starting REST Reporter HTTP Response'    
       req = http.request options, handleRequest
     
     req.write JSON.stringify body
