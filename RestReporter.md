@@ -22,9 +22,10 @@ Rest reporter is activated by exposing environment variables withs token and sui
 - ci.jobId ... CI_JOB_ID || undefined
 - ci.jobNumber ... CI_JOB_NUMBER || undefined
 
-See [Rest Reporting API documentation][doc] for more information about data reporting strucutre.
+See [Rest Reporting API documentation][doc] and it's [Apiary documentation](apiarydoc) for more information about reporting data strucutres and API.
 
 [doc]: https://github.com/apiaryio/dredd/blob/netmilk/rest-reporter/RestReportingApiBlueprint.md
+[apiarydoc]: http://docs.reportingmock.apiary.io/
 
 
 
