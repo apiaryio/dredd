@@ -8,7 +8,7 @@ htmlStub = require 'html'
 executeTransaction = proxyquire  '../../src/execute-transaction', {
   'html': htmlStub
 }
-CliReporter = require '../../src/cli-reporter'
+CliReporter = require '../../src/reporters/cli-reporter'
 
 describe 'executeTransaction(transaction, callback)', () ->
   transaction =

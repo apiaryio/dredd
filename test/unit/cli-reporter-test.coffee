@@ -3,7 +3,7 @@ sinon = require 'sinon'
 proxyquire = require('proxyquire').noCallThru()
 
 loggerStub = require '../../src/logger'
-CliReporter = proxyquire '../../src/cli-reporter', {
+CliReporter = proxyquire '../../src/reporters/cli-reporter', {
   'winston' : loggerStub
 }
 

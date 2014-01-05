@@ -1,6 +1,6 @@
-Reporter = require './reporter'
-XUnitReporter = require './x-unit-reporter'
-CliReporter = require './cli-reporter'
+Reporter = require './reporters/reporter'
+XUnitReporter = require './reporters/x-unit-reporter'
+CliReporter = require './reporters/cli-reporter'
 
 configureReporters = (config) ->
   config.reporter = new Reporter()

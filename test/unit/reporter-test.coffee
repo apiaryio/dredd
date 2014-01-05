@@ -1,7 +1,7 @@
 {assert} = require 'chai'
 sinon = require 'sinon'
 
-Reporter = require '../../src/reporter'
+Reporter = require '../../src/reporters/reporter'
 
 describe 'Reporter', () ->
 

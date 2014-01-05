@@ -1,4 +1,4 @@
-logger = require './logger'
+logger = require './../logger'
 Reporter = require './reporter'
 
 class CliReporter extends Reporter

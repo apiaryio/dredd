@@ -5,7 +5,7 @@ proxyquire = require('proxyquire').noCallThru()
 cliStub = require 'cli'
 fsStub = require 'fs'
 
-XUnitReporter = proxyquire '../../src/x-unit-reporter', {
+XUnitReporter = proxyquire '../../src/reporters/x-unit-reporter', {
   'cli' : cliStub,
   'fs' : fsStub
 }
