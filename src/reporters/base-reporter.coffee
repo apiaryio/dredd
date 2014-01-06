@@ -27,7 +27,7 @@ class BaseReporter
       @stats.skipped += 1
 
     emitter.on 'test fail', (test) =>
-      @stats.skipped += 1
+      @stats.failures += 1
       test['end'] = new Date
       test['duration'] = test.end - test.start
 
