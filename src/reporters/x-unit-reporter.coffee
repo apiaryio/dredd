@@ -1,5 +1,5 @@
 fs = require 'fs'
-cli = require 'cli'
+logger = require './../logger'
 htmlencode = require 'htmlencode'
 
 class XUnitReporter
@@ -13,7 +13,7 @@ class XUnitReporter
   sanitizedPath: (path) =>
     filePath = process.cwd() + "/report.xml" unless path?
     if fs.existsSync(filePath)
-      cli.info "File exists at #{filePath}, deleting..."
+      logger.info "File exists at #{filePath}, deleting..."
       fs.unlinkSync(filePath)
     filePath
 
@@ -75,15 +75,16 @@ class XUnitReporter
 
           fs.writeFile path, newStats + '\n' + restOfFile, (err) ->
             if err
-              cli.error err
+              logger.error err
       else
-        cli.error err
+        logger.error err
 
   cdata = (str) ->
     return '<![CDATA[' + str + ']]>'
 
   appendLine = (path, line) ->
-    fs.appendFileSync(path, line + "\n")
+    fs.appendFile path, line + "\n", (err) ->
+      throw err if err
 
   toTag = (name, attrs, close, content) ->
     end = (if close then "/>" else ">")
