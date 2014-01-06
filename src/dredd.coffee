@@ -8,11 +8,11 @@ blueprintAstToRuntime = require './blueprint-ast-to-runtime'
 configureReporters = require './configure-reporters'
 
 options =
-  'dry-run': ['d', 'Run without performing tests.']
-  silent: ['s', 'Suppress all command line output']
-  reporter: ['r', 'Output additional report format. Options: junit', 'string']
-  output: ['o', 'Specifies output file when using additional reporter', 'file']
-  debug: [null, 'Display debug information']
+  'dry-run': {'alias': 'd', 'description': 'Run without performing tests.'}
+  'silent': {'alias': 's', 'description': 'Suppress all command line output'}
+  'reporter': {'alias': 'r', 'description': 'Output additional report format. Options: junit, nyan, dot, markdown, html'}
+  'output': {'alias': 'o', 'description': 'Specifies output file when using additional reporter'}
+  'debug': { 'description': 'Display debug information'}
 
 ###
   Events:

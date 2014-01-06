@@ -21,7 +21,7 @@
     "protagonist": "~0.5.0",
     "uri-template": "~0.4.1",
     "async": "~0.2.9",
-    "cli": "~0.4.5",
+    "optimist": "~0.6.0",
     "html": "~0.0.7",
     "htmlencode": "~0.0.3"
   },
