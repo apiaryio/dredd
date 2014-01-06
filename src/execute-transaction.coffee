@@ -70,6 +70,13 @@ executeTransaction = (transaction, callback) ->
               ' ' + options['path'] + \
               ' ' + JSON.stringify(request['body']).trunc(20)
 
+  test =
+    status: ''
+    title: options['method'] + ' ' + options['path']
+    message: description
+
+  configuration.emitter.emit 'test start', test
+
   if configuration.options['dry-run']
     cli.info "Dry run, skipping..."
     return callback()
@@ -99,12 +106,8 @@ executeTransaction = (transaction, callback) ->
           return callback error if error
 
           if isValid
-            test =
-              status: "pass",
-              title: options['method'] + ' ' + options['path']
-              message: description
-            configuration.reporter.addTest test, (error) ->
-              return callback error if error
+            test.status = "pass"
+            configuration.emitter.emit 'test pass', test
             return callback()
           else
             gavel.validate real, expected, 'response', (error, result) ->
@@ -120,8 +123,7 @@ executeTransaction = (transaction, callback) ->
                 actual: prettify real
                 expected: prettify expected
                 request: options
-              configuration.reporter.addTest test, (error) ->
-                return callback error if error
+              configuration.emitter.emit 'test fail', test
               return callback()
 
     if configuration.server.startsWith 'https'

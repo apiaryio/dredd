@@ -1,51 +1,83 @@
 fs = require 'fs'
 cli = require 'cli'
-Reporter = require './reporter'
 htmlencode = require 'htmlencode'
 
-class XUnitReporter extends Reporter
-  constructor: (path) ->
-    super()
+class XUnitReporter
+  constructor: (emitter, stats, tests, path) ->
     @type = "xUnit"
-    @path = process.cwd() + "/report.xml" unless path?
-    #delete old results
-    fs.unlinkSync(@path) if fs.existsSync(@path)
+    @stats = stats
+    @tests = tests
+    @path = @sanitizedPath(path)
+    @configureEmitter emitter
 
-  addTest: (test, callback) =>
-    super test, (error) ->
-      return callback(error) if error
-    cli.debug "Adding test to junit reporter: " + JSON.stringify(test)
-    return callback()
+  sanitizedPath: (path) =>
+    filePath = process.cwd() + "/report.xml" unless path?
+    if fs.existsSync(filePath)
+      cli.info "File exists at #{filePath}, deleting..."
+      fs.unlinkSync(filePath)
+    filePath
 
-  createReport: (callback) =>
-    super (error) ->
-      return callback(error) if error
+  configureEmitter: (emitter) =>
+    emitter.on 'start', =>
+      appendLine @path, toTag('testsuite', {
+              name: 'Dredd Tests'
+            , tests: @stats.tests
+            , failures: @stats.failures
+            , errors: @stats.errors
+            , skip: @stats.skipped
+            , timestamp: (new Date).toUTCString()
+            , time: @stats.duration / 1000
+          }, false)
 
-    cli.debug "Writing junit tests to file: " + @path
-    appendLine @path, toTag('testsuite', {
-        name: 'Dredd Tests'
-      , tests: @stats.tests
-      , failures: @stats.failures
-      , errors: @stats.failures
-      , skip: @stats.tests - @stats.failures - @stats.passes
-      , timestamp: (new Date).toUTCString()
-      , time: @stats.duration / 1000
-    }, false)
-    doTest @path, test for test in @tests
-    appendLine(@path, '</testsuite>')
+    emitter.on 'end', =>
+      appendLine @path, '</testsuite>'
+      updateSuiteStats(@path, @stats)
 
-    return callback()
+    emitter.on 'test pass', (test) =>
+      attrs =
+        name: htmlencode.htmlEncode test.title
+        time: test.duration / 1000
+      appendLine @path, toTag('testcase', attrs, true)
 
-  doTest = (path, test) ->
-    attrs =
-      name: htmlencode.htmlEncode test.title
-      time: 0
+    emitter.on 'test skip', (test) =>
+      logger.skip test.title
 
-    if 'fail' is test.status
+    emitter.on 'test fail', (test) =>
+      attrs =
+        name: htmlencode.htmlEncode test.title
+        time: test.duration / 1000
       diff = "Message: \n" + test.message + "\nExpected: \n" +  (JSON.stringify test.expected, null, 4) + "\nActual:\n" + (JSON.stringify test.actual, null, 4)
-      appendLine(path, toTag('testcase', attrs, false, toTag('failure', null, false, cdata(diff))))
-    else
-      appendLine(path, toTag('testcase', attrs, true) )
+      appendLine @path, toTag('testcase', attrs, false, toTag('failure', null, false, cdata(diff)))
+
+    emitter.on 'test error', (test, error) =>
+      attrs =
+        name: htmlencode.htmlEncode test.title
+        time: test.duration / 1000
+      errorMessage = "Message: \n" + test.message + "\nError: \n"  + error
+      appendLine @path, toTag('testcase', attrs, false, toTag('failure', null, false, cdata(test.message)))
+
+  updateSuiteStats = (path, stats) ->
+    fs.readFile path, (err, data) ->
+      if !err
+        data = data.toString()
+        position = data.toString().indexOf('\n')
+        if (position != -1)
+          restOfFile = data.substr position + 1
+          newStats = toTag 'testsuite', {
+              name: 'Dredd Tests'
+            , tests: stats.tests
+            , failures: stats.failures
+            , errors: stats.errors
+            , skip: stats.skipped
+            , timestamp: (new Date).toUTCString()
+            , time: stats.duration / 1000
+          }, false
+
+          fs.writeFile path, newStats + '\n' + restOfFile, (err) ->
+            if err
+              cli.error err
+      else
+        cli.error err
 
   cdata = (str) ->
     return '<![CDATA[' + str + ']]>'

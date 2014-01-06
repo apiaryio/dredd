@@ -1,12 +1,19 @@
-Reporter = require './reporters/reporter'
+BaseReporter = require './reporters/base-reporter'
 XUnitReporter = require './reporters/x-unit-reporter'
 CliReporter = require './reporters/cli-reporter'
+DotReporter = require './reporters/dot-reporter'
+NyanCatReporter = require './reporters/nyan-reporter'
 
-configureReporters = (config) ->
-  config.reporter = new Reporter()
-  config.reporter.addReporter new CliReporter unless config.options.silent
+configureReporters = (config, data) ->
+  baseReporter = new BaseReporter(config.emitter, data.stats, data.tests)
 
-  if config.options.reporter is 'junit'
-    config.reporter.addReporter new XUnitReporter(config.options.output)
+  switch config.options.reporter
+    when 'junit'
+      xUnitReporter = new XUnitReporter(config.emitter, data.stats, data.tests, config.options.output)
+      cliReporter = new CliReporter(config.emitter, data.stats, data.tests) unless config.options.silent?
+    when 'dot'
+      dotReporter = new DotReporter(config.emitter, data.stats, data.tests)
+    when 'nyan'
+      nyanCatReporter = new NyanCatReporter(config.emitter, data.stats, data.tests)
 
 module.exports = configureReporters

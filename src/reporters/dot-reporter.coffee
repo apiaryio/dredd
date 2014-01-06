@@ -1,8 +1,8 @@
 logger = require './../logger'
 
-class CliReporter
+class DotReporter
   constructor: (emitter, stats, tests) ->
-    @type = "cli"
+    @type = "dot"
     @stats = stats
     @tests = tests
     @configureEmitter emitter
@@ -13,23 +13,20 @@ class CliReporter
 
     emitter.on 'end', =>
       if @stats.tests > 0
+        process.stdout.write "\n"
         logger.complete "#{@stats.passes} passing, #{@stats.failures} failing, #{@stats.errors} errors, #{@stats.skipped} skipped"
         logger.complete "Tests took #{@stats.duration}ms"
 
     emitter.on 'test pass', (test) =>
-      logger.pass test.title + " duration: #{test.duration}ms"
+      process.stdout.write "."
 
     emitter.on 'test skip', (test) =>
-      logger.skip test.title
+      process.stdout.write "-"
 
     emitter.on 'test fail', (test) =>
-      logger.fail test.title + " duration: #{test.duration}ms"
-      logger.fail test.message
-      logger.request "\n" + (JSON.stringify test.request, null, 4) + "\n"
-      logger.expected "\n" + (JSON.stringify test.expected, null, 4) + "\n"
-      logger.actual "\n" + (JSON.stringify test.actual, null, 4) + "\n\n"
+      process.stdout.write "F"
 
     emitter.on 'test error', (test, error) =>
-      logger.error test.title  + " duration: #{test.duration}ms"
+      process.stdout.write "E"
 
-module.exports = CliReporter
+module.exports = DotReporter

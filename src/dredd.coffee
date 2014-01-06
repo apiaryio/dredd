@@ -1,3 +1,4 @@
+{EventEmitter} = require 'events'
 async = require 'async'
 fs = require 'fs'
 protagonist = require 'protagonist'
@@ -13,27 +14,53 @@ options =
   output: ['o', 'Specifies output file when using additional reporter', 'file']
   debug: [null, 'Display debug information']
 
+###
+  Events:
+  start
+  end
+  test start
+  test fail
+  test pass
+  test skip
+  test error
+###
+
 class Dredd
   constructor: (config) ->
+    emitter = new EventEmitter
     @configuration =
       blueprintPath: null,
       server: null,
       reporter: null,
       request: null,
+      emitter: emitter,
       options:
         'dry-run': false,
         silent: false,
         reporter: null,
         output: null,
-        debug: false
+        debug: false,
+    @testData =
+      tests: [],
+      stats:
+        tests: 0
+        failures: 0
+        errors: 0
+        passes: 0
+        skipped: 0
+        start: 0
+        end: 0
+        duration: 0
 
     for own key, value of config
       @configuration[key] = value
 
-    configureReporters(@configuration)
+    configureReporters(@configuration, @testData)
 
   run: (callback) ->
     config = @configuration
+
+    config.emitter.emit 'start'
 
     fs.readFile config.blueprintPath, 'utf8', (parseError, data) ->
       return callback(parseError, config.reporter) if parseError
@@ -48,10 +75,10 @@ class Dredd
 
         async.eachSeries configuredTransactions(runtime, config), executeTransaction, (error) ->
           if error
+            config.emitter 'test error', error
             return callback error, config.reporter
 
-          config.reporter.createReport (reporterError) ->
-            return callback reporterError, config.reporter
+          config.emitter.emit 'end'
 
   handleRuntimeProblems = (runtime) ->
     if runtime['warnings'].length > 0

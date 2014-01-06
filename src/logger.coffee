@@ -11,6 +11,8 @@ config =
     expected: 6
     diff: 7
     request: 8
+    skip: 9
+    error: 10
   colors:
     test: 'yellow'
     info: 'blue'
@@ -21,6 +23,8 @@ config =
     expected: 'red'
     diff: 'red'
     request: 'green'
+    skip: 'yellow'
+    error: 'red'
 
 
 logger = new (winston.Logger) ({
