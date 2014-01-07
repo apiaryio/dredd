@@ -47,7 +47,6 @@ class MarkdownReporter
       level--
 
     emitter.on 'test fail', (test) =>
-      logger.info level
       buf += title "Fail: " + test.title +  "\n"
       buf += "\n```\n"
       buf += test.message + "\n"

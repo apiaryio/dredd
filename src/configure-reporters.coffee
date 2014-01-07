@@ -9,6 +9,7 @@ MarkdownReporter = require './reporters/markdown-reporter'
 logger = require './logger'
 
 fileReporters = ['junit', 'html', 'markdown']
+cliReporters = ['dot', 'nyan']
 
 intersection = (a, b) ->
   [a, b] = [b, a] if a.length > b.length
@@ -21,10 +22,9 @@ configureReporters = (config, data) ->
     if reporters instanceof String and reporters in fileReporters
        cliReporter = new CliReporter(config.emitter, data.stats, data.tests)
     else if reporters instanceof Array
-      for reporter in reporters
-        if reporter in fileReporters
-          cliReporter = new CliReporter(config.emitter, data.stats, data.tests)
-          break
+      usedReporters = intersection reporters, cliReporters
+      if usedReporters.length is 0
+        cliReporter = new CliReporter(config.emitter, data.stats, data.tests)
     else
         cliReporter = new CliReporter(config.emitter, data.stats, data.tests)
 
@@ -42,6 +42,8 @@ configureReporters = (config, data) ->
         mdReporter = new MarkdownReporter(config.emitter, data.stats, data.tests, path)
 
 
+  addCli(config.options.reporter) unless config.options.silent?
+
   if config.options.reporter instanceof String
     addReporter(reporter, config.emitter, data.stats, data.tests, config.options.output)
   else if config.options.reporter instanceof Array
@@ -54,11 +56,10 @@ configureReporters = (config, data) ->
 
     for reporter, i in config.options.reporter
       path = if usePaths then config.options.output[i]  else null
-      logger.info path
       addReporter(reporter, config.emitter, data.stats, data.tests, path)
 
-  if !config.options.silent?
-    addCli()
+
+
 
 
 module.exports = configureReporters
