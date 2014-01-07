@@ -104,9 +104,9 @@ class Dredd
         runtimeError = handleRuntimeProblems runtime
         return callback(runtimeError, config.reporter) if runtimeError
 
-        async.eachSeries configuredTransactions(runtime, config), executeTransaction, (error) ->
+        async.eachSeries configuredTransactions(runtime, config), executeTransaction, (error, test) ->
           if error
-            config.emitter 'test error', error
+            config.emitter 'test error', test, error
 
           config.emitter.emit 'end'
 
