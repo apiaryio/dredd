@@ -14,6 +14,7 @@ options =
   'output': {'alias': 'o', 'description': 'Specifies output file when using additional file-based reporter. This option can be used multiple times if multiple file-based reporters are used.', default: []}
   'header': {'alias': 'h', 'description': 'Extra header to include in every request. This option can be used multiple times to add multiple headers.', default:[]}
   'verbose': { 'description': 'Display debug information', 'default': false}
+  'user': {'alias': 'u', 'description': 'Basic Auth credentials in the form username:password.', 'default': null}
 
 ###
   Events:
@@ -37,12 +38,11 @@ coerceToArray = (value) ->
 
 class Dredd
   constructor: (config) ->
-    emitter = new EventEmitter
     @callback = null
     @configuration =
       blueprintPath: null
       server: null
-      emitter: emitter
+      emitter: new EventEmitter
       options:
         'dry-run': false
         silent: false
@@ -50,6 +50,7 @@ class Dredd
         output: null
         debug: false
         header: null
+        user: null
     @testData =
       tests: []
       stats:
@@ -66,6 +67,10 @@ class Dredd
     #normalize options and config
     for own key, value of config
       @configuration[key] = value
+
+    if @configuration.options.user?
+      authHeader = 'Authorization:Basic ' + new Buffer(@configuration.options.user).toString('base64')
+      @configuration.options.header.push authHeader
 
     #coerce single/multiple options into an array
     @configuration.options.reporter = coerceToArray(@configuration.options.reporter)
@@ -99,7 +104,6 @@ class Dredd
 
           # need to wait for files to finish writing, otherwise we can exit
           if stats.fileBasedReporters is 0
-            console.log "no file reporters"
             callback(null, stats)
 
   # called when a file-based reporter saves
