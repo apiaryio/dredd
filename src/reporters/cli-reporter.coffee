@@ -43,6 +43,8 @@ class CliReporter
         @errors.push test
 
     emitter.on 'test error', (test, error) =>
+      if not @inlineErrors
+        @errors.push test
       logger.error test.title  + " duration: #{test.duration}ms"
 
 module.exports = CliReporter

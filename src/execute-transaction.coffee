@@ -82,6 +82,9 @@ executeTransaction = (transaction, callback) ->
   if configuration.options['dry-run']
     logger.info "Dry run, skipping..."
     return callback()
+  else if configuration.options.method.length > 0 and not (request.method in configuration.options.method)
+    configuration.emitter.emit 'test skip', test
+    return callback()
   else
     buffer = ""
 

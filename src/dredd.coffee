@@ -15,7 +15,8 @@ options =
   'header': {'alias': 'h', 'description': 'Extra header to include in every request. This option can be used multiple times to add multiple headers.', default:[]}
   'verbose': { 'description': 'Display debug information', 'default': false}
   'user': {'alias': 'u', 'description': 'Basic Auth credentials in the form username:password.', 'default': null}
-  'inline-errors': {'alias': 'e', 'description': 'determines whether errors are displayed as they occur (true) or agregated and displayed at the end (false).', default:false}
+  'inline-errors': {'alias': 'e', 'description': 'Determines whether errors are displayed as they occur (true) or agregated and displayed at the end (false).', default:false}
+  'method': {'alias': 'm', 'description': 'Restrict tests to a particular HTTP method (GET, PUT, POST, DELETE, PATCH). This option can be used multiple times to allow multiple methods.', default:[]}
 
 ###
   Events:
@@ -52,6 +53,8 @@ class Dredd
         debug: false
         header: null
         user: null
+        'inline-errors':false
+        method: []
     @testData =
       tests: []
       stats:
@@ -77,6 +80,10 @@ class Dredd
     @configuration.options.reporter = coerceToArray(@configuration.options.reporter)
     @configuration.options.output = coerceToArray(@configuration.options.output)
     @configuration.options.header = coerceToArray(@configuration.options.header)
+    @configuration.options.method = coerceToArray(@configuration.options.method)
+
+    for method in @configuration.options.method
+      method.toUpperCase()
 
     configureReporters(@configuration, @testData, @fileReporterSaved)
 

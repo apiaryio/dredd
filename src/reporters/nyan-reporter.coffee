@@ -17,6 +17,7 @@ class NyanCatReporter
     @trajectoryWidthMax = (width - @nyanCatWidth)
     @scoreboardWidth = 5
     @tick = 0
+    @errors = []
     @configureEmitter emitter
 
   configureEmitter: (emitter) =>
@@ -31,6 +32,17 @@ class NyanCatReporter
       while i < @numberOfLines
         write "\n"
         i++
+
+      if @errors.length > 0
+          process.stdout.write "\n"
+          logger.info "Displaying failed tests..."
+          for test in @errors
+            logger.fail test.title + " duration: #{test.duration}ms"
+            logger.fail test.message
+            logger.request "\n" + (JSON.stringify test.request, null, 4) + "\n"
+            logger.expected "\n" + (JSON.stringify test.expected, null, 4) + "\n"
+            logger.actual "\n" + (JSON.stringify test.actual, null, 4) + "\n\n"
+
       logger.complete "#{@stats.passes} passing, #{@stats.failures} failing, #{@stats.errors} errors, #{@stats.skipped} skipped"
       logger.complete "Tests took #{@stats.duration}ms"
 
@@ -42,9 +54,11 @@ class NyanCatReporter
       @draw()
 
     emitter.on 'test fail', (test) =>
+      @errors.push test
       @draw()
 
     emitter.on 'test error', (test, error) =>
+      @errors.push test
       @draw()
 
   draw: =>
