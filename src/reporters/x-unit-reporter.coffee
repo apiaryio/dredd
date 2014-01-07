@@ -1,9 +1,11 @@
+{EventEmitter} = require 'events'
 fs = require 'fs'
 logger = require './../logger'
 htmlencode = require 'htmlencode'
 
-class XUnitReporter
+class XUnitReporter extends EventEmitter
   constructor: (emitter, stats, tests, path) ->
+    super()
     @type = "xUnit"
     @stats = stats
     @tests = tests
@@ -31,7 +33,8 @@ class XUnitReporter
 
     emitter.on 'end', =>
       appendLine @path, '</testsuite>'
-      updateSuiteStats(@path, @stats)
+      updateSuiteStats @path, @stats, () =>
+        @emit 'save'
 
     emitter.on 'test pass', (test) =>
       attrs =
@@ -56,7 +59,7 @@ class XUnitReporter
       errorMessage = "Message: \n" + test.message + "\nError: \n"  + error
       appendLine @path, toTag('testcase', attrs, false, toTag('failure', null, false, cdata(test.message)))
 
-  updateSuiteStats = (path, stats) ->
+  updateSuiteStats = (path, stats, callback) ->
     fs.readFile path, (err, data) ->
       if !err
         data = data.toString()
@@ -76,8 +79,10 @@ class XUnitReporter
           fs.writeFile path, newStats + '\n' + restOfFile, (err) ->
             if err
               logger.error err
+            callback()
       else
         logger.error err
+        callback()
 
   cdata = (str) ->
     return '<![CDATA[' + str + ']]>'

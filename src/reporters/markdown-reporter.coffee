@@ -1,8 +1,10 @@
+{EventEmitter} = require 'events'
 fs = require 'fs'
 logger = require './../logger'
 
-class MarkdownReporter
+class MarkdownReporter extends EventEmitter
   constructor: (emitter, stats, tests, path) ->
+    super()
     @type = "dot"
     @stats = stats
     @tests = tests
@@ -31,9 +33,10 @@ class MarkdownReporter
       buf += title('Dredd Tests') + "\n"
 
     emitter.on 'end', =>
-      fs.writeFile @path, buf, (err) ->
+      fs.writeFile @path, buf, (err) =>
         if err
           logger.error err
+        @emit 'save'
 
     emitter.on 'test start', (test) =>
       level++

@@ -5,6 +5,7 @@ protagonist = require 'protagonist'
 executeTransaction = require './execute-transaction'
 blueprintAstToRuntime = require './blueprint-ast-to-runtime'
 configureReporters = require './configure-reporters'
+logger = require './logger'
 
 options =
   'dry-run': {'alias': 'd', 'description': 'Run without performing tests.', 'default': false}
@@ -37,6 +38,7 @@ coerceToArray = (value) ->
 class Dredd
   constructor: (config) ->
     emitter = new EventEmitter
+    @callback = null
     @configuration =
       blueprintPath: null
       server: null
@@ -49,8 +51,9 @@ class Dredd
         debug: false
         header: null
     @testData =
-      tests: [],
+      tests: []
       stats:
+        fileBasedReporters: 0
         tests: 0
         failures: 0
         errors: 0
@@ -69,7 +72,7 @@ class Dredd
     @configuration.options.output = coerceToArray(@configuration.options.output)
     @configuration.options.header = coerceToArray(@configuration.options.header)
 
-    configureReporters(@configuration, @testData)
+    configureReporters(@configuration, @testData, @fileReporterSaved)
 
   run: (callback) ->
     config = @configuration
@@ -93,8 +96,18 @@ class Dredd
             config.emitter 'test error', error
 
           config.emitter.emit 'end'
-          # don't callback to give reporters time to clean up
-          #callback(null, stats)
+
+          # need to wait for files to finish writing, otherwise we can exit
+          if stats.fileBasedReporters is 0
+            console.log "no file reporters"
+            callback(null, stats)
+
+  # called when a file-based reporter saves
+  fileReporterSaved: () =>
+    if @testData.stats.fileBasedReporters is 0
+      @callback(null, stats)
+    else
+      @testData.stats.fileBasedReporters--
 
   handleRuntimeProblems = (runtime) ->
     if runtime['warnings'].length > 0
@@ -102,7 +115,7 @@ class Dredd
         message = warning['message']
         origin = warning['origin']
 
-        cli.info "Runtime compilation warning: " + warning['message'] + "\n on " + \
+        logger.info "Runtime compilation warning: " + warning['message'] + "\n on " + \
           origin['resourceGroupName'] + \
           ' > ' + origin['resourceName'] + \
           ' > ' + origin['actionName']
@@ -112,7 +125,7 @@ class Dredd
         message = error['message']
         origin = error['origin']
 
-        cli.error "Runtime compilation error: " + error['message'] + "\n on " + \
+        logger.error "Runtime compilation error: " + error['message'] + "\n on " + \
           origin['resourceGroupName'] + \
           ' > ' + origin['resourceName'] + \
           ' > ' + origin['actionName']

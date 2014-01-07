@@ -15,7 +15,7 @@ intersection = (a, b) ->
   [a, b] = [b, a] if a.length > b.length
   value for value in a when value in b
 
-configureReporters = (config, data) ->
+configureReporters = (config, data, fileReportersSave) ->
   baseReporter = new BaseReporter(config.emitter, data.stats, data.tests)
   reporters = config.options.reporter
   outputs = config.options.output
@@ -34,19 +34,24 @@ configureReporters = (config, data) ->
     switch reporter
       when 'junit'
         xUnitReporter = new XUnitReporter(emitter, stats, tests, path)
+        xUnitReporter.on 'save', fileReportersSave
       when 'dot'
         dotReporter = new DotReporter(emitter, stats, tests)
       when 'nyan'
         nyanCatReporter = new NyanCatReporter(emitter, stats, tests)
       when 'html'
         htmlReporter = new HtmlReporter(emitter, stats, tests, path)
+        htmlReporter.on 'save', fileReportersSave
       when 'markdown'
         mdReporter = new MarkdownReporter(emitter, stats, tests, path)
+        mdReporter.on 'save', fileReportersSave
 
 
   addCli(reporters) if not config.options.silent
 
   usedFileReporters = intersection reporters, fileReporters
+
+  data.stats.fileBasedReporters = usedFileReporters.length
 
   if usedFileReporters.length > 0
     usePaths = true

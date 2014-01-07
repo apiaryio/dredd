@@ -1,8 +1,10 @@
+{EventEmitter} = require 'events'
 fs = require 'fs'
 logger = require './../logger'
 
-class HtmlReporter
+class HtmlReporter extends EventEmitter
   constructor: (emitter, stats, tests, path) ->
+    super()
     @type = "html"
     @stats = stats
     @tests = tests
@@ -21,6 +23,7 @@ class HtmlReporter
 
 
     emitter.on 'end', =>
+      @emit 'save'
 
 
     emitter.on 'test pass', (test) =>
