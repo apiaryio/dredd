@@ -6,7 +6,7 @@ html = require 'html'
 url = require 'url'
 os = require 'os'
 packageConfig = require './../package.json'
-cli = require 'cli'
+logger = require './logger'
 
 
 indent = '  '
@@ -27,7 +27,7 @@ prettify = (transaction) ->
       try
         parsed = JSON.parse transaction.body
       catch e
-        cli.error "Error parsing body as json: " + transaction.body
+        logger.error "Error parsing body as json: " + transaction.body
         parsed = transaction.body
       transaction.body = parsed
     when 'text/html'
@@ -80,7 +80,7 @@ executeTransaction = (transaction, callback) ->
   configuration.emitter.emit 'test start', test
 
   if configuration.options['dry-run']
-    cli.info "Dry run, skipping..."
+    logger.info "Dry run, skipping..."
     return callback()
   else
     buffer = ""
