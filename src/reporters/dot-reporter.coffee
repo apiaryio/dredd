@@ -6,6 +6,7 @@ class DotReporter
     @stats = stats
     @tests = tests
     @configureEmitter emitter
+    @errors = []
 
   configureEmitter: (emitter) =>
     emitter.on 'start', =>
@@ -13,6 +14,15 @@ class DotReporter
 
     emitter.on 'end', =>
       if @stats.tests > 0
+        if @errors.length > 0
+          process.stdout.write "\n"
+          logger.info "Displaying failed tests..."
+          for test in @errors
+            logger.fail test.title + " duration: #{test.duration}ms"
+            logger.fail test.message
+            logger.request "\n" + (JSON.stringify test.request, null, 4) + "\n"
+            logger.expected "\n" + (JSON.stringify test.expected, null, 4) + "\n"
+            logger.actual "\n" + (JSON.stringify test.actual, null, 4) + "\n\n"
         process.stdout.write "\n"
         logger.complete "#{@stats.passes} passing, #{@stats.failures} failing, #{@stats.errors} errors, #{@stats.skipped} skipped"
         logger.complete "Tests took #{@stats.duration}ms"
@@ -25,8 +35,10 @@ class DotReporter
 
     emitter.on 'test fail', (test) =>
       process.stdout.write "F"
+      @errors.push test
 
     emitter.on 'test error', (test, error) =>
       process.stdout.write "E"
+      @errors.push test
 
 module.exports = DotReporter

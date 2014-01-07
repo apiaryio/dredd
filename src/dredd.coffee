@@ -15,6 +15,7 @@ options =
   'header': {'alias': 'h', 'description': 'Extra header to include in every request. This option can be used multiple times to add multiple headers.', default:[]}
   'verbose': { 'description': 'Display debug information', 'default': false}
   'user': {'alias': 'u', 'description': 'Basic Auth credentials in the form username:password.', 'default': null}
+  'inline-errors': {'alias': 'e', 'description': 'determines whether errors are displayed as they occur (true) or agregated and displayed at the end (false).', default:false}
 
 ###
   Events:

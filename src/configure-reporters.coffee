@@ -24,11 +24,11 @@ configureReporters = (config, data, fileReportersSave) ->
     if reporters.length > 0
       usedCliReporters = intersection reporters, cliReporters
       if usedCliReporters.length is 0
-        cliReporter = new CliReporter(config.emitter, data.stats, data.tests)
+        cliReporter = new CliReporter(config.emitter, data.stats, data.tests, config.options['inline-errors'])
       else
         addReporter(usedCliReporters[0], config.emitter, data.stats, data.tests)
     else
-      cliReporter = new CliReporter(config.emitter, data.stats, data.tests)
+      cliReporter = new CliReporter(config.emitter, data.stats, data.tests, config.options['inline-errors'])
 
   addReporter = (reporter, emitter, stats, tests, path) ->
     switch reporter
