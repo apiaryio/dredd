@@ -11,7 +11,7 @@ class XUnitReporter
     @configureEmitter emitter
 
   sanitizedPath: (path) =>
-    filePath = process.cwd() + "/report.xml" unless path?
+    filePath = if path? then process.cwd() + "/" +  path else process.cwd() + "/report.xml"
     if fs.existsSync(filePath)
       logger.info "File exists at #{filePath}, deleting..."
       fs.unlinkSync(filePath)

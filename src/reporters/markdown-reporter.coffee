@@ -10,7 +10,7 @@ class MarkdownReporter
     @configureEmitter emitter
 
   sanitizedPath: (path) =>
-    filePath = process.cwd() + "/report.md" unless path?
+    filePath = if path? then process.cwd() + "/" + path else process.cwd() + "/report.md"
     if fs.existsSync(filePath)
       logger.info "File exists at #{filePath}, deleting..."
       fs.unlinkSync(filePath)

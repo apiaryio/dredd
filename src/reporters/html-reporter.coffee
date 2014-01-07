@@ -10,7 +10,7 @@ class HtmlReporter
     @configureEmitter emitter
 
   sanitizedPath: (path) =>
-    filePath = process.cwd() + "/report.html" unless path?
+    filePath = if path? then process.cwd() +  "/" + path else process.cwd() + "/report.html"
     if fs.existsSync(filePath)
       logger.info "File exists at #{filePath}, deleting..."
       fs.unlinkSync(filePath)

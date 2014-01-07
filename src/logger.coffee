@@ -13,6 +13,7 @@ config =
     request: 8
     skip: 9
     error: 10
+    warning: 11
   colors:
     test: 'yellow'
     info: 'blue'
@@ -25,6 +26,7 @@ config =
     request: 'green'
     skip: 'yellow'
     error: 'red'
+    warning: 'yellow'
 
 
 logger = new (winston.Logger) ({
