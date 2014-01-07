@@ -36,8 +36,11 @@ configuration = {
 
 dredd = new Dredd(configuration);
 
-dredd.run(function(error, reporter){
-  if(reporter['stats']['failures'] > 0){
+dredd.run(function(error, stats){
+  if (error) {
+   console.error(error.stack);
+  }
+  if (stats.failures + stats.errors > 0) {
     process.exit(1);
   } else {
     process.exit(0);

@@ -51,9 +51,11 @@ executeTransaction = (transaction, callback) ->
       packageConfig['version'] + \
       " ("+ system + ")"
 
-  if configuration.request?.headers?
-    for header, value of configuration['request']['headers']
-      flatHeaders[header] = value
+
+  if configuration.options.header.length > 0
+    for header in configuration.options.header
+        splitHeader = header.split(':')
+        flatHeaders[splitHeader[0]] = splitHeader[1]
 
   options =
     host: parsedUrl['hostname']

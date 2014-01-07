@@ -17,48 +17,46 @@ intersection = (a, b) ->
 
 configureReporters = (config, data) ->
   baseReporter = new BaseReporter(config.emitter, data.stats, data.tests)
+  reporters = config.options.reporter
+  outputs = config.options.output
 
   addCli = (reporters) ->
-    if reporters instanceof String and reporters in fileReporters
-       cliReporter = new CliReporter(config.emitter, data.stats, data.tests)
-    else if reporters instanceof Array
-      usedReporters = intersection reporters, cliReporters
-      if usedReporters.length is 0
+    if reporters.length > 0
+      usedCliReporters = intersection reporters, cliReporters
+      if usedCliReporters.length is 0
         cliReporter = new CliReporter(config.emitter, data.stats, data.tests)
+      else
+        addReporter(usedCliReporters[0], config.emitter, data.stats, data.tests)
     else
-        cliReporter = new CliReporter(config.emitter, data.stats, data.tests)
+      cliReporter = new CliReporter(config.emitter, data.stats, data.tests)
 
   addReporter = (reporter, emitter, stats, tests, path) ->
     switch reporter
       when 'junit'
-        xUnitReporter = new XUnitReporter(emitter, stats, data.tests, path)
+        xUnitReporter = new XUnitReporter(emitter, stats, tests, path)
       when 'dot'
-        dotReporter = new DotReporter(config.emitter, data.stats, data.tests)
+        dotReporter = new DotReporter(emitter, stats, tests)
       when 'nyan'
-        nyanCatReporter = new NyanCatReporter(config.emitter, data.stats, data.tests)
+        nyanCatReporter = new NyanCatReporter(emitter, stats, tests)
       when 'html'
-        htmlReporter = new HtmlReporter(config.emitter, data.stats, data.tests, path)
+        htmlReporter = new HtmlReporter(emitter, stats, tests, path)
       when 'markdown'
-        mdReporter = new MarkdownReporter(config.emitter, data.stats, data.tests, path)
+        mdReporter = new MarkdownReporter(emitter, stats, tests, path)
 
 
-  addCli(config.options.reporter) unless config.options.silent?
+  addCli(reporters) if not config.options.silent
 
-  if config.options.reporter instanceof String
-    addReporter(reporter, config.emitter, data.stats, data.tests, config.options.output)
-  else if config.options.reporter instanceof Array
-    reporters = intersection config.options.reporter, fileReporters
+  usedFileReporters = intersection reporters, fileReporters
 
+  if usedFileReporters.length > 0
     usePaths = true
-    if not config.options.output? or reporters.length is not config.options.output.length
+    if usedFileReporters.length > outputs.length
       logger.warning "There are more reporters requiring output paths than there are output paths provided, using default paths for file-based reporters."
       usePaths = false
 
-    for reporter, i in config.options.reporter
-      path = if usePaths then config.options.output[i]  else null
+    for reporter, i in usedFileReporters
+      path = if usePaths then outputs[i] else null
       addReporter(reporter, config.emitter, data.stats, data.tests, path)
-
-
 
 
 

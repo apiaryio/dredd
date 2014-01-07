@@ -2,17 +2,17 @@
 async = require 'async'
 fs = require 'fs'
 protagonist = require 'protagonist'
-cli = require 'cli'
 executeTransaction = require './execute-transaction'
 blueprintAstToRuntime = require './blueprint-ast-to-runtime'
 configureReporters = require './configure-reporters'
 
 options =
-  'dry-run': {'alias': 'd', 'description': 'Run without performing tests.'}
-  'silent': {'alias': 's', 'description': 'Suppress all command line output'}
-  'reporter': {'alias': 'r', 'description': 'Output additional report format. Options: junit, nyan, dot, markdown, html'}
-  'output': {'alias': 'o', 'description': 'Specifies output file when using additional reporter'}
-  'debug': { 'description': 'Display debug information'}
+  'dry-run': {'alias': 'd', 'description': 'Run without performing tests.', 'default': false}
+  'silent': {'alias': 's', 'description': 'Suppress all command line output.', 'default': false}
+  'reporter': {'alias': 'r', 'description': 'Output additional report format. This option can be used multiple times to add multiple reporters. Options: junit, nyan, dot, markdown, html', default:[]}
+  'output': {'alias': 'o', 'description': 'Specifies output file when using additional file-based reporter. This option can be used multiple times if multiple file-based reporters are used.', default: []}
+  'header': {'alias': 'h', 'description': 'Extra header to include in every request. This option can be used multiple times to add multiple headers.', default:[]}
+  'verbose': { 'description': 'Display debug information', 'default': false}
 
 ###
   Events:
@@ -25,21 +25,29 @@ options =
   test error
 ###
 
+coerceToArray = (value) ->
+  if typeof value is 'string'
+    value = [value]
+  else if !value?
+    value = []
+  else if value instanceof Array
+    value
+  else value
+
 class Dredd
   constructor: (config) ->
     emitter = new EventEmitter
     @configuration =
-      blueprintPath: null,
-      server: null,
-      reporter: null,
-      request: null,
-      emitter: emitter,
+      blueprintPath: null
+      server: null
+      emitter: emitter
       options:
-        'dry-run': false,
-        silent: false,
-        reporter: null,
-        output: null,
-        debug: false,
+        'dry-run': false
+        silent: false
+        reporter: null
+        output: null
+        debug: false
+        header: null
     @testData =
       tests: [],
       stats:
@@ -52,13 +60,20 @@ class Dredd
         end: 0
         duration: 0
 
+    #normalize options and config
     for own key, value of config
       @configuration[key] = value
+
+    #coerce single/multiple options into an array
+    @configuration.options.reporter = coerceToArray(@configuration.options.reporter)
+    @configuration.options.output = coerceToArray(@configuration.options.output)
+    @configuration.options.header = coerceToArray(@configuration.options.header)
 
     configureReporters(@configuration, @testData)
 
   run: (callback) ->
     config = @configuration
+    stats = @testData.stats
 
     config.emitter.emit 'start'
 
@@ -76,9 +91,10 @@ class Dredd
         async.eachSeries configuredTransactions(runtime, config), executeTransaction, (error) ->
           if error
             config.emitter 'test error', error
-            return callback error, config.reporter
 
           config.emitter.emit 'end'
+          # don't callback to give reporters time to clean up
+          #callback(null, stats)
 
   handleRuntimeProblems = (runtime) ->
     if runtime['warnings'].length > 0
