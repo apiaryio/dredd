@@ -17,17 +17,9 @@ options =
   'user': {'alias': 'u', 'description': 'Basic Auth credentials in the form username:password.', 'default': null}
   'inline-errors': {'alias': 'e', 'description': 'Determines whether errors are displayed as they occur (true) or agregated and displayed at the end (false).', default:false}
   'method': {'alias': 'm', 'description': 'Restrict tests to a particular HTTP method (GET, PUT, POST, DELETE, PATCH). This option can be used multiple times to allow multiple methods.', default:[]}
-
-###
-  Events:
-  start
-  end
-  test start
-  test fail
-  test pass
-  test skip
-  test error
-###
+  'color': {'alias': 'c', 'description': 'Determines whether console output should include colors.', default: true}
+  'level': {'alias': 'l', 'description': 'The level of logging to output. Options: silly, debug, verbose, info, warn, error.', default: 'info'}
+  'timestamp': {'alias': 't', 'description': 'Determines whether console output should include timestamps.', default:false}
 
 coerceToArray = (value) ->
   if typeof value is 'string'
@@ -55,6 +47,9 @@ class Dredd
         user: null
         'inline-errors':false
         method: []
+        color: true
+        level: 'info'
+        timestamp: false
     @testData =
       tests: []
       stats:
@@ -67,6 +62,8 @@ class Dredd
         start: 0
         end: 0
         duration: 0
+
+    # TODO: clean up construction
 
     #normalize options and config
     for own key, value of config
@@ -84,6 +81,15 @@ class Dredd
 
     for method in @configuration.options.method
       method.toUpperCase()
+
+    logger.transports.console.colorize = @configuration.options.color
+    logger.transports.console.silent = @configuration.options.silent
+    logger.transports.console.level = @configuration.options.level
+    logger.transports.console.timestamp = @configuration.options.timestamp
+    logger.sys.transports.systemConsole.colorize = @configuration.options.color
+    logger.sys.transports.systemConsole.silent = @configuration.options.silent
+    logger.sys.transports.systemConsole.level = @configuration.options.level
+    logger.sys.transports.systemConsole.timestamp = @configuration.options.timestamp
 
     configureReporters(@configuration, @testData, @fileReporterSaved)
 
