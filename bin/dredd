@@ -4,13 +4,15 @@ var parsePackageJson = require('../lib/parsePackageJson');
 var path = require('path');
 var Dredd = require('../lib/dredd');
 
-var name = parsePackageJson(path.join(__dirname, '../package.json'));
+var version = parsePackageJson(path.join(__dirname, '../package.json'));
 
 var argv = optimist
     .usage("dredd <path to blueprint> <api_endpoint> [OPTIONS]"
      + "\n\nExample: \n  " + "dredd ./apiary.md http://localhost:3000 --dry-run")
     .options(Dredd.options)
     .wrap(80)
+    .version(version, 'version', 'Show version number')
+    .help('help', 'Show usage information')
     .argv;
 
 var argError = false;
