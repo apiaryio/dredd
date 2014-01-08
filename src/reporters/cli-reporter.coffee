@@ -24,7 +24,7 @@ class CliReporter
           logger.actual "\n" + (JSON.stringify test.actual, null, 4) + "\n\n"
       if @stats.tests > 0
         logger.complete "#{@stats.passes} passing, #{@stats.failures} failing, #{@stats.errors} errors, #{@stats.skipped} skipped"
-        logger.complete "Tests took #{@stats.duration}ms"
+      logger.complete "Tests took #{@stats.duration}ms"
 
     emitter.on 'test pass', (test) =>
       logger.pass test.title + " duration: #{test.duration}ms"

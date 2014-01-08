@@ -1,3 +1,4 @@
+{EventEmitter} = require 'events'
 {assert} = require 'chai'
 sinon = require 'sinon'
 proxyquire = require('proxyquire').noCallThru()
@@ -16,27 +17,27 @@ describe 'XUnitReporter', () ->
 
   describe 'when creating report', () ->
     beforeEach () ->
-      sinon.spy fsStub, 'appendFileSync'
+      sinon.spy fsStub, 'appendFile'
 
     afterEach () ->
-      fsStub.appendFileSync.restore()
+      fsStub.appendFile.restore()
 
     describe 'when there is one test', () ->
 
       it 'should write tests to file', (done) ->
-        xUnitReporter = new XUnitReporter()
-        xUnitReporter.addTest { status: 'fail', title: 'Failing Test' }, () ->
-          xUnitReporter.addTest { status: 'pass', title: 'Passing Test' }, () ->
-            xUnitReporter.createReport () ->
-              assert.ok fsStub.appendFileSync.called
-              fsStub.unlinkSync(xUnitReporter.path)
-              done()
+        emitter = new EventEmitter()
+        xUnitReporter = new XUnitReporter(emitter, {}, {}, false)
+        xUnitReporter.tests = [ test ]
+        xUnitReporter.stats.tests = 1
+        emitter.emit 'end'
+        assert.ok fsStub.appendFile.called
+        done()
 
     describe 'when there are no tests', () ->
 
       it 'should write empty suite', (done) ->
-        xUnitReporter = new XUnitReporter()
-        xUnitReporter.createReport () ->
-          assert.ok fsStub.appendFileSync.calledTwice
-          fsStub.unlinkSync(xUnitReporter.path)
-          done()
+        emitter = new EventEmitter()
+        xUnitReporter = new XUnitReporter(emitter, {}, {}, false)
+        emitter.emit 'end'
+        assert.ok fsStub.appendFile.called
+        done()

@@ -135,7 +135,7 @@ class Dredd
         message = warning['message']
         origin = warning['origin']
 
-        logger.info "Runtime compilation warning: " + warning['message'] + "\n on " + \
+        logger.warn "Runtime compilation warning: " + warning['message'] + "\n on " + \
           origin['resourceGroupName'] + \
           ' > ' + origin['resourceName'] + \
           ' > ' + origin['actionName']

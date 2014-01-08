@@ -1,4 +1,5 @@
 require 'coffee-errors'
+{EventEmitter} = require 'events'
 {assert} = require 'chai'
 nock = require 'nock'
 proxyquire = require 'proxyquire'
@@ -32,7 +33,11 @@ describe 'executeTransaction(transaction, callback)', () ->
       exampleName: "Bogus example name"
     configuration:
       server: 'http://localhost:3000'
-      options: []
+      emitter: new EventEmitter()
+      options:
+        'dry-run': false
+        method: []
+        header: []
 
   beforeEach () ->
     nock.disableNetConnect()
@@ -52,8 +57,6 @@ describe 'executeTransaction(transaction, callback)', () ->
         reply transaction['response']['status'],
           transaction['response']['body'],
           {'Content-Type': 'application/json'}
-      transaction['configuration'].reporter = new CliReporter()
-
 
     it 'should perform the request', (done) ->
       executeTransaction transaction, () ->
@@ -88,9 +91,7 @@ describe 'executeTransaction(transaction, callback)', () ->
           transaction['response']['body'],
           {'Content-Type': 'application/json'}
 
-      transaction['configuration']['request'] =
-        headers:
-          'X-Header' : 'foo'
+      transaction['configuration']['options']['header'] = ['X-Header:foo']
 
     it 'should include the global headers in the request', (done) ->
       executeTransaction transaction, () ->
@@ -137,7 +138,7 @@ describe 'executeTransaction(transaction, callback)', () ->
 
   describe 'when dry run', () ->
     before () ->
-      transaction['configuration']['options'] = {'dry-run' : true}
+      transaction['configuration']['options']['dry-run'] = true
       server = nock('http://localhost:3000').
         post('/machines', {"type":"bulldozer","name":"willy"}).
         reply 202, "Accepted"

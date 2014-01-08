@@ -56,7 +56,7 @@ configureReporters = (config, data, fileReportersSave) ->
   if usedFileReporters.length > 0
     usePaths = true
     if usedFileReporters.length > outputs.length
-      logger.warning "There are more reporters requiring output paths than there are output paths provided, using default paths for file-based reporters."
+      logger.warn "There are more reporters requiring output paths than there are output paths provided, using default paths for file-based reporters."
       usePaths = false
 
     for reporter, i in usedFileReporters
