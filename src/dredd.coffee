@@ -8,12 +8,14 @@ configureReporters = require './configure-reporters'
 logger = require './logger'
 
 options =
-  'dry-run': {'alias': 'd', 'description': 'Run without performing tests.', 'default': false}
+  'dry-run':
+    alias: 'd'
+    description: 'Run without performing tests.'
+    default: false
   'silent': {'alias': 's', 'description': 'Suppress all command line output.', 'default': false}
   'reporter': {'alias': 'r', 'description': 'Output additional report format. This option can be used multiple times to add multiple reporters. Options: junit, nyan, dot, markdown, html', default:[]}
   'output': {'alias': 'o', 'description': 'Specifies output file when using additional file-based reporter. This option can be used multiple times if multiple file-based reporters are used.', default: []}
   'header': {'alias': 'h', 'description': 'Extra header to include in every request. This option can be used multiple times to add multiple headers.', default:[]}
-  'verbose': { 'description': 'Display debug information', 'default': false}
   'user': {'alias': 'u', 'description': 'Basic Auth credentials in the form username:password.', 'default': null}
   'inline-errors': {'alias': 'e', 'description': 'Determines whether errors are displayed as they occur (true) or agregated and displayed at the end (false).', default:false}
   'method': {'alias': 'm', 'description': 'Restrict tests to a particular HTTP method (GET, PUT, POST, DELETE, PATCH). This option can be used multiple times to allow multiple methods.', default:[]}

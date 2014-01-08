@@ -10,6 +10,7 @@ var argv = optimist
     .usage("dredd <path to blueprint> <api_endpoint> [OPTIONS]"
      + "\n\nExample: \n  " + "dredd ./apiary.md http://localhost:3000 --dry-run")
     .options(Dredd.options)
+    .wrap(80)
     .argv;
 
 var argError = false;
