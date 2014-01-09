@@ -22,11 +22,11 @@ class NyanCatReporter
 
   configureEmitter: (emitter) =>
     emitter.on 'start', =>
-      @cursorHide
+      @cursorHide()
       @draw()
 
     emitter.on 'end', =>
-      @cursorShow
+      @cursorShow()
       i = 0
 
       while i < @numberOfLines

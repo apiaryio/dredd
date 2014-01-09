@@ -3,11 +3,11 @@
 sinon = require 'sinon'
 proxyquire = require('proxyquire').noCallThru()
 
-cliStub = require 'cli'
+loggerStub = require '../../../src/logger'
 fsStub = require 'fs'
 
 XUnitReporter = proxyquire '../../../src/reporters/x-unit-reporter', {
-  'cli' : cliStub,
+  './../logger' : loggerStub,
   'fs' : fsStub
 }
 
