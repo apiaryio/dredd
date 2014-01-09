@@ -26,12 +26,10 @@ describe 'NyanCatReporter', () ->
   describe 'when starting', () ->
 
     beforeEach () ->
-      sinon.spy process.stdout, 'write'
       sinon.spy nyanReporter, 'cursorHide'
-      sinon.spy nyanReporter, 'draw'
+      sinon.stub(nyanReporter, 'draw', ()->)
 
     afterEach () ->
-      process.stdout.write.restore()
       nyanReporter.cursorHide.restore()
       nyanReporter.draw.restore()
 
@@ -44,12 +42,10 @@ describe 'NyanCatReporter', () ->
   describe 'when ending', () ->
 
     beforeEach () ->
-      sinon.spy process.stdout, 'write'
       sinon.spy loggerStub, 'complete'
-      sinon.spy nyanReporter, 'draw'
+      sinon.stub(nyanReporter, 'draw', ()->)
 
     afterEach () ->
-      process.stdout.write.restore()
       loggerStub.complete.restore()
       nyanReporter.draw.restore()
 
@@ -86,12 +82,10 @@ describe 'NyanCatReporter', () ->
         test =
           status: 'pass'
           title: 'Passing Test'
-        sinon.spy process.stdout, 'write'
-        sinon.spy nyanReporter, 'draw'
+        sinon.stub(nyanReporter, 'draw', ()->)
         emitter.emit 'test pass', test
 
       after () ->
-        process.stdout.write.restore()
         nyanReporter.draw.restore()
 
       it 'should draw the cat', (done) ->
@@ -103,12 +97,10 @@ describe 'NyanCatReporter', () ->
         test =
           status: 'skipped'
           title: 'Skipped Test'
-        sinon.spy process.stdout, 'write'
-        sinon.spy nyanReporter, 'draw'
+        sinon.stub(nyanReporter, 'draw', ()->)
         emitter.emit 'test skip', test
 
       after () ->
-        process.stdout.write.restore()
         nyanReporter.draw.restore()
 
       it 'should draw the cat', (done) ->
@@ -121,7 +113,7 @@ describe 'NyanCatReporter', () ->
         test =
           status: 'failed'
           title: 'Failed Test'
-        sinon.spy nyanReporter, 'draw'
+        sinon.stub(nyanReporter, 'draw', ()->)
         emitter.emit 'test fail', test
 
       after () ->
@@ -137,12 +129,11 @@ describe 'NyanCatReporter', () ->
         test =
           status: 'error'
           title: 'Errored Test'
-        sinon.spy nyanReporter, 'draw'
-        sinon.spy process.stdout, 'write'
+        sinon.stub(nyanReporter, 'draw', ()->)
         emitter.emit 'test error', test, new Error('Error')
 
       after () ->
-        process.stdout.write.restore()
+
         nyanReporter.draw.restore()
 
       it 'should draw the cat', (done) ->
