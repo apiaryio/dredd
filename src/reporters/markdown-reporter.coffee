@@ -51,16 +51,20 @@ class MarkdownReporter extends EventEmitter
 
     emitter.on 'test fail', (test) =>
       buf += title "Fail: " + test.title +  "\n"
-      buf += "\n```\n"
-      buf += test.message + "\n"
-      buf += "```\n\n"
+
+      level++
+      buf += title("Message") + "\n```\n" + test.message + "\n```\n\n"
+      buf += title("Request") + "\n```\n" + (JSON.stringify test.request, null, 4) + "\n```\n\n"
+      buf += title("Expected") + "\n```\n" +(JSON.stringify test.expected, null, 4) + "\n```\n\n"
+      buf += title("Actual") + "\n```\n" + (JSON.stringify test.actual, null, 4) + "\n```\n\n"
       level--
 
+      level--
 
     emitter.on 'test error', (test, error) =>
       buf += title "Error: " + test.title +  "\n"
       buf += "\n```\n"
-      buf += test.message + "\n"
+      buf += "Message: \n" + test.message + "\nError: \n"  + error + "\nStacktrace: \n" + error.stack + "\n"
       buf += "```\n\n"
       level--
 

@@ -3,8 +3,8 @@ sinon = require 'sinon'
 proxyquire = require('proxyquire').noCallThru()
 
 {EventEmitter} = require 'events'
-loggerStub = require '../../src/logger'
-CliReporter = proxyquire '../../src/reporters/cli-reporter', {
+loggerStub = require '../../../src/logger'
+CliReporter = proxyquire '../../../src/reporters/cli-reporter', {
   'winston' : loggerStub
 }
 

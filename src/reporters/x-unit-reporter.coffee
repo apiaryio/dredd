@@ -49,14 +49,14 @@ class XUnitReporter extends EventEmitter
       attrs =
         name: htmlencode.htmlEncode test.title
         time: test.duration / 1000
-      diff = "Message: \n" + test.message + "\nExpected: \n" +  (JSON.stringify test.expected, null, 4) + "\nActual:\n" + (JSON.stringify test.actual, null, 4)
+      diff = "Message: \n" + test.message + "\nRequest: \n"  + (JSON.stringify test.request, null, 4) + "\nExpected: \n" +  (JSON.stringify test.expected, null, 4) + "\nActual:\n" + (JSON.stringify test.actual, null, 4)
       appendLine @path, toTag('testcase', attrs, false, toTag('failure', null, false, cdata(diff)))
 
     emitter.on 'test error', (test, error) =>
       attrs =
         name: htmlencode.htmlEncode test.title
         time: test.duration / 1000
-      errorMessage = "Message: \n" + test.message + "\nError: \n"  + error
+      errorMessage = "Message: \n" + test.message + "\nError: \n"  + error + "\nStacktrace: \n" + error.stack
       appendLine @path, toTag('testcase', attrs, false, toTag('failure', null, false, cdata(test.message)))
 
   updateSuiteStats = (path, stats, callback) ->

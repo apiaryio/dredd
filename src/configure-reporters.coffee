@@ -15,8 +15,8 @@ intersection = (a, b) ->
   [a, b] = [b, a] if a.length > b.length
   value for value in a when value in b
 
-configureReporters = (config, data, fileReportersSave) ->
-  baseReporter = new BaseReporter(config.emitter, data.stats, data.tests)
+configureReporters = (config, stats, tests, onSaveCallback) ->
+  baseReporter = new BaseReporter(config.emitter, stats, tests)
   reporters = config.options.reporter
   outputs = config.options.output
 
@@ -24,34 +24,34 @@ configureReporters = (config, data, fileReportersSave) ->
     if reporters.length > 0
       usedCliReporters = intersection reporters, cliReporters
       if usedCliReporters.length is 0
-        cliReporter = new CliReporter(config.emitter, data.stats, data.tests, config.options['inline-errors'])
+        cliReporter = new CliReporter(config.emitter, stats, tests, config.options['inline-errors'])
       else
-        addReporter(usedCliReporters[0], config.emitter, data.stats, data.tests)
+        addReporter(usedCliReporters[0], config.emitter, stats, tests)
     else
-      cliReporter = new CliReporter(config.emitter, data.stats, data.tests, config.options['inline-errors'])
+      cliReporter = new CliReporter(config.emitter, stats, tests, config.options['inline-errors'])
 
   addReporter = (reporter, emitter, stats, tests, path) ->
     switch reporter
       when 'junit'
         xUnitReporter = new XUnitReporter(emitter, stats, tests, path)
-        xUnitReporter.on 'save', fileReportersSave
+        xUnitReporter.on 'save', onSaveCallback
       when 'dot'
         dotReporter = new DotReporter(emitter, stats, tests)
       when 'nyan'
         nyanCatReporter = new NyanCatReporter(emitter, stats, tests)
       when 'html'
         htmlReporter = new HtmlReporter(emitter, stats, tests, path)
-        htmlReporter.on 'save', fileReportersSave
+        htmlReporter.on 'save', onSaveCallback
       when 'markdown'
         mdReporter = new MarkdownReporter(emitter, stats, tests, path)
-        mdReporter.on 'save', fileReportersSave
+        mdReporter.on 'save', onSaveCallback
 
 
   addCli(reporters) if not config.options.silent
 
   usedFileReporters = intersection reporters, fileReporters
 
-  data.stats.fileBasedReporters = usedFileReporters.length
+  stats.fileBasedReporters = usedFileReporters.length
 
   if usedFileReporters.length > 0
     usePaths = true
@@ -61,7 +61,7 @@ configureReporters = (config, data, fileReportersSave) ->
 
     for reporter, i in usedFileReporters
       path = if usePaths then outputs[i] else null
-      addReporter(reporter, config.emitter, data.stats, data.tests, path)
+      addReporter(reporter, config.emitter, stats, tests, path)
 
 
 
