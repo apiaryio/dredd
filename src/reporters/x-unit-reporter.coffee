@@ -33,8 +33,7 @@ class XUnitReporter extends EventEmitter
 
     emitter.on 'end', (callback) =>
       appendLine @path, '</testsuite>'
-      updateSuiteStats @path, @stats, () =>
-        callback()
+      updateSuiteStats @path, @stats, callback
 
     emitter.on 'test pass', (test) =>
       attrs =
@@ -78,11 +77,12 @@ class XUnitReporter extends EventEmitter
             , timestamp: (new Date).toUTCString()
             , time: stats.duration / 1000
           }, false
-
           fs.writeFile path, newStats + '\n' + restOfFile, (err) ->
             if err
               logger.error err
             callback()
+        else
+          callback()
       else
         logger.error err
         callback()

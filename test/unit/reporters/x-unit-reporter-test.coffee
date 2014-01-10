@@ -84,6 +84,28 @@ describe 'XUnitReporter', () ->
           assert.ok fsStub.appendFile.called
           done()
 
+      describe 'when the file writes successfully', () ->
+
+        before () ->
+          sinon.stub fsStub, 'readFile'
+          fsStub.readFile.yields null, 'da\nta'
+          sinon.stub fsStub, 'writeFile'
+          fsStub.writeFile.yields null
+
+        after () ->
+          fsStub.readFile.restore()
+          fsStub.writeFile.restore()
+
+        it 'should read the file and update the stats', (done) ->
+          emitter = new EventEmitter()
+          xUnitReporter = new XUnitReporter(emitter, {}, {})
+          xUnitReporter.tests = [ test ]
+          xUnitReporter.stats.tests = 1
+
+          emitter.emit 'end', () ->
+            assert.ok fsStub.writeFile.called
+            done()
+
     describe 'when there are no tests', () ->
 
       it 'should write empty suite', (done) ->
