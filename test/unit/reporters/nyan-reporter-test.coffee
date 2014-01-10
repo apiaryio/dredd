@@ -44,10 +44,12 @@ describe 'NyanCatReporter', () ->
     beforeEach () ->
       sinon.spy loggerStub, 'complete'
       sinon.stub(nyanReporter, 'draw', ()->)
+      sinon.stub nyanReporter, 'write'
 
     afterEach () ->
       loggerStub.complete.restore()
       nyanReporter.draw.restore()
+      nyanReporter.write.restore()
 
     it 'should log that testing is complete', (done) ->
       emitter.emit 'end'

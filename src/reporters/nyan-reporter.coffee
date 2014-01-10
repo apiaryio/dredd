@@ -30,11 +30,11 @@ class NyanCatReporter
       i = 0
 
       while i < @numberOfLines
-        write "\n"
+        @write "\n"
         i++
 
       if @errors.length > 0
-          process.stdout.write "\n"
+          @write "\n"
           logger.info "Displaying failed tests..."
           for test in @errors
             logger.fail test.title + " duration: #{test.duration}ms"
@@ -69,6 +69,7 @@ class NyanCatReporter
     @tick = not @tick
 
   drawScoreboard: =>
+    write = @write
     draw = (color, n) ->
       write " "
       write "\u001b[" + color + "m" + n + "\u001b[0m"
@@ -84,7 +85,7 @@ class NyanCatReporter
     draw colors.fail, @stats.errors
     draw colors.skipped, @stats.skipped
 
-    write "\n"
+    @write "\n"
     @cursorUp @numberOfLines + 1
 
   appendRainbow: =>
@@ -100,6 +101,7 @@ class NyanCatReporter
 
   drawRainbow : =>
     scoreboardWidth = @scoreboardWidth
+    write = @write
     @trajectories.forEach (line, index) ->
       write "\u001b[" + scoreboardWidth + "C"
       write line.join("")
@@ -111,23 +113,23 @@ class NyanCatReporter
     startWidth = @scoreboardWidth + @trajectories[0].length
     color = "\u001b[" + startWidth + "C"
     padding = ""
-    write color
-    write "_,------,"
-    write "\n"
-    write color
+    @write color
+    @write "_,------,"
+    @write "\n"
+    @write color
     padding = (if @tick then "  " else "   ")
-    write "_|" + padding + "/\\_/\\ "
-    write "\n"
-    write color
+    @write "_|" + padding + "/\\_/\\ "
+    @write "\n"
+    @write color
     padding = (if @tick then "_" else "__")
     tail = (if @tick then "~" else "^")
     face = undefined
-    write tail + "|" + padding + @face() + " "
-    write "\n"
-    write color
+    @write tail + "|" + padding + @face() + " "
+    @write "\n"
+    @write color
     padding = (if @tick then " " else "  ")
-    write padding + "\"\"  \"\" "
-    write "\n"
+    @write padding + "\"\"  \"\" "
+    @write "\n"
     @cursorUp @numberOfLines
 
   face: =>
@@ -142,16 +144,16 @@ class NyanCatReporter
       "( - .-)"
 
   cursorUp: (n) =>
-    write "\u001b[" + n + "A"
+    @write "\u001b[" + n + "A"
 
   cursorDown: (n) =>
-    write "\u001b[" + n + "B"
+    @write "\u001b[" + n + "B"
 
   cursorShow: =>
-    @isatty && process.stdout.write '\u001b[?25h'
+    @isatty and @write '\u001b[?25h'
 
   cursorHide: =>
-    @isatty and process.stdout.write '\u001b[?25l'
+    @isatty and @write '\u001b[?25l'
 
   generateColors: =>
     colors = []
@@ -173,8 +175,8 @@ class NyanCatReporter
     "\u001b[38;5;" + color + "m" + str + "\u001b[0m"
 
 
-write = (string) ->
-  process.stdout.write string
+  write: (str) ->
+    process.stdout.write str
 
 
 module.exports = NyanCatReporter

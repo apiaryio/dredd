@@ -43,9 +43,11 @@ describe 'DotReporter', () ->
 
     beforeEach () ->
       sinon.spy loggerStub, 'complete'
+      sinon.stub dotReporter, 'write'
 
     afterEach () ->
       loggerStub.complete.restore()
+      dotReporter.write.restore()
 
     it 'should log that testing is complete', (done) ->
       emitter.emit 'end'
@@ -60,11 +62,7 @@ describe 'DotReporter', () ->
           title: 'failing test'
         dotReporter.errors = [test]
         dotReporter.stats.tests = 1
-        sinon.spy process.stdout, 'write'
         emitter.emit 'test start', test
-
-      after () ->
-        process.stdout.write.restore()
 
       beforeEach () ->
         sinon.spy loggerStub, 'fail'
@@ -83,15 +81,15 @@ describe 'DotReporter', () ->
       test =
         status: 'pass'
         title: 'Passing Test'
-      sinon.spy process.stdout, 'write'
+      sinon.stub dotReporter, 'write'
       emitter.emit 'test start', test
       emitter.emit 'test pass', test
 
     after () ->
-      process.stdout.write.restore()
+      dotReporter.write.restore()
 
     it 'should write a .', (done) ->
-      assert.ok process.stdout.write.calledWith '.'
+      assert.ok dotReporter.write.calledWith '.'
       done()
 
   describe 'when test is skipped', () ->
@@ -99,15 +97,15 @@ describe 'DotReporter', () ->
       test =
         status: 'skipped'
         title: 'Skipped Test'
-      sinon.spy process.stdout, 'write'
+      sinon.stub dotReporter, 'write'
       emitter.emit 'test start', test
       emitter.emit 'test skip', test
 
     after () ->
-      process.stdout.write.restore()
+      dotReporter.write.restore()
 
     it 'should write a -', (done) ->
-      assert.ok process.stdout.write.calledWith('-')
+      assert.ok dotReporter.write.calledWith('-')
       done()
 
   describe 'when test fails', () ->
@@ -116,15 +114,15 @@ describe 'DotReporter', () ->
       test =
         status: 'failed'
         title: 'Failed Test'
-      sinon.spy process.stdout, 'write'
+      sinon.stub dotReporter, 'write'
       emitter.emit 'test start', test
       emitter.emit 'test fail', test
 
     after () ->
-      process.stdout.write.restore()
+      dotReporter.write.restore()
 
     it 'should write an F', (done) ->
-      assert.ok process.stdout.write.calledWith('F')
+      assert.ok dotReporter.write.calledWith('F')
       done()
 
   describe 'when test errors', () ->
@@ -133,14 +131,14 @@ describe 'DotReporter', () ->
       test =
         status: 'error'
         title: 'Errored Test'
-      sinon.spy process.stdout, 'write'
+      sinon.stub dotReporter, 'write'
       emitter.emit 'test start', test
       emitter.emit 'test error', test, new Error('Error')
 
     after () ->
-      process.stdout.write.restore()
+      dotReporter.write.restore()
 
     it 'should write an E', (done) ->
-      assert.ok process.stdout.write.calledWith('E')
+      assert.ok dotReporter.write.calledWith('E')
       done()
 
