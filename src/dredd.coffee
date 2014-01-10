@@ -40,10 +40,7 @@ class Dredd
 
       async.eachSeries configuredTransactions(runtime, config), executeTransaction, transactionsComplete
 
-    transactionsComplete = (error, test) ->
-      if error
-        config.emitter 'test error', test, error
-
+    transactionsComplete = () ->
       config.emitter.emit 'end' , () ->
         if stats.fileBasedReporters is 1
           callback(null, stats)

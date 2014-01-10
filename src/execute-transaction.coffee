@@ -27,7 +27,7 @@ prettify = (transaction) ->
       try
         parsed = JSON.parse transaction.body
       catch e
-        logger.error "Error parsing body as json: " + transaction.body
+        logger.warning "Error parsing body as json: " + transaction.body
         parsed = transaction.body
       transaction.body = parsed
     when 'text/html'
@@ -93,7 +93,7 @@ executeTransaction = (transaction, callback) ->
         buffer = buffer + chunk
 
       req.on 'error', (error) ->
-        return callback test, error
+        configuration.emitter.emit 'test error', test if error
 
       res.on 'end', () ->
         real =
@@ -108,7 +108,7 @@ executeTransaction = (transaction, callback) ->
           statusCode: response['status']
 
         gavel.isValid real, expected, 'response', (error, isValid) ->
-          return callback test, error if error
+          configuration.emitter.emit 'test error', test if error
 
           if isValid
             test.status = "pass"
@@ -119,7 +119,8 @@ executeTransaction = (transaction, callback) ->
             return callback()
           else
             gavel.validate real, expected, 'response', (error, result) ->
-              return callback(test, error) if error
+              configuration.emitter.emit 'test error', test if error
+
               message = ''
               for entity, data of result
                 for entityResult in data['results']
