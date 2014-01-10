@@ -41,6 +41,9 @@ describe 'Dredd class', () ->
         server: 'http://localhost:3000/'
         options:
           silent: true
+          method: 'get'
+          header: 'Accept:application/json'
+          user: 'bob:test'
 
     it 'should copy configuration on creation', () ->
       runner = new Dredd(configuration)

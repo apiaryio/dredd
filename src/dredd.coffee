@@ -100,10 +100,6 @@ class Dredd
     for own key, value of config
       configuration[key] = value
 
-    if configuration.options.user?
-      authHeader = 'Authorization:Basic ' + new Buffer(configuration.options.user).toString('base64')
-      configuration.options.header.push authHeader
-
     #coerce single/multiple options into an array
     configuration.options.reporter = coerceToArray(configuration.options.reporter)
     configuration.options.output = coerceToArray(configuration.options.output)
@@ -112,6 +108,10 @@ class Dredd
 
     for method in configuration.options.method
       method.toUpperCase()
+
+    if configuration.options.user?
+      authHeader = 'Authorization:Basic ' + new Buffer(configuration.options.user).toString('base64')
+      configuration.options.header.push authHeader
 
     logger.transports.console.colorize = configuration.options.color
     logger.transports.console.silent = configuration.options.silent
