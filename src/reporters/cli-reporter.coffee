@@ -1,12 +1,13 @@
 logger = require './../logger'
 
 class CliReporter
-  constructor: (emitter, stats, tests, inlineErrors) ->
+  constructor: (emitter, stats, tests, inlineErrors, details) ->
     @type = "cli"
     @stats = stats
     @tests = tests
     @configureEmitter emitter
     @inlineErrors = inlineErrors
+    @details = details
     @errors = []
 
   configureEmitter: (emitter) =>
@@ -28,6 +29,10 @@ class CliReporter
 
     emitter.on 'test pass', (test) =>
       logger.pass test.title + " duration: #{test.duration}ms"
+      if @details
+        logger.request "\n" + (JSON.stringify test.request, null, 4) + "\n"
+        logger.expected "\n" + (JSON.stringify test.expected, null, 4) + "\n"
+        logger.actual "\n" + (JSON.stringify test.actual, null, 4) + "\n\n"
 
     emitter.on 'test skip', (test) =>
       logger.skip test.title

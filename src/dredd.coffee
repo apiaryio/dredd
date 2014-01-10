@@ -91,6 +91,7 @@ class Dredd
         header: null
         user: null
         'inline-errors':false
+        details: false
         method: []
         color: true
         level: 'info'

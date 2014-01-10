@@ -136,6 +136,16 @@ describe 'XUnitReporter', () ->
       assert.ok fsStub.appendFile.called
       done()
 
+    describe 'when details=true', () ->
+
+      it 'should write details for passing tests', (done) ->
+        emitter = new EventEmitter()
+        cliReporter = new XUnitReporter(emitter, {}, {}, "test.xml", true)
+        emitter.emit 'test start', test
+        emitter.emit 'test pass', test
+        assert.ok fsStub.appendFile.called
+        done()
+
   describe 'when test is skipped', () ->
     before () ->
       test =

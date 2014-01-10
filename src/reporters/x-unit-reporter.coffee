@@ -4,12 +4,13 @@ logger = require './../logger'
 htmlencode = require 'htmlencode'
 
 class XUnitReporter extends EventEmitter
-  constructor: (emitter, stats, tests, path) ->
+  constructor: (emitter, stats, tests, path, details) ->
     super()
     @type = "xUnit"
     @stats = stats
     @tests = tests
     @path = @sanitizedPath(path)
+    @details = details
     @configureEmitter emitter
 
   sanitizedPath: (path) =>
@@ -39,7 +40,11 @@ class XUnitReporter extends EventEmitter
       attrs =
         name: htmlencode.htmlEncode test.title
         time: test.duration / 1000
-      appendLine @path, toTag('testcase', attrs, true)
+      if @details
+        deets = "\nRequest: \n"  + (JSON.stringify test.request, null, 4) + "\nExpected: \n" +  (JSON.stringify test.expected, null, 4) + "\nActual:\n" + (JSON.stringify test.actual, null, 4)
+        appendLine @path, toTag('testcase', attrs, false, toTag('system-out', null, false, cdata(deets)))
+      else
+        appendLine @path, toTag('testcase', attrs, true)
 
     emitter.on 'test skip', (test) =>
       attrs =
@@ -59,7 +64,7 @@ class XUnitReporter extends EventEmitter
         name: htmlencode.htmlEncode test.title
         time: test.duration / 1000
       errorMessage = "Message: \n" + test.message + "\nError: \n"  + error + "\nStacktrace: \n" + error.stack
-      appendLine @path, toTag('testcase', attrs, false, toTag('failure', null, false, cdata(test.message)))
+      appendLine @path, toTag('testcase', attrs, false, toTag('failure', null, false, cdata(errorMessage)))
 
   updateSuiteStats = (path, stats, callback) ->
     fs.readFile path, (err, data) ->
@@ -77,7 +82,8 @@ class XUnitReporter extends EventEmitter
             , timestamp: (new Date).toUTCString()
             , time: stats.duration / 1000
           }, false
-          fs.writeFile path, newStats + '\n' + restOfFile, (err) ->
+          xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>'
+          fs.writeFile path, xmlHeader + '\n' + newStats + '\n' + restOfFile, (err) ->
             if err
               logger.error err
             callback()

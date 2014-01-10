@@ -49,6 +49,21 @@ describe 'CliReporter', () ->
       assert.ok loggerStub.pass.calledOnce
       done()
 
+    describe 'when details=true', () ->
+
+      beforeEach () ->
+        sinon.spy loggerStub, 'request'
+
+      afterEach () ->
+        loggerStub.request.restore()
+
+      it 'should write details for passing tests', (done) ->
+        emitter = new EventEmitter()
+        cliReporter = new CliReporter(emitter, {}, {}, true, true)
+        emitter.emit 'test pass', test
+        assert.ok loggerStub.request.calledOnce
+        done()
+
   describe 'when adding failing test', () ->
 
     before () ->

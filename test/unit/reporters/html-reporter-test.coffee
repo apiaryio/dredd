@@ -93,6 +93,13 @@ describe 'HtmlReporter', () ->
       emitter.emit 'test pass', test
       done()
 
+    describe 'when details=true', () ->
+
+      it 'should write details for passing tests', (done) ->
+        htmlReporter.details = true
+        emitter.emit 'test pass', test
+        done()
+
   describe 'when test is skipped', () ->
     before () ->
       test =

@@ -3,7 +3,7 @@ fs = require 'fs'
 logger = require './../logger'
 
 class MarkdownReporter extends EventEmitter
-  constructor: (emitter, stats, tests, path) ->
+  constructor: (emitter, stats, tests, path, details) ->
     super()
     @type = "dot"
     @stats = stats
@@ -11,6 +11,7 @@ class MarkdownReporter extends EventEmitter
     @path = @sanitizedPath(path)
     @buf = ""
     @level = 1
+    @details = details
     @configureEmitter emitter
 
   sanitizedPath: (path) =>
@@ -42,6 +43,14 @@ class MarkdownReporter extends EventEmitter
 
     emitter.on 'test pass', (test) =>
       @buf += title("Pass: " + test.title) +  "\n"
+
+      if @details
+        @level++
+        @buf += title("Request") + "\n```\n" + (JSON.stringify test.request, null, 4) + "\n```\n\n"
+        @buf += title("Expected") + "\n```\n" +(JSON.stringify test.expected, null, 4) + "\n```\n\n"
+        @buf += title("Actual") + "\n```\n" + (JSON.stringify test.actual, null, 4) + "\n```\n\n"
+        @level--
+
       @level--
 
     emitter.on 'test skip', (test) =>

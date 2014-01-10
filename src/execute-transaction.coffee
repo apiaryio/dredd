@@ -112,6 +112,9 @@ executeTransaction = (transaction, callback) ->
 
           if isValid
             test.status = "pass"
+            test.actual = prettify real
+            test.expected = prettify expected
+            test.request = options
             configuration.emitter.emit 'test pass', test
             return callback()
           else

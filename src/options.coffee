@@ -24,6 +24,11 @@ options =
     description: "Determines whether errors are displayed as they occur (true) or agregated and displayed at the end (false)."
     default: false
 
+  details:
+    alias: "d"
+    description: "Determines whether request/response details are included in passing tests."
+    default: false
+
   method:
     alias: "m"
     description: "Restrict tests to a particular HTTP method (GET, PUT, POST, DELETE, PATCH). This option can be used multiple times to allow multiple methods."

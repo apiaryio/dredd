@@ -24,24 +24,24 @@ configureReporters = (config, stats, tests) ->
     if reporters.length > 0
       usedCliReporters = intersection reporters, cliReporters
       if usedCliReporters.length is 0
-        cliReporter = new CliReporter(config.emitter, stats, tests, config.options['inline-errors'])
+        cliReporter = new CliReporter(config.emitter, stats, tests, config.options['inline-errors'], config.options.details)
       else
         addReporter(usedCliReporters[0], config.emitter, stats, tests)
     else
-      cliReporter = new CliReporter(config.emitter, stats, tests, config.options['inline-errors'])
+      cliReporter = new CliReporter(config.emitter, stats, tests, config.options['inline-errors'], config.options.details)
 
   addReporter = (reporter, emitter, stats, tests, path) ->
     switch reporter
       when 'junit'
-        xUnitReporter = new XUnitReporter(emitter, stats, tests, path)
+        xUnitReporter = new XUnitReporter(emitter, stats, tests, path, config.options.details)
       when 'dot'
         dotReporter = new DotReporter(emitter, stats, tests)
       when 'nyan'
         nyanCatReporter = new NyanCatReporter(emitter, stats, tests)
       when 'html'
-        htmlReporter = new HtmlReporter(emitter, stats, tests, path)
+        htmlReporter = new HtmlReporter(emitter, stats, tests, path, config.options.details)
       when 'markdown'
-        mdReporter = new MarkdownReporter(emitter, stats, tests, path)
+        mdReporter = new MarkdownReporter(emitter, stats, tests, path, config.options.details)
 
 
   addCli(reporters) if not config.options.silent
@@ -51,13 +51,11 @@ configureReporters = (config, stats, tests) ->
   stats.fileBasedReporters = usedFileReporters.length
 
   if usedFileReporters.length > 0
-    usePaths = true
     if usedFileReporters.length > outputs.length
-      logger.warn "There are more reporters requiring output paths than there are output paths provided, using default paths for file-based reporters."
-      usePaths = false
+      logger.warn "There are more reporters requiring output paths than there are output paths provided, using default paths for additional file-based reporters."
 
     for reporter, i in usedFileReporters
-      path = if usePaths then outputs[i] else null
+      path = if outputs[i] then outputs[i] else null
       addReporter(reporter, config.emitter, stats, tests, path)
 
 

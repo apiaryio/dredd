@@ -26,6 +26,8 @@ mdReporter = new MarkdownReporter(emitter, stats, tests)
 
 describe 'MarkdownReporter', () ->
 
+  test = {}
+
   describe 'when creating', () ->
 
     describe 'when file exists', () ->
@@ -91,6 +93,14 @@ describe 'MarkdownReporter', () ->
     it 'should write pass to the buffer', (done) ->
       assert.ok ~mdReporter.buf.indexOf 'Pass'
       done()
+
+    describe 'when details=true', () ->
+
+      it 'should write details for passing tests', (done) ->
+        mdReporter.details = true
+        emitter.emit 'test pass', test
+        assert.ok ~mdReporter.buf.indexOf 'Request'
+        done()
 
   describe 'when test is skipped', () ->
     before () ->

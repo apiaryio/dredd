@@ -1,7 +1,7 @@
 logger = require './../logger'
 
 class DotReporter
-  constructor: (emitter, stats, tests) ->
+  constructor: (emitter, stats, tests, details) ->
     @type = "dot"
     @stats = stats
     @tests = tests

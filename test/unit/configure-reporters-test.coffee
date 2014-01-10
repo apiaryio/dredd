@@ -140,9 +140,9 @@ describe 'configureReporters(config, stats, tests, onSaveCallback)', () ->
       beforeEach () ->
         resetStubs()
 
-      it 'should use the default output paths', (done) ->
+      it 'should use the default output paths for the additional reporters', (done) ->
         configureReporters(configuration, {}, {}, () -> )
-        assert.ok XUnitReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, null)
+        assert.ok XUnitReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file1')
         assert.ok MarkdownReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, null)
         done()
 
@@ -195,8 +195,8 @@ describe 'configureReporters(config, stats, tests, onSaveCallback)', () ->
       beforeEach () ->
         resetStubs()
 
-      it 'should use the default output paths', (done) ->
+      it 'should use the default output paths for the additional reporters', (done) ->
         configureReporters(configuration, {}, {}, () -> )
-        assert.ok MarkdownReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, null)
+        assert.ok MarkdownReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file1')
         assert.ok HtmlReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, null)
         done()
