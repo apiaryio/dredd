@@ -15,7 +15,7 @@ intersection = (a, b) ->
   [a, b] = [b, a] if a.length > b.length
   value for value in a when value in b
 
-configureReporters = (config, stats, tests, onSaveCallback) ->
+configureReporters = (config, stats, tests) ->
   baseReporter = new BaseReporter(config.emitter, stats, tests)
   reporters = config.options.reporter
   outputs = config.options.output
@@ -34,17 +34,14 @@ configureReporters = (config, stats, tests, onSaveCallback) ->
     switch reporter
       when 'junit'
         xUnitReporter = new XUnitReporter(emitter, stats, tests, path)
-        xUnitReporter.on 'save', onSaveCallback
       when 'dot'
         dotReporter = new DotReporter(emitter, stats, tests)
       when 'nyan'
         nyanCatReporter = new NyanCatReporter(emitter, stats, tests)
       when 'html'
         htmlReporter = new HtmlReporter(emitter, stats, tests, path)
-        htmlReporter.on 'save', onSaveCallback
       when 'markdown'
         mdReporter = new MarkdownReporter(emitter, stats, tests, path)
-        mdReporter.on 'save', onSaveCallback
 
 
   addCli(reporters) if not config.options.silent

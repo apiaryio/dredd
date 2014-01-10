@@ -22,9 +22,8 @@ class HtmlReporter extends EventEmitter
     emitter.on 'start', =>
 
 
-    emitter.on 'end', =>
-      @emit 'save'
-
+    emitter.on 'end', (callback) =>
+      callback()
 
     emitter.on 'test pass', (test) =>
 

@@ -8,17 +8,33 @@ CliReporter = proxyquire '../../../src/reporters/cli-reporter', {
   './../logger' : loggerStub
 }
 
+# supress output in tests
+loggerStub.transports.console.silent = true
+
 describe 'CliReporter', () ->
 
   test = {}
+
+  describe 'when starting', () ->
+
+    beforeEach () ->
+       sinon.spy loggerStub, 'info'
+
+    afterEach () ->
+      loggerStub.info.restore()
+
+    it 'should write starting to the console', (done) ->
+      emitter = new EventEmitter()
+      cliReporter = new CliReporter(emitter, {}, {}, true)
+      emitter.emit 'start'
+      assert.ok loggerStub.info.calledOnce
+      done()
 
   describe 'when adding passing test', () ->
     before () ->
       test =
         status: 'pass'
         title: 'Passing Test'
-      # supress output in tests
-      loggerStub.transports.console.silent = true
 
     beforeEach () ->
        sinon.spy loggerStub, 'pass'
@@ -77,6 +93,46 @@ describe 'CliReporter', () ->
         emitter.emit 'end'
         assert.ok loggerStub.fail.calledTwice
         done()
+
+  describe 'when adding error test', () ->
+
+    before () ->
+      test =
+        status: 'error'
+        title: 'Error Test'
+
+    beforeEach () ->
+      sinon.spy loggerStub, 'error'
+
+    afterEach () ->
+      loggerStub.error.restore()
+
+    it 'should write error to the console', (done) ->
+      emitter = new EventEmitter()
+      cliReporter = new CliReporter(emitter, {}, {}, false)
+      emitter.emit 'test error', test
+      assert.ok loggerStub.error.calledOnce
+      done()
+
+  describe 'when adding skipped test', () ->
+
+    before () ->
+      test =
+        status: 'skip'
+        title: 'Skipped Test'
+
+    beforeEach () ->
+      sinon.spy loggerStub, 'skip'
+
+    afterEach () ->
+      loggerStub.skip.restore()
+
+    it 'should write skip to the console', (done) ->
+      emitter = new EventEmitter()
+      cliReporter = new CliReporter(emitter, {}, {}, false)
+      emitter.emit 'test skip', test
+      assert.ok loggerStub.skip.calledOnce
+      done()
 
   describe 'when creating report', () ->
 

@@ -31,10 +31,10 @@ class XUnitReporter extends EventEmitter
             , time: @stats.duration / 1000
           }, false)
 
-    emitter.on 'end', =>
+    emitter.on 'end', (callback) =>
       appendLine @path, '</testsuite>'
       updateSuiteStats @path, @stats, () =>
-        @emit 'save'
+        callback()
 
     emitter.on 'test pass', (test) =>
       attrs =
@@ -43,7 +43,10 @@ class XUnitReporter extends EventEmitter
       appendLine @path, toTag('testcase', attrs, true)
 
     emitter.on 'test skip', (test) =>
-      logger.skip test.title
+      attrs =
+        name: htmlencode.htmlEncode test.title
+        time: test.duration / 1000
+      appendLine @path, toTag('testcase', attrs, false, toTag('skipped', null, true))
 
     emitter.on 'test fail', (test) =>
       attrs =

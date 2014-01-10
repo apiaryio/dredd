@@ -27,11 +27,13 @@ describe 'NyanCatReporter', () ->
 
     beforeEach () ->
       sinon.spy nyanReporter, 'cursorHide'
-      sinon.stub(nyanReporter, 'draw', ()->)
+      sinon.spy nyanReporter, 'draw'
+      sinon.stub nyanReporter, 'write'
 
     afterEach () ->
       nyanReporter.cursorHide.restore()
       nyanReporter.draw.restore()
+      nyanReporter.write.restore()
 
     it 'should hide the cursor and draw the cat', (done) ->
       emitter.emit 'start'
@@ -43,7 +45,7 @@ describe 'NyanCatReporter', () ->
 
     beforeEach () ->
       sinon.spy loggerStub, 'complete'
-      sinon.stub(nyanReporter, 'draw', ()->)
+      sinon.spy nyanReporter, 'draw'
       sinon.stub nyanReporter, 'write'
 
     afterEach () ->
@@ -84,11 +86,13 @@ describe 'NyanCatReporter', () ->
         test =
           status: 'pass'
           title: 'Passing Test'
-        sinon.stub(nyanReporter, 'draw', ()->)
+        sinon.stub nyanReporter, 'write'
+        sinon.spy nyanReporter, 'draw'
         emitter.emit 'test pass', test
 
       after () ->
         nyanReporter.draw.restore()
+        nyanReporter.write.restore()
 
       it 'should draw the cat', (done) ->
         assert.ok nyanReporter.draw.calledOnce
@@ -99,11 +103,13 @@ describe 'NyanCatReporter', () ->
         test =
           status: 'skipped'
           title: 'Skipped Test'
-        sinon.stub(nyanReporter, 'draw', ()->)
+        sinon.spy nyanReporter, 'draw'
+        sinon.stub nyanReporter, 'write'
         emitter.emit 'test skip', test
 
       after () ->
         nyanReporter.draw.restore()
+        nyanReporter.write.restore()
 
       it 'should draw the cat', (done) ->
         assert.ok nyanReporter.draw.calledOnce
@@ -115,11 +121,13 @@ describe 'NyanCatReporter', () ->
         test =
           status: 'failed'
           title: 'Failed Test'
-        sinon.stub(nyanReporter, 'draw', ()->)
+        sinon.spy nyanReporter, 'draw'
+        sinon.stub nyanReporter, 'write'
         emitter.emit 'test fail', test
 
       after () ->
         nyanReporter.draw.restore()
+        nyanReporter.write.restore()
 
       it 'should draw the cat', (done) ->
         assert.ok nyanReporter.draw.calledOnce
@@ -131,11 +139,12 @@ describe 'NyanCatReporter', () ->
         test =
           status: 'error'
           title: 'Errored Test'
-        sinon.stub(nyanReporter, 'draw', ()->)
+        sinon.spy nyanReporter, 'draw'
+        sinon.stub nyanReporter, 'write'
         emitter.emit 'test error', test, new Error('Error')
 
       after () ->
-
+        nyanReporter.write.restore()
         nyanReporter.draw.restore()
 
       it 'should draw the cat', (done) ->

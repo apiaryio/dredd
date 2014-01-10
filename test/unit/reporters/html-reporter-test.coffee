@@ -2,13 +2,13 @@
 sinon = require 'sinon'
 proxyquire = require('proxyquire').noCallThru()
 
-
 {EventEmitter} = require 'events'
-fsStub = require 'fs'
 loggerStub = require '../../../src/logger'
-MarkdownReporter = proxyquire '../../../src/reporters/markdown-reporter', {
+fsStub = require 'fs'
+
+HtmlReporter = proxyquire '../../../src/reporters/html-reporter', {
   './../logger' : loggerStub
-  'fs': fsStub
+  'fs' : fsStub
 }
 
 emitter = new EventEmitter()
@@ -22,11 +22,17 @@ stats =
   end: 0
   duration: 0
 tests = []
-mdReporter = new MarkdownReporter(emitter, stats, tests)
+htmlReporter = new HtmlReporter(emitter, stats, tests)
 
-describe 'MarkdownReporter', () ->
+describe 'HtmlReporter', () ->
 
-  describe 'when creating', () ->
+  test = {}
+
+  it 'should call the start method', (done) ->
+    emitter.emit 'start'
+    done()
+
+  describe 'when starting', () ->
 
     describe 'when file exists', () ->
       before () ->
@@ -37,9 +43,10 @@ describe 'MarkdownReporter', () ->
       after () ->
         fsStub.existsSync.restore()
         fsStub.unlinkSync.restore()
+        emitter.removeAllListeners()
 
       it 'should delete the existing file', (done) ->
-        reporter = new MarkdownReporter(emitter, {}, {}, "test.md")
+        reporter = new HtmlReporter(emitter, {}, {}, "test.html")
         assert.ok fsStub.unlinkSync.calledOnce
         done()
 
@@ -53,31 +60,26 @@ describe 'MarkdownReporter', () ->
       after () ->
         fsStub.existsSync.restore()
         fsStub.unlinkSync.restore()
+        emitter.removeAllListeners()
 
-      it 'should create the file', (done) ->
-        reporter = new MarkdownReporter(emitter, {}, {}, "test.md")
+      it 'should delete the existing file', (done) ->
+        reporter = new HtmlReporter(emitter, {}, {}, "test.html")
         assert.ok fsStub.unlinkSync.notCalled
         done()
 
-  describe 'when starting', () ->
-
-    it 'should write the title to the buffer', (done) ->
-      emitter.emit 'start'
-      assert.ok ~mdReporter.buf.indexOf 'Dredd'
-      done()
-
   describe 'when ending', () ->
 
+    before () ->
+      stats.tests = 1
+
     beforeEach () ->
-       sinon.stub fsStub, 'writeFile'
 
     afterEach () ->
-      fsStub.writeFile.restore()
 
-    it 'should write buffer to file', (done) ->
-      emitter.emit 'end'
-      assert.ok fsStub.writeFile.called
-      done()
+    it 'should write the file', (done) ->
+      reporter = new HtmlReporter(emitter, {}, {}, "test.html")
+      emitter.emit 'end', () ->
+        done()
 
   describe 'when test passes', () ->
 
@@ -85,11 +87,10 @@ describe 'MarkdownReporter', () ->
       test =
         status: 'pass'
         title: 'Passing Test'
+
+    it 'should call the pass event', (done) ->
       emitter.emit 'test start', test
       emitter.emit 'test pass', test
-
-    it 'should write pass to the buffer', (done) ->
-      assert.ok ~mdReporter.buf.indexOf 'Pass'
       done()
 
   describe 'when test is skipped', () ->
@@ -97,11 +98,10 @@ describe 'MarkdownReporter', () ->
       test =
         status: 'skipped'
         title: 'Skipped Test'
+
+    it 'should call the skip event', (done) ->
       emitter.emit 'test start', test
       emitter.emit 'test skip', test
-
-    it 'should write skip to the buffer', (done) ->
-      assert.ok ~mdReporter.buf.indexOf 'Skip'
       done()
 
   describe 'when test fails', () ->
@@ -110,11 +110,10 @@ describe 'MarkdownReporter', () ->
       test =
         status: 'failed'
         title: 'Failed Test'
+
+    it 'should call the fail event', (done) ->
       emitter.emit 'test start', test
       emitter.emit 'test fail', test
-
-    it 'should write fail to the buffer', (done) ->
-      assert.ok ~mdReporter.buf.indexOf 'Fail'
       done()
 
   describe 'when test errors', () ->
@@ -123,11 +122,9 @@ describe 'MarkdownReporter', () ->
       test =
         status: 'error'
         title: 'Errored Test'
+
+    it 'should call the error event', (done) ->
       emitter.emit 'test start', test
       emitter.emit 'test error', test, new Error('Error')
-
-    it 'should write error to the buffer', (done) ->
-      assert.ok ~mdReporter.buf.indexOf 'Error'
       done()
-
 

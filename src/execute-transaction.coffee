@@ -128,6 +128,7 @@ executeTransaction = (transaction, callback) ->
                 actual: prettify real
                 expected: prettify expected
                 request: options
+                start: test.start
               configuration.emitter.emit 'test fail', test
               return callback()
 

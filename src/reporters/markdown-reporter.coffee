@@ -31,11 +31,11 @@ class MarkdownReporter extends EventEmitter
       @level++
       @buf += title('Dredd Tests') + "\n"
 
-    emitter.on 'end', =>
+    emitter.on 'end', (callback) =>
       fs.writeFile @path, @buf, (err) =>
         if err
           logger.error err
-        @emit 'save'
+        callback()
 
     emitter.on 'test start', (test) =>
       @level++

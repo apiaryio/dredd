@@ -17,15 +17,11 @@ class Dredd
     @tests = []
     @stats = defaultStats()
     @configuration = applyConfiguration(config, @stats)
+    configureReporters @configuration, @stats, @tests
 
   run: (callback) ->
     config = @configuration
     stats = @stats
-    configureReporters config, @stats, @tests, () ->
-      if stats.fileBasedReporters is 1
-        callback(null, stats)
-      else
-        stats.fileBasedReporters--
 
     config.emitter.emit 'start'
 
@@ -48,7 +44,11 @@ class Dredd
       if error
         config.emitter 'test error', test, error
 
-      config.emitter.emit 'end'
+      config.emitter.emit 'end' , () ->
+        if stats.fileBasedReporters is 1
+          callback(null, stats)
+        else
+          stats.fileBasedReporters--
 
       # need to wait for files to finish writing, otherwise we can exit
       if stats.fileBasedReporters is 0

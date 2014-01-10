@@ -98,6 +98,26 @@ describe 'executeTransaction(transaction, callback)', () ->
         assert.ok server.isDone()
         done()
 
+  describe 'when only certain methods are allowed by the configuration', () ->
+    beforeEach () ->
+      server = nock('http://localhost:3000').
+        post('/machines', {"type":"bulldozer","name":"willy"}).
+        matchHeader('X-Header', 'foo').
+        reply transaction['response']['status'],
+          transaction['response']['body'],
+          {'Content-Type': 'application/json'}
+      sinon.stub transaction.configuration.emitter, 'emit'
+      transaction['configuration']['options']['method'] = ['GET']
+
+    afterEach () ->
+      transaction.configuration.emitter.emit.restore()
+      transaction['configuration']['options']['method'] = []
+
+    it 'should only perform those requests', (done) ->
+      executeTransaction transaction, () ->
+        assert.ok transaction.configuration.emitter.emit.calledWith 'test skip'
+        done()
+
   describe 'when server uses https', () ->
     beforeEach () ->
       server = nock('https://localhost:3000').
