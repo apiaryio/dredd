@@ -14,6 +14,11 @@ options =
     description: "Extra header to include in every request. This option can be used multiple times to add multiple headers.\n"
     default: []
 
+  sorted:
+    alias: "s"
+    description: "Sorts requests in a sensible way so that objects are not modified before they are created. Order: CONNECT, OPTIONS, POST, GET, HEAD, PUT, PATCH, DELETE, TRACE.\n"
+    default: false
+
   user:
     alias: "u"
     description: "Basic Auth credentials in the form username:password.\n"
