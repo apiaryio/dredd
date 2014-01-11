@@ -27,16 +27,16 @@
   "devDependencies": {
     "coffee-script": "1.6.3",
     "coffee-errors": "~0.8.4",
-    "mocha": "1.13.0",
-    "chai": "1.7.1",
-    "coffee-coverage": "0.1.4",
+    "mocha": "1.17.0",
+    "chai": "~1.8.1",
+    "coffee-coverage": "0.4.1",
     "jscoverage": "0.3.8",
-    "coveralls": "2.2.0",
+    "coveralls": "~2.6.1",
     "mocha-lcov-reporter": "0.0.1",
-    "codo": "1.7.0",
+    "codo": "2.0.3",
     "sinon": "~1.7.3",
     "proxyquire": "~0.5.1",
-    "nock": "~0.22.1",
+    "nock": "~0.27.1",
     "express": "~3.4.3"
   },
   "keywords": [
