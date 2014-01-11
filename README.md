@@ -45,6 +45,10 @@ See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-lif
       --header, -h         Extra header to include in every request. This option
                            can be used multiple times to add multiple headers.
                                                                        [default: []]
+      --sorted, -s         Sorts requests in a sensible way so that objects are not
+                           modified before they are created. Order: CONNECT,
+                           OPTIONS, POST, GET, HEAD, PUT, PATCH, DELETE, TRACE.
+                                                                    [default: false]
       --user, -u           Basic Auth credentials in the form username:password.
                                                                      [default: null]
       --inline-errors, -e  Determines whether errors are displayed as they occur
