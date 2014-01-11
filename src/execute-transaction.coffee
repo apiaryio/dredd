@@ -51,11 +51,18 @@ executeTransaction = (transaction, callback) ->
       packageConfig['version'] + \
       " ("+ system + ")"
 
+  # Add length of body if no Content-Length present
+  caseInsensitiveMap = {}
+  for key, value of flatHeaders
+    caseInsensitiveMap[key.toLowerCase()] = key
+
+  if caseInsensitiveMap['content-length'] == undefined and request['body'] != ''
+    flatHeaders['Content-Length'] = request['body'].length
 
   if configuration.options.header.length > 0
     for header in configuration.options.header
-        splitHeader = header.split(':')
-        flatHeaders[splitHeader[0]] = splitHeader[1]
+      splitHeader = header.split(':')
+      flatHeaders[splitHeader[0]] = splitHeader[1]
 
   options =
     host: parsedUrl['hostname']
@@ -116,11 +123,10 @@ executeTransaction = (transaction, callback) ->
             test.expected = prettify expected
             test.request = options
             configuration.emitter.emit 'test pass', test
-            return callback()
+            return callback(null, req, res)
           else
             gavel.validate real, expected, 'response', (error, result) ->
               configuration.emitter.emit 'test error', test if error
-
               message = ''
               for entity, data of result
                 for entityResult in data['results']

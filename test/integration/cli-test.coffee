@@ -6,14 +6,47 @@ express = require 'express'
 
 PORT = '3333'
 CMD_PREFIX = ''
+
+stderr = ''
+stdout = ''
+exitStatus = null
+requests = []
+
+execCommand = (cmd, callback) ->
+  stderr = ''
+  stdout = ''
+  exitStatus = null
+
+  cli = exec CMD_PREFIX + cmd, (error, out, err) ->
+    stdout = out
+    stderr = err
+
+    if error
+      exitStatus = error.code
+
+  exitEventName = if process.version.split('.')[1] is '6' then 'exit' else 'close'
+
+  cli.on exitEventName, (code) ->
+    exitStatus = code if exitStatus == null and code != undefined
+    callback()
+
+
 describe "Command line interface", () ->
 
-  describe "Arguments with existing blueprint and responding server", () ->
+  describe "When blueprint file not found", (done) ->
+    before (done) ->
+      cmd = "./bin/dredd ./test/fixtures/nonexistent_path.md http://localhost:#{PORT}"
+
+      execCommand cmd, done
+
+    it 'should exit with status 1', () ->
+      assert.equal exitStatus, 1
+
+    it 'should print error message to stderr', () ->
+      assert.include stderr, 'Error: ENOENT, open'
+
+  describe "Arguments with existing bleuprint and responding server", () ->
     describe "when executing the command and the server is responding as specified in the blueprint", () ->
-      stderr = ''
-      stdout = ''
-      exitStatus = null
-      requests = []
 
       before (done) ->
         cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT}"
@@ -29,18 +62,7 @@ describe "Command line interface", () ->
           res.send 200, response
 
         server = app.listen PORT, () ->
-          cli = exec CMD_PREFIX + cmd, (error, out, err) ->
-            cli = exec cmd, (error, out, err) ->
-            stdout = out
-            stderr = err
-
-            if error
-              exitStatus = error.code
-
-          eventName = if process.version.split('.')[1] is '6' then 'exit' else 'close'
-
-          cli.on eventName, (code) ->
-            exitStatus = code if exitStatus == null and code != undefined
+          execCommand cmd, () ->
             server.close()
 
         server.on 'close', done
@@ -49,11 +71,6 @@ describe "Command line interface", () ->
         assert.equal exitStatus, 0
 
     describe "when executing the command and the server is sending different response", () ->
-      stderr = ''
-      stdout = ''
-      exitStatus = null
-      requests = []
-
       before (done) ->
         cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT}"
 
@@ -68,19 +85,7 @@ describe "Command line interface", () ->
           res.send 201, response
 
         server = app.listen PORT, () ->
-          cli = exec CMD_PREFIX + cmd, (error, out, err) ->
-            cli = exec cmd, (error, out, err) ->
-            stdout = out
-            stderr = err
-
-            if error
-              exitStatus = error.code
-
-          eventName = if process.version.split('.')[1] is '6' then 'exit' else 'close'
-
-          cli.on eventName, (code) ->
-            exitStatus = code if exitStatus == null and code != undefined
-
+          execCommand cmd, () ->
             server.close()
 
         server.on 'close', done

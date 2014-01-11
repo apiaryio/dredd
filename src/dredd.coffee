@@ -26,7 +26,7 @@ class Dredd
     config.emitter.emit 'start'
 
     fs.readFile config.blueprintPath, 'utf8', (parseError, data) ->
-      return callback(parseError, config.reporter) if parseError
+      return callback(parseError, stats) if parseError
       protagonist.parse data, blueprintParsingComplete
 
     blueprintParsingComplete = (protagonistError, result) ->
@@ -36,7 +36,7 @@ class Dredd
 
       runtimeError = handleRuntimeProblems runtime
 
-      return callback(runtimeError, config.reporter) if runtimeError
+      return callback(runtimeError, stats) if runtimeError
 
       async.eachSeries configuredTransactions(runtime, config), executeTransaction, transactionsComplete
 
