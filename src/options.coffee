@@ -26,7 +26,7 @@ options =
 
   "inline-errors":
     alias: "e"
-    description: "Determines whether errors are displayed as they occur (true) or agregated and displayed at the end (false).\n"
+    description: "Determines whether failures and errors are displayed as they occur (true) or agregated and displayed at the end (false).\n"
     default: false
 
   details:

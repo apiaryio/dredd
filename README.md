@@ -51,8 +51,9 @@ See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-lif
                                                                     [default: false]
       --user, -u           Basic Auth credentials in the form username:password.
                                                                      [default: null]
-      --inline-errors, -e  Determines whether errors are displayed as they occur
-                           (true) or agregated and displayed at the end (false).
+      --inline-errors, -e  Determines whether failures and errors are displayed as
+                           they occur (true) or agregated and displayed at the end
+                           (false).
                                                                     [default: false]
       --details, -d        Determines whether request/response details are included
                            in passing tests.
