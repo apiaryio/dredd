@@ -5,7 +5,7 @@ logger = require './../logger'
 class MarkdownReporter extends EventEmitter
   constructor: (emitter, stats, tests, path, details) ->
     super()
-    @type = "dot"
+    @type = "markdown"
     @stats = stats
     @tests = tests
     @path = @sanitizedPath(path)
@@ -23,7 +23,7 @@ class MarkdownReporter extends EventEmitter
 
   configureEmitter: (emitter) =>
 
-    title = (str) ->
+    title = (str) =>
       Array(@level).join("#") + " " + str
     # indent = ->
     #   Array(@level).join "  "
