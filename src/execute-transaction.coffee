@@ -21,17 +21,27 @@ String::startsWith = (str) ->
     return this.slice(0, str.length) is str
 
 prettify = (transaction) ->
+  prettyJson = (obj) ->
+    parsed = obj
+    try
+      parsed = JSON.parse obj
+    catch e
+      logger.debug "Error parsing as json: " + obj
+
+    obj = parsed
+    return parsed
+
+
   type = transaction?.headers['Content-Type'] || transaction?.headers['content-type']
   switch type
     when 'application/json'
-      try
-        parsed = JSON.parse transaction.body
-      catch e
-        logger.debug "Error parsing body as json: " + transaction.body
-        parsed = transaction.body
-      transaction.body = parsed
+      transaction.body = prettyJson transaction.body
     when 'text/html'
       transaction.body = html.prettyPrint(transaction.body, {indent_size: 2})
+
+  if transaction?.schema
+    transaction.schema = prettyJson transaction.schema
+
   return transaction
 
 executeTransaction = (transaction, callback) ->
@@ -111,8 +121,8 @@ executeTransaction = (transaction, callback) ->
         expected =
           headers: flattenHeaders response['headers']
           body: response['body']
-          bodySchema: response['schema']
-          statusCode: response['status']
+          schema: response['schema']
+          status: response['status']
 
         gavel.isValid real, expected, 'response', (error, isValid) ->
           configuration.emitter.emit 'test error', test if error
