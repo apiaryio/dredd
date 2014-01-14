@@ -27,7 +27,7 @@ prettify = (transaction) ->
       try
         parsed = JSON.parse transaction.body
       catch e
-        logger.warn "Error parsing body as json: " + transaction.body
+        logger.debug "Error parsing body as json: " + transaction.body
         parsed = transaction.body
       transaction.body = parsed
     when 'text/html'
