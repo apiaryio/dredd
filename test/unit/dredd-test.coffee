@@ -44,6 +44,7 @@ describe 'Dredd class', () ->
           method: 'get'
           header: 'Accept:application/json'
           user: 'bob:test'
+          sorted: true
 
     it 'should copy configuration on creation', () ->
       runner = new Dredd(configuration)
@@ -208,7 +209,6 @@ describe 'Dredd class', () ->
       runner.run (error) ->
         assert.ok blueprintAstToRuntimeStub.called
         done()
-
 
 
 
