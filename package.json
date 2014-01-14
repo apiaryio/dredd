@@ -1,6 +1,6 @@
 {
   "name": "dredd",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "description": "API Blueprint testing tool",
   "main": "lib/dredd.js",
   "bin": {
@@ -22,7 +22,8 @@
     "async": "~0.2.9",
     "optimist": "https://github.com/chrisn/node-optimist/tarball/master",
     "html": "~0.0.7",
-    "htmlencode": "~0.0.3"
+    "htmlencode": "~0.0.3",
+    "marked": "~0.3.0"
   },
   "devDependencies": {
     "coffee-script": "1.6.3",
