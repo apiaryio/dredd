@@ -73,8 +73,11 @@ describe 'HtmlReporter', () ->
       stats.tests = 1
 
     beforeEach () ->
+      sinon.stub fsStub, 'writeFile', (path, data, callback) ->
+        callback()
 
     afterEach () ->
+      fsStub.writeFile.restore()
 
     it 'should write the file', (done) ->
       reporter = new HtmlReporter(emitter, {}, {}, "test.html")
@@ -89,15 +92,19 @@ describe 'HtmlReporter', () ->
         title: 'Passing Test'
 
     it 'should call the pass event', (done) ->
+      reporter = new HtmlReporter(emitter, {}, {}, "test.html")
       emitter.emit 'test start', test
       emitter.emit 'test pass', test
+      assert.ok ~reporter.buf.indexOf 'Pass'
       done()
 
     describe 'when details=true', () ->
 
       it 'should write details for passing tests', (done) ->
-        htmlReporter.details = true
+        reporter = new HtmlReporter(emitter, {}, {}, "test.html")
+        reporter.details = true
         emitter.emit 'test pass', test
+        assert.ok ~reporter.buf.indexOf 'Request'
         done()
 
   describe 'when test is skipped', () ->
@@ -107,8 +114,10 @@ describe 'HtmlReporter', () ->
         title: 'Skipped Test'
 
     it 'should call the skip event', (done) ->
+      reporter = new HtmlReporter(emitter, {}, {}, "test.html")
       emitter.emit 'test start', test
       emitter.emit 'test skip', test
+      assert.ok ~reporter.buf.indexOf 'Skip'
       done()
 
   describe 'when test fails', () ->
@@ -119,8 +128,10 @@ describe 'HtmlReporter', () ->
         title: 'Failed Test'
 
     it 'should call the fail event', (done) ->
+      reporter = new HtmlReporter(emitter, {}, {}, "test.html")
       emitter.emit 'test start', test
       emitter.emit 'test fail', test
+      assert.ok ~reporter.buf.indexOf 'Fail'
       done()
 
   describe 'when test errors', () ->
@@ -131,7 +142,9 @@ describe 'HtmlReporter', () ->
         title: 'Errored Test'
 
     it 'should call the error event', (done) ->
+      reporter = new HtmlReporter(emitter, {}, {}, "test.html")
       emitter.emit 'test start', test
       emitter.emit 'test error', test, new Error('Error')
+      assert.ok ~reporter.buf.indexOf 'Error'
       done()
 
