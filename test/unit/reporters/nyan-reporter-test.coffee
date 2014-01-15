@@ -141,7 +141,7 @@ describe 'NyanCatReporter', () ->
           title: 'Errored Test'
         sinon.spy nyanReporter, 'draw'
         sinon.stub nyanReporter, 'write'
-        emitter.emit 'test error', test, new Error('Error')
+        emitter.emit 'test error', new Error('Error'), test
 
       after () ->
         nyanReporter.write.restore()

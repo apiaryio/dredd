@@ -133,7 +133,7 @@ describe 'DotReporter', () ->
         title: 'Errored Test'
       sinon.stub dotReporter, 'write'
       emitter.emit 'test start', test
-      emitter.emit 'test error', test, new Error('Error')
+      emitter.emit 'test error', new Error('Error'), test
 
     after () ->
       dotReporter.write.restore()

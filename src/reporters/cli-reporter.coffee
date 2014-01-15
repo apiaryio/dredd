@@ -47,9 +47,10 @@ class CliReporter
       else
         @errors.push test
 
-    emitter.on 'test error', (test, error) =>
+    emitter.on 'test error', (error, test) =>
       if not @inlineErrors
         @errors.push test
       logger.error test.title  + " duration: #{test.duration}ms"
+      logger.error error.stack
 
 module.exports = CliReporter

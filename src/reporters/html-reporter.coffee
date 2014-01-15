@@ -83,10 +83,10 @@ class HtmlReporter extends EventEmitter
 
       @level--
 
-    emitter.on 'test error', (test, error) =>
+    emitter.on 'test error', (error, test) =>
       @buf += title "Error: " + test.title +  "\n"
       @buf += "\n```\n"
-      @buf += "Message: \n" + test.message + "\nError: \n"  + error + "\nStacktrace: \n" + error.stack + "\n"
+      @buf += "\nError: \n"  + error + "\nStacktrace: \n" + error.stack + "\n"
       @buf += "```\n\n"
       @level--
 

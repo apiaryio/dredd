@@ -125,8 +125,8 @@ describe 'CliReporter', () ->
     it 'should write error to the console', (done) ->
       emitter = new EventEmitter()
       cliReporter = new CliReporter(emitter, {}, {}, false)
-      emitter.emit 'test error', test
-      assert.ok loggerStub.error.calledOnce
+      emitter.emit 'test error', new Error('Error'), test
+      assert.ok loggerStub.error.calledTwice
       done()
 
   describe 'when adding skipped test', () ->

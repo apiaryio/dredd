@@ -99,7 +99,7 @@ describe 'BaseReporter', () ->
         status: 'error'
         title: 'Errored Test'
       emitter.emit 'test start', test
-      emitter.emit 'test error', test, new Error('Error')
+      emitter.emit 'test error', new Error('Error'), test
 
     it 'should increment the counter', (done) ->
       assert.ok stats.errors is 1

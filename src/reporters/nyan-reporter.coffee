@@ -57,7 +57,8 @@ class NyanCatReporter
       @errors.push test
       @draw()
 
-    emitter.on 'test error', (test, error) =>
+    emitter.on 'test error', (error, test) =>
+      test.message = "\nError: \n"  + error + "\nStacktrace: \n" + error.stack + "\n"
       @errors.push test
       @draw()
 

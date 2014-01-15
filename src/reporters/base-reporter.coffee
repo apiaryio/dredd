@@ -31,7 +31,7 @@ class BaseReporter
       test['end'] = new Date
       test['duration'] = test.end - test.start
 
-    emitter.on 'test error', (test, error) =>
+    emitter.on 'test error', (error, test) =>
       @stats.errors += 1
       test['end'] = new Date
       test['duration'] = test.end - test.start

@@ -37,8 +37,9 @@ class DotReporter
       @write "F"
       @errors.push test
 
-    emitter.on 'test error', (test, error) =>
+    emitter.on 'test error', (error, test) =>
       @write "E"
+      test.message = "\nError: \n"  + error + "\nStacktrace: \n" + error.stack + "\n"
       @errors.push test
 
   write: (str) ->

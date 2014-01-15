@@ -144,7 +144,7 @@ describe 'HtmlReporter', () ->
     it 'should call the error event', (done) ->
       reporter = new HtmlReporter(emitter, {}, {}, "test.html")
       emitter.emit 'test start', test
-      emitter.emit 'test error', test, new Error('Error')
+      emitter.emit 'test error', new Error('Error'), test
       assert.ok ~reporter.buf.indexOf 'Error'
       done()
 

@@ -204,6 +204,6 @@ describe 'XUnitReporter', () ->
       emitter = new EventEmitter()
       xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
       emitter.emit 'test start', test
-      emitter.emit 'test error', test, new Error('Error')
+      emitter.emit 'test error', new Error('Error'), test
       assert.ok fsStub.appendFile.called
       done()

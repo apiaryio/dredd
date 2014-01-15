@@ -110,7 +110,7 @@ executeTransaction = (transaction, callback) ->
         buffer = buffer + chunk
 
       req.on 'error', (error) ->
-        configuration.emitter.emit 'test error', test if error
+        configuration.emitter.emit 'test error', error, test if error
 
       res.on 'end', () ->
         real =
@@ -125,7 +125,7 @@ executeTransaction = (transaction, callback) ->
           status: response['status']
 
         gavel.isValid real, expected, 'response', (error, isValid) ->
-          configuration.emitter.emit 'test error', test if error
+          configuration.emitter.emit 'test error', error, test if error
 
           if isValid
             test.status = "pass"
@@ -136,7 +136,7 @@ executeTransaction = (transaction, callback) ->
             return callback(null, req, res)
           else
             gavel.validate real, expected, 'response', (error, result) ->
-              configuration.emitter.emit 'test error', test if error
+              configuration.emitter.emit 'test error', error, test if error
               message = ''
               for entity, data of result
                 for entityResult in data['results']
