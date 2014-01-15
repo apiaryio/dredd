@@ -54,9 +54,9 @@ describe 'NyanCatReporter', () ->
       nyanReporter.write.restore()
 
     it 'should log that testing is complete', (done) ->
-      emitter.emit 'end'
-      assert.ok loggerStub.complete.calledTwice
-      done()
+      emitter.emit 'end', () ->
+        assert.ok loggerStub.complete.calledTwice
+        done()
 
     describe 'when there are failures', () ->
 
@@ -74,9 +74,9 @@ describe 'NyanCatReporter', () ->
         loggerStub.fail.restore()
 
       it 'should log the failures at the end of testing', (done) ->
-        emitter.emit 'end'
-        assert.ok loggerStub.fail.calledTwice
-        done()
+        emitter.emit 'end', ()->
+          assert.ok loggerStub.fail.calledTwice
+          done()
 
   describe 'when test finished', () ->
 

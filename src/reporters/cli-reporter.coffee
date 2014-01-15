@@ -14,7 +14,7 @@ class CliReporter
     emitter.on 'start', =>
       logger.info 'Beginning Dredd testing...'
 
-    emitter.on 'end', =>
+    emitter.on 'end', (callback) =>
       if not @inlineErrors
         logger.info "Displaying failed tests..." unless @errors.length is 0
         for test in @errors
@@ -26,6 +26,7 @@ class CliReporter
       if @stats.tests > 0
         logger.complete "#{@stats.passes} passing, #{@stats.failures} failing, #{@stats.errors} errors, #{@stats.skipped} skipped"
       logger.complete "Tests took #{@stats.duration}ms"
+      callback()
 
     emitter.on 'test pass', (test) =>
       logger.pass test.title + " duration: #{test.duration}ms"

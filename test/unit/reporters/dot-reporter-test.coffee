@@ -50,9 +50,9 @@ describe 'DotReporter', () ->
       dotReporter.write.restore()
 
     it 'should log that testing is complete', (done) ->
-      emitter.emit 'end'
-      assert.ok loggerStub.complete.calledTwice
-      done()
+      emitter.emit 'end', () ->
+        assert.ok loggerStub.complete.calledTwice
+        done()
 
     describe 'when there are failures', () ->
 
@@ -71,9 +71,9 @@ describe 'DotReporter', () ->
         loggerStub.fail.restore()
 
       it 'should log the failures at the end of testing', (done) ->
-        emitter.emit 'end'
-        assert.ok loggerStub.fail.called
-        done()
+        emitter.emit 'end', () ->
+          assert.ok loggerStub.fail.called
+          done()
 
   describe 'when test passes', () ->
 

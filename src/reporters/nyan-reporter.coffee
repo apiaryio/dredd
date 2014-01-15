@@ -25,7 +25,7 @@ class NyanCatReporter
       @cursorHide()
       @draw()
 
-    emitter.on 'end', =>
+    emitter.on 'end', (callback) =>
       @cursorShow()
       i = 0
 
@@ -45,6 +45,7 @@ class NyanCatReporter
 
       logger.complete "#{@stats.passes} passing, #{@stats.failures} failing, #{@stats.errors} errors, #{@stats.skipped} skipped"
       logger.complete "Tests took #{@stats.duration}ms"
+      callback()
 
 
     emitter.on 'test pass', (test) =>

@@ -42,6 +42,8 @@ configureReporters = (config, stats, tests) ->
         htmlReporter = new HtmlReporter(emitter, stats, tests, path, config.options.details)
       when 'markdown'
         mdReporter = new MarkdownReporter(emitter, stats, tests, path, config.options.details)
+      else
+        logger.warn 'Invalid reporter #{reporter} selected, ignoring.'
 
 
   addCli(reporters) if not config.options.silent

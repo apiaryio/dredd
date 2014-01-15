@@ -20,7 +20,7 @@
     "protagonist": "~0.6.0",
     "uri-template": "~0.4.1",
     "async": "~0.2.9",
-    "optimist": "https://github.com/chrisn/node-optimist/tarball/master",
+    "optimist": "~0.6.0",
     "html": "~0.0.7",
     "htmlencode": "~0.0.3",
     "marked": "~0.3.0"

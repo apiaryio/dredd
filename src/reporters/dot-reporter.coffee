@@ -12,7 +12,7 @@ class DotReporter
     emitter.on 'start', =>
       logger.info 'Beginning Dredd testing...'
 
-    emitter.on 'end', =>
+    emitter.on 'end', (callback) =>
       if @stats.tests > 0
         if @errors.length > 0
           @write "\n"
@@ -26,6 +26,7 @@ class DotReporter
         @write "\n"
         logger.complete "#{@stats.passes} passing, #{@stats.failures} failing, #{@stats.errors} errors, #{@stats.skipped} skipped"
         logger.complete "Tests took #{@stats.duration}ms"
+        callback()
 
     emitter.on 'test pass', (test) =>
       @write "."

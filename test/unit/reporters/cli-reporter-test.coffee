@@ -105,9 +105,9 @@ describe 'CliReporter', () ->
         emitter = new EventEmitter()
         cliReporter = new CliReporter(emitter, {}, {}, false)
         cliReporter.errors = [ test ]
-        emitter.emit 'end'
-        assert.ok loggerStub.fail.calledTwice
-        done()
+        emitter.emit 'end', () ->
+          assert.ok loggerStub.fail.calledTwice
+          done()
 
   describe 'when adding error test', () ->
 
@@ -169,18 +169,18 @@ describe 'CliReporter', () ->
         cliReporter = new CliReporter(emitter, {}, {}, false)
         cliReporter.tests = [ test ]
         cliReporter.stats.tests = 1
-        emitter.emit 'end'
-        assert.ok loggerStub.complete.calledTwice
-        done()
+        emitter.emit 'end', () ->
+          assert.ok loggerStub.complete.calledTwice
+          done()
 
     describe 'when there are no tests', () ->
 
       it 'should write to the console', (done) ->
         emitter = new EventEmitter()
         cliReporter = new CliReporter(emitter, {}, {}, false)
-        emitter.emit 'end'
-        assert.ok loggerStub.complete.calledOnce
-        done()
+        emitter.emit 'end', () ->
+          assert.ok loggerStub.complete.calledOnce
+          done()
 
 
 

@@ -20,8 +20,8 @@ String::trunc = (n) ->
 String::startsWith = (str) ->
     return this.slice(0, str.length) is str
 
-prettify = (transaction) ->
-  prettyJson = (obj) ->
+prettifyResponse = (response) ->
+  parseIfJson = (obj) ->
     parsed = obj
     try
       parsed = JSON.parse obj
@@ -32,17 +32,17 @@ prettify = (transaction) ->
     return parsed
 
 
-  type = transaction?.headers['Content-Type'] || transaction?.headers['content-type']
+  type = response?.headers['Content-Type'] || response?.headers['content-type']
   switch type
     when 'application/json'
-      transaction.body = prettyJson transaction.body
+      response.body = parseIfJson response.body
     when 'text/html'
-      transaction.body = html.prettyPrint(transaction.body, {indent_size: 2})
+      response.body = html.prettyPrint(response.body, {indent_size: 2})
 
-  if transaction?.schema
-    transaction.schema = prettyJson transaction.schema
+  if response?.schema
+    response.schema = parseIfJson response.schema
 
-  return transaction
+  return response
 
 executeTransaction = (transaction, callback) ->
   configuration = transaction['configuration']
@@ -97,7 +97,7 @@ executeTransaction = (transaction, callback) ->
   configuration.emitter.emit 'test start', test
 
   if configuration.options['dry-run']
-    logger.info "Dry run, skipping..."
+    logger.info "Dry run, skipping API Tests..."
     return callback()
   else if configuration.options.method.length > 0 and not (request.method in configuration.options.method)
     configuration.emitter.emit 'test skip', test
@@ -129,8 +129,8 @@ executeTransaction = (transaction, callback) ->
 
           if isValid
             test.status = "pass"
-            test.actual = prettify real
-            test.expected = prettify expected
+            test.actual = prettifyResponse real
+            test.expected = prettifyResponse expected
             test.request = options
             configuration.emitter.emit 'test pass', test
             return callback(null, req, res)
@@ -145,8 +145,8 @@ executeTransaction = (transaction, callback) ->
                 status: "fail",
                 title: options['method'] + ' ' + options['path'],
                 message: message
-                actual: prettify real
-                expected: prettify expected
+                actual: prettifyResponse real
+                expected: prettifyResponse expected
                 request: options
                 start: test.start
               configuration.emitter.emit 'test fail', test

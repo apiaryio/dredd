@@ -11,11 +11,19 @@ var argv = optimist
      + "\n\nExample: \n  " + "dredd ./apiary.md http://localhost:3000 --dry-run")
     .options(Dredd.options)
     .wrap(80)
-    .version(version, 'version', 'Show version number')
-    .help('help', 'Show usage information')
     .argv;
 
 var argError = false;
+
+if (argv.help == true) {
+  optimist.showHelp(fn=console.error);
+  process.exit(0);
+}
+
+if (argv.version == true) {
+  console.log(version);
+  process.exit(0);
+}
 
 if (argv._[0] == undefined) {
   console.error("Error: Must specify path to blueprint file.");
@@ -29,7 +37,7 @@ if (argError) {
   console.error("\n")
   optimist.showHelp(fn=console.error);
   process.exit(1);
-};
+}
 
 configuration = {
   'blueprintPath': argv._[0],

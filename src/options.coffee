@@ -54,4 +54,10 @@ options =
     description: "Determines whether console output should include timestamps.\n"
     default: false
 
+  help:
+    description: "Show usage information.\n"
+
+  version:
+    description: "Show version number.\n"
+
 module.exports = options

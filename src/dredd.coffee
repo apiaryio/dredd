@@ -15,7 +15,15 @@ class Dredd
   constructor: (config) ->
     @callback = null
     @tests = []
-    @stats = defaultStats()
+    @stats =
+        tests: 0
+        failures: 0
+        errors: 0
+        passes: 0
+        skipped: 0
+        start: 0
+        end: 0
+        duration: 0
     @configuration = applyConfiguration(config, @stats)
     configureReporters @configuration, @stats, @tests
 
@@ -41,28 +49,11 @@ class Dredd
       async.eachSeries configuredTransactions(runtime, config), executeTransaction, transactionsComplete
 
     transactionsComplete = () ->
+      reporterCount = EventEmitter.listenerCount(config.emitter, 'end')
       config.emitter.emit 'end' , () ->
-        if stats.fileBasedReporters is 1
+        reporterCount--
+        if reporterCount is 0
           callback(null, stats)
-        else
-          stats.fileBasedReporters--
-
-      # need to wait for files to finish writing, otherwise we can exit
-      if stats.fileBasedReporters is 0
-        callback(null, stats)
-
-  defaultStats = () ->
-    stats =
-        fileBasedReporters: 0
-        tests: 0
-        failures: 0
-        errors: 0
-        passes: 0
-        skipped: 0
-        start: 0
-        end: 0
-        duration: 0
-    return stats
 
   applyConfiguration = (config) ->
 

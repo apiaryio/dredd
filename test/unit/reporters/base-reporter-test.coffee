@@ -31,9 +31,9 @@ describe 'BaseReporter', () ->
 
   describe 'when ending', () ->
     it 'should set the end date', (done) ->
-      emitter.emit 'end'
-      assert.ok stats.end
-      done()
+      emitter.emit 'end', () ->
+        assert.ok stats.end
+        done()
 
   describe 'when test starts', () ->
     before () ->

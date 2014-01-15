@@ -9,9 +9,10 @@ class BaseReporter
     emitter.on 'start', =>
       @stats.start = new Date
 
-    emitter.on 'end', =>
+    emitter.on 'end', (callback) =>
       @stats.end = new Date
       @stats.duration = @stats.end - @stats.start
+      callback()
 
     emitter.on 'test start', (test) =>
       @tests.push(test)
