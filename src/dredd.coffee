@@ -13,7 +13,6 @@ configureReporters = require './configure-reporters'
 
 class Dredd
   constructor: (config) ->
-    @callback = null
     @tests = []
     @stats =
         tests: 0
@@ -37,7 +36,7 @@ class Dredd
       return callback(parseError, stats) if parseError
       protagonist.parse data, blueprintParsingComplete
 
-    blueprintParsingComplete = (protagonistError, result) ->
+    blueprintParsingComplete = (protagonistError, result) =>
       return callback(protagonistError, config.reporter) if protagonistError
 
       runtime = blueprintAstToRuntime result['ast']
@@ -46,14 +45,15 @@ class Dredd
 
       return callback(runtimeError, stats) if runtimeError
 
-      async.eachSeries configuredTransactions(runtime, config), executeTransaction, transactionsComplete
+      async.eachSeries configuredTransactions(runtime, config), executeTransaction, () =>
+        @transactionsComplete(config.emitter, stats, callback)
 
-    transactionsComplete = () ->
-      reporterCount = EventEmitter.listenerCount(config.emitter, 'end')
-      config.emitter.emit 'end' , () ->
-        reporterCount--
-        if reporterCount is 0
-          callback(null, stats)
+  transactionsComplete: (emitter, stats, callback) ->
+    reporterCount = EventEmitter.listenerCount(emitter, 'end')
+    emitter.emit 'end' , () ->
+      reporterCount--
+      if reporterCount is 0
+        callback(null, stats)
 
   applyConfiguration = (config) ->
 

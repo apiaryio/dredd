@@ -47,6 +47,13 @@ configuration = {
 
 dredd = new Dredd(configuration);
 
+process.on( 'SIGINT', function() {
+  console.log( "\nShutting down from SIGINT (Ctrl-C)" );
+  dredd.transactionsComplete( dredd.configuration.emitter, dredd.stats, function() {
+      process.exit(0);
+    });
+});
+
 dredd.run(function(error, stats){
   if (error) {
    console.error(error.stack);
