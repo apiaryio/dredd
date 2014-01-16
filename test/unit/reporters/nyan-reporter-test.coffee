@@ -8,20 +8,32 @@ NyanCatReporter = proxyquire '../../../src/reporters/nyan-reporter', {
   './../logger' : loggerStub
 }
 
-emitter = new EventEmitter()
-stats =
-  tests: 0
-  failures: 0
-  errors: 0
-  passes: 0
-  skipped: 0
-  start: 0
-  end: 0
-  duration: 0
-tests = []
-nyanReporter = new NyanCatReporter(emitter, stats, tests)
-
 describe 'NyanCatReporter', () ->
+
+  emitter = {}
+  stats = {}
+  tests = []
+  nyanReporter = {}
+
+  before () ->
+    loggerStub.transports.console.silent = true
+
+  after () ->
+    loggerStub.transports.console.silent = false
+
+  beforeEach () ->
+    emitter = new EventEmitter()
+    stats =
+      tests: 0
+      failures: 0
+      errors: 0
+      passes: 0
+      skipped: 0
+      start: 0
+      end: 0
+      duration: 0
+    tests = []
+    nyanReporter = new NyanCatReporter(emitter, stats, tests)
 
   describe 'when starting', () ->
 
@@ -35,11 +47,10 @@ describe 'NyanCatReporter', () ->
       nyanReporter.draw.restore()
       nyanReporter.write.restore()
 
-    it 'should hide the cursor and draw the cat', (done) ->
+    it 'should hide the cursor and draw the cat', () ->
       emitter.emit 'start'
       assert.ok nyanReporter.cursorHide.calledOnce
       assert.ok nyanReporter.draw.calledOnce
-      done()
 
   describe 'when ending', () ->
 
@@ -60,14 +71,12 @@ describe 'NyanCatReporter', () ->
 
     describe 'when there are failures', () ->
 
-      before () ->
+      beforeEach () ->
         test =
           status: 'fail'
           title: 'failing test'
         nyanReporter.errors = [test]
         emitter.emit 'test start', test
-
-      beforeEach () ->
         sinon.spy loggerStub, 'fail'
 
       afterEach () ->
@@ -82,7 +91,7 @@ describe 'NyanCatReporter', () ->
 
     describe 'when test passes', () ->
 
-      before () ->
+      beforeEach () ->
         test =
           status: 'pass'
           title: 'Passing Test'
@@ -90,16 +99,15 @@ describe 'NyanCatReporter', () ->
         sinon.spy nyanReporter, 'draw'
         emitter.emit 'test pass', test
 
-      after () ->
+      afterEach () ->
         nyanReporter.draw.restore()
         nyanReporter.write.restore()
 
-      it 'should draw the cat', (done) ->
+      it 'should draw the cat', () ->
         assert.ok nyanReporter.draw.calledOnce
-        done()
 
     describe 'when test is skipped', () ->
-      before () ->
+      beforeEach () ->
         test =
           status: 'skipped'
           title: 'Skipped Test'
@@ -107,17 +115,16 @@ describe 'NyanCatReporter', () ->
         sinon.stub nyanReporter, 'write'
         emitter.emit 'test skip', test
 
-      after () ->
+      afterEach () ->
         nyanReporter.draw.restore()
         nyanReporter.write.restore()
 
-      it 'should draw the cat', (done) ->
+      it 'should draw the cat', () ->
         assert.ok nyanReporter.draw.calledOnce
-        done()
 
     describe 'when test fails', () ->
 
-      before () ->
+      beforeEach () ->
         test =
           status: 'failed'
           title: 'Failed Test'
@@ -125,17 +132,16 @@ describe 'NyanCatReporter', () ->
         sinon.stub nyanReporter, 'write'
         emitter.emit 'test fail', test
 
-      after () ->
+      afterEach () ->
         nyanReporter.draw.restore()
         nyanReporter.write.restore()
 
-      it 'should draw the cat', (done) ->
+      it 'should draw the cat', () ->
         assert.ok nyanReporter.draw.calledOnce
-        done()
 
     describe 'when test errors', () ->
 
-      before () ->
+      beforeEach () ->
         test =
           status: 'error'
           title: 'Errored Test'
@@ -143,11 +149,10 @@ describe 'NyanCatReporter', () ->
         sinon.stub nyanReporter, 'write'
         emitter.emit 'test error', new Error('Error'), test
 
-      after () ->
+      afterEach () ->
         nyanReporter.write.restore()
         nyanReporter.draw.restore()
 
-      it 'should draw the cat', (done) ->
+      it 'should draw the cat', () ->
         assert.ok nyanReporter.draw.calledOnce
-        done()
 

@@ -11,22 +11,34 @@ MarkdownReporter = proxyquire '../../../src/reporters/markdown-reporter', {
   'fs': fsStub
 }
 
-emitter = new EventEmitter()
-stats =
-  tests: 0
-  failures: 0
-  errors: 0
-  passes: 0
-  skipped: 0
-  start: 0
-  end: 0
-  duration: 0
-tests = []
-mdReporter = new MarkdownReporter(emitter, stats, tests)
-
 describe 'MarkdownReporter', () ->
 
   test = {}
+  emitter = {}
+  stats = {}
+  tests = []
+  mdReporter = {}
+
+  before () ->
+    loggerStub.transports.console.silent = true
+
+  after () ->
+    loggerStub.transports.console.silent = false
+
+  beforeEach () ->
+    emitter = new EventEmitter()
+    stats =
+      tests: 0
+      failures: 0
+      errors: 0
+      passes: 0
+      skipped: 0
+      start: 0
+      end: 0
+      duration: 0
+    tests = []
+    mdReporter = new MarkdownReporter(emitter, stats, tests, "test.md")
+
 
   describe 'when creating', () ->
 
@@ -41,7 +53,6 @@ describe 'MarkdownReporter', () ->
         fsStub.unlinkSync.restore()
 
       it 'should delete the existing file', (done) ->
-        reporter = new MarkdownReporter(emitter, {}, {}, "test.md")
         assert.ok fsStub.unlinkSync.calledOnce
         done()
 
@@ -57,7 +68,6 @@ describe 'MarkdownReporter', () ->
         fsStub.unlinkSync.restore()
 
       it 'should create the file', (done) ->
-        reporter = new MarkdownReporter(emitter, {}, {}, "test.md")
         assert.ok fsStub.unlinkSync.notCalled
         done()
 
@@ -71,7 +81,7 @@ describe 'MarkdownReporter', () ->
   describe 'when ending', () ->
 
     beforeEach () ->
-       sinon.stub fsStub, 'writeFile'
+      sinon.stub fsStub, 'writeFile'
 
     afterEach () ->
       fsStub.writeFile.restore()
@@ -83,7 +93,7 @@ describe 'MarkdownReporter', () ->
 
   describe 'when test passes', () ->
 
-    before () ->
+    beforeEach () ->
       test =
         status: 'pass'
         title: 'Passing Test'
@@ -103,7 +113,7 @@ describe 'MarkdownReporter', () ->
         done()
 
   describe 'when test is skipped', () ->
-    before () ->
+    beforeEach () ->
       test =
         status: 'skipped'
         title: 'Skipped Test'
@@ -116,7 +126,7 @@ describe 'MarkdownReporter', () ->
 
   describe 'when test fails', () ->
 
-    before () ->
+    beforeEach () ->
       test =
         status: 'failed'
         title: 'Failed Test'
@@ -129,7 +139,7 @@ describe 'MarkdownReporter', () ->
 
   describe 'when test errors', () ->
 
-    before () ->
+    beforeEach () ->
       test =
         status: 'error'
         title: 'Errored Test'

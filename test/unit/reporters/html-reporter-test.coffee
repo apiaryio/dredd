@@ -11,26 +11,33 @@ HtmlReporter = proxyquire '../../../src/reporters/html-reporter', {
   'fs' : fsStub
 }
 
-emitter = new EventEmitter()
-stats =
-  tests: 0
-  failures: 0
-  errors: 0
-  passes: 0
-  skipped: 0
-  start: 0
-  end: 0
-  duration: 0
-tests = []
-htmlReporter = new HtmlReporter(emitter, stats, tests)
-
 describe 'HtmlReporter', () ->
 
   test = {}
+  emitter = {}
+  stats = {}
+  tests = []
+  htmlReporter = {}
 
-  it 'should call the start method', (done) ->
-    emitter.emit 'start'
-    done()
+  before () ->
+    loggerStub.transports.console.silent = true
+
+  after () ->
+    loggerStub.transports.console.silent = false
+
+  beforeEach () ->
+    emitter = new EventEmitter()
+    stats =
+      tests: 0
+      failures: 0
+      errors: 0
+      passes: 0
+      skipped: 0
+      start: 0
+      end: 0
+      duration: 0
+    tests = []
+    htmlReporter = new HtmlReporter(emitter, stats, tests, "test.html")
 
   describe 'when starting', () ->
 
@@ -43,12 +50,9 @@ describe 'HtmlReporter', () ->
       after () ->
         fsStub.existsSync.restore()
         fsStub.unlinkSync.restore()
-        emitter.removeAllListeners()
 
-      it 'should delete the existing file', (done) ->
-        reporter = new HtmlReporter(emitter, {}, {}, "test.html")
-        assert.ok fsStub.unlinkSync.calledOnce
-        done()
+      it 'should delete the existing file', () ->
+        assert.ok fsStub.unlinkSync.called
 
     describe 'when file does not exist', () ->
 
@@ -60,12 +64,13 @@ describe 'HtmlReporter', () ->
       after () ->
         fsStub.existsSync.restore()
         fsStub.unlinkSync.restore()
-        emitter.removeAllListeners()
 
-      it 'should delete the existing file', (done) ->
-        reporter = new HtmlReporter(emitter, {}, {}, "test.html")
+      it 'should not attempt to delete a file', () ->
         assert.ok fsStub.unlinkSync.notCalled
-        done()
+
+    it 'should write the prelude to the buffer', () ->
+      emitter.emit 'start'
+      assert.ok ~htmlReporter.buf.indexOf 'Dredd'
 
   describe 'when ending', () ->
 
@@ -80,8 +85,8 @@ describe 'HtmlReporter', () ->
       fsStub.writeFile.restore()
 
     it 'should write the file', (done) ->
-      reporter = new HtmlReporter(emitter, {}, {}, "test.html")
       emitter.emit 'end', () ->
+        assert.ok fsStub.writeFile.called
         done()
 
   describe 'when test passes', () ->
@@ -91,21 +96,17 @@ describe 'HtmlReporter', () ->
         status: 'pass'
         title: 'Passing Test'
 
-    it 'should call the pass event', (done) ->
-      reporter = new HtmlReporter(emitter, {}, {}, "test.html")
+    it 'should call the pass event', () ->
       emitter.emit 'test start', test
       emitter.emit 'test pass', test
-      assert.ok ~reporter.buf.indexOf 'Pass'
-      done()
+      assert.ok ~htmlReporter.buf.indexOf 'Pass'
 
     describe 'when details=true', () ->
 
-      it 'should write details for passing tests', (done) ->
-        reporter = new HtmlReporter(emitter, {}, {}, "test.html")
-        reporter.details = true
+      it 'should write details for passing tests', () ->
+        htmlReporter.details = true
         emitter.emit 'test pass', test
-        assert.ok ~reporter.buf.indexOf 'Request'
-        done()
+        assert.ok ~htmlReporter.buf.indexOf 'Request'
 
   describe 'when test is skipped', () ->
     before () ->
@@ -113,12 +114,10 @@ describe 'HtmlReporter', () ->
         status: 'skipped'
         title: 'Skipped Test'
 
-    it 'should call the skip event', (done) ->
-      reporter = new HtmlReporter(emitter, {}, {}, "test.html")
+    it 'should call the skip event', () ->
       emitter.emit 'test start', test
       emitter.emit 'test skip', test
-      assert.ok ~reporter.buf.indexOf 'Skip'
-      done()
+      assert.ok ~htmlReporter.buf.indexOf 'Skip'
 
   describe 'when test fails', () ->
 
@@ -127,12 +126,10 @@ describe 'HtmlReporter', () ->
         status: 'failed'
         title: 'Failed Test'
 
-    it 'should call the fail event', (done) ->
-      reporter = new HtmlReporter(emitter, {}, {}, "test.html")
+    it 'should call the fail event', () ->
       emitter.emit 'test start', test
       emitter.emit 'test fail', test
-      assert.ok ~reporter.buf.indexOf 'Fail'
-      done()
+      assert.ok ~htmlReporter.buf.indexOf 'Fail'
 
   describe 'when test errors', () ->
 
@@ -141,10 +138,8 @@ describe 'HtmlReporter', () ->
         status: 'error'
         title: 'Errored Test'
 
-    it 'should call the error event', (done) ->
-      reporter = new HtmlReporter(emitter, {}, {}, "test.html")
+    it 'should call the error event', () ->
       emitter.emit 'test start', test
       emitter.emit 'test error', new Error('Error'), test
-      assert.ok ~reporter.buf.indexOf 'Error'
-      done()
+      assert.ok ~htmlReporter.buf.indexOf 'Error'
 

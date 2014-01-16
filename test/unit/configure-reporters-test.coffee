@@ -14,8 +14,6 @@ HtmlReporterStub = sinon.spy require '../../src/reporters/html-reporter'
 MarkdownReporterStub = sinon.spy require '../../src/reporters/markdown-reporter'
 emitterStub = new EventEmitter()
 
-loggerStub.transports.console.silent = true
-
 configureReporters = proxyquire '../../src/configure-reporters', {
   './logger' : loggerStub
   './reporters/base-reporter': BaseReporterStub
@@ -47,6 +45,12 @@ describe 'configureReporters(config, stats, tests, onSaveCallback)', () ->
       output: []
       silent: false
       'inline-errors': false
+
+  before () ->
+    loggerStub.transports.console.silent = true
+
+  after () ->
+    loggerStub.transports.console.silent = false
 
   describe 'when there are no reporters', () ->
 

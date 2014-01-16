@@ -8,12 +8,17 @@ CliReporter = proxyquire '../../../src/reporters/cli-reporter', {
   './../logger' : loggerStub
 }
 
-# supress output in tests
-loggerStub.transports.console.silent = true
+
 
 describe 'CliReporter', () ->
 
   test = {}
+
+  before () ->
+    loggerStub.transports.console.silent = true
+
+  after () ->
+    loggerStub.transports.console.silent = false
 
   describe 'when starting', () ->
 

@@ -8,20 +8,32 @@ DotReporter = proxyquire '../../../src/reporters/dot-reporter', {
   './../logger' : loggerStub
 }
 
-emitter = new EventEmitter()
-stats =
-  tests: 0
-  failures: 0
-  errors: 0
-  passes: 0
-  skipped: 0
-  start: 0
-  end: 0
-  duration: 0
-tests = []
-dotReporter = new DotReporter(emitter, stats, tests)
-
 describe 'DotReporter', () ->
+
+  stats = {}
+  test = []
+  emitter = {}
+  dotReporter = {}
+
+  before () ->
+    loggerStub.transports.console.silent = true
+
+  after () ->
+    loggerStub.transports.console.silent = false
+
+  beforeEach () ->
+    stats =
+      tests: 0
+      failures: 0
+      errors: 0
+      passes: 0
+      skipped: 0
+      start: 0
+      end: 0
+      duration: 0
+    tests = []
+    emitter = new EventEmitter()
+    dotReporter = new DotReporter(emitter, stats, tests)
 
   describe 'when starting', () ->
 
@@ -31,17 +43,14 @@ describe 'DotReporter', () ->
     afterEach () ->
       loggerStub.info.restore()
 
-    it 'should log that testing has begun', (done) ->
+    it 'should log that testing has begun', () ->
       emitter.emit 'start'
       assert.ok loggerStub.info.called
-      done()
 
   describe 'when ending', () ->
 
-    before () ->
-      stats.tests = 1
-
     beforeEach () ->
+      stats.tests = 1
       sinon.spy loggerStub, 'complete'
       sinon.stub dotReporter, 'write'
 
@@ -49,10 +58,9 @@ describe 'DotReporter', () ->
       loggerStub.complete.restore()
       dotReporter.write.restore()
 
-    it 'should log that testing is complete', (done) ->
+    it 'should log that testing is complete', () ->
       emitter.emit 'end', () ->
         assert.ok loggerStub.complete.calledTwice
-        done()
 
     describe 'when there are failures', () ->
 
@@ -60,11 +68,11 @@ describe 'DotReporter', () ->
         test =
           status: 'fail'
           title: 'failing test'
+
+      beforeEach () ->
         dotReporter.errors = [test]
         dotReporter.stats.tests = 1
         emitter.emit 'test start', test
-
-      beforeEach () ->
         sinon.spy loggerStub, 'fail'
 
       afterEach () ->
@@ -81,6 +89,8 @@ describe 'DotReporter', () ->
       test =
         status: 'pass'
         title: 'Passing Test'
+
+    beforeEach () ->
       sinon.stub dotReporter, 'write'
       emitter.emit 'test start', test
       emitter.emit 'test pass', test
@@ -88,15 +98,16 @@ describe 'DotReporter', () ->
     after () ->
       dotReporter.write.restore()
 
-    it 'should write a .', (done) ->
+    it 'should write a .', () ->
       assert.ok dotReporter.write.calledWith '.'
-      done()
 
   describe 'when test is skipped', () ->
     before () ->
       test =
         status: 'skipped'
         title: 'Skipped Test'
+
+    beforeEach () ->
       sinon.stub dotReporter, 'write'
       emitter.emit 'test start', test
       emitter.emit 'test skip', test
@@ -104,9 +115,8 @@ describe 'DotReporter', () ->
     after () ->
       dotReporter.write.restore()
 
-    it 'should write a -', (done) ->
+    it 'should write a -', () ->
       assert.ok dotReporter.write.calledWith('-')
-      done()
 
   describe 'when test fails', () ->
 
@@ -114,6 +124,8 @@ describe 'DotReporter', () ->
       test =
         status: 'failed'
         title: 'Failed Test'
+
+    beforeEach () ->
       sinon.stub dotReporter, 'write'
       emitter.emit 'test start', test
       emitter.emit 'test fail', test
@@ -121,9 +133,8 @@ describe 'DotReporter', () ->
     after () ->
       dotReporter.write.restore()
 
-    it 'should write an F', (done) ->
+    it 'should write an F', () ->
       assert.ok dotReporter.write.calledWith('F')
-      done()
 
   describe 'when test errors', () ->
 
@@ -131,6 +142,8 @@ describe 'DotReporter', () ->
       test =
         status: 'error'
         title: 'Errored Test'
+
+    beforeEach () ->
       sinon.stub dotReporter, 'write'
       emitter.emit 'test start', test
       emitter.emit 'test error', new Error('Error'), test
@@ -138,7 +151,6 @@ describe 'DotReporter', () ->
     after () ->
       dotReporter.write.restore()
 
-    it 'should write an E', (done) ->
+    it 'should write an E', () ->
       assert.ok dotReporter.write.calledWith('E')
-      done()
 

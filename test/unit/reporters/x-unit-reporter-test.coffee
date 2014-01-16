@@ -15,6 +15,12 @@ describe 'XUnitReporter', () ->
 
   test = {}
 
+  before () ->
+    loggerStub.transports.console.silent = true
+
+  after () ->
+    loggerStub.transports.console.silent = false
+
   describe 'when creating', () ->
 
     describe 'when file exists', () ->
@@ -27,11 +33,10 @@ describe 'XUnitReporter', () ->
         fsStub.existsSync.restore()
         fsStub.unlinkSync.restore()
 
-      it 'should delete the existing file', (done) ->
+      it 'should delete the existing file', () ->
         emitter = new EventEmitter()
         xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
         assert.ok fsStub.unlinkSync.calledOnce
-        done()
 
     describe 'when file does not exist', () ->
 
@@ -44,11 +49,10 @@ describe 'XUnitReporter', () ->
         fsStub.existsSync.restore()
         fsStub.unlinkSync.restore()
 
-      it 'should create the file', (done) ->
+      it 'should create the file', () ->
         emitter = new EventEmitter()
         xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
         assert.ok fsStub.unlinkSync.notCalled
-        done()
 
   describe 'when starting', () ->
 
@@ -58,12 +62,11 @@ describe 'XUnitReporter', () ->
     afterEach () ->
       fsStub.appendFile.restore()
 
-    it 'should write opening to file', (done) ->
+    it 'should write opening to file', () ->
       emitter = new EventEmitter()
       xUnitReporter = new XUnitReporter(emitter, {}, {})
       emitter.emit 'start'
       assert.ok fsStub.appendFile.called
-      done()
 
   describe 'when ending', () ->
 
@@ -121,6 +124,20 @@ describe 'XUnitReporter', () ->
       test =
         status: 'pass'
         title: 'Passing Test'
+        request:
+          body: '{ "test": "body" }'
+          schema: '{ "test": "schema" }'
+          headers:
+            'Accept': 'application/json'
+        expected:
+          body: '{ "test": "body" }'
+          schema: '{ "test": "schema" }'
+          headers:
+            'Content-Type': 'application/json'
+        actual:
+          body: '<html></html>'
+          headers:
+            'Content-Type': 'text/html'
 
     beforeEach () ->
       sinon.stub fsStub, 'appendFile'
@@ -128,23 +145,21 @@ describe 'XUnitReporter', () ->
     afterEach () ->
       fsStub.appendFile.restore()
 
-    it 'should write a passing test', (done) ->
+    it 'should write a passing test', () ->
       emitter = new EventEmitter()
       xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
       emitter.emit 'test start', test
       emitter.emit 'test pass', test
       assert.ok fsStub.appendFile.called
-      done()
 
     describe 'when details=true', () ->
 
-      it 'should write details for passing tests', (done) ->
+      it 'should write details for passing tests', () ->
         emitter = new EventEmitter()
         cliReporter = new XUnitReporter(emitter, {}, {}, "test.xml", true)
         emitter.emit 'test start', test
         emitter.emit 'test pass', test
         assert.ok fsStub.appendFile.called
-        done()
 
   describe 'when test is skipped', () ->
     before () ->
@@ -158,13 +173,12 @@ describe 'XUnitReporter', () ->
     afterEach () ->
       fsStub.appendFile.restore()
 
-    it 'should write a skipped test', (done) ->
+    it 'should write a skipped test', () ->
       emitter = new EventEmitter()
       xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
       emitter.emit 'test start', test
       emitter.emit 'test skip', test
       assert.ok fsStub.appendFile.called
-      done()
 
   describe 'when test fails', () ->
 
@@ -179,13 +193,12 @@ describe 'XUnitReporter', () ->
     afterEach () ->
       fsStub.appendFile.restore()
 
-    it 'should write a failed test', (done) ->
+    it 'should write a failed test', () ->
       emitter = new EventEmitter()
       xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
       emitter.emit 'test start', test
       emitter.emit 'test fail', test
       assert.ok fsStub.appendFile.called
-      done()
 
   describe 'when test errors', () ->
 
@@ -200,10 +213,9 @@ describe 'XUnitReporter', () ->
     afterEach () ->
       fsStub.appendFile.restore()
 
-    it 'should write an error test', (done) ->
+    it 'should write an error test', () ->
       emitter = new EventEmitter()
       xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
       emitter.emit 'test start', test
       emitter.emit 'test error', new Error('Error'), test
       assert.ok fsStub.appendFile.called
-      done()
