@@ -1,7 +1,10 @@
 {EventEmitter} = require 'events'
 fs = require 'fs'
-logger = require './../logger'
+
 htmlencode = require 'htmlencode'
+
+logger = require './../logger'
+prettifyResponse = require './../prettify-response'
 
 class XUnitReporter extends EventEmitter
   constructor: (emitter, stats, tests, path, details) ->
@@ -41,7 +44,7 @@ class XUnitReporter extends EventEmitter
         name: htmlencode.htmlEncode test.title
         time: test.duration / 1000
       if @details
-        deets = "\nRequest: \n"  + (JSON.stringify test.request, null, 4) + "\nExpected: \n" +  (JSON.stringify test.expected, null, 4) + "\nActual:\n" + (JSON.stringify test.actual, null, 4)
+        deets = "\nRequest: \n"  + prettifyResponse(test.request) + "\nExpected: \n" +  prettifyResponse(test.expected) + "\nActual:\n" + prettifyResponse(test.actual)
         appendLine @path, toTag('testcase', attrs, false, toTag('system-out', null, false, cdata(deets)))
       else
         appendLine @path, toTag('testcase', attrs, true)
@@ -56,7 +59,7 @@ class XUnitReporter extends EventEmitter
       attrs =
         name: htmlencode.htmlEncode test.title
         time: test.duration / 1000
-      diff = "Message: \n" + test.message + "\nRequest: \n"  + (JSON.stringify test.request, null, 4) + "\nExpected: \n" +  (JSON.stringify test.expected, null, 4) + "\nActual:\n" + (JSON.stringify test.actual, null, 4)
+      diff = "Message: \n" + test.message + "\nRequest: \n"  + prettifyResponse(test.request) + "\nExpected: \n" +  prettifyResponse(test.expected) + "\nActual:\n" + prettifyResponse(test.actual)
       appendLine @path, toTag('testcase', attrs, false, toTag('failure', null, false, cdata(diff)))
 
     emitter.on 'test error', (error, test) =>

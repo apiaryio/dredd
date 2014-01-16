@@ -20,30 +20,6 @@ String::trunc = (n) ->
 String::startsWith = (str) ->
     return this.slice(0, str.length) is str
 
-prettifyResponse = (response) ->
-  parseIfJson = (obj) ->
-    parsed = obj
-    try
-      parsed = JSON.parse obj
-    catch e
-      logger.debug "Error parsing as json: " + obj
-
-    obj = parsed
-    return parsed
-
-
-  type = response?.headers['Content-Type'] || response?.headers['content-type']
-  switch type
-    when 'application/json'
-      response.body = parseIfJson response.body
-    when 'text/html'
-      response.body = html.prettyPrint(response.body, {indent_size: 2})
-
-  if response?.schema
-    response.schema = parseIfJson response.schema
-
-  return response
-
 executeTransaction = (transaction, callback) ->
   configuration = transaction['configuration']
   origin = transaction['origin']
@@ -121,16 +97,17 @@ executeTransaction = (transaction, callback) ->
         expected =
           headers: flattenHeaders response['headers']
           body: response['body']
-          schema: response['schema']
           status: response['status']
+
+        expected['schema'] = response['schema'] if response['schema']
 
         gavel.isValid real, expected, 'response', (error, isValid) ->
           configuration.emitter.emit 'test error', error, test if error
 
           if isValid
             test.status = "pass"
-            test.actual = prettifyResponse real
-            test.expected = prettifyResponse expected
+            test.actual = real
+            test.expected = expected
             test.request = options
             configuration.emitter.emit 'test pass', test
             return callback(null, req, res)
@@ -145,8 +122,8 @@ executeTransaction = (transaction, callback) ->
                 status: "fail",
                 title: options['method'] + ' ' + options['path'],
                 message: message
-                actual: prettifyResponse real
-                expected: prettifyResponse expected
+                actual: real
+                expected: expected
                 request: options
                 start: test.start
               configuration.emitter.emit 'test fail', test

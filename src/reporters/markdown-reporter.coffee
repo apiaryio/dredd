@@ -1,6 +1,8 @@
 {EventEmitter} = require 'events'
 fs = require 'fs'
+
 logger = require './../logger'
+prettifyResponse = require './../prettify-response'
 
 class MarkdownReporter extends EventEmitter
   constructor: (emitter, stats, tests, path, details) ->
@@ -46,9 +48,9 @@ class MarkdownReporter extends EventEmitter
 
       if @details
         @level++
-        @buf += title("Request") + "\n```\n" + (JSON.stringify test.request, null, 4) + "\n```\n\n"
-        @buf += title("Expected") + "\n```\n" +(JSON.stringify test.expected, null, 4) + "\n```\n\n"
-        @buf += title("Actual") + "\n```\n" + (JSON.stringify test.actual, null, 4) + "\n```\n\n"
+        @buf += title("Request") + "\n```\n" + prettifyResponse(test.request) + "\n```\n\n"
+        @buf += title("Expected") + "\n```\n" + prettifyResponse(test.expected) + "\n```\n\n"
+        @buf += title("Actual") + "\n```\n" + prettifyResponse(test.actual) + "\n```\n\n"
         @level--
 
       @level--
@@ -62,9 +64,9 @@ class MarkdownReporter extends EventEmitter
 
       @level++
       @buf += title("Message") + "\n```\n" + test.message + "\n```\n\n"
-      @buf += title("Request") + "\n```\n" + (JSON.stringify test.request, null, 4) + "\n```\n\n"
-      @buf += title("Expected") + "\n```\n" +(JSON.stringify test.expected, null, 4) + "\n```\n\n"
-      @buf += title("Actual") + "\n```\n" + (JSON.stringify test.actual, null, 4) + "\n```\n\n"
+      @buf += title("Request") + "\n```\n" + prettifyResponse(test.request) + "\n```\n\n"
+      @buf += title("Expected") + "\n```\n" + prettifyResponse(test.expected) + "\n```\n\n"
+      @buf += title("Actual") + "\n```\n" + prettifyResponse(test.actual) + "\n```\n\n"
       @level--
 
       @level--

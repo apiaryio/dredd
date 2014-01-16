@@ -1,4 +1,5 @@
 logger = require './../logger'
+prettifyResponse = require './../prettify-response'
 
 class CliReporter
   constructor: (emitter, stats, tests, inlineErrors, details) ->
@@ -20,9 +21,9 @@ class CliReporter
         for test in @errors
           logger.fail test.title + " duration: #{test.duration}ms"
           logger.fail test.message
-          logger.request "\n" + (JSON.stringify test.request, null, 4) + "\n"
-          logger.expected "\n" + (JSON.stringify test.expected, null, 4) + "\n"
-          logger.actual "\n" + (JSON.stringify test.actual, null, 4) + "\n\n"
+          logger.request "\n" + prettifyResponse(test.request) + "\n"
+          logger.expected "\n" + prettifyResponse(test.expected) + "\n"
+          logger.actual "\n" + prettifyResponse(test.actual) + "\n\n"
       if @stats.tests > 0
         logger.complete "#{@stats.passes} passing, #{@stats.failures} failing, #{@stats.errors} errors, #{@stats.skipped} skipped"
       logger.complete "Tests took #{@stats.duration}ms"
@@ -31,9 +32,9 @@ class CliReporter
     emitter.on 'test pass', (test) =>
       logger.pass test.title + " duration: #{test.duration}ms"
       if @details
-        logger.request "\n" + (JSON.stringify test.request, null, 4) + "\n"
-        logger.expected "\n" + (JSON.stringify test.expected, null, 4) + "\n"
-        logger.actual "\n" + (JSON.stringify test.actual, null, 4) + "\n\n"
+        logger.request "\n" + prettifyResponse(test.request) + "\n"
+        logger.expected "\n" + prettifyResponse(test.expected) + "\n"
+        logger.actual "\n" + prettifyResponse(test.actual) + "\n\n"
 
     emitter.on 'test skip', (test) =>
       logger.skip test.title
@@ -42,9 +43,9 @@ class CliReporter
       logger.fail test.title + " duration: #{test.duration}ms"
       if @inlineErrors
         logger.fail test.message
-        logger.request "\n" + (JSON.stringify test.request, null, 4) + "\n"
-        logger.expected "\n" + (JSON.stringify test.expected, null, 4) + "\n"
-        logger.actual "\n" + (JSON.stringify test.actual, null, 4) + "\n\n"
+        logger.request "\n" + prettifyResponse(test.request) + "\n"
+        logger.expected "\n" + prettifyResponse(test.expected) + "\n"
+        logger.actual "\n" + prettifyResponse(test.actual) + "\n\n"
       else
         @errors.push test
 

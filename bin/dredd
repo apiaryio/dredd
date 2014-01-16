@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 var optimist = require('optimist');
-var parsePackageJson = require('../lib/parsePackageJson');
+var parsePackageJson = require('../lib/parse-package-json');
 var path = require('path');
 var Dredd = require('../lib/dredd');
 

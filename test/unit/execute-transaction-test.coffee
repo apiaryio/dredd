@@ -188,23 +188,6 @@ describe 'executeTransaction(transaction, callback)', () ->
         assert.ok  server.isDone()
         done()
 
-  describe 'when server responds with html', () ->
-    beforeEach () ->
-      nock('http://localhost:3000').
-        post('/machines', {"type":"bulldozer","name":"willy"}).
-        reply transaction['response']['status'],
-          transaction['response']['body'],
-          {'Content-Type': 'text/html'}
-      sinon.spy htmlStub, 'prettyPrint'
-
-    afterEach () ->
-      htmlStub.prettyPrint.restore()
-
-    it 'should prettify the html for reporting', (done) ->
-      executeTransaction transaction, () ->
-        assert.ok htmlStub.prettyPrint.called
-        done()
-
   describe 'when dry run', () ->
     beforeEach () ->
       transaction['configuration']['options']['dry-run'] = true
