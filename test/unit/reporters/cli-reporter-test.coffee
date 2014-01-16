@@ -28,12 +28,11 @@ describe 'CliReporter', () ->
     afterEach () ->
       loggerStub.info.restore()
 
-    it 'should write starting to the console', (done) ->
+    it 'should write starting to the console', () ->
       emitter = new EventEmitter()
       cliReporter = new CliReporter(emitter, {}, {}, true)
       emitter.emit 'start'
       assert.ok loggerStub.info.calledOnce
-      done()
 
   describe 'when adding passing test', () ->
     before () ->
@@ -47,12 +46,11 @@ describe 'CliReporter', () ->
     afterEach () ->
       loggerStub.pass.restore()
 
-    it 'should write pass to the console', (done) ->
+    it 'should write pass to the console', () ->
       emitter = new EventEmitter()
       cliReporter = new CliReporter(emitter, {}, {}, true)
       emitter.emit 'test pass', test
       assert.ok loggerStub.pass.calledOnce
-      done()
 
     describe 'when details=true', () ->
 
@@ -62,12 +60,11 @@ describe 'CliReporter', () ->
       afterEach () ->
         loggerStub.request.restore()
 
-      it 'should write details for passing tests', (done) ->
+      it 'should write details for passing tests', () ->
         emitter = new EventEmitter()
         cliReporter = new CliReporter(emitter, {}, {}, true, true)
         emitter.emit 'test pass', test
         assert.ok loggerStub.request.calledOnce
-        done()
 
   describe 'when adding failing test', () ->
 
@@ -84,12 +81,11 @@ describe 'CliReporter', () ->
       afterEach () ->
         loggerStub.fail.restore()
 
-      it 'should write fail to the console', (done) ->
+      it 'should write fail to the console', () ->
         emitter = new EventEmitter()
         cliReporter = new CliReporter(emitter, {}, {}, true)
         emitter.emit 'test fail', test
         assert.ok loggerStub.fail.calledTwice
-        done()
 
     describe 'when errors are aggregated', () ->
 
@@ -99,12 +95,11 @@ describe 'CliReporter', () ->
       afterEach () ->
         loggerStub.fail.restore()
 
-      it 'should not write full failure to the console at the time of failure', (done) ->
+      it 'should not write full failure to the console at the time of failure', () ->
         emitter = new EventEmitter()
         cliReporter = new CliReporter(emitter, {}, {}, false)
         emitter.emit 'test fail', test
         assert.ok loggerStub.fail.calledOnce
-        done()
 
       it 'should write full failure to the console after execution is complete', (done) ->
         emitter = new EventEmitter()
@@ -127,12 +122,11 @@ describe 'CliReporter', () ->
     afterEach () ->
       loggerStub.error.restore()
 
-    it 'should write error to the console', (done) ->
+    it 'should write error to the console', () ->
       emitter = new EventEmitter()
       cliReporter = new CliReporter(emitter, {}, {}, false)
       emitter.emit 'test error', new Error('Error'), test
       assert.ok loggerStub.error.calledTwice
-      done()
 
   describe 'when adding skipped test', () ->
 
@@ -147,12 +141,12 @@ describe 'CliReporter', () ->
     afterEach () ->
       loggerStub.skip.restore()
 
-    it 'should write skip to the console', (done) ->
+    it 'should write skip to the console', () ->
       emitter = new EventEmitter()
       cliReporter = new CliReporter(emitter, {}, {}, false)
       emitter.emit 'test skip', test
       assert.ok loggerStub.skip.calledOnce
-      done()
+
 
   describe 'when creating report', () ->
 
