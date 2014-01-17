@@ -49,7 +49,7 @@ class Dredd
         @transactionsComplete(config.emitter, stats, callback)
 
   transactionsComplete: (emitter, stats, callback) ->
-    reporterCount = EventEmitter.listenerCount(emitter, 'end')
+    reporterCount = emitter.listeners('end').length
     emitter.emit 'end' , () ->
       reporterCount--
       if reporterCount is 0
