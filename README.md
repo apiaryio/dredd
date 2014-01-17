@@ -26,24 +26,54 @@ See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-lif
 
 ## Command Line Options
 
-    $ dredd -h
+    $ dredd --help
 
-    Usage:
-      dredd <path to blueprint> <api_endpoint> [OPTIONS]
+    dredd <path to blueprint> <api_endpoint> [OPTIONS]
 
     Example:
       dredd ./apiary.md http://localhost:3000 --dry-run
 
     Options:
-      -d, --dry-run          Run without performing tests.
-      -s, --silent           Suppress all command line output
-      -r, --reporter STRING  Output additional report format. Options: junit
-      -o, --output FILE      Specifies output file when using additional
-                             reporter
-      -k, --no-color         Omit color from output
-          --debug            Show debug information
-      -v, --version          Display the current version
-      -h, --help             Display help and usage details
+      --reporter, -r       Output additional report format. This option can be used
+                           multiple times to add multiple reporters. Options:
+                           junit, nyan, dot, markdown, html.
+                                                                       [default: []]
+      --output, -o         Specifies output file when using additional file-based
+                           reporter. This option can be used multiple times if
+                           multiple file-based reporters are used.
+                                                                       [default: []]
+      --header, -h         Extra header to include in every request. This option
+                           can be used multiple times to add multiple headers.
+                                                                       [default: []]
+      --sorted, -s         Sorts requests in a sensible way so that objects are not
+                           modified before they are created. Order: CONNECT,
+                           OPTIONS, POST, GET, HEAD, PUT, PATCH, DELETE, TRACE.
+                                                                    [default: false]
+      --user, -u           Basic Auth credentials in the form username:password.
+                                                                     [default: null]
+      --inline-errors, -e  Determines whether failures and errors are displayed as
+                           they occur (true) or agregated and displayed at the end
+                           (false).
+                                                                    [default: false]
+      --details, -d        Determines whether request/response details are included
+                           in passing tests.
+                                                                    [default: false]
+      --method, -m         Restrict tests to a particular HTTP method (GET, PUT,
+                           POST, DELETE, PATCH). This option can be used multiple
+                           times to allow multiple methods.
+                                                                       [default: []]
+      --color, -c          Determines whether console output should include colors.
+                                                                     [default: true]
+      --level, -l          The level of logging to output. Options: silly, debug,
+                           verbose, info, warn, error.
+                                                                   [default: "info"]
+      --timestamp, -t      Determines whether console output should include
+                           timestamps.
+                                                                    [default: false]
+      --version            Show version number
+      --help               Show usage information
+
+Additionally, boolean flags can be negated by prefixing `no-`, for example: `--no-color --no-inline-errors`.
 
 ## API Blueprint testability
 Dredd can test only API resources specified by *well defined transaction*. Any Non specific resources in the Blueprint e. g. with URI template or query parameters without default or example values are considered as *ambiguous transaction* thus they are resulting in a *warning* during the test run and are skipped.

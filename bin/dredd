@@ -1,46 +1,67 @@
 #!/usr/bin/env node
-var cli = require('cli');
+var optimist = require('optimist');
+var parsePackageJson = require('../lib/parse-package-json');
 var path = require('path');
 var Dredd = require('../lib/dredd');
 
-cli.enable('version', 'status');
-cli.setApp(path.join(__dirname, '../package.json'));
-cli.setUsage("dredd <path to blueprint> <api_endpoint> [OPTIONS]"
-     + "\n\nExample: \n  " + "dredd ./apiary.md http://localhost:3000 --dry-run");
+var version = parsePackageJson(path.join(__dirname, '../package.json'));
 
-cli.parse(Dredd.options);
+var argv = optimist
+    .usage("dredd <path to blueprint> <api_endpoint> [OPTIONS]"
+     + "\n\nExample: \n  " + "dredd ./apiary.md http://localhost:3000 --dry-run")
+    .options(Dredd.options)
+    .wrap(80)
+    .argv;
 
-cli.main( function (args, options) {
-  var argError = false;
+var argError = false;
 
-  if (args[0] == undefined) {
-    cli.error("Must specify path to blueprint file.\n");
-    argError = true;
-  }
-  if (args[1] == undefined) {
-    cli.error("Must specify api endpoint.\n");
-    argError = true;
-  }
-  if (argError) {
-    cli.getUsage();
-  };
+if (argv.help == true) {
+  optimist.showHelp(fn=console.error);
+  process.exit(0);
+}
 
-  configuration = {
-    'blueprintPath': args[0],
-    'server': args[1],
-    'options': options
-  }
+if (argv.version == true) {
+  console.log(version);
+  process.exit(0);
+}
 
-  dredd = new Dredd(configuration);
+if (argv._[0] == undefined) {
+  console.error("Error: Must specify path to blueprint file.");
+  argError = true;
+}
+if (argv._[1] == undefined) {
+  console.error("Error: Must specify api endpoint.");
+  argError = true;
+}
+if (argError) {
+  console.error("\n")
+  optimist.showHelp(fn=console.error);
+  process.exit(1);
+}
 
-  dredd.run(function(error, reporter){
-    if(error){
-      cli.fatal(error)
-    }
-    if(reporter['stats']['failures'] > 0){
-      process.exit(1);
-    } else {
+configuration = {
+  'blueprintPath': argv._[0],
+  'server': argv._[1],
+  'options': argv
+}
+
+dredd = new Dredd(configuration);
+
+process.on( 'SIGINT', function() {
+  console.log( "\nShutting down from SIGINT (Ctrl-C)" );
+  dredd.transactionsComplete( dredd.configuration.emitter, dredd.stats, function() {
       process.exit(0);
-    };
-  });
+    });
+});
+
+dredd.run(function(error, stats){
+  if (error) {
+   console.error(error.stack);
+   process.exit(1);
+  }
+  if (stats.failures + stats.errors > 0) {
+    process.exit(1);
+  } else {
+    process.exit(0);
+  };
 });

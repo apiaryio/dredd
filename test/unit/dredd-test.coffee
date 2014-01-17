@@ -4,10 +4,7 @@ proxyquire = require('proxyquire').noCallThru()
 
 fsStub = require 'fs'
 protagonistStub = require 'protagonist'
-
-cliStub = require 'cli'
-
-
+loggerStub = require '../../src/logger'
 
 executeTransaction = (transaction, callback) ->
   callback()
@@ -22,7 +19,7 @@ Dredd = proxyquire '../../src/dredd', {
   './blueprint-ast-to-runtime': blueprintAstToRuntimeStub
   './execute-transaction': executeTransactionStub
   'fs': fsStub
-  'cli': cliStub
+  './logger': loggerStub
 }
 
 describe 'Dredd class', () ->
@@ -44,6 +41,10 @@ describe 'Dredd class', () ->
         server: 'http://localhost:3000/'
         options:
           silent: true
+          method: 'get'
+          header: 'Accept:application/json'
+          user: 'bob:test'
+          sorted: true
 
     it 'should copy configuration on creation', () ->
       runner = new Dredd(configuration)
@@ -65,13 +66,13 @@ describe 'Dredd class', () ->
     it 'should not pass any error to the callback function', (done) ->
       runner = new Dredd(configuration)
       runner.run (error) ->
-        assert.isUndefined(error)
+        assert.isNull(error)
         done()
 
     it 'should pass the reporter as second argument', (done) ->
       runner = new Dredd(configuration)
       runner.run (error, reporter) ->
-        assert.isDefined reporter 
+        assert.isDefined reporter
         done()
 
     it 'should convert ast to runtime', (done) ->
@@ -79,17 +80,6 @@ describe 'Dredd class', () ->
       runner.run (error) ->
         assert.ok blueprintAstToRuntimeStub.called
         done()
-
-  describe 'when junit reporter is added', () ->
-    before () ->
-      configuration =
-        options:
-          reporter: 'junit'
-          silent: true
-
-    it 'should have two reporters', () ->
-      runner = new Dredd(configuration)
-      assert.equal runner.configuration.reporter.reporters.length , 1
 
   describe 'when Blueprint parsing error', () ->
     beforeEach () ->
@@ -116,9 +106,21 @@ describe 'Dredd class', () ->
         done()
 
   describe 'when Blueprint parsing warning', () ->
-    it 'should execute the runtime'
+    beforeEach () ->
+      executeTransactionStub.reset()
 
-    it 'should exit with status 0'
+    before () ->
+      configuration =
+        blueprintPath: './test/fixtures/warning-ambigous.apib'
+        url: 'http://localhost:3000/'
+        options:
+          silent: true
+
+    it 'should execute the runtime', (done) ->
+      runner = new Dredd(configuration)
+      runner.run () ->
+        assert.ok executeTransactionStub.called
+        done()
 
   describe 'when non existing Blueprint path', () ->
     beforeEach () ->
@@ -143,14 +145,13 @@ describe 'Dredd class', () ->
         assert.notOk executeTransactionStub.called
         done()
 
-    it 'should return error to stdout'
-
   describe 'when runtime contains any error', () ->
     before () ->
       configuration =
         blueprintPath: './test/fixtures/error-uri-template.apib'
         server: 'http://localhost:3000/'
-        silent: true
+        options:
+          silent: true
       executeTransactionStub.reset()
 
     it 'should NOT execute any transaction', (done) ->
@@ -158,8 +159,6 @@ describe 'Dredd class', () ->
       runner.run (error) ->
         assert.notOk executeTransactionStub.called
         done()
-
-    it 'should print runtime errors to stdout'
 
     it 'should exit with an error', (done) ->
       runner = new Dredd(configuration)
@@ -177,13 +176,23 @@ describe 'Dredd class', () ->
 
       executeTransactionStub.reset()
 
+    beforeEach () ->
+      sinon.spy loggerStub, 'warn'
+
+    afterEach () ->
+      loggerStub.warn.restore()
+
     it 'should execute some transaction', (done) ->
       runner = new Dredd(configuration)
       runner.run (error) ->
         assert.ok executeTransactionStub.called
         done()
 
-    it 'should print runtime warnings to stdout'
+    it 'should print runtime warnings to stdout', (done) ->
+      runner = new Dredd(configuration)
+      runner.run (error) ->
+        assert.ok loggerStub.warn.called
+        done()
 
     it 'should not exit', (done) ->
       runner = new Dredd(configuration)
@@ -200,7 +209,6 @@ describe 'Dredd class', () ->
       runner.run (error) ->
         assert.ok blueprintAstToRuntimeStub.called
         done()
-
 
 
 

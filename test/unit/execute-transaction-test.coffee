@@ -1,4 +1,5 @@
 require 'coffee-errors'
+{EventEmitter} = require 'events'
 {assert} = require 'chai'
 nock = require 'nock'
 proxyquire = require 'proxyquire'
@@ -8,11 +9,12 @@ htmlStub = require 'html'
 executeTransaction = proxyquire  '../../src/execute-transaction', {
   'html': htmlStub
 }
-CliReporter = require '../../src/cli-reporter'
+CliReporter = require '../../src/reporters/cli-reporter'
 
 describe 'executeTransaction(transaction, callback)', () ->
-  transaction =
-
+  transaction = {}
+  data = {}
+  server = {}
 
   beforeEach () ->
     transaction =
@@ -36,17 +38,20 @@ describe 'executeTransaction(transaction, callback)', () ->
         exampleName: "Bogus example name"
       configuration:
         server: 'http://localhost:3000'
-        options: []
+        emitter: new EventEmitter()
+        options:
+          'dry-run': false
+          method: []
+          header: []
+          reporter:  []
+
+    transaction.configuration.options.reporter = [new CliReporter(transaction.configuration.emitter, {}, {}, false, false)]
 
     nock.disableNetConnect()
 
   afterEach () ->
     nock.enableNetConnect()
     nock.cleanAll()
-
-
-  data = {}
-  server = {}
 
   describe 'setting of content-length header', () ->
     describe 'when content-length header is not present in the specified request', () ->
@@ -56,7 +61,6 @@ describe 'executeTransaction(transaction, callback)', () ->
           reply transaction['response']['status'],
             transaction['response']['body'],
             {'Content-Type': 'application/json'}
-        transaction['configuration'].reporter = new CliReporter()
         nock.recorder.rec(true)
 
       it 'should send content length header ', (done) ->
@@ -72,13 +76,11 @@ describe 'executeTransaction(transaction, callback)', () ->
 
     describe 'when content-length header is present in the specified request', () ->
       beforeEach () ->
-        transaction['configuration'].reporter = new CliReporter()
-
         server = nock('http://localhost:3000').
           post('/machines', {"type":"bulldozer","name":"willy"}).
           reply transaction['response']['status'],
             transaction['response']['body'],
-            {'Content-Type': 'application/json'}      
+            {'Content-Type': 'application/json'}
 
       it 'should not overwrite specified value', (done) ->
         transaction['request']['headers']['Content-Length'] = {}
@@ -111,8 +113,6 @@ describe 'executeTransaction(transaction, callback)', () ->
         reply transaction['response']['status'],
           transaction['response']['body'],
           {'Content-Type': 'application/json'}
-      transaction['configuration'].reporter = new CliReporter()
-
 
     it 'should perform the request', (done) ->
       executeTransaction transaction, () ->
@@ -126,7 +126,6 @@ describe 'executeTransaction(transaction, callback)', () ->
 
   describe 'when backend responds with non valid response', () ->
     beforeEach () ->
-      transaction['configuration'].reporter = new CliReporter()
       server = nock('http://localhost:3000').
         post('/machines', {"type":"bulldozer","name":"willy"}).
         reply transaction['response']['status'],
@@ -141,7 +140,6 @@ describe 'executeTransaction(transaction, callback)', () ->
 
   describe 'when there are global headers in the configuration', () ->
     beforeEach () ->
-      transaction['configuration'].reporter = new CliReporter()
       server = nock('http://localhost:3000').
         post('/machines', {"type":"bulldozer","name":"willy"}).
         matchHeader('X-Header', 'foo').
@@ -149,18 +147,35 @@ describe 'executeTransaction(transaction, callback)', () ->
           transaction['response']['body'],
           {'Content-Type': 'application/json'}
 
-      transaction['configuration']['request'] =
-        headers:
-          'X-Header' : 'foo'
+      transaction['configuration']['options']['header'] = ['X-Header:foo']
 
     it 'should include the global headers in the request', (done) ->
       executeTransaction transaction, () ->
         assert.ok server.isDone()
         done()
 
+  describe 'when only certain methods are allowed by the configuration', () ->
+    beforeEach () ->
+      server = nock('http://localhost:3000').
+        post('/machines', {"type":"bulldozer","name":"willy"}).
+        matchHeader('X-Header', 'foo').
+        reply transaction['response']['status'],
+          transaction['response']['body'],
+          {'Content-Type': 'application/json'}
+      sinon.stub transaction.configuration.emitter, 'emit'
+      transaction['configuration']['options']['method'] = ['GET']
+
+    afterEach () ->
+      transaction.configuration.emitter.emit.restore()
+      transaction['configuration']['options']['method'] = []
+
+    it 'should only perform those requests', (done) ->
+      executeTransaction transaction, () ->
+        assert.ok transaction.configuration.emitter.emit.calledWith 'test skip'
+        done()
+
   describe 'when server uses https', () ->
     beforeEach () ->
-      transaction['configuration'].reporter = new CliReporter()
       server = nock('https://localhost:3000').
         post('/machines', {"type":"bulldozer","name":"willy"}).
         reply transaction['response']['status'],
@@ -173,28 +188,9 @@ describe 'executeTransaction(transaction, callback)', () ->
         assert.ok  server.isDone()
         done()
 
-  describe 'when server responds with html', () ->
-    beforeEach () ->
-      transaction['configuration'].reporter = new CliReporter()
-      nock('http://localhost:3000').
-        post('/machines', {"type":"bulldozer","name":"willy"}).
-        reply transaction['response']['status'],
-          transaction['response']['body'],
-          {'Content-Type': 'text/html'}
-      sinon.spy htmlStub, 'prettyPrint'
-
-    afterEach () ->
-      htmlStub.prettyPrint.restore()
-
-    it 'should prettify the html for reporting', (done) ->
-      executeTransaction transaction, () ->
-        assert.ok htmlStub.prettyPrint.called
-        done()
-
   describe 'when dry run', () ->
     beforeEach () ->
-      transaction['configuration'].reporter = new CliReporter()
-      transaction['configuration']['options'] = {'dry-run' : true}
+      transaction['configuration']['options']['dry-run'] = true
       server = nock('http://localhost:3000').
         post('/machines', {"type":"bulldozer","name":"willy"}).
         reply 202, "Accepted"

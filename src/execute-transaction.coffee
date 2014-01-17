@@ -6,7 +6,7 @@ html = require 'html'
 url = require 'url'
 os = require 'os'
 packageConfig = require './../package.json'
-cli = require 'cli'
+logger = require './logger'
 
 
 indent = '  '
@@ -19,20 +19,6 @@ String::trunc = (n) ->
 
 String::startsWith = (str) ->
     return this.slice(0, str.length) is str
-
-prettify = (transaction) ->
-  type = transaction?.headers['Content-Type'] || transaction?.headers['content-type']
-  switch type
-    when 'application/json'
-      try
-        parsed = JSON.parse transaction.body
-      catch e
-        cli.error "Error parsing body as json: " + transaction.body
-        parsed = transaction.body
-      transaction.body = parsed
-    when 'text/html'
-      transaction.body = html.prettyPrint(transaction.body, {indent_size: 2})
-  return transaction
 
 executeTransaction = (transaction, callback) ->
   configuration = transaction['configuration']
@@ -55,13 +41,14 @@ executeTransaction = (transaction, callback) ->
   caseInsensitiveMap = {}
   for key, value of flatHeaders
     caseInsensitiveMap[key.toLowerCase()] = key
-  
+
   if caseInsensitiveMap['content-length'] == undefined and request['body'] != ''
     flatHeaders['Content-Length'] = request['body'].length
 
-  if configuration.request?.headers?
-    for header, value of configuration['request']['headers']
-      flatHeaders[header] = value
+  if configuration.options.header.length > 0
+    for header in configuration.options.header
+      splitHeader = header.split(':')
+      flatHeaders[splitHeader[0]] = splitHeader[1]
 
   options =
     host: parsedUrl['hostname']
@@ -78,8 +65,18 @@ executeTransaction = (transaction, callback) ->
               ' ' + options['path'] + \
               ' ' + JSON.stringify(request['body']).trunc(20)
 
+  test =
+    status: ''
+    title: options['method'] + ' ' + options['path']
+    message: description
+
+  configuration.emitter.emit 'test start', test
+
   if configuration.options['dry-run']
-    cli.info "Dry run, skipping..."
+    logger.info "Dry run, skipping API Tests..."
+    return callback()
+  else if configuration.options.method.length > 0 and not (request.method in configuration.options.method)
+    configuration.emitter.emit 'test skip', test
     return callback()
   else
     buffer = ""
@@ -89,7 +86,7 @@ executeTransaction = (transaction, callback) ->
         buffer = buffer + chunk
 
       req.on 'error', (error) ->
-        return callback error, req, res
+        configuration.emitter.emit 'test error', error, test if error
 
       res.on 'end', () ->
         real =
@@ -100,23 +97,23 @@ executeTransaction = (transaction, callback) ->
         expected =
           headers: flattenHeaders response['headers']
           body: response['body']
-          bodySchema: response['schema']
-          statusCode: response['status']
+          status: response['status']
+
+        expected['schema'] = response['schema'] if response['schema']
 
         gavel.isValid real, expected, 'response', (error, isValid) ->
-          return callback error, req, res if error
+          configuration.emitter.emit 'test error', error, test if error
 
           if isValid
-            test =
-              status: "pass",
-              title: options['method'] + ' ' + options['path']
-              message: description
-            configuration.reporter.addTest test, (error) ->
-              return callback error, req, res if error
-            return callback(undefined, req, res)
+            test.status = "pass"
+            test.actual = real
+            test.expected = expected
+            test.request = options
+            configuration.emitter.emit 'test pass', test
+            return callback(null, req, res)
           else
             gavel.validate real, expected, 'response', (error, result) ->
-              return callback(error, req, res) if error
+              configuration.emitter.emit 'test error', error, test if error
               message = ''
               for entity, data of result
                 for entityResult in data['results']
@@ -125,12 +122,12 @@ executeTransaction = (transaction, callback) ->
                 status: "fail",
                 title: options['method'] + ' ' + options['path'],
                 message: message
-                actual: prettify real
-                expected: prettify expected
+                actual: real
+                expected: expected
                 request: options
-              configuration.reporter.addTest test, (error) ->
-                return callback error, req, res if error
-              return callback(undefined, req, res)
+                start: test.start
+              configuration.emitter.emit 'test fail', test
+              return callback()
 
     if configuration.server.startsWith 'https'
       req = https.request options, handleRequest
