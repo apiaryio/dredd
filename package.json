@@ -17,7 +17,7 @@
   "dependencies": {
     "gavel": "~0.2.6",
     "winston": "~0.7.2",
-    "protagonist": "=>0.6.1",
+    "protagonist": "~0.6.1",
     "uri-template": "~0.4.1",
     "async": "~0.2.9",
     "optimist": "~0.6.0",
