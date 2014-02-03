@@ -158,6 +158,9 @@ class Dredd
   # By sorting the transactions by their methods, it is possible to ensure that
   # objects are created before they are read, updated, or deleted.
   sortTransactions = (arr) ->
+    arr.map (a, i) ->
+      a['_index'] = i
+
     arr.sort (a, b) ->
       sortedMethods = [
         "CONNECT", "OPTIONS",
@@ -166,10 +169,16 @@ class Dredd
       ]
       methodIndexA = sortedMethods.indexOf(a['request']['method'])
       methodIndexB = sortedMethods.indexOf(b['request']['method'])
+
       return switch
         when methodIndexA < methodIndexB then -1
         when methodIndexA > methodIndexB then 1
-        else 0
+        when methodIndexA == methodIndexB
+          a['_index'] - b['_index']
+
+    arr.map (a) ->
+      delete a['_index']
+
     arr
 
 module.exports = Dredd
