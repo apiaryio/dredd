@@ -75,11 +75,12 @@ See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-lif
 
 Additionally, boolean flags can be negated by prefixing `no-`, for example: `--no-color --no-inline-errors`.
 
-## API Blueprint testability
+## API Blueprint Testability
 Dredd can test only API resources specified by *well defined transaction*. Any Non specific resources in the Blueprint e. g. with URI template or query parameters without default or example values are considered as *ambiguous transaction* thus they are resulting in a *warning* during the test run and are skipped.
 
-## Contribution
+To learn more about the future of API Blueprint & Testing visit [apiaryio/api-blueprint#21](https://github.com/apiaryio/api-blueprint/issues/21).
 
+## Contribution
 Any contribution is more then welcome! Let's start with creating your own [virtual development environment][vde], then fork, write  tests, write clean, readable code which communicate, use `scripts/bdd`, keep the [test coverage] and create a pull request. :)
 
 Make sure to follow Dredd [issues page][issues].
