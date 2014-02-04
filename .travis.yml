@@ -6,6 +6,7 @@ notifications:
   email:
     recipients:
       - adam@apiary.io
+      - ladislav@apiary.io
     on_success: change
     on_failure: always
 after_success:
