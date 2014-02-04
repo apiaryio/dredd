@@ -7,34 +7,34 @@ var Dredd = require('../lib/dredd');
 var version = parsePackageJson(path.join(__dirname, '../package.json'));
 
 var argv = optimist
-    .usage("dredd <path to blueprint> <api_endpoint> [OPTIONS]"
-     + "\n\nExample: \n  " + "dredd ./apiary.md http://localhost:3000 --dry-run")
+    .usage("dredd <path to blueprint> <api_endpoint> [OPTIONS]" + 
+    "\n\nExample: \n  " + "dredd ./apiary.md http://localhost:3000 --dry-run")
     .options(Dredd.options)
     .wrap(80)
     .argv;
 
 var argError = false;
 
-if (argv.help == true) {
+if (argv.help === true) {
   optimist.showHelp(fn=console.error);
   process.exit(0);
 }
 
-if (argv.version == true) {
+if (argv.version === true) {
   console.log(version);
   process.exit(0);
 }
 
-if (argv._[0] == undefined) {
+if (argv._[0] === undefined) {
   console.error("Error: Must specify path to blueprint file.");
   argError = true;
 }
-if (argv._[1] == undefined) {
+if (argv._[1] === undefined) {
   console.error("Error: Must specify api endpoint.");
   argError = true;
 }
 if (argError) {
-  console.error("\n")
+  console.error("\n");
   optimist.showHelp(fn=console.error);
   process.exit(1);
 }
@@ -43,7 +43,7 @@ configuration = {
   'blueprintPath': argv._[0],
   'server': argv._[1],
   'options': argv
-}
+};
 
 dredd = new Dredd(configuration);
 
@@ -57,12 +57,14 @@ process.on( 'SIGINT', function() {
 dredd.run(function(error, stats){
   if (error) {
    console.error(error.message);
-   console.error(error.stack);
+   if (error.stack) {
+       console.error(error.stack);
+   }
    process.exit(1);
   }
   if (stats.failures + stats.errors > 0) {
     process.exit(1);
   } else {
     process.exit(0);
-  };
+  }
 });
