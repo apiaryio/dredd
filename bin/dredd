@@ -56,6 +56,7 @@ process.on( 'SIGINT', function() {
 
 dredd.run(function(error, stats){
   if (error) {
+   console.error(error.message);
    console.error(error.stack);
    process.exit(1);
   }
