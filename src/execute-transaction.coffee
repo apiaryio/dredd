@@ -25,10 +25,10 @@ executeTransaction = (transaction, callback) ->
   origin = transaction['origin']
   request = transaction['request']
   response = transaction['response']
-
   parsedUrl = url.parse configuration['server']
-
   flatHeaders = flattenHeaders request['headers']
+  
+  startedAt = 0
 
   # Add Dredd user agent if no User-Agent present
   if flatHeaders['User-Agent'] == undefined
@@ -101,7 +101,21 @@ executeTransaction = (transaction, callback) ->
 
         expected['schema'] = response['schema'] if response['schema']
 
+        test =
+          status: "pass",
+          title: options['method'] + ' ' + options['path']
+          message: description
+          request: options
+          realResponse: real
+          expectedResponse: expected
+          origin: transaction['origin']
+          duration: (new Date().getTime() / 1000) - startedAt
+
+
+        test['request']['body'] = transaction['request']['body']
+
         gavel.isValid real, expected, 'response', (error, isValid) ->
+
           configuration.emitter.emit 'test error', error, test if error
 
           if isValid
@@ -129,6 +143,7 @@ executeTransaction = (transaction, callback) ->
               configuration.emitter.emit 'test fail', test
               return callback()
 
+    startedAt = new Date().getTime() / 1000
     if configuration.server.startsWith 'https'
       req = https.request options, handleRequest
     else

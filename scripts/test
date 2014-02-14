@@ -1,5 +1,6 @@
 #!/bin/sh
 ./scripts/build
-./scripts/mocha 2>&1
+./scripts/mocha 2>&1 \
+&& ./scripts/test_gitignore
 
 

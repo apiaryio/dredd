@@ -1,0 +1,7 @@
+#!/bin/bash
+./scripts/build
+export DREDD_REST_TOKEN=aff888af9993db9ef70edf3c878ab521
+export DREDD_REST_SUITE=jakubtest
+export DREDD_REST_URL=http://reportingmock.apiary.io
+export DREDD_REST_DEBUG=1
+./bin/dredd ./RestReportingApiBlueprint.md http://apiaryprivatetests.apiary.io
