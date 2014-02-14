@@ -1,4 +1,4 @@
-FORMAT: X-1A
+FORMAT: 1A
 HOST: http://api.apiary.io/
 
 # Apiary Dredd tests reporting API 

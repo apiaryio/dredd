@@ -11,7 +11,7 @@ Rest reporter is activated by exposing environment variables withs token and sui
 
 ### Passing test run details with env varirables
 
-> json_dot.notation ... ENV VAIRABLE || default value
+> json_dot.notation ... ENV VARIABLE || default value
 
 - agent ... DREDD_AGENT || process.env['USER']
 - hostname ... DREDD_HOSTNAME || os.hostname
@@ -22,7 +22,7 @@ Rest reporter is activated by exposing environment variables withs token and sui
 - ci.jobId ... CI_JOB_ID || undefined
 - ci.jobNumber ... CI_JOB_NUMBER || undefined
 
-See [Rest Reporting API documentation][doc] and it's [Apiary documentation](apiarydoc) for more information about reporting data strucutres and API.
+See [Rest Reporting API documentation][doc] and it's [Apiary documentation](apiarydoc) for more information about reporting data structures and API.
 
 [doc]: https://github.com/apiaryio/dredd/blob/netmilk/rest-reporter/RestReportingApiBlueprint.md
 [apiarydoc]: http://docs.reportingmock.apiary.io/
