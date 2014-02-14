@@ -23,7 +23,8 @@
     "optimist": "~0.6.0",
     "html": "~0.0.7",
     "htmlencode": "~0.0.3",
-    "marked": "~0.3.0"
+    "marked": "~0.3.0",
+    "node-uuid": "~1.4.1"
   },
   "devDependencies": {
     "coffee-script": "1.6.3",

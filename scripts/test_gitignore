@@ -1,0 +1,29 @@
+#!/bin/bash
+if git ls-files | grep ^lib/ > /dev/null
+  then
+    echo "ERROR from ./scripts/test_gitignore"
+    echo "Git ls-files contains 'lib' directory, it should not be part"
+    echo "of the git repository. 'lib' directory is distributed only as"
+    echo "a part of the NPM paclage"
+    exit 1
+fi
+
+if ! cat .gitignore | grep ^lib\/ > /dev/null
+  then
+    echo "ERROR from ./scripts/test_gitignore"
+    echo "Gitignore does not contains 'lib'. 'lib' directory, it should not be part"
+    echo "of the git repository. 'lib' directory is distributed only as"
+    echo "a part of the NPM paclage"
+    exit 1
+fi
+
+
+if ! cat .npmignore | grep ^src\/ > /dev/null
+  then
+    echo "ERROR from ./scripts/test_gitignore"
+    echo "Npmignore does not contains 'src'. 'src' folder contains only Coffee code"
+    echo "which is compilated in the npm ;prepublish hook to JavaScript under 'lib'"
+    exit 1
+fi
+
+exit 0

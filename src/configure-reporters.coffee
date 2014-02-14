@@ -5,6 +5,7 @@ DotReporter = require './reporters/dot-reporter'
 NyanCatReporter = require './reporters/nyan-reporter'
 HtmlReporter = require './reporters/html-reporter'
 MarkdownReporter = require './reporters/markdown-reporter'
+RestReporter = require './reporters/rest-reporter'
 
 logger = require './logger'
 
@@ -60,6 +61,13 @@ configureReporters = (config, stats, tests) ->
       path = if outputs[i] then outputs[i] else null
       addReporter(reporter, config.emitter, stats, tests, path)
 
+  if process.env['DREDD_REST_TOKEN']? && process.env['DREDD_REST_SUITE']?
 
+    config.options.restReporter = 
+      apiUrl: process.env['DREDD_REST_URL'] || 'https://api.apiary.io'
+      apiToken: process.env['DREDD_REST_TOKEN']
+      suite: process.env['DREDD_REST_SUITE']
+
+    config.reporter.addReporter new RestReporter config
 
 module.exports = configureReporters
