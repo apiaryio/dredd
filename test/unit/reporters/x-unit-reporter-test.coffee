@@ -72,32 +72,27 @@ describe 'XUnitReporter', () ->
 
     beforeEach () ->
       sinon.stub fsStub, 'appendFile'
+      sinon.stub fsStub, 'readFile'
+      fsStub.readFile.yields null, 'da\nta'
+      sinon.stub fsStub, 'writeFile'
+      fsStub.writeFile.yields null
 
     afterEach () ->
       fsStub.appendFile.restore()
+      fsStub.readFile.restore()
+      fsStub.writeFile.restore()
 
     describe 'when there is one test', () ->
 
-      it 'should write tests to file', (done) ->
+      it 'should write tests to file', () ->
         emitter = new EventEmitter()
         xUnitReporter = new XUnitReporter(emitter, {}, {})
         xUnitReporter.tests = [ test ]
         xUnitReporter.stats.tests = 1
-        emitter.emit 'end', () ->
-          assert.ok fsStub.appendFile.called
-          done()
+        emitter.emit 'test pass', test
+        assert.ok fsStub.appendFile.called
 
       describe 'when the file writes successfully', () ->
-
-        before () ->
-          sinon.stub fsStub, 'readFile'
-          fsStub.readFile.yields null, 'da\nta'
-          sinon.stub fsStub, 'writeFile'
-          fsStub.writeFile.yields null
-
-        after () ->
-          fsStub.readFile.restore()
-          fsStub.writeFile.restore()
 
         it 'should read the file and update the stats', (done) ->
           emitter = new EventEmitter()
@@ -115,7 +110,7 @@ describe 'XUnitReporter', () ->
         emitter = new EventEmitter()
         xUnitReporter = new XUnitReporter(emitter, {}, {})
         emitter.emit 'end', () ->
-          assert.ok fsStub.appendFile.called
+          assert.ok fsStub.writeFile.called
           done()
 
   describe 'when test passes', () ->

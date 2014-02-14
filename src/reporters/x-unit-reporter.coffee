@@ -36,7 +36,6 @@ class XUnitReporter extends EventEmitter
           }, false)
 
     emitter.on 'end', (callback) =>
-      appendLine @path, '</testsuite>'
       updateSuiteStats @path, @stats, callback
 
     emitter.on 'test pass', (test) =>
@@ -86,7 +85,7 @@ class XUnitReporter extends EventEmitter
             , time: stats.duration / 1000
           }, false
           xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>'
-          fs.writeFile path, xmlHeader + '\n' + newStats + '\n' + restOfFile, (err) ->
+          fs.writeFile path, xmlHeader + '\n' + newStats + '\n' + restOfFile + '</testsuite>', (err) ->
             if err
               logger.error err
             callback()
