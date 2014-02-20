@@ -25,6 +25,7 @@ class Dredd
         duration: 0
     @configuration = applyConfiguration(config, @stats)
     configureReporters @configuration, @stats, @tests
+    @runner = new Runner(@configuration)
 
   run: (callback) ->
     config = @configuration
@@ -43,9 +44,7 @@ class Dredd
       runtimeError = handleRuntimeProblems runtime
       return callback(runtimeError, stats) if runtimeError
 
-      runner = new Runner(config)
-
-      runner.run runtime['transactions'], () ->
+      @runner.run runtime['transactions'], () ->
         reporterCount = config.emitter.listeners('end').length
         config.emitter.emit 'end' , () ->
           reporterCount--

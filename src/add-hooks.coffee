@@ -8,7 +8,7 @@ hooks = require './hooks'
 logger = require './logger'
 
 addHooks = (runner) ->
-    pattern = runner.configuration.options.hookfiles
+    pattern = runner?.configuration?.options?.hookfiles
     return if not pattern
 
     files = glob.sync pattern

@@ -438,4 +438,31 @@ describe "Command line interface", () ->
         # look for the prefix for cli output with timestamps
         assert.notEqual stdout.indexOf 'Z -', -1
 
+  describe 'when loading hooks with --hookfiles', () ->
+
+    recievedRequest = {}
+
+    before (done) ->
+      cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT} --hookfiles=./test/fixtures/*_hooks.*"
+
+      app = express()
+
+      app.get '/machines', (req, res) ->
+        recievedRequest = req
+        res.setHeader 'Content-Type', 'application/json'
+        machine =
+          type: 'bulldozer'
+          name: 'willy'
+        response = [machine]
+        res.send 200, response
+
+      server = app.listen PORT, () ->
+        execCommand cmd, () ->
+          server.close()
+
+      server.on 'close', done
+
+    it 'should modify the transaction with hooks', () ->
+      assert.equal recievedRequest.headers['header'], '123232323'
+
 

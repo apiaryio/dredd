@@ -15,14 +15,6 @@ packageConfig = require './../package.json'
 logger = require './logger'
 
 
-indent = '  '
-
-String::trunc = (n) ->
-  if this.length>n
-    return this.substr(0,n-1)+'...'
-  else
-    return this
-
 String::startsWith = (str) ->
     return this.slice(0, str.length) is str
 
@@ -37,7 +29,8 @@ class TransactionRunner
     async.mapSeries transactions, @configureTransaction, (err, results) ->
       transactions = results
 
-    async.eachSeries transactions, @executeTransaction, callback
+    async.eachSeries transactions, @executeTransaction, () ->
+      callback()
 
   configureTransaction: (transaction, callback) =>
     configuration = @configuration
@@ -120,7 +113,7 @@ class TransactionRunner
     if configuration.options['dry-run']
       logger.info "Dry run, skipping API Tests..."
       return callback()
-    else if configuration.options.method.length > 0 and not (request.method in configuration.options.method)
+    else if configuration.options.method.length > 0 and not (transaction.request.method in configuration.options.method)
       configuration.emitter.emit 'test skip', test
       return callback()
     else

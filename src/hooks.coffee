@@ -4,10 +4,10 @@ class Hooks
     @beforeHooks = {}
     @afterHooks = {}
 
-  before: (name, hook) ->
+  before: (name, hook) =>
     @beforeHooks[name] = hook
 
-  after: (name, hook) ->
+  after: (name, hook) =>
     @afterHooks[name] = hook
 
 module.exports = new Hooks()
