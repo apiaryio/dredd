@@ -57,28 +57,28 @@ describe 'XUnitReporter', () ->
   describe 'when starting', () ->
 
     beforeEach () ->
-      sinon.stub fsStub, 'appendFile'
+      sinon.stub fsStub, 'appendFileSync'
 
     afterEach () ->
-      fsStub.appendFile.restore()
+      fsStub.appendFileSync.restore()
 
     it 'should write opening to file', () ->
       emitter = new EventEmitter()
       xUnitReporter = new XUnitReporter(emitter, {}, {})
       emitter.emit 'start'
-      assert.ok fsStub.appendFile.called
+      assert.ok fsStub.appendFileSync.called
 
   describe 'when ending', () ->
 
     beforeEach () ->
-      sinon.stub fsStub, 'appendFile'
+      sinon.stub fsStub, 'appendFileSync'
       sinon.stub fsStub, 'readFile'
       fsStub.readFile.yields null, 'da\nta'
       sinon.stub fsStub, 'writeFile'
       fsStub.writeFile.yields null
 
     afterEach () ->
-      fsStub.appendFile.restore()
+      fsStub.appendFileSync.restore()
       fsStub.readFile.restore()
       fsStub.writeFile.restore()
 
@@ -90,7 +90,7 @@ describe 'XUnitReporter', () ->
         xUnitReporter.tests = [ test ]
         xUnitReporter.stats.tests = 1
         emitter.emit 'test pass', test
-        assert.ok fsStub.appendFile.called
+        assert.ok fsStub.appendFileSync.called
 
       describe 'when the file writes successfully', () ->
 
@@ -135,17 +135,17 @@ describe 'XUnitReporter', () ->
             'Content-Type': 'text/html'
 
     beforeEach () ->
-      sinon.stub fsStub, 'appendFile'
+      sinon.stub fsStub, 'appendFileSync'
 
     afterEach () ->
-      fsStub.appendFile.restore()
+      fsStub.appendFileSync.restore()
 
     it 'should write a passing test', () ->
       emitter = new EventEmitter()
       xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
       emitter.emit 'test start', test
       emitter.emit 'test pass', test
-      assert.ok fsStub.appendFile.called
+      assert.ok fsStub.appendFileSync.called
 
     describe 'when details=true', () ->
 
@@ -154,7 +154,7 @@ describe 'XUnitReporter', () ->
         cliReporter = new XUnitReporter(emitter, {}, {}, "test.xml", true)
         emitter.emit 'test start', test
         emitter.emit 'test pass', test
-        assert.ok fsStub.appendFile.called
+        assert.ok fsStub.appendFileSync.called
 
   describe 'when test is skipped', () ->
     before () ->
@@ -163,17 +163,17 @@ describe 'XUnitReporter', () ->
         title: 'Skipped Test'
 
     beforeEach () ->
-      sinon.stub fsStub, 'appendFile'
+      sinon.stub fsStub, 'appendFileSync'
 
     afterEach () ->
-      fsStub.appendFile.restore()
+      fsStub.appendFileSync.restore()
 
     it 'should write a skipped test', () ->
       emitter = new EventEmitter()
       xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
       emitter.emit 'test start', test
       emitter.emit 'test skip', test
-      assert.ok fsStub.appendFile.called
+      assert.ok fsStub.appendFileSync.called
 
   describe 'when test fails', () ->
 
@@ -183,17 +183,17 @@ describe 'XUnitReporter', () ->
         title: 'Failed Test'
 
     beforeEach () ->
-      sinon.stub fsStub, 'appendFile'
+      sinon.stub fsStub, 'appendFileSync'
 
     afterEach () ->
-      fsStub.appendFile.restore()
+      fsStub.appendFileSync.restore()
 
     it 'should write a failed test', () ->
       emitter = new EventEmitter()
       xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
       emitter.emit 'test start', test
       emitter.emit 'test fail', test
-      assert.ok fsStub.appendFile.called
+      assert.ok fsStub.appendFileSync.called
 
   describe 'when test errors', () ->
 
@@ -203,14 +203,14 @@ describe 'XUnitReporter', () ->
         title: 'Errored Test'
 
     beforeEach () ->
-      sinon.stub fsStub, 'appendFile'
+      sinon.stub fsStub, 'appendFileSync'
 
     afterEach () ->
-      fsStub.appendFile.restore()
+      fsStub.appendFileSync.restore()
 
     it 'should write an error test', () ->
       emitter = new EventEmitter()
       xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
       emitter.emit 'test start', test
       emitter.emit 'test error', new Error('Error'), test
-      assert.ok fsStub.appendFile.called
+      assert.ok fsStub.appendFileSync.called

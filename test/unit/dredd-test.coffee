@@ -6,10 +6,9 @@ fsStub = require 'fs'
 protagonistStub = require 'protagonist'
 loggerStub = require '../../src/logger'
 
-executeTransaction = (transaction, callback) ->
+executeTransactionStub = require  '../../src/transaction-runner'
+sinon.stub executeTransactionStub, 'executeTransaction', (transaction, callback) ->
   callback()
-
-executeTransactionStub = sinon.spy executeTransaction
 
 blueprintAstToRuntime = require '../../src/blueprint-ast-to-runtime'
 blueprintAstToRuntimeStub = sinon.spy blueprintAstToRuntime
@@ -83,7 +82,7 @@ describe 'Dredd class', () ->
 
   describe 'when Blueprint parsing error', () ->
     beforeEach () ->
-      executeTransactionStub.reset()
+      executeTransactionStub.executeTransaction.reset()
 
     before () ->
       configuration =
@@ -102,12 +101,12 @@ describe 'Dredd class', () ->
     it 'should NOT execute any transaction', (done) ->
       runner = new Dredd(configuration)
       runner.run () ->
-        assert.notOk executeTransactionStub.called
+        assert.notOk executeTransactionStub.executeTransaction.called
         done()
 
   describe 'when Blueprint parsing warning', () ->
     beforeEach () ->
-      executeTransactionStub.reset()
+      executeTransactionStub.executeTransaction.reset()
 
     before () ->
       configuration =
@@ -119,12 +118,12 @@ describe 'Dredd class', () ->
     it 'should execute the runtime', (done) ->
       runner = new Dredd(configuration)
       runner.run () ->
-        assert.ok executeTransactionStub.called
+        assert.ok executeTransactionStub.executeTransaction.called
         done()
 
   describe 'when non existing Blueprint path', () ->
     beforeEach () ->
-      executeTransactionStub.reset()
+      executeTransactionStub.executeTransaction.reset()
 
     before () ->
       configuration =
@@ -142,7 +141,7 @@ describe 'Dredd class', () ->
     it 'should NOT execute any transaction', (done) ->
       runner = new Dredd(configuration)
       runner.run (error) ->
-        assert.notOk executeTransactionStub.called
+        assert.notOk executeTransactionStub.executeTransaction.called
         done()
 
   describe 'when runtime contains any error', () ->
@@ -152,12 +151,12 @@ describe 'Dredd class', () ->
         server: 'http://localhost:3000/'
         options:
           silent: true
-      executeTransactionStub.reset()
+      executeTransactionStub.executeTransaction.reset()
 
     it 'should NOT execute any transaction', (done) ->
       runner = new Dredd(configuration)
       runner.run (error) ->
-        assert.notOk executeTransactionStub.called
+        assert.notOk executeTransactionStub.executeTransaction.called
         done()
 
     it 'should exit with an error', (done) ->
@@ -174,7 +173,7 @@ describe 'Dredd class', () ->
         options:
           silent: true
 
-      executeTransactionStub.reset()
+      executeTransactionStub.executeTransaction.reset()
 
     beforeEach () ->
       sinon.spy loggerStub, 'warn'
@@ -185,7 +184,7 @@ describe 'Dredd class', () ->
     it 'should execute some transaction', (done) ->
       runner = new Dredd(configuration)
       runner.run (error) ->
-        assert.ok executeTransactionStub.called
+        assert.ok executeTransactionStub.executeTransaction.called
         done()
 
     it 'should print runtime warnings to stdout', (done) ->
@@ -202,7 +201,7 @@ describe 'Dredd class', () ->
 
   describe 'when runtime is without errors and warnings', () ->
     beforeEach () ->
-      executeTransactionStub.reset()
+      executeTransactionStub.executeTransaction.reset()
 
     it 'should execute the runtime', (done) ->
       runner = new Dredd(configuration)

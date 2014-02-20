@@ -6,9 +6,12 @@ proxyquire = require 'proxyquire'
 sinon = require 'sinon'
 htmlStub = require 'html'
 
-executeTransaction = proxyquire  '../../src/execute-transaction', {
+runner = proxyquire  '../../src/transaction-runner', {
   'html': htmlStub
 }
+
+executeTransaction = runner.executeTransaction
+
 CliReporter = require '../../src/reporters/cli-reporter'
 
 describe 'executeTransaction(transaction, callback)', () ->
