@@ -71,6 +71,29 @@ describe "Command line interface", () ->
       it 'exit status should be 0', () ->
         assert.equal exitStatus, 0
 
+    describe "when executing the command and the server is responding as specified in the blueprint, endpoint with path", () ->
+      before (done) ->
+        cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT}/v2"
+
+        app = express()
+
+        app.get '/v2/machines', (req, res) ->
+          res.setHeader 'Content-Type', 'application/json'
+          machine =
+            type: 'bulldozer'
+            name: 'willy'
+          response = [machine]
+          res.send 200, response
+
+        server = app.listen PORT, () ->
+          execCommand cmd, () ->
+            server.close()
+
+        server.on 'close', done
+
+      it 'exit status should be 0', () ->
+        assert.equal exitStatus, 0
+
     describe "when executing the command and the server is sending different response", () ->
       before (done) ->
         cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT}"
@@ -437,5 +460,3 @@ describe "Command line interface", () ->
       it 'should display timestamps', () ->
         # look for the prefix for cli output with timestamps
         assert.notEqual stdout.indexOf 'Z -', -1
-
-
