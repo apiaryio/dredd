@@ -1,3 +1,2 @@
 #!/bin/sh
-./scripts/test &&
 ./scripts/build
