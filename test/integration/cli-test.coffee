@@ -50,7 +50,7 @@ describe "Command line interface", () ->
     describe "when executing the command and the server is responding as specified in the blueprint", () ->
 
       before (done) ->
-        cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT}"
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT}"
 
         app = express()
 
@@ -73,7 +73,7 @@ describe "Command line interface", () ->
 
     describe "when executing the command and the server is responding as specified in the blueprint, endpoint with path", () ->
       before (done) ->
-        cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT}/v2"
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT}/v2"
 
         app = express()
 
@@ -96,7 +96,7 @@ describe "Command line interface", () ->
 
     describe "when executing the command and the server is sending different response", () ->
       before (done) ->
-        cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT}"
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT}"
 
         app = express()
 
@@ -124,7 +124,7 @@ describe "Command line interface", () ->
       recievedRequest = {}
 
       before (done) ->
-        cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT} -r nyan"
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -r nyan"
 
         app = express()
 
@@ -153,7 +153,7 @@ describe "Command line interface", () ->
       recievedRequest = {}
 
       before (done) ->
-        cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT} -r junit -o test_file_output.xml"
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -r junit -o test_file_output.xml"
 
         app = express()
 
@@ -184,7 +184,7 @@ describe "Command line interface", () ->
       recievedRequest = {}
 
       before (done) ->
-        cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT} -h Accept:application/json"
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -h Accept:application/json"
 
         app = express()
 
@@ -212,7 +212,7 @@ describe "Command line interface", () ->
       recievedRequest = {}
 
       before (done) ->
-        cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT} -u username:password"
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -u username:password"
 
         app = express()
 
@@ -268,7 +268,7 @@ describe "Command line interface", () ->
     describe 'when displaying errors inline with -e', () ->
 
       before (done) ->
-        cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT} -e"
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -e"
 
         app = express()
 
@@ -297,7 +297,7 @@ describe "Command line interface", () ->
       recievedRequest = {}
 
       before (done) ->
-        cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT} -d"
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -d"
 
         app = express()
 
@@ -327,7 +327,7 @@ describe "Command line interface", () ->
         recievedRequest = {}
 
         before (done) ->
-          cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT} -m POST"
+          cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -m POST"
 
           app = express()
 
@@ -354,7 +354,7 @@ describe "Command line interface", () ->
         recievedRequest = {}
 
         before (done) ->
-          cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT} -m GET"
+          cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -m GET"
 
           app = express()
 
@@ -381,7 +381,7 @@ describe "Command line interface", () ->
       recievedRequest = {}
 
       before (done) ->
-        cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT} --no-color"
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color"
 
         app = express()
 
@@ -410,7 +410,7 @@ describe "Command line interface", () ->
       recievedRequest = {}
 
       before (done) ->
-        cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT} -l=error"
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -l=error"
 
         app = express()
 
@@ -438,7 +438,7 @@ describe "Command line interface", () ->
       recievedRequest = {}
 
       before (done) ->
-        cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT} -t"
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -t"
 
         app = express()
 
