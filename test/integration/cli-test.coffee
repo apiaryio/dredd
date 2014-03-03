@@ -460,3 +460,54 @@ describe "Command line interface", () ->
       it 'should display timestamps', () ->
         # look for the prefix for cli output with timestamps
         assert.notEqual stdout.indexOf 'Z -', -1
+
+  describe "tests a blueprint containing an endpoint with schema", () ->
+    describe "and server is responding in accordance with the schema", () ->
+
+      before (done) ->
+        cmd = "./bin/dredd ./test/fixtures/schema.apib http://localhost:#{PORT}"
+
+        app = express()
+
+        app.get '/', (req, res) ->
+          res.setHeader 'Content-Type', 'application/json'
+          response =
+            data:
+              expires: 1234,
+              token: 'this should pass since its a string'
+
+          res.send 200, response
+
+        server = app.listen PORT, () ->
+          execCommand cmd, () ->
+            server.close()
+
+        server.on 'close', done
+
+      it 'exit status should be 0 (sucess)', () ->
+        assert.equal exitStatus, 0
+
+    describe "and server is NOT responding in accordance with the schema", () ->
+
+      before (done) ->
+        cmd = "./bin/dredd ./test/fixtures/schema.apib http://localhost:#{PORT}"
+
+        app = express()
+
+        app.get '/', (req, res) ->
+          res.setHeader 'Content-Type', 'application/json'
+          response =
+            data:
+              expires: 'this should fail since its a string',
+              token: 'this should pass since its a string'
+
+          res.send 200, response
+
+        server = app.listen PORT, () ->
+          execCommand cmd, () ->
+            server.close()
+
+        server.on 'close', done
+
+      it 'exit status should be 1 (failure)', () ->
+        assert.equal exitStatus, 1  
