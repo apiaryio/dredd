@@ -44,12 +44,16 @@ class Dredd
       runtimeError = handleRuntimeProblems runtime
       return callback(runtimeError, stats) if runtimeError
 
-      @runner.run runtime['transactions'], () ->
-        reporterCount = config.emitter.listeners('end').length
-        config.emitter.emit 'end' , () ->
-          reporterCount--
-          if reporterCount is 0
-            callback(null, stats)
+      @runner.run runtime['transactions'], () =>
+        @transactionsComplete(callback)
+
+  transactionsComplete: (callback) =>
+    stats = @stats
+    reporterCount = @configuration.emitter.listeners('end').length
+    @configuration.emitter.emit 'end' , () ->
+      reporterCount--
+      if reporterCount is 0
+        callback(null, stats)
 
 module.exports = Dredd
 module.exports.options = options
