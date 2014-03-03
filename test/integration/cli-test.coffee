@@ -474,7 +474,7 @@ describe "Command line interface", () ->
           response =
             data:
               expires: 1234,
-              token: 'this should pass since its a string'
+              token: 'this should pass since it is a string'
 
           res.send 200, response
 
@@ -484,7 +484,7 @@ describe "Command line interface", () ->
 
         server.on 'close', done
 
-      it 'exit status should be 0 (sucess)', () ->
+      it 'exit status should be 0 (success)', () ->
         assert.equal exitStatus, 0
 
     describe "and server is NOT responding in accordance with the schema", () ->
@@ -498,8 +498,8 @@ describe "Command line interface", () ->
           res.setHeader 'Content-Type', 'application/json'
           response =
             data:
-              expires: 'this should fail since its a string',
-              token: 'this should pass since its a string'
+              expires: 'this should fail since it is a string',
+              token: 'this should pass since it is a string'
 
           res.send 200, response
 
