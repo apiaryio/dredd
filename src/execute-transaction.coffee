@@ -50,10 +50,15 @@ executeTransaction = (transaction, callback) ->
       splitHeader = header.split(':')
       flatHeaders[splitHeader[0]] = splitHeader[1]
 
+  if parsedUrl['path'] == "/"
+    fullPath = request['uri']
+  else
+    fullPath = parsedUrl['path'] + request['uri']
+
   options =
     host: parsedUrl['hostname']
     port: parsedUrl['port']
-    path: request['uri']
+    path: fullPath
     method: request['method']
     headers: flatHeaders
 

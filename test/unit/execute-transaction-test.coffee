@@ -199,4 +199,3 @@ describe 'executeTransaction(transaction, callback)', () ->
       executeTransaction transaction, () ->
         assert.notOk server.isDone()
         done()
-
