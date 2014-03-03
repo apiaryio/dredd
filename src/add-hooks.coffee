@@ -3,6 +3,7 @@ path = require 'path'
 require 'coffee-script'
 proxyquire = require('proxyquire').noCallThru()
 glob = require 'glob'
+async = require 'async'
 
 hooks = require './hooks'
 logger = require './logger'
@@ -29,17 +30,21 @@ addHooks = (runner) ->
       return
 
     runner.before 'executeTransaction', (transaction, callback)  =>
-      if hooks.beforeHooks[transaction.name]?
-        logger.debug 'Running before hook'
-        hook = hooks.beforeHooks[transaction.name]
-        runHook(hook, transaction, callback)
-      else
-        callback()
+      runHooksForTransaction hooks.beforeHooks[transaction.name], transaction, callback
+
     runner.after 'executeTransaction', (transaction, callback) =>
-      if hooks.afterHooks[transaction.name]?
-        logger.debug 'Running after hook'
-        hook = hooks.afterHooks[transaction.name]
-        runHook(hook, transaction, callback)
+      runHooksForTransaction hooks.afterHooks[transaction.name], transaction, callback
+
+  runHooksForTransaction = (hooksForTransaction, transaction, callback) =>
+    if hooksForTransaction?
+        logger.debug 'Running hooks...'
+
+        runHookWithTransaction = (hook, callback) ->
+          runHook hook, transaction, callback
+
+        async.eachSeries hooksForTransaction, runHookWithTransaction, () ->
+          callback()
+
       else
         callback()
 

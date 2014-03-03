@@ -165,15 +165,40 @@ describe 'addHooks(runner)', () ->
       describe 'with hooks', () ->
         beforeEach () ->
           hooksStub.beforeHooks =
-            'Group Machine > Machine > Delete Message > Bogus example name' : (transaction) ->
-              loggerStub.info "before"
+            'Group Machine > Machine > Delete Message > Bogus example name' : [
+              (transaction) ->
+                loggerStub.info "before"
+            ]
           hooksStub.afterHooks =
-            'Group Machine > Machine > Delete Message > Bogus example name' : (transaction, done) ->
-              loggerStub.info "after"
-              done()
+            'Group Machine > Machine > Delete Message > Bogus example name' : [
+              (transaction, done) ->
+                loggerStub.info "after"
+                done()
+            ]
 
         it 'should run the hooks', (done) ->
           runner.executeTransaction transaction, () ->
+            done()
+
+      describe 'with multiple hooks for the same transaction', () ->
+        beforeEach () ->
+          sinon.spy loggerStub, 'info'
+          hooksStub.beforeHooks =
+            'Group Machine > Machine > Delete Message > Bogus example name' : [
+              (transaction) ->
+                loggerStub.info "first",
+              (transaction, cb) ->
+                loggerStub.info "second"
+                cb()
+            ]
+
+        afterEach () ->
+          loggerStub.info.restore()
+
+        it 'should run all hooks', (done) ->
+          runner.executeTransaction transaction, () ->
+            assert.ok loggerStub.info.calledWith "first"
+            assert.ok loggerStub.info.calledWith "second"
             done()
 
       describe 'without hooks', () ->
