@@ -94,17 +94,20 @@ executeTransaction = (transaction, callback) ->
         configuration.emitter.emit 'test error', error, test if error
 
       res.on 'end', () ->
-        real =
+
+        # The data models as used here must conform to Gavel.js
+        # as defined in `http-response.coffee`
+        real = 
+          statusCode: res.statusCode
           headers: res.headers
           body: buffer
-          status: res.statusCode
 
-        expected =
+        expected = 
           headers: flattenHeaders response['headers']
           body: response['body']
-          status: response['status']
+          statusCode: response['status'] 
 
-        expected['schema'] = response['schema'] if response['schema']
+        expected['bodySchema'] = response['schema'] if response['schema']
 
         gavel.isValid real, expected, 'response', (error, isValid) ->
           configuration.emitter.emit 'test error', error, test if error

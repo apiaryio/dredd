@@ -1,4 +1,4 @@
-FORMAT: X-1A
+FORMAT: 1A
 
 # Machines API
 
@@ -8,7 +8,7 @@ FORMAT: X-1A
 
 ## Get Machines [GET]
 
-- Response 202 (application/json)
+- Response 200 (application/json)
 
     [
       {

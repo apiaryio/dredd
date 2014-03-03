@@ -5,10 +5,12 @@ node_js:
 notifications:
   email:
     recipients:
-      - adam@apiary.io
+      - z@apiary.io
       - ladislav@apiary.io
     on_success: change
     on_failure: always
+  hipchat:
+    - secure: "pKDBboEmYne/Hs9qUSCQCgWZ9insdvgvB0DyMYYpO8RHgNOAhpcY1Kz/wTmFtm1k2HjGNGx1OVgVhOYXwIiJQZbmiUT4gVDEUtmpSgiW3/uQATgaPFUAsaIFqemTPgI6Q8RfsJZQk1kRMioZhk0ldQY5A+AUIKYKg1BFiOsrO1s="
 after_success:
   - ./scripts/coveralls
 
