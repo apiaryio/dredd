@@ -30,12 +30,14 @@ addHooks = (runner) ->
 
     runner.before 'executeTransaction', (transaction, callback)  =>
       if hooks.beforeHooks[transaction.name]?
+        logger.debug 'Running before hook'
         hook = hooks.beforeHooks[transaction.name]
         runHook(hook, transaction, callback)
       else
         callback()
     runner.after 'executeTransaction', (transaction, callback) =>
       if hooks.afterHooks[transaction.name]?
+        logger.debug 'Running after hook'
         hook = hooks.afterHooks[transaction.name]
         runHook(hook, transaction, callback)
       else
