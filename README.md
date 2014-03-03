@@ -80,42 +80,8 @@ See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-lif
 
 Additionally, boolean flags can be negated by prefixing `no-`, for example: `--no-color --no-inline-errors`.
 
-## Writing Hooks
+Dredd can be configured to use hookfiles to do basic setup/teardown between tests. See the [wiki article on writing hooks](https://github.com/apiaryio/dredd/wiki/Writing-Hooks) for more details.
 
-Dredd can be configured to use a set of hook files (specified with the `--hookfiles` flag) that define before and after hooks for requests. Hookfiles can be in javascript or coffeescript, and must import the hook methods.
-
-Requests are identified by their `name`, which is derived from the structure of the blueprint. You can print a list of the generated names with `--names`.
-
-**Example**
-
-Get Names:
-
-```sh
-$ dredd single_get.md http://machines.apiary.io --names
-info: Machines > Machines collection > Get Machines
-```
-
-Write a hookfile:
-```coffee
-{before, after} = require 'hooks'
-
-before "Machines > Machines collection > Get Machines", (transaction) ->
-  console.log "before"
-
-after "Machines > Machines collection > Get Machines", (transaction) ->
-  console.log "after"
-```
-
-Run tests:
-```sh
-$ dredd single_get.md http://machines.apiary.io --hookfiles=*_hooks.*
-info: Found Hookfiles: test_hooks.coffee
-info: Beginning Dredd testing...
-before
-pass: GET /machines duration: 2965ms
-after
-complete: 1 passing, 0 failing, 0 errors, 0 skipped
-complete: Tests took 2977ms
 ```
 
 ## API Blueprint Testability
