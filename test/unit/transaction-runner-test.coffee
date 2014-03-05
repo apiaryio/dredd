@@ -148,6 +148,7 @@ describe 'TransactionRunner', ()->
           resourceName: 'Machine'
           actionName: 'Delete Message'
           exampleName: 'Bogus example name'
+        fullPath: '/machines'
 
 
     describe 'when printing the names', () ->

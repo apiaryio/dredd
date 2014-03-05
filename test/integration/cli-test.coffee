@@ -73,7 +73,7 @@ describe "Command line interface", () ->
 
     describe "when executing the command and the server is responding as specified in the blueprint, endpoint with path", () ->
       before (done) ->
-        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT}/v2"
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT}/v2/"
 
         app = express()
 
@@ -466,7 +466,7 @@ describe "Command line interface", () ->
     recievedRequest = {}
 
     before (done) ->
-      cmd = "./bin/dredd ./test/fixtures/single_get.md http://localhost:#{PORT} --hookfiles=./test/fixtures/*_hooks.*"
+      cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/*_hooks.*"
 
       app = express()
 
@@ -488,6 +488,8 @@ describe "Command line interface", () ->
     it 'should modify the transaction with hooks', () ->
       assert.equal recievedRequest.headers['header'], '123232323'
 
+  describe "tests a blueprint containing an endpoint with schema", () ->
+    describe "and server is responding in accordance with the schema", () ->
 
       before (done) ->
         cmd = "./bin/dredd ./test/fixtures/schema.apib http://localhost:#{PORT}"
@@ -535,4 +537,4 @@ describe "Command line interface", () ->
         server.on 'close', done
 
       it 'exit status should be 1 (failure)', () ->
-        assert.equal exitStatus, 1  
+        assert.equal exitStatus, 1

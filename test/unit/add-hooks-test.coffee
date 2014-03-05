@@ -147,6 +147,7 @@ describe 'addHooks(runner)', () ->
           resourceName: 'Machine'
           actionName: 'Delete Message'
           exampleName: 'Bogus example name'
+        fullPath: '/machines'
 
       beforeEach () ->
         server = nock('http://localhost:3000').
