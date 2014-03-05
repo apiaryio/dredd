@@ -99,8 +99,7 @@ class XUnitReporter extends EventEmitter
     return '<![CDATA[' + str + ']]>'
 
   appendLine = (path, line) ->
-    fs.appendFile path, line + "\n", (err) ->
-      throw err if err
+    fs.appendFileSync path, line + "\n"
 
   toTag = (name, attrs, close, content) ->
     end = (if close then "/>" else ">")

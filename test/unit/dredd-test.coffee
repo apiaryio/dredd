@@ -6,18 +6,12 @@ fsStub = require 'fs'
 protagonistStub = require 'protagonist'
 loggerStub = require '../../src/logger'
 
-executeTransaction = (transaction, callback) ->
-  callback()
-
-executeTransactionStub = sinon.spy executeTransaction
-
 blueprintAstToRuntime = require '../../src/blueprint-ast-to-runtime'
 blueprintAstToRuntimeStub = sinon.spy blueprintAstToRuntime
 
 Dredd = proxyquire '../../src/dredd', {
   'protagonist': protagonistStub
   './blueprint-ast-to-runtime': blueprintAstToRuntimeStub
-  './execute-transaction': executeTransactionStub
   'fs': fsStub
   './logger': loggerStub
 }
@@ -25,6 +19,7 @@ Dredd = proxyquire '../../src/dredd', {
 describe 'Dredd class', () ->
 
   configuration = {}
+  dredd = {}
 
   beforeEach () ->
     sinon.spy protagonistStub, 'parse'
@@ -47,43 +42,56 @@ describe 'Dredd class', () ->
           sorted: true
 
     it 'should copy configuration on creation', () ->
-      runner = new Dredd(configuration)
-      assert.ok(runner.configuration.options.silent)
-      assert.notOk(runner.configuration.options['dry-run'])
+      dredd = new Dredd(configuration)
+      assert.ok(dredd.configuration.options.silent)
+      assert.notOk(dredd.configuration.options['dry-run'])
 
     it 'should load the file on given path', (done) ->
-      runner = new Dredd(configuration)
-      runner.run (error) ->
+      dredd = new Dredd(configuration)
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+        callback()
+      dredd.run (error) ->
         assert.ok fsStub.readFile.calledWith configuration['blueprintPath']
+        dredd.runner.executeTransaction.restore()
         done()
 
     it 'should parse blueprint to ast', (done) ->
-      runner = new Dredd(configuration)
-      runner.run (error) ->
+      dredd = new Dredd(configuration)
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+        callback()
+      dredd.run (error) ->
         assert.ok protagonistStub.parse.called
+        dredd.runner.executeTransaction.restore()
         done()
 
     it 'should not pass any error to the callback function', (done) ->
-      runner = new Dredd(configuration)
-      runner.run (error) ->
+      dredd = new Dredd(configuration)
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+        callback()
+      dredd.run (error) ->
         assert.isNull(error)
+        dredd.runner.executeTransaction.restore()
         done()
 
     it 'should pass the reporter as second argument', (done) ->
-      runner = new Dredd(configuration)
-      runner.run (error, reporter) ->
+      dredd = new Dredd(configuration)
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+        callback()
+      dredd.run (error, reporter) ->
         assert.isDefined reporter
+        dredd.runner.executeTransaction.restore()
         done()
 
     it 'should convert ast to runtime', (done) ->
-      runner = new Dredd(configuration)
-      runner.run (error) ->
+      dredd = new Dredd(configuration)
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+        callback()
+      dredd.run (error) ->
         assert.ok blueprintAstToRuntimeStub.called
+        dredd.runner.executeTransaction.restore()
         done()
 
   describe 'when Blueprint parsing error', () ->
-    beforeEach () ->
-      executeTransactionStub.reset()
 
     before () ->
       configuration =
@@ -91,23 +99,27 @@ describe 'Dredd class', () ->
         url: 'http://localhost:3000/'
         options:
           silent: true
+      dredd = new Dredd(configuration)
+
+    beforeEach () ->
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+        callback()
+
+    afterEach () ->
+      dredd.runner.executeTransaction.restore()
 
     it 'should exit with an error', (done) ->
-      runner = new Dredd(configuration)
-      runner.run (error) ->
+      dredd.run (error) ->
         assert.ok error
         done()
 
 
     it 'should NOT execute any transaction', (done) ->
-      runner = new Dredd(configuration)
-      runner.run () ->
-        assert.notOk executeTransactionStub.called
+      dredd.run () ->
+        assert.notOk dredd.runner.executeTransaction.called
         done()
 
   describe 'when Blueprint parsing warning', () ->
-    beforeEach () ->
-      executeTransactionStub.reset()
 
     before () ->
       configuration =
@@ -115,98 +127,117 @@ describe 'Dredd class', () ->
         url: 'http://localhost:3000/'
         options:
           silent: true
+      dredd = new Dredd(configuration)
+
+    beforeEach () ->
+      sinon.stub dredd.runner, 'run', (transaction, callback) ->
+        callback()
+
+    afterEach () ->
+      dredd.runner.run.restore()
 
     it 'should execute the runtime', (done) ->
-      runner = new Dredd(configuration)
-      runner.run () ->
-        assert.ok executeTransactionStub.called
+      dredd.run () ->
+        assert.ok dredd.runner.run.called
         done()
 
   describe 'when non existing Blueprint path', () ->
-    beforeEach () ->
-      executeTransactionStub.reset()
 
-    before () ->
+    beforeEach () ->
       configuration =
         blueprintPath: './balony/path.apib'
         url: 'http://localhost:3000/'
         options:
           silent: true
+      dredd = new Dredd(configuration)
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+        callback()
+
+    afterEach () ->
+      dredd.runner.executeTransaction.reset()
 
     it 'should pass the error to the callback function', (done) ->
-      runner = new Dredd(configuration)
-      runner.run (error) ->
+      dredd.run (error) ->
         assert.ok error
         done()
 
     it 'should NOT execute any transaction', (done) ->
-      runner = new Dredd(configuration)
-      runner.run (error) ->
-        assert.notOk executeTransactionStub.called
+      dredd.run (error) ->
+        assert.notOk dredd.runner.executeTransaction.called
         done()
 
   describe 'when runtime contains any error', () ->
-    before () ->
+    beforeEach () ->
       configuration =
         blueprintPath: './test/fixtures/error-uri-template.apib'
         server: 'http://localhost:3000/'
         options:
           silent: true
-      executeTransactionStub.reset()
+      dredd = new Dredd(configuration)
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+        callback()
+
+    afterEach () ->
+      dredd.runner.executeTransaction.reset()
 
     it 'should NOT execute any transaction', (done) ->
-      runner = new Dredd(configuration)
-      runner.run (error) ->
-        assert.notOk executeTransactionStub.called
+      dredd.run (error) ->
+        assert.notOk dredd.runner.executeTransaction.called
         done()
 
     it 'should exit with an error', (done) ->
-      runner = new Dredd(configuration)
-      runner.run (error) ->
+      dredd.run (error) ->
         assert.ok error
         done()
 
   describe 'when runtime contains any warning', () ->
-    before () ->
+
+    beforeEach () ->
       configuration =
         blueprintPath: './test/fixtures/warning-ambigous.apib'
         server: 'http://localhost:3000/'
         options:
           silent: true
-
-      executeTransactionStub.reset()
-
-    beforeEach () ->
       sinon.spy loggerStub, 'warn'
+      dredd = new Dredd(configuration)
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+        callback()
 
     afterEach () ->
+      dredd.runner.executeTransaction.reset()
       loggerStub.warn.restore()
 
     it 'should execute some transaction', (done) ->
-      runner = new Dredd(configuration)
-      runner.run (error) ->
-        assert.ok executeTransactionStub.called
+      dredd.run (error) ->
+        assert.ok dredd.runner.executeTransaction.called
         done()
 
     it 'should print runtime warnings to stdout', (done) ->
-      runner = new Dredd(configuration)
-      runner.run (error) ->
+      dredd.run (error) ->
         assert.ok loggerStub.warn.called
         done()
 
     it 'should not exit', (done) ->
-      runner = new Dredd(configuration)
-      runner.run (error) ->
+      dredd.run (error) ->
         assert.notOk error
         done()
 
   describe 'when runtime is without errors and warnings', () ->
     beforeEach () ->
-      executeTransactionStub.reset()
+      configuration =
+        blueprintPath: './test/fixtures/warning-ambigous.apib'
+        server: 'http://localhost:3000/'
+        options:
+          silent: true
+      dredd = new Dredd(configuration)
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+        callback()
+
+    afterEach () ->
+      dredd.runner.executeTransaction.reset()
 
     it 'should execute the runtime', (done) ->
-      runner = new Dredd(configuration)
-      runner.run (error) ->
+      dredd.run (error) ->
         assert.ok blueprintAstToRuntimeStub.called
         done()
 

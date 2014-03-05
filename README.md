@@ -5,6 +5,7 @@
 [![devDependency Status](https://david-dm.org/apiaryio/dredd/dev-status.png)](https://david-dm.org/apiaryio/dredd#info=devDependencies)
 [![Coverage Status](https://coveralls.io/repos/apiaryio/dredd/badge.png?branch=master)](https://coveralls.io/r/apiaryio/dredd?branch=master)
 
+[![NPM](https://nodei.co/npm/dredd.png)](https://nodei.co/npm/dredd/)
 
 Dredd is a command-line tool for testing API documentation written in [API Blueprint][] format against its backend implementation. With Dredd you can easily plug your API documentation into the Continous Integration system like [Travis CI][] or [Jenkins][] and have API documentation up-to-date, all the time. Dredd uses the [Gavel][] for judging if a particular API response is valid or if is not. If you are curious about how decisions are made, please refer to Gavel's [behavior specification][].
 
@@ -27,13 +28,17 @@ See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-lif
 ## Command Line Options
 
     $ dredd --help
-
-    dredd <path to blueprint> <api_endpoint> [OPTIONS]
+    Usage:
+      dredd <path to blueprint> <api_endpoint> [OPTIONS]
 
     Example:
       dredd ./apiary.md http://localhost:3000 --dry-run
 
     Options:
+      --hookfiles, -f      Specifes a pattern to match files with before/after
+                           hooks for running tests                   [default: null]
+      --names, -n          Only list names of requests (for use in a hookfile). No
+                           requests are made.                       [default: false]
       --reporter, -r       Output additional report format. This option can be used
                            multiple times to add multiple reporters. Options:
                            junit, nyan, dot, markdown, html.
@@ -70,10 +75,14 @@ See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-lif
       --timestamp, -t      Determines whether console output should include
                            timestamps.
                                                                     [default: false]
-      --version            Show version number
-      --help               Show usage information
+      --help               Show usage information.
+      --version            Show version number.
 
 Additionally, boolean flags can be negated by prefixing `no-`, for example: `--no-color --no-inline-errors`.
+
+Dredd can be configured to use hookfiles to do basic setup/teardown between tests. See the [wiki article on writing hooks](https://github.com/apiaryio/dredd/wiki/Writing-Hooks) for more details.
+
+```
 
 ## API Blueprint Testability
 Dredd can test only API resources specified by *well defined transaction*. Any Non specific resources in the Blueprint e. g. with URI template or query parameters without default or example values are considered as *ambiguous transaction* thus they are resulting in a *warning* during the test run and are skipped.
