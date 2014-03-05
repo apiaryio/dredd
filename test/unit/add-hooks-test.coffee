@@ -147,6 +147,7 @@ describe 'addHooks(runner)', () ->
           resourceName: 'Machine'
           actionName: 'Delete Message'
           exampleName: 'Bogus example name'
+        fullPath: '/machines'
 
       beforeEach () ->
         server = nock('http://localhost:3000').
@@ -164,6 +165,7 @@ describe 'addHooks(runner)', () ->
 
       describe 'with hooks', () ->
         beforeEach () ->
+          sinon.spy loggerStub, 'info'
           hooksStub.beforeHooks =
             'Group Machine > Machine > Delete Message > Bogus example name' : [
               (transaction) ->
@@ -176,8 +178,13 @@ describe 'addHooks(runner)', () ->
                 done()
             ]
 
+        afterEach () ->
+          loggerStub.info.restore()
+
         it 'should run the hooks', (done) ->
           runner.executeTransaction transaction, () ->
+            assert.ok loggerStub.info.calledWith "before"
+            assert.ok loggerStub.info.calledWith "after"
             done()
 
       describe 'with multiple hooks for the same transaction', () ->

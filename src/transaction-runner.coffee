@@ -2,6 +2,7 @@ http = require 'http'
 https = require 'https'
 html = require 'html'
 url = require 'url'
+path = require 'path'
 os = require 'os'
 
 gavel = require 'gavel'
@@ -40,10 +41,18 @@ class TransactionRunner
 
     parsedUrl = url.parse configuration['server']
 
+    # joins paths regardless of slashes
+    # there may be a nice way in the future: https://github.com/joyent/node/issues/2216
+    # note that path.join will fail on windows, and url.resolve can have undesirable behavior depending on slashes
+    if parsedUrl['path'] is "/"
+      fullPath = request['uri']
+    else
+      fullPath = '/' + [parsedUrl['path'].replace(/^\/|\/$/g,""), request['uri'].replace(/^\/|\/$/g,"")].join("/")
+
     flatHeaders = flattenHeaders request['headers']
 
     # Add Dredd user agent if no User-Agent present
-    if flatHeaders['User-Agent'] == undefined
+    if not flatHeaders['User-Agent']
       system = os.type() + ' ' + os.release() + '; ' + os.arch()
       flatHeaders['User-Agent'] = "Dredd/" + \
         packageConfig['version'] + \
@@ -54,7 +63,7 @@ class TransactionRunner
     for key, value of flatHeaders
       caseInsensitiveMap[key.toLowerCase()] = key
 
-    if caseInsensitiveMap['content-length'] == undefined and request['body'] != ''
+    if not caseInsensitiveMap['content-length'] and request['body'] != ''
       flatHeaders['Content-Length'] = request['body'].length
 
     if configuration.options.header.length > 0
@@ -72,11 +81,13 @@ class TransactionRunner
 
     id = request['method'] + ' ' + request['uri']
 
+    # The data models as used here must conform to Gavel.js
+    # as defined in `http-response.coffee`
     expected =
       headers: flattenHeaders response['headers']
       body: response['body']
-      status: response['status']
-    expected['schema'] = response['schema'] if response['schema']
+      statusCode: response['status']
+    expected['bodySchema'] = response['schema'] if response['schema']
 
     configuredTransaction =
       name: name
@@ -86,6 +97,7 @@ class TransactionRunner
       request: request
       expected: expected
       origin: origin
+      fullPath: fullPath
 
     return callback(null, configuredTransaction)
 
@@ -95,7 +107,7 @@ class TransactionRunner
     requestOptions =
       host: transaction.host
       port: transaction.port
-      path: transaction.request['uri']
+      path: transaction.fullPath
       method: transaction.request['method']
       headers: transaction.request.headers
 
@@ -127,10 +139,14 @@ class TransactionRunner
           configuration.emitter.emit 'test error', error, test if error
 
         res.on 'end', () ->
+
+          # The data models as used here must conform to Gavel.js
+          # as defined in `http-response.coffee`
           real =
+            statusCode: res.statusCode
             headers: res.headers
             body: buffer
-            status: res.statusCode
+
           transaction['real'] = real
 
           gavel.isValid real, transaction.expected, 'response', (error, isValid) ->
