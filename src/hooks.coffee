@@ -3,6 +3,7 @@ class Hooks
   constructor: () ->
     @beforeHooks = {}
     @afterHooks = {}
+    @transactions = {}
 
   before: (name, hook) =>
     @addHook(@beforeHooks, name, hook)
