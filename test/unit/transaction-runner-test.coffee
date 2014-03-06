@@ -57,6 +57,9 @@ describe 'TransactionRunner', ()->
     it 'should add advice', () ->
       assert.ok advisableStub.async.call.called
 
+    it 'should add hooks', () ->
+      assert.ok addHooksStub.called
+
   describe 'configureTransaction(transaction, callback)', () ->
 
     beforeEach () ->
