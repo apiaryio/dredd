@@ -82,8 +82,6 @@ Additionally, boolean flags can be negated by prefixing `no-`, for example: `--n
 
 Dredd can be configured to use hookfiles to do basic setup/teardown between tests. See the [wiki article on writing hooks](https://github.com/apiaryio/dredd/wiki/Writing-Hooks) for more details.
 
-```
-
 ## API Blueprint Testability
 Dredd can test only API resources specified by *well defined transaction*. Any Non specific resources in the Blueprint e. g. with URI template or query parameters without default or example values are considered as *ambiguous transaction* thus they are resulting in a *warning* during the test run and are skipped.
 
