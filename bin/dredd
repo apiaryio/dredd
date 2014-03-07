@@ -7,7 +7,7 @@ var Dredd = require('../lib/dredd');
 var version = parsePackageJson(path.join(__dirname, '../package.json'));
 
 var argv = optimist
-    .usage("dredd <path to blueprint> <api_endpoint> [OPTIONS]" + 
+    .usage("Usage: \n  dredd <path to blueprint> <api_endpoint> [OPTIONS]" +
     "\n\nExample: \n  " + "dredd ./apiary.md http://localhost:3000 --dry-run")
     .options(Dredd.options)
     .wrap(80)
@@ -49,18 +49,20 @@ dredd = new Dredd(configuration);
 
 process.on( 'SIGINT', function() {
   console.log( "\nShutting down from SIGINT (Ctrl-C)" );
-  dredd.transactionsComplete( dredd.configuration.emitter, dredd.stats, function() {
-      process.exit(0);
-    });
+  dredd.transactionsComplete(function() {
+    process.exit(0);
+  });
 });
 
 dredd.run(function(error, stats){
   if (error) {
-   console.error(error.message);
-   if (error.stack) {
-       console.error(error.stack);
-   }
-   process.exit(1);
+    if (error.message) {
+      console.error(error.message);
+    }
+    if (error.stack) {
+      console.error(error.stack);
+    }
+    process.exit(1);
   }
   if (stats.failures + stats.errors > 0) {
     process.exit(1);

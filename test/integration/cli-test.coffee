@@ -73,7 +73,7 @@ describe "Command line interface", () ->
 
     describe "when executing the command and the server is responding as specified in the blueprint, endpoint with path", () ->
       before (done) ->
-        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT}/v2"
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT}/v2/"
 
         app = express()
 
@@ -461,6 +461,33 @@ describe "Command line interface", () ->
         # look for the prefix for cli output with timestamps
         assert.notEqual stdout.indexOf 'Z -', -1
 
+  describe 'when loading hooks with --hookfiles', () ->
+
+    recievedRequest = {}
+
+    before (done) ->
+      cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/*_hooks.*"
+
+      app = express()
+
+      app.get '/machines', (req, res) ->
+        recievedRequest = req
+        res.setHeader 'Content-Type', 'application/json'
+        machine =
+          type: 'bulldozer'
+          name: 'willy'
+        response = [machine]
+        res.send 200, response
+
+      server = app.listen PORT, () ->
+        execCommand cmd, () ->
+          server.close()
+
+      server.on 'close', done
+
+    it 'should modify the transaction with hooks', () ->
+      assert.equal recievedRequest.headers['header'], '123232323'
+
   describe "tests a blueprint containing an endpoint with schema", () ->
     describe "and server is responding in accordance with the schema", () ->
 
@@ -510,4 +537,4 @@ describe "Command line interface", () ->
         server.on 'close', done
 
       it 'exit status should be 1 (failure)', () ->
-        assert.equal exitStatus, 1  
+        assert.equal exitStatus, 1

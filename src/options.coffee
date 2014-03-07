@@ -1,4 +1,14 @@
 options =
+  hookfiles:
+    alias: 'f'
+    description: 'Specifes a pattern to match files with before/after hooks for running tests'
+    default: null
+
+  names:
+    alias: 'n'
+    description: 'Only list names of requests (for use in a hookfile). No requests are made.'
+    default: false
+
   reporter:
     alias: "r"
     description: "Output additional report format. This option can be used multiple times to add multiple reporters. Options: junit, nyan, dot, markdown, html.\n"
