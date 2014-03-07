@@ -32,13 +32,13 @@
   "devDependencies": {
     "coffee-errors": "~0.8.4",
     "mocha": "1.17.0",
-    "chai": "~1.8.1",
+    "chai": "~1.9.0",
     "coffee-coverage": "0.4.1",
     "jscoverage": "0.3.8",
-    "coveralls": "~2.6.1",
+    "coveralls": "~2.8.0",
     "mocha-lcov-reporter": "0.0.1",
     "codo": "2.0.3",
-    "sinon": "~1.7.3",
+    "sinon": "~1.9.0",
     "nock": "~0.27.1",
     "express": "~3.4.3"
   },
