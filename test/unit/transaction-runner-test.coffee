@@ -238,7 +238,6 @@ describe 'TransactionRunner', ()->
           assert.ok server.isDone()
           done()
 
-
     describe 'when backend responds as it should', () ->
       beforeEach () ->
         server = nock('http://localhost:3000').

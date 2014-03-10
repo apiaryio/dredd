@@ -18,7 +18,9 @@ addHooks = proxyquire  '../../src/add-hooks', {
   'hooks': hooksStub
 }
 
-describe 'addHooks(runner)', () ->
+describe 'addHooks(runner, transaction)', () ->
+
+  transactions = {}
 
   before () ->
     loggerStub.transports.console.silent = true
@@ -35,7 +37,7 @@ describe 'addHooks(runner)', () ->
       globStub.sync.restore()
 
     it 'should return immediately', ()->
-      addHooks()
+      addHooks("", transactions)
       assert.ok globStub.sync.notCalled
 
 
@@ -52,7 +54,7 @@ describe 'addHooks(runner)', () ->
 
     it 'should return files', () ->
       sinon.spy globStub, 'sync'
-      addHooks(runner)
+      addHooks(runner, transactions)
       assert.ok globStub.sync.called
       globStub.sync.restore()
 
@@ -73,7 +75,7 @@ describe 'addHooks(runner)', () ->
         pathStub.resolve.restore()
 
       it 'should load the files', () ->
-        addHooks(runner)
+        addHooks(runner, transactions)
         assert.ok pathStub.resolve.called
 
       it 'should attach the hooks', () ->
@@ -81,7 +83,7 @@ describe 'addHooks(runner)', () ->
         sinon.restore globStub.sync
         sinon.stub globStub, 'sync', (pattern) ->
           []
-        addHooks(runner)
+        addHooks(runner, transactions)
         assert.ok runner.before.called
         assert.ok runner.after.called
 
@@ -105,11 +107,11 @@ describe 'addHooks(runner)', () ->
         globStub.sync.restore()
 
       it 'should log an error', () ->
-        addHooks(runner)
+        addHooks(runner, transactions)
         assert.ok loggerStub.error.called
 
       it 'should not attach the hooks', () ->
-        addHooks(runner)
+        addHooks(runner, transactions)
         assert.ok runner.before.notCalled
         assert.ok runner.after.notCalled
 
@@ -165,6 +167,7 @@ describe 'addHooks(runner)', () ->
 
       describe 'with hooks', () ->
         beforeEach () ->
+          sinon.spy loggerStub, 'info'
           hooksStub.beforeHooks =
             'Group Machine > Machine > Delete Message > Bogus example name' : [
               (transaction) ->
@@ -177,8 +180,13 @@ describe 'addHooks(runner)', () ->
                 done()
             ]
 
+        afterEach () ->
+          loggerStub.info.restore()
+
         it 'should run the hooks', (done) ->
           runner.executeTransaction transaction, () ->
+            assert.ok loggerStub.info.calledWith "before"
+            assert.ok loggerStub.info.calledWith "after"
             done()
 
       describe 'with multiple hooks for the same transaction', () ->

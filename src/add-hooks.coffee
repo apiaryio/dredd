@@ -8,7 +8,11 @@ async = require 'async'
 hooks = require './hooks'
 logger = require './logger'
 
-addHooks = (runner) ->
+addHooks = (runner, transactions) ->
+
+    for transaction in transactions
+      hooks.transactions[transaction.name] = transaction
+
     pattern = runner?.configuration?.options?.hookfiles
     return if not pattern
 

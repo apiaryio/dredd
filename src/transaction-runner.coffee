@@ -22,13 +22,15 @@ String::startsWith = (str) ->
 class TransactionRunner
   constructor: (@configuration) ->
     advisable.async.call TransactionRunner.prototype
-    addHooks @
+    addHooks @, {}
 
   run: (transactions, callback) ->
     transactions = if @configuration.options['sorted'] then sortTransactions(transactions) else transactions
 
     async.mapSeries transactions, @configureTransaction, (err, results) ->
       transactions = results
+
+    addHooks {}, transactions
 
     async.eachSeries transactions, @executeTransaction, () ->
       callback()
