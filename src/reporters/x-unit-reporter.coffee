@@ -19,8 +19,7 @@ class XUnitReporter extends EventEmitter
   sanitizedPath: (path) =>
     filePath = if path? then process.cwd() + "/" +  path else process.cwd() + "/report.xml"
     if fs.existsSync(filePath)
-      logger.info "File exists at #{filePath}, deleting..."
-      fs.unlinkSync(filePath)
+      logger.info "File exists at #{filePath}, will be overwritten..."
     filePath
 
   configureEmitter: (emitter) =>
