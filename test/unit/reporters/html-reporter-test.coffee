@@ -45,14 +45,14 @@ describe 'HtmlReporter', () ->
       before () ->
         sinon.stub fsStub, 'existsSync', (path) ->
           return true
-        sinon.stub fsStub, 'unlinkSync'
+        sinon.stub loggerStub, 'info'
 
       after () ->
         fsStub.existsSync.restore()
-        fsStub.unlinkSync.restore()
+        loggerStub.info.restore()
 
-      it 'should delete the existing file', () ->
-        assert.ok fsStub.unlinkSync.called
+      it 'should inform about the existing file', () ->
+        assert.ok loggerStub.info.called
 
     describe 'when file does not exist', () ->
 
@@ -142,4 +142,3 @@ describe 'HtmlReporter', () ->
       emitter.emit 'test start', test
       emitter.emit 'test error', new Error('Error'), test
       assert.ok ~htmlReporter.buf.indexOf 'Error'
-
