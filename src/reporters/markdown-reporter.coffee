@@ -1,6 +1,8 @@
 {EventEmitter} = require 'events'
 fs = require 'fs'
 
+file = require 'file'
+
 logger = require './../logger'
 prettifyResponse = require './../prettify-response'
 
@@ -17,7 +19,7 @@ class MarkdownReporter extends EventEmitter
     @configureEmitter emitter
 
   sanitizedPath: (path) =>
-    filePath = if path? then process.cwd() + "/" + path else process.cwd() + "/report.md"
+    filePath = if path? then file.path.abspath(path) else file.path.abspath("./report.md")
     if fs.existsSync(filePath)
       logger.info "File exists at #{filePath}, will be overwritten..."
     filePath
