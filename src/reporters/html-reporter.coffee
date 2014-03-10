@@ -2,6 +2,7 @@
 fs = require 'fs'
 
 marked = require 'marked'
+file = require 'file'
 
 logger = require './../logger'
 prettifyResponse = require './../prettify-response'
@@ -29,7 +30,7 @@ class HtmlReporter extends EventEmitter
     @configureEmitter emitter
 
   sanitizedPath: (path) =>
-    filePath = if path? then process.cwd() + "/" + path else process.cwd() + "/report.html"
+    filePath = if path? then file.path.abspath(path) else file.path.abspath("./report.html")
     if fs.existsSync(filePath)
       logger.info "File exists at #{filePath}, will be overwritten..."
     filePath

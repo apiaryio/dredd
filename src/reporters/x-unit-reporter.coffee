@@ -2,6 +2,7 @@
 fs = require 'fs'
 
 htmlencode = require 'htmlencode'
+file = require 'file'
 
 logger = require './../logger'
 prettifyResponse = require './../prettify-response'
@@ -17,7 +18,7 @@ class XUnitReporter extends EventEmitter
     @configureEmitter emitter
 
   sanitizedPath: (path) =>
-    filePath = if path? then process.cwd() + "/" +  path else process.cwd() + "/report.xml"
+    filePath = if path? then file.path.abspath(path) else file.path.abspath("./report.xml")
     if fs.existsSync(filePath)
       logger.info "File exists at #{filePath}, will be overwritten..."
     filePath
