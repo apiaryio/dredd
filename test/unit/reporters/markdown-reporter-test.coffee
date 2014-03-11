@@ -46,15 +46,14 @@ describe 'MarkdownReporter', () ->
       before () ->
         sinon.stub fsStub, 'existsSync', (path) ->
           return true
-        sinon.stub fsStub, 'unlinkSync'
+        sinon.stub loggerStub, 'info'
 
       after () ->
         fsStub.existsSync.restore()
-        fsStub.unlinkSync.restore()
+        loggerStub.info.restore()
 
-      it 'should delete the existing file', (done) ->
-        assert.ok fsStub.unlinkSync.calledOnce
-        done()
+      it 'should inform about the existing file', () ->
+        assert.ok loggerStub.info.called
 
     describe 'when file does not exist', () ->
 
@@ -149,5 +148,3 @@ describe 'MarkdownReporter', () ->
     it 'should write error to the buffer', (done) ->
       assert.ok ~mdReporter.buf.indexOf 'Error'
       done()
-
-
