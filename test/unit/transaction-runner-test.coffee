@@ -149,6 +149,7 @@ describe 'TransactionRunner', ()->
           actionName: 'Delete Message'
           exampleName: 'Bogus example name'
         fullPath: '/machines'
+        protocol: 'http:'
 
 
     describe 'when printing the names', () ->
@@ -209,6 +210,7 @@ describe 'TransactionRunner', ()->
             transaction['expected']['body'],
             {'Content-Type': 'application/json'}
         configuration.server = 'https://localhost:3000'
+        transaction.protocol = 'https:'
         runner = new Runner(configuration)
 
       afterEach () ->
@@ -228,6 +230,7 @@ describe 'TransactionRunner', ()->
             transaction['expected']['body'],
             {'Content-Type': 'application/json'}
         configuration.server = 'http://localhost:3000'
+        transaction.protocol = 'http:'
         runner = new Runner(configuration)
 
       afterEach () ->
@@ -276,4 +279,3 @@ describe 'TransactionRunner', ()->
         runner.executeTransaction transaction, () ->
           assert.ok server.isDone()
           done()
-
