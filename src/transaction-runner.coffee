@@ -100,6 +100,7 @@ class TransactionRunner
       expected: expected
       origin: origin
       fullPath: fullPath
+      protocol: parsedUrl.protocol
 
     return callback(null, configuredTransaction)
 
@@ -179,10 +180,8 @@ class TransactionRunner
                 configuration.emitter.emit 'test fail', test
                 return callback()
 
-      if configuration.server.startsWith 'https'
-        req = https.request requestOptions, handleRequest
-      else
-        req = http.request requestOptions, handleRequest
+      transport = if transaction.protocol is 'https:' then https else http
+      req = transport.request requestOptions, handleRequest
 
       req.write transaction.request['body'] if transaction.request['body'] != ''
       req.end()
