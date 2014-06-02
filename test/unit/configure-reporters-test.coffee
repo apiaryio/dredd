@@ -12,6 +12,8 @@ DotReporterStub = sinon.spy require '../../src/reporters/dot-reporter'
 NyanCatReporterStub = sinon.spy require '../../src/reporters/nyan-reporter'
 HtmlReporterStub = sinon.spy require '../../src/reporters/html-reporter'
 MarkdownReporterStub = sinon.spy require '../../src/reporters/markdown-reporter'
+ApiaryReporterStub = sinon.spy require '../../src/reporters/apiary-reporter'
+
 emitterStub = new EventEmitter()
 
 configureReporters = proxyquire '../../src/configure-reporters', {
@@ -23,6 +25,7 @@ configureReporters = proxyquire '../../src/configure-reporters', {
   './reporters/nyan-reporter': NyanCatReporterStub
   './reporters/html-reporter': HtmlReporterStub
   './reporters/markdown-reporter': MarkdownReporterStub
+  './reporters/apiary-reporter': ApiaryReporterStub
 }
 
 resetStubs = () ->
@@ -34,6 +37,7 @@ resetStubs = () ->
   NyanCatReporterStub.reset()
   HtmlReporterStub.reset()
   MarkdownReporterStub.reset()
+  ApiaryReporterStub.reset()
 
 
 describe 'configureReporters(config, stats, tests, onSaveCallback)', () ->

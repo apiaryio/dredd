@@ -28,11 +28,12 @@ describe 'CliReporter', () ->
     afterEach () ->
       loggerStub.info.restore()
 
-    it 'should write starting to the console', () ->
+    it 'should write starting to the console', (done) ->
       emitter = new EventEmitter()
       cliReporter = new CliReporter(emitter, {}, {}, true)
-      emitter.emit 'start'
-      assert.ok loggerStub.info.calledOnce
+      emitter.emit 'start', '', () -> 
+        assert.ok loggerStub.info.calledOnce
+        done()
 
   describe 'when adding passing test', () ->
     before () ->

@@ -42,10 +42,11 @@ class HtmlReporter extends EventEmitter
     # indent = ->
     #   Array(@level).join "  "
 
-    emitter.on 'start', =>
+    emitter.on 'start', (rawBlueprint, callback)=>
       @level++
       @buf += title('Dredd Tests') + "\n"
-
+      callback()
+      
     emitter.on 'end', (callback) =>
       html = marked @buf
       fs.writeFile @path, html, (err) =>

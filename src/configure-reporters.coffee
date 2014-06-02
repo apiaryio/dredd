@@ -5,10 +5,11 @@ DotReporter = require './reporters/dot-reporter'
 NyanCatReporter = require './reporters/nyan-reporter'
 HtmlReporter = require './reporters/html-reporter'
 MarkdownReporter = require './reporters/markdown-reporter'
+ApiaryReporter = require './reporters/apiary-reporter'
 
 logger = require './logger'
 
-fileReporters = ['junit', 'html', 'markdown']
+fileReporters = ['junit', 'html', 'markdown', 'apiary']
 cliReporters = ['dot', 'nyan']
 
 intersection = (a, b) ->
@@ -42,6 +43,8 @@ configureReporters = (config, stats, tests) ->
         htmlReporter = new HtmlReporter(emitter, stats, tests, path, config.options.details)
       when 'markdown'
         mdReporter = new MarkdownReporter(emitter, stats, tests, path, config.options.details)
+      when 'apiary'
+        apiaryReporter = new ApiaryReporter(emitter, stats, tests)        
       else
         logger.warn 'Invalid reporter #{reporter} selected, ignoring.'
 
@@ -53,7 +56,11 @@ configureReporters = (config, stats, tests) ->
   stats.fileBasedReporters = usedFileReporters.length
 
   if usedFileReporters.length > 0
-    if usedFileReporters.length > outputs.length
+    usedFileReportersLength = usedFileReporters.length
+    if reporters.indexOf('apiary') != -1
+      usedFileReportersLength = usedFileReportersLength - 1
+
+    if usedFileReportersLength > outputs.length
       logger.warn "There are more reporters requiring output paths than there are output paths provided, using default paths for additional file-based reporters."
 
     for reporter, i in usedFileReporters

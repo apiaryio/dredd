@@ -62,11 +62,12 @@ describe 'XUnitReporter', () ->
     afterEach () ->
       fsStub.appendFileSync.restore()
 
-    it 'should write opening to file', () ->
+    it 'should write opening to file', (done) ->
       emitter = new EventEmitter()
       xUnitReporter = new XUnitReporter(emitter, {}, {})
-      emitter.emit 'start'
-      assert.ok fsStub.appendFileSync.called
+      emitter.emit 'start', '', () ->
+        assert.ok fsStub.appendFileSync.called
+        done()
 
   describe 'when ending', () ->
 

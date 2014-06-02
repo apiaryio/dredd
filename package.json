@@ -28,7 +28,8 @@
     "proxyquire": "~0.5.1",
     "coffee-script": "1.6.3",
     "glob": "~3.2.8",
-    "file": "~0.2.2"
+    "file": "~0.2.2",
+    "node-uuid": "~1.4.1"
   },
   "devDependencies": {
     "coffee-errors": "~0.8.4",

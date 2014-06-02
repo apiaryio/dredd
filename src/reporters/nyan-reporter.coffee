@@ -23,10 +23,11 @@ class NyanCatReporter
     @configureEmitter emitter
 
   configureEmitter: (emitter) =>
-    emitter.on 'start', =>
+    emitter.on 'start', (rawBlueprint, callback)=>
       @cursorHide()
       @draw()
-
+      callback()
+      
     emitter.on 'end', (callback) =>
       @cursorShow()
       i = 0

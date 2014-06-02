@@ -24,7 +24,7 @@ class XUnitReporter extends EventEmitter
     filePath
 
   configureEmitter: (emitter) =>
-    emitter.on 'start', =>
+    emitter.on 'start', (rawBlueprint, callback) =>
       appendLine @path, toTag('testsuite', {
               name: 'Dredd Tests'
             , tests: @stats.tests
@@ -34,7 +34,8 @@ class XUnitReporter extends EventEmitter
             , timestamp: (new Date).toUTCString()
             , time: @stats.duration / 1000
           }, false)
-
+      callback()
+    
     emitter.on 'end', (callback) =>
       updateSuiteStats @path, @stats, callback
 

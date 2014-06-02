@@ -73,9 +73,9 @@ describe 'MarkdownReporter', () ->
   describe 'when starting', () ->
 
     it 'should write the title to the buffer', (done) ->
-      emitter.emit 'start'
-      assert.ok ~mdReporter.buf.indexOf 'Dredd'
-      done()
+      emitter.emit 'start', '', () ->
+        assert.ok ~mdReporter.buf.indexOf 'Dredd'
+        done()
 
   describe 'when ending', () ->
 

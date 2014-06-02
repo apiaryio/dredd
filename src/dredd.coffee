@@ -31,11 +31,13 @@ class Dredd
     config = @configuration
     stats = @stats
 
-    config.emitter.emit 'start'
-
     fs.readFile config.blueprintPath, 'utf8', (parseError, data) ->
       return callback(parseError, stats) if parseError
-      protagonist.parse data, blueprintParsingComplete
+      reporterCount = config.emitter.listeners('start').length
+      config.emitter.emit 'start', data, () ->
+        reporterCount--
+        if reporterCount is 0
+          protagonist.parse data, blueprintParsingComplete
 
     blueprintParsingComplete = (protagonistError, result) =>
       return callback(protagonistError, config.reporter) if protagonistError
