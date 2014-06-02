@@ -31,10 +31,11 @@ class MarkdownReporter extends EventEmitter
     # indent = ->
     #   Array(@level).join "  "
 
-    emitter.on 'start', =>
+    emitter.on 'start', (rawBlueprint, callback)=>
       @level++
       @buf += title('Dredd Tests') + "\n"
-
+      callback()
+      
     emitter.on 'end', (callback) =>
       fs.writeFile @path, @buf, (err) =>
         if err

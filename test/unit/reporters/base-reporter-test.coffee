@@ -36,9 +36,10 @@ describe 'BaseReporter', () ->
       stats =
         start: null
 
-    it 'should set the start date', () ->
-      emitter.emit 'start'
-      assert.ok stats.start
+    it 'should set the start date', (done) ->
+      emitter.emit 'start', '', () ->
+        assert.ok stats.start
+        done()
 
   describe 'when ending', () ->
 

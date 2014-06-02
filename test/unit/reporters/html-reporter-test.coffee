@@ -68,9 +68,10 @@ describe 'HtmlReporter', () ->
       it 'should not attempt to delete a file', () ->
         assert.ok fsStub.unlinkSync.notCalled
 
-    it 'should write the prelude to the buffer', () ->
-      emitter.emit 'start'
-      assert.ok ~htmlReporter.buf.indexOf 'Dredd'
+    it 'should write the prelude to the buffer', (done) ->
+      emitter.emit 'start', '' , () ->
+        assert.ok ~htmlReporter.buf.indexOf 'Dredd'
+        done()
 
   describe 'when ending', () ->
 

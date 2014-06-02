@@ -12,9 +12,10 @@ class CliReporter
     @errors = []
 
   configureEmitter: (emitter) =>
-    emitter.on 'start', =>
+    emitter.on 'start', (rawBlueprint, callback)=>
       logger.info 'Beginning Dredd testing...'
-
+      callback()
+      
     emitter.on 'end', (callback) =>
       if not @inlineErrors
         logger.info "Displaying failed tests..." unless @errors.length is 0

@@ -177,6 +177,7 @@ class TransactionRunner
                   expected: transaction.expected
                   request: transaction.request
                   start: test.start
+                  results: result
                 configuration.emitter.emit 'test fail', test
                 return callback()
 

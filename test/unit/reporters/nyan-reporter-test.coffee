@@ -47,10 +47,11 @@ describe 'NyanCatReporter', () ->
       nyanReporter.draw.restore()
       nyanReporter.write.restore()
 
-    it 'should hide the cursor and draw the cat', () ->
-      emitter.emit 'start'
-      assert.ok nyanReporter.cursorHide.calledOnce
-      assert.ok nyanReporter.draw.calledOnce
+    it 'should hide the cursor and draw the cat', (done) ->
+      emitter.emit 'start', '', () ->
+        assert.ok nyanReporter.cursorHide.calledOnce
+        assert.ok nyanReporter.draw.calledOnce
+        done()
 
   describe 'when ending', () ->
 
