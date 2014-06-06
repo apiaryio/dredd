@@ -59,6 +59,8 @@ configureReporters = (config, stats, tests) ->
     usedFileReportersLength = usedFileReporters.length
     if reporters.indexOf('apiary') != -1
       usedFileReportersLength = usedFileReportersLength - 1
+      if process.env['DREDD_REST_TOKEN'] == undefined or process.env['DREDD_REST_SUITE'] == undefined
+        logger.warn "Apiary reporter environment variable DREDD_REST_TOKEN or DREDD_REST_SUITE not defined."
 
     if usedFileReportersLength > outputs.length
       logger.warn "There are more reporters requiring output paths than there are output paths provided, using default paths for additional file-based reporters."

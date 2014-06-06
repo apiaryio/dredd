@@ -25,8 +25,8 @@ class ApiaryReporter
     @configuration =
       apiUrl: process.env['DREDD_REST_URL'] || "https://api.apiary.io"
       apiToken: process.env['DREDD_REST_TOKEN'] || null
-      apiSuite: process.env['DREDD_REST_SUITE'] || "anonymous"
-
+      apiSuite: process.env['DREDD_REST_SUITE'] || null
+      
     logger.info 'Using apiary reporter.'
 
   configureEmitter: (emitter) =>
@@ -34,6 +34,19 @@ class ApiaryReporter
       @uuid = uuid.v4()
       @startedAt = Math.round(new Date().getTime() / 1000)
 
+      ciVars = [/^TRAVIS/, /^CIRCLE/, /^CI/]
+      envVarNames = Object.keys process.env
+      ciEnvVars = {}
+      for envVarName in envVarNames
+        ciEnvVar = false
+
+        for ciVar in ciVars
+          if envVarName.match(ciVar) != null
+            ciEnvVar = true
+
+        if ciEnvVar == true
+          ciEnvVars[envVarName] = process.env[envVarName]          
+      
       data =
         blueprint: rawBlueprint
         agent: process.env['DREDD_AGENT'] || process.env['USER']
@@ -42,13 +55,7 @@ class ApiaryReporter
         startedAt: @startedAt
         public: true
         status: 'running'
-        agentEnvironment:
-          ci: process.env['CI']?        
-          name: process.env['CI_NAME'] 
-          buildId: process.env['CI_BUILD_ID']
-          buildNumber: process.env['CI_BUILD_NUMBER']
-          jobId: process.env['CI_JOB_ID']
-          jobNumber: process.env['CI_JOB_NUMBER']
+        agentEnvironment: ciEnvVars
 
       path = '/apis/' + @configuration['apiSuite'] + '/tests/runs'
 
@@ -78,6 +85,7 @@ class ApiaryReporter
       data = 
         endedAt: Math.round(new Date().getTime() / 1000)
         result: @stats
+        status: if (@stats['failures'] > 0 or @stats['errors'] > 0) then 'failed' else 'passed' 
       
       path = '/apis/' + @configuration['apiSuite'] + '/tests/run/' + @remoteId        
       
