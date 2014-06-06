@@ -26,7 +26,7 @@ class ApiaryReporter
       apiUrl: process.env['DREDD_REST_URL'] || "https://api.apiary.io"
       apiToken: process.env['DREDD_REST_TOKEN'] || null
       apiSuite: process.env['DREDD_REST_SUITE'] || null
-      
+
     logger.info 'Using apiary reporter.'
 
   configureEmitter: (emitter) =>
@@ -34,7 +34,7 @@ class ApiaryReporter
       @uuid = uuid.v4()
       @startedAt = Math.round(new Date().getTime() / 1000)
 
-      ciVars = [/^TRAVIS/, /^CIRCLE/, /^CI/]
+      ciVars = [/^TRAVIS/, /^CIRCLE/, /^CI/, /^DRONE/]
       envVarNames = Object.keys process.env
       ciEnvVars = {}
       for envVarName in envVarNames
@@ -61,7 +61,7 @@ class ApiaryReporter
 
       @_performRequest path, 'POST', data, (error, response, parsedBody) =>
         if error
-          console.log error
+          logger.error error
           callback()
         else 
           @remoteId = parsedBody['_id']
@@ -72,14 +72,14 @@ class ApiaryReporter
       path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
       @_performRequest path, 'POST', data, (error, response, parsedBody) =>
         if error
-          console.log error  
+          logger.error error  
 
     emitter.on 'test fail', (test) =>
       data = @_transformTestToReporter test
       path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
       @_performRequest path, 'POST', data, (error, response, parsedBody) =>
         if error
-          console.log error
+          logger.error error
 
     emitter.on 'end', (callback) =>
       data = 
@@ -91,7 +91,8 @@ class ApiaryReporter
       
       @_performRequest path, 'PATCH', data, (error, response, parsedBody) =>
         if error
-          console.log error
+          logger.error error
+        logger.complete 'See results in Apiary at: https://app.apiary.io/' + @configuration.apiSuite + '/tests/run/' + @remoteId
         callback()
 
   _transformTestToReporter: (test) ->
