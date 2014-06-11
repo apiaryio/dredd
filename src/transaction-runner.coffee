@@ -118,6 +118,7 @@ class TransactionRunner
       status: ''
       title: transaction.id
       message: transaction.name
+      origin: transaction.origin
 
     if configuration.options.names
       logger.info transaction.name
@@ -169,15 +170,15 @@ class TransactionRunner
                 for entity, data of result
                   for entityResult in data['results']
                     message += entity + ": " + entityResult['message'] + "\n"
-                test =
-                  status: "fail",
-                  title: transaction.id,
-                  message: message
-                  actual: real
-                  expected: transaction.expected
-                  request: transaction.request
-                  start: test.start
-                  results: result
+                
+                test.status = "fail"
+                test.title = transaction.id
+                test.message = message
+                test.actual = real
+                test.expected = transaction.expected
+                test.request = transaction.request
+                test.start = test.start
+                test.results = result
                 configuration.emitter.emit 'test fail', test
                 return callback()
 

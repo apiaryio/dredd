@@ -25,7 +25,7 @@ class ApiaryReporter
     @configuration =
       apiUrl: process.env['DREDD_REST_URL'] || "https://api.apiary.io"
       apiToken: process.env['DREDD_REST_TOKEN'] || null
-      apiSuite: process.env['DREDD_REST_SUITE'] || "anonymous"
+      apiSuite: process.env['DREDD_REST_SUITE'] || null
 
     logger.info 'Using apiary reporter.'
 
@@ -34,6 +34,19 @@ class ApiaryReporter
       @uuid = uuid.v4()
       @startedAt = Math.round(new Date().getTime() / 1000)
 
+      ciVars = [/^TRAVIS/, /^CIRCLE/, /^CI/, /^DRONE/]
+      envVarNames = Object.keys process.env
+      ciEnvVars = {}
+      for envVarName in envVarNames
+        ciEnvVar = false
+
+        for ciVar in ciVars
+          if envVarName.match(ciVar) != null
+            ciEnvVar = true
+
+        if ciEnvVar == true
+          ciEnvVars[envVarName] = process.env[envVarName]          
+      
       data =
         blueprint: rawBlueprint
         agent: process.env['DREDD_AGENT'] || process.env['USER']
@@ -42,19 +55,13 @@ class ApiaryReporter
         startedAt: @startedAt
         public: true
         status: 'running'
-        agentEnvironment:
-          ci: process.env['CI']?        
-          name: process.env['CI_NAME'] 
-          buildId: process.env['CI_BUILD_ID']
-          buildNumber: process.env['CI_BUILD_NUMBER']
-          jobId: process.env['CI_JOB_ID']
-          jobNumber: process.env['CI_JOB_NUMBER']
+        agentEnvironment: ciEnvVars
 
       path = '/apis/' + @configuration['apiSuite'] + '/tests/runs'
 
       @_performRequest path, 'POST', data, (error, response, parsedBody) =>
         if error
-          console.log error
+          logger.error error
           callback()
         else 
           @remoteId = parsedBody['_id']
@@ -65,25 +72,27 @@ class ApiaryReporter
       path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
       @_performRequest path, 'POST', data, (error, response, parsedBody) =>
         if error
-          console.log error  
+          logger.error error  
 
     emitter.on 'test fail', (test) =>
       data = @_transformTestToReporter test
       path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
       @_performRequest path, 'POST', data, (error, response, parsedBody) =>
         if error
-          console.log error
+          logger.error error
 
     emitter.on 'end', (callback) =>
       data = 
         endedAt: Math.round(new Date().getTime() / 1000)
         result: @stats
+        status: if (@stats['failures'] > 0 or @stats['errors'] > 0) then 'failed' else 'passed' 
       
       path = '/apis/' + @configuration['apiSuite'] + '/tests/run/' + @remoteId        
       
       @_performRequest path, 'PATCH', data, (error, response, parsedBody) =>
         if error
-          console.log error
+          logger.error error
+        logger.complete 'See results in Apiary at: https://app.apiary.io/' + @configuration.apiSuite + '/tests/run/' + @remoteId
         callback()
 
   _transformTestToReporter: (test) ->
