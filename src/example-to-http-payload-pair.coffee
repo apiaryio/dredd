@@ -1,8 +1,8 @@
-inheritHeaders = require './inherit-headers'
+convertAstMetadata = require './convert-ast-metadata'
 
 # Transforms API Blueprint example to an array of Expected
 # HTTP Request and Response body and headers
-exampleToHttpPayloadPair = (example, inheritingHeaders = {}) ->
+exampleToHttpPayloadPair = (example) ->
   
   result = 
     warnings: []
@@ -33,10 +33,10 @@ exampleToHttpPayloadPair = (example, inheritingHeaders = {}) ->
         headers: {}
     
     request['body'] = selectedRequest['body']
-    request['headers'] = inheritHeaders selectedRequest['headers'], inheritingHeaders
+    request['headers'] = convertAstMetadata selectedRequest['headers']
 
     response['body'] = selectedResponse['body']
-    response['headers'] = inheritHeaders selectedResponse['headers'], inheritingHeaders
+    response['headers'] = convertAstMetadata selectedResponse['headers']
     response['status'] = selectedResponse['name']
     if selectedResponse['schema'] != ""
       response['schema'] = selectedResponse['schema']

@@ -4,7 +4,6 @@ exampleToHttpPayloadPairs = require '../../src/example-to-http-payload-pair'
 
 describe 'exampleToHttpPayloadPair()', () ->
   data = null
-  inheritingHeaders = {}
   example = 
     name: "Simple name"
     description: "Very clear description"
@@ -22,7 +21,7 @@ describe 'exampleToHttpPayloadPair()', () ->
       body: '{"foo": "bar"}'
     ]
   before () -> 
-    data = exampleToHttpPayloadPairs example, inheritingHeaders
+    data = exampleToHttpPayloadPairs example
 
   it 'should return an object', () ->
     assert.isObject data
@@ -30,25 +29,6 @@ describe 'exampleToHttpPayloadPair()', () ->
   it 'should set response status', () ->
     assert.isNotNull data['pair']['response']['status']
 
-  describe 'when inheritingHeaders provided', () ->
-    before () ->
-      inheritingHeaders =
-        'Content-Type': 'text/plain'
-        'Pragma': 'no-cache'
-      data = exampleToHttpPayloadPairs example, inheritingHeaders
-    
-    it 'should not override Request headers defined in the example by inherited', () ->
-      assert.equal data['pair']['request']['headers']['Content-Type'], 'application/json'  
-    
-    it 'should not override Response headers defined in the example by inherited', () ->
-      assert.equal data['pair']['response']['headers']['Content-Type'], 'application/json'  
-    
-    it 'should add Request headers from inherited if not already present', () ->
-      assert.equal data['pair']['request']['headers']['Pragma'], 'no-cache'
-    
-    it 'should add Response headers from inherited if not already present', () ->
-      assert.equal data['pair']['response']['headers']['Pragma'], 'no-cache'
-  
   describe 'when single request and response per example', () ->
     it 'should return no error', () ->
       assert.equal data['errors'].length, 0    
@@ -62,7 +42,7 @@ describe 'exampleToHttpPayloadPair()', () ->
     describe 'when response schema is empty string', () ->
       before () ->
         example['responses'][0]['schema'] = ""
-        data = exampleToHttpPayloadPairs example, inheritingHeaders      
+        data = exampleToHttpPayloadPairs example
       
       it 'should remove schema key from response', () ->
         assert.isUndefined data['pair']['response']['schema']
@@ -70,7 +50,7 @@ describe 'exampleToHttpPayloadPair()', () ->
     describe 'when response schema is not empty string', () ->
       before () ->
         example['responses'][0]['schema'] = "{}"
-        data = exampleToHttpPayloadPairs example, inheritingHeaders      
+        data = exampleToHttpPayloadPairs example
       
       it 'should add schema key to response', () ->
         assert.isDefined data['pair']['response']['schema']
@@ -103,7 +83,7 @@ describe 'exampleToHttpPayloadPair()', () ->
           body: '{"foo": "bar"}'
         ]
 
-      data = exampleToHttpPayloadPairs example, inheritingHeaders
+      data = exampleToHttpPayloadPairs example
 
     it 'should return no error', () ->
       assert.equal data['errors'].length, 0    
@@ -153,7 +133,7 @@ describe 'exampleToHttpPayloadPair()', () ->
           }          
         ]
 
-      data = exampleToHttpPayloadPairs example, inheritingHeaders
+      data = exampleToHttpPayloadPairs example
 
     it 'should return no error', () ->
       assert.equal data['errors'].length, 0    
@@ -177,8 +157,6 @@ describe 'exampleToHttpPayloadPair()', () ->
        
   describe 'when no request', () ->
     before () -> 
-      inheritingHeaders =
-        'Content-Type': 'application/json'
       example = 
         name: "Simple name"
         description: "Very clear description"
@@ -192,7 +170,7 @@ describe 'exampleToHttpPayloadPair()', () ->
           }        
         ]
 
-      data = exampleToHttpPayloadPairs example, inheritingHeaders
+      data = exampleToHttpPayloadPairs example
 
     it 'should return no error', () ->
       assert.equal data['errors'].length, 0    
@@ -204,10 +182,7 @@ describe 'exampleToHttpPayloadPair()', () ->
       request = {}
       before () ->
         request = data['pair']['request']
-      
-      it 'should have inherited headers', () ->
-        assert.include Object.keys(request['headers']), 'Content-Type'
-      
+            
       it 'should have body with empty string', () ->
         assert.equal request['body'], ''
 
@@ -228,7 +203,7 @@ describe 'exampleToHttpPayloadPair()', () ->
         responses: [
         ]
 
-      data = exampleToHttpPayloadPairs example, inheritingHeaders
+      data = exampleToHttpPayloadPairs example
 
     it 'should return no error', () ->
       assert.equal data['errors'].length, 0    
