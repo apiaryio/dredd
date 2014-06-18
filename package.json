@@ -1,6 +1,6 @@
 {
   "name": "dredd",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "API Blueprint testing tool",
   "main": "lib/dredd.js",
   "bin": {
@@ -15,7 +15,7 @@
     "url": "https://github.com/apiaryio/dredd"
   },
   "dependencies": {
-    "gavel": "~0.2.6",
+    "gavel": "~0.3.0",
     "winston": "~0.7.2",
     "protagonist": "~0.8.0",
     "uri-template": "~0.4.1",
