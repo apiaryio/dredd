@@ -2,10 +2,11 @@ convertAstMetadata = (metadata) ->
   result = {}
   if Array.isArray metadata
     for item in metadata
-      name = item['name']
-      delete item['name']
+      dupItem = JSON.parse(JSON.stringify(item))
+      name = dupItem['name']
+      delete dupItem['name']
       
-      result[name] = item
+      result[name] = dupItem
     
   result
 
