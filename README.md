@@ -11,12 +11,6 @@ Dredd is a command-line tool for testing API documentation written in [API Bluep
 
 ![Dredd API Blueprint testing tool](https://raw.github.com/apiaryio/dredd/master/img/Dredd.png)
 
-## Get Started Testing Your API
-
-    $ dredd blueprint.md http://api.myservice.tld
-
-See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-life example.
-
 ## Installation
 [Node.js][] and [NPM][] is required.
 
@@ -24,6 +18,52 @@ See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-lif
 
 [Node.js]: https://npmjs.org/
 [NPM]: https://npmjs.org/
+
+## Get Started Testing Your API
+
+    $ dredd blueprint.md http://api.myservice.tld
+
+See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-life example.
+
+## Writing testable blueprints
+
+If you are using [URI templates][URIt] in your blueprint, you have to provide default or example values in the blueprint [URI parameter syntax][UPS] to provide values for URI parameter substitution. Everyu resource in the blueprint defined by URI template without default values is not testable, is considered as an ambigous transaction and skip it.  In this case Dredd will throw a warning and let you know which parameter is not defined in the blueprint. 
+
+[UPS]: https://github.com/apiaryio/api-blueprint/blob/master/API%20Blueprint%20Specification.md#def-uriparameters-section
+[URIt]: http://tools.ietf.org/html/rfc6570
+
+## Hooks
+
+Dredd can be configured to use hookfiles to do basic setup/teardown between tests (specified with the --hookfiles flag). Hookfiles can be in javascript or coffeescript, and must import the hook methods.
+
+Requests are identified by their name, which is derived from the structure of the blueprint. You can print a list of the generated names with --names.
+
+### Example
+
+Get Names:
+
+```sh
+$ dredd single_get.md http://machines.apiary.io --names
+info: Machines > Machines collection > Get Machines
+```
+
+Write a hookfile:
+
+```coffee
+{before, after} = require 'hooks'
+
+before "Machines > Machines collection > Get Machines", (transaction) ->
+  console.log "before"
+
+after "Machines > Machines collection > Get Machines", (transaction) ->
+  console.log "after"
+```
+
+Run tests:
+
+```sh
+dredd single_get.md http://machines.apiary.io --hookfiles=*_hooks.*
+```
 
 ## Command Line Options
 
@@ -80,17 +120,13 @@ See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-lif
 
 Additionally, boolean flags can be negated by prefixing `no-`, for example: `--no-color --no-inline-errors`.
 
-Dredd can be configured to use hookfiles to do basic setup/teardown between tests. See the [wiki article on writing hooks](https://github.com/apiaryio/dredd/wiki/Writing-Hooks) for more details.
-
-## API Blueprint Testability
-Dredd can test only API resources specified by *well defined transaction*. Any Non specific resources in the Blueprint e. g. with URI template or query parameters without default or example values are considered as *ambiguous transaction* thus they are resulting in a *warning* during the test run and are skipped.
-
-To learn more about the future of API Blueprint & Testing visit [apiaryio/api-blueprint#21](https://github.com/apiaryio/api-blueprint/issues/21).
-
 ## Contribution
+
 Any contribution is more then welcome! Let's start with creating your own [virtual development environment][vde], then fork, write  tests, write clean, readable code which communicate, use `scripts/bdd`, keep the [test coverage] and create a pull request. :)
 
 Make sure to follow Dredd [issues page][issues].
+
+To learn more about the future of API Blueprint & Testing visit [apiaryio/api-blueprint#21](https://github.com/apiaryio/api-blueprint/issues/21).
 
 [API Blueprint]: http://apiblueprint.org/
 [test coverage]: https://coveralls.io/r/apiaryio/dredd?branch=master
