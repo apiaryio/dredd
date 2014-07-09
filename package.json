@@ -15,9 +15,9 @@
     "url": "https://github.com/apiaryio/dredd"
   },
   "dependencies": {
-    "gavel": "~0.3.3",
+    "gavel": "~0.3.4",
     "winston": "~0.7.2",
-    "protagonist": "~0.11.0",
+    "protagonist": "~0.12.0",
     "uri-template": "~0.4.1",
     "async": "~0.9.0",
     "optimist": "~0.6.0",

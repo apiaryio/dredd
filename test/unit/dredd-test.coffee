@@ -101,18 +101,17 @@ describe 'Dredd class', () ->
           silent: true
       dredd = new Dredd(configuration)
 
-    beforeEach () ->
+    beforeEach () ->      
       sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
         callback()
 
-    afterEach () ->
+    afterEach () ->      
       dredd.runner.executeTransaction.restore()
 
     it 'should exit with an error', (done) ->
       dredd.run (error) ->
         assert.ok error
         done()
-
 
     it 'should NOT execute any transaction', (done) ->
       dredd.run () ->
@@ -132,14 +131,22 @@ describe 'Dredd class', () ->
     beforeEach () ->
       sinon.stub dredd.runner, 'run', (transaction, callback) ->
         callback()
+      sinon.spy loggerStub, 'warn'
 
     afterEach () ->
       dredd.runner.run.restore()
+      loggerStub.warn.restore()
 
     it 'should execute the runtime', (done) ->
       dredd.run () ->
         assert.ok dredd.runner.run.called
         done()
+
+    it 'should write warnings to warn logger', (done) ->
+      dredd.run () ->
+        assert.ok loggerStub.warn.called
+        done()
+
 
   describe 'when non existing Blueprint path', () ->
 
