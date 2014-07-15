@@ -31,8 +31,8 @@ class Dredd
     config = @configuration
     stats = @stats
 
-    fs.readFile config.blueprintPath, 'utf8', (parseError, data) ->
-      return callback(parseError, stats) if parseError
+    fs.readFile config.blueprintPath, 'utf8', (loadingError, data) ->
+      return callback(loadingError, stats) if loadingError
       reporterCount = config.emitter.listeners('start').length
       config.emitter.emit 'start', data, () ->
         reporterCount--
@@ -41,7 +41,15 @@ class Dredd
 
     blueprintParsingComplete = (protagonistError, result) =>
       return callback(protagonistError, config.reporter) if protagonistError
-
+      
+      if result['warnings'].length > 0
+        for warning in result['warnings']
+          message = 'Parser warning: ' + ' (' + warning.code + ') ' + warning.message
+          for loc in warning['location']
+            pos = loc.index + ':' + loc.length
+            message = message + ' ' + pos
+          logger.warn message
+      
       runtime = blueprintAstToRuntime result['ast']
       runtimeError = handleRuntimeProblems runtime
       return callback(runtimeError, stats) if runtimeError
