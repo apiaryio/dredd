@@ -27,7 +27,7 @@ See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-lif
 
 ## Writing testable blueprints
 
-If you are using [URI templates][URIt] in your blueprint, you have to provide default or example values in the blueprint [URI parameter syntax][UPS] to provide values for URI parameter substitution. Every resource in the blueprint defined by URI template without default values is not testable, it's considered as an ambigous transaction and skipped. In case of any ambigous transactuion Dredd will throw a warning and let you know which parameter example value is not defined in the blueprint. 
+If you are using [URI templates][URIt] in your blueprint, you have to provide example values in the blueprint's [URI parameter syntax][UPS] to provide values for each URI parameter substitution. Every resource in the blueprint defined by URI template without specifying example values is not testable, it's considered as an ambigous transaction and skipped. In case of any ambigous transaction Dredd will throw a warning and let you know which parameter example value is not defined in the blueprint. 
 
 [UPS]: https://github.com/apiaryio/api-blueprint/blob/master/API%20Blueprint%20Specification.md#def-uriparameters-section
 [URIt]: http://tools.ietf.org/html/rfc6570
