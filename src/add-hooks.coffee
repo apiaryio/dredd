@@ -8,7 +8,8 @@ async = require 'async'
 hooks = require './hooks'
 logger = require './logger'
 
-addHooks = (runner, transactions) ->
+addHooks = (runner, transactions, emitter) ->
+    @emitter = emitter
 
     for transaction in transactions
       hooks.transactions[transaction.name] = transaction
@@ -44,7 +45,11 @@ addHooks = (runner, transactions) ->
         logger.debug 'Running hooks...'
 
         runHookWithTransaction = (hook, callback) ->
-          runHook hook, transaction, callback
+          try
+            runHook hook, transaction, callback
+          catch error
+            emitError(transaction, error)
+            callback()
 
         async.eachSeries hooksForTransaction, runHookWithTransaction, () ->
           callback()
@@ -61,5 +66,13 @@ addHooks = (runner, transactions) ->
       # async
       hook transaction, () =>
         callback()
+
+  emitError = (transaction, error) ->
+    test =
+      status: ''
+      title: transaction.id
+      message: transaction.name
+      origin: transaction.origin
+    @emitter.emit 'test error', error, test if error
 
 module.exports = addHooks

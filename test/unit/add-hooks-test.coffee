@@ -210,6 +210,23 @@ describe 'addHooks(runner, transaction)', () ->
             assert.ok loggerStub.info.calledWith "second"
             done()
 
+      describe 'with hook that throws an error', () ->
+        beforeEach () ->
+          hooksStub.beforeHooks =
+            'Group Machine > Machine > Delete Message > Bogus example name' : [
+              (transaction) ->
+                JSON.parse '<<<>>>!@#!@#!@#4234234'
+            ]
+          sinon.stub configuration.emitter, 'emit'
+
+        after () ->
+          configuration.emitter.emit.restore()
+
+        it 'should report an error with the test', (done) ->
+          runner.executeTransaction transaction, () ->
+            assert.ok emitter.emit.calledWith "test error"
+            done()
+
       describe 'without hooks', () ->
         beforeEach () ->
           hooksStub.beforeHooks = []

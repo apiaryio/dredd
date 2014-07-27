@@ -22,7 +22,7 @@ String::startsWith = (str) ->
 class TransactionRunner
   constructor: (@configuration) ->
     advisable.async.call TransactionRunner.prototype
-    addHooks @, {}
+    addHooks @, {}, @configuration.emitter
 
   run: (transactions, callback) ->
     transactions = if @configuration.options['sorted'] then sortTransactions(transactions) else transactions
@@ -30,7 +30,7 @@ class TransactionRunner
     async.mapSeries transactions, @configureTransaction, (err, results) ->
       transactions = results
 
-    addHooks {}, transactions
+    addHooks {}, transactions, @configuration.emitter
 
     async.eachSeries transactions, @executeTransaction, () ->
       callback()
@@ -170,7 +170,7 @@ class TransactionRunner
                 for entity, data of result
                   for entityResult in data['results']
                     message += entity + ": " + entityResult['message'] + "\n"
-                
+
                 test.status = "fail"
                 test.title = transaction.id
                 test.message = message
@@ -183,9 +183,12 @@ class TransactionRunner
                 return callback()
 
       transport = if transaction.protocol is 'https:' then https else http
-      req = transport.request requestOptions, handleRequest
-
-      req.write transaction.request['body'] if transaction.request['body'] != ''
-      req.end()
+      try
+        req = transport.request requestOptions, handleRequest
+        req.write transaction.request['body'] if transaction.request['body'] != ''
+        req.end()
+      catch error
+        configuration.emitter.emit 'test error', error, test if error
+        return callback()
 
 module.exports = TransactionRunner
