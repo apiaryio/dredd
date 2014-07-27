@@ -101,6 +101,7 @@ class TransactionRunner
       origin: origin
       fullPath: fullPath
       protocol: parsedUrl.protocol
+      skip: false
 
     return callback(null, configuredTransaction)
 
@@ -130,6 +131,10 @@ class TransactionRunner
       logger.info "Dry run, skipping API Tests..."
       return callback()
     else if configuration.options.method.length > 0 and not (transaction.request.method in configuration.options.method)
+      configuration.emitter.emit 'test skip', test
+      return callback()
+    else if transaction.skip
+      # manually set to skip a test
       configuration.emitter.emit 'test skip', test
       return callback()
     else
