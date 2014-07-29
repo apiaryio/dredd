@@ -27,10 +27,13 @@ describe 'XUnitReporter', () ->
       before () ->
         sinon.stub fsStub, 'existsSync', (path) ->
           return true
+        sinon.stub fsStub, 'unlinkSync', (path) ->
+          return true
         sinon.stub loggerStub, 'info'
 
       after () ->
         fsStub.existsSync.restore()
+        fsStub.unlinkSync.restore()
         loggerStub.info.restore()
 
       it 'should inform about the existing file', () ->

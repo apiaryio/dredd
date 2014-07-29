@@ -201,6 +201,21 @@ describe 'TransactionRunner', ()->
           assert.ok configuration.emitter.emit.calledWith 'test skip'
           done()
 
+    describe 'when a test has been manually set to skip in a hook', () ->
+
+      beforeEach () ->
+        sinon.stub configuration.emitter, 'emit'
+        runner = new Runner(configuration)
+
+      afterEach () ->
+        configuration.emitter.emit.restore()
+
+      it 'should skip the test', (done) ->
+        transaction.skip = true
+        runner.executeTransaction transaction, () ->
+          assert.ok configuration.emitter.emit.calledWith 'test skip'
+          done()
+
     describe 'when server uses https', () ->
 
       beforeEach () ->

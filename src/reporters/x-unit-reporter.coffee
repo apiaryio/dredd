@@ -21,6 +21,7 @@ class XUnitReporter extends EventEmitter
     filePath = if path? then file.path.abspath(path) else file.path.abspath("./report.xml")
     if fs.existsSync(filePath)
       logger.info "File exists at #{filePath}, will be overwritten..."
+      fs.unlinkSync(filePath)
     filePath
 
   configureEmitter: (emitter) =>
@@ -35,7 +36,7 @@ class XUnitReporter extends EventEmitter
             , time: @stats.duration / 1000
           }, false)
       callback()
-    
+
     emitter.on 'end', (callback) =>
       updateSuiteStats @path, @stats, callback
 
