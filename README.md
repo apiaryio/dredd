@@ -59,6 +59,14 @@ after "Machines > Machines collection > Get Machines", (transaction) ->
   console.log "after"
 ```
 
+Skipping a test with hooks:
+
+```coffee
+before "Machines > Machines collection > Get Machines", (transaction) ->
+  transaction.skip = true
+```
+
+
 Run tests:
 
 ```sh
