@@ -63,6 +63,11 @@ options =
     alias: "t"
     description: "Determines whether console output should include timestamps.\n"
     default: false
+  
+  silent:
+    alias: "q"
+    description: "Silences commandline output.\n"
+    default: false
 
   help:
     description: "Show usage information.\n"
