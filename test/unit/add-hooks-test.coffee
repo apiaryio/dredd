@@ -9,13 +9,15 @@ globStub = require 'glob'
 pathStub = require 'path'
 loggerStub = require '../../src/logger'
 hooksStub = require '../../src/hooks'
+eventsStub = require '../../src/dredd-events'
 Runner = require '../../src/transaction-runner'
 
 addHooks = proxyquire  '../../src/add-hooks', {
   'logger': loggerStub,
   'glob': globStub,
   'pathStub': pathStub,
-  'hooks': hooksStub
+  'hooks': hooksStub,
+  'dredd-events': eventsStub
 }
 
 describe 'addHooks(runner, transaction)', () ->
@@ -84,8 +86,10 @@ describe 'addHooks(runner, transaction)', () ->
         sinon.stub globStub, 'sync', (pattern) ->
           []
         addHooks(runner, transactions)
-        assert.ok runner.before.called
-        assert.ok runner.after.called
+        assert.ok runner.before.calledWith 'executeTransaction'
+        assert.ok runner.after.calledWith 'executeTransaction'
+        assert.ok runner.before.calledWith 'executeTransactions'
+        assert.ok runner.after.calledWith 'executeTransactions'
 
 
     describe 'when there is an error reading the hook files', () ->
@@ -208,6 +212,27 @@ describe 'addHooks(runner, transaction)', () ->
           runner.executeTransaction transaction, () ->
             assert.ok loggerStub.info.calledWith "first"
             assert.ok loggerStub.info.calledWith "second"
+            done()
+
+      describe 'with events', () ->
+        beforeAll = sinon.stub()
+        afterAll = sinon.stub()
+
+        before () ->
+          beforeAll.callsArg(0)
+          afterAll.callsArg(0)
+
+        beforeEach () ->
+          eventsStub.beforeAll beforeAll
+          eventsStub.afterAll afterAll
+
+        after () ->
+          eventsStub.reset()
+
+        it 'should run the events', (done) ->
+          runner.executeTransactions [], () ->
+            assert.ok beforeAll.called
+            assert.ok afterAll.called
             done()
 
       describe 'with hook that throws an error', () ->
