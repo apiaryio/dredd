@@ -38,10 +38,10 @@ addHooks = (runner, transactions, emitter) ->
 
     # Support for suite setup/teardown
     runner.before 'executeTransactions', (transactions, callback) =>
-      dreddEvents.runBefore(callback)
+      dreddEvents.runBeforeAll(callback)
 
     runner.after 'executeTransactions', (transactions, callback) =>
-      dreddEvents.runAfter(callback)
+      dreddEvents.runAfterAll(callback)
 
     runner.before 'executeTransaction', (transaction, callback)  =>
       runHooksForTransaction hooks.beforeHooks[transaction.name], transaction, callback

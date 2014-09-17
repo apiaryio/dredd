@@ -18,10 +18,10 @@ class DreddEvents
     @beforeCallback = null
     @afterCallback = null
 
-  runBefore: (callback) =>
+  runBeforeAll: (callback) =>
     runIfDefined(@beforeCallback, callback)
 
-  runAfter: (callback) =>
+  runAfterAll: (callback) =>
     runIfDefined(@afterCallback, callback)
 
 module.exports = new DreddEvents()
