@@ -5,7 +5,6 @@ proxyquire = require('proxyquire').noCallThru()
 glob = require 'glob'
 async = require 'async'
 
-dreddEvents = require './dredd-events'
 hooks = require './hooks'
 logger = require './logger'
 
@@ -25,8 +24,7 @@ addHooks = (runner, transactions, emitter) ->
     try
       for file in files
         proxyquire path.resolve(process.cwd(), file), {
-          'hooks': hooks,
-          'dredd-events': dreddEvents
+          'hooks': hooks
         }
     catch error
       logger.warn 'Skipping hook loading...'
@@ -37,11 +35,11 @@ addHooks = (runner, transactions, emitter) ->
       return
 
     # Support for suite setup/teardown
-    runner.before 'executeTransactions', (transactions, callback) =>
-      dreddEvents.runBeforeAll(callback)
+    runner.before 'executeAllTransactions', (transactions, callback) =>
+      hooks.runBeforeAll(callback)
 
-    runner.after 'executeTransactions', (transactions, callback) =>
-      dreddEvents.runAfterAll(callback)
+    runner.after 'executeAllTransactions', (transactions, callback) =>
+      hooks.runAfterAll(callback)
 
     runner.before 'executeTransaction', (transaction, callback)  =>
       runHooksForTransaction hooks.beforeHooks[transaction.name], transaction, callback

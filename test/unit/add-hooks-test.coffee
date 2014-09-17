@@ -9,15 +9,13 @@ globStub = require 'glob'
 pathStub = require 'path'
 loggerStub = require '../../src/logger'
 hooksStub = require '../../src/hooks'
-eventsStub = require '../../src/dredd-events'
 Runner = require '../../src/transaction-runner'
 
 addHooks = proxyquire  '../../src/add-hooks', {
   'logger': loggerStub,
   'glob': globStub,
   'pathStub': pathStub,
-  'hooks': hooksStub,
-  'dredd-events': eventsStub
+  'hooks': hooksStub
 }
 
 describe 'addHooks(runner, transaction)', () ->
@@ -88,8 +86,8 @@ describe 'addHooks(runner, transaction)', () ->
         addHooks(runner, transactions)
         assert.ok runner.before.calledWith 'executeTransaction'
         assert.ok runner.after.calledWith 'executeTransaction'
-        assert.ok runner.before.calledWith 'executeTransactions'
-        assert.ok runner.after.calledWith 'executeTransactions'
+        assert.ok runner.before.calledWith 'executeAllTransactions'
+        assert.ok runner.after.calledWith 'executeAllTransactions'
 
 
     describe 'when there is an error reading the hook files', () ->
@@ -214,28 +212,37 @@ describe 'addHooks(runner, transaction)', () ->
             assert.ok loggerStub.info.calledWith "second"
             done()
 
-      describe 'with events', () ->
+      describe 'with a beforeAll hook', () ->
         beforeAll = sinon.stub()
-        afterAll = sinon.stub()
+        beforeAll.callsArg(0)
 
         before () ->
-          beforeAll.callsArg(0)
-          afterAll.callsArg(0)
-
-        beforeEach () ->
-          eventsStub.beforeAll beforeAll
-          eventsStub.afterAll afterAll
+          hooksStub.beforeAll beforeAll
 
         after () ->
-          eventsStub.reset()
+          hooksStub.beforeAllHooks = []
 
-        it 'should run the events', (done) ->
-          runner.executeTransactions [], () ->
+        it 'should run the hooks', (done) ->
+          runner.executeAllTransactions [], () ->
             assert.ok beforeAll.called
+            done()
+
+      describe 'with an afterAll hook', () ->
+        afterAll = sinon.stub()
+        afterAll.callsArg(0)
+
+        before () ->
+          hooksStub.afterAll afterAll
+
+        after () ->
+          hooksStub.afterAllHooks = []
+
+        it 'should run the hooks', (done) ->
+          runner.executeAllTransactions [], () ->
             assert.ok afterAll.called
             done()
 
-      describe 'with multiple callbacks for the same events', () ->
+      describe 'with multiple hooks for the same events', () ->
         beforeAll1 = sinon.stub()
         beforeAll2 = sinon.stub()
         afterAll1 = sinon.stub()
@@ -248,16 +255,17 @@ describe 'addHooks(runner, transaction)', () ->
           afterAll2.callsArg(0)
 
         beforeEach () ->
-          eventsStub.beforeAll beforeAll1
-          eventsStub.afterAll afterAll1
-          eventsStub.afterAll afterAll2
-          eventsStub.beforeAll beforeAll2
+          hooksStub.beforeAll beforeAll1
+          hooksStub.afterAll afterAll1
+          hooksStub.afterAll afterAll2
+          hooksStub.beforeAll beforeAll2
 
         after () ->
-          eventsStub.reset()
+          hooksStub.beforeAllHooks = []
+          hooksStub.afterAllHooks = []
 
         it 'should run all the events in order', (done) ->
-          runner.executeTransactions [], () ->
+          runner.executeAllTransactions [], () ->
             assert.ok beforeAll1.calledBefore(beforeAll2)
             assert.ok beforeAll2.called
             assert.ok afterAll1.calledBefore(afterAll2)

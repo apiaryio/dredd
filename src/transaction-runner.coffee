@@ -32,7 +32,7 @@ class TransactionRunner
 
     addHooks {}, transactions, @configuration.emitter
 
-    @executeTransactions(transactions,callback)
+    @executeAllTransactions(transactions,callback)
 
   configureTransaction: (transaction, callback) =>
     configuration = @configuration
@@ -104,7 +104,7 @@ class TransactionRunner
 
     return callback(null, configuredTransaction)
 
-  executeTransactions: (transactions, callback) =>
+  executeAllTransactions: (transactions, callback) =>
     async.eachSeries transactions, @executeTransaction, callback
 
   executeTransaction: (transaction, callback) =>

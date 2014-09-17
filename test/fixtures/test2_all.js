@@ -1,10 +1,8 @@
-var events;
 var hooks;
 
-events = require('dredd-events');
 hooks = require('hooks');
 
-events.beforeAll(function(done) {
+hooks.beforeAll(function(done) {
   console.log('*** beforeAll');
   done();
 });

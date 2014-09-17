@@ -1,4 +1,4 @@
-{afterAll} = require 'dredd-events'
+{afterAll} = require 'hooks'
 
 afterAll (done) ->
   console.log "afterAll"

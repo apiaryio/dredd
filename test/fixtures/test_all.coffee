@@ -1,5 +1,4 @@
-{after} = require 'hooks'
-{afterAll} = require 'dredd-events'
+{after,afterAll} = require 'hooks'
 
 after "Machines > Machines collection > Get Machines", (transaction) ->
   console.log "*** after"
