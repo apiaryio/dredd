@@ -10,16 +10,24 @@ describe 'DreddEvents', () ->
   describe 'before', () ->
     callback = sinon.spy()
 
+    afterEach () ->
+      dreddEvents.reset()
+
     it 'should do nothing if not registered', (done) ->
       dreddEvents.runBeforeAll () ->
         assert.ok callback.notCalled
         done()
 
     it 'should callback if registered', (testDone) ->
-      dreddEvents.beforeAll (initDone) ->
-        assert.ok(typeof initDone is 'function')
-        initDone()
-      dreddEvents.runBeforeAll (runDone) ->
+      firstCallback = sinon.stub()
+      firstCallback.callsArg(0)
+
+      dreddEvents.beforeAll firstCallback
+      dreddEvents.beforeAll (done) ->
+        assert.ok typeof done is 'function'
+        assert.ok firstCallback.called
+        done()
+      dreddEvents.runBeforeAll (done) ->
         testDone()
 
   describe 'after', () ->
@@ -31,8 +39,13 @@ describe 'DreddEvents', () ->
         done()
 
     it 'should callback if registered', (testDone) ->
-      dreddEvents.afterAll (initDone) ->
-        assert.ok(typeof initDone is 'function')
-        initDone()
-      dreddEvents.runAfterAll (runDone) ->
+      firstCallback = sinon.stub()
+      firstCallback.callsArg(0)
+
+      dreddEvents.afterAll firstCallback
+      dreddEvents.afterAll (done) ->
+        assert.ok(typeof done is 'function')
+        assert.ok firstCallback.called
+        done()
+      dreddEvents.runAfterAll (done) ->
         testDone()

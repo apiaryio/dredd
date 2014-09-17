@@ -1,27 +1,23 @@
-runIfDefined = (fn, callback) ->
-  if fn
-    fn(callback)
-  else
-    callback()
+async = require 'async'
 
 class DreddEvents
   constructor: () ->
     @reset()
 
   beforeAll: (callback) =>
-    @beforeCallback = callback
+    @beforeCallbacks.push callback
 
   afterAll: (callback) =>
-    @afterCallback = callback
+    @afterCallbacks.push callback
 
   reset: () ->
-    @beforeCallback = null
-    @afterCallback = null
+    @beforeCallbacks = []
+    @afterCallbacks = []
 
   runBeforeAll: (callback) =>
-    runIfDefined(@beforeCallback, callback)
+    async.series @beforeCallbacks, callback
 
   runAfterAll: (callback) =>
-    runIfDefined(@afterCallback, callback)
+    async.series @afterCallbacks, callback
 
 module.exports = new DreddEvents()

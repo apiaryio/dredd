@@ -235,6 +235,35 @@ describe 'addHooks(runner, transaction)', () ->
             assert.ok afterAll.called
             done()
 
+      describe 'with multiple callbacks for the same events', () ->
+        beforeAll1 = sinon.stub()
+        beforeAll2 = sinon.stub()
+        afterAll1 = sinon.stub()
+        afterAll2 = sinon.stub()
+
+        before () ->
+          beforeAll1.callsArg(0)
+          beforeAll2.callsArg(0)
+          afterAll1.callsArg(0)
+          afterAll2.callsArg(0)
+
+        beforeEach () ->
+          eventsStub.beforeAll beforeAll1
+          eventsStub.afterAll afterAll1
+          eventsStub.afterAll afterAll2
+          eventsStub.beforeAll beforeAll2
+
+        after () ->
+          eventsStub.reset()
+
+        it 'should run all the events in order', (done) ->
+          runner.executeTransactions [], () ->
+            assert.ok beforeAll1.calledBefore(beforeAll2)
+            assert.ok beforeAll2.called
+            assert.ok afterAll1.calledBefore(afterAll2)
+            assert.ok afterAll2.called
+            done()
+
       describe 'with hook that throws an error', () ->
         beforeEach () ->
           hooksStub.beforeHooks =
