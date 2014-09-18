@@ -29,7 +29,7 @@ execCommand = (cmd, callback) ->
 
   cli.on exitEventName, (code) ->
     exitStatus = code if exitStatus == null and code != undefined
-    callback()
+    callback(undefined, stdout, stderr)
 
 
 describe "Command line interface", () ->
@@ -487,6 +487,83 @@ describe "Command line interface", () ->
 
     it 'should modify the transaction with hooks', () ->
       assert.equal recievedRequest.headers['header'], '123232323'
+
+  describe 'when describing events in hookfiles', () ->
+
+    recievedRequest = {}
+    output = {}
+
+    containsLine = (str, expected) ->
+      lines = str.split('\n')
+      for line in lines
+        if line is expected
+          return true
+      return false
+
+    before (done) ->
+      cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/*_events.*"
+
+      app = express()
+
+      app.get '/machines', (req, res) ->
+        recievedRequest = req
+        res.setHeader 'Content-Type', 'application/json'
+        machine =
+          type: 'bulldozer'
+          name: 'willy'
+        response = [machine]
+        res.send 200, response
+
+      server = app.listen PORT, () ->
+        execCommand cmd, (err, stdout, stderr) ->
+          output.stdout = stdout
+          output.stderr = stderr
+          server.close()
+
+      server.on 'close', done
+
+    it 'should execute the before and after events', () ->
+      assert.ok containsLine(output.stdout, 'beforeAll')
+      assert.ok containsLine(output.stdout, 'afterAll')
+
+  describe 'when describing both hooks and events in hookfiles', () ->
+
+    recievedRequest = {}
+    output = {}
+
+    getResults = (str) ->
+      ret = []
+      lines = str.split('\n')
+      for line in lines
+        if line.startsWith('*** ')
+          ret.push(line.substr(4))
+      return ret.join(',')
+
+    before (done) ->
+      cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/*_all.*"
+
+      app = express()
+
+      app.get '/machines', (req, res) ->
+        recievedRequest = req
+        res.setHeader 'Content-Type', 'application/json'
+        machine =
+          type: 'bulldozer'
+          name: 'willy'
+        response = [machine]
+        res.send 200, response
+
+      server = app.listen PORT, () ->
+        execCommand cmd, (err, stdout, stderr) ->
+          output.stdout = stdout
+          output.stderr = stderr
+          server.close()
+
+      server.on 'close', done
+
+    it 'should execute hooks and events in order', () ->
+      events = getResults(output.stdout)
+      assert.ok events is 'beforeAll,before,after,afterAll'
 
   describe "tests a blueprint containing an endpoint with schema", () ->
     describe "and server is responding in accordance with the schema", () ->

@@ -34,6 +34,13 @@ addHooks = (runner, transactions, emitter) ->
       logger.error 'Stack: ' + error.stack if error.stack?
       return
 
+    # Support for suite setup/teardown
+    runner.before 'executeAllTransactions', (transactions, callback) =>
+      hooks.runBeforeAll(callback)
+
+    runner.after 'executeAllTransactions', (transactions, callback) =>
+      hooks.runAfterAll(callback)
+
     runner.before 'executeTransaction', (transaction, callback)  =>
       runHooksForTransaction hooks.beforeHooks[transaction.name], transaction, callback
 

@@ -84,8 +84,10 @@ describe 'addHooks(runner, transaction)', () ->
         sinon.stub globStub, 'sync', (pattern) ->
           []
         addHooks(runner, transactions)
-        assert.ok runner.before.called
-        assert.ok runner.after.called
+        assert.ok runner.before.calledWith 'executeTransaction'
+        assert.ok runner.after.calledWith 'executeTransaction'
+        assert.ok runner.before.calledWith 'executeAllTransactions'
+        assert.ok runner.after.calledWith 'executeAllTransactions'
 
 
     describe 'when there is an error reading the hook files', () ->
@@ -208,6 +210,66 @@ describe 'addHooks(runner, transaction)', () ->
           runner.executeTransaction transaction, () ->
             assert.ok loggerStub.info.calledWith "first"
             assert.ok loggerStub.info.calledWith "second"
+            done()
+
+      describe 'with a beforeAll hook', () ->
+        beforeAll = sinon.stub()
+        beforeAll.callsArg(0)
+
+        before () ->
+          hooksStub.beforeAll beforeAll
+
+        after () ->
+          hooksStub.beforeAllHooks = []
+
+        it 'should run the hooks', (done) ->
+          runner.executeAllTransactions [], () ->
+            assert.ok beforeAll.called
+            done()
+
+      describe 'with an afterAll hook', () ->
+        afterAll = sinon.stub()
+        afterAll.callsArg(0)
+
+        before () ->
+          hooksStub.afterAll afterAll
+
+        after () ->
+          hooksStub.afterAllHooks = []
+
+        it 'should run the hooks', (done) ->
+          runner.executeAllTransactions [], () ->
+            assert.ok afterAll.called
+            done()
+
+      describe 'with multiple hooks for the same events', () ->
+        beforeAll1 = sinon.stub()
+        beforeAll2 = sinon.stub()
+        afterAll1 = sinon.stub()
+        afterAll2 = sinon.stub()
+
+        before () ->
+          beforeAll1.callsArg(0)
+          beforeAll2.callsArg(0)
+          afterAll1.callsArg(0)
+          afterAll2.callsArg(0)
+
+        beforeEach () ->
+          hooksStub.beforeAll beforeAll1
+          hooksStub.afterAll afterAll1
+          hooksStub.afterAll afterAll2
+          hooksStub.beforeAll beforeAll2
+
+        after () ->
+          hooksStub.beforeAllHooks = []
+          hooksStub.afterAllHooks = []
+
+        it 'should run all the events in order', (done) ->
+          runner.executeAllTransactions [], () ->
+            assert.ok beforeAll1.calledBefore(beforeAll2)
+            assert.ok beforeAll2.called
+            assert.ok afterAll1.calledBefore(afterAll2)
+            assert.ok afterAll2.called
             done()
 
       describe 'with hook that throws an error', () ->
