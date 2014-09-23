@@ -73,6 +73,22 @@ Run tests:
 dredd single_get.md http://machines.apiary.io --hookfiles=*_hooks.*
 ```
 
+Dredd also supports callbacks before and after all tests:
+
+```coffee
+{beforeAll, afterAll} = require 'hooks'
+
+beforeAll (done) ->
+  # do setup
+  done()
+
+afterAll (done) ->
+  # do teardown
+  done()
+```
+
+If `beforeAll` and `afterAll` are called multiple times, the callbacks are executed serially in the order they were called.
+
 ## Command Line Options
 
     $ dredd --help
