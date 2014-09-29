@@ -38,7 +38,7 @@
     "coffee-coverage": "~0.4.2",
     "coffee-errors": "~0.8.4",
     "coveralls": "~2.11.2",
-    "express": "~3.4.3",
+    "express": "~4.9.5",
     "jscoverage": "~0.5.3",
     "mocha": "~1.21.4",
     "mocha-lcov-reporter": "0.0.1",
