@@ -1,3 +1,6 @@
+# faking setImmediate for node < 0.9
+require 'setimmediate'
+
 fs = require 'fs'
 
 protagonist = require 'protagonist'
