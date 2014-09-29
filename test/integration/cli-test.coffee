@@ -60,7 +60,7 @@ describe "Command line interface", () ->
             type: 'bulldozer'
             name: 'willy'
           response = [machine]
-          res.send 200, response
+          res.status(200).send response
 
         server = app.listen PORT, () ->
           execCommand cmd, () ->
@@ -83,7 +83,7 @@ describe "Command line interface", () ->
             type: 'bulldozer'
             name: 'willy'
           response = [machine]
-          res.send 200, response
+          res.status(200).send response
 
         server = app.listen PORT, () ->
           execCommand cmd, () ->
@@ -106,7 +106,7 @@ describe "Command line interface", () ->
             kind: 'bulldozer'
             imatriculation: 'willy'
           response = [machine]
-          res.send 201, response
+          res.status(201).send response
 
         server = app.listen PORT, () ->
           execCommand cmd, () ->
@@ -135,7 +135,7 @@ describe "Command line interface", () ->
             type: 'bulldozer'
             name: 'willy'
           response = [machine]
-          res.send 200, response
+          res.status(200).send response
 
         server = app.listen PORT, () ->
           execCommand cmd, () ->
@@ -164,7 +164,7 @@ describe "Command line interface", () ->
             type: 'bulldozer'
             name: 'willy'
           response = [machine]
-          res.send 200, response
+          res.status(200).send response
 
         server = app.listen PORT, () ->
           execCommand cmd, () ->
@@ -195,7 +195,7 @@ describe "Command line interface", () ->
             type: 'bulldozer'
             name: 'willy'
           response = [machine]
-          res.send 200, response
+          res.status(200).send response
 
         server = app.listen PORT, () ->
           execCommand cmd, () ->
@@ -223,7 +223,7 @@ describe "Command line interface", () ->
             type: 'bulldozer'
             name: 'willy'
           response = [machine]
-          res.send 200, response
+          res.status(200).send response
 
         server = app.listen PORT, () ->
           execCommand cmd, () ->
@@ -254,7 +254,7 @@ describe "Command line interface", () ->
             type: 'bulldozer'
             name: 'willy'
           response = [machine]
-          res.send 200, response
+          res.status(200).send response
 
         server = app.listen PORT, () ->
           execCommand cmd, () ->
@@ -278,7 +278,7 @@ describe "Command line interface", () ->
             kind: 'bulldozer'
             imatriculation: 'willy'
           response = [machine]
-          res.send 201, response
+          res.status(201).send response
 
         server = app.listen PORT, () ->
           execCommand cmd, () ->
@@ -308,7 +308,7 @@ describe "Command line interface", () ->
             type: 'bulldozer'
             name: 'willy'
           response = [machine]
-          res.send 200, response
+          res.status(200).send response
 
         server = app.listen PORT, () ->
           execCommand cmd, () ->
@@ -338,7 +338,7 @@ describe "Command line interface", () ->
               type: 'bulldozer'
               name: 'willy'
             response = [machine]
-            res.send 200, response
+            res.status(200).send response
 
           server = app.listen PORT, () ->
             execCommand cmd, () ->
@@ -365,7 +365,7 @@ describe "Command line interface", () ->
               type: 'bulldozer'
               name: 'willy'
             response = [machine]
-            res.send 200, response
+            res.status(200).send response
 
           server = app.listen PORT, () ->
             execCommand cmd, () ->
@@ -392,7 +392,7 @@ describe "Command line interface", () ->
             type: 'bulldozer'
             name: 'willy'
           response = [machine]
-          res.send 200, response
+          res.status(200).send response
 
         server = app.listen PORT, () ->
           execCommand cmd, () ->
@@ -421,7 +421,7 @@ describe "Command line interface", () ->
             type: 'bulldozer'
             name: 'willy'
           response = [machine]
-          res.send 200, response
+          res.status(200).send response
 
         server = app.listen PORT, () ->
           execCommand cmd, () ->
@@ -449,7 +449,7 @@ describe "Command line interface", () ->
             type: 'bulldozer'
             name: 'willy'
           response = [machine]
-          res.send 200, response
+          res.status(200).send response
 
         server = app.listen PORT, () ->
           execCommand cmd, () ->
@@ -477,7 +477,7 @@ describe "Command line interface", () ->
           type: 'bulldozer'
           name: 'willy'
         response = [machine]
-        res.send 200, response
+        res.status(200).send response
 
       server = app.listen PORT, () ->
         execCommand cmd, () ->
@@ -512,7 +512,7 @@ describe "Command line interface", () ->
           type: 'bulldozer'
           name: 'willy'
         response = [machine]
-        res.send 200, response
+        res.status(200).send response
 
       server = app.listen PORT, () ->
         execCommand cmd, (err, stdout, stderr) ->
@@ -551,7 +551,7 @@ describe "Command line interface", () ->
           type: 'bulldozer'
           name: 'willy'
         response = [machine]
-        res.send 200, response
+        res.status(200).send response
 
       server = app.listen PORT, () ->
         execCommand cmd, (err, stdout, stderr) ->
@@ -580,7 +580,7 @@ describe "Command line interface", () ->
               expires: 1234,
               token: 'this should pass since it is a string'
 
-          res.send 200, response
+          res.status(200).send response
 
         server = app.listen PORT, () ->
           execCommand cmd, () ->
@@ -605,7 +605,7 @@ describe "Command line interface", () ->
               expires: 'this should fail since it is a string',
               token: 'this should pass since it is a string'
 
-          res.send 200, response
+          res.status(200).send response
 
         server = app.listen PORT, () ->
           execCommand cmd, () ->

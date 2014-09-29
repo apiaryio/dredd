@@ -1,6 +1,6 @@
 path = require 'path'
 
-require 'coffee-script'
+require 'coffee-script/register'
 proxyquire = require('proxyquire').noCallThru()
 glob = require 'glob'
 async = require 'async'
@@ -28,10 +28,10 @@ addHooks = (runner, transactions, emitter) ->
         }
     catch error
       logger.warn 'Skipping hook loading...'
-      logger.error 'Error reading hook files (' + files + ')'
-      logger.error 'This probably means one or more of your hookfiles is invalid.'
-      logger.error 'Message: ' + error.message if error.message?
-      logger.error 'Stack: ' + error.stack if error.stack?
+      logger.warn 'Error reading hook files (' + files + ')'
+      logger.warn 'This probably means one or more of your hookfiles is invalid.'
+      logger.warn 'Message: ' + error.message if error.message?
+      logger.warn 'Stack: ' + error.stack if error.stack?
       return
 
     # Support for suite setup/teardown

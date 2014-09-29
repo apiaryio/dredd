@@ -1,6 +1,6 @@
 {
   "name": "dredd",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "description": "API Blueprint testing tool",
   "main": "lib/dredd.js",
   "bin": {
@@ -15,34 +15,35 @@
     "url": "https://github.com/apiaryio/dredd"
   },
   "dependencies": {
-    "gavel": "~0.3.4",
-    "winston": "~0.7.2",
-    "protagonist": "~0.12.0",
-    "uri-template": "~0.4.1",
+    "advisable": "~0.2.0",
     "async": "~0.9.0",
-    "optimist": "~0.6.0",
+    "coffee-script": "~1.8.0",
+    "file": "~0.2.2",
+    "gavel": "~0.3.9",
+    "glob": "~4.0.2",
     "html": "~0.0.7",
     "htmlencode": "~0.0.3",
-    "marked": "~0.3.0",
-    "advisable": "~0.2.0",
+    "marked": "~0.3.2",
+    "node-uuid": "~1.4.1",
+    "optimist": "~0.6.0",
+    "protagonist": "~0.15.0",
     "proxyquire": "~1.0.1",
-    "coffee-script": "~1.6.3",
-    "glob": "~4.0.2",
-    "file": "~0.2.2",
-    "node-uuid": "~1.4.1"
+    "setimmediate": "^1.0.2",
+    "uri-template": "~0.4.1",
+    "winston": "~0.8.0"
   },
   "devDependencies": {
-    "coffee-errors": "~0.8.4",
-    "mocha": "~1.20.1",
     "chai": "~1.9.0",
-    "coffee-coverage": "~0.4.2",
-    "jscoverage": "~0.5.3",
-    "coveralls": "~2.10.0",
-    "mocha-lcov-reporter": "0.0.1",
     "codo": "2.0.9",
-    "sinon": "~1.10.2",
-    "nock": "~0.27.1",
-    "express": "~3.4.3"
+    "coffee-coverage": "~0.4.2",
+    "coffee-errors": "~0.8.4",
+    "coveralls": "~2.11.2",
+    "express": "~4.9.5",
+    "jscoverage": "~0.5.3",
+    "mocha": "~1.21.4",
+    "mocha-lcov-reporter": "0.0.1",
+    "nock": "~0.48.0",
+    "sinon": "~1.10.2"
   },
   "keywords": [
     "api",

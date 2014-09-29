@@ -95,7 +95,7 @@ describe 'addHooks(runner, transaction)', () ->
       beforeEach () ->
         sinon.stub pathStub, 'resolve', (path, rel) ->
           throw new Error()
-        sinon.spy loggerStub, 'error'
+        sinon.spy loggerStub, 'warn'
         sinon.spy runner, 'before'
         sinon.spy runner, 'after'
         sinon.stub globStub, 'sync', (pattern) ->
@@ -103,14 +103,14 @@ describe 'addHooks(runner, transaction)', () ->
 
       afterEach () ->
         pathStub.resolve.restore()
-        loggerStub.error.restore()
+        loggerStub.warn.restore()
         runner.before.restore()
         runner.after.restore()
         globStub.sync.restore()
 
-      it 'should log an error', () ->
+      it 'should log an warning', () ->
         addHooks(runner, transactions)
-        assert.ok loggerStub.error.called
+        assert.ok loggerStub.warn.called
 
       it 'should not attach the hooks', () ->
         addHooks(runner, transactions)
