@@ -15,6 +15,7 @@ describe 'expandUriTemplateWithParameters', () ->
         type: 'string'
         required: true
         example: 'waldo'
+        default: ''
 
     data = expandUriTemplateWithParameters uriTemplate, parameters
 
@@ -39,6 +40,7 @@ describe 'expandUriTemplateWithParameters', () ->
             type: 'string'
             required: true
             example: 'waldo'
+            default: ''
 
         data = expandUriTemplateWithParameters uriTemplate, parameters
 
@@ -72,6 +74,7 @@ describe 'expandUriTemplateWithParameters', () ->
               type: 'string'
               required: true
               example: 'waldo'
+              default: ''
 
           data = expandUriTemplateWithParameters uriTemplate, parameters
 
@@ -131,12 +134,14 @@ describe 'expandUriTemplateWithParameters', () ->
               type: 'string'
               required: true
               example: 'waldo'
+              default: ''
             fanny:
               required: false
               description: 'Machine fanny'
               type: 'string'
               required: true
               example: 'wild'
+              default: ''
 
           data = expandUriTemplateWithParameters uriTemplate, parameters
 
@@ -158,6 +163,8 @@ describe 'expandUriTemplateWithParameters', () ->
                 description: 'Machine name'
                 type: 'string'
                 required: true
+                example: ''
+                default: ''
 
             data = expandUriTemplateWithParameters uriTemplate, parameters
 
@@ -176,7 +183,7 @@ describe 'expandUriTemplateWithParameters', () ->
               warning = data['warnings'][data['warnings'].length - 1]
 
             it 'sohuld contain proper text', () ->
-              text = "No example value for parameter"
+              text = "No example value for required parameter"
               assert.include warning, text
 
         describe 'when example value is given', () ->
@@ -188,6 +195,7 @@ describe 'expandUriTemplateWithParameters', () ->
                 type: 'string'
                 required: true
                 example: 'example-one'
+                default: ''
 
             data = expandUriTemplateWithParameters uriTemplate, parameters
 
@@ -237,6 +245,7 @@ describe 'expandUriTemplateWithParameters', () ->
                 type: 'string'
                 required: false
                 example: 'example-one'
+                default: ''
 
             data = expandUriTemplateWithParameters uriTemplate, parameters
 
@@ -261,6 +270,7 @@ describe 'expandUriTemplateWithParameters', () ->
                 type: 'string'
                 required: false
                 default: 'default-one'
+                example: ''
 
             data = expandUriTemplateWithParameters uriTemplate, parameters
 
@@ -310,6 +320,8 @@ describe 'expandUriTemplateWithParameters', () ->
                 description: 'Machine name'
                 type: 'string'
                 required: false
+                default: ''
+                example: ''
 
             data = expandUriTemplateWithParameters uriTemplate, parameters
 

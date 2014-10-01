@@ -44,18 +44,18 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
       for uriParameter in uriParameters
         param = parameters[uriParameter]
         if param['required'] == true
-          if param['example'] == undefined
+          if param['example'] == undefined or param['example'] == ""
             ambigous = true
             text = "\nAmbigous URI template: #{uriTemplate} " + \
-                   "\nNo example value for parameter:" + \
+                   "\nNo example value for required parameter:" + \
                    "'" + uriParameter + "'"
             result['warnings'].push text
           else
             toExpand[uriParameter] = param['example']
         else
-          if param['example'] != undefined
+          if param['example'] != undefined and param['example'] != ""
             toExpand[uriParameter] = param['example']
-          else if param['default'] != undefined
+          else if param['default'] != undefined and param['default'] != ""
             toExpand[uriParameter] = param['default']
 
     if ambigous == false
