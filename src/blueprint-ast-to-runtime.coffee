@@ -2,6 +2,7 @@ inheritParameters = require './inherit-parameters'
 expandUriTemplateWithParameters = require './expand-uri-template-with-parameters'
 exampleToHttpPayloadPair = require './example-to-http-payload-pair'
 convertAstMetadata = require './convert-ast-metadata'
+validateParameters = require './validate-parameters'
 
 blueprintAstToRuntime = (blueprintAst) ->
   runtime = 
@@ -25,6 +26,16 @@ blueprintAstToRuntime = (blueprintAst) ->
 
         parameters = inheritParameters actionParameters, resourceParameters
 
+        # validate URI parameters
+        paramsResult = validateParameters parameters
+
+        for message in paramsResult['errors']
+          runtime['errors'].push {
+            origin: JSON.parse(JSON.stringify(origin))
+            message: message
+          }
+  
+        # expand URI parameters
         uriResult = expandUriTemplateWithParameters resource['uriTemplate'], parameters
         
         for message in uriResult['warnings']
