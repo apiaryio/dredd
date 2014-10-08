@@ -5,7 +5,7 @@ validateParameters = (params) ->
   }
 
   for paramName, param of params
-    if param['required'] == true and param['example'] == ''      
+    if param['required'] == true and (param['example'] == '' or param['example'] == undefined)
       text = "Required URI parameter '#{paramName}' has no example value."
       result['errors'].push text
 
