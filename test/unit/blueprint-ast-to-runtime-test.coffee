@@ -81,12 +81,31 @@ describe "blueprintAstToRuntime()", () ->
       data = blueprintAstToRuntime blueprintAst
       assert.notEqual data['warnings'].length, 0  
 
+  describe 'when some error in URI parameters validation appear', () ->
+    it 'should have piped all errors from validateParameters', () ->
+      blueprintAst = require '../fixtures/blueprint-ast'
+      params = [
+        {
+          name: 'name'
+          description: 'Machine name'
+          type: 'string'
+          required: true
+          example: '1.1'
+          default: ''
+          values: []
+        }
+      ]
+
+      blueprintAst['resourceGroups'][0]['resources'][1]['parameters'] = params
+      data = blueprintAstToRuntime blueprintAst
+      assert.notEqual data['errors'].length, 0       
+
   describe 'when some error in URI expanding appear', () ->
     it 'should have piped all errors from expandUriTemplate', () ->
       blueprintAst = require '../fixtures/blueprint-ast'
       blueprintAst['resourceGroups'][0]['resources'][1]['uriTemplate'] = '/machines{{/name}'
       data = blueprintAstToRuntime blueprintAst
-      assert.notEqual data['errors'].length, 0       
+      assert.notEqual data['errors'].length, 0    
 
   describe 'when some warning in example selecting appear', () ->
     before () ->
