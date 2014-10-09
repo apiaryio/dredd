@@ -33,6 +33,22 @@ describe 'validateParameters', () ->
       assert.include message, 'name'
       assert.include message, 'string'
 
+  # Based on bug report:
+  # https://github.com/apiaryio/dredd/issues/106
+  describe 'when type is string and example is a string but starting with a number', () ->
+    it 'should set no error', () ->
+      params =
+        name:
+          description: 'Machine name'
+          type: 'string'
+          required: true
+          example: '6f7c1245'
+          default: ''
+          values: []
+
+      result = validateParameters params
+      assert.equal result['errors'].length, 0
+
 
   describe 'when type is string and example is a not a parseable float', () ->
     it 'should set no error', () ->
