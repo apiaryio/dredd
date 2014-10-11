@@ -49,6 +49,22 @@ describe 'validateParameters', () ->
       result = validateParameters params
       assert.equal result['errors'].length, 0
 
+  # based on tully's comment
+  describe 'when type is string and example is "666"', () ->
+    it 'should set descriptive error', () ->
+      params =
+        name:
+          description: 'Machine name'
+          type: 'string'
+          required: true
+          example: '666'
+          default: ''
+          values: []
+
+      result = validateParameters params
+      message = result['errors'][0]
+      assert.include message, 'name'
+      assert.include message, 'string'
 
   describe 'when type is string and example is a not a parseable float', () ->
     it 'should set no error', () ->
