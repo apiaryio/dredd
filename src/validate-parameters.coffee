@@ -11,7 +11,7 @@ validateParameters = (params) ->
 
     switch param['type']
       when 'string'
-        unless isNaN(parseFloat(param['example']))
+        unless isNaN(Number(String(param['example'])))
           text = "URI parameter '#{paramName}' is declared as 'string' but it is a number."
           result['errors'].push text
       when 'number'
