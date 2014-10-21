@@ -16,7 +16,7 @@ validateParameters = (params) ->
           result['errors'].push text
       when 'boolean'
         if param['example'] != 'true' or param['example'] != 'false'
-          text = "URI parameter '#{paramName}' is decalred as 'boolean' but it is not. "
+          text = "URI parameter '#{paramName}' is declared as 'boolean' but it is not. "
           result['errors'].push text
 
     if param['values'].length > 0
