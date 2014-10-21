@@ -18,7 +18,7 @@ describe 'validateParameters', () ->
     assert.isObject result
 
   describe 'when type is string and example is a parseable float', () ->
-    it 'should set descriptive error', () ->
+    it 'should not assume the type is a number', () ->
       params =
         name:
           description: 'Machine name'
@@ -29,9 +29,7 @@ describe 'validateParameters', () ->
           values: []
 
       result = validateParameters params
-      message = result['errors'][0]
-      assert.include message, 'name'
-      assert.include message, 'string'
+      assert.equal result['errors'].length, 0
 
   # Based on bug report:
   # https://github.com/apiaryio/dredd/issues/106
@@ -51,7 +49,7 @@ describe 'validateParameters', () ->
 
   # based on tully's comment
   describe 'when type is string and example is "666"', () ->
-    it 'should set descriptive error', () ->
+    it 'should not assume the type is a number', () ->
       params =
         name:
           description: 'Machine name'
@@ -62,9 +60,7 @@ describe 'validateParameters', () ->
           values: []
 
       result = validateParameters params
-      message = result['errors'][0]
-      assert.include message, 'name'
-      assert.include message, 'string'
+      assert.equal result['errors'].length, 0
 
   describe 'when type is string and example is a not a parseable float', () ->
     it 'should set no error', () ->
@@ -123,8 +119,8 @@ describe 'validateParameters', () ->
             { "value": "A" },
             { "value": "B" },
             { "value": "C" }
-          ]         
- 
+          ]
+
       result = validateParameters params
       message = result['errors'][0]
       assert.include message, 'name'
@@ -143,8 +139,8 @@ describe 'validateParameters', () ->
             { "value": "A" },
             { "value": "B" },
             { "value": "C" }
-          ]         
- 
+          ]
+
       result = validateParameters params
       assert.equal result['errors'].length, 0
 
@@ -162,7 +158,7 @@ describe 'validateParameters', () ->
       result = validateParameters params
       message = result['errors'][0]
       assert.include message, 'name'
-      assert.include message, 'boolean'      
+      assert.include message, 'boolean'
 
   describe 'when type is boolean and example value is a parseable bool', () ->
     it 'should set no error', () ->
@@ -192,4 +188,4 @@ describe 'validateParameters', () ->
       result = validateParameters params
       message = result['errors'][0]
       assert.include message, 'name'
-      assert.include message, 'Required'      
+      assert.include message, 'Required'

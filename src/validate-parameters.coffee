@@ -10,17 +10,13 @@ validateParameters = (params) ->
       result['errors'].push text
 
     switch param['type']
-      when 'string'
-        unless isNaN(Number(String(param['example'])))
-          text = "URI parameter '#{paramName}' is declared as 'string' but it is a number."
-          result['errors'].push text
       when 'number'
         if isNaN(parseFloat(param['example']))
           text = "URI parameter '#{paramName}' is declared as 'number' but it is a string."
           result['errors'].push text
       when 'boolean'
         if param['example'] != 'true' or param['example'] != 'false'
-          text = "URI parameter '#{paramName}' is decalred as 'boolean' but it is not. "
+          text = "URI parameter '#{paramName}' is declared as 'boolean' but it is not. "
           result['errors'].push text
 
     if param['values'].length > 0
@@ -28,7 +24,7 @@ validateParameters = (params) ->
       unless values.indexOf(param['example']) > -1
         text = "URI parameter '#{paramName}' example value is not one of enum values."
         result['errors'].push text
-        
+
   return result
 
 module.exports = validateParameters

@@ -4,26 +4,26 @@ blueprintAstToRuntime = require '../../src/blueprint-ast-to-runtime'
 describe "blueprintAstToRuntime()", () ->
   blueprintAst = require '../fixtures/blueprint-ast'
   data = {}
-  before () -> 
+  before () ->
     data = blueprintAstToRuntime blueprintAst
-  
+
   describe 'its return', () ->
     it 'shuold return an object', () ->
       assert.isObject data
-  
+
     ['transactions', 'errors', 'warnings'].forEach (key) ->
       it 'should have key \'' + key + "'", () ->
         assert.include Object.keys(data), key
 
     describe 'transcactions', () ->
       it 'should not be empty', () ->
-        assert.notEqual data['transactions'].length, 0 
-    
+        assert.notEqual data['transactions'].length, 0
+
     describe 'each entry under errors', () ->
       errors = []
       before () ->
         errors = data['errors']
-      
+
       it 'should have origin keys', () ->
         errors.forEach (error, index) ->
           assert.isDefined error['origin'], 'Warning index ' + index
@@ -32,21 +32,21 @@ describe "blueprintAstToRuntime()", () ->
       warnings = []
       before () ->
         warnings = data['warnings']
-      
+
       it 'should have origin keys', () ->
         warnings.forEach (warning, index) ->
           assert.isDefined warning['origin'], 'Warning index ' + index
-    
+
     describe 'each entry under transactions', () ->
       transactions = []
       before () ->
         transactions = data['transactions']
-      
+
       ['origin', 'request', 'response'].forEach (key) ->
         it 'should have "' + key + '" key', () ->
           transactions.forEach (transaction, index) ->
             assert.isDefined transaction[key], 'Transaction index ' + index
-     
+
       describe 'value under origin key', () ->
         it 'is an object', () ->
           transactions.forEach (transaction, index) ->
@@ -79,7 +79,7 @@ describe "blueprintAstToRuntime()", () ->
       blueprintAst['resourceGroups'][0]['resources'][1]['actions'][0]['parameters'] = {}
 
       data = blueprintAstToRuntime blueprintAst
-      assert.notEqual data['warnings'].length, 0  
+      assert.notEqual data['warnings'].length, 0
 
   describe 'when some error in URI parameters validation appear', () ->
     it 'should have piped all errors from validateParameters', () ->
@@ -88,9 +88,9 @@ describe "blueprintAstToRuntime()", () ->
         {
           name: 'name'
           description: 'Machine name'
-          type: 'string'
+          type: 'number'
           required: true
-          example: '1.1'
+          example: 'bob'
           default: ''
           values: []
         }
@@ -98,18 +98,18 @@ describe "blueprintAstToRuntime()", () ->
 
       blueprintAst['resourceGroups'][0]['resources'][1]['parameters'] = params
       data = blueprintAstToRuntime blueprintAst
-      assert.notEqual data['errors'].length, 0       
+      assert.notEqual data['errors'].length, 0
 
   describe 'when some error in URI expanding appear', () ->
     it 'should have piped all errors from expandUriTemplate', () ->
       blueprintAst = require '../fixtures/blueprint-ast'
       blueprintAst['resourceGroups'][0]['resources'][1]['uriTemplate'] = '/machines{{/name}'
       data = blueprintAstToRuntime blueprintAst
-      assert.notEqual data['errors'].length, 0    
+      assert.notEqual data['errors'].length, 0
 
   describe 'when some warning in example selecting appear', () ->
     before () ->
-      response = 
+      response =
         name: 418
         headers: {}
         body: ""
@@ -118,5 +118,5 @@ describe "blueprintAstToRuntime()", () ->
       data = blueprintAstToRuntime blueprintAst
 
     it 'should have piped all warnings from exampleToHttpPayloadPair', () ->
-      assert.notEqual data['warnings'].length, 0      
+      assert.notEqual data['warnings'].length, 0
 
