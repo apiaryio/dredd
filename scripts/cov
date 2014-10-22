@@ -13,6 +13,6 @@ echo "Using Mocha reporter: $REPORTER" 1>&2
 $COV --exclude node_modules,.git,test --path relative . ./src-cov 1>&2
 cp -r ./test ./src-cov/test
 cp ./package.json ./src-cov
-find ./src-cov/test/unit | grep "\-test" | xargs $MOCHA  --reporter $REPORTER --compilers 'coffee:coffee-script'
+find ./src-cov/test/unit | grep "\-test" | xargs $MOCHA  --reporter $REPORTER --compilers 'coffee:coffee-script/register'
 
 rm -rf ./src-cov
