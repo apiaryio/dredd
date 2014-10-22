@@ -17,6 +17,36 @@ describe 'validateParameters', () ->
     result = validateParameters params
     assert.isObject result
 
+  describe 'when type is string and example is a parseable float', () ->
+    it 'should set no error', () ->
+      params =
+        name:
+          description: 'Machine name'
+          type: 'string'
+          required: true
+          example: '1.1'
+          default: ''
+          values: []
+
+      result = validateParameters params
+      message = result['errors'][0]
+      assert.equal result['errors'].length, 0
+
+  # Based on bug report:
+  # https://github.com/apiaryio/dredd/issues/106
+  describe 'when type is string and example is a string but starting with a number', () ->
+    it 'should set no error', () ->
+      params =
+        name:
+          description: 'Machine name'
+          type: 'string'
+          required: true
+          example: '6f7c1245'
+          default: ''
+          values: []
+
+      result = validateParameters params
+
   describe 'when type is string and example is a not a parseable float', () ->
     it 'should set no error', () ->
       params =
@@ -120,7 +150,7 @@ describe 'validateParameters', () ->
       params =
         name:
           description: 'Machine name'
-          type: 'string'
+          type: 'boolean'
           required: true
           example: 'true'
           default: ''

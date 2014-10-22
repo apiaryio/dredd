@@ -111,6 +111,19 @@ describe 'TransactionRunner', ()->
           assert.equal configuredTransaction.request.headers['Content-Length'], 44
           done()
 
+    describe 'when an additional header has a colon', ()->
+      beforeEach () ->
+        configuration.options.header = ["MyCustomDate:Wed, 10 Sep 2014 12:34:26 GMT"]
+        runner = new Runner(configuration)
+
+      afterEach () ->
+        configuration.options.header = []
+
+      it 'should include the entire value in the header', (done)->
+        runner.configureTransaction transaction, (err, configuredTransaction) ->
+          assert.equal configuredTransaction.request.headers['MyCustomDate'], 'Wed, 10 Sep 2014 12:34:26 GMT'
+          done()
+
     describe 'when configuring a transaction', () ->
 
       it 'should callback with a properly configured transaction', (done) ->
