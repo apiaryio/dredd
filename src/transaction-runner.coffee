@@ -69,8 +69,10 @@ class TransactionRunner
 
     if configuration.options.header.length > 0
       for header in configuration.options.header
-        splitHeader = header.split(':')
-        flatHeaders[splitHeader[0]] = splitHeader[1]
+        splitIndex = header.indexOf(':')
+        headerKey = header.substring(0, splitIndex)
+        headerValue = header.substring(splitIndex + 1)
+        flatHeaders[headerKey] = headerValue
 
     request['headers'] = flatHeaders
 
