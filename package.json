@@ -26,7 +26,7 @@
     "marked": "~0.3.2",
     "node-uuid": "~1.4.1",
     "optimist": "~0.6.0",
-    "protagonist": "~0.15.0",
+    "protagonist": "~0.17.0",
     "proxyquire": "~1.0.1",
     "setimmediate": "^1.0.2",
     "uri-template": "~0.4.1",
@@ -40,7 +40,7 @@
     "coveralls": "~2.11.2",
     "express": "~4.9.5",
     "jscoverage": "~0.5.3",
-    "mocha": "~1.21.4",
+    "mocha": "~2.0.0",
     "mocha-lcov-reporter": "0.0.1",
     "nock": "~0.48.0",
     "sinon": "~1.10.2"
