@@ -10,10 +10,6 @@ validateParameters = (params) ->
       result['errors'].push text
 
     switch param['type']
-      when 'string'
-        unless isNaN(parseFloat(param['example']))
-          text = "URI parameter '#{paramName}' is declared as 'string' but it is a number."
-          result['errors'].push text
       when 'number'
         if isNaN(parseFloat(param['example']))
           text = "URI parameter '#{paramName}' is declared as 'number' but it is a string."
@@ -28,7 +24,7 @@ validateParameters = (params) ->
       unless values.indexOf(param['example']) > -1
         text = "URI parameter '#{paramName}' example value is not one of enum values."
         result['errors'].push text
-        
+
   return result
 
 module.exports = validateParameters

@@ -17,23 +17,6 @@ describe 'validateParameters', () ->
     result = validateParameters params
     assert.isObject result
 
-  describe 'when type is string and example is a parseable float', () ->
-    it 'should set descriptive error', () ->
-      params =
-        name:
-          description: 'Machine name'
-          type: 'string'
-          required: true
-          example: '1.1'
-          default: ''
-          values: []
-
-      result = validateParameters params
-      message = result['errors'][0]
-      assert.include message, 'name'
-      assert.include message, 'string'
-
-
   describe 'when type is string and example is a not a parseable float', () ->
     it 'should set no error', () ->
       params =
@@ -64,7 +47,7 @@ describe 'validateParameters', () ->
       assert.include message, 'name'
       assert.include message, 'number'
 
-  describe 'when type is number and example is a not a parseable float', () ->
+  describe 'when type is number and example is a parseable float', () ->
     it 'should set no error', () ->
       params =
         name:
@@ -91,8 +74,8 @@ describe 'validateParameters', () ->
             { "value": "A" },
             { "value": "B" },
             { "value": "C" }
-          ]         
- 
+          ]
+
       result = validateParameters params
       message = result['errors'][0]
       assert.include message, 'name'
@@ -111,8 +94,8 @@ describe 'validateParameters', () ->
             { "value": "A" },
             { "value": "B" },
             { "value": "C" }
-          ]         
- 
+          ]
+
       result = validateParameters params
       assert.equal result['errors'].length, 0
 
@@ -130,7 +113,7 @@ describe 'validateParameters', () ->
       result = validateParameters params
       message = result['errors'][0]
       assert.include message, 'name'
-      assert.include message, 'boolean'      
+      assert.include message, 'boolean'
 
   describe 'when type is boolean and example value is a parseable bool', () ->
     it 'should set no error', () ->
@@ -160,4 +143,4 @@ describe 'validateParameters', () ->
       result = validateParameters params
       message = result['errors'][0]
       assert.include message, 'name'
-      assert.include message, 'Required'      
+      assert.include message, 'Required'
