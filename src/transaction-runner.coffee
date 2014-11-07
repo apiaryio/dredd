@@ -192,11 +192,10 @@ class TransactionRunner
                 return callback()
 
       transport = if transaction.protocol is 'https:' then https else http
+      if transaction.request['body'] and @isMultipart requestOptions
+        @replaceLineFeedInBody transaction, requestOptions
+
       try
-
-        if transaction.request['body'] != ''
-          @replaceLineFeedInBody transaction, requestOptions
-
         req = transport.request requestOptions, handleRequest
         req.write transaction.request['body'] if transaction.request['body'] != ''
         req.end()
@@ -204,12 +203,13 @@ class TransactionRunner
         configuration.emitter.emit 'test error', error, test if error
         return callback()
 
+  isMultipart: (requestOptions) =>
+    requestOptions['headers']?['Content-Type']?.indexOf("multipart") > -1
+
   replaceLineFeedInBody: (transaction, requestOptions) =>
-    logger.debug 'Content-Length before: ' + requestOptions['headers']['Content-Length']
     transaction.request['body'] = transaction.request['body'].replace(/\n/g, '\r\n')
     transaction.request['headers']['Content-Length'] = transaction.request['body'].length
     requestOptions.headers = transaction.request['headers']
-    logger.debug 'Content-Length after: '  + requestOptions['headers']['Content-Length']
 
 
 module.exports = TransactionRunner
