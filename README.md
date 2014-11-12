@@ -99,6 +99,8 @@ If `beforeAll` and `afterAll` are called multiple times, the callbacks are execu
       dredd ./apiary.md http://localhost:3000 --dry-run
 
     Options:
+      --dry-run, -y        Do not run any real HTTP transaction, only parse
+                           blueprint and compile transactions.       [default: null]
       --hookfiles, -f      Specifes a pattern to match files with before/after
                            hooks for running tests                   [default: null]
       --names, -n          Only list names of requests (for use in a hookfile). No
