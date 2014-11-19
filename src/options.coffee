@@ -1,4 +1,9 @@
 options =
+  "dry-run":
+    alias: 'y'
+    description: 'Do not run any real HTTP transaction, only parse blueprint and compile transactions.'
+    default: null
+
   hookfiles:
     alias: 'f'
     description: 'Specifes a pattern to match files with before/after hooks for running tests'
@@ -63,7 +68,7 @@ options =
     alias: "t"
     description: "Determines whether console output should include timestamps.\n"
     default: false
-  
+
   silent:
     alias: "q"
     description: "Silences commandline output.\n"
