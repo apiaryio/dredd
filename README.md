@@ -19,22 +19,70 @@ Dredd is a command-line tool for validating API documentation written in [API Bl
 [Node.js]: https://npmjs.org/
 [NPM]: https://npmjs.org/
 
-## Get Started Testing Your API
+## Get Started Testing API Documentation and backend
 
-    $ dredd blueprint.md http://api.myservice.tld
+Create a new documentation file in [API Blueprint][] format in `blueprint.md`
 
-See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-life example.
+```
+# GET /
++ Response 200 (application/json; charset=utf-8)
+
+      {"message": "Hello World!"}
+```
+
+Let's create a backend for example in [Express.js][]. To install it:
+
+```
+$ npm install express
+```
+
+Create file with backend application in `app.js`:
+
+```node
+var express = require('express');
+var app = express();
+
+app.get('/', function (req, res) {
+  res.json({message: 'Hello World!'});
+})
+
+var server = app.listen(3000);
+```
+
+Run the API application on background:
+
+```
+$ node app.js &
+```
+
+Finally, run Dredd for validation:
+
+```
+$ dredd blueprint.md http://localhost:3000
+```
+
+Celebrate! Your API is in sync with your documentation:
+
+```
+info: Beginning Dredd testing...
+warn: Parser warning:  (10) message-body asset is expected to be a pre-formatted code block, every of its line indented by exactly 8 spaces or 2 tabs 62:30
+pass: GET / duration: 12ms
+complete: 1 passing, 0 failing, 0 errors, 0 skipped
+complete: Tests took 19ms
+```
+
+See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-life example in continous integration.
 
 ## Writing validatable blueprints
 
-If you are using [URI templates][URIt] in your blueprint, you have to provide example values in the blueprint's [URI parameter syntax][UPS] to provide values for each URI parameter substitution. Every resource in the blueprint defined by URI template without specifying example values is not validatable, it's considered as an ambigous transaction and skipped. In case of any ambigous transaction Dredd will throw a warning and let you know which parameter example value is not defined in the blueprint. 
+If you are using [URI templates][URIt] in your blueprint, you have to provide example values in the blueprint's [URI parameter syntax][UPS] to provide values for each URI parameter substitution. Every resource in the blueprint defined by URI template without specifying example values is not validatable, it's considered as an ambigous transaction and skipped. In case of any ambigous transaction Dredd will throw a warning and let you know which parameter example value is not defined in the blueprint.
 
 [UPS]: https://github.com/apiaryio/api-blueprint/blob/master/API%20Blueprint%20Specification.md#def-uriparameters-section
 [URIt]: http://tools.ietf.org/html/rfc6570
 
 ## Hooks
 
-Dredd can be configured to use hookfiles to do basic setup/teardown between each validation (specified with the --hookfiles flag). Hookfiles can be in javascript or coffeescript, and must import the hook methods.
+If you want to execute some code before and after each request, Dredd can be configured to use hookfiles to do basic setup/teardown between each validation (specified with the `--hookfiles` flag). Hookfiles can be in javascript or coffeescript, and must import the hook methods.
 
 Requests are identified by their name, which is derived from the structure of the blueprint. You can print a list of the generated names with --names.
 
@@ -162,3 +210,4 @@ To learn more about the future of API Blueprint & Testing visit [apiaryio/api-bl
 [behavior specification]: https://www.relishapp.com/apiary/gavel/docs
 [vde]: https://github.com/apiaryio/dredd/blob/master/VirtualDevelopmentEnvironment.md
 [issues]: https://github.com/apiaryio/dredd/issues?state=open
+[Express.js]: http://expressjs.com/starter/hello-world.html
