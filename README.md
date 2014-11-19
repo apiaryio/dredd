@@ -39,14 +39,14 @@ $ npm install express
 Create file with backend application in `app.js`:
 
 ```node
-var express = require('express')
-var app = express()
+var express = require('express');
+var app = express();
 
 app.get('/', function (req, res) {
-  res.json({message: 'Hello World!'})
+  res.json({message: 'Hello World!'});
 })
 
-var server = app.listen(3000)
+var server = app.listen(3000);
 ```
 
 Run the API application on background:
