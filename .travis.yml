@@ -1,6 +1,5 @@
 language: node_js
 node_js:
-  - 0.8
   - 0.10
 before_install:
   - npm install -g npm@~1.4.6
@@ -9,6 +8,7 @@ notifications:
     recipients:
       - z@apiary.io
       - ladislav@apiary.io
+      - adam@apiary.io
     on_success: change
     on_failure: always
   hipchat:

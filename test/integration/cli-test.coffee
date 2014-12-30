@@ -3,8 +3,6 @@
 express = require 'express'
 fs = require 'fs'
 
-
-
 PORT = '3333'
 CMD_PREFIX = ''
 
@@ -29,7 +27,7 @@ execCommand = (cmd, callback) ->
 
   cli.on exitEventName, (code) ->
     exitStatus = code if exitStatus == null and code != undefined
-    callback(undefined, stdout, stderr)
+    callback(undefined, stdout, stderr, exitStatus)
 
 
 describe "Command line interface", () ->
@@ -44,7 +42,7 @@ describe "Command line interface", () ->
       assert.equal exitStatus, 1
 
     it 'should print error message to stderr', () ->
-      assert.include stderr, 'Error: ENOENT, open'
+      assert.include stderr, 'not found'
 
   describe "Arguments with existing bleuprint and responding server", () ->
     describe "when executing the command and the server is responding as specified in the blueprint", () ->
@@ -376,6 +374,47 @@ describe "Command line interface", () ->
         it 'should allow the request to go through', () ->
           assert.ok recievedRequest.headers
 
+    describe "when filtering transaction to particular name with -x or --only", () ->
+
+      machineHit = false
+      messageHit = false
+      before (done) ->
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --path=./test/fixtures/multifile/*.apib --only=\"Message API > /message > GET\" --no-color"
+
+        app = express()
+
+        app.get '/machines', (req, res) ->
+          machineHit = true
+          res.setHeader 'Content-Type', 'application/json; charset=utf-8'
+          machine =
+            type: 'bulldozer'
+            name: 'willy'
+          response = [machine]
+          res.status(200).send response
+
+        app.get '/message', (req, res) ->
+          messageHit = true
+          res.setHeader 'Content-Type', 'text/plain; charset=utf-8'
+          res.status(200).send "Hello World!\n"
+
+        server = app.listen PORT, () ->
+          execCommand cmd, () ->
+            server.close()
+
+        server.on 'close', done
+
+      it 'should not send the request', () ->
+        assert.isFalse machineHit
+
+      it 'should notify skipping to the stdout', () ->
+        assert.include stdout, 'skip: GET /machines'
+
+      it 'should hit the only transaction', () ->
+        assert.isTrue messageHit
+
+      it 'exit status should be 0', () ->
+        assert.equal exitStatus, 0
+
     describe 'when suppressing color with --no-color', () ->
 
       recievedRequest = {}
@@ -615,3 +654,77 @@ describe "Command line interface", () ->
 
       it 'exit status should be 1 (failure)', () ->
         assert.equal exitStatus, 1
+
+  describe "when blueprint path is a glob", () ->
+    describe "and called with --names options", () ->
+      before (done) ->
+        cmd = "./bin/dredd ./test/fixtures/multifile/*.apib http://localhost --names"
+        execCommand cmd, () ->
+          done()
+
+      it 'it should include all paths from all blueprints matching the glob', () ->
+        assert.include stdout, '> /greeting > GET'
+        assert.include stdout, '> /message > GET'
+        assert.include stdout, '> /name > GET'
+
+      it 'should exit with status 0', () ->
+        assert.equal exitStatus, 0
+
+    describe 'and called with hooks', () ->
+
+      receivedRequests = []
+
+      before (done) ->
+        cmd = "./bin/dredd ./test/fixtures/multifile/*.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/multifile/multifile_hooks.coffee"
+
+        app = express()
+
+        app.get '/name', (req, res) ->
+          receivedRequests.push req
+          res.setHeader 'content-type', 'text/plain'
+          res.status(200).send "Adam\n"
+
+        app.get '/greeting', (req, res) ->
+          receivedRequests.push req
+          res.setHeader 'content-type', 'text/plain'
+          res.status(200).send "Howdy!\n"
+
+        app.get '/message', (req, res) ->
+          receivedRequests.push req
+          res.setHeader 'content-type', 'text/plain'
+          res.status(200).send "Hello World!\n"
+
+        server = app.listen PORT, () ->
+          execCommand cmd, () ->
+            server.close()
+
+        server.on 'close', done
+
+      it 'should eval the hook for each transaction', () ->
+        assert.include stdout, 'after name'
+        assert.include stdout, 'after greeting'
+        assert.include stdout, 'after message'
+
+      it 'should exit with status 0', () ->
+        assert.equal exitStatus, 0
+
+      it 'server should receive 3 requests', () ->
+        assert.equal receivedRequests.length, 3
+
+
+  describe "when called with additional --path argument which is a glob", () ->
+    describe "and called with --names options", () ->
+      before (done) ->
+        cmd = "./bin/dredd ./test/fixtures/multiple-examples.apib http://localhost --path=./test/fixtures/multifile/*.apib --names"
+        execCommand cmd, () ->
+          done()
+
+      it 'it should include all paths from all blueprints matching all paths and globs', () ->
+        assert.include stdout, 'Greeting API > /greeting > GET'
+        assert.include stdout, 'Message API > /message > GET'
+        assert.include stdout, 'Name API > /name > GET'
+        assert.include stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 1'
+        assert.include stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 2'
+
+      it 'should exit with status 0', () ->
+        assert.equal exitStatus, 0
