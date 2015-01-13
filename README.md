@@ -147,57 +147,57 @@ If `beforeAll` and `afterAll` are called multiple times, the callbacks are execu
       dredd ./apiary.md http://localhost:3000 --dry-run
 
     Options:
-  --dry-run, -y        Do not run any real HTTP transaction, only parse
-                       blueprint and compile transactions.       [default: null]
-  --hookfiles, -f      Specifes a pattern to match files with before/after
-                       hooks for running tests                   [default: null]
-  --names, -n          Only list names of requests (for use in a hookfile). No
-                       requests are made.                       [default: false]
-  --only, -x           Run only specified transaction name. Can be used
-                       multiple times                              [default: []]
-  --reporter, -r       Output additional report format. This option can be used
-                       multiple times to add multiple reporters. Options:
-                       junit, nyan, dot, markdown, html, apiary.
-                                                                   [default: []]
-  --output, -o         Specifies output file when using additional file-based
-                       reporter. This option can be used multiple times if
-                       multiple file-based reporters are used.
-                                                                   [default: []]
-  --header, -h         Extra header to include in every request. This option
-                       can be used multiple times to add multiple headers.
-                                                                   [default: []]
-  --sorted, -s         Sorts requests in a sensible way so that objects are not
-                       modified before they are created. Order: CONNECT,
-                       OPTIONS, POST, GET, HEAD, PUT, PATCH, DELETE, TRACE.
-                                                                [default: false]
-  --user, -u           Basic Auth credentials in the form username:password.
-                                                                 [default: null]
-  --inline-errors, -e  Determines whether failures and errors are displayed as
-                       they occur (true) or agregated and displayed at the end
-                       (false).
-                                                                [default: false]
-  --details, -d        Determines whether request/response details are included
-                       in passing tests.
-                                                                [default: false]
-  --method, -m         Restrict tests to a particular HTTP method (GET, PUT,
-                       POST, DELETE, PATCH). This option can be used multiple
-                       times to allow multiple methods.
-                                                                   [default: []]
-  --color, -c          Determines whether console output should include colors.
-                                                                 [default: true]
-  --level, -l          The level of logging to output. Options: silly, debug,
-                       verbose, info, warn, error.
-                                                               [default: "info"]
-  --timestamp, -t      Determines whether console output should include
-                       timestamps.
-                                                                [default: false]
-  --silent, -q         Silences commandline output.
-                                                                [default: false]
-  --path, -p           Additional blueprint paths. Can be used multiple times
-                       with glob pattern.                          [default: []]
-  --help               Show usage information.
+      --dry-run, -y        Do not run any real HTTP transaction, only parse
+                           blueprint and compile transactions.       [default: null]
+      --hookfiles, -f      Specifes a pattern to match files with before/after
+                           hooks for running tests                   [default: null]
+      --names, -n          Only list names of requests (for use in a hookfile). No
+                           requests are made.                       [default: false]
+      --only, -x           Run only specified transaction name. Can be used
+                           multiple times                              [default: []]
+      --reporter, -r       Output additional report format. This option can be used
+                           multiple times to add multiple reporters. Options:
+                           junit, nyan, dot, markdown, html, apiary.
+                                                                       [default: []]
+      --output, -o         Specifies output file when using additional file-based
+                           reporter. This option can be used multiple times if
+                           multiple file-based reporters are used.
+                                                                       [default: []]
+      --header, -h         Extra header to include in every request. This option
+                           can be used multiple times to add multiple headers.
+                                                                       [default: []]
+      --sorted, -s         Sorts requests in a sensible way so that objects are not
+                           modified before they are created. Order: CONNECT,
+                           OPTIONS, POST, GET, HEAD, PUT, PATCH, DELETE, TRACE.
+                                                                    [default: false]
+      --user, -u           Basic Auth credentials in the form username:password.
+                                                                     [default: null]
+      --inline-errors, -e  Determines whether failures and errors are displayed as
+                           they occur (true) or agregated and displayed at the end
+                           (false).
+                                                                    [default: false]
+      --details, -d        Determines whether request/response details are included
+                           in passing tests.
+                                                                    [default: false]
+      --method, -m         Restrict tests to a particular HTTP method (GET, PUT,
+                           POST, DELETE, PATCH). This option can be used multiple
+                           times to allow multiple methods.
+                                                                       [default: []]
+      --color, -c          Determines whether console output should include colors.
+                                                                     [default: true]
+      --level, -l          The level of logging to output. Options: silly, debug,
+                           verbose, info, warn, error.
+                                                                   [default: "info"]
+      --timestamp, -t      Determines whether console output should include
+                           timestamps.
+                                                                    [default: false]
+      --silent, -q         Silences commandline output.
+                                                                    [default: false]
+      --path, -p           Additional blueprint paths. Can be used multiple times
+                           with glob pattern.                          [default: []]
+      --help               Show usage information.
 
-  --version            Show version number.
+      --version            Show version number.
 
 Additionally, boolean flags can be negated by prefixing `no-`, for example: `--no-color --no-inline-errors`.
 
