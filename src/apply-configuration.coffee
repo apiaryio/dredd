@@ -44,6 +44,7 @@ applyConfiguration = (config) ->
   configuration.options.output = coerceToArray(configuration.options.output)
   configuration.options.header = coerceToArray(configuration.options.header)
   configuration.options.method = coerceToArray(configuration.options.method)
+  configuration.options.only = coerceToArray(configuration.options.only)
 
   for method in configuration.options.method
     method.toUpperCase()

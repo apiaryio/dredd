@@ -45,11 +45,6 @@ if(!Array.isArray(argv['path'])){
   argv['path'] = argv['p'] = [argv['path']];
 }
 
-// transform only and x argument to array if it's not
-if(!Array.isArray(argv['only'])){
-  argv['only'] = argv['x'] = [argv['only']];
-}
-
 // some shells are automatically expanding globs and concating result as arguments
 // so I'm taking last argument as API endpoint server URL and removing it forom optimist's args
 var server = argv._[argv._.length - 1];
