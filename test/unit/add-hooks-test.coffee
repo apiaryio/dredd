@@ -4,12 +4,15 @@ require 'coffee-errors'
 nock = require 'nock'
 proxyquire = require 'proxyquire'
 sinon = require 'sinon'
+express = require 'express'
+bodyParser = require 'body-parser'
 
 globStub = require 'glob'
 pathStub = require 'path'
 loggerStub = require '../../src/logger'
 hooksStub = require '../../src/hooks'
 Runner = require '../../src/transaction-runner'
+
 
 addHooks = proxyquire  '../../src/add-hooks', {
   'logger': loggerStub,
@@ -296,4 +299,41 @@ describe 'addHooks(runner, transaction)', () ->
 
         it 'should not run the hooks', (done) ->
           runner.executeTransaction transaction, () ->
+            done()
+
+      describe 'with hook modifying the transaction body and backend Express app using the body parser', () ->
+        it 'should perform the transaction and don\'t hang', (done) ->
+          nock.cleanAll()
+
+          receivedRequests = []
+
+          hooksStub.beforeHooks =
+            'Group Machine > Machine > Delete Message > Bogus example name' : [
+              (transaction) ->
+                body = JSON.parse transaction.request.body
+                body.name = "Michael"
+                transaction.request.body = JSON.stringify body
+                transaction.request.headers['Content-Length'] = transaction.request.body.length
+            ]
+
+          app = express()
+          app.use(bodyParser.json())
+
+          app.post '/machines', (req, res) ->
+            receivedRequests.push req
+            res.setHeader 'Content-Type', 'application/json'
+            machine =
+              type: 'bulldozer'
+              name: 'willy'
+            response = [machine]
+            res.status(200).send response
+
+          server = app.listen transaction.port, () ->
+            runner.executeTransaction transaction, () ->
+              #should not hang here
+              assert.ok true
+              server.close()
+
+          server.on 'close', () ->
+            assert.equal receivedRequests.length, 1
             done()

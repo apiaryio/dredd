@@ -33,6 +33,7 @@
     "winston": "~0.8.0"
   },
   "devDependencies": {
+    "body-parser": "^1.10.1",
     "chai": "~1.9.0",
     "codo": "2.0.9",
     "coffee-coverage": "~0.4.2",
