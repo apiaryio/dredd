@@ -35,25 +35,29 @@ class Dredd
     stats = @stats
 
     config.files = []
+    config.data = {}
+    runtimes = {}
 
     # expand all globs
-    async.each config.options.path, (globToExpand, globCallback) ->
-      glob globToExpand, (err, match) ->
-        globCallback err if err
-        config.files = config.files.concat match
-        globCallback()
+    expandGlobs = (cb) ->
+      async.each config.options.path, (globToExpand, globCallback) ->
+        glob globToExpand, (err, match) ->
+          globCallback err if err
+          config.files = config.files.concat match
+          globCallback()
 
-    , (err) =>
-      return callback(err, stats) if err
-      return callback({message: "Blueprint file or files not found on path: '#{config.options.path}'"}, stats) if config.files.length == 0
+      , (err) =>
+        return callback(err, stats) if err
+        return callback({message: "Blueprint file or files not found on path: '#{config.options.path}'"}, stats) if config.files.length == 0
 
-      # remove duplicate filenames
-      config.files = config.files.filter (item, pos) ->
-        return config.files.indexOf(item) == pos
+        # remove duplicate filenames
+        config.files = config.files.filter (item, pos) ->
+          return config.files.indexOf(item) == pos
+        cb()
 
-      config.data = {}
 
-      # load all files
+    # load all files
+    loadFiles = (cb) ->
       async.each config.files, (file, loadCallback) ->
         fs.readFile file, 'utf8', (loadingError, data) ->
           return loadCallback(loadingError) if loadingError
@@ -62,51 +66,64 @@ class Dredd
 
       , (err) =>
         return callback(err, stats) if err
+        cb()
 
-        # parse all file blueprints
-        async.each Object.keys(config.data), (file, parseCallback) ->
-          protagonist.parse config.data[file]['raw'], (protagonistError, result) ->
-            return parseCallback protagonistError if protagonistError
-            config.data[file]['parsed'] = result
-            parseCallback()
-        , (err) =>
-          return callback(err, config.reporter) if err
-          # log all parser warnings for each ast
-          for file, data of config.data
-            result = data['parsed']
-            if result['warnings'].length > 0
-              for warning in result['warnings']
-                message = "Parser warning in file '#{file}':"  + ' (' + warning.code + ') ' + warning.message
-                for loc in warning['location']
-                  pos = loc.index + ':' + loc.length
-                  message = message + ' ' + pos
-                logger.warn message
+    # parse all file blueprints
+    parseBlueprints = (cb) ->
+      async.each Object.keys(config.data), (file, parseCallback) ->
+        protagonist.parse config.data[file]['raw'], (protagonistError, result) ->
+          return parseCallback protagonistError if protagonistError
+          config.data[file]['parsed'] = result
+          parseCallback()
+      , (err) =>
+        return callback(err, config.reporter) if err
+        # log all parser warnings for each ast
+        for file, data of config.data
+          result = data['parsed']
+          if result['warnings'].length > 0
+            for warning in result['warnings']
+              message = "Parser warning in file '#{file}':"  + ' (' + warning.code + ') ' + warning.message
+              for loc in warning['location']
+                pos = loc.index + ':' + loc.length
+                message = message + ' ' + pos
+              logger.warn message
 
-          runtimes = {}
-          runtimes['warnings'] = []
-          runtimes['errors'] = []
-          runtimes['transactions'] = []
 
-          # extract http transactions for each ast
-          for file, data of config.data
-            runtime = blueprintAstToRuntime data['parsed']['ast'], file
+        runtimes['warnings'] = []
+        runtimes['errors'] = []
+        runtimes['transactions'] = []
 
-            runtimes['warnings'] = runtimes['warnings'].concat(runtime['warnings'])
-            runtimes['errors'] = runtimes['errors'].concat(runtime['errors'])
-            runtimes['transactions'] = runtimes['transactions'].concat(runtime['transactions'])
+        # extract http transactions for each ast
+        for file, data of config.data
+          runtime = blueprintAstToRuntime data['parsed']['ast'], file
 
-          runtimeError = handleRuntimeProblems runtimes
-          return callback(runtimeError, stats) if runtimeError
+          runtimes['warnings'] = runtimes['warnings'].concat(runtime['warnings'])
+          runtimes['errors'] = runtimes['errors'].concat(runtime['errors'])
+          runtimes['transactions'] = runtimes['transactions'].concat(runtime['transactions'])
 
-          reporterCount = config.emitter.listeners('start').length
-          config.emitter.emit 'start', config.data, () =>
-            reporterCount--
-            if reporterCount is 0
+        runtimeError = handleRuntimeProblems runtimes
+        return callback(runtimeError, stats) if runtimeError
+        cb()
 
-              # run all transactions
-              @runner.config(config)
-              @runner.run runtimes['transactions'], () =>
-                @transactionsComplete(callback)
+    #start the runner
+    startRunner = () =>
+      reporterCount = config.emitter.listeners('start').length
+      config.emitter.emit 'start', config.data, () =>
+        reporterCount--
+        if reporterCount is 0
+
+          # run all transactions
+          @runner.config(config)
+          @runner.run runtimes['transactions'], () =>
+            @transactionsComplete(callback)
+
+    # spin that merry-go-round
+    expandGlobs () ->
+      loadFiles () ->
+        parseBlueprints () ->
+          startRunner()
+
+
 
   transactionsComplete: (callback) =>
     stats = @stats
