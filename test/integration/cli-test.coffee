@@ -46,7 +46,7 @@ describe "Command line interface", () ->
     it 'should print error message to stderr', () ->
       assert.include stderr, 'Error: ENOENT, open'
 
-  describe "Arguments with existing bleuprint and responding server", () ->
+  describe "Arguments with existing blueprint and responding server", () ->
     describe "when executing the command and the server is responding as specified in the blueprint", () ->
 
       before (done) ->
@@ -403,7 +403,36 @@ describe "Command line interface", () ->
       it 'should print without colors', () ->
         # if colors are not on, there is no closing color code between
         # the "pass" and the ":"
-        assert.ok stdout.indexOf 'pass:' > -1
+        assert.include stdout, 'pass:'
+
+    describe 'when suppressing color with --color false', () ->
+
+      recievedRequest = {}
+
+      before (done) ->
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --color false"
+
+        app = express()
+
+        app.get '/machines', (req, res) ->
+          recievedRequest = req
+          res.setHeader 'Content-Type', 'application/json'
+          machine =
+            type: 'bulldozer'
+            name: 'willy'
+          response = [machine]
+          res.status(200).send response
+
+        server = app.listen PORT, () ->
+          execCommand cmd, () ->
+            server.close()
+
+        server.on 'close', done
+
+      it 'should print without colors', () ->
+        # if colors are not on, there is no closing color code between
+        # the "pass" and the ":"
+        assert.include stdout, 'pass:'
 
     describe 'when setting the log output level with -l', () ->
 

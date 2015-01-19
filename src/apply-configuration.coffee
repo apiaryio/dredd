@@ -45,6 +45,12 @@ applyConfiguration = (config) ->
   configuration.options.header = coerceToArray(configuration.options.header)
   configuration.options.method = coerceToArray(configuration.options.method)
 
+  #coerce color to bool
+  if configuration.options.color == 'false'
+    configuration.options.color = false
+  else if configuration.options.color == 'true'
+    configuration.options.color = true
+
   for method in configuration.options.method
     method.toUpperCase()
 
