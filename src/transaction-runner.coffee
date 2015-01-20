@@ -63,14 +63,6 @@ class TransactionRunner
         packageConfig['version'] + \
         " ("+ system + ")"
 
-    # Add length of body if no Content-Length present
-    caseInsensitiveMap = {}
-    for key, value of flatHeaders
-      caseInsensitiveMap[key.toLowerCase()] = key
-
-    if not caseInsensitiveMap['content-length'] and request['body'] != ''
-      flatHeaders['Content-Length'] = request['body'].length
-
     if configuration.options.header.length > 0
       for header in configuration.options.header
         splitIndex = header.indexOf(':')
@@ -117,6 +109,16 @@ class TransactionRunner
 
   executeTransaction: (transaction, callback) =>
     configuration = @configuration
+
+    # Add length of body if no Content-Length present
+    # Doing here instead of in configureTransaction, because request body can be edited in before hook
+
+    caseInsensitiveMap = {}
+    for key, value of transaction.request.headers
+      caseInsensitiveMap[key.toLowerCase()] = key
+
+    if not caseInsensitiveMap['content-length'] and transaction.request['body'] != ''
+      transaction.request.headers['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
 
     requestOptions =
       host: transaction.host

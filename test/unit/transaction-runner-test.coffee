@@ -141,25 +141,6 @@ describe 'TransactionRunner', ()->
           assert.ok configuredTransaction.request.headers['User-Agent']
           done()
 
-    describe 'when no Content-Length is present', () ->
-
-      it 'should add a Content-Length header', (done) ->
-        runner.configureTransaction transaction, (err, configuredTransaction) ->
-          assert.ok configuredTransaction.request.headers['Content-Length']
-          done()
-
-    describe 'when Content-Length header is present', () ->
-
-      beforeEach () ->
-        transaction.headers =
-          "Content-Length":
-              value: 44
-
-      it 'should not add a Content-Length header', (done) ->
-        runner.configureTransaction transaction, (err, configuredTransaction) ->
-          assert.equal configuredTransaction.request.headers['Content-Length'], 44
-          done()
-
     describe 'when an additional header has a colon', ()->
       beforeEach () ->
         configuration.options.header = ["MyCustomDate:Wed, 10 Sep 2014 12:34:26 GMT"]
@@ -212,6 +193,42 @@ describe 'TransactionRunner', ()->
           exampleName: 'Bogus example name'
         fullPath: '/machines'
         protocol: 'http:'
+
+    describe 'when no Content-Length is present', () ->
+
+      beforeEach () ->
+        delete transaction.request.headers["Content-Length"]
+        server = nock('http://localhost:3000').
+          post('/machines', {"type":"bulldozer","name":"willy"}).
+          reply transaction['expected']['status'],
+            transaction['expected']['body'],
+            {'Content-Type': 'application/json'}
+
+      afterEach () ->
+        nock.cleanAll()
+
+      it 'should add a Content-Length header', (done) ->
+        runner.executeTransaction transaction, () ->
+          assert.ok transaction.request.headers['Content-Length']
+          done()
+
+    describe 'when Content-Length header is present', () ->
+
+      beforeEach () ->
+        transaction.request.headers["Content-Length"] = 44
+        server = nock('http://localhost:3000').
+          post('/machines', {"type":"bulldozer","name":"willy"}).
+          reply transaction['expected']['status'],
+            transaction['expected']['body'],
+            {'Content-Type': 'application/json'}
+
+      afterEach () ->
+        nock.cleanAll()
+
+      it 'should not add a Content-Length header', (done) ->
+        runner.executeTransaction transaction, () ->
+          assert.equal transaction.request.headers['Content-Length'], 44
+          done()
 
 
     describe 'when printing the names', () ->
