@@ -32,7 +32,6 @@ describe 'Dredd class', () ->
   describe 'with valid configuration', () ->
     before () ->
       configuration =
-        blueprintPath: './test/fixtures/apiary.apib'
         server: 'http://localhost:3000/'
         options:
           silent: true
@@ -40,6 +39,7 @@ describe 'Dredd class', () ->
           header: 'Accept:application/json'
           user: 'bob:test'
           sorted: true
+          path: ['./test/fixtures/apiary.apib']
 
     it 'should copy configuration on creation', () ->
       dredd = new Dredd(configuration)
@@ -51,7 +51,7 @@ describe 'Dredd class', () ->
       sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
         callback()
       dredd.run (error) ->
-        assert.ok fsStub.readFile.calledWith configuration['blueprintPath']
+        assert.ok fsStub.readFile.calledWith configuration.options.path[0]
         dredd.runner.executeTransaction.restore()
         done()
 
@@ -91,21 +91,88 @@ describe 'Dredd class', () ->
         dredd.runner.executeTransaction.restore()
         done()
 
+    describe 'when paths specified with glob paterns', () ->
+      before () ->
+        configuration =
+          server: 'http://localhost:3000/'
+          options:
+            silent: true
+            path: ['./test/fixtures/multifile/*.apib', './test/fixtures/multifile/*.apib' ,'./test/fixtures/multifile/*.balony']
+        dredd = new Dredd(configuration)
+
+      beforeEach () ->
+        sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+          callback()
+
+      afterEach () ->
+        dredd.runner.executeTransaction.restore()
+
+      it 'should expand all glob patterns and resolved paths should be unique', (done) ->
+        dredd.run (error) ->
+          return done error if error
+          assert.equal dredd.configuration.files.length, 3
+          assert.include dredd.configuration.files, './test/fixtures/multifile/message.apib'
+          done()
+
+      it 'should remove globs from config', (done) ->
+        dredd.run (error) ->
+          return done error if error
+          assert.notInclude dredd.configuration.files, './test/fixtures/multifile/*.apib'
+          assert.notInclude dredd.configuration.files, './test/fixtures/multifile/*.balony'
+          done()
+
+      it 'should load file contents on paths to config', (done) ->
+        dredd.run (error) ->
+          return done error if error
+          assert.isObject dredd.configuration.data
+          assert.property dredd.configuration.data, './test/fixtures/multifile/greeting.apib'
+          assert.isObject dredd.configuration.data['./test/fixtures/multifile/greeting.apib']
+          assert.property dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'raw'
+          done()
+
+      it 'should parse loaded files', (done) ->
+        dredd.run (error) ->
+          return done error if error
+          assert.property dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'parsed'
+          done()
+
+
+    describe 'when glob pattern does not match any files', () ->
+      before () ->
+        configuration =
+          server: 'http://localhost:3000/'
+          options:
+            silent: true
+            path: ['./test/fixtures/multifile/*.balony']
+        dredd = new Dredd(configuration)
+
+      beforeEach () ->
+        sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+          callback()
+
+      afterEach () ->
+        dredd.runner.executeTransaction.restore()
+
+      it 'should return error', (done) ->
+        dredd.run (error) ->
+          assert.ok error
+          done()
+
   describe 'when Blueprint parsing error', () ->
 
     before () ->
       configuration =
-        blueprintPath: './test/fixtures/error-blueprint.apib'
         url: 'http://localhost:3000/'
         options:
           silent: true
+          path: ['./test/fixtures/error-blueprint.apib']
       dredd = new Dredd(configuration)
 
-    beforeEach () ->      
+    beforeEach () ->
       sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
         callback()
 
-    afterEach () ->      
+    afterEach () ->
       dredd.runner.executeTransaction.restore()
 
     it 'should exit with an error', (done) ->
@@ -122,10 +189,10 @@ describe 'Dredd class', () ->
 
     before () ->
       configuration =
-        blueprintPath: './test/fixtures/warning-ambigous.apib'
         url: 'http://localhost:3000/'
         options:
           silent: true
+          path: ['./test/fixtures/warning-ambigous.apib']
       dredd = new Dredd(configuration)
 
     beforeEach () ->
@@ -152,10 +219,10 @@ describe 'Dredd class', () ->
 
     beforeEach () ->
       configuration =
-        blueprintPath: './balony/path.apib'
         url: 'http://localhost:3000/'
         options:
           silent: true
+          path: ['./balony/path.apib']
       dredd = new Dredd(configuration)
       sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
         callback()
@@ -176,10 +243,11 @@ describe 'Dredd class', () ->
   describe 'when runtime contains any error', () ->
     beforeEach () ->
       configuration =
-        blueprintPath: './test/fixtures/error-uri-template.apib'
         server: 'http://localhost:3000/'
         options:
           silent: true
+          path: ['./test/fixtures/error-uri-template.apib']
+
       dredd = new Dredd(configuration)
       sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
         callback()
@@ -201,10 +269,10 @@ describe 'Dredd class', () ->
 
     beforeEach () ->
       configuration =
-        blueprintPath: './test/fixtures/warning-ambigous.apib'
         server: 'http://localhost:3000/'
         options:
           silent: true
+          path: ['./test/fixtures/warning-ambigous.apib']
       sinon.spy loggerStub, 'warn'
       dredd = new Dredd(configuration)
       sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
@@ -232,10 +300,10 @@ describe 'Dredd class', () ->
   describe 'when runtime is without errors and warnings', () ->
     beforeEach () ->
       configuration =
-        blueprintPath: './test/fixtures/warning-ambigous.apib'
         server: 'http://localhost:3000/'
         options:
           silent: true
+          path: ['./test/fixtures/warning-ambigous.apib']
       dredd = new Dredd(configuration)
       sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
         callback()

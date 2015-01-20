@@ -24,6 +24,10 @@ class TransactionRunner
     advisable.async.call TransactionRunner.prototype
     addHooks @, {}, @configuration.emitter
 
+  config: (config) ->
+    @configuration = config
+    @multiBlueprint = Object.keys(@configuration.data).length > 1
+
   run: (transactions, callback) ->
     transactions = if @configuration.options['sorted'] then sortTransactions(transactions) else transactions
 
@@ -77,6 +81,8 @@ class TransactionRunner
     request['headers'] = flatHeaders
 
     name = ''
+    name += origin['apiName'] if @multiBlueprint
+    name += ' > ' if @multiBlueprint and origin['resourceGroupName']
     name += origin['resourceGroupName'] if origin['resourceGroupName']
     name += ' > ' + origin['resourceName'] if origin['resourceName']
     name += ' > ' + origin['actionName'] if origin['actionName']
@@ -135,6 +141,9 @@ class TransactionRunner
       logger.info "Dry run, skipping API Tests..."
       return callback()
     else if configuration.options.method.length > 0 and not (transaction.request.method in configuration.options.method)
+      configuration.emitter.emit 'test skip', test
+      return callback()
+    else if configuration.options.only.length > 0 and not (transaction.name in configuration.options.only)
       configuration.emitter.emit 'test skip', test
       return callback()
     else if transaction.skip

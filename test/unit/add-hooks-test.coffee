@@ -127,6 +127,7 @@ describe 'addHooks(runner, transaction)', () ->
           method: []
           header: []
           reporter:  []
+          only: []
           hookfiles: './**/*_hooks.*'
 
       transaction =
