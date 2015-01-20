@@ -31,6 +31,7 @@ describe 'TransactionRunner', ()->
     options:
       'dry-run': false
       method: []
+      only: []
       header: []
       reporter:  []
   transaction = {}
@@ -70,6 +71,7 @@ describe 'TransactionRunner', ()->
           options:
             'dry-run': false
             method: []
+            only: []
             header: []
             reporter: []
 
@@ -87,6 +89,7 @@ describe 'TransactionRunner', ()->
           options:
             'dry-run': false
             method: []
+            only: []
             header: []
             reporter: []
         runner = new Runner(configuration)

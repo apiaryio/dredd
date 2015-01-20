@@ -28,6 +28,7 @@ applyConfiguration = (config) ->
       'inline-errors':false
       details: false
       method: []
+      only: []
       color: true
       level: 'info'
       timestamp: false
