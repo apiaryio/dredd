@@ -30,7 +30,7 @@ class TransactionRunner
     async.mapSeries transactions, @configureTransaction, (err, results) ->
       transactions = results
 
-    addHooks {}, transactions, @configuration.emitter
+    addHooks @, transactions, @configuration.emitter
 
     @executeAllTransactions(transactions,callback)
 
@@ -125,21 +125,31 @@ class TransactionRunner
       message: transaction.name
       origin: transaction.origin
 
-    if configuration.options.names
-      logger.info transaction.name
-      return callback()
-
     configuration.emitter.emit 'test start', test
 
-    if configuration.options['dry-run']
+    if transaction.skip
+      # manually set to skip a test in hooks
+      configuration.emitter.emit 'test skip', test
+      return callback()
+    else if configuration.options['dry-run']
       logger.info "Dry run, skipping API Tests..."
+      transaction.skip = true
+      return callback()
+    else if configuration.options.names
+      logger.info transaction.name
+      transaction.skip = true
       return callback()
     else if configuration.options.method.length > 0 and not (transaction.request.method in configuration.options.method)
       configuration.emitter.emit 'test skip', test
+      transaction.skip = true
       return callback()
-    else if transaction.skip
-      # manually set to skip a test
-      configuration.emitter.emit 'test skip', test
+    else if transaction.fail
+      # manually set to fail a test in hooks
+      transaction.test = test
+      transaction.test.status = 'fail'
+      transaction.test.message = "Failed in before hook: #{transaction.fail}"
+      transaction.test.failedIn = 'executeTransasction'
+      configuration.emitter.emit 'test fail', test
       return callback()
     else
       buffer = ""
@@ -167,10 +177,11 @@ class TransactionRunner
 
             if isValid
               test.status = "pass"
+              test.title = transaction.id
               test.actual = real
               test.expected = transaction.expected
               test.request = transaction.request
-              configuration.emitter.emit 'test pass', test
+              transaction.test = test
               return callback()
             else
               gavel.validate real, transaction.expected, 'response', (error, result) ->
@@ -188,7 +199,7 @@ class TransactionRunner
                 test.request = transaction.request
                 test.start = test.start
                 test.results = result
-                configuration.emitter.emit 'test fail', test
+                transaction.test = test
                 return callback()
 
       transport = if transaction.protocol is 'https:' then https else http

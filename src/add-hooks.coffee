@@ -15,24 +15,25 @@ addHooks = (runner, transactions, emitter) ->
       hooks.transactions[transaction.name] = transaction
 
     pattern = runner?.configuration?.options?.hookfiles
-    return if not pattern
 
-    files = glob.sync pattern
+    if pattern
 
-    logger.info 'Found Hookfiles: ' + files
+      files = glob.sync pattern
 
-    try
-      for file in files
-        proxyquire path.resolve(process.cwd(), file), {
-          'hooks': hooks
-        }
-    catch error
-      logger.warn 'Skipping hook loading...'
-      logger.warn 'Error reading hook files (' + files + ')'
-      logger.warn 'This probably means one or more of your hookfiles is invalid.'
-      logger.warn 'Message: ' + error.message if error.message?
-      logger.warn 'Stack: ' + error.stack if error.stack?
-      return
+      logger.info 'Found Hookfiles: ' + files
+
+      try
+        for file in files
+          proxyquire path.resolve(process.cwd(), file), {
+            'hooks': hooks
+          }
+      catch error
+        logger.warn 'Skipping hook loading...'
+        logger.warn 'Error reading hook files (' + files + ')'
+        logger.warn 'This probably means one or more of your hookfiles is invalid.'
+        logger.warn 'Message: ' + error.message if error.message?
+        logger.warn 'Stack: ' + error.stack if error.stack?
+        return
 
     # Support for suite setup/teardown
     runner.before 'executeAllTransactions', (transactions, callback) =>
@@ -41,11 +42,29 @@ addHooks = (runner, transactions, emitter) ->
     runner.after 'executeAllTransactions', (transactions, callback) =>
       hooks.runAfterAll(callback)
 
+    # Regular before and after hooks
     runner.before 'executeTransaction', (transaction, callback)  =>
+      #run before hooks
       runHooksForTransaction hooks.beforeHooks[transaction.name], transaction, callback
 
     runner.after 'executeTransaction', (transaction, callback) =>
+      #run before after hooks
       runHooksForTransaction hooks.afterHooks[transaction.name], transaction, callback
+
+    runner.after 'executeTransaction', (transaction, callback) =>
+      # Suppport for programatically failing transactions in after hook
+      # Examinig transaction result here to avoid emit pass event and ther failing it here
+      if not transaction.skip
+        if transaction['fail'] and transaction.failedIn != "executeTransasction" # this means it was already programatically failed
+          transaction['test']['status'] = 'fail'
+          transaction['test']['message'] = "Failed in after hook: #{transaction['fail']}\n#{transaction['test']['message']}"
+          @emitter.emit 'test fail', transaction['test']
+        else
+          if transaction['test']['status'] == 'pass'
+            @emitter.emit 'test pass', transaction['test']
+          else if transaction['test']['status'] == 'fail'
+            @emitter.emit 'test fail', transaction['test']
+      callback()
 
   runHooksForTransaction = (hooksForTransaction, transaction, callback) =>
     if hooksForTransaction?
@@ -61,8 +80,8 @@ addHooks = (runner, transactions, emitter) ->
         async.eachSeries hooksForTransaction, runHookWithTransaction, () ->
           callback()
 
-      else
-        callback()
+    else
+      callback()
 
   runHook = (hook, transaction, callback) ->
     if hook.length is 1

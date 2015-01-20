@@ -21,6 +21,7 @@ addHooks = proxyquire  '../../src/add-hooks', {
 describe 'addHooks(runner, transaction)', () ->
 
   transactions = {}
+  server = null
 
   before () ->
     loggerStub.transports.console.silent = true
@@ -129,34 +130,36 @@ describe 'addHooks(runner, transaction)', () ->
           reporter:  []
           hookfiles: './**/*_hooks.*'
 
-      transaction =
-        name: 'Group Machine > Machine > Delete Message > Bogus example name'
-        id: 'POST /machines'
-        host: 'localhost'
-        port: '3000'
-        request:
-          body: '{\n  "type": "bulldozer",\n  "name": "willy"}\n'
-          headers:
-            'Content-Type': 'application/json'
-            'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)'
-            'Content-Length': 44
-          uri: '/machines'
-          method: 'POST'
-        expected:
-          headers: 'content-type': 'application/json'
-          body: '{\n  "type": "bulldozer",\n  "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n'
-          status: '202'
-        origin:
-          resourceGroupName: 'Group Machine'
-          resourceName: 'Machine'
-          actionName: 'Delete Message'
-          exampleName: 'Bogus example name'
-        fullPath: '/machines'
+      transaction = {}
 
       beforeEach () ->
+        transaction =
+          name: 'Group Machine > Machine > Delete Message > Bogus example name'
+          id: 'POST /machines'
+          host: 'localhost'
+          port: '3000'
+          request:
+            body: '{\n  "type": "bulldozer",\n  "name": "willy"}\n'
+            headers:
+              'Content-Type': 'application/json'
+              'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)'
+              'Content-Length': 44
+            uri: '/machines'
+            method: 'POST'
+          expected:
+            headers: 'content-type': 'application/json'
+            body: '{\n  "type": "bulldozer",\n  "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n'
+            statusCode: '202'
+          origin:
+            resourceGroupName: 'Group Machine'
+            resourceName: 'Machine'
+            actionName: 'Delete Message'
+            exampleName: 'Bogus example name'
+          fullPath: '/machines'
+
         server = nock('http://localhost:3000').
           post('/machines', {"type":"bulldozer","name":"willy"}).
-          reply transaction['expected']['status'],
+          reply transaction['expected']['statusCode'],
             transaction['expected']['body'],
             {'Content-Type': 'application/json'}
         runner = new Runner(configuration)
@@ -288,6 +291,186 @@ describe 'addHooks(runner, transaction)', () ->
           runner.executeTransaction transaction, () ->
             assert.ok emitter.emit.calledWith "test error"
             done()
+
+      describe 'with hook failing the transaction', () ->
+        describe 'in before hook', () ->
+          beforeEach () ->
+            hooksStub.beforeHooks =
+              'Group Machine > Machine > Delete Message > Bogus example name' : [
+                (transaction) ->
+                  transaction.fail = "Message before"
+              ]
+            sinon.stub configuration.emitter, 'emit'
+
+          afterEach () ->
+            configuration.emitter.emit.restore()
+            hooksStub.beforeHooks = {}
+
+          it 'should fail the test', (done) ->
+            runner.executeTransaction transaction, () ->
+              assert.ok emitter.emit.calledWith "test fail"
+              done()
+
+          it 'should not run the transaction', (done) ->
+            runner.executeTransaction transaction, () ->
+              assert.notOk server.isDone()
+              done()
+
+          it 'should pass the failing message to the emitter', (done) ->
+            runner.executeTransaction transaction, () ->
+              messages = []
+              callCount = emitter.emit.callCount
+              for callNo in [0.. callCount - 1]
+                messages.push emitter.emit.getCall(callNo).args[1].message
+              assert.include messages.join(), "Message before"
+              done()
+
+            it 'should mention before hook in the error message', (done) ->
+              runner.executeTransaction transaction, () ->
+                messages = []
+                callCount = emitter.emit.callCount
+                for callNo in [0.. callCount - 1]
+                  messages.push emitter.emit.getCall(callNo).args[1].message
+                assert.include messages, "Failed in before hook:"
+                done()
+
+          describe 'when message is set to fail also in after hook', () ->
+            beforeEach () ->
+              hooksStub.afterHooks =
+                'Group Machine > Machine > Delete Message > Bogus example name' : [
+                  (transaction) ->
+                    transaction.fail = "Message after"
+                ]
+
+            afterEach () ->
+              hooksStub.afterHooks = {}
+
+            it 'should pass the failing message to the emitter', (done) ->
+              runner.executeTransaction transaction, () ->
+                messages = []
+                callCount = emitter.emit.callCount
+                for callNo in [0.. callCount - 1]
+                  messages.push emitter.emit.getCall(callNo).args[1].message
+                assert.notInclude messages, "Message after fail"
+                done()
+
+            it 'should not mention after hook in the error message', (done) ->
+              runner.executeTransaction transaction, () ->
+                messages = []
+                callCount = emitter.emit.callCount
+                for callNo in [0.. callCount - 1]
+                  messages.push emitter.emit.getCall(callNo).args[1].message
+                assert.notInclude messages, "Failed in after hook:"
+                done()
+
+        describe 'in after hook when transaction fails ', () ->
+          modifiedTransaction = {}
+          beforeEach () ->
+            modifiedTransaction = JSON.parse(JSON.stringify(transaction))
+            modifiedTransaction['expected']['statusCode'] = "303"
+
+            hooksStub.beforeHooks = {}
+            hooksStub.afterHooks =
+              'Group Machine > Machine > Delete Message > Bogus example name' : [
+                (transaction) ->
+                  transaction.fail = "Message after fail"
+              ]
+            sinon.stub configuration.emitter, 'emit'
+
+          afterEach () ->
+            configuration.emitter.emit.reset()
+            configuration.emitter.emit.restore()
+            hooksStub.afterHooks = {}
+
+          it 'should make the request', (done) ->
+            runner.executeTransaction transaction, () ->
+              assert.ok server.isDone()
+              done()
+
+          it 'should not fail again', (done) ->
+            runner.executeTransaction modifiedTransaction, () ->
+              failCount = 0
+              messages = []
+              callCount = emitter.emit.callCount
+              for callNo in [0.. callCount - 1]
+                failCount++ if emitter.emit.getCall(callNo).args[0] == 'test fail'
+                messages.push emitter.emit.getCall(callNo).args[1].message
+              assert.equal failCount, 1
+              done()
+
+          it 'should not pass the hook message to the emitter', (done) ->
+            runner.executeTransaction modifiedTransaction, () ->
+              messages = []
+              callCount = configuration.emitter.emit.callCount
+              for callNo in [0.. callCount - 1]
+                messages.push configuration.emitter.emit.getCall(callNo).args[1].message
+              assert.notInclude messages, "Message after fail"
+              done()
+
+            it 'should not mention after hook in the error message', (done) ->
+              runner.executeTransaction transaction, () ->
+                messages = []
+                callCount = emitter.emit.callCount
+                for callNo in [0.. callCount - 1]
+                  messages.push emitter.emit.getCall(callNo).args[1].message
+                assert.notInclude messages, "Failed in after hook:"
+                done()
+
+        describe 'in after hook when transaction passes ', () ->
+          beforeEach () ->
+            hooksStub.afterHooks =
+              'Group Machine > Machine > Delete Message > Bogus example name' : [
+                (transaction) ->
+                  transaction.fail = "Message after pass"
+              ]
+            sinon.stub configuration.emitter, 'emit'
+
+          afterEach () ->
+            configuration.emitter.emit.reset()
+            configuration.emitter.emit.restore()
+            hooksStub.afterHooks = {}
+
+          it 'should make the request', (done) ->
+            runner.executeTransaction transaction, () ->
+              assert.ok server.isDone()
+              done()
+
+          it 'it should fail the test', (done) ->
+            runner.executeTransaction transaction, () ->
+              assert.ok emitter.emit.calledWith "test fail"
+              done()
+
+          it 'it should not pass the test', (done) ->
+            runner.executeTransaction transaction, () ->
+              assert.notOk emitter.emit.calledWith "test pass"
+              done()
+
+          it 'it should pass the failing message to the emitter', (done) ->
+            runner.executeTransaction transaction, () ->
+              messages = []
+              callCount = emitter.emit.callCount
+              for callNo in [0.. callCount - 1]
+                messages.push emitter.emit.getCall(callNo).args[1].message
+              assert.include messages.join(), "Message after pass"
+              done()
+
+          it 'should mention after hook in the error message', (done) ->
+            runner.executeTransaction transaction, () ->
+              messages = []
+              callCount = emitter.emit.callCount
+              for callNo in [0.. callCount - 1]
+                messages.push emitter.emit.getCall(callNo).args[1].message
+              assert.include messages.join(), "Failed in after hook:"
+              done()
+
+          it 'should set transaction status to failed', (done) ->
+            runner.executeTransaction transaction, () ->
+              messages = []
+              callCount = emitter.emit.callCount
+              for callNo in [0.. callCount - 1]
+                messages.push emitter.emit.getCall(callNo).args[1].message
+              assert.notInclude messages, "Failed in after hook:"
+              done()
 
       describe 'without hooks', () ->
         beforeEach () ->
