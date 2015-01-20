@@ -112,7 +112,7 @@ class TransactionRunner
       caseInsensitiveMap[key.toLowerCase()] = key
 
     if not caseInsensitiveMap['content-length'] and transaction.request['body'] != ''
-      transaction.request.headers['Content-Length'] = transaction.request['body'].length
+      transaction.request.headers['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
 
     requestOptions =
       host: transaction.host
