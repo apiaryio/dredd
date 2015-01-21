@@ -9,6 +9,8 @@ ApiaryReporter = proxyquire '../../../src/reporters/apiary-reporter', {
   './../logger': loggerStub
 }
 
+blueprintData = require '../../fixtures/blueprint-data'
+
 describe 'ApiaryReporter', () ->
   beforeEach () ->
     sinon.stub loggerStub, 'info'
@@ -47,6 +49,15 @@ describe 'ApiaryReporter', () ->
         status: "fail"
         title: "POST /machines"
         message: "headers: Value of the ‘content-type’ must be application/json.\nbody: No validator found for real data media type 'text/plain' and expected data media type 'application/json'.\nstatusCode: Real and expected data does not match.\n"
+
+        origin:
+          filename: './test/fixtures/multifile/greeting.apib'
+          apiName: 'Greeting API'
+          resourceGroupName: ''
+          resourceName: '/greeting'
+          actionName: 'GET'
+          exampleName: ''
+
         actual:
           statusCode: 400
           headers:
@@ -126,57 +137,86 @@ describe 'ApiaryReporter', () ->
     describe 'when starting', () ->
       call = null
       runId = '507f1f77bcf86cd799439011'
-
+      requestBody = null
       beforeEach () ->
         uri = '/apis/public/tests/runs'
         reportUrl = "https://absolutely.fency.url/wich-can-change/some/id"
+
+        # this is a hack how to get access to the performed request from nock
+        # nock isn't able to provide it
+        getBody = (body) ->
+          requestBody = body
+          return body
+
         call = nock(process.env['APIARY_API_URL']).
+          filteringRequestBody(getBody).
           post(uri).
-          reply(201, {"_id": runId, "reportUrl": reportUrl})
+          reply(201, JSON.stringify({"_id": runId, "reportUrl": reportUrl}))
 
       it 'should set uuid', (done) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}
-        emitter.emit 'start', "blueprint data", () ->
+        emitter.emit 'start', blueprintData, () ->
           assert.isNotNull apiaryReporter.uuid
           done()
 
       it 'should set start time', (done) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}
-        emitter.emit 'start', "blueprint data", () ->
+        emitter.emit 'start', blueprintData, () ->
           assert.isNotNull apiaryReporter.startedAt
           done()
 
       it 'should call "create new test run" HTTP resource', (done ) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}
-        emitter.emit 'start', "blueprint data", () ->
+        emitter.emit 'start', blueprintData, () ->
           assert.isTrue call.isDone()
           done()
 
       it 'should attach test run ID back to the reporter as remoteId', (done) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}
-        emitter.emit 'start', "blueprint data", () ->
+        emitter.emit 'start', blueprintData, () ->
           assert.isNotNull apiaryReporter.remoteId
           done()
 
       it 'should attach test run reportUrl to the reporter as reportUrl', (done) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}
-        emitter.emit 'start', "blueprint data", () ->
+        emitter.emit 'start', blueprintData, () ->
           assert.isNotNull apiaryReporter.reportUrl
+          done()
+
+      it 'should have blueprints key in the request and it should be an array and members should have propers structure', (done) ->
+        emitter = new EventEmitter
+        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        emitter.emit 'start', blueprintData, () ->
+          parsedBody = JSON.parse requestBody
+          assert.isArray parsedBody.blueprints
+          for blueprint in parsedBody.blueprints
+            assert.property blueprint, 'raw'
+            assert.property blueprint, 'file'
+            assert.property blueprint, 'parsed'
           done()
 
     describe 'when adding passing test', () ->
       call = null
       runId = '507f1f77bcf86cd799439011'
       test = null
+      requestBody = null
 
       beforeEach () ->
         uri = '/apis/public/tests/steps?testRunId=' + runId
+
+        # this is a hack how to get access to the performed request from nock
+        # nock isn't able to provide it
+        getBody = (body) ->
+          requestBody = body
+          return body
+
         call = nock(process.env['APIARY_API_URL']).
+          filteringRequestBody(getBody).
           post(uri).
           reply(201, {"_id": runId})
 
@@ -186,6 +226,14 @@ describe 'ApiaryReporter', () ->
         apiaryReporter.remoteId = runId
         emitter.emit 'test pass', test
         assert.isTrue call.isDone()
+
+      it 'should have origin with filename in the request', () ->
+        emitter = new EventEmitter
+        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter.remoteId = runId
+        emitter.emit 'test pass', test
+        parsedBody = JSON.parse requestBody
+        assert.property parsedBody['origin'], 'filename'
 
     describe 'when adding failing test', () ->
       call = null
@@ -359,35 +407,35 @@ describe 'ApiaryReporter', () ->
       it 'should set uuid', (done) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}
-        emitter.emit 'start', "blueprint data", () ->
+        emitter.emit 'start', blueprintData, () ->
           assert.isNotNull apiaryReporter.uuid
           done()
 
       it 'should set start time', (done) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}
-        emitter.emit 'start', "blueprint data", () ->
+        emitter.emit 'start', blueprintData, () ->
           assert.isNotNull apiaryReporter.startedAt
           done()
 
       it 'should call "create new test run" HTTP resource', (done ) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}
-        emitter.emit 'start', "blueprint data", () ->
+        emitter.emit 'start', blueprintData, () ->
           assert.isTrue call.isDone()
           done()
 
       it 'should attach test run ID back to the reporter as remoteId', (done) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}
-        emitter.emit 'start', "blueprint data", () ->
+        emitter.emit 'start', blueprintData, () ->
           assert.isNotNull apiaryReporter.remoteId
           done()
 
       it 'should attach test run reportUrl to the reporter as reportUrl', (done) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}
-        emitter.emit 'start', "blueprint data", () ->
+        emitter.emit 'start', blueprintData, () ->
           assert.isNotNull apiaryReporter.reportUrl
           done()
 

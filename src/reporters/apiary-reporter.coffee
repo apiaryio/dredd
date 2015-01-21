@@ -31,7 +31,7 @@ class ApiaryReporter
     logger.info 'Using apiary reporter.'
 
   configureEmitter: (emitter) =>
-    emitter.on 'start', (rawBlueprint, callback) =>
+    emitter.on 'start', (blueprintsData, callback) =>
       @uuid = uuid.v4()
       @startedAt = Math.round(new Date().getTime() / 1000)
 
@@ -48,8 +48,13 @@ class ApiaryReporter
         if ciEnvVar == true
           ciEnvVars[envVarName] = process.env[envVarName]
 
+      # transform blueprints data to array
+      blueprints = []
+      for blueprint of blueprintsData
+        blueprints.push blueprint
+
       data =
-        blueprint: rawBlueprint
+        blueprints: blueprints
         agent: process.env['DREDD_AGENT'] || process.env['USER']
         agentRunUuid: @uuid
         hostname: process.env['DREDD_HOSTNAME'] || os.hostname()
@@ -129,7 +134,12 @@ class ApiaryReporter
       res.on 'end', () =>
         if @verbose
           console.log 'Rest Reporter Response ended'
-        parsedBody = JSON.parse buffer
+
+        try
+          parsedBody = JSON.parse buffer
+        catch e
+          throw new Error "Apiary reporter: Failed to JSON parse Apiary API response body: \n #{buffer}"
+
 
         if @verbose
           info =
