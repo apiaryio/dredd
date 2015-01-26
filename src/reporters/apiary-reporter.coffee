@@ -50,8 +50,8 @@ class ApiaryReporter
 
       # transform blueprints data to array
       blueprints = []
-      for blueprint of blueprintsData
-        blueprints.push blueprint
+      for blueprintPath, blueprintData of blueprintsData
+        blueprints.push blueprintData
 
       data =
         blueprints: blueprints
