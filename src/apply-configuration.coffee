@@ -46,8 +46,13 @@ applyConfiguration = (config) ->
   configuration.options.header = coerceToArray(configuration.options.header)
   configuration.options.method = coerceToArray(configuration.options.method)
   configuration.options.only = coerceToArray(configuration.options.only)
+  configuration.options.path = coerceToArray(configuration.options.path)
 
-  #coerce color to bool
+  # support for legacy JS API options
+  if config.blueprintPath
+    configuration.options.path.push config.blueprintPath
+
+  # coerce color to bool
   if configuration.options.color == 'false'
     configuration.options.color = false
   else if configuration.options.color == 'true'

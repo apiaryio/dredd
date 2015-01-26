@@ -29,6 +29,24 @@ describe 'Dredd class', () ->
     protagonistStub.parse.restore()
     fsStub.readFile.restore()
 
+  describe 'with legacy configuration', () ->
+    before () ->
+      configuration =
+        server: 'http://localhost:3000/'
+        blueprintPath: './test/fixtures/apiary.apib'
+
+    it 'should not explode and run executeTransaction', (done) ->
+      fn = () ->
+        dredd = new Dredd(configuration)
+        sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+          callback()
+        dredd.run (error) ->
+          assert.ok dredd.runner.executeTransaction.called
+          dredd.runner.executeTransaction.restore()
+          done()
+
+      assert.doesNotThrow fn
+
   describe 'with valid configuration', () ->
     before () ->
       configuration =
