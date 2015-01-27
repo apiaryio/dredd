@@ -12,7 +12,7 @@ HOST: http://api.apiary.io/
 
 - Attributes
   - _id (string, `507f1f77bcf86cd799439011`) ... Unique object id. DO NOT USE IT WHEN CREATING! Used in post body only for purpose of testing this blueprint.
-  - reportUrl: (string, required, `https://absolutely.fency.url/wich-can-change/some/id`) ... Report UI URL
+  - reportUrl (string, required, `https://absolutely.fency.url/wich-can-change/some/id`) ... Report UI URL
   - blueprints (array, required) ... Array of blueprints used for the test run
       - filename (string, required) ... file name
       - raw (string, required) ... raw bleuprint content in Markdown
