@@ -139,6 +139,7 @@ describe 'ApiaryReporter', () ->
       runId = '507f1f77bcf86cd799439011'
       requestBody = null
       beforeEach () ->
+        requestBody = null
         uri = '/apis/public/tests/runs'
         reportUrl = "https://absolutely.fency.url/wich-can-change/some/id"
 
@@ -194,6 +195,7 @@ describe 'ApiaryReporter', () ->
         emitter.emit 'start', blueprintData, () ->
           parsedBody = JSON.parse requestBody
           assert.isArray parsedBody.blueprints
+          assert.lengthOf parsedBody.blueprints, 1
           for blueprint in parsedBody.blueprints
             assert.property blueprint, 'raw'
             assert.property blueprint, 'filename'
