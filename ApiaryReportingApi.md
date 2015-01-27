@@ -14,7 +14,7 @@ HOST: http://api.apiary.io/
   - _id (string, `507f1f77bcf86cd799439011`) ... Unique object id. DO NOT USE IT WHEN CREATING! Used in post body only for purpose of testing this blueprint.
   - reportUrl: (string, required, `https://absolutely.fency.url/wich-can-change/some/id`) ... Report UI URL
   - blueprints (array, required) ... Array of blueprints used for the test run
-      - file (string, reqiured) ... file name
+      - filename (string, required) ... file name
       - raw (string, required) ... raw bleuprint content in Markdown
       - parsed (object, required)  ... parsed blueprint from raw data
         - ast (object, required) ... parsed blueprint ast
@@ -56,7 +56,7 @@ HOST: http://api.apiary.io/
           "blueprints": [
             {
               "raw": "",
-              "file": "",
+              "filename": "",
               "parsed": {
                 "ast": {
                   "someAst": "keys"
@@ -97,7 +97,7 @@ HOST: http://api.apiary.io/
           "blueprints": [
             {
               "raw": "",
-              "file": "",
+              "filename": "",
               "parsed": {
                 "ast": {},
                 "warnings": [],
@@ -145,7 +145,7 @@ HOST: http://api.apiary.io/
             "blueprints": [
               {
                 "raw": "",
-                "file": "",
+                "filename": "",
                 "parsed": {
                   "ast": {},
                   "warnings": [],
@@ -214,7 +214,7 @@ HOST: http://api.apiary.io/
           "blueprints": [
             {
               "raw": "",
-              "file": "",
+              "filename": "",
               "parsed": {
                 "ast": {},
                 "warnings": [],

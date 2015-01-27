@@ -196,7 +196,7 @@ describe 'ApiaryReporter', () ->
           assert.isArray parsedBody.blueprints
           for blueprint in parsedBody.blueprints
             assert.property blueprint, 'raw'
-            assert.property blueprint, 'file'
+            assert.property blueprint, 'filename'
             assert.property blueprint, 'parsed'
           done()
 
