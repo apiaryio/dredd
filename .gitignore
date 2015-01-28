@@ -1,3 +1,6 @@
 node_modules
 /lib
 .vagrant
+*.DS_Store
+/.idea
+/npm-debug.log

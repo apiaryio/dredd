@@ -4,9 +4,9 @@
 
 Rest reporter is activated by exposing environment variables withs token and suite.
 
-- DREDD_REST_TOKEN ... Authentication token used for reporting
-- DREDD_REST_SUITE ... API Suite reporting to 
-- DREDD_REST_URL ... Upstream API base URL. Default to https://api.apiary.io
+- APIARY_API_KEY ... Authentication token used for reporting
+- APIARY_API_NAME ... API (AKA suite, subdomain, vanity ) reporting to
+- APIARY_API_URL ... Upstream API base URL. Default to https://api.apiary.io
 - DREDD_REST_DEBUG ... Turn on debugging messages
 
 ### Passing test run details with env varirables

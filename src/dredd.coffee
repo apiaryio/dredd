@@ -61,7 +61,7 @@ class Dredd
       async.each config.files, (file, loadCallback) ->
         fs.readFile file, 'utf8', (loadingError, data) ->
           return loadCallback(loadingError) if loadingError
-          config.data[file] = {raw: data, file: file}
+          config.data[file] = {raw: data, filename: file}
           loadCallback()
 
       , (err) =>
