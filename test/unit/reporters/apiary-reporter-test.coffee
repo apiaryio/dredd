@@ -198,8 +198,16 @@ describe 'ApiaryReporter', () ->
           assert.lengthOf parsedBody.blueprints, 1
           for blueprint in parsedBody.blueprints
             assert.property blueprint, 'raw'
+            assert.propertyVal blueprint, 'raw', "# GET /message\n+ Response 200 (text/plain)\n\n      Hello World!\n"
             assert.property blueprint, 'filename'
+            assert.propertyVal blueprint, 'filename', './path/to/blueprint.file'
             assert.property blueprint, 'parsed'
+            assert.property blueprint.parsed, 'ast'
+            assert.property blueprint.parsed, 'warnings'
+            assert.property blueprint.parsed, 'sourcemap'
+            assert.isObject blueprint.parsed.ast
+            assert.isArray blueprint.parsed.warnings
+            assert.isObject blueprint.parsed.sourcemap
           done()
 
     describe 'when adding passing test', () ->

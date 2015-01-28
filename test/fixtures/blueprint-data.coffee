@@ -1,6 +1,6 @@
 module.exports = {
-  "./path/to/blueprint": {
-    filename: "./path/to/blueprint"
+  "./path/to/blueprint.file": {
+    filename: "./path/to/blueprint.file"
     raw:  "# GET /message\n+ Response 200 (text/plain)\n\n      Hello World!\n"
     parsed: {
       "ast": {
