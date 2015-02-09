@@ -5,7 +5,7 @@ clone = require 'clone'
 bodyParser = require 'body-parser'
 fs = require 'fs'
 
-PORT = '3333'
+PORT = 3333
 CMD_PREFIX = ''
 
 stderr = ''
@@ -38,7 +38,7 @@ execCommand = (cmd, options = {}, callback) ->
 
 describe "Command line interface", () ->
 
-  describe "When blueprint file not found", (done) ->
+  describe "When blueprint file not found", ->
     before (done) ->
       cmd = "./bin/dredd ./test/fixtures/nonexistent_path.md http://localhost:#{PORT}"
 
@@ -49,6 +49,114 @@ describe "Command line interface", () ->
 
     it 'should print error message to stderr', () ->
       assert.include stderr, 'not found'
+
+
+  describe "When blueprint file should be loaded from 'http(s)://...' url", ->
+    server = null
+    loadedFromServer = null
+    connectedToServer = null
+    notFound = null
+    fileFound = null
+
+    errorCmd = "./bin/dredd http://localhost:#{PORT+1}/connection-error.apib http://localhost:#{PORT+1}"
+    wrongCmd = "./bin/dredd http://localhost:#{PORT}/not-found.apib http://localhost:#{PORT}"
+    goodCmd = "./bin/dredd http://localhost:#{PORT}/file.apib http://localhost:#{PORT}"
+
+    afterEach ->
+      connectedToServer = null
+
+    before (done) ->
+      app = express()
+
+      app.use (req, res, next) ->
+        connectedToServer = true
+        next()
+
+      app.get '/', (req, res) ->
+        res.sendStatus 404
+
+      app.get '/file.apib', (req, res) ->
+        fileFound = true
+        res.type('text')
+        stream = fs.createReadStream './test/fixtures/single-get.apib'
+        stream.pipe res
+
+      app.get '/machines', (req, res) ->
+        res.setHeader 'Content-Type', 'application/json'
+        machine =
+          type: 'bulldozer'
+          name: 'willy'
+        response = [machine]
+        res.status(200).send response
+
+      app.get '/not-found.apib', (req, res) ->
+        notFound = true
+        res.status(404).end()
+
+      server = app.listen PORT, ->
+        done()
+
+    after (done) ->
+      server.close ->
+        app = null
+        server = null
+        done()
+
+    describe 'and I try to load a file from bad hostname at all', ->
+      before (done) ->
+        execCommand errorCmd, ->
+          done()
+
+      after ->
+        connectedToServer = null
+
+      it 'should not send a GET to the server', ->
+        assert.isNull connectedToServer
+
+      it 'should exit with status 1', ->
+        assert.equal exitStatus, 1
+
+      it 'should print error message to stderr', ->
+        assert.include stderr, 'Error when loading file from URL'
+        assert.include stderr, 'Is the provided URL correct?'
+        assert.include stderr, 'connection-error.apib'
+
+    describe 'and I try to load a file that does not exist from an existing server', ->
+      before (done) ->
+        execCommand wrongCmd, ->
+          done()
+
+      after ->
+        connectedToServer = null
+
+      it 'should connect to the right server', ->
+        assert.isTrue connectedToServer
+
+      it 'should send a GET to server at wrong URL', ->
+        assert.isTrue notFound
+
+      it 'should exit with status 1', ->
+        assert.equal exitStatus, 1
+
+      it 'should print error message to stderr', ->
+        assert.include stderr, 'Unable to load file from URL'
+        assert.include stderr, 'responded with status code 404'
+        assert.include stderr, 'not-found.apib'
+
+    describe 'and I try to load a file that actually is there', ->
+      before (done) ->
+        execCommand goodCmd, ->
+          done()
+
+      it 'should send a GET to the right server', ->
+        assert.isTrue connectedToServer
+
+      it 'should send a GET to server at good URL', ->
+        assert.isTrue fileFound
+
+      it 'should exit with status 0', ->
+        assert.equal exitStatus, 0
+
 
   describe "Arguments with existing blueprint and responding server", () ->
     describe "when executing the command and the server is responding as specified in the blueprint", () ->

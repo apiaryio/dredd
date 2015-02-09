@@ -5,6 +5,8 @@ glob = require 'glob'
 fs = require 'fs'
 protagonist = require 'protagonist'
 async = require 'async'
+request = require 'request'
+url = require 'url'
 
 logger = require './logger'
 options = require './options'
@@ -13,6 +15,8 @@ applyConfiguration = require './apply-configuration'
 handleRuntimeProblems = require './handle-runtime-problems'
 blueprintAstToRuntime = require './blueprint-ast-to-runtime'
 configureReporters = require './configure-reporters'
+
+CONNECTION_ERRORS = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
 
 class Dredd
   constructor: (config) ->
@@ -41,6 +45,9 @@ class Dredd
     # expand all globs
     expandGlobs = (cb) ->
       async.each config.options.path, (globToExpand, globCallback) ->
+        if /^http(s)?:\/\//.test globToExpand
+          config.files = config.files.concat globToExpand
+          return globCallback()
         glob globToExpand, (err, match) ->
           globCallback err if err
           config.files = config.files.concat match
@@ -58,15 +65,42 @@ class Dredd
 
     # load all files
     loadFiles = (cb) ->
-      async.each config.files, (file, loadCallback) ->
-        fs.readFile file, 'utf8', (loadingError, data) ->
-          return loadCallback(loadingError) if loadingError
-          config.data[file] = {raw: data, filename: file}
-          loadCallback()
+      # 6 parallel connections is a standard limit when connecting to one hostname,
+      # use the same limit of parallel connections for reading/downloading files
+      async.eachLimit config.files, 6, (fileUrlOrPath, loadCallback) ->
+        try
+          fileUrl = url.parse fileUrlOrPath
+        catch
+          fileUrl = null
 
-      , (err) =>
+        if fileUrl and fileUrl.protocol in ['http:', 'https:'] and fileUrl.host
+          downloadFile fileUrlOrPath, loadCallback
+        else
+          readLocalFile fileUrlOrPath, loadCallback
+
+      , (err) ->
         return callback(err, stats) if err
         cb()
+
+    downloadFile = (fileUrl, downloadCallback) ->
+      request.get
+        url: fileUrl
+        timeout: 5000
+        json: false
+      , (downloadError, res, body) ->
+        if downloadError
+          downloadCallback {message: "Error when loading file from URL '#{fileUrl}'. Is the provided URL correct?"}
+        else if not body or res.statusCode < 200 or res.statusCode >= 300
+          downloadCallback {message: "Unable to load file from URL '#{fileUrl}'. Server did not send any blueprint back and responded with status code #{res.statusCode}."}
+        else
+          config.data[fileUrl] = {raw: body, filename: fileUrl}
+          downloadCallback()
+
+    readLocalFile = (filePath, readCallback) ->
+      fs.readFile filePath, 'utf8', (readingError, data) ->
+        return readCallback(readingError) if readingError
+        config.data[filePath] = {raw: data, filename: filePath}
+        readCallback()
 
     # parse all file blueprints
     parseBlueprints = (cb) ->

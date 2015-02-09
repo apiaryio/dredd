@@ -28,6 +28,7 @@
     "optimist": "~0.6.1",
     "protagonist": "~0.17.1",
     "proxyquire": "^1.3.1",
+    "request": "",
     "setimmediate": "^1.0.2",
     "uri-template": "~1.0.0",
     "winston": "^0.9.0"
