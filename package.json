@@ -35,6 +35,7 @@
   "devDependencies": {
     "body-parser": "^1.10.2",
     "chai": "^1.10.0",
+    "clone": "",
     "codo": "2.0.9",
     "coffee-coverage": "~0.4.4",
     "coffee-errors": "~0.8.6",
