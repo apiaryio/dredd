@@ -187,6 +187,7 @@ class TransactionRunner
               gavel.validate real, transaction.expected, 'response', (error, result) ->
                 configuration.emitter.emit 'test error', error, test if error
                 message = ''
+                delete result['version']
                 for entity, data of result
                   for entityResult in data['results']
                     message += entity + ": " + entityResult['message'] + "\n"
