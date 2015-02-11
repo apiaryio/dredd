@@ -23,7 +23,7 @@
     "glob": "^4.3.5",
     "html": "~0.0.7",
     "htmlencode": "~0.0.4",
-    "marked": "~0.3.3",
+    "markdown-it": "^3.0.5",
     "node-uuid": "~1.4.2",
     "optimist": "~0.6.1",
     "protagonist": "~0.17.1",
