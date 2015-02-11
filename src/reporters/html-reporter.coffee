@@ -1,21 +1,11 @@
 {EventEmitter} = require 'events'
 fs = require 'fs'
 
-marked = require 'marked'
+md = require('markdown-it')()
 file = require 'file'
 
 logger = require './../logger'
 prettifyResponse = require './../prettify-response'
-
-marked.setOptions {
-  gfm: true
-  tables: true
-  breaks: true
-  pedantic: false
-  sanitize: true
-  smartLists: true
-  smartypants: true
-}
 
 class HtmlReporter extends EventEmitter
   constructor: (emitter, stats, tests, path, details) ->
@@ -46,9 +36,9 @@ class HtmlReporter extends EventEmitter
       @level++
       @buf += title('Dredd Tests') + "\n"
       callback()
-      
+
     emitter.on 'end', (callback) =>
-      html = marked @buf
+      html = md.render @buf
       fs.writeFile @path, html, (err) =>
         if err
           logger.error err
