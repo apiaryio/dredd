@@ -173,35 +173,40 @@ class TransactionRunner
 
           transaction['real'] = real
 
-          gavel.isValid real, transaction.expected, 'response', (error, isValid) ->
-            configuration.emitter.emit 'test error', error, test if error
+          gavel.isValid real, transaction.expected, 'response', (isValidError, isValid) ->
+            configuration.emitter.emit 'test error', isValidError, test if isValidError
+
+            test.start = test.start
+            test.title = transaction.id
+            test.actual = real
+            test.expected = transaction.expected
+            test.request = transaction.request
 
             if isValid
               test.status = "pass"
-              test.actual = real
-              test.expected = transaction.expected
-              test.request = transaction.request
-              configuration.emitter.emit 'test pass', test
-              return callback()
             else
-              gavel.validate real, transaction.expected, 'response', (error, result) ->
-                configuration.emitter.emit 'test error', error, test if error
-                message = ''
-                delete result['version']
-                for entity, data of result
-                  for entityResult in data['results']
-                    message += entity + ": " + entityResult['message'] + "\n"
+              test.status = "fail"
 
-                test.status = "fail"
-                test.title = transaction.id
-                test.message = message
-                test.actual = real
-                test.expected = transaction.expected
-                test.request = transaction.request
-                test.start = test.start
-                test.results = result
+            gavel.validate real, transaction.expected, 'response', (validateError, result) ->
+              if not isValidError and validateError
+                configuration.emitter.emit 'test error', validateError, test
+
+              message = ''
+
+              for resultKey, data of result
+                if resultKey isnt 'version'
+                  for entityResult in data['results']
+                    message += resultKey + ": " + entityResult['message'] + "\n"
+
+              test.message = message
+              test.results = result
+
+              if isValid
+                configuration.emitter.emit 'test pass', test
+              else
                 configuration.emitter.emit 'test fail', test
-                return callback()
+
+              return callback()
 
       transport = if transaction.protocol is 'https:' then https else http
       try

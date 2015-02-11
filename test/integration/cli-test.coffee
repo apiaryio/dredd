@@ -1,6 +1,8 @@
 {assert} = require('chai')
 {exec} = require('child_process')
 express = require 'express'
+clone = require 'clone'
+bodyParser = require 'body-parser'
 fs = require 'fs'
 
 PORT = '3333'
@@ -11,12 +13,16 @@ stdout = ''
 exitStatus = null
 requests = []
 
-execCommand = (cmd, callback) ->
+execCommand = (cmd, options = {}, callback) ->
   stderr = ''
   stdout = ''
   exitStatus = null
 
-  cli = exec CMD_PREFIX + cmd, (error, out, err) ->
+  if typeof options is 'function'
+    callback = options
+    options = undefined
+
+  cli = exec CMD_PREFIX + cmd, options, (error, out, err) ->
     stdout = out
     stderr = err
 
@@ -117,6 +123,62 @@ describe "Command line interface", () ->
 
   describe "when called with arguments", () ->
 
+    describe "when using reporter -r apiary", () ->
+
+      receivedRequest = null
+
+      before (done) ->
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --reporter apiary"
+
+        apiary = express()
+        app = express()
+
+        apiary.use bodyParser.json(size:'1mb')
+
+        apiary.post '/apis/*', (req, res) ->
+          if req.url.indexOf('/public/tests/steps') > -1
+            receivedRequest ?= req.body
+          res.type('json')
+          res.status(201).send
+            _id: '1234_id'
+            testRunId: '6789_testRunId'
+            reportUrl: 'http://url.me/test/run/1234_id'
+
+        apiary.all '*', (req, res) ->
+          res.type 'json'
+          res.status(200).send {}
+
+        app.get '/machines', (req, res) ->
+          res.setHeader 'Content-Type', 'application/json'
+          machine =
+            type: 'bulldozer'
+            name: 'willy'
+          response = [machine]
+          res.status(200).send response
+
+        server = app.listen PORT, () ->
+          server2 = apiary.listen (PORT+1), ->
+            env = clone process.env
+            env['APIARY_API_URL'] = "http://localhost:#{PORT+1}"
+            execCommand cmd, {env}, () ->
+              server2.close ->
+                server.close ->
+
+        server.on 'close', done
+
+      it 'should print using the new reporter', ()->
+        assert.include stdout, 'http://url.me/test/run/1234_id'
+
+      it 'should send results from gavel', ()->
+        assert.isObject receivedRequest
+        assert.deepProperty receivedRequest, 'resultData.request'
+        assert.deepProperty receivedRequest, 'resultData.realResponse'
+        assert.deepProperty receivedRequest, 'resultData.expectedResponse'
+        assert.deepProperty receivedRequest, 'resultData.result.body.validator'
+        assert.deepProperty receivedRequest, 'resultData.result.headers.validator'
+        assert.deepProperty receivedRequest, 'resultData.result.statusCode.validator'
+
+
     describe "when using additional reporters with -r", () ->
 
       recievedRequest = {}
@@ -141,9 +203,9 @@ describe "Command line interface", () ->
 
         server.on 'close', done
 
-        it 'should print using the new reporter', ()->
-          # nyan cat ears should exist in stdout
-          assert.ok stdout.indexOf '/\\_/\\' > -1
+      it 'should print using the new reporter', ()->
+        # nyan cat ears should exist in stdout
+        assert.ok stdout.indexOf '/\\_/\\' > -1
 
 
     describe 'when using an output path with -o', () ->
@@ -344,8 +406,8 @@ describe "Command line interface", () ->
 
           server.on 'close', done
 
-          it 'should not send the request request', () ->
-            assert.equal recievedRequest, {}
+        it 'should not send the request request', () ->
+          assert.deepEqual recievedRequest, {}
 
       describe 'when not blocking a request', () ->
 
