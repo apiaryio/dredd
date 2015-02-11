@@ -137,7 +137,7 @@ describe "Command line interface", () ->
 
         apiary.post '/apis/*', (req, res) ->
           if req.body and req.url.indexOf('/tests/steps') > -1
-            receivedRequest = clone(req.body, false)
+            receivedRequest ?= clone(req.body, false)
           res.type('json')
           res.status(201).send
             _id: '1234_id'
@@ -161,23 +161,22 @@ describe "Command line interface", () ->
             env = clone process.env, false
             env['APIARY_API_URL'] = "http://127.0.0.1:#{PORT+1}"
             execCommand cmd, {env}, () ->
-              server.close ->
+              server2.close ->
+                server.close ->
 
         server.on 'close', done
 
       it 'should print using the new reporter', ()->
         assert.include stdout, 'http://url.me/test/run/1234_id'
 
-      it 'should send results from gavel', (done) ->
-        server2.close ->
-          assert.isObject receivedRequest
-          assert.deepProperty receivedRequest, 'resultData.request'
-          assert.deepProperty receivedRequest, 'resultData.realResponse'
-          assert.deepProperty receivedRequest, 'resultData.expectedResponse'
-          assert.deepProperty receivedRequest, 'resultData.result.body.validator'
-          assert.deepProperty receivedRequest, 'resultData.result.headers.validator'
-          assert.deepProperty receivedRequest, 'resultData.result.statusCode.validator'
-          done()
+      it 'should send results from gavel', ()->
+        assert.isObject receivedRequest
+        assert.deepProperty receivedRequest, 'resultData.request'
+        assert.deepProperty receivedRequest, 'resultData.realResponse'
+        assert.deepProperty receivedRequest, 'resultData.expectedResponse'
+        assert.deepProperty receivedRequest, 'resultData.result.body.validator'
+        assert.deepProperty receivedRequest, 'resultData.result.headers.validator'
+        assert.deepProperty receivedRequest, 'resultData.result.statusCode.validator'
 
 
     describe "when using additional reporters with -r", () ->
