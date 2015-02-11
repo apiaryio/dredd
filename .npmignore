@@ -1,3 +1,5 @@
 src/
+.travis.yml
 .git*
 .vagrant
+.npmignore
