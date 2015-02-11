@@ -122,9 +122,9 @@ describe "Command line interface", () ->
         assert.equal exitStatus, 1
 
   describe "when called with arguments", () ->
-
     describe "when using reporter -r apiary", () ->
-
+      server = null
+      server2 = null
       receivedRequest = null
 
       before (done) ->
@@ -133,11 +133,11 @@ describe "Command line interface", () ->
         apiary = express()
         app = express()
 
-        apiary.use bodyParser.json(size:'1mb')
+        apiary.use bodyParser.json(size:'5mb')
 
         apiary.post '/apis/*', (req, res) ->
-          if req.url.indexOf('/public/tests/steps') > -1
-            receivedRequest ?= req.body
+          if req.body and req.url.indexOf('/tests/steps') > -1
+            receivedRequest ?= clone(req.body, false)
           res.type('json')
           res.status(201).send
             _id: '1234_id'
@@ -146,7 +146,7 @@ describe "Command line interface", () ->
 
         apiary.all '*', (req, res) ->
           res.type 'json'
-          res.status(200).send {}
+          res.send {}
 
         app.get '/machines', (req, res) ->
           res.setHeader 'Content-Type', 'application/json'
@@ -158,8 +158,8 @@ describe "Command line interface", () ->
 
         server = app.listen PORT, () ->
           server2 = apiary.listen (PORT+1), ->
-            env = clone process.env
-            env['APIARY_API_URL'] = "http://localhost:#{PORT+1}"
+            env = clone process.env, false
+            env['APIARY_API_URL'] = "http://127.0.0.1:#{PORT+1}"
             execCommand cmd, {env}, () ->
               server2.close ->
                 server.close ->
@@ -180,16 +180,12 @@ describe "Command line interface", () ->
 
 
     describe "when using additional reporters with -r", () ->
-
-      recievedRequest = {}
-
       before (done) ->
         cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -r nyan"
 
         app = express()
 
         app.get '/machines', (req, res) ->
-          recievedRequest = req
           res.setHeader 'Content-Type', 'application/json'
           machine =
             type: 'bulldozer'
@@ -209,16 +205,12 @@ describe "Command line interface", () ->
 
 
     describe 'when using an output path with -o', () ->
-
-      recievedRequest = {}
-
       before (done) ->
         cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -r junit -o test_file_output.xml"
 
         app = express()
 
         app.get '/machines', (req, res) ->
-          recievedRequest = req
           res.setHeader 'Content-Type', 'application/json'
           machine =
             type: 'bulldozer'
@@ -241,7 +233,7 @@ describe "Command line interface", () ->
 
     describe "when adding additional headers with -h", () ->
 
-      recievedRequest = {}
+      receivedRequest = {}
 
       before (done) ->
         cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -h Accept:application/json"
@@ -249,7 +241,7 @@ describe "Command line interface", () ->
         app = express()
 
         app.get '/machines', (req, res) ->
-          recievedRequest = req
+          receivedRequest = req
           res.setHeader 'Content-Type', 'application/json'
           machine =
             type: 'bulldozer'
@@ -264,12 +256,12 @@ describe "Command line interface", () ->
         server.on 'close', done
 
       it 'should have an additional header in the request', () ->
-        assert.ok recievedRequest.headers.accept is 'application/json'
+        assert.deepPropertyVal receivedRequest, 'headers.accept', 'application/json'
 
 
     describe "when adding basic auth credentials with -u", () ->
 
-      recievedRequest = {}
+      receivedRequest = {}
 
       before (done) ->
         cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -u username:password"
@@ -277,7 +269,7 @@ describe "Command line interface", () ->
         app = express()
 
         app.get '/machines', (req, res) ->
-          recievedRequest = req
+          receivedRequest = req
           res.setHeader 'Content-Type', 'application/json'
           machine =
             type: 'bulldozer'
@@ -292,23 +284,19 @@ describe "Command line interface", () ->
         server.on 'close', done
 
       it 'should have an authorization header in the request', () ->
-        assert.ok recievedRequest.headers.authorization
+        assert.ok receivedRequest.headers.authorization
 
       it 'should contain a base64 encoded string of the username and password', () ->
-        assert.ok recievedRequest.headers.authorization is 'Basic ' + new Buffer('username:password').toString('base64')
+        assert.ok receivedRequest.headers.authorization is 'Basic ' + new Buffer('username:password').toString('base64')
 
 
     describe "when sorting requests with -s", () ->
-
-      recievedRequest = {}
-
       before (done) ->
         cmd = "./bin/dredd ./test/fixtures/apiary.apib http://localhost:#{PORT} -s"
 
         app = express()
 
         app.get '/machines', (req, res) ->
-          recievedRequest = req
           res.setHeader 'Content-Type', 'application/json'
           machine =
             type: 'bulldozer'
@@ -353,16 +341,12 @@ describe "Command line interface", () ->
         assert.equal count, 2
 
     describe 'when showing details for all requests with -d', () ->
-
-      recievedRequest = {}
-
       before (done) ->
         cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -d"
 
         app = express()
 
         app.get '/machines', (req, res) ->
-          recievedRequest = req
           res.setHeader 'Content-Type', 'application/json'
           machine =
             type: 'bulldozer'
@@ -384,7 +368,7 @@ describe "Command line interface", () ->
 
       describe 'when blocking a request', () ->
 
-        recievedRequest = {}
+        receivedRequest = {}
 
         before (done) ->
           cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -m POST"
@@ -392,7 +376,7 @@ describe "Command line interface", () ->
           app = express()
 
           app.get '/machines', (req, res) ->
-            recievedRequest = req
+            receivedRequest = req
             res.setHeader 'Content-Type', 'application/json'
             machine =
               type: 'bulldozer'
@@ -407,11 +391,11 @@ describe "Command line interface", () ->
           server.on 'close', done
 
         it 'should not send the request request', () ->
-          assert.deepEqual recievedRequest, {}
+          assert.deepEqual receivedRequest, {}
 
       describe 'when not blocking a request', () ->
 
-        recievedRequest = {}
+        receivedRequest = {}
 
         before (done) ->
           cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -m GET"
@@ -419,7 +403,7 @@ describe "Command line interface", () ->
           app = express()
 
           app.get '/machines', (req, res) ->
-            recievedRequest = req
+            receivedRequest = req
             res.setHeader 'Content-Type', 'application/json'
             machine =
               type: 'bulldozer'
@@ -434,7 +418,7 @@ describe "Command line interface", () ->
           server.on 'close', done
 
         it 'should allow the request to go through', () ->
-          assert.ok recievedRequest.headers
+          assert.ok receivedRequest.headers
 
     describe "when filtering transaction to particular name with -x or --only", () ->
 
@@ -478,16 +462,12 @@ describe "Command line interface", () ->
         assert.equal exitStatus, 0
 
     describe 'when suppressing color with --no-color', () ->
-
-      recievedRequest = {}
-
       before (done) ->
         cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color"
 
         app = express()
 
         app.get '/machines', (req, res) ->
-          recievedRequest = req
           res.setHeader 'Content-Type', 'application/json'
           machine =
             type: 'bulldozer'
@@ -507,16 +487,12 @@ describe "Command line interface", () ->
         assert.include stdout, 'pass:'
 
     describe 'when suppressing color with --color false', () ->
-
-      recievedRequest = {}
-
       before (done) ->
         cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --color false"
 
         app = express()
 
         app.get '/machines', (req, res) ->
-          recievedRequest = req
           res.setHeader 'Content-Type', 'application/json'
           machine =
             type: 'bulldozer'
@@ -536,16 +512,12 @@ describe "Command line interface", () ->
         assert.include stdout, 'pass:'
 
     describe 'when setting the log output level with -l', () ->
-
-      recievedRequest = {}
-
       before (done) ->
         cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -l=error"
 
         app = express()
 
         app.get '/machines', (req, res) ->
-          recievedRequest = req
           res.setHeader 'Content-Type', 'application/json'
           machine =
             type: 'bulldozer'
@@ -564,16 +536,12 @@ describe "Command line interface", () ->
         assert.ok stdout.indexOf 'complete' is -1
 
     describe 'when showing timestamps with -t', () ->
-
-      recievedRequest = {}
-
       before (done) ->
         cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -t"
 
         app = express()
 
         app.get '/machines', (req, res) ->
-          recievedRequest = req
           res.setHeader 'Content-Type', 'application/json'
           machine =
             type: 'bulldozer'
@@ -593,7 +561,7 @@ describe "Command line interface", () ->
 
   describe 'when loading hooks with --hookfiles', () ->
 
-    recievedRequest = {}
+    receivedRequest = {}
 
     before (done) ->
       cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/*_hooks.*"
@@ -601,7 +569,7 @@ describe "Command line interface", () ->
       app = express()
 
       app.get '/machines', (req, res) ->
-        recievedRequest = req
+        receivedRequest = req
         res.setHeader 'Content-Type', 'application/json'
         machine =
           type: 'bulldozer'
@@ -616,13 +584,10 @@ describe "Command line interface", () ->
       server.on 'close', done
 
     it 'should modify the transaction with hooks', () ->
-      assert.equal recievedRequest.headers['header'], '123232323'
+      assert.equal receivedRequest.headers['header'], '123232323'
 
   describe 'when describing events in hookfiles', () ->
-
-    recievedRequest = {}
     output = {}
-
     containsLine = (str, expected) ->
       lines = str.split('\n')
       for line in lines
@@ -636,7 +601,6 @@ describe "Command line interface", () ->
       app = express()
 
       app.get '/machines', (req, res) ->
-        recievedRequest = req
         res.setHeader 'Content-Type', 'application/json'
         machine =
           type: 'bulldozer'
@@ -657,10 +621,7 @@ describe "Command line interface", () ->
       assert.ok containsLine(output.stdout, 'afterAll')
 
   describe 'when describing both hooks and events in hookfiles', () ->
-
-    recievedRequest = {}
     output = {}
-
     getResults = (str) ->
       ret = []
       lines = str.split('\n')
@@ -675,7 +636,6 @@ describe "Command line interface", () ->
       app = express()
 
       app.get '/machines', (req, res) ->
-        recievedRequest = req
         res.setHeader 'Content-Type', 'application/json'
         machine =
           type: 'bulldozer'
@@ -800,7 +760,7 @@ describe "Command line interface", () ->
         assert.equal exitStatus, 0
 
       it 'server should receive 3 requests', () ->
-        assert.equal receivedRequests.length, 3
+        assert.lengthOf receivedRequests, 3
 
 
   describe "when called with additional --path argument which is a glob", () ->
