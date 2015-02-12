@@ -180,6 +180,78 @@ describe 'Dredd class', () ->
           assert.ok error
           done()
 
+    describe 'when configuration contains directInput object with "filename" as key, and an API Blueprint string as value', () ->
+      beforeEach ->
+        configuration =
+          server: 'http://localhost:3000/'
+          directInput: {
+            'direct': """
+              # API name
+
+              GET /url
+              + Response 200 (application/json)
+
+                      {"a":"b"}'
+              """
+          }
+          options:
+            silent: true
+        dredd = new Dredd(configuration)
+        sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+          callback()
+
+      afterEach () ->
+        dredd.runner.executeTransaction.restore()
+
+      it 'should not expand any glob patterns', (done) ->
+        dredd.run (error) ->
+          return done error if error
+          assert.lengthOf dredd.configuration.files, 0
+          done()
+
+      it 'should pass data contents to config', (done) ->
+        dredd.run (error) ->
+          return done error if error
+          assert.isObject dredd.configuration.data
+          assert.deepPropertyVal dredd, 'configuration.data.direct.filename', 'direct'
+          assert.deepProperty    dredd, 'configuration.data.direct.raw'
+          done()
+
+      it 'should parse passed data contents', (done) ->
+        dredd.run (error) ->
+          return done error if error
+          assert.deepProperty dredd, 'configuration.data.direct.parsed'
+          done()
+
+      describe 'and I also set configuration.options.path to an existing file', ->
+        localdredd = null
+        beforeEach ->
+          configuration.options ?= {}
+          configuration.options.path = ['./test/fixtures/apiary.apib']
+          localdredd = new Dredd(configuration)
+          sinon.stub localdredd.runner, 'executeTransaction', (transaction, callback) ->
+            callback()
+
+        afterEach ->
+          localdredd.runner.executeTransaction.restore()
+
+        it 'should fill configuration data with directInput and one file at that path', (done) ->
+          localdredd.run (error) ->
+            return done error if error
+            assert.lengthOf    localdredd.configuration.files, 1
+            assert.isObject    localdredd.configuration.data
+            assert.lengthOf    Object.keys(localdredd.configuration.data), 2
+            assert.property    localdredd.configuration.data, './test/fixtures/apiary.apib'
+            assert.propertyVal localdredd.configuration.data['./test/fixtures/apiary.apib'], 'filename', './test/fixtures/apiary.apib'
+            assert.property    localdredd.configuration.data['./test/fixtures/apiary.apib'], 'raw'
+            assert.property    localdredd.configuration.data['./test/fixtures/apiary.apib'], 'parsed'
+            assert.deepPropertyVal localdredd, 'configuration.data.direct.filename', 'direct'
+            assert.deepProperty    localdredd, 'configuration.data.direct.raw'
+            assert.deepProperty    localdredd, 'configuration.data.direct.parsed'
+            done()
+
+
+
   describe 'when Blueprint parsing error', () ->
 
     before () ->
