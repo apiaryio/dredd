@@ -34,9 +34,23 @@ class Dredd
     config = @configuration
     stats = @stats
 
+    configDataIsEmpty = true
+
     config.files = []
     config.data = {}
     runtimes = {}
+
+    passedConfigData = {}
+
+    for own key, val of config.directInput or {}
+      configDataIsEmpty = false
+      passedConfigData[key] = {
+        filename: key
+        raw: val
+      }
+
+    if not configDataIsEmpty
+      config.data = passedConfigData
 
     # expand all globs
     expandGlobs = (cb) ->
@@ -48,7 +62,9 @@ class Dredd
 
       , (err) =>
         return callback(err, stats) if err
-        return callback({message: "Blueprint file or files not found on path: '#{config.options.path}'"}, stats) if config.files.length == 0
+
+        if configDataIsEmpty and config.files.length == 0
+          return callback({message: "Blueprint file or files not found on path: '#{config.options.path}'"}, stats)
 
         # remove duplicate filenames
         config.files = config.files.filter (item, pos) ->
