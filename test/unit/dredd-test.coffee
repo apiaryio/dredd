@@ -180,12 +180,24 @@ describe 'Dredd class', () ->
           assert.ok error
           done()
 
-    describe 'when configuration contains directInput object with "filename" as key, and an API Blueprint string as value', () ->
+    describe 'when configuration contains data object with "filename" as key, and an API Blueprint string as value', () ->
       beforeEach ->
         configuration =
           server: 'http://localhost:3000/'
-          directInput: {
-            'direct': """
+          options:
+            silent: true
+          data:
+            testingDirectObject:
+              filename: 'testingDirectObjectFilename'
+              raw: """
+                # API name
+
+                GET /url
+                + Response 200 (application/json)
+
+                        {"a":"b"}'
+                """
+            testingDirectBlueprintString: """
               # API name
 
               GET /url
@@ -193,9 +205,6 @@ describe 'Dredd class', () ->
 
                       {"a":"b"}'
               """
-          }
-          options:
-            silent: true
         dredd = new Dredd(configuration)
         sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
           callback()
@@ -213,14 +222,18 @@ describe 'Dredd class', () ->
         dredd.run (error) ->
           return done error if error
           assert.isObject dredd.configuration.data
-          assert.deepPropertyVal dredd, 'configuration.data.direct.filename', 'direct'
-          assert.deepProperty    dredd, 'configuration.data.direct.raw'
+          assert.notDeepProperty dredd, 'configuration.data.testingDirectObject'
+          assert.deepPropertyVal dredd, 'configuration.data.testingDirectObjectFilename.filename', 'testingDirectObjectFilename'
+          assert.deepProperty    dredd, 'configuration.data.testingDirectObjectFilename.raw'
+          assert.deepPropertyVal dredd, 'configuration.data.testingDirectBlueprintString.filename', 'testingDirectBlueprintString'
+          assert.deepProperty    dredd, 'configuration.data.testingDirectBlueprintString.raw'
           done()
 
       it 'should parse passed data contents', (done) ->
         dredd.run (error) ->
           return done error if error
-          assert.deepProperty dredd, 'configuration.data.direct.parsed'
+          assert.deepProperty dredd, 'configuration.data.testingDirectObjectFilename.parsed'
+          assert.deepProperty dredd, 'configuration.data.testingDirectBlueprintString.parsed'
           done()
 
       describe 'and I also set configuration.options.path to an existing file', ->
@@ -235,19 +248,22 @@ describe 'Dredd class', () ->
         afterEach ->
           localdredd.runner.executeTransaction.restore()
 
-        it 'should fill configuration data with directInput and one file at that path', (done) ->
+        it 'should fill configuration data with data and one file at that path', (done) ->
           localdredd.run (error) ->
             return done error if error
             assert.lengthOf    localdredd.configuration.files, 1
             assert.isObject    localdredd.configuration.data
-            assert.lengthOf    Object.keys(localdredd.configuration.data), 2
+            assert.lengthOf    Object.keys(localdredd.configuration.data), 3
             assert.property    localdredd.configuration.data, './test/fixtures/apiary.apib'
             assert.propertyVal localdredd.configuration.data['./test/fixtures/apiary.apib'], 'filename', './test/fixtures/apiary.apib'
             assert.property    localdredd.configuration.data['./test/fixtures/apiary.apib'], 'raw'
             assert.property    localdredd.configuration.data['./test/fixtures/apiary.apib'], 'parsed'
-            assert.deepPropertyVal localdredd, 'configuration.data.direct.filename', 'direct'
-            assert.deepProperty    localdredd, 'configuration.data.direct.raw'
-            assert.deepProperty    localdredd, 'configuration.data.direct.parsed'
+            assert.deepPropertyVal localdredd, 'configuration.data.testingDirectObjectFilename.filename', 'testingDirectObjectFilename'
+            assert.deepProperty    localdredd, 'configuration.data.testingDirectObjectFilename.raw'
+            assert.deepProperty    localdredd, 'configuration.data.testingDirectObjectFilename.parsed'
+            assert.deepPropertyVal localdredd, 'configuration.data.testingDirectBlueprintString.filename', 'testingDirectBlueprintString'
+            assert.deepProperty    localdredd, 'configuration.data.testingDirectBlueprintString.raw'
+            assert.deepProperty    localdredd, 'configuration.data.testingDirectBlueprintString.parsed'
             done()
 
 

@@ -17,6 +17,7 @@
   "dependencies": {
     "advisable": "~0.2.0",
     "async": "~0.9.0",
+    "clone": "^0.2.x",
     "coffee-script": "^1.9.0",
     "file": "~0.2.2",
     "gavel": "~0.4.0",
@@ -35,7 +36,6 @@
   "devDependencies": {
     "body-parser": "^1.10.2",
     "chai": "^1.10.0",
-    "clone": "^0.x",
     "codo": "2.0.9",
     "coffee-coverage": "~0.4.4",
     "coffee-errors": "~0.8.6",
