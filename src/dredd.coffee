@@ -3,6 +3,7 @@ require 'setimmediate'
 
 glob = require 'glob'
 fs = require 'fs'
+clone = require 'clone'
 protagonist = require 'protagonist'
 async = require 'async'
 
@@ -15,7 +16,10 @@ blueprintAstToRuntime = require './blueprint-ast-to-runtime'
 configureReporters = require './configure-reporters'
 
 class Dredd
-  constructor: (config) ->
+  constructor: (configOrigin) ->
+    # do not touch passed configuration, rather work on a clone of it
+    # (e.g prevents changing references)
+    config = clone configOrigin
     @tests = []
     @stats =
         tests: 0
@@ -34,9 +38,29 @@ class Dredd
     config = @configuration
     stats = @stats
 
-    config.files = []
-    config.data = {}
+    configDataIsEmpty = true
+
+    config.files ?= []
+    config.data ?= {}
     runtimes = {}
+
+    passedConfigData = {}
+
+    for own key, val of config.data or {}
+      configDataIsEmpty = false
+      if (typeof val is 'string')
+        passedConfigData[key] = {
+          filename: key
+          raw: val
+        }
+      else if (typeof val is 'object') and val.raw and val.filename
+        passedConfigData[val.filename] = {
+          filename: val.filename
+          raw: val.raw
+        }
+
+    if not configDataIsEmpty
+      config.data = passedConfigData
 
     # expand all globs
     expandGlobs = (cb) ->
@@ -48,7 +72,9 @@ class Dredd
 
       , (err) =>
         return callback(err, stats) if err
-        return callback({message: "Blueprint file or files not found on path: '#{config.options.path}'"}, stats) if config.files.length == 0
+
+        if configDataIsEmpty and config.files.length == 0
+          return callback({message: "Blueprint file or files not found on path: '#{config.options.path}'"}, stats)
 
         # remove duplicate filenames
         config.files = config.files.filter (item, pos) ->
