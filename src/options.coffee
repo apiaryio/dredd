@@ -81,7 +81,7 @@ options =
 
   path:
     alias: "p"
-    description: "Additional blueprint paths. Can be used multiple times with glob pattern."
+    description: "Additional blueprint paths or URLs. Can be used multiple times with glob pattern for paths."
     default: []
 
   help:

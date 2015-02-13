@@ -7,7 +7,7 @@ var Dredd = require('../lib/dredd');
 var version = parsePackageJson(path.join(__dirname, '../package.json'));
 
 var argv = optimist
-    .usage("Usage: \n  dredd <path to blueprint> <api_endpoint> [OPTIONS]" +
+    .usage("Usage: \n  dredd <path or URL to blueprint> <api_endpoint> [OPTIONS]" +
     "\n\nExample: \n  " + "dredd ./apiary.md http://localhost:3000 --dry-run")
     .options(Dredd.options)
     .wrap(80)
