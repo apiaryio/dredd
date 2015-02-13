@@ -141,7 +141,7 @@ If `beforeAll` and `afterAll` are called multiple times, the callbacks are execu
 
     $ dredd --help
     Usage:
-      dredd <path to blueprint> <api_endpoint> [OPTIONS]
+      dredd <path or URL to blueprint> <api_endpoint> [OPTIONS]
 
     Example:
       dredd ./apiary.md http://localhost:3000 --dry-run
@@ -193,8 +193,8 @@ If `beforeAll` and `afterAll` are called multiple times, the callbacks are execu
                                                                     [default: false]
       --silent, -q         Silences commandline output.
                                                                     [default: false]
-      --path, -p           Additional blueprint paths. Can be used multiple times
-                           with glob pattern.                          [default: []]
+      --path, -p           Additional blueprint paths or URLs. Can be used multiple
+                           times with glob pattern for paths.          [default: []]
       --help               Show usage information.
 
       --version            Show version number.
