@@ -4,6 +4,7 @@ proxyquire = require('proxyquire').noCallThru()
 
 fsStub = require 'fs'
 protagonistStub = require 'protagonist'
+requestStub = require 'request'
 loggerStub = require '../../src/logger'
 
 blueprintAstToRuntime = require '../../src/blueprint-ast-to-runtime'
@@ -11,6 +12,7 @@ blueprintAstToRuntimeStub = sinon.spy blueprintAstToRuntime
 
 Dredd = proxyquire '../../src/dredd', {
   'protagonist': protagonistStub
+  'request': requestStub
   './blueprint-ast-to-runtime': blueprintAstToRuntimeStub
   'fs': fsStub
   './logger': loggerStub
@@ -34,8 +36,15 @@ describe 'Dredd class', () ->
       configuration =
         server: 'http://localhost:3000/'
         blueprintPath: './test/fixtures/apiary.apib'
+       sinon.stub loggerStub, 'info', ->
+       sinon.stub loggerStub, 'log', ->
+
+    after ->
+      loggerStub.info.restore()
+      loggerStub.log.restore()
 
     it 'should not explode and run executeTransaction', (done) ->
+
       fn = () ->
         dredd = new Dredd(configuration)
         sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
@@ -180,6 +189,7 @@ describe 'Dredd class', () ->
           assert.ok error
           done()
 
+
     describe 'when configuration contains data object with "filename" as key, and an API Blueprint string as value', () ->
       beforeEach ->
         configuration =
@@ -266,6 +276,134 @@ describe 'Dredd class', () ->
             assert.deepProperty    localdredd, 'configuration.data.testingDirectBlueprintString.parsed'
             done()
 
+
+    describe 'when paths are specified as a mix of URLs and a glob path', () ->
+      blueprintCode = null
+      before (done) ->
+        configuration =
+          server: 'http://localhost:3000/'
+          options:
+            silent: true
+            path: ['http://some.path.to/file.apib', 'https://another.path.to/apiary.apib', './test/fixtures/multifile/*.apib']
+        dredd = new Dredd(configuration)
+        fsStub.readFile './test/fixtures/single-get.apib', 'utf8', (err, content) ->
+          blueprintCode = content.toString()
+          done err
+
+      beforeEach () ->
+        sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+          callback()
+
+      afterEach () ->
+        dredd.runner.executeTransaction.restore()
+
+      describe 'when all URLs can be downloaded', ->
+        before ->
+          sinon.stub requestStub, 'get', (receivedArgs = {}, cb) ->
+            cb null, {statusCode:200}, blueprintCode
+
+        after ->
+          requestStub.get.restore()
+
+        it 'should expand glob pattern and resolved paths should be unique', (done) ->
+          dredd.run (error) ->
+            return done error if error
+            assert.lengthOf dredd.configuration.files, 5
+            assert.sameMembers dredd.configuration.files, [
+              'http://some.path.to/file.apib'
+              'https://another.path.to/apiary.apib'
+              './test/fixtures/multifile/message.apib'
+              './test/fixtures/multifile/greeting.apib'
+              './test/fixtures/multifile/name.apib'
+            ]
+            done()
+
+        it 'should remove globs from config', (done) ->
+          dredd.run (error) ->
+            return done error if error
+            assert.notInclude dredd.configuration.files, './test/fixtures/multifile/*.apib'
+            done()
+
+        it 'should load file contents on paths to config and parse these files', (done) ->
+          dredd.run (error) ->
+            return done error if error
+            assert.isObject dredd.configuration.data
+            assert.property dredd.configuration.data, './test/fixtures/multifile/greeting.apib'
+            assert.property dredd.configuration.data, 'http://some.path.to/file.apib'
+            assert.property dredd.configuration.data, 'https://another.path.to/apiary.apib'
+
+            assert.isObject dredd.configuration.data['./test/fixtures/multifile/name.apib']
+            assert.property dredd.configuration.data['./test/fixtures/multifile/name.apib'], 'filename'
+            assert.property dredd.configuration.data['./test/fixtures/multifile/name.apib'], 'raw'
+            assert.property dredd.configuration.data['./test/fixtures/multifile/name.apib'], 'parsed'
+
+            assert.isObject dredd.configuration.data['./test/fixtures/multifile/message.apib']
+            assert.property dredd.configuration.data['./test/fixtures/multifile/message.apib'], 'filename'
+            assert.property dredd.configuration.data['./test/fixtures/multifile/message.apib'], 'raw'
+            assert.property dredd.configuration.data['./test/fixtures/multifile/message.apib'], 'parsed'
+
+            assert.isObject dredd.configuration.data['./test/fixtures/multifile/greeting.apib']
+            assert.property dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'filename'
+            assert.property dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'raw'
+            assert.property dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'parsed'
+
+            assert.isObject dredd.configuration.data['http://some.path.to/file.apib']
+            assert.property dredd.configuration.data['http://some.path.to/file.apib'], 'filename'
+            assert.property dredd.configuration.data['http://some.path.to/file.apib'], 'raw'
+            assert.property dredd.configuration.data['http://some.path.to/file.apib'], 'parsed'
+
+            assert.isObject dredd.configuration.data['https://another.path.to/apiary.apib']
+            assert.property dredd.configuration.data['https://another.path.to/apiary.apib'], 'filename'
+            assert.property dredd.configuration.data['https://another.path.to/apiary.apib'], 'raw'
+            assert.property dredd.configuration.data['https://another.path.to/apiary.apib'], 'parsed'
+            done()
+
+      describe 'when an URL for one blueprint returns 404 not-found', ->
+        before ->
+          sinon.stub requestStub, 'get', (receivedArgs = {}, cb) ->
+            if receivedArgs?.url is 'https://another.path.to/apiary.apib'
+              return cb null, {statusCode: 404}, 'Page Not Found'
+            cb null, {statusCode:200}, blueprintCode
+
+        after ->
+          requestStub.get.restore()
+
+        it 'should exit with an error', (done) ->
+          dredd.run (error) ->
+            assert.ok error
+            assert.isObject error
+            assert.property error, 'message'
+            assert.include error.message, 'Unable to load file from URL'
+            done()
+
+        it 'should not execute any transaction', (done) ->
+          dredd.run () ->
+            assert.notOk dredd.runner.executeTransaction.called
+            done()
+
+      describe 'when an URL for one blueprint is unreachable (erroneous)', ->
+        before ->
+          sinon.stub requestStub, 'get', (receivedArgs = {}, cb) ->
+            if receivedArgs?.url is 'http://some.path.to/file.apib'
+              # server not found on
+              return cb {code: 'ENOTFOUND'}
+            cb null, {statusCode:200}, blueprintCode
+
+        after ->
+          requestStub.get.restore()
+
+        it 'should exit with an error', (done) ->
+          dredd.run (error) ->
+            assert.ok error
+            assert.isObject error
+            assert.property error, 'message'
+            assert.include error.message, 'Error when loading file from URL'
+            done()
+
+        it 'should not execute any transaction', (done) ->
+          dredd.run () ->
+            assert.notOk dredd.runner.executeTransaction.called
+            done()
 
 
   describe 'when Blueprint parsing error', () ->
