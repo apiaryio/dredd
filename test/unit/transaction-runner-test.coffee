@@ -405,3 +405,50 @@ describe 'TransactionRunner', ()->
         runner.executeTransaction transaction, () ->
           assert.ok server.isDone()
           done()
+
+  describe 'executeTransaction(transaction, callback) multipart', () ->
+
+    beforeEach () ->
+    multiPartTransaction =
+        name: 'Group Machine > Machine > Post Message> Bogus example name'
+        id: 'POST /machines/message'
+        host: 'localhost'
+        port: '3000'
+        request:
+          body: '\n--BOUNDARY \ncontent-disposition: form-data; name="mess12"\n\n{"message":"mess1"}\n--BOUNDARY\n\nContent-Disposition: form-data; name="mess2"\n\n{"message":"mess1"}\n--BOUNDARY--'
+          headers:
+            'Content-Type': 'multipart/form-data; boundary=BOUNDARY'
+            'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)'
+            'Content-Length': 180
+          uri: '/machines/message'
+          method: 'POST'
+        expected:
+          headers:
+            'content-type': 'text/htm'
+        body: ''
+        status: '204'
+        origin:
+          resourceGroupName: 'Group Machine'
+          resourceName: 'Machine'
+          actionName: 'Post Message'
+          exampleName: 'Bogus example name'
+        fullPath: '/machines/message'
+        protocol: 'http:'
+
+    describe 'when multipart body request', () ->
+
+      parsedBody = '\r\n--BOUNDARY \r\ncontent-disposition: form-data; name="mess12"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY\r\n\r\nContent-Disposition: form-data; name="mess2"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY--'
+      beforeEach () ->
+        server = nock('http://localhost:3000').
+        post('/machines/message').
+        reply 204
+        configuration.server = 'http://localhost:3000'
+
+      afterEach () ->
+        nock.cleanAll()
+
+      it 'should replace line feed in body', (done) ->
+        runner.executeTransaction multiPartTransaction, () ->
+          assert.ok server.isDone()
+          assert.equal multiPartTransaction['request']['body'], parsedBody, 'Body'
+          done()

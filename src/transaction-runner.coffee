@@ -17,7 +17,7 @@ logger = require './logger'
 
 
 String::startsWith = (str) ->
-    return this.slice(0, str.length) is str
+  return this.slice(0, str.length) is str
 
 class TransactionRunner
   constructor: (@configuration) ->
@@ -209,6 +209,9 @@ class TransactionRunner
               return callback()
 
       transport = if transaction.protocol is 'https:' then https else http
+      if transaction.request['body'] and @isMultipart requestOptions
+        @replaceLineFeedInBody transaction, requestOptions
+
       try
         req = transport.request requestOptions, handleRequest
         req.write transaction.request['body'] if transaction.request['body'] != ''
@@ -216,5 +219,14 @@ class TransactionRunner
       catch error
         configuration.emitter.emit 'test error', error, test if error
         return callback()
+
+  isMultipart: (requestOptions) =>
+    requestOptions['headers']?['Content-Type']?.indexOf("multipart") > -1
+
+  replaceLineFeedInBody: (transaction, requestOptions) =>
+    transaction.request['body'] = transaction.request['body'].replace(/\n/g, '\r\n')
+    transaction.request['headers']['Content-Length'] = transaction.request['body'].length
+    requestOptions.headers = transaction.request['headers']
+
 
 module.exports = TransactionRunner
