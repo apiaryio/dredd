@@ -34,8 +34,15 @@ describe 'Dredd class', () ->
       configuration =
         server: 'http://localhost:3000/'
         blueprintPath: './test/fixtures/apiary.apib'
+       sinon.stub loggerStub, 'info', ->
+       sinon.stub loggerStub, 'log', ->
+
+    after ->
+      loggerStub.info.restore()
+      loggerStub.log.restore()
 
     it 'should not explode and run executeTransaction', (done) ->
+
       fn = () ->
         dredd = new Dredd(configuration)
         sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
