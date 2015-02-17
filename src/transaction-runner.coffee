@@ -17,7 +17,7 @@ logger = require './logger'
 
 
 String::startsWith = (str) ->
-    return this.slice(0, str.length) is str
+  return this.slice(0, str.length) is str
 
 class TransactionRunner
   constructor: (@configuration) ->
@@ -113,11 +113,11 @@ class TransactionRunner
     # Add length of body if no Content-Length present
     # Doing here instead of in configureTransaction, because request body can be edited in before hook
 
-    caseInsensitiveMap = {}
+    caseInsensitiveRequestHeadersMap = {}
     for key, value of transaction.request.headers
-      caseInsensitiveMap[key.toLowerCase()] = key
+      caseInsensitiveRequestHeadersMap[key.toLowerCase()] = key
 
-    if not caseInsensitiveMap['content-length'] and transaction.request['body'] != ''
+    if not caseInsensitiveRequestHeadersMap['content-length'] and transaction.request['body'] != ''
       transaction.request.headers['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
 
     requestOptions =
@@ -209,6 +209,9 @@ class TransactionRunner
               return callback()
 
       transport = if transaction.protocol is 'https:' then https else http
+      if transaction.request['body'] and @isMultipart requestOptions
+        @replaceLineFeedInBody transaction, requestOptions
+
       try
         req = transport.request requestOptions, handleRequest
         req.write transaction.request['body'] if transaction.request['body'] != ''
@@ -216,5 +219,18 @@ class TransactionRunner
       catch error
         configuration.emitter.emit 'test error', error, test if error
         return callback()
+
+  isMultipart: (requestOptions) =>
+    caseInsensitiveRequestHeaders = {}
+    for key, value of requestOptions.headers
+      caseInsensitiveRequestHeaders[key.toLowerCase()] = value
+    caseInsensitiveRequestHeaders['content-type']?.indexOf("multipart") > -1
+
+  replaceLineFeedInBody: (transaction, requestOptions) =>
+    if transaction.request['body'].indexOf('\r\n') == -1
+      transaction.request['body'] = transaction.request['body'].replace(/\n/g, '\r\n')
+      transaction.request['headers']['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
+      requestOptions.headers = transaction.request['headers']
+
 
 module.exports = TransactionRunner
