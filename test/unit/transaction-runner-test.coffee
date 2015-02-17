@@ -505,6 +505,23 @@ describe 'TransactionRunner', ()->
           assert.include multiPartTransaction['request']['body'], "\r\n"
           done()
 
+    describe 'when multipart header in request, but body already has some CR (added in hooks e.g.s)', () ->
+      beforeEach () ->
+        server = nock('http://localhost:3000').
+        post('/machines/message').
+        reply 204
+        configuration.server = 'http://localhost:3000'
+        multiPartTransaction['request']['body'] = '\r\n--BOUNDARY \r\ncontent-disposition: form-data; name="mess12"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY\r\n\r\nContent-Disposition: form-data; name="mess2"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY--'
+
+      afterEach () ->
+        nock.cleanAll()
+
+      it 'should not add CR again', (done) ->
+        runner.executeTransaction multiPartTransaction, () ->
+          assert.ok server.isDone()
+          assert.notInclude multiPartTransaction['request']['body'], "\r\r"
+          done()
+
     describe 'when multipart header is not in request', () ->
       beforeEach () ->
         server = nock('http://localhost:3000').

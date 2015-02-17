@@ -227,9 +227,10 @@ class TransactionRunner
     caseInsensitiveRequestHeaders['content-type']?.indexOf("multipart") > -1
 
   replaceLineFeedInBody: (transaction, requestOptions) =>
-    transaction.request['body'] = transaction.request['body'].replace(/\n/g, '\r\n')
-    transaction.request['headers']['Content-Length'] = transaction.request['body'].length
-    requestOptions.headers = transaction.request['headers']
+    if transaction.request['body'].indexOf('\r\n') == -1
+      transaction.request['body'] = transaction.request['body'].replace(/\n/g, '\r\n')
+      transaction.request['headers']['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
+      requestOptions.headers = transaction.request['headers']
 
 
 module.exports = TransactionRunner
