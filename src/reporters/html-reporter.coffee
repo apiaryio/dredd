@@ -19,13 +19,13 @@ class HtmlReporter extends EventEmitter
     @details = details
     @configureEmitter emitter
 
-  sanitizedPath: (path) =>
+  sanitizedPath: (path) ->
     filePath = if path? then file.path.abspath(path) else file.path.abspath("./report.html")
     if fs.existsSync(filePath)
       logger.info "File exists at #{filePath}, will be overwritten..."
     filePath
 
-  configureEmitter: (emitter) =>
+  configureEmitter: (emitter) ->
 
     title = (str) =>
       Array(@level).join("#") + " " + str
@@ -39,7 +39,7 @@ class HtmlReporter extends EventEmitter
 
     emitter.on 'end', (callback) =>
       html = md.render @buf
-      fs.writeFile @path, html, (err) =>
+      fs.writeFile @path, html, (err) ->
         if err
           logger.error err
         callback()

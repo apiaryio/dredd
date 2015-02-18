@@ -78,14 +78,14 @@ class ApiaryReporter
     emitter.on 'test pass', (test) =>
       data = @_transformTestToReporter test
       path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
-      @_performRequest path, 'POST', data, (error, response, parsedBody) =>
+      @_performRequest path, 'POST', data, (error, response, parsedBody) ->
         if error
           logger.error error
 
     emitter.on 'test fail', (test) =>
       data = @_transformTestToReporter test
       path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
-      @_performRequest path, 'POST', data, (error, response, parsedBody) =>
+      @_performRequest path, 'POST', data, (error, response, parsedBody) ->
         if error
           logger.error error
 
@@ -120,18 +120,18 @@ class ApiaryReporter
   _performRequest: (path, method, body, callback) =>
     buffer = ""
 
-    handleRequest = (res) ->
-      res.on 'data', (chunk) ->
+    handleRequest = (res) =>
+      res.on 'data', (chunk) =>
         if @verbose
           console.log 'REST Reporter HTTPS Response chunk: ' + chunk
         buffer = buffer + chunk
 
-      res.on 'error', (error) ->
+      res.on 'error', (error) =>
         if @verbose
           console.log 'REST Reporter HTTPS Response error.'
         return callback error, req, res
 
-      res.on 'end', () =>
+      res.on 'end', =>
         if @verbose
           console.log 'Rest Reporter Response ended'
 

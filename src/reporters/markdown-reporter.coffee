@@ -18,13 +18,13 @@ class MarkdownReporter extends EventEmitter
     @details = details
     @configureEmitter emitter
 
-  sanitizedPath: (path) =>
+  sanitizedPath: (path) ->
     filePath = if path? then file.path.abspath(path) else file.path.abspath("./report.md")
     if fs.existsSync(filePath)
       logger.info "File exists at #{filePath}, will be overwritten..."
     filePath
 
-  configureEmitter: (emitter) =>
+  configureEmitter: (emitter) ->
 
     title = (str) =>
       Array(@level).join("#") + " " + str
@@ -35,9 +35,9 @@ class MarkdownReporter extends EventEmitter
       @level++
       @buf += title('Dredd Tests') + "\n"
       callback()
-      
+
     emitter.on 'end', (callback) =>
-      fs.writeFile @path, @buf, (err) =>
+      fs.writeFile @path, @buf, (err) ->
         if err
           logger.error err
         callback()

@@ -21,22 +21,30 @@ options =
 
   reporter:
     alias: "r"
-    description: "Output additional report format. This option can be used multiple times to add multiple reporters. Options: junit, nyan, dot, markdown, html, apiary.\n"
+    description: """Output additional report format. This option can be used \
+      multiple times to add multiple reporters. \
+      Options: junit, nyan, dot, markdown, html, apiary.\n"""
     default: []
 
   output:
     alias: "o"
-    description: "Specifies output file when using additional file-based reporter. This option can be used multiple times if multiple file-based reporters are used.\n"
+    description: """
+      Specifies output file when using additional file-based reporter. \
+      This option can be used multiple times if multiple file-based reporters are used.\n"""
     default: []
 
   header:
     alias: "h"
-    description: "Extra header to include in every request. This option can be used multiple times to add multiple headers.\n"
+    description: """
+      Extra header to include in every request. \
+      This option can be used multiple times to add multiple headers.\n"""
     default: []
 
   sorted:
     alias: "s"
-    description: "Sorts requests in a sensible way so that objects are not modified before they are created. Order: CONNECT, OPTIONS, POST, GET, HEAD, PUT, PATCH, DELETE, TRACE.\n"
+    description: """
+      Sorts requests in a sensible way so that objects are not modified before they are created. \
+      Order: CONNECT, OPTIONS, POST, GET, HEAD, PUT, PATCH, DELETE, TRACE.\n"""
     default: false
 
   user:
@@ -46,7 +54,9 @@ options =
 
   "inline-errors":
     alias: "e"
-    description: "Determines whether failures and errors are displayed as they occur (true) or agregated and displayed at the end (false).\n"
+    description: """
+      Determines whether failures and errors are displayed as they \
+      occur (true) or agregated and displayed at the end (false).\n"""
     default: false
 
   details:
@@ -56,7 +66,9 @@ options =
 
   method:
     alias: "m"
-    description: "Restrict tests to a particular HTTP method (GET, PUT, POST, DELETE, PATCH). This option can be used multiple times to allow multiple methods.\n"
+    description: """
+      Restrict tests to a particular HTTP method (GET, PUT, POST, DELETE, PATCH). \
+      This option can be used multiple times to allow multiple methods.\n"""
     default: []
 
   color:

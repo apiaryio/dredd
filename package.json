@@ -40,6 +40,7 @@
     "codo": "2.0.9",
     "coffee-coverage": "~0.4.4",
     "coffee-errors": "~0.8.6",
+    "coffeelint": "^1.8.1",
     "coveralls": "~2.11.2",
     "express": "^4.11.1",
     "jscoverage": "~0.5.9",

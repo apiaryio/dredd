@@ -10,7 +10,7 @@ class DotReporter
     @errors = []
 
   configureEmitter: (emitter) =>
-    emitter.on 'start', =>
+    emitter.on 'start', ->
       logger.info 'Beginning Dredd testing...'
 
     emitter.on 'end', (callback) =>

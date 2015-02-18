@@ -1,7 +1,7 @@
 async = require 'async'
 
 class Hooks
-  constructor: () ->
+  constructor: ->
     @beforeHooks = {}
     @afterHooks = {}
     @transactions = {}
@@ -20,7 +20,7 @@ class Hooks
   afterAll: (hook) =>
     @afterAllHooks.push hook
 
-  addHook: (hooks, name, hook) =>
+  addHook: (hooks, name, hook) ->
     if hooks[name]
       hooks[name].push hook
     else

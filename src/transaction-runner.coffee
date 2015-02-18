@@ -162,7 +162,7 @@ class TransactionRunner
         req.on 'error', (error) ->
           configuration.emitter.emit 'test error', error, test if error
 
-        res.on 'end', () ->
+        res.on 'end', ->
 
           # The data models as used here must conform to Gavel.js
           # as defined in `http-response.coffee`
@@ -220,13 +220,13 @@ class TransactionRunner
         configuration.emitter.emit 'test error', error, test if error
         return callback()
 
-  isMultipart: (requestOptions) =>
+  isMultipart: (requestOptions) ->
     caseInsensitiveRequestHeaders = {}
     for key, value of requestOptions.headers
       caseInsensitiveRequestHeaders[key.toLowerCase()] = value
     caseInsensitiveRequestHeaders['content-type']?.indexOf("multipart") > -1
 
-  replaceLineFeedInBody: (transaction, requestOptions) =>
+  replaceLineFeedInBody: (transaction, requestOptions) ->
     if transaction.request['body'].indexOf('\r\n') == -1
       transaction.request['body'] = transaction.request['body'].replace(/\n/g, '\r\n')
       transaction.request['headers']['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')

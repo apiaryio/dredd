@@ -63,7 +63,10 @@ configureReporters = (config, stats, tests) ->
         logger.warn "Apiary reporter environment variable DREDD_REST_TOKEN or DREDD_REST_SUITE not defined."
 
     if usedFileReportersLength > outputs.length
-      logger.warn "There are more reporters requiring output paths than there are output paths provided, using default paths for additional file-based reporters."
+      logger.warn """
+      There are more reporters requiring output paths than there are output paths
+      provided, using default paths for additional file-based reporters.
+      """
 
     for reporter, i in usedFileReporters
       path = if outputs[i] then outputs[i] else null
