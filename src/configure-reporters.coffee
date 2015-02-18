@@ -44,7 +44,7 @@ configureReporters = (config, stats, tests) ->
       when 'markdown'
         mdReporter = new MarkdownReporter(emitter, stats, tests, path, config.options.details)
       when 'apiary'
-        apiaryReporter = new ApiaryReporter(emitter, stats, tests)        
+        apiaryReporter = new ApiaryReporter(emitter, stats, tests)
       else
         logger.warn 'Invalid reporter #{reporter} selected, ignoring.'
 
