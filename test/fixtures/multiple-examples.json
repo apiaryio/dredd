@@ -1,0 +1,100 @@
+{
+  "_version": "2.0",
+  "metadata": [
+    {
+      "name": "FORMAT",
+      "value": "1A"
+    }
+  ],
+  "name": "Machines API",
+  "description": "",
+  "resourceGroups": [
+    {
+      "name": "Machines",
+      "description": "",
+      "resources": [
+        {
+          "name": "Machines collection",
+          "description": "",
+          "uriTemplate": "/machines",
+          "model": {},
+          "parameters": [],
+          "actions": [
+            {
+              "name": "Get Machines",
+              "description": "",
+              "method": "GET",
+              "parameters": [],
+              "examples": [
+                {
+                  "name": "",
+                  "description": "",
+                  "requests": [
+                    {
+                      "name": "",
+                      "description": "",
+                      "headers": [
+                        {
+                          "name": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": "",
+                      "schema": ""
+                    }
+                  ],
+                  "responses": [
+                    {
+                      "name": "200",
+                      "description": "",
+                      "headers": [
+                        {
+                          "name": "Content-Type",
+                          "value": "application/json; charset=utf-8"
+                        }
+                      ],
+                      "body": "[\n  {\n    \"type\": \"bulldozer\",\n    \"name\": \"willy\"\n  }\n]\n",
+                      "schema": ""
+                    }
+                  ]
+                },
+                {
+                  "name": "",
+                  "description": "",
+                  "requests": [
+                    {
+                      "name": "",
+                      "description": "",
+                      "headers": [
+                        {
+                          "name": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": "",
+                      "schema": ""
+                    }
+                  ],
+                  "responses": [
+                    {
+                      "name": "200",
+                      "description": "",
+                      "headers": [
+                        {
+                          "name": "Content-Type",
+                          "value": "application/json; charset=utf-8"
+                        }
+                      ],
+                      "body": "[\n  {\n    \"type\": \"bulldozer\",\n    \"name\": \"willy\"\n  }\n]\n",
+                      "schema": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

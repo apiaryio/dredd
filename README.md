@@ -4,6 +4,7 @@
 [![Dependency Status](https://david-dm.org/apiaryio/dredd.png)](https://david-dm.org/apiaryio/dredd)
 [![devDependency Status](https://david-dm.org/apiaryio/dredd/dev-status.png)](https://david-dm.org/apiaryio/dredd#info=devDependencies)
 [![Coverage Status](https://coveralls.io/repos/apiaryio/dredd/badge.png?branch=master)](https://coveralls.io/r/apiaryio/dredd?branch=master)
+[![Join the chat at https://gitter.im/apiaryio/dredd](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/apiaryio/dredd?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![NPM](https://nodei.co/npm/dredd.png)](https://nodei.co/npm/dredd/)
 
@@ -141,7 +142,7 @@ If `beforeAll` and `afterAll` are called multiple times, the callbacks are execu
 
     $ dredd --help
     Usage:
-      dredd <path to blueprint> <api_endpoint> [OPTIONS]
+      dredd <path or URL to blueprint> <api_endpoint> [OPTIONS]
 
     Example:
       dredd ./apiary.md http://localhost:3000 --dry-run
@@ -153,9 +154,11 @@ If `beforeAll` and `afterAll` are called multiple times, the callbacks are execu
                            hooks for running tests                   [default: null]
       --names, -n          Only list names of requests (for use in a hookfile). No
                            requests are made.                       [default: false]
+      --only, -x           Run only specified transaction name. Can be used
+                           multiple times                              [default: []]
       --reporter, -r       Output additional report format. This option can be used
                            multiple times to add multiple reporters. Options:
-                           junit, nyan, dot, markdown, html.
+                           junit, nyan, dot, markdown, html, apiary.
                                                                        [default: []]
       --output, -o         Specifies output file when using additional file-based
                            reporter. This option can be used multiple times if
@@ -175,7 +178,7 @@ If `beforeAll` and `afterAll` are called multiple times, the callbacks are execu
                            (false).
                                                                     [default: false]
       --details, -d        Determines whether request/response details are included
-                           in passing validations.
+                           in passing tests.
                                                                     [default: false]
       --method, -m         Restrict tests to a particular HTTP method (GET, PUT,
                            POST, DELETE, PATCH). This option can be used multiple
@@ -189,7 +192,12 @@ If `beforeAll` and `afterAll` are called multiple times, the callbacks are execu
       --timestamp, -t      Determines whether console output should include
                            timestamps.
                                                                     [default: false]
+      --silent, -q         Silences commandline output.
+                                                                    [default: false]
+      --path, -p           Additional blueprint paths or URLs. Can be used multiple
+                           times with glob pattern for paths.          [default: []]
       --help               Show usage information.
+
       --version            Show version number.
 
 Additionally, boolean flags can be negated by prefixing `no-`, for example: `--no-color --no-inline-errors`.

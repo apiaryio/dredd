@@ -1,21 +1,11 @@
 {EventEmitter} = require 'events'
 fs = require 'fs'
 
-marked = require 'marked'
+md = require('markdown-it')()
 file = require 'file'
 
 logger = require './../logger'
 prettifyResponse = require './../prettify-response'
-
-marked.setOptions {
-  gfm: true
-  tables: true
-  breaks: true
-  pedantic: false
-  sanitize: true
-  smartLists: true
-  smartypants: true
-}
 
 class HtmlReporter extends EventEmitter
   constructor: (emitter, stats, tests, path, details) ->
@@ -29,13 +19,13 @@ class HtmlReporter extends EventEmitter
     @details = details
     @configureEmitter emitter
 
-  sanitizedPath: (path) =>
+  sanitizedPath: (path) ->
     filePath = if path? then file.path.abspath(path) else file.path.abspath("./report.html")
     if fs.existsSync(filePath)
       logger.info "File exists at #{filePath}, will be overwritten..."
     filePath
 
-  configureEmitter: (emitter) =>
+  configureEmitter: (emitter) ->
 
     title = (str) =>
       Array(@level).join("#") + " " + str
@@ -46,10 +36,10 @@ class HtmlReporter extends EventEmitter
       @level++
       @buf += title('Dredd Tests') + "\n"
       callback()
-      
+
     emitter.on 'end', (callback) =>
-      html = marked @buf
-      fs.writeFile @path, html, (err) =>
+      html = md.render @buf
+      fs.writeFile @path, html, (err) ->
         if err
           logger.error err
         callback()

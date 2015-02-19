@@ -4,22 +4,40 @@ exampleToHttpPayloadPair = require './example-to-http-payload-pair'
 convertAstMetadata = require './convert-ast-metadata'
 validateParameters = require './validate-parameters'
 
-blueprintAstToRuntime = (blueprintAst) ->
-  runtime = 
+blueprintAstToRuntime = (blueprintAst, filename) ->
+  runtime =
     transactions: []
     errors: []
     warnings: []
-  
+
   origin = {}
-  
-  for resourceGroup in blueprintAst['resourceGroups']
+  origin['filename'] = filename
+
+  if blueprintAst['name'] != ""
+    origin['apiName'] = blueprintAst['name']
+  else
+    origin['apiName'] = origin['filename']
+
+  for resourceGroup, index in blueprintAst['resourceGroups']
+    #should not be possible specify more than one unnamed group, must verify
+    # if resourceGroup['name'] != ""
+    #   origin['resourceGroupName'] = resourceGroup['name']
+    # else
+    #   origin['resourceGroupName'] = "Group #{index + 1}"
+
     origin['resourceGroupName'] = resourceGroup['name']
 
     for resource in resourceGroup['resources']
-      origin['resourceName'] = resource['name']
+      if resource['name'] != ""
+        origin['resourceName'] = resource['name']
+      else
+        origin['resourceName'] = resource['uriTemplate']
 
       for action in resource['actions']
-        origin['actionName'] = action['name']
+        if action['name'] != ""
+          origin['actionName'] = action['name']
+        else
+          origin['actionName'] = action['method']
 
         actionParameters = convertAstMetadata action['parameters']
         resourceParameters = convertAstMetadata resource['parameters']
@@ -34,10 +52,10 @@ blueprintAstToRuntime = (blueprintAst) ->
             origin: JSON.parse(JSON.stringify(origin))
             message: message
           }
-  
+
         # expand URI parameters
         uriResult = expandUriTemplateWithParameters resource['uriTemplate'], parameters
-        
+
         for message in uriResult['warnings']
           runtime['warnings'].push {
             origin: JSON.parse(JSON.stringify(origin))
@@ -50,13 +68,16 @@ blueprintAstToRuntime = (blueprintAst) ->
             message: message
           }
 
-        
-        if uriResult['uri'] != null      
-          for example in action['examples']
-            origin['exampleName'] = example['name']
-            
+
+        if uriResult['uri'] != null
+          for example, exampleIndex in action['examples']
+            if action['examples'].length > 1 and example['name'] == ""
+              origin['exampleName'] = "Example " + (exampleIndex + 1)
+            else
+              origin['exampleName'] = example['name']
+
             result = exampleToHttpPayloadPair example
-            
+
             for message in result['warnings']
               runtime['warnings'].push {
                 origin: JSON.parse(JSON.stringify(origin))
@@ -71,10 +92,10 @@ blueprintAstToRuntime = (blueprintAst) ->
             #   }
 
             transaction = result['pair']
-            transaction['origin'] = JSON.parse(JSON.stringify(origin)) 
+            transaction['origin'] = JSON.parse(JSON.stringify(origin))
             transaction['request']['uri'] = uriResult['uri']
             transaction['request']['method'] = action['method']
-            
+
             runtime['transactions'].push transaction
 
   return runtime

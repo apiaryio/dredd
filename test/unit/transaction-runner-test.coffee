@@ -31,6 +31,7 @@ describe 'TransactionRunner', ()->
     options:
       'dry-run': false
       method: []
+      only: []
       header: []
       reporter:  []
   transaction = {}
@@ -60,6 +61,42 @@ describe 'TransactionRunner', ()->
     it 'should add hooks', () ->
       assert.ok addHooksStub.called
 
+  describe 'config(config)', () ->
+    describe 'when single file in data is present', () ->
+      it 'should set multiBlueprint to false', () ->
+        configuration =
+          server: 'http://localhost:3000'
+          emitter: new EventEmitter()
+          data: {"file1": {"raw": "blueprint1"}}
+          options:
+            'dry-run': false
+            method: []
+            only: []
+            header: []
+            reporter: []
+
+        runner = new Runner(configuration)
+        runner.config(configuration)
+
+        assert.notOk runner.multiBlueprint
+
+    describe 'when multiple files in data are present', () ->
+      it 'should set multiBlueprint to true', () ->
+        configuration =
+          server: 'http://localhost:3000'
+          emitter: new EventEmitter()
+          data: {"file1": {"raw": "blueprint1"}, "file2": {"raw": "blueprint2"} }
+          options:
+            'dry-run': false
+            method: []
+            only: []
+            header: []
+            reporter: []
+        runner = new Runner(configuration)
+        runner.config(configuration)
+
+        assert.ok runner.multiBlueprint
+
   describe 'configureTransaction(transaction, callback)', () ->
 
     beforeEach () ->
@@ -78,6 +115,7 @@ describe 'TransactionRunner', ()->
               value: "application/json"
           status: "202"
         origin:
+          apiName: "Machines API"
           resourceGroupName: "Group Machine"
           resourceName: "Machine"
           actionName: "Delete Message"
@@ -85,30 +123,25 @@ describe 'TransactionRunner', ()->
 
       runner = new Runner(configuration)
 
+    describe 'when processing multiple blueprints', () ->
+      it 'should include api name in the transaction name', (done) ->
+        runner.multiBlueprint = true
+        runner.configureTransaction transaction, (err, configuredTransaction) ->
+          assert.include configuredTransaction.name, 'Machines API'
+          done()
+
+    describe 'when processing only single blueprint', () ->
+      it 'should not include api name in the transaction name', (done) ->
+        runner.multiBlueprint = false
+        runner.configureTransaction transaction, (err, configuredTransaction) ->
+          assert.notInclude configuredTransaction.name, 'Machines API'
+          done()
+
     describe 'when request does not have User-Agent', () ->
 
       it 'should add the Dredd User-Agent', (done) ->
         runner.configureTransaction transaction, (err, configuredTransaction) ->
           assert.ok configuredTransaction.request.headers['User-Agent']
-          done()
-
-    describe 'when no Content-Length is present', () ->
-
-      it 'should add a Content-Length header', (done) ->
-        runner.configureTransaction transaction, (err, configuredTransaction) ->
-          assert.ok configuredTransaction.request.headers['Content-Length']
-          done()
-
-    describe 'when Content-Length header is present', () ->
-
-      beforeEach () ->
-        transaction.headers =
-          "Content-Length":
-              value: 44
-
-      it 'should not add a Content-Length header', (done) ->
-        runner.configureTransaction transaction, (err, configuredTransaction) ->
-          assert.equal configuredTransaction.request.headers['Content-Length'], 44
           done()
 
     describe 'when an additional header has a colon', ()->
@@ -164,6 +197,42 @@ describe 'TransactionRunner', ()->
         fullPath: '/machines'
         protocol: 'http:'
 
+    describe 'when no Content-Length is present', () ->
+
+      beforeEach () ->
+        delete transaction.request.headers["Content-Length"]
+        server = nock('http://localhost:3000').
+          post('/machines', {"type":"bulldozer","name":"willy"}).
+          reply transaction['expected']['status'],
+            transaction['expected']['body'],
+            {'Content-Type': 'application/json'}
+
+      afterEach () ->
+        nock.cleanAll()
+
+      it 'should add a Content-Length header', (done) ->
+        runner.executeTransaction transaction, () ->
+          assert.ok transaction.request.headers['Content-Length']
+          done()
+
+    describe 'when Content-Length header is present', () ->
+
+      beforeEach () ->
+        transaction.request.headers["Content-Length"] = 44
+        server = nock('http://localhost:3000').
+          post('/machines', {"type":"bulldozer","name":"willy"}).
+          reply transaction['expected']['status'],
+            transaction['expected']['body'],
+            {'Content-Type': 'application/json'}
+
+      afterEach () ->
+        nock.cleanAll()
+
+      it 'should not add a Content-Length header', (done) ->
+        runner.executeTransaction transaction, () ->
+          assert.equal transaction.request.headers['Content-Length'], 44
+          done()
+
 
     describe 'when printing the names', () ->
 
@@ -210,6 +279,35 @@ describe 'TransactionRunner', ()->
         configuration.options['method'] = []
 
       it 'should only perform those requests', (done) ->
+        runner.executeTransaction transaction, () ->
+          assert.ok configuration.emitter.emit.calledWith 'test skip'
+          done()
+
+    describe 'when only certain names are allowed by the configuration', () ->
+
+      beforeEach () ->
+        server = nock('http://localhost:3000').
+          post('/machines', {"type":"bulldozer","name":"willy"}).
+          reply transaction['expected']['status'],
+            transaction['expected']['body'],
+            {'Content-Type': 'application/json'}
+
+        configuration.options['only'] = ['Group Machine > Machine > Delete Message > Bogus example name']
+        sinon.stub configuration.emitter, 'emit'
+        runner = new Runner(configuration)
+
+      afterEach () ->
+        configuration.emitter.emit.restore()
+        configuration.options['only'] = []
+        nock.cleanAll()
+
+      it 'should not skip transactions with matching names', (done) ->
+        runner.executeTransaction transaction, () ->
+          assert.notOk configuration.emitter.emit.calledWith 'test skip'
+          done()
+
+      it 'should skip transactions with different names', (done) ->
+        transaction['name'] = 'Group Machine > Machine > Delete Message > Bogus different example name'
         runner.executeTransaction transaction, () ->
           assert.ok configuration.emitter.emit.calledWith 'test skip'
           done()
@@ -307,3 +405,136 @@ describe 'TransactionRunner', ()->
         runner.executeTransaction transaction, () ->
           assert.ok server.isDone()
           done()
+
+  describe 'executeTransaction(transaction, callback) multipart', () ->
+    multiPartTransaction = null
+    notMultiPartTransaction = null
+    runner = null
+    beforeEach () ->
+      runner = new Runner(configuration)
+      multiPartTransaction =
+          name: 'Group Machine > Machine > Post Message> Bogus example name'
+          id: 'POST /machines/message'
+          host: 'localhost'
+          port: '3000'
+          request:
+            body: '\n--BOUNDARY \ncontent-disposition: form-data; name="mess12"\n\n{"message":"mess1"}\n--BOUNDARY\n\nContent-Disposition: form-data; name="mess2"\n\n{"message":"mess1"}\n--BOUNDARY--'
+            headers:
+              'Content-Type': 'multipart/form-data; boundary=BOUNDARY'
+              'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)'
+              'Content-Length': 180
+            uri: '/machines/message'
+            method: 'POST'
+          expected:
+            headers:
+              'content-type': 'text/htm'
+          body: ''
+          status: '204'
+          origin:
+            resourceGroupName: 'Group Machine'
+            resourceName: 'Machine'
+            actionName: 'Post Message'
+            exampleName: 'Bogus example name'
+          fullPath: '/machines/message'
+          protocol: 'http:'
+
+      notMultiPartTransaction =
+          name: 'Group Machine > Machine > Post Message> Bogus example name'
+          id: 'POST /machines/message'
+          host: 'localhost'
+          port: '3000'
+          request:
+            body: '\n--BOUNDARY \ncontent-disposition: form-data; name="mess12"\n\n{"message":"mess1"}\n--BOUNDARY\n\nContent-Disposition: form-data; name="mess2"\n\n{"message":"mess1"}\n--BOUNDARY--'
+            headers:
+              'Content-Type': 'text/plain'
+              'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)'
+              'Content-Length': 180
+            uri: '/machines/message'
+            method: 'POST'
+          expected:
+            headers:
+              'content-type': 'text/htm'
+          body: ''
+          status: '204'
+          origin:
+            resourceGroupName: 'Group Machine'
+            resourceName: 'Machine'
+            actionName: 'Post Message'
+            exampleName: 'Bogus example name'
+          fullPath: '/machines/message'
+          protocol: 'http:'
+
+    describe 'when multipart header in request', () ->
+
+      parsedBody = '\r\n--BOUNDARY \r\ncontent-disposition: form-data; name="mess12"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY\r\n\r\nContent-Disposition: form-data; name="mess2"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY--'
+      beforeEach () ->
+        server = nock('http://localhost:3000').
+        post('/machines/message').
+        reply 204
+        configuration.server = 'http://localhost:3000'
+
+      afterEach () ->
+        nock.cleanAll()
+
+      it 'should replace line feed in body', (done) ->
+        runner.executeTransaction multiPartTransaction, () ->
+          assert.ok server.isDone()
+          assert.equal multiPartTransaction['request']['body'], parsedBody, 'Body'
+          assert.include multiPartTransaction['request']['body'], "\r\n"
+          done()
+
+    describe 'when multipart header in request is with lowercase key', () ->
+
+      parsedBody = '\r\n--BOUNDARY \r\ncontent-disposition: form-data; name="mess12"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY\r\n\r\nContent-Disposition: form-data; name="mess2"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY--'
+      beforeEach () ->
+        server = nock('http://localhost:3000').
+        post('/machines/message').
+        reply 204
+        configuration.server = 'http://localhost:3000'
+
+        delete multiPartTransaction['request']['headers']['Content-Type']
+        multiPartTransaction['request']['headers']['content-type'] = 'multipart/form-data; boundary=BOUNDARY'
+
+      afterEach () ->
+        nock.cleanAll()
+
+      it 'should replace line feed in body', (done) ->
+        runner.executeTransaction multiPartTransaction, () ->
+          assert.ok server.isDone()
+          assert.equal multiPartTransaction['request']['body'], parsedBody, 'Body'
+          assert.include multiPartTransaction['request']['body'], "\r\n"
+          done()
+
+    describe 'when multipart header in request, but body already has some CR (added in hooks e.g.s)', () ->
+      beforeEach () ->
+        server = nock('http://localhost:3000').
+        post('/machines/message').
+        reply 204
+        configuration.server = 'http://localhost:3000'
+        multiPartTransaction['request']['body'] = '\r\n--BOUNDARY \r\ncontent-disposition: form-data; name="mess12"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY\r\n\r\nContent-Disposition: form-data; name="mess2"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY--'
+
+      afterEach () ->
+        nock.cleanAll()
+
+      it 'should not add CR again', (done) ->
+        runner.executeTransaction multiPartTransaction, () ->
+          assert.ok server.isDone()
+          assert.notInclude multiPartTransaction['request']['body'], "\r\r"
+          done()
+
+    describe 'when multipart header is not in request', () ->
+      beforeEach () ->
+        server = nock('http://localhost:3000').
+        post('/machines/message').
+        reply 204
+        configuration.server = 'http://localhost:3000'
+
+      afterEach () ->
+        nock.cleanAll()
+
+      it 'should not include any line-feed in body', (done) ->
+        runner.executeTransaction notMultiPartTransaction, () ->
+          assert.ok server.isDone()
+          assert.notInclude multiPartTransaction['request']['body'], "\r\n"
+          done()
+

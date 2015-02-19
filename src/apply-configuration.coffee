@@ -28,6 +28,7 @@ applyConfiguration = (config) ->
       'inline-errors':false
       details: false
       method: []
+      only: []
       color: true
       level: 'info'
       timestamp: false
@@ -44,6 +45,18 @@ applyConfiguration = (config) ->
   configuration.options.output = coerceToArray(configuration.options.output)
   configuration.options.header = coerceToArray(configuration.options.header)
   configuration.options.method = coerceToArray(configuration.options.method)
+  configuration.options.only = coerceToArray(configuration.options.only)
+  configuration.options.path = coerceToArray(configuration.options.path)
+
+  # support for legacy JS API options
+  if config.blueprintPath
+    configuration.options.path.push config.blueprintPath
+
+  # coerce color to bool
+  if configuration.options.color == 'false'
+    configuration.options.color = false
+  else if configuration.options.color == 'true'
+    configuration.options.color = true
 
   for method in configuration.options.method
     method.toUpperCase()

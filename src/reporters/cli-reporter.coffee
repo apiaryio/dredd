@@ -12,7 +12,7 @@ class CliReporter
     @errors = []
 
   configureEmitter: (emitter) =>
-    emitter.on 'start', (rawBlueprint, callback)=>
+    emitter.on 'start', (rawBlueprint, callback) ->
       logger.info 'Beginning Dredd testing...'
       callback()
 
@@ -37,7 +37,7 @@ class CliReporter
         logger.expected "\n" + prettifyResponse(test.expected) + "\n"
         logger.actual "\n" + prettifyResponse(test.actual) + "\n\n"
 
-    emitter.on 'test skip', (test) =>
+    emitter.on 'test skip', (test) ->
       logger.skip test.title
 
     emitter.on 'test fail', (test) =>

@@ -18,19 +18,20 @@ class ApiaryReporter
     @startedAt = null
     @endedAt = null
     @remoteId = null
+    @reportUrl = null
     @configureEmitter emitter
     @inlineErrors = inlineErrors
     @errors = []
     @verbose = process.env['DREDD_REST_DEBUG']?
     @configuration =
-      apiUrl: process.env['DREDD_REST_URL'] || "https://api.apiary.io"
-      apiToken: process.env['DREDD_REST_TOKEN'] || null
-      apiSuite: process.env['DREDD_REST_SUITE'] || null
+      apiUrl: process.env['APIARY_API_URL'] || "https://api.apiary.io"
+      apiToken: process.env['APIARY_API_KEY'] || null
+      apiSuite: process.env['APIARY_API_NAME'] || 'public'
 
     logger.info 'Using apiary reporter.'
 
   configureEmitter: (emitter) =>
-    emitter.on 'start', (rawBlueprint, callback) =>
+    emitter.on 'start', (blueprintsData, callback) =>
       @uuid = uuid.v4()
       @startedAt = Math.round(new Date().getTime() / 1000)
 
@@ -45,10 +46,15 @@ class ApiaryReporter
             ciEnvVar = true
 
         if ciEnvVar == true
-          ciEnvVars[envVarName] = process.env[envVarName]          
-      
+          ciEnvVars[envVarName] = process.env[envVarName]
+
+      # transform blueprints data to array
+      blueprints = []
+      for blueprintPath, blueprintData of blueprintsData
+        blueprints.push blueprintData
+
       data =
-        blueprint: rawBlueprint
+        blueprints: blueprints
         agent: process.env['DREDD_AGENT'] || process.env['USER']
         agentRunUuid: @uuid
         hostname: process.env['DREDD_HOSTNAME'] || os.hostname()
@@ -63,40 +69,43 @@ class ApiaryReporter
         if error
           logger.error error
           callback()
-        else 
+        else
           @remoteId = parsedBody['_id']
+          @reportUrl = parsedBody['reportUrl'] if parsedBody['reportUrl']
+
           callback()
-    
+
     emitter.on 'test pass', (test) =>
       data = @_transformTestToReporter test
       path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
-      @_performRequest path, 'POST', data, (error, response, parsedBody) =>
+      @_performRequest path, 'POST', data, (error, response, parsedBody) ->
         if error
-          logger.error error  
+          logger.error error
 
     emitter.on 'test fail', (test) =>
       data = @_transformTestToReporter test
       path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
-      @_performRequest path, 'POST', data, (error, response, parsedBody) =>
+      @_performRequest path, 'POST', data, (error, response, parsedBody) ->
         if error
           logger.error error
 
     emitter.on 'end', (callback) =>
-      data = 
+      data =
         endedAt: Math.round(new Date().getTime() / 1000)
         result: @stats
-        status: if (@stats['failures'] > 0 or @stats['errors'] > 0) then 'failed' else 'passed' 
-      
-      path = '/apis/' + @configuration['apiSuite'] + '/tests/run/' + @remoteId        
-      
+        status: if (@stats['failures'] > 0 or @stats['errors'] > 0) then 'failed' else 'passed'
+
+      path = '/apis/' + @configuration['apiSuite'] + '/tests/run/' + @remoteId
+
       @_performRequest path, 'PATCH', data, (error, response, parsedBody) =>
         if error
           logger.error error
-        logger.complete 'See results in Apiary at: https://app.apiary.io/' + @configuration.apiSuite + '/tests/run/' + @remoteId
+        reportUrl = @reportUrl || "https://app.apiary.io/#{@configuration.apiSuite}/tests/run/#{@remoteId}"
+        logger.complete "See results in Apiary at: #{reportUrl}"
         callback()
 
   _transformTestToReporter: (test) ->
-    data = 
+    data =
       testRunId: @remoteId
       origin: test['origin']
       duration: test['duration']
@@ -106,36 +115,41 @@ class ApiaryReporter
         realResponse: test['actual']
         expectedResponse: test['expected']
         result: test['results']
-    return data  
+    return data
 
   _performRequest: (path, method, body, callback) =>
     buffer = ""
-    
-    handleRequest = (res) ->
-      res.on 'data', (chunk) ->
+
+    handleRequest = (res) =>
+      res.on 'data', (chunk) =>
         if @verbose
           console.log 'REST Reporter HTTPS Response chunk: ' + chunk
         buffer = buffer + chunk
-  
-      res.on 'error', (error) ->
+
+      res.on 'error', (error) =>
         if @verbose
           console.log 'REST Reporter HTTPS Response error.'
         return callback error, req, res
 
-      res.on 'end', () =>
+      res.on 'end', =>
         if @verbose
           console.log 'Rest Reporter Response ended'
-        parsedBody = JSON.parse buffer        
+
+        try
+          parsedBody = JSON.parse buffer
+        catch e
+          throw new Error "Apiary reporter: Failed to JSON parse Apiary API response body: \n #{buffer}"
+
 
         if @verbose
-          info = 
+          info =
             headers: res.headers
             statusCode: res.statusCode
-            body: parsedBody     
+            body: parsedBody
           console.log 'Rest Reporter Response:', JSON.stringify(info, null, 2)
 
         return callback(undefined, res, parsedBody)
-    
+
     parsedUrl = url.parse @configuration['apiUrl']
     system = os.type() + ' ' + os.release() + '; ' + os.arch()
 
@@ -145,7 +159,7 @@ class ApiaryReporter
       path: path
       method: method
       headers:
-        'User-Agent': "Dredd REST Reporter/" + packageConfig['version'] + " ("+ system + ")"
+        'User-Agent': "Dredd REST Reporter/" + packageConfig['version'] + " (" + system + ")"
         'Content-Type': 'application/json'
 
     unless @configuration['apiToken'] == null
@@ -163,10 +177,10 @@ class ApiaryReporter
       req = https.request options, handleRequest
     else
       if @verbose
-        console.log 'Starting REST Reporter HTTP Response'    
+        console.log 'Starting REST Reporter HTTP Response'
       req = http.request options, handleRequest
-    
+
     req.write JSON.stringify body
-    req.end()  
+    req.end()
 
 module.exports = ApiaryReporter

@@ -1,18 +1,23 @@
 language: node_js
 node_js:
-  - 0.8
   - 0.10
+sudo: false
 before_install:
-  - npm install -g npm@~1.4.6
+  - npm install -g npm@1.4.28
 notifications:
   email:
     recipients:
       - z@apiary.io
       - ladislav@apiary.io
+      - adam@apiary.io
     on_success: change
     on_failure: always
   hipchat:
-    - secure: "pKDBboEmYne/Hs9qUSCQCgWZ9insdvgvB0DyMYYpO8RHgNOAhpcY1Kz/wTmFtm1k2HjGNGx1OVgVhOYXwIiJQZbmiUT4gVDEUtmpSgiW3/uQATgaPFUAsaIFqemTPgI6Q8RfsJZQk1kRMioZhk0ldQY5A+AUIKYKg1BFiOsrO1s="
+    rooms:
+      secure: "QGWyFDPoKcj97epznHoyriuS/eJIbgZtTAVVM6M3IpgwgTX2LuiGVJbUvZy1BDlp31sYTLslrZ4zHeBwbOoy8zrM0KW8pr+pvgzO+EAsNchd9Ox9SqA0E/4gnaRg0myZIb67YM0hB9NEXT5sAOv9EoEae2SXw2KeoX1Myg+wsI4="
+    template:
+      - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a>/<a href="%{compare_url}">Change view</a>)'
+    format: html
 after_success:
   - ./scripts/coveralls
 
