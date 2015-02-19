@@ -16,7 +16,7 @@ applyConfiguration = (config) ->
   configuration =
     blueprintPath: null
     server: null
-    emitter: new EventEmitter()
+    emitter: new EventEmitter
     options:
       'dry-run': false
       silent: false

@@ -36,7 +36,7 @@ class TransactionRunner
 
     addHooks {}, transactions, @configuration.emitter
 
-    @executeAllTransactions(transactions,callback)
+    @executeAllTransactions(transactions, callback)
 
   configureTransaction: (transaction, callback) =>
     configuration = @configuration
@@ -52,7 +52,7 @@ class TransactionRunner
     if parsedUrl['path'] is "/"
       fullPath = request['uri']
     else
-      fullPath = '/' + [parsedUrl['path'].replace(/^\/|\/$/g,""), request['uri'].replace(/^\/|\/$/g,"")].join("/")
+      fullPath = '/' + [parsedUrl['path'].replace(/^\/|\/$/g, ""), request['uri'].replace(/^\/|\/$/g, "")].join("/")
 
     flatHeaders = flattenHeaders request['headers']
 
@@ -61,7 +61,7 @@ class TransactionRunner
       system = os.type() + ' ' + os.release() + '; ' + os.arch()
       flatHeaders['User-Agent'] = "Dredd/" + \
         packageConfig['version'] + \
-        " ("+ system + ")"
+        " (" + system + ")"
 
     if configuration.options.header.length > 0
       for header in configuration.options.header

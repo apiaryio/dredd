@@ -46,7 +46,7 @@ configureReporters = (config, stats, tests) ->
       when 'apiary'
         apiaryReporter = new ApiaryReporter(emitter, stats, tests)
       else
-        logger.warn 'Invalid reporter #{reporter} selected, ignoring.'
+        logger.warn "Invalid reporter #{reporter} selected, ignoring."
 
 
   addCli(reporters) if not config.options.silent

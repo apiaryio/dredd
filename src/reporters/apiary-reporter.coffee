@@ -159,7 +159,7 @@ class ApiaryReporter
       path: path
       method: method
       headers:
-        'User-Agent': "Dredd REST Reporter/" + packageConfig['version'] + " ("+ system + ")"
+        'User-Agent': "Dredd REST Reporter/" + packageConfig['version'] + " (" + system + ")"
         'Content-Type': 'application/json'
 
     unless @configuration['apiToken'] == null

@@ -5,9 +5,9 @@ convertAstMetadata = (metadata) ->
       dupItem = JSON.parse(JSON.stringify(item))
       name = dupItem['name']
       delete dupItem['name']
-      
+
       result[name] = dupItem
-    
+
   result
 
 module.exports = convertAstMetadata
