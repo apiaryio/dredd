@@ -245,7 +245,7 @@ describe "Command line interface", () ->
 
         apiary.post '/apis/*', (req, res) ->
           if req.body and req.url.indexOf('/tests/steps') > -1
-            receivedRequest ?= clone(req.body, false)
+            receivedRequest ?= clone(req.body)
           res.type('json')
           res.status(201).send
             _id: '1234_id'
@@ -266,7 +266,7 @@ describe "Command line interface", () ->
 
         server = app.listen PORT, () ->
           server2 = apiary.listen (PORT+1), ->
-            env = clone process.env, false
+            env = clone process.env
             env['APIARY_API_URL'] = "http://127.0.0.1:#{PORT+1}"
             execCommand cmd, {env}, () ->
               server2.close ->
