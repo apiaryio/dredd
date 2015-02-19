@@ -17,7 +17,7 @@ class XUnitReporter extends EventEmitter
     @details = details
     @configureEmitter emitter
 
-  sanitizedPath: (path) =>
+  sanitizedPath: (path) ->
     filePath = if path? then file.path.abspath(path) else file.path.abspath("./report.xml")
     if fs.existsSync(filePath)
       logger.info "File exists at #{filePath}, will be overwritten..."
@@ -27,14 +27,14 @@ class XUnitReporter extends EventEmitter
   configureEmitter: (emitter) =>
     emitter.on 'start', (rawBlueprint, callback) =>
       appendLine @path, toTag('testsuite', {
-              name: 'Dredd Tests'
-            , tests: @stats.tests
-            , failures: @stats.failures
-            , errors: @stats.errors
-            , skip: @stats.skipped
-            , timestamp: (new Date).toUTCString()
-            , time: @stats.duration / 1000
-          }, false)
+        name: 'Dredd Tests'
+        tests: @stats.tests
+        failures: @stats.failures
+        errors: @stats.errors
+        skip: @stats.skipped
+        timestamp: (new Date()).toUTCString()
+        time: @stats.duration / 1000
+      }, false)
       callback()
 
     emitter.on 'end', (callback) =>
@@ -45,7 +45,14 @@ class XUnitReporter extends EventEmitter
         name: htmlencode.htmlEncode test.title
         time: test.duration / 1000
       if @details
-        deets = "\nRequest: \n"  + prettifyResponse(test.request) + "\nExpected: \n" +  prettifyResponse(test.expected) + "\nActual:\n" + prettifyResponse(test.actual)
+        deets = """
+        \nRequest:
+        #{prettifyResponse(test.request)}
+        Expected:
+        #{prettifyResponse(test.expected)}
+        Actual:
+        #{prettifyResponse(test.actual)}
+        """
         appendLine @path, toTag('testcase', attrs, false, toTag('system-out', null, false, cdata(deets)))
       else
         appendLine @path, toTag('testcase', attrs, true)
@@ -60,7 +67,16 @@ class XUnitReporter extends EventEmitter
       attrs =
         name: htmlencode.htmlEncode test.title
         time: test.duration / 1000
-      diff = "Message: \n" + test.message + "\nRequest: \n"  + prettifyResponse(test.request) + "\nExpected: \n" +  prettifyResponse(test.expected) + "\nActual:\n" + prettifyResponse(test.actual)
+      diff = """
+      Message:
+      #{test.message}
+      Request:
+      #{prettifyResponse(test.request)}
+      Expected:
+      #{prettifyResponse(test.expected)}
+      Actual:
+      #{prettifyResponse(test.actual)}
+      """
       appendLine @path, toTag('testcase', attrs, false, toTag('failure', null, false, cdata(diff)))
 
     emitter.on 'test error', (error, test) =>
@@ -78,13 +94,13 @@ class XUnitReporter extends EventEmitter
         if (position != -1)
           restOfFile = data.substr position + 1
           newStats = toTag 'testsuite', {
-              name: 'Dredd Tests'
-            , tests: stats.tests
-            , failures: stats.failures
-            , errors: stats.errors
-            , skip: stats.skipped
-            , timestamp: (new Date).toUTCString()
-            , time: stats.duration / 1000
+            name: 'Dredd Tests'
+            tests: stats.tests
+            failures: stats.failures
+            errors: stats.errors
+            skip: stats.skipped
+            timestamp: (new Date()).toUTCString()
+            time: stats.duration / 1000
           }, false
           xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>'
           fs.writeFile path, xmlHeader + '\n' + newStats + '\n' + restOfFile + '</testsuite>', (err) ->

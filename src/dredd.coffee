@@ -77,7 +77,7 @@ class Dredd
           config.files = config.files.concat match
           globCallback()
 
-      , (err) =>
+      , (err) ->
         return callback(err, stats) if err
 
         if configDataIsEmpty and config.files.length == 0
@@ -115,9 +115,16 @@ class Dredd
         json: false
       , (downloadError, res, body) ->
         if downloadError
-          downloadCallback {message: "Error when loading file from URL '#{fileUrl}'. Is the provided URL correct?"}
+          downloadCallback {
+            message: "Error when loading file from URL '#{fileUrl}'. Is the provided URL correct?"
+          }
         else if not body or res.statusCode < 200 or res.statusCode >= 300
-          downloadCallback {message: "Unable to load file from URL '#{fileUrl}'. Server did not send any blueprint back and responded with status code #{res.statusCode}."}
+          downloadCallback {
+            message: """
+            Unable to load file from URL '#{fileUrl}'. \
+            Server did not send any blueprint back and responded with status code #{res.statusCode}.
+            """
+          }
         else
           config.data[fileUrl] = {raw: body, filename: fileUrl}
           downloadCallback()
@@ -135,7 +142,7 @@ class Dredd
           return parseCallback protagonistError if protagonistError
           config.data[file]['parsed'] = result
           parseCallback()
-      , (err) =>
+      , (err) ->
         return callback(err, config.reporter) if err
         # log all parser warnings for each ast
         for file, data of config.data
@@ -166,21 +173,21 @@ class Dredd
         cb()
 
     #start the runner
-    startRunner = () =>
+    startRunner = =>
       reporterCount = config.emitter.listeners('start').length
-      config.emitter.emit 'start', config.data, () =>
+      config.emitter.emit 'start', config.data, =>
         reporterCount--
         if reporterCount is 0
 
           # run all transactions
           @runner.config(config)
-          @runner.run runtimes['transactions'], () =>
+          @runner.run runtimes['transactions'], =>
             @transactionsComplete(callback)
 
     # spin that merry-go-round
-    expandGlobs () ->
-      loadFiles () ->
-        parseBlueprints () ->
+    expandGlobs ->
+      loadFiles ->
+        parseBlueprints ->
           startRunner()
 
 
@@ -188,7 +195,7 @@ class Dredd
   transactionsComplete: (callback) =>
     stats = @stats
     reporterCount = @configuration.emitter.listeners('end').length
-    @configuration.emitter.emit 'end' , () ->
+    @configuration.emitter.emit 'end' , ->
       reporterCount--
       if reporterCount is 0
         callback(null, stats)

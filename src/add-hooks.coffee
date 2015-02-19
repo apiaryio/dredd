@@ -9,60 +9,60 @@ hooks = require './hooks'
 logger = require './logger'
 
 addHooks = (runner, transactions, emitter) ->
-    @emitter = emitter
+  @emitter = emitter
 
-    for transaction in transactions
-      hooks.transactions[transaction.name] = transaction
+  for transaction in transactions
+    hooks.transactions[transaction.name] = transaction
 
-    pattern = runner?.configuration?.options?.hookfiles
-    return if not pattern
+  pattern = runner?.configuration?.options?.hookfiles
+  return if not pattern
 
-    files = glob.sync pattern
+  files = glob.sync pattern
 
-    logger.info 'Found Hookfiles: ' + files
+  logger.info 'Found Hookfiles: ' + files
 
-    try
-      for file in files
-        proxyquire path.resolve(process.cwd(), file), {
-          'hooks': hooks
-        }
-    catch error
-      logger.warn 'Skipping hook loading...'
-      logger.warn 'Error reading hook files (' + files + ')'
-      logger.warn 'This probably means one or more of your hookfiles is invalid.'
-      logger.warn 'Message: ' + error.message if error.message?
-      logger.warn 'Stack: ' + error.stack if error.stack?
-      return
+  try
+    for file in files
+      proxyquire path.resolve(process.cwd(), file), {
+        'hooks': hooks
+      }
+  catch error
+    logger.warn 'Skipping hook loading...'
+    logger.warn 'Error reading hook files (' + files + ')'
+    logger.warn 'This probably means one or more of your hookfiles is invalid.'
+    logger.warn 'Message: ' + error.message if error.message?
+    logger.warn 'Stack: ' + error.stack if error.stack?
+    return
 
-    # Support for suite setup/teardown
-    runner.before 'executeAllTransactions', (transactions, callback) =>
-      hooks.runBeforeAll(callback)
+  # Support for suite setup/teardown
+  runner.before 'executeAllTransactions', (transactions, callback) ->
+    hooks.runBeforeAll(callback)
 
-    runner.after 'executeAllTransactions', (transactions, callback) =>
-      hooks.runAfterAll(callback)
+  runner.after 'executeAllTransactions', (transactions, callback) ->
+    hooks.runAfterAll(callback)
 
-    runner.before 'executeTransaction', (transaction, callback)  =>
-      runHooksForTransaction hooks.beforeHooks[transaction.name], transaction, callback
+  runner.before 'executeTransaction', (transaction, callback)  ->
+    runHooksForTransaction hooks.beforeHooks[transaction.name], transaction, callback
 
-    runner.after 'executeTransaction', (transaction, callback) =>
-      runHooksForTransaction hooks.afterHooks[transaction.name], transaction, callback
+  runner.after 'executeTransaction', (transaction, callback) ->
+    runHooksForTransaction hooks.afterHooks[transaction.name], transaction, callback
 
-  runHooksForTransaction = (hooksForTransaction, transaction, callback) =>
+  runHooksForTransaction = (hooksForTransaction, transaction, callback) ->
     if hooksForTransaction?
-        logger.debug 'Running hooks...'
+      logger.debug 'Running hooks...'
 
-        runHookWithTransaction = (hook, callback) ->
-          try
-            runHook hook, transaction, callback
-          catch error
-            emitError(transaction, error)
-            callback()
-
-        async.eachSeries hooksForTransaction, runHookWithTransaction, () ->
+      runHookWithTransaction = (hook, callback) ->
+        try
+          runHook hook, transaction, callback
+        catch error
+          emitError(transaction, error)
           callback()
 
-      else
+      async.eachSeries hooksForTransaction, runHookWithTransaction, ->
         callback()
+
+    else
+      callback()
 
   runHook = (hook, transaction, callback) ->
     if hook.length is 1
@@ -71,10 +71,10 @@ addHooks = (runner, transactions, emitter) ->
       callback()
     else if hook.length is 2
       # async
-      hook transaction, () =>
+      hook transaction, ->
         callback()
 
-  emitError = (transaction, error) ->
+  emitError = (transaction, error) =>
     test =
       status: ''
       title: transaction.id

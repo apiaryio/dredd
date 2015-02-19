@@ -9,7 +9,13 @@ class NyanCatReporter
     @stats = stats
     @tests = tests
     @isatty = tty.isatty 1 and tty.isatty 2
-    windowWidth = (if @isatty then (if process.stdout.getWindowSize then process.stdout.getWindowSize(1)[0] else tty.getWindowSize()[1]) else 75)
+    if @isatty
+      if process.stdout.getWindowSize
+        windowWidth = process.stdout.getWindowSize(1)[0]
+      else
+        windowWidth = tty.getWindowSize()[1]
+    else
+      windowWidth = 75
     width = windowWidth * .75 | 0
     @rainbowColors = @generateColors()
     @colorIndex = 0
@@ -27,7 +33,7 @@ class NyanCatReporter
       @cursorHide()
       @draw()
       callback()
-      
+
     emitter.on 'end', (callback) =>
       @cursorShow()
       i = 0
@@ -37,14 +43,14 @@ class NyanCatReporter
         i++
 
       if @errors.length > 0
-          @write "\n"
-          logger.info "Displaying failed tests..."
-          for test in @errors
-            logger.fail test.title + " duration: #{test.duration}ms"
-            logger.fail test.message
-            logger.request "\n" + prettifyResponse(test.request) + "\n"
-            logger.expected "\n" + prettifyResponse(test.expected) + "\n"
-            logger.actual "\n" + prettifyResponse(test.actual) + "\n\n"
+        @write "\n"
+        logger.info "Displaying failed tests..."
+        for test in @errors
+          logger.fail test.title + " duration: #{test.duration}ms"
+          logger.fail test.message
+          logger.request "\n" + prettifyResponse(test.request) + "\n"
+          logger.expected "\n" + prettifyResponse(test.expected) + "\n"
+          logger.actual "\n" + prettifyResponse(test.actual) + "\n\n"
 
       logger.complete "#{@stats.passes} passing, #{@stats.failures} failing, #{@stats.errors} errors, #{@stats.skipped} skipped"
       logger.complete "Tests took #{@stats.duration}ms"
@@ -160,7 +166,7 @@ class NyanCatReporter
   cursorHide: =>
     @isatty and @write '\u001b[?25l'
 
-  generateColors: =>
+  generateColors: ->
     colors = []
     i = 0
 

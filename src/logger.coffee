@@ -42,13 +42,13 @@ config =
     debug: 'blue'
 
 consoleTransport = new (winston.transports.Console)({
-      colorize: true
-    })
+  colorize: true
+})
 
 sysConsoleTransport = new (winston.transports.Console)({
-      name: 'systemConsole'
-      colorize: true
-    })
+  name: 'systemConsole'
+  colorize: true
+})
 
 logger = new (winston.Logger) ({
   transports: [

@@ -1,0 +1,116 @@
+{
+    "arrow_spacing": {
+        "level": "warn"
+    },
+    "camel_case_classes": {
+        "level": "error"
+    },
+    "coffeescript_error": {
+        "level": "error"
+    },
+    "colon_assignment_spacing": {
+        "level": "ignore",
+        "spacing": {
+            "left": 0,
+            "right": 0
+        }
+    },
+    "cyclomatic_complexity": {
+        "value": 10,
+        "level": "ignore"
+    },
+    "duplicate_key": {
+        "level": "error"
+    },
+    "empty_constructor_needs_parens": {
+        "level": "ignore"
+    },
+    "ensure_comprehensions": {
+        "level": "warn"
+    },
+    "indentation": {
+        "value": 2,
+        "level": "error"
+    },
+    "line_endings": {
+        "level": "ignore",
+        "value": "unix"
+    },
+    "max_line_length": {
+        "value": 130,
+        "level": "error",
+        "limitComments": true
+    },
+    "missing_fat_arrows": {
+        "level": "warn"
+    },
+    "newlines_after_classes": {
+        "value": 3,
+        "level": "warn"
+    },
+    "no_backticks": {
+        "level": "error"
+    },
+    "no_debugger": {
+        "level": "warn"
+    },
+    "no_empty_functions": {
+        "level": "warn"
+    },
+    "no_empty_param_list": {
+        "level": "warn"
+    },
+    "no_implicit_braces": {
+        "level": "ignore",
+        "strict": true
+    },
+    "no_implicit_parens": {
+        "strict": true,
+        "level": "ignore"
+    },
+    "no_interpolation_in_single_quotes": {
+        "level": "warn"
+    },
+    "no_plusplus": {
+        "level": "ignore"
+    },
+    "no_stand_alone_at": {
+        "level": "warn"
+    },
+    "no_tabs": {
+        "level": "error"
+    },
+    "no_throwing_strings": {
+        "level": "error"
+    },
+    "no_trailing_semicolons": {
+        "level": "error"
+    },
+    "no_trailing_whitespace": {
+        "level": "error",
+        "allowed_in_comments": false,
+        "allowed_in_empty_lines": false
+    },
+    "no_unnecessary_double_quotes": {
+        "level": "ignore"
+    },
+    "no_unnecessary_fat_arrows": {
+        "level": "warn"
+    },
+    "non_empty_constructor_needs_parens": {
+        "level": "warn"
+    },
+    "prefer_english_operator": {
+        "level": "ignore",
+        "doubleNotLevel": "ignore"
+    },
+    "space_operators": {
+        "level": "error"
+    },
+    "spacing_after_comma": {
+        "level": "warn"
+    },
+    "transform_messes_up_line_numbers": {
+        "level": "warn"
+    }
+}

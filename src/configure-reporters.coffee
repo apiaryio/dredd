@@ -44,9 +44,9 @@ configureReporters = (config, stats, tests) ->
       when 'markdown'
         mdReporter = new MarkdownReporter(emitter, stats, tests, path, config.options.details)
       when 'apiary'
-        apiaryReporter = new ApiaryReporter(emitter, stats, tests)        
+        apiaryReporter = new ApiaryReporter(emitter, stats, tests)
       else
-        logger.warn 'Invalid reporter #{reporter} selected, ignoring.'
+        logger.warn "Invalid reporter #{reporter} selected, ignoring."
 
 
   addCli(reporters) if not config.options.silent
@@ -63,7 +63,10 @@ configureReporters = (config, stats, tests) ->
         logger.warn "Apiary reporter environment variable DREDD_REST_TOKEN or DREDD_REST_SUITE not defined."
 
     if usedFileReportersLength > outputs.length
-      logger.warn "There are more reporters requiring output paths than there are output paths provided, using default paths for additional file-based reporters."
+      logger.warn """
+      There are more reporters requiring output paths than there are output paths
+      provided, using default paths for additional file-based reporters.
+      """
 
     for reporter, i in usedFileReporters
       path = if outputs[i] then outputs[i] else null

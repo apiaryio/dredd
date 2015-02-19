@@ -3,22 +3,22 @@ convertAstMetadata = require './convert-ast-metadata'
 # Transforms API Blueprint example to an array of Expected
 # HTTP Request and Response body and headers
 exampleToHttpPayloadPair = (example) ->
-  
-  result = 
+
+  result =
     warnings: []
     errors: []
     pair: {}
 
-  request = {}  
+  request = {}
   response = {}
 
   if example['requests'].length > 1
     text = "Multiple requests, using first."
-    result['warnings'].push text 
+    result['warnings'].push text
 
   if example['responses'].length > 1
     text = "Multiple responses, using first."
-    result['warnings'].push text 
+    result['warnings'].push text
 
   if example['responses'].length == 0
     text = "No response available. Can't create HTTP transaction."
@@ -28,10 +28,10 @@ exampleToHttpPayloadPair = (example) ->
     selectedResponse = example['responses'][0]
 
     if example['requests'].length == 0
-      selectedRequest = 
+      selectedRequest =
         body: ""
         headers: {}
-    
+
     request['body'] = selectedRequest['body']
     request['headers'] = convertAstMetadata selectedRequest['headers']
 
@@ -40,7 +40,7 @@ exampleToHttpPayloadPair = (example) ->
     response['status'] = selectedResponse['name']
     if selectedResponse['schema'] != ""
       response['schema'] = selectedResponse['schema']
-      
+
     result['pair']['request'] = request
     result['pair']['response'] = response
 
