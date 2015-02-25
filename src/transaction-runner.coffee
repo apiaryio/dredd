@@ -22,11 +22,14 @@ String::startsWith = (str) ->
 class TransactionRunner
   constructor: (@configuration) ->
     advisable.async.call TransactionRunner.prototype
-    addHooks @, {}, @configuration.emitter
+    @hooks = null
 
   config: (config) ->
     @configuration = config
     @multiBlueprint = Object.keys(@configuration.data).length > 1
+
+  addHooks: (transactions = {})->
+    @hooks = addHooks @, transactions, @configuration.emitter
 
   run: (transactions, callback) ->
     transactions = if @configuration.options['sorted'] then sortTransactions(transactions) else transactions
@@ -34,9 +37,36 @@ class TransactionRunner
     async.mapSeries transactions, @configureTransaction, (err, results) ->
       transactions = results
 
-    addHooks @, transactions, @configuration.emitter
+    @addHooks(transactions)
 
     @executeAllTransactions(transactions, callback)
+
+  runHooksForTransaction = (hooksForTransaction, transaction, callback) ->
+    if hooksForTransaction?
+      logger.debug 'Running hooks...'
+
+      runHookWithTransaction = (hook, callback) ->
+        try
+          runHook hook, transaction, callback
+        catch error
+          emitError(transaction, error)
+          callback()
+
+      async.eachSeries hooksForTransaction, runHookWithTransaction, ->
+        callback()
+
+    else
+      callback()
+
+  runHook = (hook, transaction, callback) ->
+    if hook.length is 1
+      # syncronous, no callback
+      hook transaction
+      callback()
+    else if hook.length is 2
+      # async
+      hook transaction, ->
+        callback()
 
   configureTransaction: (transaction, callback) =>
     configuration = @configuration
@@ -139,6 +169,11 @@ class TransactionRunner
       # manually set to skip a test in hooks
       configuration.emitter.emit 'test skip', test
       return callback()
+    else if transaction.fail
+      # manually set to skip a test in hooks
+      test.message = transaction.fail
+      configuration.emitter.emit 'test fail', test
+      return callback()
     else if configuration.options['dry-run']
       logger.info "Dry run, skipping API Tests..."
       transaction.skip = true
@@ -153,6 +188,7 @@ class TransactionRunner
       return callback()
     else if configuration.options.only.length > 0 and not (transaction.name in configuration.options.only)
       configuration.emitter.emit 'test skip', test
+      transaction.skip = true
       return callback()
     else if transaction.skip
       # manually set to skip a test
@@ -206,10 +242,12 @@ class TransactionRunner
 
               test.message = message
               test.results = result
+              test.valid = isValid
 
-              if isValid
-                configuration.emitter.emit 'test pass', test
-              else
+              # propagate test to after hooks
+              transaction.test = test
+
+              if test.valid == false
                 configuration.emitter.emit 'test fail', test
 
               return callback()

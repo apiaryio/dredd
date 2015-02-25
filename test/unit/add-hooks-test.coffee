@@ -21,7 +21,7 @@ addHooks = proxyquire  '../../src/add-hooks', {
   'hooks': hooksStub
 }
 
-describe 'addHooks(runner, transaction)', () ->
+describe.only 'addHooks(runner, transaction)', () ->
 
   transactions = {}
   server = null
@@ -40,8 +40,16 @@ describe 'addHooks(runner, transaction)', () ->
     after () ->
       globStub.sync.restore()
 
-    it 'should return immediately', ()->
-      addHooks("", transactions)
+    it 'should not expand any glob', ()->
+      runner =
+        configuration:
+          options:
+            hookfiles: null
+        before: (fn, cb) ->
+          return
+        after: (fn, cb) ->
+          return
+      addHooks(runner, transactions, new EventEmitter())
       assert.ok globStub.sync.notCalled
 
 
@@ -116,11 +124,6 @@ describe 'addHooks(runner, transaction)', () ->
         addHooks(runner, transactions)
         assert.ok loggerStub.warn.called
 
-      it 'should not attach the hooks', () ->
-        addHooks(runner, transactions)
-        assert.ok runner.before.notCalled
-        assert.ok runner.after.notCalled
-
     describe 'when a transaction is executed', () ->
 
       configuration =
@@ -167,6 +170,7 @@ describe 'addHooks(runner, transaction)', () ->
             transaction['expected']['body'],
             {'Content-Type': 'application/json'}
         runner = new Runner(configuration)
+        runner.addHooks()
         sinon.stub globStub, 'sync', (pattern) ->
           []
 
@@ -290,10 +294,12 @@ describe 'addHooks(runner, transaction)', () ->
 
         after () ->
           configuration.emitter.emit.restore()
+          hooksStub.beforeHooks = {}
+          hooksStub.afterHooks = {}
 
         it 'should report an error with the test', (done) ->
           runner.executeTransaction transaction, () ->
-            assert.ok emitter.emit.calledWith "test error"
+            assert.ok configuration.emitter.emit.calledWith "test error"
             done()
 
       describe 'with hook failing the transaction', () ->
@@ -309,10 +315,11 @@ describe 'addHooks(runner, transaction)', () ->
           afterEach () ->
             configuration.emitter.emit.restore()
             hooksStub.beforeHooks = {}
+            hooksStub.afterHooks = {}
 
           it 'should fail the test', (done) ->
             runner.executeTransaction transaction, () ->
-              assert.ok emitter.emit.calledWith "test fail"
+              assert.ok configuration.emitter.emit.calledWith "test fail"
               done()
 
           it 'should not run the transaction', (done) ->
@@ -323,18 +330,18 @@ describe 'addHooks(runner, transaction)', () ->
           it 'should pass the failing message to the emitter', (done) ->
             runner.executeTransaction transaction, () ->
               messages = []
-              callCount = emitter.emit.callCount
+              callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
-                messages.push emitter.emit.getCall(callNo).args[1].message
+                messages.push configuration.emitter.emit.getCall(callNo).args[1].message
               assert.include messages.join(), "Message before"
               done()
 
             it 'should mention before hook in the error message', (done) ->
               runner.executeTransaction transaction, () ->
                 messages = []
-                callCount = emitter.emit.callCount
+                callCount = configuration.emitter.emit.callCount
                 for callNo in [0.. callCount - 1]
-                  messages.push emitter.emit.getCall(callNo).args[1].message
+                  messages.push configuration.emitter.emit.getCall(callNo).args[1].message
                 assert.include messages, "Failed in before hook:"
                 done()
 
@@ -352,18 +359,18 @@ describe 'addHooks(runner, transaction)', () ->
             it 'should pass the failing message to the emitter', (done) ->
               runner.executeTransaction transaction, () ->
                 messages = []
-                callCount = emitter.emit.callCount
+                callCount = configuration.emitter.emit.callCount
                 for callNo in [0.. callCount - 1]
-                  messages.push emitter.emit.getCall(callNo).args[1].message
+                  messages.push configuration.emitter.emit.getCall(callNo).args[1].message
                 assert.notInclude messages, "Message after fail"
                 done()
 
             it 'should not mention after hook in the error message', (done) ->
               runner.executeTransaction transaction, () ->
                 messages = []
-                callCount = emitter.emit.callCount
+                callCount = configuration.emitter.emit.callCount
                 for callNo in [0.. callCount - 1]
-                  messages.push emitter.emit.getCall(callNo).args[1].message
+                  messages.push configuration.emitter.emit.getCall(callNo).args[1].message
                 assert.notInclude messages, "Failed in after hook:"
                 done()
 
@@ -395,10 +402,10 @@ describe 'addHooks(runner, transaction)', () ->
             runner.executeTransaction modifiedTransaction, () ->
               failCount = 0
               messages = []
-              callCount = emitter.emit.callCount
+              callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
-                failCount++ if emitter.emit.getCall(callNo).args[0] == 'test fail'
-                messages.push emitter.emit.getCall(callNo).args[1].message
+                failCount++ if configuration.emitter.emit.getCall(callNo).args[0] == 'test fail'
+                messages.push configuration.emitter.emit.getCall(callNo).args[1].message
               assert.equal failCount, 1
               done()
 
@@ -414,9 +421,9 @@ describe 'addHooks(runner, transaction)', () ->
             it 'should not mention after hook in the error message', (done) ->
               runner.executeTransaction transaction, () ->
                 messages = []
-                callCount = emitter.emit.callCount
+                callCount = configuration.emitter.emit.callCount
                 for callNo in [0.. callCount - 1]
-                  messages.push emitter.emit.getCall(callNo).args[1].message
+                  messages.push configuration.emitter.emit.getCall(callNo).args[1].message
                 assert.notInclude messages, "Failed in after hook:"
                 done()
 
@@ -441,48 +448,60 @@ describe 'addHooks(runner, transaction)', () ->
 
           it 'it should fail the test', (done) ->
             runner.executeTransaction transaction, () ->
-              assert.ok emitter.emit.calledWith "test fail"
+              assert.ok configuration.emitter.emit.calledWith "test fail"
               done()
 
           it 'it should not pass the test', (done) ->
             runner.executeTransaction transaction, () ->
-              assert.notOk emitter.emit.calledWith "test pass"
+              assert.notOk configuration.emitter.emit.calledWith "test pass"
               done()
 
           it 'it should pass the failing message to the emitter', (done) ->
             runner.executeTransaction transaction, () ->
               messages = []
-              callCount = emitter.emit.callCount
+              callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
-                messages.push emitter.emit.getCall(callNo).args[1].message
+                messages.push configuration.emitter.emit.getCall(callNo).args[1].message
               assert.include messages.join(), "Message after pass"
               done()
 
           it 'should mention after hook in the error message', (done) ->
             runner.executeTransaction transaction, () ->
               messages = []
-              callCount = emitter.emit.callCount
+              callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
-                messages.push emitter.emit.getCall(callNo).args[1].message
+                messages.push configuration.emitter.emit.getCall(callNo).args[1].message
               assert.include messages.join(), "Failed in after hook:"
               done()
 
           it 'should set transaction status to failed', (done) ->
             runner.executeTransaction transaction, () ->
               messages = []
-              callCount = emitter.emit.callCount
+              callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
-                messages.push emitter.emit.getCall(callNo).args[1].message
+                messages.push configuration.emitter.emit.getCall(callNo).args[1].message
               assert.notInclude messages, "Failed in after hook:"
               done()
 
       describe 'without hooks', () ->
         beforeEach () ->
-          hooksStub.beforeHooks = []
-          hooksStub.afterHooks = []
+          hooksStub.beforeHooks = {}
+          hooksStub.afterHooks = {}
+          sinon.stub configuration.emitter, 'emit'
+
+        afterEach () ->
+          configuration.emitter.emit.reset()
+          configuration.emitter.emit.restore()
+          hooksStub.afterHooks = {}
+          hooksStub.beforeHooks = {}
 
         it 'should not run the hooks', (done) ->
           runner.executeTransaction transaction, () ->
+            done()
+
+        it 'should pass the transactions', (done) ->
+          runner.executeTransaction transaction, () ->
+            assert.ok configuration.emitter.emit.calledWith "test pass"
             done()
 
       describe 'with hook modifying the transaction body and backend Express app using the body parser', () ->

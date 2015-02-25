@@ -1,5 +1,8 @@
 async = require 'async'
 
+# Do not add any functinoality to this class unless you want expose it to the Hooks
+# This class is only an interface for users of Dredd hooks.
+
 class Hooks
   constructor: ->
     @beforeHooks = {}

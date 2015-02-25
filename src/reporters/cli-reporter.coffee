@@ -26,7 +26,7 @@ class CliReporter
           logger.expected "\n" + prettifyResponse(test.expected) + "\n" if test.expected
           logger.actual "\n" + prettifyResponse(test.actual) + "\n\n" if test.actual
       if @stats.tests > 0
-        logger.complete "#{@stats.passes} passing, #{@stats.failures} failing, #{@stats.errors} errors, #{@stats.skipped} skipped"
+        logger.complete "#{@stats.passes} passing, #{@stats.failures} failing, #{@stats.errors} errors, #{@stats.skipped} skipped, #{@stats.tests} total"
       logger.complete "Tests took #{@stats.duration}ms"
       callback()
 
