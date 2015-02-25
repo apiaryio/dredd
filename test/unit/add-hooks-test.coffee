@@ -466,13 +466,9 @@ describe 'addHooks(runner, transaction)', () ->
               assert.include messages.join(), "Failed in after hook:"
               done()
 
-          it 'should set transaction status to failed', (done) ->
+          it 'should set transaction test status to failed', (done) ->
             runner.executeAllTransactions [transaction], hooksStub, () ->
-              messages = []
-              callCount = configuration.emitter.emit.callCount
-              for callNo in [0.. callCount - 1]
-                messages.push configuration.emitter.emit.getCall(callNo).args[1].message
-              assert.notInclude messages, "Failed in after hook:"
+              assert.equal transaction.test.status, 'fail'
               done()
 
       describe 'without hooks', () ->

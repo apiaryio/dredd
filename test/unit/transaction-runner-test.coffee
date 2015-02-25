@@ -5,7 +5,6 @@ nock = require 'nock'
 proxyquire = require 'proxyquire'
 sinon = require 'sinon'
 htmlStub = require 'html'
-advisableStub = require 'advisable'
 addHooksStub = sinon.spy require '../../src/add-hooks'
 loggerStub = require '../../src/logger'
 httpStub = require 'http'
@@ -13,7 +12,6 @@ httpsStub = require 'https'
 
 Runner = proxyquire  '../../src/transaction-runner', {
   'html': htmlStub,
-  'advisable': advisableStub,
   './add-hooks': addHooksStub
   './logger': loggerStub
   'http': httpStub
@@ -46,17 +44,10 @@ describe 'TransactionRunner', ()->
   describe 'constructor', () ->
 
     beforeEach () ->
-      sinon.spy advisableStub.async, 'call'
       runner = new Runner(configuration)
-
-    afterEach () ->
-      sinon.spy advisableStub.async.call.restore()
 
     it 'should copy configuration', () ->
       assert.ok runner.configuration.server
-
-    it 'should add advice', () ->
-      assert.ok advisableStub.async.call.called
 
   describe 'config(config)', () ->
     describe 'when single file in data is present', () ->

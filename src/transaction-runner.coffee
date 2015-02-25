@@ -4,9 +4,7 @@ html = require 'html'
 url = require 'url'
 path = require 'path'
 os = require 'os'
-
 gavel = require 'gavel'
-advisable = require 'advisable'
 async = require 'async'
 
 flattenHeaders = require './flatten-headers'
@@ -21,7 +19,6 @@ String::startsWith = (str) ->
 
 class TransactionRunner
   constructor: (@configuration) ->
-    advisable.async.call TransactionRunner.prototype
 
   config: (config) ->
     @configuration = config
@@ -144,7 +141,8 @@ class TransactionRunner
     if transaction.test # if transaction test was executed and was not skipped or failed
       if transaction.test.valid == true
         if transaction.fail
-          transaction.test.message = transaction.fail
+          transaction.test.status = 'fail'
+          transaction.test.message = "Failed in after hook: " + transaction.fail
           @configuration.emitter.emit 'test fail', transaction.test
         else
           @configuration.emitter.emit 'test pass', transaction.test
