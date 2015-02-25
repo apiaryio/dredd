@@ -11,7 +11,11 @@ globStub = require 'glob'
 pathStub = require 'path'
 loggerStub = require '../../src/logger'
 hooksStub = require '../../src/hooks'
-Runner = require '../../src/transaction-runner'
+
+
+Runner = proxyquire '../../src/transaction-runner',  {
+  'logger': loggerStub
+}
 
 
 addHooks = proxyquire  '../../src/add-hooks', {
@@ -21,7 +25,7 @@ addHooks = proxyquire  '../../src/add-hooks', {
   'hooks': hooksStub
 }
 
-describe.only 'addHooks(runner, transaction)', () ->
+describe 'addHooks(runner, transaction)', () ->
 
   transactions = {}
   server = null
@@ -89,18 +93,6 @@ describe.only 'addHooks(runner, transaction)', () ->
       it 'should load the files', () ->
         addHooks(runner, transactions)
         assert.ok pathStub.resolve.called
-
-      it 'should attach the hooks', () ->
-        # can't stub proxyquire, so we skip it by forcing files to be empty
-        sinon.restore globStub.sync
-        sinon.stub globStub, 'sync', (pattern) ->
-          []
-        addHooks(runner, transactions)
-        assert.ok runner.before.calledWith 'executeTransaction'
-        assert.ok runner.after.calledWith 'executeTransaction'
-        assert.ok runner.before.calledWith 'executeAllTransactions'
-        assert.ok runner.after.calledWith 'executeAllTransactions'
-
 
     describe 'when there is an error reading the hook files', () ->
 
@@ -197,7 +189,7 @@ describe.only 'addHooks(runner, transaction)', () ->
           loggerStub.info.restore()
 
         it 'should run the hooks', (done) ->
-          runner.executeTransaction transaction, () ->
+          runner.executeAllTransactions [transaction], hooksStub, () ->
             assert.ok loggerStub.info.calledWith "before"
             assert.ok loggerStub.info.calledWith "after"
             done()
@@ -218,7 +210,7 @@ describe.only 'addHooks(runner, transaction)', () ->
           loggerStub.info.restore()
 
         it 'should run all hooks', (done) ->
-          runner.executeTransaction transaction, () ->
+          runner.executeAllTransactions [transaction], hooksStub, () ->
             assert.ok loggerStub.info.calledWith "first"
             assert.ok loggerStub.info.calledWith "second"
             done()
@@ -234,7 +226,7 @@ describe.only 'addHooks(runner, transaction)', () ->
           hooksStub.beforeAllHooks = []
 
         it 'should run the hooks', (done) ->
-          runner.executeAllTransactions [], () ->
+          runner.executeAllTransactions [], hooksStub, () ->
             assert.ok beforeAll.called
             done()
 
@@ -249,7 +241,7 @@ describe.only 'addHooks(runner, transaction)', () ->
           hooksStub.afterAllHooks = []
 
         it 'should run the hooks', (done) ->
-          runner.executeAllTransactions [], () ->
+          runner.executeAllTransactions [], hooksStub, () ->
             assert.ok afterAll.called
             done()
 
@@ -276,7 +268,7 @@ describe.only 'addHooks(runner, transaction)', () ->
           hooksStub.afterAllHooks = []
 
         it 'should run all the events in order', (done) ->
-          runner.executeAllTransactions [], () ->
+          runner.executeAllTransactions [], hooksStub, () ->
             assert.ok beforeAll1.calledBefore(beforeAll2)
             assert.ok beforeAll2.called
             assert.ok afterAll1.calledBefore(afterAll2)
@@ -298,7 +290,7 @@ describe.only 'addHooks(runner, transaction)', () ->
           hooksStub.afterHooks = {}
 
         it 'should report an error with the test', (done) ->
-          runner.executeTransaction transaction, () ->
+          runner.executeAllTransactions [transaction], hooksStub, () ->
             assert.ok configuration.emitter.emit.calledWith "test error"
             done()
 
@@ -318,17 +310,17 @@ describe.only 'addHooks(runner, transaction)', () ->
             hooksStub.afterHooks = {}
 
           it 'should fail the test', (done) ->
-            runner.executeTransaction transaction, () ->
+            runner.executeAllTransactions [transaction], hooksStub, () ->
               assert.ok configuration.emitter.emit.calledWith "test fail"
               done()
 
           it 'should not run the transaction', (done) ->
-            runner.executeTransaction transaction, () ->
+            runner.executeAllTransactions [transaction], hooksStub, () ->
               assert.notOk server.isDone()
               done()
 
           it 'should pass the failing message to the emitter', (done) ->
-            runner.executeTransaction transaction, () ->
+            runner.executeAllTransactions [transaction], hooksStub, () ->
               messages = []
               callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
@@ -337,7 +329,7 @@ describe.only 'addHooks(runner, transaction)', () ->
               done()
 
             it 'should mention before hook in the error message', (done) ->
-              runner.executeTransaction transaction, () ->
+              runner.executeAllTransactions [transaction], hooksStub, () ->
                 messages = []
                 callCount = configuration.emitter.emit.callCount
                 for callNo in [0.. callCount - 1]
@@ -357,7 +349,7 @@ describe.only 'addHooks(runner, transaction)', () ->
               hooksStub.afterHooks = {}
 
             it 'should pass the failing message to the emitter', (done) ->
-              runner.executeTransaction transaction, () ->
+              runner.executeAllTransactions [transaction], hooksStub, () ->
                 messages = []
                 callCount = configuration.emitter.emit.callCount
                 for callNo in [0.. callCount - 1]
@@ -366,7 +358,7 @@ describe.only 'addHooks(runner, transaction)', () ->
                 done()
 
             it 'should not mention after hook in the error message', (done) ->
-              runner.executeTransaction transaction, () ->
+              runner.executeAllTransactions [transaction], hooksStub, () ->
                 messages = []
                 callCount = configuration.emitter.emit.callCount
                 for callNo in [0.. callCount - 1]
@@ -394,12 +386,12 @@ describe.only 'addHooks(runner, transaction)', () ->
             hooksStub.afterHooks = {}
 
           it 'should make the request', (done) ->
-            runner.executeTransaction transaction, () ->
+            runner.executeAllTransactions [transaction], hooksStub, () ->
               assert.ok server.isDone()
               done()
 
           it 'should not fail again', (done) ->
-            runner.executeTransaction modifiedTransaction, () ->
+            runner.executeAllTransactions [modifiedTransaction], hooksStub, () ->
               failCount = 0
               messages = []
               callCount = configuration.emitter.emit.callCount
@@ -410,7 +402,7 @@ describe.only 'addHooks(runner, transaction)', () ->
               done()
 
           it 'should not pass the hook message to the emitter', (done) ->
-            runner.executeTransaction modifiedTransaction, () ->
+            runner.executeAllTransactions [modifiedTransaction], hooksStub, () ->
               messages = []
               callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
@@ -419,7 +411,7 @@ describe.only 'addHooks(runner, transaction)', () ->
               done()
 
             it 'should not mention after hook in the error message', (done) ->
-              runner.executeTransaction transaction, () ->
+              runner.executeAllTransactions [transaction], hooksStub, () ->
                 messages = []
                 callCount = configuration.emitter.emit.callCount
                 for callNo in [0.. callCount - 1]
@@ -442,22 +434,22 @@ describe.only 'addHooks(runner, transaction)', () ->
             hooksStub.afterHooks = {}
 
           it 'should make the request', (done) ->
-            runner.executeTransaction transaction, () ->
+            runner.executeAllTransactions [transaction], hooksStub, () ->
               assert.ok server.isDone()
               done()
 
           it 'it should fail the test', (done) ->
-            runner.executeTransaction transaction, () ->
+            runner.executeAllTransactions [transaction], hooksStub, () ->
               assert.ok configuration.emitter.emit.calledWith "test fail"
               done()
 
           it 'it should not pass the test', (done) ->
-            runner.executeTransaction transaction, () ->
+            runner.executeAllTransactions [transaction], hooksStub, () ->
               assert.notOk configuration.emitter.emit.calledWith "test pass"
               done()
 
           it 'it should pass the failing message to the emitter', (done) ->
-            runner.executeTransaction transaction, () ->
+            runner.executeAllTransactions [transaction], hooksStub, () ->
               messages = []
               callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
@@ -466,7 +458,7 @@ describe.only 'addHooks(runner, transaction)', () ->
               done()
 
           it 'should mention after hook in the error message', (done) ->
-            runner.executeTransaction transaction, () ->
+            runner.executeAllTransactions [transaction], hooksStub, () ->
               messages = []
               callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
@@ -475,7 +467,7 @@ describe.only 'addHooks(runner, transaction)', () ->
               done()
 
           it 'should set transaction status to failed', (done) ->
-            runner.executeTransaction transaction, () ->
+            runner.executeAllTransactions [transaction], hooksStub, () ->
               messages = []
               callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
@@ -496,11 +488,11 @@ describe.only 'addHooks(runner, transaction)', () ->
           hooksStub.beforeHooks = {}
 
         it 'should not run the hooks', (done) ->
-          runner.executeTransaction transaction, () ->
+          runner.executeAllTransactions [transaction], hooksStub, () ->
             done()
 
         it 'should pass the transactions', (done) ->
-          runner.executeTransaction transaction, () ->
+          runner.executeAllTransactions [transaction], hooksStub, () ->
             assert.ok configuration.emitter.emit.calledWith "test pass"
             done()
 
@@ -532,7 +524,7 @@ describe.only 'addHooks(runner, transaction)', () ->
             res.status(200).send response
 
           server = app.listen transaction.port, () ->
-            runner.executeTransaction transaction, () ->
+            runner.executeAllTransactions [transaction], hooksStub, () ->
               #should not hang here
               assert.ok true
               server.close()

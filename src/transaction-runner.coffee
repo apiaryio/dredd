@@ -22,14 +22,13 @@ String::startsWith = (str) ->
 class TransactionRunner
   constructor: (@configuration) ->
     advisable.async.call TransactionRunner.prototype
-    @hooks = null
 
   config: (config) ->
     @configuration = config
     @multiBlueprint = Object.keys(@configuration.data).length > 1
 
   addHooks: (transactions = {})->
-    @hooks = addHooks @, transactions, @configuration.emitter
+    addHooks @, transactions, @configuration.emitter
 
   run: (transactions, callback) ->
     transactions = if @configuration.options['sorted'] then sortTransactions(transactions) else transactions
@@ -37,19 +36,18 @@ class TransactionRunner
     async.mapSeries transactions, @configureTransaction, (err, results) ->
       transactions = results
 
-    @addHooks(transactions)
+    hooks = @addHooks(transactions)
+    @executeAllTransactions(transactions, hooks, callback)
 
-    @executeAllTransactions(transactions, callback)
-
-  runHooksForTransaction = (hooksForTransaction, transaction, callback) ->
+  runHooksForTransaction: (hooksForTransaction, transaction, callback) ->
     if hooksForTransaction?
       logger.debug 'Running hooks...'
 
-      runHookWithTransaction = (hook, callback) ->
+      runHookWithTransaction = (hook, callback) =>
         try
-          runHook hook, transaction, callback
+          @runHook hook, transaction, callback
         catch error
-          emitError(transaction, error)
+          @emitError(transaction, error)
           callback()
 
       async.eachSeries hooksForTransaction, runHookWithTransaction, ->
@@ -58,7 +56,15 @@ class TransactionRunner
     else
       callback()
 
-  runHook = (hook, transaction, callback) ->
+  emitError: (transaction, error) ->
+    test =
+      status: ''
+      title: transaction.id
+      message: transaction.name
+      origin: transaction.origin
+    @configuration.emitter.emit 'test error', error, test if error
+
+  runHook: (hook, transaction, callback) ->
     if hook.length is 1
       # syncronous, no callback
       hook transaction
@@ -134,8 +140,39 @@ class TransactionRunner
 
     return callback(null, configuredTransaction)
 
-  executeAllTransactions: (transactions, callback) =>
-    async.eachSeries transactions, @executeTransaction, callback
+  emitResult: (transaction, callback) ->
+    if transaction.test # if transaction test was executed and was not skipped or failed
+      if transaction.test.valid == true
+        if transaction.fail
+          transaction.test.message = transaction.fail
+          @configuration.emitter.emit 'test fail', transaction.test
+        else
+          @configuration.emitter.emit 'test pass', transaction.test
+    callback()
+
+  executeAllTransactions: (transactions, hooks, callback) =>
+    hooks.transactions = transactions
+
+    # run beforeAll hooks
+    hooks.runBeforeAll () =>
+
+      # iterate over transactions transaction
+      async.eachSeries transactions, (transaction, transactionCallback) =>
+
+        # run before hooks
+        @runHooksForTransaction hooks.beforeHooks[transaction.name], transaction, () =>
+
+          # execute and validate HTTP transaction
+          @executeTransaction transaction, () =>
+
+            # run after hooks
+            @runHooksForTransaction hooks.afterHooks[transaction.name], transaction, () =>
+
+              # decide and emit result
+              @emitResult transaction, transactionCallback
+      , () ->
+        #runAfterHooks
+        hooks.runAfterAll(callback)
 
   executeTransaction: (transaction, callback) =>
     configuration = @configuration

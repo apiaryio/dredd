@@ -39,28 +39,6 @@ addHooks = (runner, transactions, emitter) ->
 
   loadHookFiles()
 
-  # Support for suite setup/teardown
-  runner.before 'executeAllTransactions', (transactions, callback) ->
-    hooks.runBeforeAll(callback)
-
-  runner.after 'executeAllTransactions', (transactions, callback) ->
-    hooks.runAfterAll(callback)
-
-  runner.before 'executeTransaction', (transaction, callback)  ->
-    runHooksForTransaction hooks.beforeHooks[transaction.name], transaction, callback
-
-  runner.after 'executeTransaction', (transaction, callback) =>
-    runHooksForTransaction hooks.afterHooks[transaction.name], transaction, () =>
-      if transaction.test # if transaction test was executed and was not skipped or failed
-        if transaction.test.valid == true
-          if transaction.fail
-            transaction.test.message = transaction.fail
-            @emitter.emit 'test fail', transaction.test
-          else
-            @emitter.emit 'test pass', transaction.test
-
-      callback()
-
 
   runHooksForTransaction = (hooksForTransaction, transaction, callback) ->
     if hooksForTransaction?
