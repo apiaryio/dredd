@@ -13,67 +13,29 @@ addHooks = (runner, transactions, emitter) ->
   @runner = runner
   @transactions = transactions
 
-  loadHookFiles = () =>
-    for transaction in @transactions
-      hooks.transactions[transaction.name] = transaction
 
-    pattern = @runner?.configuration?.options?.hookfiles
-    if pattern
+  for transaction in @transactions
+    hooks.transactions[transaction.name] = transaction
 
-      files = glob.sync pattern
+  pattern = @runner?.configuration?.options?.hookfiles
+  if pattern
 
-      logger.info 'Found Hookfiles: ' + files
+    files = glob.sync pattern
 
-      try
-        for file in files
-          proxyquire path.resolve(process.cwd(), file), {
-            'hooks': hooks
-          }
-      catch error
-        logger.warn 'Skipping hook loading...'
-        logger.warn 'Error reading hook files (' + files + ')'
-        logger.warn 'This probably means one or more of your hookfiles is invalid.'
-        logger.warn 'Message: ' + error.message if error.message?
-        logger.warn 'Stack: ' + error.stack if error.stack?
-        return
+    logger.info 'Found Hookfiles: ' + files
 
-  loadHookFiles()
-
-
-  runHooksForTransaction = (hooksForTransaction, transaction, callback) ->
-    if hooksForTransaction?
-      logger.debug 'Running hooks...'
-
-      runHookWithTransaction = (hook, callback) ->
-        try
-          runHook hook, transaction, callback
-        catch error
-          emitError(transaction, error)
-          callback()
-
-      async.eachSeries hooksForTransaction, runHookWithTransaction, ->
-        callback()
-
-    else
-      callback()
-
-  runHook = (hook, transaction, callback) ->
-    if hook.length is 1
-      # syncronous, no callback
-      hook transaction
-      callback()
-    else if hook.length is 2
-      # async
-      hook transaction, ->
-        callback()
-
-  emitError = (transaction, error) =>
-    test =
-      status: ''
-      title: transaction.id
-      message: transaction.name
-      origin: transaction.origin
-    @emitter.emit 'test error', error, test if error
+    try
+      for file in files
+        proxyquire path.resolve(process.cwd(), file), {
+          'hooks': hooks
+        }
+    catch error
+      logger.warn 'Skipping hook loading...'
+      logger.warn 'Error reading hook files (' + files + ')'
+      logger.warn 'This probably means one or more of your hookfiles is invalid.'
+      logger.warn 'Message: ' + error.message if error.message?
+      logger.warn 'Stack: ' + error.stack if error.stack?
+      return
 
   return hooks
 

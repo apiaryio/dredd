@@ -4,6 +4,7 @@ html = require 'html'
 url = require 'url'
 path = require 'path'
 os = require 'os'
+chai = require 'chai'
 gavel = require 'gavel'
 async = require 'async'
 
@@ -44,7 +45,9 @@ class TransactionRunner
         try
           @runHook hook, transaction, callback
         catch error
-          @emitError(transaction, error)
+          unless error instanceof chai.AssertionError
+            @emitError(transaction, error)
+
           callback()
 
       async.eachSeries hooksForTransaction, runHookWithTransaction, ->
@@ -206,7 +209,7 @@ class TransactionRunner
       return callback()
     else if transaction.fail
       # manually set to skip a test in hooks
-      test.message = transaction.fail
+      test.message = "Failed in before hook: " + transaction.fail
       configuration.emitter.emit 'test fail', test
       return callback()
     else if configuration.options['dry-run']

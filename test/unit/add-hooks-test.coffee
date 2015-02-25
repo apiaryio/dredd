@@ -284,7 +284,7 @@ describe 'addHooks(runner, transaction)', () ->
             ]
           sinon.stub configuration.emitter, 'emit'
 
-        after () ->
+        afterEach () ->
           configuration.emitter.emit.restore()
           hooksStub.beforeHooks = {}
           hooksStub.afterHooks = {}
@@ -292,6 +292,30 @@ describe 'addHooks(runner, transaction)', () ->
         it 'should report an error with the test', (done) ->
           runner.executeAllTransactions [transaction], hooksStub, () ->
             assert.ok configuration.emitter.emit.calledWith "test error"
+            done()
+
+      describe 'with hook that throws a chai expectation error', () ->
+        beforeEach () ->
+          hooksStub.beforeHooks =
+            'Group Machine > Machine > Delete Message > Bogus example name' : [
+              (transaction) ->
+                assert.ok false
+            ]
+          sinon.stub configuration.emitter, 'emit'
+
+        afterEach () ->
+          configuration.emitter.emit.restore()
+          hooksStub.beforeHooks = {}
+          hooksStub.afterHooks = {}
+
+        it 'should not report an error', (done) ->
+          runner.executeAllTransactions [transaction], hooksStub, () ->
+            assert.notOk configuration.emitter.emit.calledWith "test error"
+            done()
+
+        it.skip 'should report a fail', (done) ->
+          runner.executeAllTransactions [transaction], hooksStub, () ->
+            assert.ok configuration.emitter.emit.calledWith "test fail"
             done()
 
       describe 'with hook failing the transaction', () ->
@@ -328,14 +352,14 @@ describe 'addHooks(runner, transaction)', () ->
               assert.include messages.join(), "Message before"
               done()
 
-            it 'should mention before hook in the error message', (done) ->
-              runner.executeAllTransactions [transaction], hooksStub, () ->
-                messages = []
-                callCount = configuration.emitter.emit.callCount
-                for callNo in [0.. callCount - 1]
-                  messages.push configuration.emitter.emit.getCall(callNo).args[1].message
-                assert.include messages, "Failed in before hook:"
-                done()
+          it 'should mention before hook in the error message', (done) ->
+            runner.executeAllTransactions [transaction], hooksStub, () ->
+              messages = []
+              callCount = configuration.emitter.emit.callCount
+              for callNo in [0.. callCount - 1]
+                messages.push configuration.emitter.emit.getCall(callNo).args[1].message
+              assert.include messages.join(), "Failed in before hook:"
+              done()
 
           describe 'when message is set to fail also in after hook', () ->
             beforeEach () ->
@@ -432,6 +456,7 @@ describe 'addHooks(runner, transaction)', () ->
             configuration.emitter.emit.reset()
             configuration.emitter.emit.restore()
             hooksStub.afterHooks = {}
+            hooksStub.beforeHooks = {}
 
           it 'should make the request', (done) ->
             runner.executeAllTransactions [transaction], hooksStub, () ->
