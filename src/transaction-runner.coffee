@@ -25,16 +25,13 @@ class TransactionRunner
     @configuration = config
     @multiBlueprint = Object.keys(@configuration.data).length > 1
 
-  addHooks: (transactions = {})->
-    addHooks @, transactions, @configuration.emitter
-
   run: (transactions, callback) ->
     transactions = if @configuration.options['sorted'] then sortTransactions(transactions) else transactions
 
     async.mapSeries transactions, @configureTransaction, (err, results) ->
       transactions = results
 
-    hooks = @addHooks(transactions)
+    hooks = addHooks @, transactions, @configuration.emitter
     @executeAllTransactions(transactions, hooks, callback)
 
   runHooksForTransaction: (hooksForTransaction, transaction, callback) ->
@@ -161,7 +158,7 @@ class TransactionRunner
     hooks.runBeforeAll () =>
 
       # iterate over transactions transaction
-      async.eachSeries transactions, (transaction, transactionCallback) =>
+      async.eachSeries transactions, (transaction, iterationCallback) =>
 
         # run before hooks
         @runHooksForTransaction hooks.beforeHooks[transaction.name], transaction, () =>
@@ -173,8 +170,9 @@ class TransactionRunner
             @runHooksForTransaction hooks.afterHooks[transaction.name], transaction, () =>
 
               # decide and emit result
-              @emitResult transaction, transactionCallback
+              @emitResult transaction, iterationCallback
       , () ->
+
         #runAfterHooks
         hooks.runAfterAll(callback)
 

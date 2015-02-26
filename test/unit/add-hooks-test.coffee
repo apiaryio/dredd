@@ -162,7 +162,6 @@ describe 'addHooks(runner, transaction)', () ->
             transaction['expected']['body'],
             {'Content-Type': 'application/json'}
         runner = new Runner(configuration)
-        runner.addHooks()
         sinon.stub globStub, 'sync', (pattern) ->
           []
 
