@@ -47,7 +47,10 @@ class TransactionRunner
         catch error
           unless error instanceof chai.AssertionError
             @emitError(transaction, error)
-
+          else
+            transaction.message = "Failed assertion in hooks: " + error.message
+            transaction.test?.status = 'fail'
+            @configuration.emitter.emit 'test fail', transaction.test
           callback()
 
       async.eachSeries hooksForTransaction, runHookWithTransaction, ->

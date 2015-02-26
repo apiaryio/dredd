@@ -275,7 +275,7 @@ describe 'addHooks(runner, transaction)', () ->
             assert.ok afterAll2.called
             done()
 
-      describe 'with hook that throws an error', () ->
+      describe 'with before hook that throws an error', () ->
         beforeEach () ->
           hooksStub.beforeHooks =
             'Group Machine > Machine > Delete Message > Bogus example name' : [
@@ -294,7 +294,26 @@ describe 'addHooks(runner, transaction)', () ->
             assert.ok configuration.emitter.emit.calledWith "test error"
             done()
 
-      describe 'with hook that throws a chai expectation error', () ->
+      describe 'with after hook that throws an error', () ->
+        beforeEach () ->
+          hooksStub.afterHooks =
+            'Group Machine > Machine > Delete Message > Bogus example name' : [
+              (transaction) ->
+                JSON.parse '<<<>>>!@#!@#!@#4234234'
+            ]
+          sinon.stub configuration.emitter, 'emit'
+
+        afterEach () ->
+          configuration.emitter.emit.restore()
+          hooksStub.beforeHooks = {}
+          hooksStub.afterHooks = {}
+
+        it 'should report an error with the test', (done) ->
+          runner.executeAllTransactions [transaction], hooksStub, () ->
+            assert.ok configuration.emitter.emit.calledWith "test error"
+            done()
+
+      describe 'with before hook that throws a chai expectation error', () ->
         beforeEach () ->
           hooksStub.beforeHooks =
             'Group Machine > Machine > Delete Message > Bogus example name' : [
@@ -313,10 +332,40 @@ describe 'addHooks(runner, transaction)', () ->
             assert.notOk configuration.emitter.emit.calledWith "test error"
             done()
 
-        it.skip 'should report a fail', (done) ->
+        it 'should report a fail', (done) ->
           runner.executeAllTransactions [transaction], hooksStub, () ->
             assert.ok configuration.emitter.emit.calledWith "test fail"
             done()
+
+      describe 'with after shook that throws a chai expectation error', () ->
+        beforeEach () ->
+          hooksStub.afterHooks =
+            'Group Machine > Machine > Delete Message > Bogus example name' : [
+              (transaction) ->
+                assert.ok false
+            ]
+          sinon.stub configuration.emitter, 'emit'
+
+        afterEach () ->
+          configuration.emitter.emit.restore()
+          hooksStub.beforeHooks = {}
+          hooksStub.afterHooks = {}
+
+        it 'should not report an error', (done) ->
+          runner.executeAllTransactions [transaction], hooksStub, () ->
+            assert.notOk configuration.emitter.emit.calledWith "test error"
+            done()
+
+        it 'should report a fail', (done) ->
+          runner.executeAllTransactions [transaction], hooksStub, () ->
+            assert.ok configuration.emitter.emit.calledWith "test fail"
+            done()
+
+        it 'should set test as failed', (done) ->
+          runner.executeAllTransactions [transaction], hooksStub, () ->
+            assert.equal transaction.test.status, 'fail'
+            done()
+
 
       describe 'with hook failing the transaction', () ->
         describe 'in before hook', () ->
