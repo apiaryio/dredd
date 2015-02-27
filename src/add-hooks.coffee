@@ -80,6 +80,6 @@ addHooks = (runner, transactions, emitter) ->
       title: transaction.id
       message: transaction.name
       origin: transaction.origin
-    @emitter.emit 'test error', error, test if error
+    @emitter?.emit 'test error', error, test if error
 
 module.exports = addHooks

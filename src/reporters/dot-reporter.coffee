@@ -2,7 +2,7 @@ logger = require './../logger'
 prettifyResponse = require './../prettify-response'
 
 class DotReporter
-  constructor: (emitter, stats, tests, details) ->
+  constructor: (emitter, stats, tests) ->
     @type = "dot"
     @stats = stats
     @tests = tests

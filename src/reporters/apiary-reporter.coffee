@@ -6,9 +6,6 @@ url = require 'url'
 packageConfig = require './../../package.json'
 logger = require './../logger'
 
-String::startsWith = (str) ->
-  return this.slice(0, str.length) is str
-
 class ApiaryReporter
   constructor: (emitter, stats, tests, inlineErrors) ->
     @type = "cli"
@@ -121,6 +118,8 @@ class ApiaryReporter
     buffer = ""
 
     handleRequest = (res) =>
+      res.setEncoding 'utf8'
+
       res.on 'data', (chunk) =>
         if @verbose
           console.log 'REST Reporter HTTPS Response chunk: ' + chunk
@@ -171,7 +170,7 @@ class ApiaryReporter
         body: body
       console.log 'Rest Reporter Request:', JSON.stringify(info, null, 2)
 
-    if @configuration.apiUrl.startsWith 'https'
+    if @configuration.apiUrl?.indexOf('https') is 0
       if @verbose
         console.log 'Starting REST Reporter HTTPS Request'
       req = https.request options, handleRequest

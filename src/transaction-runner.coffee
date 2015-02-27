@@ -16,9 +16,6 @@ packageConfig = require './../package.json'
 logger = require './logger'
 
 
-String::startsWith = (str) ->
-  return this.slice(0, str.length) is str
-
 class TransactionRunner
   constructor: (@configuration) ->
     advisable.async.call TransactionRunner.prototype
