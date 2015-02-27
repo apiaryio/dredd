@@ -1,87 +1,12 @@
 #!/usr/bin/env node
-var optimist = require('optimist');
-var parsePackageJson = require('../lib/parse-package-json');
-var path = require('path');
-var Dredd = require('../lib/dredd');
+var DreddCommand = require('../lib/command');
 
-var version = parsePackageJson(path.join(__dirname, '../package.json'));
-
-var argv = optimist
-    .usage("Usage: \n  dredd <path or URL to blueprint> <api_endpoint> [OPTIONS]" +
-    "\n\nExample: \n  " + "dredd ./apiary.md http://localhost:3000 --dry-run")
-    .options(Dredd.options)
-    .wrap(80)
-    .argv;
-
-var argError = false;
-
-if (argv.help === true) {
-  optimist.showHelp(fn=console.error);
-  process.exit(0);
-}
-
-if (argv.version === true) {
-  console.log(version);
-  process.exit(0);
-}
-
-if (argv._[0] === undefined) {
-  console.error("Error: Must specify path to blueprint file.");
-  argError = true;
-}
-if (argv._[1] === undefined) {
-  console.error("Error: Must specify api endpoint.");
-  argError = true;
-}
-
-if (argError) {
-  console.error("\n");
-  optimist.showHelp(fn=console.error);
-  process.exit(1);
-}
-
-// transform path and p argument to array if it's not
-if(!Array.isArray(argv['path'])){
-  argv['path'] = argv['p'] = [argv['path']];
-}
-
-// some shells are automatically expanding globs and concating result as arguments
-// so I'm taking last argument as API endpoint server URL and removing it forom optimist's args
-var server = argv._[argv._.length - 1];
-argv._.splice(argv._.length -1, 1);
-
-// and rest of arguments concating to 'path' and 'p' opts, duplicates are filtered out later
-argv['p'] = argv['path'] = argv['path'].concat(argv._)
-
-configuration = {
-  'server': server,
-  'options': argv
-};
-
-configuration.options.path.push(argv._[0]);
-
-dredd = new Dredd(configuration);
-
-process.on( 'SIGINT', function() {
-  console.log( "\nShutting down from SIGINT (Ctrl-C)" );
-  dredd.transactionsComplete(function() {
-    process.exit(0);
-  });
+var dreddCli = new DreddCommand({
+  custom: {
+    cwd: process.cwd(),
+    argv: process.argv.slice(2)
+  },
+  exit: process.exit
 });
 
-dredd.run(function(error, stats){
-  if (error) {
-    if (error.message) {
-      console.error(error.message);
-    }
-    if (error.stack) {
-      console.error(error.stack);
-    }
-    process.exit(1);
-  }
-  if (stats.failures + stats.errors > 0) {
-    process.exit(1);
-  } else {
-    process.exit(0);
-  }
-});
+dreddCli.warmUp().takeoff();
