@@ -1,4 +1,5 @@
 {EventEmitter} = require 'events'
+clone = require 'clone'
 
 logger = require './logger'
 
@@ -18,6 +19,10 @@ applyConfiguration = (config) ->
     blueprintPath: null
     server: null
     emitter: new EventEmitter
+    custom: { # used for custom settings of various APIs or reporters
+      # Keep commented-out, so these values are actually set by DreddCommand
+      # cwd: process.cwd()
+    }
     options:
       'dry-run': false
       silent: false
@@ -37,9 +42,15 @@ applyConfiguration = (config) ->
       names: false
       hookfiles: null
 
-  #normalize options and config
+  # normalize options and config
   for own key, value of config
-    configuration[key] = value
+    # copy anything except "custom" hash
+    if key isnt 'custom'
+      configuration[key] = value
+    else
+      configuration['custom'] ?= {}
+      for own customKey, customVal of config['custom'] or {}
+        configuration['custom'][customKey] = clone customVal, false
 
   #coerce single/multiple options into an array
   configuration.options.reporter = coerceToArray(configuration.options.reporter)
