@@ -28,7 +28,7 @@ class TransactionRunner
     async.mapSeries transactions, @configureTransaction, (err, results) ->
       transactions = results
 
-    hooks = addHooks @, transactions, @configuration.emitter
+    hooks = addHooks @, transactions, @configuration.emitter, @configuration.custom
     @executeAllTransactions(transactions, hooks, callback)
 
   runHooksForTransaction: (hooksForTransaction, transaction, callback) ->
