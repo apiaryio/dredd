@@ -48,7 +48,7 @@ execCommand = (custom = {}, cb) ->
   ).warmUp().takeoff()
   return
 
-describe "DreddCommand class Integration", () ->
+describe "Dredd class Integration", () ->
   dreddCommand = null
   custom = {}
 
