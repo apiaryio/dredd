@@ -3,7 +3,6 @@ require 'setimmediate'
 
 glob = require 'glob'
 fs = require 'fs'
-clone = require 'clone'
 protagonist = require 'protagonist'
 async = require 'async'
 request = require 'request'
@@ -19,22 +18,29 @@ configureReporters = require './configure-reporters'
 
 CONNECTION_ERRORS = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
 
+removeDuplicates = (arr) ->
+  arr.reduce (alreadyProcessed, currentItem) ->
+    if alreadyProcessed.indexOf(currentItem) is -1
+      return alreadyProcessed.concat currentItem
+    return alreadyProcessed
+  , []
+
 class Dredd
-  constructor: (configOrigin) ->
-    # do not touch passed configuration, rather work on a clone of it
-    # (e.g prevents changing references)
-    config = clone configOrigin
+  constructor: (config) ->
     @tests = []
     @stats =
-        tests: 0
-        failures: 0
-        errors: 0
-        passes: 0
-        skipped: 0
-        start: 0
-        end: 0
-        duration: 0
+      tests: 0
+      failures: 0
+      errors: 0
+      passes: 0
+      skipped: 0
+      start: 0
+      end: 0
+      duration: 0
+
     @configuration = applyConfiguration(config, @stats)
+    @configuration.options ?= {}
+
     configureReporters @configuration, @stats, @tests
     @runner = new Runner @configuration
 
@@ -66,6 +72,9 @@ class Dredd
     if not configDataIsEmpty
       config.data = passedConfigData
 
+    # remove duplicate paths
+    config.options.path = removeDuplicates config.options.path
+
     # expand all globs
     expandGlobs = (cb) ->
       async.each config.options.path, (globToExpand, globCallback) ->
@@ -84,10 +93,8 @@ class Dredd
           return callback({message: "Blueprint file or files not found on path: '#{config.options.path}'"}, stats)
 
         # remove duplicate filenames
-        config.files = config.files.filter (item, pos) ->
-          return config.files.indexOf(item) == pos
+        config.files = removeDuplicates config.files
         cb()
-
 
     # load all files
     loadFiles = (cb) ->
