@@ -1,5 +1,6 @@
 {assert} = require 'chai'
 sinon = require 'sinon'
+express = require 'express'
 
 proxyquire = require('proxyquire').noCallThru()
 
@@ -161,12 +162,14 @@ describe "DreddCommand class", () ->
         assert.equal dc.dreddInstance, 'myDreddInstance'
 
 
-  describe 'takeoff', ->
+  describe 'takeoff without argv set', ->
     dc = null
     runDreddStub = null
+    exitCalled = null
     beforeEach ->
       dc = new DreddCommand({
         exit: ->
+          exitCalled = true
       })
       dc.dreddInstance = 'dreddInstance'
       runDreddStub = sinon.stub dc, 'runDredd', ->
@@ -175,6 +178,8 @@ describe "DreddCommand class", () ->
       dc.runDredd.restore()
 
     describe 'with finished set to false', ->
+      it 'should not call exit callback', ->
+        assert.isNull exitCalled
       it 'does call runDredd just once with dreddInstance as first argument', ->
         runDreddStub.reset()
         dc.takeoff()
@@ -189,6 +194,62 @@ describe "DreddCommand class", () ->
         dc.finished = true
         dc.takeoff()
         assert.equal dc.runDredd.called, 0
+
+
+  describe 'takeoff with argv set to load regular blueprint', ->
+    dc = null
+    runDreddStub = null
+    returnGood = true
+
+    beforeEach (done) ->
+      app = express()
+
+      app.get '/machines', (req, res) ->
+        if returnGood
+          res.type('json').status(200).send [type: 'bulldozer', name: 'willy']
+        else
+          res.type('json').status(200).send [my: 'another', world: 'service']
+
+      dc = new DreddCommand({
+        custom:
+          argv: [
+            './test/fixtures/single-get.apib'
+            "http://localhost:#{PORT}"
+            '--path=./test/fixtures/single-get.apib'
+          ]
+        exit: (code) ->
+          exitStatus = code
+          server.close()
+      })
+      dc.warmUp()
+
+      server = app.listen PORT, () ->
+        dc.takeoff()
+
+      server.on 'close', done
+
+    describe 'with server returning good things', ->
+      before ->
+        returnGood = true
+
+      it 'returns exit code 0', ->
+        assert.equal exitStatus, 0
+
+      it 'propagates configuration options to Dredd class', ->
+        assert.equal dc.dreddInstance.configuration.options.path[0], "./test/fixtures/single-get.apib"
+        assert.equal dc.dreddInstance.configuration.server, "http://localhost:#{PORT}"
+
+    describe 'with server returning wrong things', ->
+
+      before ->
+        returnGood = false
+
+      it 'returns exit code 1', ->
+        assert.equal exitStatus, 1
+
+      it 'propagates configuration options to Dredd class', ->
+        assert.equal dc.dreddInstance.configuration.options.path[0], "./test/fixtures/single-get.apib"
+        assert.equal dc.dreddInstance.configuration.server, "http://localhost:#{PORT}"
 
 
   describe "when called w/ OR wo/ special arguments", () ->
