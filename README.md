@@ -129,7 +129,7 @@ Using [Chai](http://chaijs.com/) assertions in hooks will result to a failing tr
 {assert} = require 'chai'
 
 after "Machines > Machines collection > Get Machines", (transaction) ->
-  assert.isBelow transaction.real.body.length > 100
+  assert.isBelow transaction.real.body.length, 100
 ```
 
 
