@@ -29,9 +29,7 @@ execCommand = (cmd, options = {}, callback) ->
     if error
       exitStatus = error.code
 
-  exitEventName = if process.version.split('.')[1] is '6' then 'exit' else 'close'
-
-  cli.on exitEventName, (code) ->
+  cli.on 'close', (code) ->
     exitStatus = code if exitStatus == null and code != undefined
     callback(undefined, stdout, stderr, exitStatus)
 
@@ -274,8 +272,14 @@ describe "Command line interface", () ->
 
         server.on 'close', done
 
+      it 'should exit with status 0', ()->
+        assert.equal exitStatus, 0
+
       it 'should print using the new reporter', ()->
         assert.include stdout, 'http://url.me/test/run/1234_id'
+
+      it 'should print warning about missing APIARY_API_KEY', ()->
+        assert.include stdout, 'Apiary reporter environment variable APIARY_API_KEY'
 
       it 'should send results from gavel', ()->
         assert.isObject receivedRequest
@@ -309,7 +313,7 @@ describe "Command line interface", () ->
 
       it 'should print using the new reporter', ()->
         # nyan cat ears should exist in stdout
-        assert.ok stdout.indexOf '/\\_/\\' > -1
+        assert.ok stdout.indexOf('/\\_/\\') > -1
 
 
     describe 'when using an output path with -o', () ->
@@ -419,7 +423,7 @@ describe "Command line interface", () ->
         server.on 'close', done
 
       it 'should perform the POST, GET, PUT, DELETE in order', () ->
-        assert.ok stdout.indexOf 'POST'< stdout.indexOf 'GET' < stdout.indexOf 'PUT' < stdout.indexOf 'DELETE'
+        assert.ok stdout.indexOf('POST') < stdout.indexOf('GET') < stdout.indexOf('PUT') < stdout.indexOf('DELETE')
 
     describe 'when displaying errors inline with -e', () ->
 
@@ -470,7 +474,7 @@ describe "Command line interface", () ->
 
       it 'should display details on passing tests', () ->
         # the request: block is not shown for passing tests normally
-        assert.ok stdout.indexOf 'request' > -1
+        assert.ok stdout.indexOf('request') > -1
 
     describe "when filtering request methods with -m", () ->
 
@@ -641,7 +645,7 @@ describe "Command line interface", () ->
 
       it 'should not display anything', () ->
         # at the "error" level, complete should not be shown
-        assert.ok stdout.indexOf 'complete' is -1
+        assert.ok stdout.indexOf('complete') is -1
 
     describe 'when showing timestamps with -t', () ->
       before (done) ->
@@ -665,7 +669,7 @@ describe "Command line interface", () ->
 
       it 'should display timestamps', () ->
         # look for the prefix for cli output with timestamps
-        assert.notEqual stdout.indexOf 'Z -', -1
+        assert.notEqual stdout.indexOf('Z -'), -1
 
   describe 'when loading hooks with --hookfiles', () ->
 
@@ -734,7 +738,7 @@ describe "Command line interface", () ->
       ret = []
       lines = str.split('\n')
       for line in lines
-        if line.startsWith('*** ')
+        if line.indexOf('*** ') is 0
           ret.push(line.substr(4))
       return ret.join(',')
 

@@ -45,8 +45,9 @@ configureReporters = (config, stats, tests) ->
         mdReporter = new MarkdownReporter(emitter, stats, tests, path, config.options.details)
       when 'apiary'
         apiaryReporter = new ApiaryReporter(emitter, stats, tests)
-      else
-        logger.warn "Invalid reporter #{reporter} selected, ignoring."
+      # else
+      #   Cannot happen, due to 'intersection' usage
+      #   logger.warn "Invalid reporter #{reporter} selected, ignoring."
 
 
   addCli(reporters) if not config.options.silent
@@ -57,14 +58,14 @@ configureReporters = (config, stats, tests) ->
 
   if usedFileReporters.length > 0
     usedFileReportersLength = usedFileReporters.length
-    if reporters.indexOf('apiary') != -1
+    if reporters.indexOf('apiary') > -1
       usedFileReportersLength = usedFileReportersLength - 1
-      if process.env['DREDD_REST_TOKEN'] == undefined or process.env['DREDD_REST_SUITE'] == undefined
-        logger.warn "Apiary reporter environment variable DREDD_REST_TOKEN or DREDD_REST_SUITE not defined."
+      if process.env['APIARY_API_KEY'] == undefined or process.env['APIARY_API_NAME'] == undefined
+        logger.warn "Apiary reporter environment variable APIARY_API_KEY or APIARY_API_NAME not defined."
 
     if usedFileReportersLength > outputs.length
       logger.warn """
-      There are more reporters requiring output paths than there are output paths
+      There are more reporters requiring output paths than there are output paths \
       provided, using default paths for additional file-based reporters.
       """
 

@@ -195,7 +195,7 @@ class Dredd
   transactionsComplete: (callback) =>
     stats = @stats
     reporterCount = @configuration.emitter.listeners('end').length
-    @configuration.emitter.emit 'end' , ->
+    @configuration.emitter.emit 'end', ->
       reporterCount--
       if reporterCount is 0
         callback(null, stats)

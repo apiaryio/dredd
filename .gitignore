@@ -1,5 +1,7 @@
 node_modules
+src-cov
 /lib
+cov.html
 .vagrant
 *.DS_Store
 /.idea

@@ -8,7 +8,7 @@ class NyanCatReporter
     @type = "nyan"
     @stats = stats
     @tests = tests
-    @isatty = tty.isatty 1 and tty.isatty 2
+    @isatty = tty.isatty(1) and tty.isatty(2)
     if @isatty
       if process.stdout.getWindowSize
         windowWidth = process.stdout.getWindowSize(1)[0]
@@ -29,7 +29,7 @@ class NyanCatReporter
     @configureEmitter emitter
 
   configureEmitter: (emitter) =>
-    emitter.on 'start', (rawBlueprint, callback)=>
+    emitter.on 'start', (rawBlueprint, callback) =>
       @cursorHide()
       @draw()
       callback()

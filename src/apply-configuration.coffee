@@ -2,16 +2,17 @@
 
 logger = require './logger'
 
-applyConfiguration = (config) ->
+coerceToArray = (value) ->
+  if Array.isArray value
+    return value
+  else if typeof value is 'string'
+    return [value]
+  else if !value?
+    return []
+  else
+    return value
 
-  coerceToArray = (value) ->
-    if typeof value is 'string'
-      value = [value]
-    else if !value?
-      value = []
-    else if value instanceof Array
-      value
-    else value
+applyConfiguration = (config) ->
 
   configuration =
     blueprintPath: null
