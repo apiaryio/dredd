@@ -115,6 +115,23 @@ before "Machines > Machines collection > Get Machines", (transaction) ->
   transaction.skip = true
 ```
 
+Failing a validation with hooks:
+
+```coffee
+before "Machines > Machines collection > Get Machines", (transaction) ->
+  transaction.fail = "Some failing message"
+```
+
+Using [Chai](http://chaijs.com/) assertions in hooks will result to a failing transaction:
+
+```coffee
+{before, after} = require 'hooks'
+{assert} = require 'chai'
+
+after "Machines > Machines collection > Get Machines", (transaction) ->
+  assert.isBelow transaction.real.body.length, 100
+```
+
 
 Run validation:
 

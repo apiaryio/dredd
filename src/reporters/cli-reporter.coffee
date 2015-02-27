@@ -22,11 +22,16 @@ class CliReporter
         for test in @errors
           logger.fail test.title + " duration: #{test.duration}ms"
           logger.fail test.message
-          logger.request "\n" + prettifyResponse(test.request) + "\n"
-          logger.expected "\n" + prettifyResponse(test.expected) + "\n"
-          logger.actual "\n" + prettifyResponse(test.actual) + "\n\n"
+          logger.request "\n" + prettifyResponse(test.request) + "\n" if test.request
+          logger.expected "\n" + prettifyResponse(test.expected) + "\n" if test.expected
+          logger.actual "\n" + prettifyResponse(test.actual) + "\n\n" if test.actual
       if @stats.tests > 0
-        logger.complete "#{@stats.passes} passing, #{@stats.failures} failing, #{@stats.errors} errors, #{@stats.skipped} skipped"
+        logger.complete "#{@stats.passes} passing, " +
+          "#{@stats.failures} failing, " +
+          "#{@stats.errors} errors, " +
+          "#{@stats.skipped} skipped, " +
+          "#{@stats.tests} total"
+
       logger.complete "Tests took #{@stats.duration}ms"
       callback()
 
@@ -44,9 +49,9 @@ class CliReporter
       logger.fail test.title + " duration: #{test.duration}ms"
       if @inlineErrors
         logger.fail test.message
-        logger.request "\n" + prettifyResponse(test.request) + "\n"
-        logger.expected "\n" + prettifyResponse(test.expected) + "\n"
-        logger.actual "\n" + prettifyResponse(test.actual) + "\n\n"
+        logger.request "\n" + prettifyResponse(test.request) + "\n" if test.request
+        logger.expected "\n" + prettifyResponse(test.expected) + "\n" if test.expected
+        logger.actual "\n" + prettifyResponse(test.actual) + "\n\n" if test.actual
       else
         @errors.push test
 

@@ -33,11 +33,11 @@
     "request": "^2.53.0",
     "setimmediate": "^1.0.2",
     "uri-template": "~1.0.0",
-    "winston": "^0.9.0"
+    "winston": "^0.9.0",
+    "chai": "^2.0.0"
   },
   "devDependencies": {
     "body-parser": "^1.12.0",
-    "chai": "^2.0.0",
     "codo": "2.0.9",
     "coffee-coverage": "~0.4.4",
     "coffee-errors": "~0.8.6",

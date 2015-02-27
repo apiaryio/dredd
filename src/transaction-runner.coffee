@@ -4,9 +4,8 @@ html = require 'html'
 url = require 'url'
 path = require 'path'
 os = require 'os'
-
+chai = require 'chai'
 gavel = require 'gavel'
-advisable = require 'advisable'
 async = require 'async'
 
 flattenHeaders = require './flatten-headers'
@@ -18,8 +17,6 @@ logger = require './logger'
 
 class TransactionRunner
   constructor: (@configuration) ->
-    advisable.async.call TransactionRunner.prototype
-    addHooks @, {}, @configuration.emitter
 
   config: (config) ->
     @configuration = config
@@ -31,9 +28,48 @@ class TransactionRunner
     async.mapSeries transactions, @configureTransaction, (err, results) ->
       transactions = results
 
-    addHooks {}, transactions, @configuration.emitter
+    hooks = addHooks @, transactions, @configuration.emitter
+    @executeAllTransactions(transactions, hooks, callback)
 
-    @executeAllTransactions(transactions, callback)
+  runHooksForTransaction: (hooksForTransaction, transaction, callback) ->
+    if hooksForTransaction?
+      logger.debug 'Running hooks...'
+
+      runHookWithTransaction = (hook, callback) =>
+        try
+          @runHook hook, transaction, callback
+        catch error
+          unless error instanceof chai.AssertionError
+            @emitError(transaction, error)
+          else
+            transaction.message = "Failed assertion in hooks: " + error.message
+            transaction.test?.status = 'fail'
+            @configuration.emitter.emit 'test fail', transaction.test
+          callback()
+
+      async.eachSeries hooksForTransaction, runHookWithTransaction, ->
+        callback()
+
+    else
+      callback()
+
+  emitError: (transaction, error) ->
+    test =
+      status: ''
+      title: transaction.id
+      message: transaction.name
+      origin: transaction.origin
+    @configuration.emitter.emit 'test error', error, test if error
+
+  runHook: (hook, transaction, callback) ->
+    if hook.length is 1
+      # syncronous, no callback
+      hook transaction
+      callback()
+    else if hook.length is 2
+      # async
+      hook transaction, ->
+        callback()
 
   configureTransaction: (transaction, callback) =>
     configuration = @configuration
@@ -101,8 +137,41 @@ class TransactionRunner
 
     return callback(null, configuredTransaction)
 
-  executeAllTransactions: (transactions, callback) =>
-    async.eachSeries transactions, @executeTransaction, callback
+  emitResult: (transaction, callback) ->
+    if transaction.test # if transaction test was executed and was not skipped or failed
+      if transaction.test.valid == true
+        if transaction.fail
+          transaction.test.status = 'fail'
+          transaction.test.message = "Failed in after hook: " + transaction.fail
+          @configuration.emitter.emit 'test fail', transaction.test
+        else
+          @configuration.emitter.emit 'test pass', transaction.test
+    callback()
+
+  executeAllTransactions: (transactions, hooks, callback) =>
+    hooks.transactions = transactions
+
+    # run beforeAll hooks
+    hooks.runBeforeAll () =>
+
+      # iterate over transactions transaction
+      async.eachSeries transactions, (transaction, iterationCallback) =>
+
+        # run before hooks
+        @runHooksForTransaction hooks.beforeHooks[transaction.name], transaction, () =>
+
+          # execute and validate HTTP transaction
+          @executeTransaction transaction, () =>
+
+            # run after hooks
+            @runHooksForTransaction hooks.afterHooks[transaction.name], transaction, () =>
+
+              # decide and emit result
+              @emitResult transaction, iterationCallback
+      , () ->
+
+        #runAfterHooks
+        hooks.runAfterAll(callback)
 
   executeTransaction: (transaction, callback) =>
     configuration = @configuration
@@ -130,20 +199,32 @@ class TransactionRunner
       message: transaction.name
       origin: transaction.origin
 
-    if configuration.options.names
-      logger.info transaction.name
-      return callback()
-
     configuration.emitter.emit 'test start', test
 
-    if configuration.options['dry-run']
+    if transaction.skip
+      # manually set to skip a test in hooks
+      configuration.emitter.emit 'test skip', test
+      return callback()
+    else if transaction.fail
+      # manually set to skip a test in hooks
+      test.message = "Failed in before hook: " + transaction.fail
+      configuration.emitter.emit 'test fail', test
+      return callback()
+    else if configuration.options['dry-run']
       logger.info "Dry run, skipping API Tests..."
+      transaction.skip = true
+      return callback()
+    else if configuration.options.names
+      logger.info transaction.name
+      transaction.skip = true
       return callback()
     else if configuration.options.method.length > 0 and not (transaction.request.method in configuration.options.method)
       configuration.emitter.emit 'test skip', test
+      transaction.skip = true
       return callback()
     else if configuration.options.only.length > 0 and not (transaction.name in configuration.options.only)
       configuration.emitter.emit 'test skip', test
+      transaction.skip = true
       return callback()
     else if transaction.skip
       # manually set to skip a test
@@ -197,10 +278,12 @@ class TransactionRunner
 
               test.message = message
               test.results = result
+              test.valid = isValid
 
-              if isValid
-                configuration.emitter.emit 'test pass', test
-              else
+              # propagate test to after hooks
+              transaction.test = test
+
+              if test.valid == false
                 configuration.emitter.emit 'test fail', test
 
               return callback()

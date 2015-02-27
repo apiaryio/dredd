@@ -1,18 +1,13 @@
 require 'coffee-errors'
 {assert} = require 'chai'
 {EventEmitter} = require 'events'
-nock = require 'nock'
 proxyquire = require 'proxyquire'
 sinon = require 'sinon'
-express = require 'express'
-bodyParser = require 'body-parser'
 
 globStub = require 'glob'
 pathStub = require 'path'
 loggerStub = require '../../src/logger'
 hooksStub = require '../../src/hooks'
-Runner = require '../../src/transaction-runner'
-
 
 addHooks = proxyquire  '../../src/add-hooks', {
   'logger': loggerStub,
@@ -24,6 +19,7 @@ addHooks = proxyquire  '../../src/add-hooks', {
 describe 'addHooks(runner, transaction)', () ->
 
   transactions = {}
+  server = null
 
   before () ->
     loggerStub.transports.console.silent = true
@@ -39,8 +35,16 @@ describe 'addHooks(runner, transaction)', () ->
     after () ->
       globStub.sync.restore()
 
-    it 'should return immediately', ()->
-      addHooks("", transactions)
+    it 'should not expand any glob', ()->
+      runner =
+        configuration:
+          options:
+            hookfiles: null
+        before: (fn, cb) ->
+          return
+        after: (fn, cb) ->
+          return
+      addHooks(runner, transactions, new EventEmitter())
       assert.ok globStub.sync.notCalled
 
 
@@ -81,18 +85,6 @@ describe 'addHooks(runner, transaction)', () ->
         addHooks(runner, transactions)
         assert.ok pathStub.resolve.called
 
-      it 'should attach the hooks', () ->
-        # can't stub proxyquire, so we skip it by forcing files to be empty
-        sinon.restore globStub.sync
-        sinon.stub globStub, 'sync', (pattern) ->
-          []
-        addHooks(runner, transactions)
-        assert.ok runner.before.calledWith 'executeTransaction'
-        assert.ok runner.after.calledWith 'executeTransaction'
-        assert.ok runner.before.calledWith 'executeAllTransactions'
-        assert.ok runner.after.calledWith 'executeAllTransactions'
-
-
     describe 'when there is an error reading the hook files', () ->
 
       beforeEach () ->
@@ -111,230 +103,6 @@ describe 'addHooks(runner, transaction)', () ->
         runner.after.restore()
         globStub.sync.restore()
 
-      it 'should log an warning', () ->
+      it 'should log a warning', () ->
         addHooks(runner, transactions)
         assert.ok loggerStub.warn.called
-
-      it 'should not attach the hooks', () ->
-        addHooks(runner, transactions)
-        assert.ok runner.before.notCalled
-        assert.ok runner.after.notCalled
-
-    describe 'when a transaction is executed', () ->
-
-      configuration =
-        server: 'http://localhost:3000'
-        emitter: new EventEmitter()
-        options:
-          'dry-run': false
-          method: []
-          header: []
-          reporter:  []
-          only: []
-          hookfiles: './**/*_hooks.*'
-
-      transaction =
-        name: 'Group Machine > Machine > Delete Message > Bogus example name'
-        id: 'POST /machines'
-        host: 'localhost'
-        port: '3000'
-        request:
-          body: '{\n  "type": "bulldozer",\n  "name": "willy"}\n'
-          headers:
-            'Content-Type': 'application/json'
-            'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)'
-            'Content-Length': 44
-          uri: '/machines'
-          method: 'POST'
-        expected:
-          headers: 'content-type': 'application/json'
-          body: '{\n  "type": "bulldozer",\n  "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n'
-          status: '202'
-        origin:
-          resourceGroupName: 'Group Machine'
-          resourceName: 'Machine'
-          actionName: 'Delete Message'
-          exampleName: 'Bogus example name'
-        fullPath: '/machines'
-
-      beforeEach () ->
-        server = nock('http://localhost:3000').
-          post('/machines', {"type":"bulldozer","name":"willy"}).
-          reply transaction['expected']['status'],
-            transaction['expected']['body'],
-            {'Content-Type': 'application/json'}
-        runner = new Runner(configuration)
-        sinon.stub globStub, 'sync', (pattern) ->
-          []
-
-      afterEach () ->
-        globStub.sync.restore()
-        nock.cleanAll()
-
-      describe 'with hooks', () ->
-        beforeEach () ->
-          sinon.spy loggerStub, 'info'
-          hooksStub.beforeHooks =
-            'Group Machine > Machine > Delete Message > Bogus example name' : [
-              (transaction) ->
-                loggerStub.info "before"
-            ]
-          hooksStub.afterHooks =
-            'Group Machine > Machine > Delete Message > Bogus example name' : [
-              (transaction, done) ->
-                loggerStub.info "after"
-                done()
-            ]
-
-        afterEach () ->
-          loggerStub.info.restore()
-
-        it 'should run the hooks', (done) ->
-          runner.executeTransaction transaction, () ->
-            assert.ok loggerStub.info.calledWith "before"
-            assert.ok loggerStub.info.calledWith "after"
-            done()
-
-      describe 'with multiple hooks for the same transaction', () ->
-        beforeEach () ->
-          sinon.spy loggerStub, 'info'
-          hooksStub.beforeHooks =
-            'Group Machine > Machine > Delete Message > Bogus example name' : [
-              (transaction) ->
-                loggerStub.info "first",
-              (transaction, cb) ->
-                loggerStub.info "second"
-                cb()
-            ]
-
-        afterEach () ->
-          loggerStub.info.restore()
-
-        it 'should run all hooks', (done) ->
-          runner.executeTransaction transaction, () ->
-            assert.ok loggerStub.info.calledWith "first"
-            assert.ok loggerStub.info.calledWith "second"
-            done()
-
-      describe 'with a beforeAll hook', () ->
-        beforeAll = sinon.stub()
-        beforeAll.callsArg(0)
-
-        before () ->
-          hooksStub.beforeAll beforeAll
-
-        after () ->
-          hooksStub.beforeAllHooks = []
-
-        it 'should run the hooks', (done) ->
-          runner.executeAllTransactions [], () ->
-            assert.ok beforeAll.called
-            done()
-
-      describe 'with an afterAll hook', () ->
-        afterAll = sinon.stub()
-        afterAll.callsArg(0)
-
-        before () ->
-          hooksStub.afterAll afterAll
-
-        after () ->
-          hooksStub.afterAllHooks = []
-
-        it 'should run the hooks', (done) ->
-          runner.executeAllTransactions [], () ->
-            assert.ok afterAll.called
-            done()
-
-      describe 'with multiple hooks for the same events', () ->
-        beforeAll1 = sinon.stub()
-        beforeAll2 = sinon.stub()
-        afterAll1 = sinon.stub()
-        afterAll2 = sinon.stub()
-
-        before () ->
-          beforeAll1.callsArg(0)
-          beforeAll2.callsArg(0)
-          afterAll1.callsArg(0)
-          afterAll2.callsArg(0)
-
-        beforeEach () ->
-          hooksStub.beforeAll beforeAll1
-          hooksStub.afterAll afterAll1
-          hooksStub.afterAll afterAll2
-          hooksStub.beforeAll beforeAll2
-
-        after () ->
-          hooksStub.beforeAllHooks = []
-          hooksStub.afterAllHooks = []
-
-        it 'should run all the events in order', (done) ->
-          runner.executeAllTransactions [], () ->
-            assert.ok beforeAll1.calledBefore(beforeAll2)
-            assert.ok beforeAll2.called
-            assert.ok afterAll1.calledBefore(afterAll2)
-            assert.ok afterAll2.called
-            done()
-
-      describe 'with hook that throws an error', () ->
-        beforeEach () ->
-          hooksStub.beforeHooks =
-            'Group Machine > Machine > Delete Message > Bogus example name' : [
-              (transaction) ->
-                JSON.parse '<<<>>>!@#!@#!@#4234234'
-            ]
-          sinon.stub configuration.emitter, 'emit'
-
-        after () ->
-          configuration.emitter.emit.restore()
-
-        it 'should report an error with the test', (done) ->
-          runner.executeTransaction transaction, () ->
-            assert.ok emitter.emit.calledWith "test error"
-            done()
-
-      describe 'without hooks', () ->
-        beforeEach () ->
-          hooksStub.beforeHooks = []
-          hooksStub.afterHooks = []
-
-        it 'should not run the hooks', (done) ->
-          runner.executeTransaction transaction, () ->
-            done()
-
-      describe 'with hook modifying the transaction body and backend Express app using the body parser', () ->
-        it 'should perform the transaction and don\'t hang', (done) ->
-          nock.cleanAll()
-
-          receivedRequests = []
-
-          hooksStub.beforeHooks =
-            'Group Machine > Machine > Delete Message > Bogus example name' : [
-              (transaction) ->
-                body = JSON.parse transaction.request.body
-                body.name = "Michael"
-                transaction.request.body = JSON.stringify body
-                transaction.request.headers['Content-Length'] = transaction.request.body.length
-            ]
-
-          app = express()
-          app.use(bodyParser.json())
-
-          app.post '/machines', (req, res) ->
-            receivedRequests.push req
-            res.setHeader 'Content-Type', 'application/json'
-            machine =
-              type: 'bulldozer'
-              name: 'willy'
-            response = [machine]
-            res.status(200).send response
-
-          server = app.listen transaction.port, () ->
-            runner.executeTransaction transaction, () ->
-              #should not hang here
-              assert.ok true
-              server.close()
-
-          server.on 'close', () ->
-            assert.equal receivedRequests.length, 1
-            done()
