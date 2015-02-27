@@ -24,28 +24,25 @@ transactionRunner = proxyquire '../../src/transaction-runner', {
   './add-hooks': addHooksStub
   './logger': loggerStub
 }
-dreddStub = proxyquire '../../src/dredd', {
+Dredd = proxyquire '../../src/dredd', {
   './transaction-runner': transactionRunner
   './logger': loggerStub
 }
-DreddCommand = proxyquire '../../src/command', {
-  './dredd': dreddStub
-  'console': loggerStub
-}
 
-execCommand = (custom = {}, cb) ->
+execCommand = (options = {}, cb) ->
   stdout = ''
   stderr = ''
   exitStatus = null
   finished = false
-  dreddCommand = new DreddCommand({
-    custom: custom
-  }, (code) ->
+  options.server ?= "http://localhost:#{PORT}"
+  options.level ?= 'info'
+  new Dredd(options).run (error, stats = {}) ->
     if not finished
       finished = true
-      exitStatus = (code ? 0)
-      cb null, stdout, stderr, (code ? 0)
-  ).warmUp().takeoff()
+      if error?.message
+        stderr += error.message
+      exitStatus = if (error or (1 * stats.failures + 1 * stats.errors) > 0) then 1 else 0
+      cb null, stdout, stderr, exitStatus
   return
 
 describe "Dredd class Integration", () ->
@@ -67,15 +64,13 @@ describe "Dredd class Integration", () ->
     return
 
 
-  describe "when creating DreddCommand instance with existing blueprint and responding server", () ->
+  describe "when creating Dredd instance with existing blueprint and responding server", () ->
     describe "when the server is responding as specified in the blueprint", () ->
 
       before (done) ->
-        custom =
-          argv: [
-            "./test/fixtures/single-get.apib"
-            "http://localhost:#{PORT}"
-          ]
+        cmd =
+          options:
+            path: "./test/fixtures/single-get.apib"
 
         app = express()
 
@@ -83,7 +78,7 @@ describe "Dredd class Integration", () ->
           res.type('json').status(200).send [type: 'bulldozer', name: 'willy']
 
         server = app.listen PORT, () ->
-          execCommand custom, ->
+          execCommand cmd, ->
             server.close()
 
         server.on 'close', done
@@ -93,11 +88,9 @@ describe "Dredd class Integration", () ->
 
     describe "when the server is sending different response", () ->
       before (done) ->
-        custom =
-          argv: [
-            "./test/fixtures/single-get.apib"
-            "http://localhost:#{PORT}"
-          ]
+        cmd =
+          options:
+            path: ["./test/fixtures/single-get.apib"]
 
         app = express()
 
@@ -105,7 +98,7 @@ describe "Dredd class Integration", () ->
           res.type('json').status(201).send [kind: 'bulldozer', imatriculation: 'willy']
 
         server = app.listen PORT, () ->
-          execCommand custom, () ->
+          execCommand cmd, () ->
             server.close()
 
         server.on 'close', done
@@ -121,14 +114,13 @@ describe "Dredd class Integration", () ->
     exitStatus = null
 
     before (done) ->
-      custom =
-        argv: [
-          "./test/fixtures/single-get.apib"
-          "http://localhost:#{PORT}"
-          "--reporter=apiary"
-        ]
-        apiaryApiUrl: "http://127.0.0.1:#{PORT+1}"
-        dreddRestDebug: '1'
+      cmd =
+        options:
+          path: ["./test/fixtures/single-get.apib"]
+          reporter: ["apiary"]
+        custom:
+          apiaryApiUrl: "http://127.0.0.1:#{PORT+1}"
+          dreddRestDebug: '1'
 
       apiary = express()
       app = express()
@@ -153,7 +145,7 @@ describe "Dredd class Integration", () ->
 
       server = app.listen PORT, () ->
         server2 = apiary.listen (PORT+1), ->
-          execCommand custom, () ->
+          execCommand cmd, () ->
             server2.close ->
               server.close ->
 
@@ -183,12 +175,9 @@ describe "Dredd class Integration", () ->
 
     describe '--path argument is a string', ->
       before (done) ->
-        custom =
-          argv: [
-            "./test/fixtures/single-get.apib"
-            '--path', './test/fixtures/single-get.apib'
-            "http://localhost:#{PORT}"
-          ]
+        cmd =
+          options:
+            path: ["./test/fixtures/single-get.apib", './test/fixtures/single-get.apib']
 
         app = express()
 
@@ -197,7 +186,7 @@ describe "Dredd class Integration", () ->
           res.type('json').status(200).send response
 
         server = app.listen PORT, () ->
-          execCommand custom, (error, stdOut, stdErr, code) ->
+          execCommand cmd, (error, stdOut, stdErr, code) ->
             err = stdErr
             out = stdOut
             exitCode = code
@@ -215,15 +204,14 @@ describe "Dredd class Integration", () ->
       exitStatus = null
 
       before (done) ->
-        custom =
-          argv: [
-            "./test/fixtures/single-get.apib"
-            "http://localhost:#{PORT}"
-            "--reporter=apiary"
-          ]
-          apiaryReporterEnv:
-            APIARY_API_URL: "http://127.0.0.1:#{PORT+1}"
-            DREDD_REST_DEBUG: '1'
+        cmd =
+          options:
+            path: ["./test/fixtures/single-get.apib"]
+            reporter: ['apiary']
+          custom:
+            apiaryReporterEnv:
+              APIARY_API_URL: "http://127.0.0.1:#{PORT+1}"
+              DREDD_REST_DEBUG: '1'
 
         apiary = express()
         app = express()
@@ -248,7 +236,7 @@ describe "Dredd class Integration", () ->
 
         server = app.listen PORT, () ->
           server2 = apiary.listen (PORT+1), ->
-            execCommand custom, () ->
+            execCommand cmd, () ->
               server2.close ->
                 server.close ->
 
@@ -277,18 +265,18 @@ describe "Dredd class Integration", () ->
     notFound = null
     fileFound = null
 
-    errorCmd = argv: [
-      "http://localhost:#{PORT+1}/connection-error.apib"
-      "http://localhost:#{PORT+1}"
-    ]
-    wrongCmd = argv: [
-      "http://localhost:#{PORT}/not-found.apib"
-      "http://localhost:#{PORT}"
-    ]
-    goodCmd = argv: [
-      "http://localhost:#{PORT}/file.apib"
-      "http://localhost:#{PORT}"
-    ]
+    errorCmd =
+      server: "http://localhost:#{PORT+1}"
+      options:
+        path: ["http://localhost:#{PORT+1}/connection-error.apib"]
+
+    wrongCmd =
+      options:
+        path: ["http://localhost:#{PORT}/not-found.apib"]
+
+    goodCmd =
+      options:
+        path: ["http://localhost:#{PORT}/file.apib"]
 
     afterEach ->
       connectedToServer = null
