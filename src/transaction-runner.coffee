@@ -202,7 +202,7 @@ class TransactionRunner
     configuration.emitter.emit 'test start', test
 
     if transaction.skip
-      # manually set to skip a test in hooks
+      # manually set to skip a test (can be done in hooks too)
       configuration.emitter.emit 'test skip', test
       return callback()
     else if transaction.fail
@@ -225,10 +225,6 @@ class TransactionRunner
     else if configuration.options.only.length > 0 and not (transaction.name in configuration.options.only)
       configuration.emitter.emit 'test skip', test
       transaction.skip = true
-      return callback()
-    else if transaction.skip
-      # manually set to skip a test
-      configuration.emitter.emit 'test skip', test
       return callback()
     else
       buffer = ""
