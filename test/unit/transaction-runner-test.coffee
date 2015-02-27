@@ -40,9 +40,19 @@ describe 'TransactionRunner', ()->
   runner = {}
 
   before () ->
+    # TODO/FIXME: use new Hooks instance for every addHooks call
+    # until then, clean all hooks
+    hooksStub.beforeAllHooks = []
+    hooksStub.afterAllHooks = []
+    hooksStub.beforeHooks = {}
+    hooksStub.afterHooks = {}
     loggerStub.transports.console.silent = true
 
   after () ->
+    hooksStub.beforeAllHooks = []
+    hooksStub.afterAllHooks = []
+    hooksStub.beforeHooks = {}
+    hooksStub.afterHooks = {}
     loggerStub.transports.console.silent = false
 
   describe 'constructor', () ->
