@@ -9,15 +9,11 @@ hooks = require './hooks'
 logger = require './logger'
 
 addHooks = (runner, transactions, emitter) ->
-  @emitter = emitter
-  @runner = runner
-  @transactions = transactions
 
-
-  for transaction in @transactions
+  for transaction in transactions
     hooks.transactions[transaction.name] = transaction
 
-  pattern = @runner?.configuration?.options?.hookfiles
+  pattern = runner?.configuration?.options?.hookfiles
   if pattern
 
     files = glob.sync pattern
