@@ -7,7 +7,7 @@ packageConfig = require './../../package.json'
 logger = require './../logger'
 
 class ApiaryReporter
-  constructor: (emitter, stats, tests, inlineErrors) ->
+  constructor: (emitter, stats, tests, config) ->
     @type = "cli"
     @stats = stats
     @tests = tests
@@ -15,35 +15,51 @@ class ApiaryReporter
     @startedAt = null
     @endedAt = null
     @remoteId = null
+    @config = config
     @reportUrl = null
     @configureEmitter emitter
-    @inlineErrors = inlineErrors
     @errors = []
-    @verbose = process.env['DREDD_REST_DEBUG']?
+    @verbose = @_get('dreddRestDebug', 'DREDD_REST_DEBUG', null)?
     @configuration =
-      apiUrl: process.env['APIARY_API_URL'] || "https://api.apiary.io"
-      apiToken: process.env['APIARY_API_KEY'] || null
-      apiSuite: process.env['APIARY_API_NAME'] || 'public'
+      apiUrl: @_get 'apiaryApiUrl', 'APIARY_API_URL', 'https://api.apiary.io'
+      apiToken: @_get 'apiaryApiKey', 'APIARY_API_KEY', null
+      apiSuite: @_get 'apiaryApiName', 'APIARY_API_NAME', null
 
     logger.info 'Using apiary reporter.'
+    if not @configuration.apiToken? and not @configuration.apiSuite?
+      logger.warn "Apiary reporter environment variable APIARY_API_KEY or APIARY_API_NAME not defined."
+    @configuration.apiSuite ?= 'public'
+
+  _get: (customProperty, envProperty, defaultVal) ->
+    returnVal = defaultVal
+    if @config.custom?[customProperty]?
+      returnVal = @config.custom[customProperty]
+    else if @config.custom?.apiaryReporterEnv?[customProperty]?
+      returnVal = @config.custom.apiaryReporterEnv[customProperty]
+    else if @config.custom?.apiaryReporterEnv?[envProperty]?
+      returnVal = @config.custom.apiaryReporterEnv[envProperty]
+    else if process.env[envProperty]?
+      returnVal = process.env[envProperty]
+    return returnVal
+
+  _getKeys: ->
+    returnKeys = []
+    returnKeys = returnKeys.concat Object.keys(@config.custom?.apiaryReporterEnv or {})
+    return returnKeys.concat Object.keys process.env
 
   configureEmitter: (emitter) =>
     emitter.on 'start', (blueprintsData, callback) =>
       @uuid = uuid.v4()
       @startedAt = Math.round(new Date().getTime() / 1000)
 
-      ciVars = [/^TRAVIS/, /^CIRCLE/, /^CI/, /^DRONE/]
-      envVarNames = Object.keys process.env
+      # Cycle through all keys from
+      # - config.custom.apiaryReporterEnv
+      # - process.env keys
+      ciVars = /^(TRAVIS|CIRCLE|CI|DRONE)/
+      envVarNames = @_getKeys()
       ciEnvVars = {}
-      for envVarName in envVarNames
-        ciEnvVar = false
-
-        for ciVar in ciVars
-          if envVarName.match(ciVar) != null
-            ciEnvVar = true
-
-        if ciEnvVar == true
-          ciEnvVars[envVarName] = process.env[envVarName]
+      for envVarName in envVarNames when envVarName.match(ciVars)?
+        ciEnvVars[envVarName] = @_get envVarName, envVarName
 
       # transform blueprints data to array
       blueprints = []
@@ -52,9 +68,9 @@ class ApiaryReporter
 
       data =
         blueprints: blueprints
-        agent: process.env['DREDD_AGENT'] || process.env['USER']
+        agent: @_get('dreddAgent', 'DREDD_AGENT') || @_get('user', 'USER')
         agentRunUuid: @uuid
-        hostname: process.env['DREDD_HOSTNAME'] || os.hostname()
+        hostname: @_get('dreddHostname', 'DREDD_HOSTNAME') || os.hostname()
         startedAt: @startedAt
         public: true
         status: 'running'
@@ -122,17 +138,17 @@ class ApiaryReporter
 
       res.on 'data', (chunk) =>
         if @verbose
-          console.log 'REST Reporter HTTPS Response chunk: ' + chunk
+          logger.log 'REST Reporter HTTPS Response chunk: ' + chunk
         buffer = buffer + chunk
 
       res.on 'error', (error) =>
         if @verbose
-          console.log 'REST Reporter HTTPS Response error.'
+          logger.log 'REST Reporter HTTPS Response error.'
         return callback error, req, res
 
       res.on 'end', =>
         if @verbose
-          console.log 'Rest Reporter Response ended'
+          logger.log 'Rest Reporter Response ended'
 
         try
           parsedBody = JSON.parse buffer
@@ -145,7 +161,7 @@ class ApiaryReporter
             headers: res.headers
             statusCode: res.statusCode
             body: parsedBody
-          console.log 'Rest Reporter Response:', JSON.stringify(info, null, 2)
+          logger.log 'Rest Reporter Response:', JSON.stringify(info, null, 2)
 
         return callback(undefined, res, parsedBody)
 
@@ -168,15 +184,15 @@ class ApiaryReporter
       info =
         options: options
         body: body
-      console.log 'Rest Reporter Request:', JSON.stringify(info, null, 2)
+      logger.log 'Rest Reporter Request:', JSON.stringify(info, null, 2)
 
     if @configuration.apiUrl?.indexOf('https') is 0
       if @verbose
-        console.log 'Starting REST Reporter HTTPS Request'
+        logger.log 'Starting REST Reporter HTTPS Request'
       req = https.request options, handleRequest
     else
       if @verbose
-        console.log 'Starting REST Reporter HTTP Response'
+        logger.log 'Starting REST Reporter HTTP Response'
       req = http.request options, handleRequest
 
     req.write JSON.stringify body

@@ -2,6 +2,7 @@
 {EventEmitter} = require 'events'
 proxyquire = require 'proxyquire'
 nock = require 'nock'
+clone = require 'clone'
 sinon = require 'sinon'
 loggerStub = require '../../../src/logger'
 
@@ -9,9 +10,12 @@ ApiaryReporter = proxyquire '../../../src/reporters/apiary-reporter', {
   './../logger': loggerStub
 }
 
+PORT = 9876
+
 blueprintData = require '../../fixtures/blueprint-data'
 
 describe 'ApiaryReporter', () ->
+  env = {}
   beforeEach () ->
     sinon.stub loggerStub, 'info'
     sinon.stub loggerStub, 'complete'
@@ -40,10 +44,10 @@ describe 'ApiaryReporter', () ->
       tests = []
       emitter = new EventEmitter
       #baseReporter = new BaseReporter(emitter, stats, tests)
-
-      process.env['APIARY_API_URL'] = "https://api.apiary.io"
-      delete process.env['APIARY_API_KEY']
-      delete process.env['APIARY_API_NAME']
+      env = {'CIRCLE_VARIABLE': 'CIRCLE_VALUE'}
+      env['APIARY_API_URL'] = "https://localhost:#{PORT}"
+      delete env['APIARY_API_KEY']
+      delete env['APIARY_API_NAME']
 
       test =
         status: "fail"
@@ -149,49 +153,49 @@ describe 'ApiaryReporter', () ->
           requestBody = body
           return body
 
-        call = nock(process.env['APIARY_API_URL']).
+        call = nock(env['APIARY_API_URL']).
           filteringRequestBody(getBody).
           post(uri).
           reply(201, JSON.stringify({"_id": runId, "reportUrl": reportUrl}))
 
       it 'should set uuid', (done) ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         emitter.emit 'start', blueprintData, () ->
           assert.isNotNull apiaryReporter.uuid
           done()
 
       it 'should set start time', (done) ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         emitter.emit 'start', blueprintData, () ->
           assert.isNotNull apiaryReporter.startedAt
           done()
 
       it 'should call "create new test run" HTTP resource', (done ) ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         emitter.emit 'start', blueprintData, () ->
           assert.isTrue call.isDone()
           done()
 
       it 'should attach test run ID back to the reporter as remoteId', (done) ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         emitter.emit 'start', blueprintData, () ->
           assert.isNotNull apiaryReporter.remoteId
           done()
 
       it 'should attach test run reportUrl to the reporter as reportUrl', (done) ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         emitter.emit 'start', blueprintData, () ->
           assert.isNotNull apiaryReporter.reportUrl
           done()
 
       it 'should have blueprints key in the request and it should be an array and members should have propers structure', (done) ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         emitter.emit 'start', blueprintData, () ->
           parsedBody = JSON.parse requestBody
           assert.isArray parsedBody.blueprints
@@ -225,21 +229,21 @@ describe 'ApiaryReporter', () ->
           requestBody = body
           return body
 
-        call = nock(process.env['APIARY_API_URL']).
+        call = nock(env['APIARY_API_URL']).
           filteringRequestBody(getBody).
           post(uri).
           reply(201, {"_id": runId})
 
       it 'should call "create new test step" HTTP resource', () ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
         emitter.emit 'test pass', test
         assert.isTrue call.isDone()
 
       it 'should have origin with filename in the request', () ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
         emitter.emit 'test pass', test
         parsedBody = JSON.parse requestBody
@@ -252,13 +256,13 @@ describe 'ApiaryReporter', () ->
 
       beforeEach () ->
         uri = '/apis/public/tests/steps?testRunId=' + runId
-        call = nock(process.env['APIARY_API_URL']).
+        call = nock(env['APIARY_API_URL']).
           post(uri).
           reply(201, {"_id": runId})
 
       it 'should call "create new test step" HTTP resource', () ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
         emitter.emit 'test fail', test
         assert.isTrue call.isDone()
@@ -270,13 +274,13 @@ describe 'ApiaryReporter', () ->
 
       beforeEach () ->
         uri = '/apis/public/tests/run/' + runId
-        call = nock(process.env['APIARY_API_URL']).
+        call = nock(env['APIARY_API_URL']).
           patch(uri).
           reply(201, {"_id": runId})
 
       it 'should update "test run" resource with result data', (done) ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
         emitter.emit 'end', () ->
           assert.isTrue call.isDone()
@@ -284,7 +288,7 @@ describe 'ApiaryReporter', () ->
 
       it 'should return generated url if no reportUrl is not available', (done) ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
         emitter.emit 'end', () ->
           assert.ok loggerStub.complete.calledWith 'See results in Apiary at: https://app.apiary.io/public/tests/run/507f1f77bcf86cd799439011'
@@ -292,7 +296,7 @@ describe 'ApiaryReporter', () ->
 
       it 'should return reportUrl from testRun entity', (done) ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
         apiaryReporter.reportUrl = "https://absolutely.fency.url/wich-can-change/some/id"
         emitter.emit 'end', () ->
@@ -304,6 +308,7 @@ describe 'ApiaryReporter', () ->
     tests = []
     test = {}
     emitter = {}
+    env = {}
     baseReporter = {}
 
     beforeEach (done) ->
@@ -320,9 +325,10 @@ describe 'ApiaryReporter', () ->
       emitter = new EventEmitter
       #baseReporter = new BaseReporter(emitter, stats, tests)
 
-      process.env['APIARY_API_URL'] = "https://api.apiary.io"
-      process.env['APIARY_API_KEY'] = "aff888af9993db9ef70edf3c878ab521"
-      process.env['APIARY_API_NAME'] = "jakubtest"
+      env = {}
+      env['APIARY_API_URL'] = "https://localhost:#{PORT}"
+      env['APIARY_API_KEY'] = "aff888af9993db9ef70edf3c878ab521"
+      env['APIARY_API_NAME'] = "jakubtest"
       test =
         status: "fail"
         title: "POST /machines"
@@ -408,43 +414,43 @@ describe 'ApiaryReporter', () ->
       reportUrl = "https://absolutely.fency.url/wich-can-change/some/id"
 
       beforeEach () ->
-        uri = '/apis/' + process.env['APIARY_API_NAME'] + '/tests/runs'
-        call = nock(process.env['APIARY_API_URL']).
+        uri = '/apis/' + env['APIARY_API_NAME'] + '/tests/runs'
+        call = nock(env['APIARY_API_URL']).
           post(uri).
-          matchHeader('Authentication', 'Token ' + process.env['APIARY_API_KEY']).
+          matchHeader('Authentication', 'Token ' + env['APIARY_API_KEY']).
           reply(201, {"_id": runId, "reportUrl": reportUrl})
 
       it 'should set uuid', (done) ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         emitter.emit 'start', blueprintData, () ->
           assert.isNotNull apiaryReporter.uuid
           done()
 
       it 'should set start time', (done) ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         emitter.emit 'start', blueprintData, () ->
           assert.isNotNull apiaryReporter.startedAt
           done()
 
       it 'should call "create new test run" HTTP resource', (done ) ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         emitter.emit 'start', blueprintData, () ->
           assert.isTrue call.isDone()
           done()
 
       it 'should attach test run ID back to the reporter as remoteId', (done) ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         emitter.emit 'start', blueprintData, () ->
           assert.isNotNull apiaryReporter.remoteId
           done()
 
       it 'should attach test run reportUrl to the reporter as reportUrl', (done) ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         emitter.emit 'start', blueprintData, () ->
           assert.isNotNull apiaryReporter.reportUrl
           done()
@@ -456,15 +462,15 @@ describe 'ApiaryReporter', () ->
       test = null
 
       beforeEach () ->
-        uri = '/apis/' + process.env['APIARY_API_NAME'] + '/tests/steps?testRunId=' + runId
-        call = nock(process.env['APIARY_API_URL']).
+        uri = '/apis/' + env['APIARY_API_NAME'] + '/tests/steps?testRunId=' + runId
+        call = nock(env['APIARY_API_URL']).
           post(uri).
-          matchHeader('Authentication', 'Token ' + process.env['APIARY_API_KEY']).
+          matchHeader('Authentication', 'Token ' + env['APIARY_API_KEY']).
           reply(201, {"_id": runId})
 
       it 'should call "create new test step" HTTP resource', () ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
         emitter.emit 'test pass', test
         assert.isTrue call.isDone()
@@ -475,15 +481,15 @@ describe 'ApiaryReporter', () ->
       test = null
 
       beforeEach () ->
-        uri = '/apis/' + process.env['APIARY_API_NAME'] + '/tests/steps?testRunId=' + runId
-        call = nock(process.env['APIARY_API_URL']).
+        uri = '/apis/' + env['APIARY_API_NAME'] + '/tests/steps?testRunId=' + runId
+        call = nock(env['APIARY_API_URL']).
           post(uri).
-          matchHeader('Authentication', 'Token ' + process.env['APIARY_API_KEY']).
+          matchHeader('Authentication', 'Token ' + env['APIARY_API_KEY']).
           reply(201, {"_id": runId})
 
       it 'should call "create new test step" HTTP resource', () ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
         emitter.emit 'test fail', test
         assert.isTrue call.isDone()
@@ -494,15 +500,15 @@ describe 'ApiaryReporter', () ->
       runId = '507f1f77bcf86cd799439011'
 
       beforeEach () ->
-        uri = '/apis/' + process.env['APIARY_API_NAME'] + '/tests/run/' + runId
-        call = nock(process.env['APIARY_API_URL']).
+        uri = '/apis/' + env['APIARY_API_NAME'] + '/tests/run/' + runId
+        call = nock(env['APIARY_API_URL']).
           patch(uri).
-          matchHeader('Authentication', 'Token ' + process.env['APIARY_API_KEY']).
+          matchHeader('Authentication', 'Token ' + env['APIARY_API_KEY']).
           reply(201, {"_id": runId})
 
       it 'should update "test run" resource with result data', (done) ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
         emitter.emit 'end', () ->
           assert.isTrue call.isDone()
@@ -510,7 +516,7 @@ describe 'ApiaryReporter', () ->
 
       it 'should return generated url if reportUrl is not available', (done) ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
         emitter.emit 'end', () ->
           assert.ok loggerStub.complete.calledWith 'See results in Apiary at: https://app.apiary.io/jakubtest/tests/run/507f1f77bcf86cd799439011'
@@ -518,7 +524,7 @@ describe 'ApiaryReporter', () ->
 
       it 'should return reportUrl from testRun entity', (done) ->
         emitter = new EventEmitter
-        apiaryReporter = new ApiaryReporter emitter, {}, {}
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
         apiaryReporter.reportUrl = "https://absolutely.fency.url/wich-can-change/some/id"
         emitter.emit 'end', () ->

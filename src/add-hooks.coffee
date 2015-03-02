@@ -3,12 +3,10 @@ path = require 'path'
 require 'coffee-script/register'
 proxyquire = require('proxyquire').noCallThru()
 glob = require 'glob'
-async = require 'async'
-
 hooks = require './hooks'
 logger = require './logger'
 
-addHooks = (runner, transactions, emitter) ->
+addHooks = (runner, transactions, emitter, customConfig) ->
 
   for transaction in transactions
     hooks.transactions[transaction.name] = transaction
@@ -22,7 +20,7 @@ addHooks = (runner, transactions, emitter) ->
 
     try
       for file in files
-        proxyquire path.resolve(process.cwd(), file), {
+        proxyquire path.resolve((customConfig?.cwd or process.cwd()), file), {
           'hooks': hooks
         }
     catch error

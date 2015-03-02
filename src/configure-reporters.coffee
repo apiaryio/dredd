@@ -44,7 +44,7 @@ configureReporters = (config, stats, tests) ->
       when 'markdown'
         mdReporter = new MarkdownReporter(emitter, stats, tests, path, config.options.details)
       when 'apiary'
-        apiaryReporter = new ApiaryReporter(emitter, stats, tests)
+        apiaryReporter = new ApiaryReporter(emitter, stats, tests, config)
       # else
       #   Cannot happen, due to 'intersection' usage
       #   logger.warn "Invalid reporter #{reporter} selected, ignoring."
@@ -60,8 +60,6 @@ configureReporters = (config, stats, tests) ->
     usedFileReportersLength = usedFileReporters.length
     if reporters.indexOf('apiary') > -1
       usedFileReportersLength = usedFileReportersLength - 1
-      if process.env['APIARY_API_KEY'] == undefined or process.env['APIARY_API_NAME'] == undefined
-        logger.warn "Apiary reporter environment variable APIARY_API_KEY or APIARY_API_NAME not defined."
 
     if usedFileReportersLength > outputs.length
       logger.warn """
