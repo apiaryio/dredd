@@ -8,6 +8,7 @@ logger = require './logger'
 
 addHooks = (runner, transactions, emitter, customConfig) ->
 
+  hooks.transactions ?= {}
   for transaction in transactions
     hooks.transactions[transaction.name] = transaction
 

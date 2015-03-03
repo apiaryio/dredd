@@ -32,12 +32,13 @@ class TransactionRunner
     @executeAllTransactions(transactions, hooks, callback)
 
   runHooksForTransaction: (hooksForTransaction, transaction, callback) ->
-    if hooksForTransaction?
+    if hooksForTransaction? and Array.isArray hooksForTransaction
       logger.debug 'Running hooks...'
 
-      runHookWithTransaction = (hook, callback) =>
+      runHookWithTransaction = (hookFnIndex, callback) =>
+        hookFn = hooksForTransaction[hookFnIndex]
         try
-          @runHook hook, transaction, callback
+          @runHook hookFn, transaction, callback
         catch error
           unless error instanceof chai.AssertionError
             @emitError(transaction, error)
@@ -47,7 +48,7 @@ class TransactionRunner
             @configuration.emitter.emit 'test fail', transaction.test
           callback()
 
-      async.eachSeries hooksForTransaction, runHookWithTransaction, ->
+      async.timesSeries hooksForTransaction.length, runHookWithTransaction, ->
         callback()
 
     else
@@ -149,13 +150,25 @@ class TransactionRunner
     callback()
 
   executeAllTransactions: (transactions, hooks, callback) =>
-    hooks.transactions = transactions
+    # Warning: Following lines is "differently" performed by 'addHooks'
+    # in TransactionRunner.run call. Because addHooks creates
+    # hooks.transactions as an object `{}` with transaction.name keys
+    # and value is every transaction, we do not fill transactions
+    # from executeAllTransactions here, because it's supposed to an Array here.
+    unless hooks.transactions?
+      hooks.transactions = {}
+      for transaction in transactions
+        hooks.transactions[transaction.name] = transaction
+    # /end warning
 
     # run beforeAll hooks
     hooks.runBeforeAll () =>
 
-      # iterate over transactions transaction
-      async.eachSeries transactions, (transaction, iterationCallback) =>
+      # Iterate over transactions' transaction
+      # Because async changes the way referencing of properties work,
+      # we need to work with indexes (keys) here, no other way of access.
+      async.timesSeries transactions.length, (transactionIndex, iterationCallback) =>
+        transaction = transactions[transactionIndex]
 
         # run before hooks
         @runHooksForTransaction hooks.beforeHooks[transaction.name], transaction, () =>
@@ -206,7 +219,7 @@ class TransactionRunner
       configuration.emitter.emit 'test skip', test
       return callback()
     else if transaction.fail
-      # manually set to skip a test in hooks
+      # manually set to fail a test in hooks
       test.message = "Failed in before hook: " + transaction.fail
       configuration.emitter.emit 'test fail', test
       return callback()
