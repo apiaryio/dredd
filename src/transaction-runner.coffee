@@ -35,7 +35,8 @@ class TransactionRunner
     if hooksForTransaction?
       logger.debug 'Running hooks...'
 
-      runHookWithTransaction = (hook, callback) =>
+      runHookWithTransaction = (hookIndex, callback) =>
+        hook = hooksForTransaction[hookIndex]
         try
           @runHook hook, transaction, callback
         catch error
@@ -47,7 +48,7 @@ class TransactionRunner
             @configuration.emitter.emit 'test fail', transaction.test
           callback()
 
-      async.eachSeries hooksForTransaction, runHookWithTransaction, ->
+      async.timesSeries hooksForTransaction.length, runHookWithTransaction, ->
         callback()
 
     else
@@ -149,13 +150,25 @@ class TransactionRunner
     callback()
 
   executeAllTransactions: (transactions, hooks, callback) =>
-    hooks.transactions = transactions
+    # Warning: Following lines is "differently" performed by 'addHooks'
+    # in TransactionRunner.run call. Because addHooks creates
+    # hooks.transactions as an object `{}` with transaction.name keys
+    # and value is every transaction, we do not fill transactions
+    # from executeAllTransactions here, because it's supposed to an Array here.
+    unless hooks.transactions?
+      hooks.transactions = {}
+      for transaction in transactions
+        hooks.transactions[transaction.name] = transaction
+    # /end warning
 
     # run beforeAll hooks
     hooks.runBeforeAll () =>
 
       # iterate over transactions transaction
-      async.eachSeries transactions, (transaction, iterationCallback) =>
+      # because async changes the way referencing of properties work,
+      # we need to work with indexes (keys) here, no other way of access
+      async.timesSeries transactions.length, (transactionIndex, iterationCallback) =>
+        transaction = transactions[transactionIndex]
 
         # run before hooks
         @runHooksForTransaction hooks.beforeHooks[transaction.name], transaction, () =>

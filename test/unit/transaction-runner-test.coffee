@@ -1,6 +1,7 @@
 require 'coffee-errors'
 {EventEmitter} = require 'events'
 {assert} = require 'chai'
+clone = require 'clone'
 nock = require 'nock'
 proxyquire = require 'proxyquire'
 sinon = require 'sinon'
@@ -554,6 +555,7 @@ describe 'TransactionRunner', ()->
         hookfiles: './**/*_hooks.*'
 
     transaction = {}
+    transactions = {}
 
     beforeEach () ->
       transaction =
@@ -585,6 +587,9 @@ describe 'TransactionRunner', ()->
         reply transaction['expected']['statusCode'],
           transaction['expected']['body'],
           {'Content-Type': 'application/json'}
+      transactions = {}
+      transactions[transaction.name] = clone transaction, false
+      hooksStub.transactions = transactions
       runner = new Runner(configuration)
 
     afterEach () ->
@@ -609,6 +614,32 @@ describe 'TransactionRunner', ()->
         loggerStub.info.restore()
 
       it 'should run the hooks', (done) ->
+        runner.executeAllTransactions [transaction], hooksStub, () ->
+          assert.ok loggerStub.info.calledWith "before"
+          assert.ok loggerStub.info.calledWith "after"
+          done()
+
+    describe 'with hooks, but without hooks.transactions set', () ->
+      beforeEach () ->
+        sinon.spy loggerStub, 'info'
+        hooksStub.transactions = null
+        hooksStub.beforeHooks =
+          'Group Machine > Machine > Delete Message > Bogus example name' : [
+            (transaction) ->
+              loggerStub.info "before"
+          ]
+        hooksStub.afterHooks =
+          'Group Machine > Machine > Delete Message > Bogus example name' : [
+            (transaction, done) ->
+              loggerStub.info "after"
+              done()
+          ]
+
+      afterEach () ->
+        loggerStub.info.restore()
+
+      it 'should run the hooks', (done) ->
+        hooksStub.transactions = null
         runner.executeAllTransactions [transaction], hooksStub, () ->
           assert.ok loggerStub.info.calledWith "before"
           assert.ok loggerStub.info.calledWith "after"
