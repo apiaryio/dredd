@@ -32,13 +32,13 @@ class TransactionRunner
     @executeAllTransactions(transactions, hooks, callback)
 
   runHooksForTransaction: (hooksForTransaction, transaction, callback) ->
-    if hooksForTransaction?
+    if hooksForTransaction? and Array.isArray hooksForTransaction
       logger.debug 'Running hooks...'
 
-      runHookWithTransaction = (hookIndex, callback) =>
-        hook = hooksForTransaction[hookIndex]
+      runHookWithTransaction = (hookFnIndex, callback) =>
+        hookFn = hooksForTransaction[hookFnIndex]
         try
-          @runHook hook, transaction, callback
+          @runHook hookFn, transaction, callback
         catch error
           unless error instanceof chai.AssertionError
             @emitError(transaction, error)
@@ -164,9 +164,9 @@ class TransactionRunner
     # run beforeAll hooks
     hooks.runBeforeAll () =>
 
-      # iterate over transactions transaction
-      # because async changes the way referencing of properties work,
-      # we need to work with indexes (keys) here, no other way of access
+      # Iterate over transactions' transaction
+      # Because async changes the way referencing of properties work,
+      # we need to work with indexes (keys) here, no other way of access.
       async.timesSeries transactions.length, (transactionIndex, iterationCallback) =>
         transaction = transactions[transactionIndex]
 
@@ -219,7 +219,7 @@ class TransactionRunner
       configuration.emitter.emit 'test skip', test
       return callback()
     else if transaction.fail
-      # manually set to skip a test in hooks
+      # manually set to fail a test in hooks
       test.message = "Failed in before hook: " + transaction.fail
       configuration.emitter.emit 'test fail', test
       return callback()
