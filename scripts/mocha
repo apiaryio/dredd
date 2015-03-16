@@ -1,3 +1,0 @@
-#!/bin/sh
-cd $(dirname $0)/..
-find ./test/ -name '*-test.coffee' | xargs ./node_modules/.bin/mocha --timeout 20000 --reporter spec --compilers 'coffee:coffee-script/register'
