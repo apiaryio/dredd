@@ -21,7 +21,7 @@ info: Machines > Machines collection > Get Machines
 
 ## To run Dredd with hooks
 
-Dredd uses [glob][http://npmjs.com/package/glob] when searching for files.
+Dredd uses [glob](http://npmjs.com/package/glob) when searching for files.
 So use wildcard(s) to traverse the file tree and read files with hooks.
 
 Run validation with hooks from file names ending with `_hooks` without extensions:
@@ -81,7 +81,7 @@ are executed serially in the order they were called.
 
 As you might've probably noticed, hooks can be executed both synchronously and
 asynchronously. Hook is a function. First argument received is always a transaction
-object. More about transaction object can be found in [transaction object documentation][docs/transaction.md].
+object. More about transaction object can be found in [transaction object documentation](docs/transaction.md).
 
 ```js
 var hooks = require('hooks');
@@ -104,7 +104,8 @@ We do not force you to use callbacks if you do not need that.
 
 ## Fail or Skip
 
-Transaction can be easily
+Transaction can be skipped or failed. Just set the appropriate property.
+
 Skipping a validation with hooks:
 
 ```coffee
@@ -133,8 +134,6 @@ after "Machines > Machines collection > Get Machines", (transaction) ->
   assert.isBelow transaction.real.body.length, 100
 ```
 
-### OAuth
-
 
 ### Append Query Parameter to every URL
 
@@ -159,4 +158,51 @@ hooks._beforeEach (transaction) ->
   else
     transaction.fullPath += "?" + paramToAdd
 ```
+
+
+### OAuth
+
+Let's say you have installed the [oauth](http://www.npmjs.org/package/oauth) package.
+And also you have a function to retrieve the token from the OAuth provider
+of your choice somewhere inside your custom hook.
+
+```javascript
+var OAuth2 = OAuth.OAuth2;
+
+// your twitter application
+var twitterConsumerKey = process.env.TWITTER_CONSUMER_KEY;
+var twitterConsumerSecret = process.env.TWITTER_CONSUMER_SECRET;
+
+retrieveOauth2Token = function(callback) {
+  var oauth2 = new OAuth2(
+    yourTwitterConsumerKey,
+    yourTwitterConsumerSecret,
+    'https://api.twitter.com/',
+    null, 'oauth2/token', null
+  );
+  oauth2.getOAuthAccessToken('',
+    {'grant_type':'client_credentials'},
+    function (e, access_token, refresh_token, results){
+      callback("bearer:" + access_token);
+  });
+}
+
+var hooks = require("hooks");
+var retrievedPlaintextToken = '';
+hooks.beforeAll(function(done) {
+  if (retrievedPlaintextToken) {
+    return done();
+  }
+  else {
+    retrieveOauth2Token(function(token){
+      retrievedPlaintextToken = token;
+      done();
+    });
+  }
+});
+
+```
+
+This way you can retrieve the token. To actually use it as a query parameter,
+you can use similar approach from the Append Query Parameter example above.
 
