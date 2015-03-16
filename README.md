@@ -106,12 +106,12 @@ of the blueprint. You can print a list of the generated names with `--names`.
 
 Details of Hooks usage are described in [Dredd Hooks documentation][docs/hooks.md].
 
-Here is a short list of hooks features
+Here is a short list of some hooks features
 
 - `before`, `after`, `beforeAll`, `afterAll` events to be called before/after (all) transactions performed by Dredd
 - _synchronous_ or _asynchronous_ validation (opens possibilities to retrieve data during test run)
 - programatically `fail` or `skip` a transaction
-- append _query-parameter(s)_ before a transaction is tested
+- e.g. append _query-parameter(s)_ before a transaction is tested or do any other change to it
 
 
 ## Command Line Options
