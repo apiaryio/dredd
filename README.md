@@ -8,7 +8,13 @@
 
 [![NPM](https://nodei.co/npm/dredd.png)](https://nodei.co/npm/dredd/)
 
-Dredd is a command-line tool for validating API documentation written in [API Blueprint][] format against its backend implementation. With Dredd you can easily plug your API documentation into the Continous Integration system like [Travis CI][] or [Jenkins][] and have API documentation up-to-date, all the time. Dredd uses the [Gavel][] for judging if a particular API response is valid or if is not. If you are curious about how decisions are made, please refer to Gavel's [behavior specification][].
+Dredd is a command-line tool for validating API documentation written in [API Blueprint][]
+format against its backend implementation. With Dredd you can easily plug your
+API documentation into the Continous Integration system like [Travis CI][]
+or [Jenkins][] and have API documentation up-to-date, all the time.
+Dredd uses the [Gavel][] for judging if a particular API response is valid
+or if it isn't. If you are curious about how decisions are made, please refer
+to Gavel's [behavior specification][].
 
 ![Dredd API Blueprint testing tool](https://raw.github.com/apiaryio/dredd/master/img/Dredd.png)
 
@@ -72,88 +78,41 @@ complete: 1 passing, 0 failing, 0 errors, 0 skipped
 complete: Tests took 19ms
 ```
 
-See [dredd-example](https://github.com/apiaryio/dredd-example) repo for real-life example in continous integration.
+See [dredd-example](https://github.com/apiaryio/dredd-example) repo
+for real-life example in continous integration.
 
 ## Writing validatable blueprints
 
-If you are using [URI templates][URIt] in your blueprint, you have to provide example values in the blueprint's [URI parameter syntax][UPS] to provide values for each URI parameter substitution. Every resource in the blueprint defined by URI template without specifying example values is not validatable, it's considered as an ambigous transaction and skipped. In case of any ambigous transaction Dredd will throw a warning and let you know which parameter example value is not defined in the blueprint.
+If you are using [URI templates][URIt] in your blueprint,
+you have to provide example values in the blueprint's [URI parameter syntax][UPS]
+to provide values for each URI parameter substitution.
+Every resource in the blueprint defined by URI template without specifying
+example values is not validatable, it's considered as an ambigous transaction
+and skipped. In case of any ambigous transaction Dredd will throw a warning and
+let you know which parameter example value is not defined in the blueprint.
 
 [UPS]: https://github.com/apiaryio/api-blueprint/blob/master/API%20Blueprint%20Specification.md#def-uriparameters-section
 [URIt]: http://tools.ietf.org/html/rfc6570
 
 ## Hooks
 
-If you want to execute some code before and after each request, Dredd can be configured to use hookfiles to do basic setup/teardown between each validation (specified with the `--hookfiles` flag). Hookfiles can be in javascript or coffeescript, and must import the hook methods.
+If you want to execute some code before and after each request,
+Dredd can be configured to use hookfiles to do basic setup/teardown between
+each validation (specified with the `--hookfiles` flag). Hookfiles can be
+in JavaScript or [CoffeeScript][], and must import the hook methods.
 
-Requests are identified by their name, which is derived from the structure of the blueprint. You can print a list of the generated names with --names.
+Requests are identified by their name, which is derived from the structure
+of the blueprint. You can print a list of the generated names with `--names`.
 
-### Example
+Details of Hooks usage are described in [Dredd Hooks documentation][docs/hooks.md].
 
-Get Names:
+Here is a short list of hooks features
 
-```sh
-$ dredd single_get.md http://machines.apiary.io --names
-info: Machines > Machines collection > Get Machines
-```
+- `before`, `after`, `beforeAll`, `afterAll` events to be called before/after (all) transactions performed by Dredd
+- _synchronous_ or _asynchronous_ validation (opens possibilities to retrieve data during test run)
+- programatically `fail` or `skip` a transaction
+- append _query-parameter(s)_ before a transaction is tested
 
-Write a hookfile:
-
-```coffee
-{before, after} = require 'hooks'
-
-before "Machines > Machines collection > Get Machines", (transaction) ->
-  console.log "before"
-
-after "Machines > Machines collection > Get Machines", (transaction) ->
-  console.log "after"
-```
-
-Skipping a validation with hooks:
-
-```coffee
-before "Machines > Machines collection > Get Machines", (transaction) ->
-  transaction.skip = true
-```
-
-Failing a validation with hooks:
-
-```coffee
-before "Machines > Machines collection > Get Machines", (transaction) ->
-  transaction.fail = "Some failing message"
-```
-
-Using [Chai](http://chaijs.com/) assertions in hooks will result to a failing transaction:
-
-```coffee
-{before, after} = require 'hooks'
-{assert} = require 'chai'
-
-after "Machines > Machines collection > Get Machines", (transaction) ->
-  assert.isBelow transaction.real.body.length, 100
-```
-
-
-Run validation:
-
-```sh
-dredd single_get.md http://machines.apiary.io --hookfiles=*_hooks.*
-```
-
-Dredd also supports callbacks before and after all tests:
-
-```coffee
-{beforeAll, afterAll} = require 'hooks'
-
-beforeAll (done) ->
-  # do setup
-  done()
-
-afterAll (done) ->
-  # do teardown
-  done()
-```
-
-If `beforeAll` and `afterAll` are called multiple times, the callbacks are executed serially in the order they were called.
 
 ## Command Line Options
 
@@ -217,11 +176,14 @@ If `beforeAll` and `afterAll` are called multiple times, the callbacks are execu
 
       --version            Show version number.
 
-Additionally, boolean flags can be negated by prefixing `no-`, for example: `--no-color --no-inline-errors`.
+Additionally, boolean flags can be negated by prefixing `no-`,
+for example: `--no-color --no-inline-errors`.
 
 ## Contribution
 
-Any contribution is more then welcome! Let's start with creating your own [virtual development environment][vde], then fork, write  tests, write clean, readable code which communicate, use `scripts/bdd`, keep the [test coverage] and create a pull request. :)
+Any contribution is more then welcome!
+Let's start with creating your own [virtual development environment][vde],
+then fork, write tests, write clean, readable code which communicate, use `scripts/bdd`, keep the [test coverage][] and create a pull request. :)
 
 Make sure to follow Dredd [issues page][issues].
 
@@ -236,3 +198,4 @@ To learn more about the future of API Blueprint & Testing visit [apiaryio/api-bl
 [vde]: https://github.com/apiaryio/dredd/blob/master/VirtualDevelopmentEnvironment.md
 [issues]: https://github.com/apiaryio/dredd/issues?state=open
 [Express.js]: http://expressjs.com/starter/hello-world.html
+[CoffeeScript]: http://coffeescript.org
