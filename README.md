@@ -104,7 +104,7 @@ in JavaScript or [CoffeeScript][], and must import the hook methods.
 Requests are identified by their name, which is derived from the structure
 of the blueprint. You can print a list of the generated names with `--names`.
 
-Details of Hooks usage are described in [Dredd Hooks documentation][docs/hooks.md].
+Details of Hooks usage are described in [Dredd Hooks documentation](docs/hooks.md).
 
 Here is a short list of some hooks features
 
