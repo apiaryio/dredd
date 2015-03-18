@@ -1,12 +1,14 @@
+clone = require 'clone'
+
 convertAstMetadata = (metadata) ->
   result = {}
-  if Array.isArray metadata
-    for item in metadata
-      dupItem = JSON.parse(JSON.stringify(item))
-      name = dupItem['name']
-      delete dupItem['name']
+  cloned = clone metadata
+  if Array.isArray cloned
+    for item in cloned
+      name = item['name']
+      delete item['name']
 
-      result[name] = dupItem
+      result[name] = item
 
   result
 
