@@ -893,7 +893,7 @@ describe 'TransactionRunner', ()->
       describe 'in after hook when transaction fails ', () ->
         modifiedTransaction = {}
         beforeEach () ->
-          modifiedTransaction = JSON.parse(JSON.stringify(transaction))
+          modifiedTransaction = clone(transaction)
           modifiedTransaction['expected']['statusCode'] = "303"
 
           hooksStub.beforeHooks = {}
