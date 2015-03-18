@@ -1,7 +1,7 @@
 # Dredd Hooks documentation
 
 Dredd can load JavaScript or CoffeeScript files and process them.
-The interface to communicate and actually use hooks is achieved throught
+The interface to communicate and actually use hooks is achieved through
 requiring virtual `hooks` dependency provided by Dredd.
 
 ------
@@ -12,7 +12,8 @@ You'd need __names__ of your transactions (_actions_) before proceeding further.
 In order to do that please run Dredd with the `--names` argument as the last one
 and it'll print all available names of transactions.
 
-Get Names:
+If you have an API Blueprint in `single_get.md` file, you can retrieve all
+transaction names like this:
 
 ```sh
 $ dredd single_get.md http://machines.apiary.io --names
@@ -22,7 +23,7 @@ info: Machines > Machines collection > Get Machines
 ## To run Dredd with hooks
 
 Dredd uses [glob](http://npmjs.com/package/glob) when searching for files.
-So use wildcard(s) to traverse the file tree and read files with hooks.
+So use wildcard(s) to traverse the file tree and read files with your hooks.
 
 Run validation with hooks from file names ending with `_hooks` without extensions:
 
@@ -33,11 +34,13 @@ dredd single_get.md http://machines.apiary.io --hookfiles=*_hooks.*
 ## Hook types: before, after, beforeAll, afterAll
 
 Dredd provides four types of hooks. _Single transaction hooks_ or _all transactions hooks_.
-You must provide __transaction name__ in order to tell what function the
-single transaction hook should be called upon.
-Then the first argument is a _string_ (transaction name), second argument is the _function_.
 
-If you use all transactions hooks, please use only one argument–the actual function.
+You must provide __transaction name__ in order to tell what function the
+__single transaction hook__ should be called upon.
+The first argument is a _string_ (transaction name), second argument is
+the _function_.
+
+If you use __all transactions hooks__, please use only one argument–the actual function.
 
 - __before__ hooks are called before every single transaction
 - __after__ hooks are called after every single transaction,
@@ -75,13 +78,16 @@ afterAll (done) ->
 ```
 
 If `beforeAll` and `afterAll` are called multiple times, the callbacks
-are executed serially in the order they were called.
+are executed [serially][] (in the order hook files were loaded from filesystem).
+
+[serially]: http://en.wiktionary.org/wiki/serially
 
 ## Synchronous vs. Asynchronous hook
 
 As you might've probably noticed, hooks can be executed both synchronously and
-asynchronously. Hook is a function. First argument received is always a transaction
-object. More about transaction object can be found in [transaction object documentation](docs/transaction.md).
+asynchronously. __Hook is a function__. First argument received is always a transaction
+object and it __must__ be defined in the [function arguments](http://mdn.io/function).
+More about transaction object can be found in [transaction object documentation](docs/transaction.md).
 
 ```js
 var hooks = require('hooks');
@@ -94,7 +100,8 @@ var myHook = function (transaction, callback) {
 }
 ```
 
-Optional second argument for the hook function is a callback.
+__Optional__ second argument for the hook function is a __callback__.
+
 Dredd looks for number of arguments and behaves accordingly. If you do not provide
 any argument name, Dredd won't call that hook function, because Dredd doesn't know
 what type of hook it is.
@@ -102,7 +109,7 @@ what type of hook it is.
 You are free to use hooks with just one argument (the transaction object).
 We do not force you to use callbacks if you do not need that.
 
-## Fail or Skip
+## Fail or Skip a transaction inside a hook
 
 Transaction can be skipped or failed. Just set the appropriate property.
 
