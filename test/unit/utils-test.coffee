@@ -129,7 +129,7 @@ describe 'utils', () ->
       it 'shows ~ 4 warnings', ->
         assert.lengthOf warnings, 4
 
-      it 'prints lines for those three warnings', ->
+      it 'prints lines for those warnings', ->
         expectedLines = [
           'lines 5-6'
           'line 12'
