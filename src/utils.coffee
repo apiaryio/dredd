@@ -4,7 +4,6 @@ characterIndexToPosition = (charIndex = 0, text = '') ->
   pieceOfCode = text.substring 0, charIndex
   return {
     row: pieceOfCode.match(newlineRegExp)?.length + 1
-    column: (pieceOfCode.length - pieceOfCode.lastIndexOf('\n'))
   }
 
 
@@ -31,25 +30,34 @@ warningLocationToRanges = (warningLocation = [], text = '') ->
       position = characterIndexToPosition(loc.index, text)
       rowsIndexes.push position.row
 
-  if rowsIndexes.length > 0
-    rowsIndexes.sort(sortNumbersAscending)
-    ranges = []
-    range = {start: rowsIndexes[0], end: rowsIndexes[0]}
-    for rowIndex in rowsIndexes
-      if rowIndex is range.end or rowIndex is range.end + 1 # moving end of known range
-        range.end = rowIndex
-      else
-        ranges.push range # non-continuous range
-        range = {start: rowIndex, end: rowIndex}
-    # push the last edited range to ranges-array
-    ranges.push range
-    return ranges
-  else
-    positionEnd = characterIndexToPosition(lastLocation.index + lastLocation.length, text)
-    return [{start: position.row, end: positionEnd.row}]
+  rowsIndexes.sort(sortNumbersAscending)
+  ranges = []
+  range = {start: rowsIndexes[0], end: rowsIndexes[0]}
+  for rowIndex in rowsIndexes
+    if rowIndex is range.end or rowIndex is range.end + 1 # moving end of known range
+      range.end = rowIndex
+    else
+      ranges.push range # non-continuous range
+      range = {start: rowIndex, end: rowIndex}
+  # push the last edited range to ranges-array
+  ranges.push range
+  return ranges
+
+
+rangesToLinesText = (ranges) ->
+  pos = ''
+  for range, rangeIndex in ranges or []
+    if rangeIndex > 0
+      pos += ', '
+    if range.start isnt range.end
+      pos += "lines #{range.start}-#{range.end}"
+    else
+      pos += "line #{range.start}"
+  return pos
 
 
 module.exports = {
   characterIndexToPosition
+  rangesToLinesText
   warningLocationToRanges
 }

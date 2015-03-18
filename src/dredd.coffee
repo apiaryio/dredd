@@ -15,7 +15,7 @@ applyConfiguration = require './apply-configuration'
 handleRuntimeProblems = require './handle-runtime-problems'
 blueprintAstToRuntime = require './blueprint-ast-to-runtime'
 configureReporters = require './configure-reporters'
-{warningLocationToRanges} = require './utils'
+{warningLocationToRanges, rangesToLinesText} = require './utils'
 
 CONNECTION_ERRORS = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
 
@@ -160,14 +160,7 @@ class Dredd
               message = "Parser warning in file '#{file}':"  + ' (' + warning.code + ') ' + warning.message
               ranges = warningLocationToRanges warning['location'], data['raw']
               if ranges?.length
-                pos = ''
-                for range, rangeIndex in ranges or []
-                  if rangeIndex > 0
-                    pos += ', '
-                  if range.start isnt range.end
-                    pos += "lines #{range.start}-#{range.end}"
-                  else
-                    pos += "line #{range.start}"
+                pos = rangesToLinesText ranges
                 message = message + '; ' + pos
               logger.warn message
 
