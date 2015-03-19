@@ -42,11 +42,11 @@ the _function_.
 
 If you use __all transactions hooks__, please use only one argument–the actual function.
 
-- `__before__` hooks are called before every single transaction
-- `__after__` hooks are called after every single transaction,
+- __`before`__ hooks are called before every single transaction
+- __`after`__ hooks are called after every single transaction,
   regardless its success or failure status
-- `__beforeAll__` hooks are called at the beginning of the whole test
-- `__afterAll__` hooks are called after all transactions have set their end status
+- __`beforeAll`__ hooks are called at the beginning of the whole test
+- __`afterAll`__` hooks are called after all transactions have set their end status
 
 
 ### Hook types examples
