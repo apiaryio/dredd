@@ -1,3 +1,4 @@
+clone = require 'clone'
 inheritParameters = require './inherit-parameters'
 expandUriTemplateWithParameters = require './expand-uri-template-with-parameters'
 exampleToHttpPayloadPair = require './example-to-http-payload-pair'
@@ -49,7 +50,7 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
 
         for message in paramsResult['errors']
           runtime['errors'].push {
-            origin: JSON.parse(JSON.stringify(origin))
+            origin: clone origin
             message: message
           }
 
@@ -58,13 +59,13 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
 
         for message in uriResult['warnings']
           runtime['warnings'].push {
-            origin: JSON.parse(JSON.stringify(origin))
+            origin: clone origin
             message: message
           }
 
         for message in uriResult['errors']
           runtime['errors'].push {
-            origin: JSON.parse(JSON.stringify(origin))
+            origin: clone origin
             message: message
           }
 
@@ -80,7 +81,7 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
 
             for message in result['warnings']
               runtime['warnings'].push {
-                origin: JSON.parse(JSON.stringify(origin))
+                origin: clone origin
                 message: message
               }
 
@@ -92,7 +93,7 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
             #   }
 
             transaction = result['pair']
-            transaction['origin'] = JSON.parse(JSON.stringify(origin))
+            transaction['origin'] = clone origin
             transaction['request']['uri'] = uriResult['uri']
             transaction['request']['method'] = action['method']
 
