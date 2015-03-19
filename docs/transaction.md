@@ -35,10 +35,10 @@ Transction object is used as a first arguemnt for hook functions
   - skip false (boolean) Set to `true` to skip this transcition
   - fail false (string) Set to `true` or string with message and transaction will result in fail
 
-  - test (object)
-    - status (string) Test status - phase
-    - start (string) Start tiem in UTC ISO 8601
-    - valid (boolean) Test result
+  - test (object) Result of Gavel validation, same object is passed to reporters
+    - status fail (string) Test status - phase
+    - start 2015-03-19T00:58:32.796Z (string) Start tiem in UTC ISO 8601
+    - valid false (boolean) Test result
 
     - results (object) Results from Gavel in it's format
       - version 2 (string) Gavel version
