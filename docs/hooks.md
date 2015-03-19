@@ -46,7 +46,7 @@ If you use __all transactions hooks__, please use only one argument–the actual
 - __`after`__ hooks are called after every single transaction,
   regardless its success or failure status
 - __`beforeAll`__ hooks are called at the beginning of the whole test
-- __`afterAll`__` hooks are called after all transactions have set their end status
+- __`afterAll`__ hooks are called after all transactions have set their end status
 
 
 ### Hook types examples
