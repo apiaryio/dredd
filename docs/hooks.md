@@ -113,6 +113,7 @@ Transaction can be skipped or failed. Just set the appropriate property.
 Skipping a validation with hooks:
 
 ```coffee
+{before} = require 'hooks'
 before "Machines > Machines collection > Get Machines", (transaction) ->
   transaction.skip = true
 ```
