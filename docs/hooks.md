@@ -6,7 +6,7 @@ requiring virtual `hooks` dependency provided by Dredd.
 
 ------
 
-## First things first
+## Getting transaction names
 
 You'd need __names__ of your transactions (_actions_) before proceeding further.
 In order to do that please run Dredd with the `--names` argument as the last one
@@ -23,15 +23,15 @@ info: Machines > Machines collection > Get Machines
 ## To run Dredd with hooks
 
 Dredd uses [glob](http://npmjs.com/package/glob) when searching for files.
-So use wildcard(s) to traverse the file tree and read files with your hooks.
+So you can use wildcard(s) to traverse the file tree and read files with your hooks.
 
-Run validation with hooks from file names ending with `_hooks` without extensions:
+**Example:** Run validation with hooks from file names ending with `_hooks` without extensions:
 
 ```sh
 dredd single_get.md http://machines.apiary.io --hookfiles=*_hooks.*
 ```
 
-## Hook types: before, after, beforeAll, afterAll
+## Hook types: `before`, `after`, `beforeAll`, `afterAll`
 
 Dredd provides four types of hooks. _Single transaction hooks_ or _all transactions hooks_.
 
@@ -42,11 +42,11 @@ the _function_.
 
 If you use __all transactions hooks__, please use only one argument–the actual function.
 
-- __before__ hooks are called before every single transaction
-- __after__ hooks are called after every single transaction,
+- `__before__` hooks are called before every single transaction
+- `__after__` hooks are called after every single transaction,
   regardless its success or failure status
-- __beforeAll__ hooks are called at the beginning of the whole test
-- __afterAll__ hooks are called after all transactions have set their end status
+- `__beforeAll__` hooks are called at the beginning of the whole test
+- `__afterAll__` hooks are called after all transactions have set their end status
 
 
 ### Hook types examples
@@ -66,7 +66,7 @@ after "Machines > Machines collection > Get Machines", (transaction) ->
 Usage of asynchronous `beforeAll` and `afterAll` hooks:
 
 ```coffee
-{beforeAll, afterAll} = require 'hooks'
+{beforeAll, afterAll, transactions} = require 'hooks'
 
 beforeAll (done) ->
   # do setup
@@ -78,36 +78,33 @@ afterAll (done) ->
 ```
 
 If `beforeAll` and `afterAll` are called multiple times, the callbacks
-are executed [serially][] (in the order hook files were loaded from filesystem).
+are executed serially (in the order hook files were loaded from filesystem).
 
-[serially]: http://en.wiktionary.org/wiki/serially
+All compiled `transactions` are populated in `hooks` module object, so you can work with them in `beforeAll` hook
 
 ## Synchronous vs. Asynchronous hook
 
-As you might've probably noticed, hooks can be executed both synchronously and
-asynchronously. __Hook is a function__. First argument received is always a transaction
-object and it __must__ be defined in the [function arguments](http://mdn.io/function).
-More about transaction object can be found in [transaction object documentation](docs/transaction.md).
+Hooks can be executed both synchronously and asynchronously. __Hook is a function__. 
 
-```js
-var hooks = require('hooks');
-var before = hooks.before;
-var myHook = function (transaction, callback) {
-  console.log(transaction.fullPath); // access to URL of the transaction
-  // ...your own asynchronous task
+First argument received in hook function is always a transaction object and it __must__ be defined in the function arguments.
+
+__Optional__ second argument for the hook function is a __callback__.
+
+
+More about the `transaction` object can be found in [transaction object documentation](docs/transaction.md).
+
+```coffee
+{before} = require 'hooks'
+
+before 'Machines > Machines collection > Get Machines', (transaction, callback) {
+  // ... your own asynchronous task here
+  // ...
+  // ..
   // once finished, just call callback
   callback();
 }
 ```
 
-__Optional__ second argument for the hook function is a __callback__.
-
-Dredd looks for number of arguments and behaves accordingly. If you do not provide
-any argument name, Dredd won't call that hook function, because Dredd doesn't know
-what type of hook it is.
-
-You are free to use hooks with just one argument (the transaction object).
-We do not force you to use callbacks if you do not need that.
 
 ## Fail or Skip a transaction inside a hook
 
@@ -123,10 +120,20 @@ before "Machines > Machines collection > Get Machines", (transaction) ->
 Failing a validation with hooks:
 
 ```coffee
+{before} = require 'hooks'
 before "Machines > Machines collection > Get Machines", (transaction) ->
   transaction.fail = "Some failing message"
 ```
 
+## Using Chai Expectations to fail a transaction
+Dredd catches Chai's expectation errors in hooks and makes transaction fail
+
+```coffee
+{before} = require 'hooks'
+after "Machines > Machines collection > Get Machines", (transaction) ->
+  parsedResponse = JSON.parse transaction.actual.body
+  assert.isAbove parsedResponse.itemsCount, 10
+```
 
 ## Advanced Examples
 
@@ -144,11 +151,10 @@ after "Machines > Machines collection > Get Machines", (transaction) ->
 
 ### Append Query Parameter to every URL
 
-
 ```coffee
 hooks = require 'hooks'
 
-# New hooks helper function
+# workaround helper for "before each" hooks
 hooks._beforeEach = (hookFn) ->
   hooks.beforeAll (done) ->
     for transactionKey, transaction of hooks.transactions or {}
@@ -156,7 +162,6 @@ hooks._beforeEach = (hookFn) ->
       hooks.beforeHooks[transaction.name].unshift hookFn
     done()
 
-# call the hooks helper function to actually add new hook
 hooks._beforeEach (transaction) ->
   # add query parameter to each transaction here
   paramToAdd = "foo=bar"
@@ -167,7 +172,7 @@ hooks._beforeEach (transaction) ->
 ```
 
 
-### OAuth
+### Using OAuth
 
 Let's say you have installed the [oauth](http://www.npmjs.org/package/oauth) package.
 And also you have a function to retrieve the token from the OAuth provider
