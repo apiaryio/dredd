@@ -126,20 +126,16 @@ before "Machines > Machines collection > Get Machines", (transaction) ->
   transaction.fail = "Some failing message"
 ```
 
-## Using Chai Expectations to fail a transaction
-Dredd catches Chai's expectation errors in hooks and makes transaction fail
 
-```coffee
-{before} = require 'hooks'
-after "Machines > Machines collection > Get Machines", (transaction) ->
-  parsedResponse = JSON.parse transaction.actual.body
-  assert.isAbove parsedResponse.itemsCount, 10
-```
+
 
 ## Advanced Examples
 
-You can also require [Chai](http://chaijs.com/) and use its assertions in
-before/after hooks and it'll determine if the transaction is or isn't failing:
+
+### Using Chai Expectations to fail a transaction
+You can also require [Chai](http://chaijs.com/) and use its `asert`, `should` or `expect` interface in
+hooks and write set your custom expectations. Dredd catches Chai's expectation error in hooks and makes transaction to fail.
+
 
 ```coffee
 {before, after} = require 'hooks'
