@@ -91,7 +91,7 @@ First argument received in hook function is always a transaction object and it _
 __Optional__ second argument for the hook function is a __callback__.
 
 
-More about the `transaction` object can be found in [transaction object documentation](docs/transaction.md).
+More about the `transaction` object can be found in [transaction object documentation](transaction.md).
 
 ```coffee
 {before} = require 'hooks'
