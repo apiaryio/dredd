@@ -1,9 +1,9 @@
 {assert} = require 'chai'
 
 protagonist = require 'protagonist'
-utils = require '../../src/utils'
+blueprintUtils = require '../../src/blueprint-utils'
 
-describe 'utils', () ->
+describe 'blueprintUtils', () ->
 
   placeholderText = ''
 
@@ -12,7 +12,7 @@ describe 'utils', () ->
 
     it 'returns an object with non-zero-based row', ->
       str = "first\nsecond\nthird lines\ncontent continues"
-      position = utils.characterIndexToPosition str.indexOf('lines', str), str
+      position = blueprintUtils.characterIndexToPosition str.indexOf('lines', str), str
       assert.deepEqual position, {row: 3}
 
   describe 'warningLocationToRanges()', ->
@@ -32,7 +32,7 @@ describe 'utils', () ->
         # also add just one single line warning location
         {index: str.indexOf('ten'), length: 3}
       ]
-      ranges = utils.warningLocationToRanges location, str
+      ranges = blueprintUtils.warningLocationToRanges location, str
       assert.isArray ranges
       assert.lengthOf ranges, 3
       assert.deepEqual ranges, [
@@ -63,24 +63,24 @@ describe 'utils', () ->
         assert.lengthOf results.warnings, 1
         assert.deepProperty results, 'warnings.0.location.0.index'
         assert.deepProperty results, 'warnings.0.location.0.length'
-        ranges = utils.warningLocationToRanges results.warnings[0].location, blueprint
+        ranges = blueprintUtils.warningLocationToRanges results.warnings[0].location, blueprint
         assert.isArray ranges
         assert.lengthOf ranges, 1
         assert.deepEqual ranges, [{start: 6, end: 7}]
         done()
 
     it 'returns an empty Array for empty locations', ->
-      assert.deepEqual utils.warningLocationToRanges([], placeholderText), []
+      assert.deepEqual blueprintUtils.warningLocationToRanges([], placeholderText), []
 
     it 'returns an empty Array for undefined locations', ->
-      assert.deepEqual utils.warningLocationToRanges(undefined, placeholderText), []
+      assert.deepEqual blueprintUtils.warningLocationToRanges(undefined, placeholderText), []
 
   describe 'rangesToLinesText()', ->
 
     describe 'when tested on fake locations', ->
 
       it 'should return a string of line(s) separated with comma', ->
-        line = utils.rangesToLinesText [
+        line = blueprintUtils.rangesToLinesText [
           {start: 2, end: 4}
           {start: 8, end: 8}
           {start: 10, end: 15}
@@ -123,7 +123,7 @@ describe 'utils', () ->
         """
         protagonist.parse blueprint, (err, results) ->
           warnings = results.warnings or []
-          ranges = (utils.warningLocationToRanges(warn.location, blueprint) for warn in warnings)
+          ranges = (blueprintUtils.warningLocationToRanges(warn.location, blueprint) for warn in warnings)
           done err
 
       it 'shows ~ 4 warnings', ->
@@ -137,7 +137,7 @@ describe 'utils', () ->
           'lines 21-23'
         ]
         for expectedLine, lineIndex in expectedLines
-          generatedLine = utils.rangesToLinesText ranges[lineIndex]
+          generatedLine = blueprintUtils.rangesToLinesText ranges[lineIndex]
           assert.isString expectedLine
           assert.strictEqual generatedLine, expectedLine
 

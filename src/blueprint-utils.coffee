@@ -1,23 +1,25 @@
 newlineRegExp = /\n/g
 
-characterIndexToPosition = (charIndex = 0, text = '') ->
+blueprintUtils = {}
+
+blueprintUtils.characterIndexToPosition = (charIndex = 0, text = '') ->
   pieceOfCode = text.substring 0, charIndex
   return {
     row: pieceOfCode.match(newlineRegExp)?.length + 1
   }
 
 
-sortNumbersAscending = (a, b) ->
+blueprintUtils.sortNumbersAscending = (a, b) ->
   return a - b
 
-warningLocationToRanges = (warningLocation = [], text = '') ->
+blueprintUtils.warningLocationToRanges = (warningLocation = [], text = '') ->
   unless warningLocation.length
     # no start-end ranges, nothing to return
     return []
 
   rowsIndexes = []
 
-  position = characterIndexToPosition(warningLocation[0].index, text)
+  position = blueprintUtils.characterIndexToPosition(warningLocation[0].index, text)
 
   # add this warning position row into ranges array
   rowsIndexes.push position.row
@@ -27,10 +29,10 @@ warningLocationToRanges = (warningLocation = [], text = '') ->
   if warningLocation.length > 0
     # more lines
     for loc, locKey in warningLocation when locKey > 0
-      position = characterIndexToPosition(loc.index, text)
+      position = blueprintUtils.characterIndexToPosition(loc.index, text)
       rowsIndexes.push position.row
 
-  rowsIndexes.sort(sortNumbersAscending)
+  rowsIndexes.sort(blueprintUtils.sortNumbersAscending)
   ranges = []
   range = {start: rowsIndexes[0], end: rowsIndexes[0]}
   for rowIndex in rowsIndexes
@@ -44,7 +46,7 @@ warningLocationToRanges = (warningLocation = [], text = '') ->
   return ranges
 
 
-rangesToLinesText = (ranges) ->
+blueprintUtils.rangesToLinesText = (ranges) ->
   pos = ''
   for range, rangeIndex in ranges or []
     if rangeIndex > 0
@@ -56,8 +58,4 @@ rangesToLinesText = (ranges) ->
   return pos
 
 
-module.exports = {
-  characterIndexToPosition
-  rangesToLinesText
-  warningLocationToRanges
-}
+module.exports = blueprintUtils
