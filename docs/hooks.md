@@ -40,13 +40,13 @@ __single transaction hook__ should be called upon.
 The first argument is a _string_ (transaction name), second argument is
 the _function_.
 
-If you use __all transactions hooks__, please use only one argument–the actual function.
+If you use __all transactions hooks__, please use only one argument–the actual hook __function__.
 
-- __`before`__ hooks are called before every single transaction
-- __`after`__ hooks are called after every single transaction,
+- `before` hooks are called before every single transaction
+- `after` hooks are called after every single transaction,
   regardless its success or failure status
-- __`beforeAll`__ hooks are called at the beginning of the whole test
-- __`afterAll`__ hooks are called after all transactions have set their end status
+- `beforeAll` hooks are called at the beginning of the whole test
+- `afterAll` hooks are called after all transactions have set their end status
 
 
 ### Hook types examples
@@ -84,7 +84,7 @@ All compiled `transactions` are populated in `hooks` module object, so you can w
 
 ## Synchronous vs. Asynchronous hook
 
-Hooks can be executed both synchronously and asynchronously. __Hook is a function__. 
+Hooks can be executed both synchronously and asynchronously. __Hook is a function__.
 
 First argument received in hook function is always a transaction object and it __must__ be defined in the function arguments.
 
@@ -127,15 +127,13 @@ before "Machines > Machines collection > Get Machines", (transaction) ->
 ```
 
 
-
-
 ## Advanced Examples
 
 
-### Using Chai Expectations to fail a transaction
-You can also require [Chai](http://chaijs.com/) and use its `asert`, `should` or `expect` interface in
-hooks and write set your custom expectations. Dredd catches Chai's expectation error in hooks and makes transaction to fail.
+### Using Chai assertions to fail a transaction
 
+You can also require [Chai](http://chaijs.com/) and use its `assert`, `should` or `expect` interface in
+hooks and write your custom expectations. Dredd catches Chai's expectation error in hooks and makes transaction to fail.
 
 ```coffee
 {before, after} = require 'hooks'

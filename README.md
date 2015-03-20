@@ -23,7 +23,7 @@ to Gavel's [behavior specification][].
 
     $ npm install -g dredd
 
-[Node.js]: https://npmjs.org/
+[Node.js]: https://nodejs.org/
 [NPM]: https://npmjs.org/
 
 ## Get Started Testing API Documentation and backend
@@ -39,13 +39,13 @@ Create a new documentation file in [API Blueprint][] format in `blueprint.md`
 
 Let's create a backend for example in [Express.js][]. To install it:
 
-```
+```sh
 $ npm install express
 ```
 
 Create file with backend application in `app.js`:
 
-```node
+```javascript
 var express = require('express');
 var app = express();
 
@@ -58,13 +58,13 @@ var server = app.listen(3000);
 
 Run the API application on background:
 
-```
+```sh
 $ node app.js &
 ```
 
 Finally, run Dredd for validation:
 
-```
+```sh
 $ dredd blueprint.md http://localhost:3000
 ```
 
@@ -89,7 +89,7 @@ to provide values for each URI parameter substitution.
 Every resource in the blueprint defined by URI template without specifying
 example values is not validatable, it's considered as an ambigous transaction
 and skipped. In case of any ambigous transaction Dredd will throw a warning and
-let you know which parameter example value is not defined in the blueprint.
+let you know what parameter example value is not defined in the blueprint.
 
 [UPS]: https://github.com/apiaryio/api-blueprint/blob/master/API%20Blueprint%20Specification.md#def-uriparameters-section
 [URIt]: http://tools.ietf.org/html/rfc6570
@@ -101,7 +101,7 @@ Dredd can be configured to use hookfiles to do basic setup/teardown between
 each validation (specified with the `--hookfiles` flag). Hookfiles can be
 in JavaScript or [CoffeeScript][], and must import the hook methods.
 
-Requests are identified by their name, which is derived from the structure
+Requests (also referred as _Transactions_) are identified by their name, which is derived from the structure
 of the blueprint. You can print a list of the generated names with `--names`.
 
 Details of Hooks usage are described in [Dredd Hooks documentation](docs/hooks.md).
@@ -111,7 +111,7 @@ Here is a short list of some hooks features
 - `before`, `after`, `beforeAll`, `afterAll` events to be called before/after (all) transactions performed by Dredd
 - _synchronous_ or _asynchronous_ validation (opens possibilities to retrieve data during test run)
 - programatically `fail` or `skip` a transaction
-- e.g. append _query-parameter(s)_ before a transaction is tested or do any other change to it
+- advanced usage can be e.g. to append _query-parameter(s)_ before a transaction is tested (you can do any other change to it)
 
 
 ## Command Line Options
@@ -181,7 +181,7 @@ for example: `--no-color --no-inline-errors`.
 
 ## Contribution
 
-Any contribution is more then welcome!
+Any contribution is more than welcome!
 Let's start with creating your own [virtual development environment][vde],
 then fork, write tests, write clean, readable code which communicate, use `scripts/bdd`, keep the [test coverage][] and create a pull request. :)
 
