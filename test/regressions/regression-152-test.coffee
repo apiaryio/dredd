@@ -22,10 +22,10 @@ execCommand = (cmd, options = {}, callback) ->
     callback = options
     options = undefined
 
-  cmdPath = path.join __dirname, '../../bin/dredd'
-  cmdPath = cmd.replace 'bin/dredd', cmdPath
+  # cmdPath = path.join __dirname, '../../bin/dredd'
+  # cmdPath = cmd.replace 'bin/dredd', cmdPath
 
-  cli = exec cmdPath, options, (error, out, err) ->
+  cli = exec "node #{cmd}", options, (error, out, err) ->
     stdout = out
     stderr = err
 
