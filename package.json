@@ -7,10 +7,10 @@
     "dredd": "bin/dredd"
   },
   "scripts": {
-    "cleanup": "rimraf lib",
-    "compile": "coffee --bare --compile --output lib src",
+    "cleanup": "rimraf ./lib",
+    "compile": "coffee --bare --compile --output ./lib ./src",
 
-    "lint": "coffeelint src",
+    "lint": "coffeelint ./src",
 
     "mocha":  "mocha --recursive -R spec --compilers=\"coffee:coffee-script/register\" --timeout 60000 \"test/**/*-test.coffee\"",
     "bdd": "mocha --watch --recursive -R spec --compilers=\"coffee:coffee-script/register\" --timeout 60000 \"test/**/*-test.coffee\"",

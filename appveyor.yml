@@ -7,6 +7,10 @@ cache:
   - C:\Users\appveyor\AppData\Roaming\npm -> **\package.json
   - C:\Users\appveyor\AppData\Roaming\npm-cache -> **\package.json
 
+hosts:
+  localhost: 127.0.0.1
+  api.apiary.io: 127.0.0.1
+
 # Install scripts. (runs after repo cloning)
 install:
   # Get the latest stable version of Node.js or io.js
