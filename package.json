@@ -7,7 +7,7 @@
     "dredd": "./bin/dredd"
   },
   "scripts": {
-    "cleanup": "./node_modules/rimraf/bin.js ./lib",
+    "cleanup": "./node_modules/.bin/rimraf ./lib",
     "compile": "./node_modules/coffee-script/bin/coffee --bare --compile --output ./lib/ ./src/",
 
     "lint": "./node_modules/coffeelint/bin/coffeelint ./src",
@@ -24,7 +24,7 @@
     "html-cov": "npm run cov:prepare && npm run cov:html && npm run cov:clean",
     "coveralls": "npm run cov:prepare && npm run cov:coveralls && npm run cov:clean",
 
-    "cov:clean": "./node_modules/rimraf/bin.js ./src-cov",
+    "cov:clean": "./node_modules/.bin/rimraf ./src-cov",
     "cov:coverage": "./node_modules/coffee-coverage/bin/coffeecoverage --exclude node_modules,.git,test --path relative . ./src-cov 1>&2",
     "cov:prepare": "npm run cov:clean && npm run cov:coverage && npm run cov:copies",
 
