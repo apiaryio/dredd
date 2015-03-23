@@ -12,8 +12,8 @@
 
     "lint": "coffeelint src",
 
-    "mocha":  "mocha --reporter spec --compilers 'coffee:coffee-script/register' --timeout 60000 --recursive './test/**/*-test.coffee'",
-    "bdd": "mocha --watch --reporter spec --compilers 'coffee:coffee-script/register' --timeout 60000 --recursive './test/**/*-test.coffee'",
+    "mocha":  "mocha --reporter spec --require coffee-script/register --compilers coffee:coffee-script/register --timeout 60000 --recursive './test/**/*-test.coffee'",
+    "bdd": "mocha --watch --reporter spec --require coffee-script/register --compilers coffee:coffee-script/register --timeout 60000 --recursive './test/**/*-test.coffee'",
 
     "pretest": "npm run lint",
     "test": "npm run compile && npm run mocha 2>&1",
@@ -32,9 +32,9 @@
     "cov:copy-package-json": "ncp package.json src-cov/package.json",
     "cov:copy-test": "ncp test src-cov/test",
 
-    "cov:test": "mocha -R spec --timeout 60000 --compilers 'coffee:coffee-script/register' --recursive './src-cov/test/**/*-test.coffee'",
-    "cov:html": "mocha -R html-cov --timeout 60000 --compilers 'coffee:coffee-script/register' --recursive './src-cov/test/**/*-test.coffee' > cov.html",
-    "cov:coveralls": "mocha -R mocha-lcov-reporter --timeout 60000 --compilers 'coffee:coffee-script/register' --recursive './src-cov/test/**/*-test.coffee' | ./node_modules/coveralls/bin/coveralls.js"
+    "cov:test": "mocha -R spec --timeout 60000 --require coffee-script/register --compilers coffee:coffee-script/register --recursive './src-cov/test/**/*-test.coffee'",
+    "cov:html": "mocha -R html-cov --timeout 60000 --require coffee-script/register --compilers coffee:coffee-script/register --recursive './src-cov/test/**/*-test.coffee' > cov.html",
+    "cov:coveralls": "mocha -R mocha-lcov-reporter --timeout 60000 --require coffee-script/register --compilers coffee:coffee-script/register --recursive './src-cov/test/**/*-test.coffee' | ./node_modules/coveralls/bin/coveralls.js"
   },
   "repository": {
     "type": "git",
