@@ -1,8 +1,8 @@
 require 'coffee-errors'
 {assert} = require 'chai'
-{EventEmitter} = require 'events'
 proxyquire = require 'proxyquire'
 sinon = require 'sinon'
+clone = require 'clone'
 
 globStub = require 'glob'
 pathStub = require 'path'
@@ -16,58 +16,58 @@ addHooks = proxyquire  '../../src/add-hooks', {
   'hooks': hooksStub
 }
 
-describe 'addHooks(runner, transaction)', () ->
+describe 'addHooks(runner, transactions, emitter, customConfig)', () ->
 
   transactions = {}
   server = null
 
   before () ->
-    # TODO/FIXME: use new Hooks instance for every addHooks call
-    # until then, clean all hooks
-    hooksStub.beforeAllHooks = []
-    hooksStub.afterAllHooks = []
-    hooksStub.beforeHooks = {}
-    hooksStub.afterHooks = {}
     loggerStub.transports.console.silent = true
 
   after () ->
-    hooksStub.beforeAllHooks = []
-    hooksStub.afterAllHooks = []
-    hooksStub.beforeHooks = {}
-    hooksStub.afterHooks = {}
     loggerStub.transports.console.silent = false
+
+  describe 'constructor', ->
+    runner =
+      configuration:
+        options:
+          hookfiles: null
+
+    it 'should create hooks instance at runner.hooks', ->
+      hooks = addHooks(runner, transactions)
+      assert.isDefined hooks
+      assert.instanceOf hooks, hooksStub
+      assert.strictEqual hooks, runner.hooks
+      assert.deepProperty runner, 'hooks.transactions'
 
   describe 'with no pattern', () ->
 
+    runner = null
+
     before () ->
+      runner =
+        configuration:
+          options:
+            hookfiles: null
+
       sinon.spy globStub, 'sync'
 
     after () ->
       globStub.sync.restore()
 
     it 'should not expand any glob', ()->
-      runner =
-        configuration:
-          options:
-            hookfiles: null
-        before: (fn, cb) ->
-          return
-        after: (fn, cb) ->
-          return
-      addHooks(runner, transactions, new EventEmitter())
+      addHooks(runner, transactions)
       assert.ok globStub.sync.notCalled
 
-
   describe 'with valid pattern', () ->
-
-    runner =
+    runner = null
+    runnerSource =
       configuration:
         options:
           hookfiles: './**/*_hooks.*'
-      before: (fn, cb) ->
-        return
-      after: (fn, cb) ->
-        return
+
+    before ->
+      runner = clone runnerSource
 
     it 'should return files', () ->
       sinon.spy globStub, 'sync'
@@ -76,18 +76,14 @@ describe 'addHooks(runner, transaction)', () ->
       globStub.sync.restore()
 
     describe 'when files are valid js/coffeescript', () ->
-
-      beforeEach () ->
-        sinon.spy runner, 'before'
-        sinon.spy runner, 'after'
+      before () ->
+        runner = clone(runnerSource)
         sinon.stub globStub, 'sync', (pattern) ->
           ['file1.js', 'file2.coffee']
         sinon.stub pathStub, 'resolve', (path, rel) ->
           ""
 
-      afterEach () ->
-        runner.before.restore()
-        runner.after.restore()
+      after () ->
         globStub.sync.restore()
         pathStub.resolve.restore()
 
@@ -97,22 +93,26 @@ describe 'addHooks(runner, transaction)', () ->
 
     describe 'when there is an error reading the hook files', () ->
 
-      beforeEach () ->
+      beforeEach ->
+        runner = clone(runnerSource)
         sinon.stub pathStub, 'resolve', (path, rel) ->
           throw new Error()
         sinon.spy loggerStub, 'warn'
-        sinon.spy runner, 'before'
-        sinon.spy runner, 'after'
+        sinon.spy loggerStub, 'info'
         sinon.stub globStub, 'sync', (pattern) ->
           ['file1.xml', 'file2.md']
 
-      afterEach () ->
+      afterEach ->
         pathStub.resolve.restore()
         loggerStub.warn.restore()
-        runner.before.restore()
-        runner.after.restore()
+        loggerStub.info.restore()
         globStub.sync.restore()
 
-      it 'should log a warning', () ->
+      it 'should log an info with hookfiles paths', ->
+        addHooks(runner, transactions)
+        assert.ok loggerStub.info.called
+        assert.equal loggerStub.info.firstCall.args[0], 'Found Hookfiles: file1.xml,file2.md'
+
+      it 'should log a warning', ->
         addHooks(runner, transactions)
         assert.ok loggerStub.warn.called

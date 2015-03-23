@@ -3,12 +3,14 @@ path = require 'path'
 require 'coffee-script/register'
 proxyquire = require('proxyquire').noCallThru()
 glob = require 'glob'
-hooks = require './hooks'
+Hooks = require './hooks'
 logger = require './logger'
 
 addHooks = (runner, transactions, emitter, customConfig) ->
 
+  hooks = new Hooks()
   hooks.transactions ?= {}
+
   for transaction in transactions
     hooks.transactions[transaction.name] = transaction
 
@@ -31,6 +33,8 @@ addHooks = (runner, transactions, emitter, customConfig) ->
       logger.warn 'Message: ' + error.message if error.message?
       logger.warn 'Stack: ' + error.stack if error.stack?
       return
+
+  runner.hooks ?= hooks
 
   return hooks
 

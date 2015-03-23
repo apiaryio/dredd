@@ -9,15 +9,13 @@ express = require 'express'
 bodyParser = require 'body-parser'
 
 htmlStub = require 'html'
-addHooksStub = sinon.spy require '../../src/add-hooks'
 loggerStub = require '../../src/logger'
+addHooks = require '../../src/add-hooks'
 httpStub = require 'http'
 httpsStub = require 'https'
-hooksStub = require '../../src/hooks'
 
 Runner = proxyquire  '../../src/transaction-runner', {
   'html': htmlStub,
-  './add-hooks': addHooksStub
   './logger': loggerStub
   'http': httpStub
   'https': httpsStub
@@ -41,19 +39,9 @@ describe 'TransactionRunner', ()->
   runner = {}
 
   before () ->
-    # TODO/FIXME: use new Hooks instance for every addHooks call
-    # until then, clean all hooks
-    hooksStub.beforeAllHooks = []
-    hooksStub.afterAllHooks = []
-    hooksStub.beforeHooks = {}
-    hooksStub.afterHooks = {}
     loggerStub.transports.console.silent = true
 
   after () ->
-    hooksStub.beforeAllHooks = []
-    hooksStub.afterAllHooks = []
-    hooksStub.beforeHooks = {}
-    hooksStub.afterHooks = {}
     loggerStub.transports.console.silent = false
 
   describe 'constructor', () ->
@@ -552,7 +540,8 @@ describe 'TransactionRunner', ()->
         header: []
         reporter:  []
         only: []
-        hookfiles: './**/*_hooks.*'
+        # do not actually search & load hookfiles from disk
+        # hookfiles: './**/*_hooks.*'
 
     transaction = {}
     transactions = {}
@@ -589,8 +578,8 @@ describe 'TransactionRunner', ()->
           {'Content-Type': 'application/json'}
       transactions = {}
       transactions[transaction.name] = clone transaction, false
-      hooksStub.transactions = transactions
       runner = new Runner(configuration)
+      addHooks runner, transactions
 
     afterEach () ->
       nock.cleanAll()
@@ -598,13 +587,13 @@ describe 'TransactionRunner', ()->
     describe 'with hooks', () ->
       beforeEach () ->
         sinon.spy loggerStub, 'info'
-        hooksStub.beforeHooks =
-          'Group Machine > Machine > Delete Message > Bogus example name' : [
+        runner.hooks.beforeHooks =
+          'Group Machine > Machine > Delete Message > Bogus example name': [
             (transaction) ->
               loggerStub.info "before"
           ]
-        hooksStub.afterHooks =
-          'Group Machine > Machine > Delete Message > Bogus example name' : [
+        runner.hooks.afterHooks =
+          'Group Machine > Machine > Delete Message > Bogus example name': [
             (transaction, done) ->
               loggerStub.info "after"
               done()
@@ -614,7 +603,7 @@ describe 'TransactionRunner', ()->
         loggerStub.info.restore()
 
       it 'should run the hooks', (done) ->
-        runner.executeAllTransactions [transaction], hooksStub, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, () ->
           assert.ok loggerStub.info.calledWith "before"
           assert.ok loggerStub.info.calledWith "after"
           done()
@@ -622,13 +611,13 @@ describe 'TransactionRunner', ()->
     describe 'with hooks, but without hooks.transactions set', () ->
       beforeEach () ->
         sinon.spy loggerStub, 'info'
-        hooksStub.transactions = null
-        hooksStub.beforeHooks =
+        runner.hooks.transactions = null
+        runner.hooks.beforeHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
             (transaction) ->
               loggerStub.info "before"
           ]
-        hooksStub.afterHooks =
+        runner.hooks.afterHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
             (transaction, done) ->
               loggerStub.info "after"
@@ -639,8 +628,8 @@ describe 'TransactionRunner', ()->
         loggerStub.info.restore()
 
       it 'should run the hooks', (done) ->
-        hooksStub.transactions = null
-        runner.executeAllTransactions [transaction], hooksStub, () ->
+        runner.hooks.transactions = null
+        runner.executeAllTransactions [transaction], runner.hooks, () ->
           assert.ok loggerStub.info.calledWith "before"
           assert.ok loggerStub.info.calledWith "after"
           done()
@@ -648,7 +637,7 @@ describe 'TransactionRunner', ()->
     describe 'with multiple hooks for the same transaction', () ->
       beforeEach () ->
         sinon.spy loggerStub, 'info'
-        hooksStub.beforeHooks =
+        runner.hooks.beforeHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
             (transaction) ->
               loggerStub.info "first",
@@ -661,7 +650,7 @@ describe 'TransactionRunner', ()->
         loggerStub.info.restore()
 
       it 'should run all hooks', (done) ->
-        runner.executeAllTransactions [transaction], hooksStub, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, () ->
           assert.ok loggerStub.info.calledWith "first"
           assert.ok loggerStub.info.calledWith "second"
           done()
@@ -670,14 +659,11 @@ describe 'TransactionRunner', ()->
       beforeAll = sinon.stub()
       beforeAll.callsArg(0)
 
-      before () ->
-        hooksStub.beforeAll beforeAll
-
-      after () ->
-        hooksStub.beforeAllHooks = []
+      beforeEach () ->
+        runner.hooks.beforeAll beforeAll
 
       it 'should run the hooks', (done) ->
-        runner.executeAllTransactions [], hooksStub, () ->
+        runner.executeAllTransactions [], runner.hooks, () ->
           assert.ok beforeAll.called
           done()
 
@@ -685,14 +671,11 @@ describe 'TransactionRunner', ()->
       afterAll = sinon.stub()
       afterAll.callsArg(0)
 
-      before () ->
-        hooksStub.afterAll afterAll
-
-      after () ->
-        hooksStub.afterAllHooks = []
+      beforeEach () ->
+        runner.hooks.afterAll afterAll
 
       it 'should run the hooks', (done) ->
-        runner.executeAllTransactions [], hooksStub, () ->
+        runner.executeAllTransactions [], runner.hooks, () ->
           assert.ok afterAll.called
           done()
 
@@ -709,17 +692,13 @@ describe 'TransactionRunner', ()->
         afterAll2.callsArg(0)
 
       beforeEach () ->
-        hooksStub.beforeAll beforeAll1
-        hooksStub.afterAll afterAll1
-        hooksStub.afterAll afterAll2
-        hooksStub.beforeAll beforeAll2
-
-      after () ->
-        hooksStub.beforeAllHooks = []
-        hooksStub.afterAllHooks = []
+        runner.hooks.beforeAll beforeAll1
+        runner.hooks.afterAll afterAll1
+        runner.hooks.afterAll afterAll2
+        runner.hooks.beforeAll beforeAll2
 
       it 'should run all the events in order', (done) ->
-        runner.executeAllTransactions [], hooksStub, () ->
+        runner.executeAllTransactions [], runner.hooks, () ->
           assert.ok beforeAll1.calledBefore(beforeAll2)
           assert.ok beforeAll2.called
           assert.ok afterAll1.calledBefore(afterAll2)
@@ -728,7 +707,7 @@ describe 'TransactionRunner', ()->
 
     describe 'with before hook that throws an error', () ->
       beforeEach () ->
-        hooksStub.beforeHooks =
+        runner.hooks.beforeHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
             (transaction) ->
               JSON.parse '<<<>>>!@#!@#!@#4234234'
@@ -737,17 +716,15 @@ describe 'TransactionRunner', ()->
 
       afterEach () ->
         configuration.emitter.emit.restore()
-        hooksStub.beforeHooks = {}
-        hooksStub.afterHooks = {}
 
       it 'should report an error with the test', (done) ->
-        runner.executeAllTransactions [transaction], hooksStub, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, () ->
           assert.ok configuration.emitter.emit.calledWith "test error"
           done()
 
     describe 'with after hook that throws an error', () ->
       beforeEach () ->
-        hooksStub.afterHooks =
+        runner.hooks.afterHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
             (transaction) ->
               JSON.parse '<<<>>>!@#!@#!@#4234234'
@@ -756,17 +733,15 @@ describe 'TransactionRunner', ()->
 
       afterEach () ->
         configuration.emitter.emit.restore()
-        hooksStub.beforeHooks = {}
-        hooksStub.afterHooks = {}
 
       it 'should report an error with the test', (done) ->
-        runner.executeAllTransactions [transaction], hooksStub, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, () ->
           assert.ok configuration.emitter.emit.calledWith "test error"
           done()
 
     describe 'with before hook that throws a chai expectation error', () ->
       beforeEach () ->
-        hooksStub.beforeHooks =
+        runner.hooks.beforeHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
             (transaction) ->
               assert.ok false
@@ -775,22 +750,20 @@ describe 'TransactionRunner', ()->
 
       afterEach () ->
         configuration.emitter.emit.restore()
-        hooksStub.beforeHooks = {}
-        hooksStub.afterHooks = {}
 
       it 'should not report an error', (done) ->
-        runner.executeAllTransactions [transaction], hooksStub, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, () ->
           assert.notOk configuration.emitter.emit.calledWith "test error"
           done()
 
       it 'should report a fail', (done) ->
-        runner.executeAllTransactions [transaction], hooksStub, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, () ->
           assert.ok configuration.emitter.emit.calledWith "test fail"
           done()
 
-    describe 'with after shook that throws a chai expectation error', () ->
+    describe 'with after hook that throws a chai expectation error', () ->
       beforeEach () ->
-        hooksStub.afterHooks =
+        runner.hooks.afterHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
             (transaction) ->
               assert.ok false
@@ -799,21 +772,19 @@ describe 'TransactionRunner', ()->
 
       afterEach () ->
         configuration.emitter.emit.restore()
-        hooksStub.beforeHooks = {}
-        hooksStub.afterHooks = {}
 
       it 'should not report an error', (done) ->
-        runner.executeAllTransactions [transaction], hooksStub, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, () ->
           assert.notOk configuration.emitter.emit.calledWith "test error"
           done()
 
       it 'should report a fail', (done) ->
-        runner.executeAllTransactions [transaction], hooksStub, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, () ->
           assert.ok configuration.emitter.emit.calledWith "test fail"
           done()
 
       it 'should set test as failed', (done) ->
-        runner.executeAllTransactions [transaction], hooksStub, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, () ->
           assert.equal transaction.test.status, 'fail'
           done()
 
@@ -821,7 +792,7 @@ describe 'TransactionRunner', ()->
     describe 'with hook failing the transaction', () ->
       describe 'in before hook', () ->
         beforeEach () ->
-          hooksStub.beforeHooks =
+          runner.hooks.beforeHooks =
             'Group Machine > Machine > Delete Message > Bogus example name' : [
               (transaction) ->
                 transaction.fail = "Message before"
@@ -830,21 +801,19 @@ describe 'TransactionRunner', ()->
 
         afterEach () ->
           configuration.emitter.emit.restore()
-          hooksStub.beforeHooks = {}
-          hooksStub.afterHooks = {}
 
         it 'should fail the test', (done) ->
-          runner.executeAllTransactions [transaction], hooksStub, () ->
+          runner.executeAllTransactions [transaction], runner.hooks, () ->
             assert.ok configuration.emitter.emit.calledWith "test fail"
             done()
 
         it 'should not run the transaction', (done) ->
-          runner.executeAllTransactions [transaction], hooksStub, () ->
+          runner.executeAllTransactions [transaction], runner.hooks, () ->
             assert.notOk server.isDone()
             done()
 
         it 'should pass the failing message to the emitter', (done) ->
-          runner.executeAllTransactions [transaction], hooksStub, () ->
+          runner.executeAllTransactions [transaction], runner.hooks, () ->
             messages = []
             callCount = configuration.emitter.emit.callCount
             for callNo in [0.. callCount - 1]
@@ -853,7 +822,7 @@ describe 'TransactionRunner', ()->
             done()
 
         it 'should mention before hook in the error message', (done) ->
-          runner.executeAllTransactions [transaction], hooksStub, () ->
+          runner.executeAllTransactions [transaction], runner.hooks, () ->
             messages = []
             callCount = configuration.emitter.emit.callCount
             for callNo in [0.. callCount - 1]
@@ -863,17 +832,14 @@ describe 'TransactionRunner', ()->
 
         describe 'when message is set to fail also in after hook', () ->
           beforeEach () ->
-            hooksStub.afterHooks =
+            runner.hooks.afterHooks =
               'Group Machine > Machine > Delete Message > Bogus example name' : [
                 (transaction) ->
                   transaction.fail = "Message after"
               ]
 
-          afterEach () ->
-            hooksStub.afterHooks = {}
-
           it 'should pass the failing message to the emitter', (done) ->
-            runner.executeAllTransactions [transaction], hooksStub, () ->
+            runner.executeAllTransactions [transaction], runner.hooks, () ->
               messages = []
               callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
@@ -882,7 +848,7 @@ describe 'TransactionRunner', ()->
               done()
 
           it 'should not mention after hook in the error message', (done) ->
-            runner.executeAllTransactions [transaction], hooksStub, () ->
+            runner.executeAllTransactions [transaction], runner.hooks, () ->
               messages = []
               callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
@@ -896,8 +862,7 @@ describe 'TransactionRunner', ()->
           modifiedTransaction = clone(transaction)
           modifiedTransaction['expected']['statusCode'] = "303"
 
-          hooksStub.beforeHooks = {}
-          hooksStub.afterHooks =
+          runner.hooks.afterHooks =
             'Group Machine > Machine > Delete Message > Bogus example name' : [
               (transaction) ->
                 transaction.fail = "Message after fail"
@@ -907,15 +872,14 @@ describe 'TransactionRunner', ()->
         afterEach () ->
           configuration.emitter.emit.reset()
           configuration.emitter.emit.restore()
-          hooksStub.afterHooks = {}
 
         it 'should make the request', (done) ->
-          runner.executeAllTransactions [transaction], hooksStub, () ->
+          runner.executeAllTransactions [transaction], runner.hooks, () ->
             assert.ok server.isDone()
             done()
 
         it 'should not fail again', (done) ->
-          runner.executeAllTransactions [modifiedTransaction], hooksStub, () ->
+          runner.executeAllTransactions [modifiedTransaction], runner.hooks, () ->
             failCount = 0
             messages = []
             callCount = configuration.emitter.emit.callCount
@@ -926,7 +890,7 @@ describe 'TransactionRunner', ()->
             done()
 
         it 'should not pass the hook message to the emitter', (done) ->
-          runner.executeAllTransactions [modifiedTransaction], hooksStub, () ->
+          runner.executeAllTransactions [modifiedTransaction], runner.hooks, () ->
             messages = []
             callCount = configuration.emitter.emit.callCount
             for callNo in [0.. callCount - 1]
@@ -934,18 +898,18 @@ describe 'TransactionRunner', ()->
             assert.notInclude messages, "Message after fail"
             done()
 
-          it 'should not mention after hook in the error message', (done) ->
-            runner.executeAllTransactions [transaction], hooksStub, () ->
-              messages = []
-              callCount = configuration.emitter.emit.callCount
-              for callNo in [0.. callCount - 1]
-                messages.push configuration.emitter.emit.getCall(callNo).args[1].message
-              assert.notInclude messages, "Failed in after hook:"
-              done()
+        it 'should not mention after hook in the error message', (done) ->
+          runner.executeAllTransactions [transaction], runner.hooks, () ->
+            messages = []
+            callCount = configuration.emitter.emit.callCount
+            for callNo in [0.. callCount - 1]
+              messages.push configuration.emitter.emit.getCall(callNo).args[1].message
+            assert.notInclude messages, "Failed in after hook:"
+            done()
 
       describe 'in after hook when transaction passes ', () ->
         beforeEach () ->
-          hooksStub.afterHooks =
+          runner.hooks.afterHooks =
             'Group Machine > Machine > Delete Message > Bogus example name' : [
               (transaction) ->
                 transaction.fail = "Message after pass"
@@ -955,26 +919,24 @@ describe 'TransactionRunner', ()->
         afterEach () ->
           configuration.emitter.emit.reset()
           configuration.emitter.emit.restore()
-          hooksStub.afterHooks = {}
-          hooksStub.beforeHooks = {}
 
         it 'should make the request', (done) ->
-          runner.executeAllTransactions [transaction], hooksStub, () ->
+          runner.executeAllTransactions [transaction], runner.hooks, () ->
             assert.ok server.isDone()
             done()
 
         it 'it should fail the test', (done) ->
-          runner.executeAllTransactions [transaction], hooksStub, () ->
+          runner.executeAllTransactions [transaction], runner.hooks, () ->
             assert.ok configuration.emitter.emit.calledWith "test fail"
             done()
 
         it 'it should not pass the test', (done) ->
-          runner.executeAllTransactions [transaction], hooksStub, () ->
+          runner.executeAllTransactions [transaction], runner.hooks, () ->
             assert.notOk configuration.emitter.emit.calledWith "test pass"
             done()
 
         it 'it should pass the failing message to the emitter', (done) ->
-          runner.executeAllTransactions [transaction], hooksStub, () ->
+          runner.executeAllTransactions [transaction], runner.hooks, () ->
             messages = []
             callCount = configuration.emitter.emit.callCount
             for callNo in [0.. callCount - 1]
@@ -983,7 +945,7 @@ describe 'TransactionRunner', ()->
             done()
 
         it 'should mention after hook in the error message', (done) ->
-          runner.executeAllTransactions [transaction], hooksStub, () ->
+          runner.executeAllTransactions [transaction], runner.hooks, () ->
             messages = []
             callCount = configuration.emitter.emit.callCount
             for callNo in [0.. callCount - 1]
@@ -992,28 +954,24 @@ describe 'TransactionRunner', ()->
             done()
 
         it 'should set transaction test status to failed', (done) ->
-          runner.executeAllTransactions [transaction], hooksStub, () ->
+          runner.executeAllTransactions [transaction], runner.hooks, () ->
             assert.equal transaction.test.status, 'fail'
             done()
 
     describe 'without hooks', () ->
       beforeEach () ->
-        hooksStub.beforeHooks = {}
-        hooksStub.afterHooks = {}
         sinon.stub configuration.emitter, 'emit'
 
       afterEach () ->
         configuration.emitter.emit.reset()
         configuration.emitter.emit.restore()
-        hooksStub.afterHooks = {}
-        hooksStub.beforeHooks = {}
 
       it 'should not run the hooks', (done) ->
-        runner.executeAllTransactions [transaction], hooksStub, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, () ->
           done()
 
       it 'should pass the transactions', (done) ->
-        runner.executeAllTransactions [transaction], hooksStub, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, () ->
           assert.ok configuration.emitter.emit.calledWith "test pass"
           done()
 
@@ -1023,7 +981,7 @@ describe 'TransactionRunner', ()->
 
         receivedRequests = []
 
-        hooksStub.beforeHooks =
+        runner.hooks.beforeHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
             (transaction) ->
               body = JSON.parse transaction.request.body
@@ -1045,7 +1003,7 @@ describe 'TransactionRunner', ()->
           res.status(200).send response
 
         server = app.listen transaction.port, () ->
-          runner.executeAllTransactions [transaction], hooksStub, () ->
+          runner.executeAllTransactions [transaction], runner.hooks, () ->
             #should not hang here
             assert.ok true
             server.close()

@@ -1,6 +1,5 @@
 http = require 'http'
 https = require 'https'
-html = require 'html'
 url = require 'url'
 path = require 'path'
 os = require 'os'
