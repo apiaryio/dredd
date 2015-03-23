@@ -4,9 +4,9 @@ express = require 'express'
 clone = require 'clone'
 bodyParser = require 'body-parser'
 fs = require 'fs'
+path = require 'path'
 
 PORT = 9998
-CMD_PREFIX = ''
 
 stderr = ''
 stdout = ''
@@ -22,7 +22,10 @@ execCommand = (cmd, options = {}, callback) ->
     callback = options
     options = undefined
 
-  cli = exec CMD_PREFIX + cmd, options, (error, out, err) ->
+  cmdPath = path.join __dirname, '../../bin/dredd'
+  cmdPath = cmd.replace 'bin/dredd', cmdPath
+
+  cli = exec cmdPath, options, (error, out, err) ->
     stdout = out
     stderr = err
 
