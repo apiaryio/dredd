@@ -27,30 +27,37 @@ describe 'addHooks(runner, transactions)', () ->
   after () ->
     loggerStub.transports.console.silent = false
 
-  describe 'with no pattern', () ->
-
-    runner = null
-
-    beforeEach () ->
-      runner =
-        configuration:
-          options:
-            hookfiles: null
-      sinon.spy globStub, 'sync'
-
-    afterEach () ->
-      globStub.sync.restore()
-
-    it 'should not expand any glob', ()->
-      addHooks(runner, transactions)
-      assert.ok globStub.sync.notCalled
+  describe 'constructor', ->
+    runner =
+      configuration:
+        options:
+          hookfiles: null
 
     it 'should create hooks instance at runner.hooks', ->
       hooks = addHooks(runner, transactions)
       assert.isDefined hooks
       assert.instanceOf hooks, hooksStub
+      assert.strictEqual hooks, runner.hooks
       assert.deepProperty runner, 'hooks.transactions'
 
+  describe 'with no pattern', () ->
+
+    runner = null
+
+    before () ->
+      runner =
+        configuration:
+          options:
+            hookfiles: null
+
+      sinon.spy globStub, 'sync'
+
+    after () ->
+      globStub.sync.restore()
+
+    it 'should not expand any glob', ()->
+      addHooks(runner, transactions)
+      assert.ok globStub.sync.notCalled
 
   describe 'with valid pattern', () ->
     runner = null

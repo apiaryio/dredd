@@ -34,6 +34,8 @@ addHooks = (runner, transactions, emitter, customConfig) ->
       logger.warn 'Stack: ' + error.stack if error.stack?
       return
 
+  runner.hooks ?= hooks
+
   return hooks
 
 module.exports = addHooks
