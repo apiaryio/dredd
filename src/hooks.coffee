@@ -35,4 +35,4 @@ class Hooks
   runAfterAll: (callback) =>
     async.series @afterAllHooks, callback
 
-module.exports = new Hooks()
+module.exports = Hooks
