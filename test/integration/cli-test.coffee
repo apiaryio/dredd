@@ -5,7 +5,7 @@ clone = require 'clone'
 bodyParser = require 'body-parser'
 fs = require 'fs'
 
-PORT = 3333
+PORT = 9998
 CMD_PREFIX = ''
 
 stderr = ''
@@ -265,7 +265,7 @@ describe "Command line interface", () ->
         server = app.listen PORT, () ->
           server2 = apiary.listen (PORT+1), ->
             env = clone process.env
-            env['APIARY_API_URL'] = "http://127.0.0.1:#{PORT+1}"
+            env['APIARY_API_URL'] = "http://localhost:#{PORT+1}"
             execCommand cmd, {env}, () ->
               server2.close ->
                 server.close ->

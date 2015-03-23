@@ -119,7 +119,7 @@ describe "Dredd class Integration", () ->
           path: ["./test/fixtures/single-get.apib"]
           reporter: ["apiary"]
         custom:
-          apiaryApiUrl: "http://127.0.0.1:#{PORT+1}"
+          apiaryApiUrl: "http://localhost:#{PORT+1}"
           dreddRestDebug: '1'
 
       apiary = express()
@@ -210,7 +210,7 @@ describe "Dredd class Integration", () ->
             reporter: ['apiary']
           custom:
             apiaryReporterEnv:
-              APIARY_API_URL: "http://127.0.0.1:#{PORT+1}"
+              APIARY_API_URL: "http://localhost:#{PORT+1}"
               DREDD_REST_DEBUG: '1'
 
         apiary = express()

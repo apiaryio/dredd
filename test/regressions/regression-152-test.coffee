@@ -5,7 +5,7 @@ clone = require 'clone'
 bodyParser = require 'body-parser'
 fs = require 'fs'
 
-PORT = 3333
+PORT = 9998
 CMD_PREFIX = ''
 
 stderr = ''
