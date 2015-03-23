@@ -20,7 +20,9 @@ test_script:
   - node --version
   - npm --version
   # run tests
-  - npm test
+  - npm run lint
+  - npm run compile
+  - npm run mocha
 
 # Don't actually build.
 build: off
