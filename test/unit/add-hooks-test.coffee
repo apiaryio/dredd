@@ -16,7 +16,7 @@ addHooks = proxyquire  '../../src/add-hooks', {
   'hooks': hooksStub
 }
 
-describe 'addHooks(runner, transactions)', () ->
+describe 'addHooks(runner, transactions, emitter, customConfig)', () ->
 
   transactions = {}
   server = null
