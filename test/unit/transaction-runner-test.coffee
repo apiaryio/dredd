@@ -540,7 +540,8 @@ describe 'TransactionRunner', ()->
         header: []
         reporter:  []
         only: []
-        hookfiles: './**/*_hooks.*'
+        # do not actually search & load hookfiles from disk
+        # hookfiles: './**/*_hooks.*'
 
     transaction = {}
     transactions = {}
