@@ -1,6 +1,7 @@
 # Dredd — HTTP API Validation Tool
 
 [![Build Status](https://travis-ci.org/apiaryio/dredd.png?branch=master)](https://travis-ci.org/apiaryio/dredd)
+[![Build Status AppVeyor](https://ci.appveyor.com/api/projects/status/0lv5i5oe6oi88q92?svg=true)](https://ci.appveyor.com/project/Apiary/dredd)
 [![Dependency Status](https://david-dm.org/apiaryio/dredd.png)](https://david-dm.org/apiaryio/dredd)
 [![devDependency Status](https://david-dm.org/apiaryio/dredd/dev-status.png)](https://david-dm.org/apiaryio/dredd#info=devDependencies)
 [![Coverage Status](https://coveralls.io/repos/apiaryio/dredd/badge.png?branch=master)](https://coveralls.io/r/apiaryio/dredd?branch=master)
