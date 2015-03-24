@@ -29,6 +29,9 @@ execCommand = (cmd, options = {}, callback) ->
     if error
       exitStatus = error.code
 
+  cli.stdout.setBlocking(true)
+  cli.stderr.setBlocking(true)
+
   cli.on 'close', (code) ->
     exitStatus = code if exitStatus == null and code != undefined
     if cli.stdout?._pendingWriteReqs or cli.stderr?._pendingWriteReqs
