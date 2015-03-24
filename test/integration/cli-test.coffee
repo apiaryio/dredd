@@ -1,5 +1,5 @@
 {assert} = require('chai')
-{exec} = require('child_process')
+{exec, spawn} = require('child_process')
 express = require 'express'
 clone = require 'clone'
 bodyParser = require 'body-parser'
@@ -22,21 +22,25 @@ execCommand = (cmd, options = {}, callback) ->
     callback = options
     options = undefined
 
-  cli = exec "node #{cmd}", options, (error, out, err) ->
-    stdout = out
-    stderr = err
+  args = cmd.match(/[^\s"']+|"([^"]*)"|'([^']*)'/gi)
+  args = args.map (item) ->
+    item = item.replace(/\ /g, '\ ')
+    if item[0] in ['"', "'"]
+      item.substring(1, item.length - 1)
+    else
+      item
 
-    if error
-      exitStatus = error.code
+  cli = spawn process.execPath, args, options
 
-  cli.stdout.setBlocking(true)
-  cli.stderr.setBlocking(true)
+  cli.stdout.on 'data', (data) ->
+    stdout += data.toString()
+  cli.stderr.on 'data', (data) ->
+    stderr += data.toString()
 
   cli.on 'close', (code) ->
     exitStatus = code if exitStatus == null and code != undefined
     if cli.stdout?._pendingWriteReqs or cli.stderr?._pendingWriteReqs
       process.nextTick ->
-        exitStatus = code if exitStatus == null and code != undefined
         callback(undefined, stdout, stderr, exitStatus)
     else
       callback(undefined, stdout, stderr, exitStatus)
@@ -545,7 +549,7 @@ describe "Command line interface", () ->
       machineHit = false
       messageHit = false
       before (done) ->
-        cmd = "bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --path=./test/fixtures/multifile/*.apib --only=\"Message API > /message > GET\" --no-color"
+        cmd = "bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --path ./test/fixtures/multifile/*.apib --only \"Message API > /message > GET\" --no-color"
 
         app = express()
 
@@ -633,7 +637,7 @@ describe "Command line interface", () ->
 
     describe 'when setting the log output level with -l', () ->
       before (done) ->
-        cmd = "bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -l=error"
+        cmd = "bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} -l error"
 
         app = express()
 
@@ -684,7 +688,7 @@ describe "Command line interface", () ->
     receivedRequest = {}
 
     before (done) ->
-      cmd = "bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/*_hooks.*"
+      cmd = "bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles ./test/fixtures/*_hooks.*"
 
       app = express()
 
@@ -716,7 +720,7 @@ describe "Command line interface", () ->
       return false
 
     before (done) ->
-      cmd = "bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/*_events.*"
+      cmd = "bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles ./test/fixtures/*_events.*"
 
       app = express()
 
@@ -751,7 +755,7 @@ describe "Command line interface", () ->
       return ret.join(',')
 
     before (done) ->
-      cmd = "bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/*_all.*"
+      cmd = "bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles ./test/fixtures/*_all.*"
 
       app = express()
 
@@ -846,7 +850,7 @@ describe "Command line interface", () ->
       receivedRequests = []
 
       before (done) ->
-        cmd = "bin/dredd ./test/fixtures/multifile/*.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/multifile/multifile_hooks.coffee"
+        cmd = "bin/dredd ./test/fixtures/multifile/*.apib http://localhost:#{PORT} --hookfiles ./test/fixtures/multifile/multifile_hooks.coffee"
 
         app = express()
 
@@ -886,7 +890,7 @@ describe "Command line interface", () ->
   describe "when called with additional --path argument which is a glob", () ->
     describe "and called with --names options", () ->
       before (done) ->
-        cmd = "bin/dredd ./test/fixtures/multiple-examples.apib http://localhost --path=./test/fixtures/multifile/*.apib --names"
+        cmd = "bin/dredd ./test/fixtures/multiple-examples.apib http://localhost --path ./test/fixtures/multifile/*.apib --names"
         execCommand cmd, () ->
           done()
 
