@@ -26,7 +26,7 @@ test_script:
   # run tests
   - npm run lint
   - npm run compile
-  - npm run mocha
+  - npm run mocha 2>&1
 
 # Don't actually build.
 build: off

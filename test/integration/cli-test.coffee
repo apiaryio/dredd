@@ -22,9 +22,6 @@ execCommand = (cmd, options = {}, callback) ->
     callback = options
     options = undefined
 
-  # cmdPath = path.join __dirname, '../../bin/dredd'
-  # cmdPath = cmd.replace 'bin/dredd', cmdPath
-
   cli = exec "node #{cmd}", options, (error, out, err) ->
     stdout = out
     stderr = err
@@ -34,7 +31,12 @@ execCommand = (cmd, options = {}, callback) ->
 
   cli.on 'close', (code) ->
     exitStatus = code if exitStatus == null and code != undefined
-    callback(undefined, stdout, stderr, exitStatus)
+    if cli.stdout?._pendingWriteReqs or cli.stderr?._pendingWriteReqs
+      process.nextTick ->
+        exitStatus = code if exitStatus == null and code != undefined
+        callback(undefined, stdout, stderr, exitStatus)
+    else
+      callback(undefined, stdout, stderr, exitStatus)
 
 
 describe "Command line interface", () ->
