@@ -7,9 +7,34 @@
     "dredd": "bin/dredd"
   },
   "scripts": {
-    "pretest": "coffeelint ./src",
-    "test": "scripts/test",
-    "prepublish": "scripts/prepublish"
+    "cleanup": "rimraf ./lib",
+    "compile": "coffee --bare --compile --output ./lib ./src",
+
+    "lint": "coffeelint ./src",
+
+    "mocha":  "mocha --recursive -R spec --compilers=\"coffee:coffee-script/register\" --timeout 60000 \"test/**/*-test.coffee\"",
+    "bdd": "mocha --watch --recursive -R spec --compilers=\"coffee:coffee-script/register\" --timeout 60000 \"test/**/*-test.coffee\"",
+
+    "pretest": "npm run lint",
+    "test": "npm run compile && npm run mocha 2>&1",
+
+    "prepublish": "npm run cleanup && npm run compile",
+
+    "cov": "npm run cov:prepare && npm run cov:base && npm run cov:clean",
+    "html-cov": "npm run cov:prepare && npm run cov:html && npm run cov:clean",
+    "coveralls": "npm run cov:prepare && npm run cov:coveralls && npm run cov:clean",
+
+    "cov:clean": "rimraf src-cov",
+    "cov:coverage": "coffeecoverage --exclude node_modules,.git,test --path relative src src-cov 1>&2",
+    "cov:prepare": "npm run cov:clean && npm run cov:coverage && npm run cov:copies",
+
+    "cov:copies": "npm run cov:copy-package-json && npm run cov:copy-test",
+    "cov:copy-package-json": "ncp package.json src-cov/package.json",
+    "cov:copy-test": "ncp test src-cov/test",
+
+    "cov:test": "mocha --recursive -R spec --timeout 60000 --compilers=\"coffee:coffee-script/register\" \"./src-cov/test/**/*-test.coffee\"",
+    "cov:html": "mocha --recursive -R html-cov --timeout 60000 --compilers=\"coffee:coffee-script/register\" \"./src-cov/test/**/*-test.coffee\" > cov.html",
+    "cov:coveralls": "mocha --recursive -R=mocha-lcov-reporter --timeout 60000 --compilers=\"coffee:coffee-script/register\" \"./src-cov/test/**/*-test.coffee\" | ./node_modules/coveralls/bin/coveralls.js"
   },
   "repository": {
     "type": "git",
@@ -37,18 +62,20 @@
     "winston": "^0.9.0"
   },
   "devDependencies": {
-    "body-parser": "^1.12.0",
+    "body-parser": "^1.12.1",
     "codo": "2.0.9",
     "coffee-coverage": "~0.4.5",
     "coffee-errors": "~0.8.6",
     "coffeelint": "^1.9.2",
     "coveralls": "~2.11.2",
-    "express": "^4.12.1",
+    "ncp": "^2.0.0",
+    "express": "^4.12.2",
     "jscoverage": "~0.5.9",
     "mocha": "^2.1.0",
     "mocha-lcov-reporter": "0.0.2",
     "nock": "^0.59.1",
-    "sinon": "^1.12.2"
+    "rimraf": "",
+    "sinon": "^1.14.0"
   },
   "keywords": [
     "api",

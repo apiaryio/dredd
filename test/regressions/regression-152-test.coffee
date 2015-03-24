@@ -4,9 +4,9 @@ express = require 'express'
 clone = require 'clone'
 bodyParser = require 'body-parser'
 fs = require 'fs'
+path = require 'path'
 
-PORT = 3333
-CMD_PREFIX = ''
+PORT = 9998
 
 stderr = ''
 stdout = ''
@@ -22,7 +22,7 @@ execCommand = (cmd, options = {}, callback) ->
     callback = options
     options = undefined
 
-  cli = exec CMD_PREFIX + cmd, options, (error, out, err) ->
+  cli = exec "node #{cmd}", options, (error, out, err) ->
     stdout = out
     stderr = err
 
@@ -31,7 +31,12 @@ execCommand = (cmd, options = {}, callback) ->
 
   cli.on 'close', (code) ->
     exitStatus = code if exitStatus == null and code != undefined
-    callback(undefined, stdout, stderr, exitStatus)
+    if cli.stdout?._pendingWriteReqs or cli.stderr?._pendingWriteReqs
+      process.nextTick ->
+        exitStatus = code if exitStatus == null and code != undefined
+        callback(undefined, stdout, stderr, exitStatus)
+    else
+      callback(undefined, stdout, stderr, exitStatus)
 
 
 describe "Regressions", () ->
@@ -41,7 +46,7 @@ describe "Regressions", () ->
     receivedRequest = {}
 
     before (done) ->
-      cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/regression-152.coffee"
+      cmd = "bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/regression-152.coffee"
 
       app = express()
 
