@@ -1,6 +1,5 @@
-path = require 'path'
-
 require 'coffee-script/register'
+path = require 'path'
 proxyquire = require('proxyquire').noCallThru()
 glob = require 'glob'
 Hooks = require './hooks'

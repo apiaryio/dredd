@@ -9,6 +9,11 @@ options =
     description: 'Specifes a pattern to match files with before/after hooks for running tests'
     default: null
 
+  sandbox:
+    alias: 'b'
+    description: "Load and run non trusted hooks code in sandboxed container"
+    default: false
+
   names:
     alias: 'n'
     description: 'Only list names of requests (for use in a hookfile). No requests are made.'

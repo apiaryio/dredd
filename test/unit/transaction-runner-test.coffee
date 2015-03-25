@@ -1012,3 +1012,12 @@ describe 'TransactionRunner', ()->
           assert.equal receivedRequests.length, 1
           done()
 
+  describe 'runHoook(hook, tranasction, callback)', () ->
+    describe 'when sandbox mode is on', () ->
+      it 'shuold run the hook'
+      it 'should not have aceess to current context'
+      it 'should not have access to require'
+      it 'should set back the transaction'
+      it 'should have access to the hook stash'
+      it 'should be able to modify hook stash'
+
