@@ -6,6 +6,7 @@ os = require 'os'
 chai = require 'chai'
 gavel = require 'gavel'
 async = require 'async'
+{Pitboss} = require 'pitboss'
 
 flattenHeaders = require './flatten-headers'
 addHooks = require './add-hooks'
@@ -16,6 +17,7 @@ logger = require './logger'
 
 class TransactionRunner
   constructor: (@configuration) ->
+    @hookStash = {}
 
   config: (config) ->
     @configuration = config
@@ -30,14 +32,26 @@ class TransactionRunner
     hooks = addHooks @, transactions, @configuration.emitter, @configuration.custom
     @executeAllTransactions(transactions, hooks, callback)
 
-  runHooksForTransaction: (hooksForTransaction, transaction, callback) ->
-    if hooksForTransaction? and Array.isArray hooksForTransaction
+  runHooksForTransaction: (hooks, transaction, legacy = false, callback) ->
+    if hooks? and Array.isArray hooks
       logger.debug 'Running hooks...'
 
       runHookWithTransaction = (hookFnIndex, callback) =>
-        hookFn = hooksForTransaction[hookFnIndex]
+        hookFn = hooks[hookFnIndex]
         try
-          @runHook hookFn, transaction, callback
+          if legacy
+            @runLegacyHook hookFn, transaction, (err) =>
+              if err
+                error = new Error err
+                @emitError(transaction, error)
+              callback()
+          else
+            @runHook hookFn, transaction, (err) ->
+              if err
+                error = new Error err
+                @emitError(transaction, error)
+              callback()
+
         catch error
           unless error instanceof chai.AssertionError
             @emitError(transaction, error)
@@ -47,13 +61,15 @@ class TransactionRunner
             @configuration.emitter.emit 'test fail', transaction.test
           callback()
 
-      async.timesSeries hooksForTransaction.length, runHookWithTransaction, ->
+      async.timesSeries hooks.length, runHookWithTransaction, ->
         callback()
 
     else
       callback()
 
   emitError: (transaction, error) ->
+    # TODO investigate how event handler looks like, because it couldn't be able
+    # to handle transactions instead of transaction
     test =
       status: ''
       title: transaction.id
@@ -61,15 +77,104 @@ class TransactionRunner
       origin: transaction.origin
     @configuration.emitter.emit 'test error', error, test if error
 
-  runHook: (hook, transaction, callback) ->
-    if hook.length is 1
-      # syncronous, no callback
-      hook transaction
-      callback()
-    else if hook.length is 2
-      # async
-      hook transaction, ->
+  # Will be used runHook instead in next major release, see deprecation warning
+  runLegacyHook: (hook, transactions, callback) ->
+    # not sandboxed mode - hook is a function
+    if typeof(hook) == 'function'
+      if hook.length is 1
+        # sync api
+
+        # TODO: if it throw an exception here, nothing heppens probably,
+        # replicate, mitigate
+        logger.warn "DEPRECATION WARNING!"
+        logger.warn "You are using only one argument for the `beforeAll` or `afterAll` hook function."
+        logger.warn "One argument hook functions will be treated as synchronous in next major release."
+        logger.warn ""
+        logger.warn "Api of the hooks functions will be unified soon across all hook functions:"
+        logger.warn " - `beforeAll` and `afterAll` hooks will support sync API depending on number of arguments"
+        logger.warn " - API of callback all functions will be the same"
+        logger.warn " - First passed argument will be a `transactions` object"
+        logger.warn " - Second passed argument will be a optional callback function for async"
+        logger.warn " - `transactions` object in `hooks` module object will be removed"
+        logger.warn " - Manipulation of transactions will must be performed on first function argument"
+        hook callback
+
+      else if hook.length is 2
+        # async api
+        hook transactions, ->
+          callback()
+
+    # sandboxed mode - hook is a string - only sync API
+    if typeof(hook) == 'string'
+      wrappedCode = """
+      // run the hook
+      var func = #{hook}
+      func(transactions)
+
+      // setup the return object
+      var output = {};
+      output["transactions"] = transactions;
+      output["stash"] = stash;
+      output;
+      """
+
+      pitboss = new Pitboss wrappedCode, {
+        timeout: 500
+      }
+
+      pitboss.run {context: {transactions: transactions, stash: @hookStash}, libraries: ['console']}, (err, result) =>
+        return callback(err) if err
+        # reference to `transaction` get lost here if whole object is assigned
+        # this is wokraround how to copy proprties
+        # clone doesn't work either
+        for key, value of result.transactions
+          transactions[key] = value
+        @hookStash = result.stash
         callback()
+
+
+  runHook: (hook, transaction, callback) ->
+    # not sandboxed mode - hook is a function
+    if typeof(hook) == 'function'
+      if hook.length is 1
+        # sync api
+        hook transaction
+        callback()
+      else if hook.length is 2
+        # async api
+        hook transaction, ->
+          callback()
+
+    # sandboxed mode - hook is a string - only sync API
+    if typeof(hook) == 'string'
+
+      wrappedCode = """
+      // run the hook
+      var func = #{hook}
+      func(transaction)
+
+      // setup the return object
+      var output = {};
+      output["transaction"] = transaction;
+      output["stash"] = stash;
+      output;
+      """
+
+      pitboss = new Pitboss wrappedCode, {
+        timeout: 500
+      }
+
+      pitboss.run {context: {transaction: transaction, stash: @hookStash}, libraries: ['console']}, (err, result) =>
+        return callback(err) if err
+        # reference to `transaction` get lost here if whole object is assigned
+        # this is wokraround how to copy proprties
+        # clone doesn't work either
+        for key, value of result.transaction
+          transaction[key] = value
+        @hookStash = result.stash
+        callback()
+
+
 
   configureTransaction: (transaction, callback) =>
     configuration = @configuration
@@ -161,7 +266,7 @@ class TransactionRunner
     # /end warning
 
     # run beforeAll hooks
-    hooks.runBeforeAll () =>
+    @runHooksForTransaction hooks.beforeAllHooks, transactions, true, () =>
 
       # Iterate over transactions' transaction
       # Because async changes the way referencing of properties work,
@@ -170,20 +275,20 @@ class TransactionRunner
         transaction = transactions[transactionIndex]
 
         # run before hooks
-        @runHooksForTransaction hooks.beforeHooks[transaction.name], transaction, () =>
+        @runHooksForTransaction hooks.beforeHooks[transaction.name], transaction, false, () =>
 
           # execute and validate HTTP transaction
           @executeTransaction transaction, () =>
 
             # run after hooks
-            @runHooksForTransaction hooks.afterHooks[transaction.name], transaction, () =>
+            @runHooksForTransaction hooks.afterHooks[transaction.name], transaction, false, () =>
 
               # decide and emit result
               @emitResult transaction, iterationCallback
-      , () ->
+      , () =>
 
         #runAfterHooks
-        hooks.runAfterAll(callback)
+        @runHooksForTransaction hooks.afterAllHooks, transactions, true, callback
 
   executeTransaction: (transaction, callback) =>
     configuration = @configuration

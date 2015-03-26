@@ -369,4 +369,7 @@ describe "Dredd class Integration", () ->
         assert.equal exitStatus, 0
 
 
-  describe 'when i pass hooks code text to hooksCode option'
+  describe 'when i pass hooks code text to hooksCode option', () ->
+    describe 'and I run a test', () ->
+      it 'should pass no error'
+      it 'should execute'

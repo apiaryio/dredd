@@ -135,7 +135,7 @@ describe 'addHooks(runner, transactions, emitter, customConfig)', () ->
     describe 'all hooks functions on the runner object', () ->
       it 'should be strings'
 
-    desribe 'when hook loading explodes', () ->
+    describe 'when hook loading explodes', () ->
       it 'should log a warning'
 
     describe 'context of code adding hooks', () ->
@@ -150,6 +150,6 @@ describe 'addHooks(runner, transactions, emitter, customConfig)', () ->
       it 'shuold eval and load the code from the array'
 
   describe 'when code is provided as a string in Dredd\'s options', () ->
-    describe 'when sendbox mode is off' () ->
+    describe 'when sendbox mode is off', () ->
       it 'should throw an error containing descriptive error'
       # passing hooks code text must be used in 'sandbox' mode
