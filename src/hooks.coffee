@@ -29,10 +29,4 @@ class Hooks
     else
       hooks[name] = [hook]
 
-  runBeforeAll: (callback) =>
-    async.series @beforeAllHooks, callback
-
-  runAfterAll: (callback) =>
-    async.series @afterAllHooks, callback
-
 module.exports = Hooks

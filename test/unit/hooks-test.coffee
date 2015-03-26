@@ -29,32 +29,24 @@ describe 'Hooks', () ->
     it 'should add to hook collection', () ->
       assert.property hooks.afterHooks, 'afterHook'
 
-  describe 'when adding beforeAll hooks', () ->
+  describe 'when adding beforeAll hook', () ->
+    hooks = null
 
-    it 'should invoke registered callbacks', (testDone) ->
-      callback = sinon.stub()
-      callback.callsArg(0)
-
+    before () ->
       hooks = new Hooks()
-      hooks.beforeAll callback
-      hooks.beforeAll (done) ->
-        assert.ok typeof done is 'function'
-        assert.ok callback.called
-        done()
-      hooks.runBeforeAll (done) ->
-        testDone()
+      hooks.beforeAll () ->
+        ""
 
-  describe 'when adding afterAll hooks', () ->
+    it 'should add to hook collection', () ->
+      assert.lengthOf hooks.beforeAllHooks, 1
 
-    it 'should callback if registered', (testDone) ->
-      callback = sinon.stub()
-      callback.callsArg(0)
+  describe 'when adding afterAll hook', () ->
+    hooks = null
 
+    before () ->
       hooks = new Hooks()
-      hooks.afterAll callback
-      hooks.afterAll (done) ->
-        assert.ok(typeof done is 'function')
-        assert.ok callback.called
-        done()
-      hooks.runAfterAll (done) ->
-        testDone()
+      hooks.afterAll () ->
+        ""
+
+    it 'should add to hook collection', () ->
+      assert.lengthOf hooks.afterAllHooks, 1
