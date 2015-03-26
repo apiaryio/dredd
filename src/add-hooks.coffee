@@ -35,6 +35,7 @@ addHooks = (runner, transactions, emitter, customConfig) ->
 
   runner.hooks ?= hooks
 
+
   return hooks
 
 module.exports = addHooks

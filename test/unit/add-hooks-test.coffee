@@ -117,39 +117,20 @@ describe 'addHooks(runner, transactions, emitter, customConfig)', () ->
         addHooks(runner, transactions)
         assert.ok loggerStub.warn.called
 
+  describe 'when sandboxed mode is off', () ->
+    describe 'when hooks are passed as a string from Dredd class', () ->
+      it 'should throw a "not implemented" exception'
 
-  describe 'when sandbox is turned on', () ->
+  describe 'when sandboxed mode is on', () ->
+    describe 'when hookfiles option is given', () ->
+      it 'should not use proxyquire'
+      it 'should load files from the filesystem'
+      it 'should run the loaded code'
+      it 'should add hook functions strings to the runner object'
 
-    runner = null
-    runnerSource =
-      configuration:
-        options:
-          hookfiles: './**/*_hooks.*'
-          sandbox: true
+    describe 'when hooks are passed as string from Dredd class', () ->
+      it 'should run given code'
+      it 'should add hook functions strings to the runner object '
 
-    before ->
-      runner = clone runnerSource
-
-    it 'should add hooks on the runner object'
-
-    describe 'all hooks functions on the runner object', () ->
-      it 'should be strings'
-
-    describe 'when hook loading explodes', () ->
-      it 'should log a warning'
-
-    describe 'context of code adding hooks', () ->
-      it 'should not have access to addHooks context'
-      it 'should not have access to require'
-      it 'should have defined before'
-      it 'should have defined after'
-      it 'should have defined beforeAll'
-      it 'should have defined afterAll'
-
-    describe 'when hook code is provided as string in Dredd\'s options', () ->
-      it 'shuold eval and load the code from the array'
-
-  describe 'when code is provided as a string in Dredd\'s options', () ->
-    describe 'when sendbox mode is off', () ->
-      it 'should throw an error containing descriptive error'
-      # passing hooks code text must be used in 'sandbox' mode
+    describe 'when multiple hook files are processed', () ->
+      it 'should not overwrite previous content of hooks'

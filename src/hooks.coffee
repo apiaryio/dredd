@@ -10,6 +10,8 @@ class Hooks
     @transactions = {}
     @beforeAllHooks = []
     @afterAllHooks = []
+    @beforeEachHooks = []
+    @afterEachHooks = []
 
   before: (name, hook) =>
     @addHook(@beforeHooks, name, hook)
@@ -22,6 +24,12 @@ class Hooks
 
   afterAll: (hook) =>
     @afterAllHooks.push hook
+
+  beforeEach: (hook) =>
+    @beforeEachHooks.push hook
+
+  afterEach: (hook) =>
+    @afterEachHooks.push hook
 
   addHook: (hooks, name, hook) ->
     if hooks[name]

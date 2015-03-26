@@ -656,7 +656,7 @@ describe 'TransactionRunner', ()->
           assert.ok loggerStub.info.calledWith "second"
           done()
 
-    describe 'around hooks with legacy async interface (fist argument is a callback)', () ->
+    describe '*All hooks with legacy async interface (fist argument is a callback)', () ->
       describe 'with a beforeAll hook', () ->
         legacyApiFunction = (callback) ->
           callback()
@@ -708,13 +708,13 @@ describe 'TransactionRunner', ()->
             assert.ok afterAllStub2.called
             done()
 
-    describe 'around hooks with standard async API (first argument transactions, second callback)', () ->
+    describe '*All hooks with standard async API (first argument transactions, second callback)', () ->
 
       describe 'with a beforeAll hook', () ->
-        legacyApiFunction = (transactions, callback) ->
+        hook = (transactions, callback) ->
           callback()
 
-        beforeAllStub = sinon.spy(legacyApiFunction)
+        beforeAllStub = sinon.spy(hook)
 
         beforeEach () ->
           runner.hooks.beforeAll beforeAllStub
@@ -725,10 +725,10 @@ describe 'TransactionRunner', ()->
             done()
 
       describe 'with an afterAll hook', () ->
-        legacyApiFunction = (transactions, callback) ->
+        hook = (transactions, callback) ->
           callback()
 
-        afterAllStub = sinon.spy legacyApiFunction
+        afterAllStub = sinon.spy hook
 
         beforeEach () ->
           runner.hooks.afterAll afterAllStub
@@ -739,13 +739,13 @@ describe 'TransactionRunner', ()->
             done()
 
       describe 'with multiple hooks for the same events', () ->
-        legacyApiFunction = (transactions, callback) ->
+        hook = (transactions, callback) ->
           callback()
 
-        beforeAllStub1 = sinon.spy(legacyApiFunction)
-        beforeAllStub2 = sinon.spy(legacyApiFunction)
-        afterAllStub1 = sinon.spy(legacyApiFunction)
-        afterAllStub2 = sinon.spy(legacyApiFunction)
+        beforeAllStub1 = sinon.spy(hook)
+        beforeAllStub2 = sinon.spy(hook)
+        afterAllStub1 = sinon.spy(hook)
+        afterAllStub2 = sinon.spy(hook)
 
         beforeEach () ->
           runner.hooks.beforeAll beforeAllStub1
@@ -761,7 +761,7 @@ describe 'TransactionRunner', ()->
             assert.ok afterAllStub2.called
             done()
 
-    describe 'around hooks with sandboxed API (functions as strings)', () ->
+    describe '*All hooks with sandboxed API (functions as strings)', () ->
       describe 'with a beforeAll hook', () ->
 
         beforeEach () ->
@@ -851,6 +851,120 @@ describe 'TransactionRunner', ()->
             call = configuration.emitter.emit.getCall(0)
             assert.notOk configuration.emitter.emit.calledWith "test error"
             assert.property transactions, 'prop'
+            done()
+
+    describe '*Each hooks with standard async API (first argument transactions, second callback)', () ->
+
+      transactionsForExecution = []
+
+      before () ->
+        transaction =
+          name: 'Group Machine > Machine > Delete Message > Bogus example name'
+          id: 'POST /machines'
+          host: 'localhost'
+          port: '3000'
+          request:
+            body: '{\n  "type": "bulldozer",\n  "name": "willy"}\n'
+            headers:
+              'Content-Type': 'application/json'
+              'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)'
+              'Content-Length': 44
+            uri: '/machines'
+            method: 'POST'
+          expected:
+            headers: 'content-type': 'application/json'
+            body: '{\n  "type": "bulldozer",\n  "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n'
+            statusCode: '202'
+          origin:
+            resourceGroupName: 'Group Machine'
+            resourceName: 'Machine'
+            actionName: 'Delete Message'
+            exampleName: 'Bogus example name'
+          fullPath: '/machines'
+
+        for i in [1,2]
+          clonedTransaction = clone transaction
+          clonedTransaction['name'] = clonedTransaction['name'] + " #{i}"
+          transactionsForExecution.push clonedTransaction
+
+      describe 'with a beforeEach hook', () ->
+        hook = (transactions, callback) ->
+          callback()
+
+        beforeEachStub = sinon.spy(hook)
+
+        beforeEach () ->
+          runner.hooks.beforeEach beforeEachStub
+          server = nock('http://localhost:3000').
+            post('/machines', {"type":"bulldozer","name":"willy"}).
+            reply transactionsForExecution[0]['expected']['status'],
+              transactionsForExecution[0]['expected']['body'],
+              {'Content-Type': 'application/json'}
+
+        afterEach () ->
+          beforeEachStub.reset()
+          nock.cleanAll()
+
+        it 'should run the hooks', (done) ->
+          runner.executeAllTransactions transactionsForExecution, runner.hooks, () ->
+            assert.ok beforeEachStub.called
+            done()
+
+        it 'should run the hook for each transaction', (done) ->
+          runner.executeAllTransactions transactionsForExecution, runner.hooks, () ->
+            assert.equal beforeEachStub.callCount, transactionsForExecution.length
+            done()
+
+
+      describe 'with a afterEach hook', () ->
+        hook = (transactions, callback) ->
+          callback()
+
+        afterEachStub = sinon.spy(hook)
+
+        beforeEach () ->
+          runner.hooks.afterEach afterEachStub
+          server = nock('http://localhost:3000').
+            post('/machines', {"type":"bulldozer","name":"willy"}).
+            reply transactionsForExecution[0]['expected']['status'],
+              transactionsForExecution[0]['expected']['body'],
+              {'Content-Type': 'application/json'}
+
+        afterEach () ->
+          afterEachStub.reset()
+          nock.cleanAll()
+
+        it 'should run the hooks', (done) ->
+          runner.executeAllTransactions transactionsForExecution, runner.hooks, () ->
+            assert.ok afterEachStub.called
+            done()
+
+        it 'should run the hook for each transaction', (done) ->
+          runner.executeAllTransactions transactionsForExecution, runner.hooks, () ->
+            assert.equal afterEachStub.callCount, transactionsForExecution.length
+            done()
+
+      describe 'with multiple hooks for the same events', () ->
+        legacyApiFunction = (transactions, callback) ->
+          callback()
+
+        beforeAllStub1 = sinon.spy(legacyApiFunction)
+        beforeAllStub2 = sinon.spy(legacyApiFunction)
+        afterAllStub1 = sinon.spy(legacyApiFunction)
+        afterAllStub2 = sinon.spy(legacyApiFunction)
+
+        beforeEach () ->
+          runner.hooks.beforeAll beforeAllStub1
+          runner.hooks.afterAll afterAllStub1
+          runner.hooks.afterAll afterAllStub2
+          runner.hooks.beforeAll beforeAllStub2
+
+        it 'should run all the events in order', (done) ->
+          runner.executeAllTransactions [], runner.hooks, () ->
+            assert.ok beforeAllStub1.calledBefore(beforeAllStub2)
+            assert.ok beforeAllStub2.called
+            assert.ok afterAllStub1.calledBefore(afterAllStub2)
+            assert.ok afterAllStub2.called
             done()
 
     describe 'with before hook that throws an error', () ->

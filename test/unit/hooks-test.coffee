@@ -50,3 +50,25 @@ describe 'Hooks', () ->
 
     it 'should add to hook collection', () ->
       assert.lengthOf hooks.afterAllHooks, 1
+
+  describe 'when adding beforeEach hook', () ->
+    hooks = null
+
+    before () ->
+      hooks = new Hooks()
+      hooks.beforeEach () ->
+        ""
+
+    it 'should add to hook collection', () ->
+      assert.lengthOf hooks.beforeEachHooks, 1
+
+  describe 'when adding afterEach hook', () ->
+    hooks = null
+
+    before () ->
+      hooks = new Hooks()
+      hooks.afterEach () ->
+        ""
+
+    it 'should add to hook collection', () ->
+      assert.lengthOf hooks.afterEachHooks, 1

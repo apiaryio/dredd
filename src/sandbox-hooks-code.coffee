@@ -1,0 +1,4 @@
+sandboxHooksCode = () ->
+
+
+module.exports = sandboxHooksCode

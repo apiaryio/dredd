@@ -32,36 +32,39 @@ class TransactionRunner
     hooks = addHooks @, transactions, @configuration.emitter, @configuration.custom
     @executeAllTransactions(transactions, hooks, callback)
 
-  runHooksForTransaction: (hooks, transaction, legacy = false, callback) ->
+
+  # Tha `data` argument can be transactions or transaction object
+  runHooksForData: (hooks, data, legacy = false, callback) ->
     if hooks? and Array.isArray hooks
       logger.debug 'Running hooks...'
 
-      runHookWithTransaction = (hookFnIndex, callback) =>
+      runHookWithData = (hookFnIndex, callback) =>
         hookFn = hooks[hookFnIndex]
         try
           if legacy
-            @runLegacyHook hookFn, transaction, (err) =>
+            @runLegacyHook hookFn, data, (err) =>
               if err
                 error = new Error err
-                @emitError(transaction, error)
+                @emitError(data, error)
               callback()
           else
-            @runHook hookFn, transaction, (err) ->
+            @runHook hookFn, data, (err) ->
               if err
                 error = new Error err
-                @emitError(transaction, error)
+                @emitError(data, error)
               callback()
 
         catch error
-          unless error instanceof chai.AssertionError
-            @emitError(transaction, error)
+          if error instanceof chai.AssertionError
+            data.message = "Failed assertion in hooks: " + error.message
+            data.test?.status = 'fail'
+            @configuration.emitter.emit 'test fail', data.test
           else
-            transaction.message = "Failed assertion in hooks: " + error.message
-            transaction.test?.status = 'fail'
-            @configuration.emitter.emit 'test fail', transaction.test
+            @emitError(data, error)
+
           callback()
 
-      async.timesSeries hooks.length, runHookWithTransaction, ->
+      async.timesSeries hooks.length, runHookWithData, ->
         callback()
 
     else
@@ -89,6 +92,7 @@ class TransactionRunner
         logger.warn "DEPRECATION WARNING!"
         logger.warn "You are using only one argument for the `beforeAll` or `afterAll` hook function."
         logger.warn "One argument hook functions will be treated as synchronous in next major release."
+        logger.warn "To keep the async behaviour, just define hook function with two parameters. "
         logger.warn ""
         logger.warn "Api of the hooks functions will be unified soon across all hook functions:"
         logger.warn " - `beforeAll` and `afterAll` hooks will support sync API depending on number of arguments"
@@ -96,7 +100,7 @@ class TransactionRunner
         logger.warn " - First passed argument will be a `transactions` object"
         logger.warn " - Second passed argument will be a optional callback function for async"
         logger.warn " - `transactions` object in `hooks` module object will be removed"
-        logger.warn " - Manipulation of transactions will must be performed on first function argument"
+        logger.warn " - Manipulation of transactions will have to be performed on first function argument"
         hook callback
 
       else if hook.length is 2
@@ -266,7 +270,7 @@ class TransactionRunner
     # /end warning
 
     # run beforeAll hooks
-    @runHooksForTransaction hooks.beforeAllHooks, transactions, true, () =>
+    @runHooksForData hooks.beforeAllHooks, transactions, true, () =>
 
       # Iterate over transactions' transaction
       # Because async changes the way referencing of properties work,
@@ -274,21 +278,27 @@ class TransactionRunner
       async.timesSeries transactions.length, (transactionIndex, iterationCallback) =>
         transaction = transactions[transactionIndex]
 
-        # run before hooks
-        @runHooksForTransaction hooks.beforeHooks[transaction.name], transaction, false, () =>
+        # run beforeEach hooks
+        @runHooksForData hooks.beforeEachHooks, transaction, false, () =>
 
-          # execute and validate HTTP transaction
-          @executeTransaction transaction, () =>
+          # run before hooks
+          @runHooksForData hooks.beforeHooks[transaction.name], transaction, false, () =>
 
-            # run after hooks
-            @runHooksForTransaction hooks.afterHooks[transaction.name], transaction, false, () =>
+            # execute and validate HTTP transaction
+            @executeTransaction transaction, () =>
 
-              # decide and emit result
-              @emitResult transaction, iterationCallback
+              # run afterEach hooks
+              @runHooksForData hooks.afterEachHooks, transaction, false, () =>
+
+                # run after hooks
+                @runHooksForData hooks.afterHooks[transaction.name], transaction, false, () =>
+
+                  # decide and emit result
+                  @emitResult transaction, iterationCallback
       , () =>
 
         #runAfterHooks
-        @runHooksForTransaction hooks.afterAllHooks, transactions, true, callback
+        @runHooksForData hooks.afterAllHooks, transactions, true, callback
 
   executeTransaction: (transaction, callback) =>
     configuration = @configuration
