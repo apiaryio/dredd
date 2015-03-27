@@ -46,6 +46,7 @@ addHooks = (runner, transactions, callback) ->
 
     # Running in sendboxed mode
     else
+      logger.info 'Loading hookfiles in sandboxed context' + files
       for file in files
         resolvedPath = path.resolve((customConfigCwd or process.cwd()), file)
 

@@ -7,7 +7,7 @@ Hooks = require '../../src/hooks'
 
 describe 'Hooks', () ->
 
-  describe 'when adding before hook', () ->
+  describe '#before', () ->
     hooks = null
 
     before () ->
@@ -18,7 +18,7 @@ describe 'Hooks', () ->
     it 'should add to hook collection', () ->
       assert.property hooks.beforeHooks, 'beforeHook'
 
-  describe 'when adding after hook', () ->
+  describe '#after', () ->
     hooks = null
 
     before () ->
@@ -29,7 +29,7 @@ describe 'Hooks', () ->
     it 'should add to hook collection', () ->
       assert.property hooks.afterHooks, 'afterHook'
 
-  describe 'when adding beforeAll hook', () ->
+  describe '#beforeAll', () ->
     hooks = null
 
     before () ->
@@ -40,7 +40,7 @@ describe 'Hooks', () ->
     it 'should add to hook collection', () ->
       assert.lengthOf hooks.beforeAllHooks, 1
 
-  describe 'when adding afterAll hook', () ->
+  describe '#afterAll', () ->
     hooks = null
 
     before () ->
@@ -51,7 +51,7 @@ describe 'Hooks', () ->
     it 'should add to hook collection', () ->
       assert.lengthOf hooks.afterAllHooks, 1
 
-  describe 'when adding beforeEach hook', () ->
+  describe '#beforeEach', () ->
     hooks = null
 
     before () ->
@@ -62,7 +62,7 @@ describe 'Hooks', () ->
     it 'should add to hook collection', () ->
       assert.lengthOf hooks.beforeEachHooks, 1
 
-  describe 'when adding afterEach hook', () ->
+  describe '#afterEach', () ->
     hooks = null
 
     before () ->

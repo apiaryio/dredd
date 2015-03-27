@@ -193,7 +193,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
       it 'should add hook functions strings to the runner object', (done) ->
         addHooks runner, transactions, (err) ->
           return err if err
-          assert.property runner.hooks.beforeHooks, 'Machines > Machines collection > Get Machines'
+          assert.property runner.hooks.afterHooks, 'Machines > Machines collection > Get Machines'
           done()
 
     describe 'when hooks are passed as string from Dredd class', () ->
