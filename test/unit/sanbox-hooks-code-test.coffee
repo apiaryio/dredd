@@ -7,29 +7,89 @@ describe 'sandboxHooksCode(hooksCode, callback)', () ->
   it 'should be a defined function', () ->
     assert.isFunction sandboxHooksCode
 
-  it 'should run the code' #, (done) ->
-    # code = """
-
-    # """
-    # sandboxHooksCode code, (err,result) ->
-    #   done()
-
-
-  describe 'when hook loading explodes', () ->
-    it 'should return an error in callback'
+  describe 'when hookscode explodes', () ->
+    it 'should return an error in callback', (done) ->
+      hooksCode = """
+      throw(new Error("Exploded during sandboxed processing of hook file"));
+      """
+      sandboxHooksCode hooksCode, (err, result) ->
+        assert.include err, 'sandbox'
+        done()
 
   describe 'context of code adding hooks', () ->
-    it 'should not have access to addHooks context'
-    it 'should not have access to require'
-    it 'should have defined before'
-    it 'should have defined after'
-    it 'should have defined beforeAll'
-    it 'should have defined afterAll'
-    it 'should have defined beforeEach'
-    it 'should have defined afterEach'
+    it 'should not have access to this context', (done) ->
+      contextVar = ''
+      hooksCode = """
+      contextVar = "b";
+      """
+      sandboxHooksCode hooksCode, (err, result) ->
+        assert.include err, 'contextVar'
+        done()
 
-  it 'should pass result object to the second callback argument'
+    it 'should not have access to require', (done) ->
+      contextVar = ''
+      hooksCode = """
+      require('fs');
+      """
+      sandboxHooksCode hooksCode, (err, result) ->
+        assert.include err, 'require'
+        done()
 
-  describe 'should result object', () ->
-    it 'should have same stricture as hooks object'
-    it 'should contain function strings in their places'
+    functions = [
+      'before'
+      'after'
+      'beforeAll'
+      'afterAll'
+      'beforeEach'
+      'afterEach'
+    ]
+
+    for name in functions then do (name) ->
+      it "should have defined function '#{name}'", (done) ->
+        hooksCode = """
+        if(typeof(#{name}) !== 'function'){
+          throw(new Error('#{name} is not a function'))
+        }
+        """
+        sandboxHooksCode hooksCode, (err, result) ->
+          assert.isUndefined err
+          done()
+
+    it 'should pass result object to the second callback argument', (done) ->
+      hooksCode = ""
+      sandboxHooksCode hooksCode, (err, result) ->
+        return done(err) if err
+        assert.isObject result
+        done()
+
+  describe 'result object', () ->
+    properties = [
+      'beforeAllHooks'
+      'beforeEachHooks'
+      'beforeHooks'
+      'afterHooks'
+      'afterEachHooks'
+      'afterAllHooks'
+    ]
+
+    for property in properties then do (property) ->
+      it "should have property #{property}", (done) ->
+        hooksCode = """
+        var dummyFunc = function(data){
+          return true;
+        }
+
+        before(dummyFunc);
+        after(dummyFunc);
+        beforeAll('Transaction Name', dummyFunc);
+        afterAll('Transaction Name', dummyFunc);
+        beforeEach(dummyFunc);
+        afterEach(dummyFunc);
+        """
+
+        sandboxHooksCode hooksCode, (err, result) ->
+          return done(err) if err
+          assert.property result, property
+          done()
+
+
