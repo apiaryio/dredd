@@ -1,3 +1,5 @@
+
+# READ THIS! Disclaimer:
 # Do not add any functinoality to this class unless you want expose it to the Hooks API
 # This class is only an interface for users of Dredd hooks.
 
@@ -35,6 +37,8 @@ class Hooks
     else
       hooks[name] = [hook]
 
+  # This is not part of hooks API
+  # This is here only because it has to be injected into sandboxed context
   dumpHooksFunctionsToStrings: () ->
     # prepare JSON friendly object
     toReturn = JSON.parse(JSON.stringify(@))

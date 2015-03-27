@@ -10,25 +10,29 @@ sandboxHooksCode = require './sandbox-hooks-code'
 
 addHooks = (runner, transactions, callback) ->
 
-  hooks = new Hooks()
-  hooks.transactions ?= {}
+  runner.hooks = new Hooks()
+  runner.hooks.transactions ?= {}
+
+  customConfigCwd = runner?.configuration?.custom?.cwd
 
   for transaction in transactions
-    hooks.transactions[transaction.name] = transaction
+    runner.hooks.transactions[transaction.name] = transaction
 
   pattern = runner?.configuration?.options?.hookfiles
-  if pattern
+  if not pattern
+    return callback()
 
+  else
     files = glob.sync pattern
 
     logger.info 'Found Hookfiles: ' + files
 
     # Running in node sendboxed mode
-    if runner?.configuration?.options?.sandbox == false
+    if not runner.configuration.options.sandbox == true
       try
         for file in files
-          proxyquire path.resolve((customConfig?.cwd or process.cwd()), file), {
-            'hooks': hooks
+          proxyquire path.resolve((customConfigCwd or process.cwd()), file), {
+            'hooks': runner.hooks
           }
         return callback()
       catch error
@@ -42,7 +46,7 @@ addHooks = (runner, transactions, callback) ->
     # Running in sendboxed mode
     else
       for file in files
-        resolvedPath = path.resolve((customConfig?.cwd or process.cwd()), file)
+        resolvedPath = path.resolve((customConfigCwd or process.cwd()), file)
 
         # load hook file content
         fs.readFile resolvedPath, 'utf8', (readingError, data) ->
@@ -52,15 +56,9 @@ addHooks = (runner, transactions, callback) ->
           sandboxHooksCode data, (sandboxError, result) ->
             return callback(sandboxError) if sandboxError
 
-            # merge hooks
+            # TODO merge hooks here
 
             callback()
 
-
-
-
-  runner.hooks ?= hooks
-
-  return hooks
 
 module.exports = addHooks

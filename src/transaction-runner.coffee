@@ -29,8 +29,9 @@ class TransactionRunner
     async.mapSeries transactions, @configureTransaction, (err, results) ->
       transactions = results
 
-    hooks = addHooks @, transactions, @configuration.emitter, @configuration.custom
-    @executeAllTransactions(transactions, hooks, callback)
+    addHooks @, transactions, (addHooksError) =>
+      callback addHooksError if addHooksError
+      @executeAllTransactions(transactions, @hooks, callback)
 
 
   # Tha `data` argument can be transactions or transaction object

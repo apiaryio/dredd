@@ -8,9 +8,17 @@ Sandboxed hooks cen be used for running untrusted hook code. In each hook file y
 `beforeEach(function)`
 `afterEach(function)`
 
-[Transasction]() object is passed as a first argument to the hook function. Sandboxed hooks doesn't have asynchronous API. Loading of hooks and each hook is ran in it's own isolated, sandboxed context. Hook maximum execution time is 500ms. Inside each hook you can access `stash` object variable which is passed between contexts of each hook function execution.
 
-## Good
+- [Transasction]() object is passed as a first argument to the hook function.
+- Sandboxed hooks doesn't have asynchronous API. Loading of hooks and each hook is ran in it's own isolated, sandboxed context.
+- Hook maximum execution time is 500ms.
+- Inside each hook you can access `stash` object variable which is passed between contexts of each hook function execution.
+- Hook code is evaluated as `use strict`
+
+
+## Examples
+
+### Good
 ```javascript
 
 after('First action', function(transaction){
@@ -26,7 +34,7 @@ before('Second action', funciton(transaction){
 ```
 
 
-## Bad
+### Bad, throwing an exception
 ```javascript
 var myObject = {};
 

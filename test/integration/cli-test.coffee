@@ -891,3 +891,36 @@ describe "Command line interface", () ->
 
       it 'should exit with status 0', () ->
         assert.equal exitStatus, 0
+
+  describe.skip "Using sandboxed hooks", () ->
+    resourceRequested = false
+
+    before (done) ->
+      cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --sandboxed --hookfiles=./test/fixtures/sandboxed-hook.js"
+
+      app = express()
+
+      app.get '/machines', (req, res) ->
+        requestReceived = true
+        res.setHeader 'Content-Type', 'application/json'
+        machine =
+          type: 'bulldozer'
+          name: 'willy'
+        response = [machine]
+        res.status(200).send response
+
+      server = app.listen PORT, () ->
+        execCommand cmd, () ->
+          server.close()
+
+      server.on 'close', done
+
+    it 'should hit the resource', () ->
+      assert.ok resourceRequested
+
+    it 'exit status should be 0', () ->
+      assert.equal exitStatus, 1
+
+    it 'stdout shoud contain fail message', () ->
+      assert.include stdout, 'failed in sandboxed hook'
+

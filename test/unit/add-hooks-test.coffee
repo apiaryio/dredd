@@ -27,7 +27,7 @@ addHooks = proxyquire  '../../src/add-hooks', {
   'fs': fsStub
 }
 
-describe 'addHooks(runner, transactions, emitter, customConfig)', () ->
+describe 'addHooks(runner, transactions, callback)', () ->
 
   transactions = {}
   server = null
@@ -44,12 +44,14 @@ describe 'addHooks(runner, transactions, emitter, customConfig)', () ->
         options:
           hookfiles: null
 
-    it 'should create hooks instance at runner.hooks', ->
-      hooks = addHooks(runner, transactions)
-      assert.isDefined hooks
-      assert.instanceOf hooks, hooksStub
-      assert.strictEqual hooks, runner.hooks
-      assert.deepProperty runner, 'hooks.transactions'
+    it 'should create hooks instance at runner.hooks', (done)->
+      addHooks runner, transactions, (err) ->
+        return err if err
+        assert.isDefined runner.hooks
+        assert.instanceOf runner.hooks, hooksStub
+        assert.strictEqual runner.hooks, runner.hooks
+        assert.deepProperty runner, 'hooks.transactions'
+        done()
 
   describe 'with no pattern', () ->
 
@@ -66,29 +68,34 @@ describe 'addHooks(runner, transactions, emitter, customConfig)', () ->
     after () ->
       globStub.sync.restore()
 
-    it 'should not expand any glob', ()->
-      addHooks(runner, transactions)
-      assert.ok globStub.sync.notCalled
+    it 'should not expand any glob', (done) ->
+      addHooks runner, transactions, (err) ->
+        assert.ok globStub.sync.notCalled
+        done()
 
   describe 'with valid pattern', () ->
     runner = null
-    runnerSource =
-      configuration:
-        options:
-          hookfiles: './**/*_hooks.*'
+    beforeEach ->
+      runner =
+        configuration:
+          options:
+            hookfiles: './**/*_hooks.*'
 
-    before ->
-      runner = clone runnerSource
-
-    it 'should return files', () ->
+    it 'should return files', (done) ->
       sinon.spy globStub, 'sync'
-      addHooks(runner, transactions)
-      assert.ok globStub.sync.called
-      globStub.sync.restore()
+      addHooks runner, transactions, (err) ->
+        return done err if err
+        assert.ok globStub.sync.called
+        globStub.sync.restore()
+        done()
 
     describe 'when files are valid js/coffeescript', () ->
+      runner = null
       before () ->
-        runner = clone(runnerSource)
+        runner =
+          configuration:
+            options:
+              hookfiles: './**/*_hooks.*'
         sinon.stub globStub, 'sync', (pattern) ->
           ['file1.js', 'file2.coffee']
         sinon.stub pathStub, 'resolve', (path, rel) ->
@@ -98,14 +105,20 @@ describe 'addHooks(runner, transactions, emitter, customConfig)', () ->
         globStub.sync.restore()
         pathStub.resolve.restore()
 
-      it 'should load the files', () ->
-        addHooks(runner, transactions)
-        assert.ok pathStub.resolve.called
+      it 'should load the files', (done) ->
+        addHooks runner, transactions, (err) ->
+          return done err if err
+          assert.ok pathStub.resolve.called
+          done()
 
     describe 'when there is an error reading the hook files', () ->
-
+      runner = null
       beforeEach ->
-        runner = clone(runnerSource)
+        runner =
+          configuration:
+            options:
+              hookfiles: './**/*_hooks.*'
+
         sinon.stub pathStub, 'resolve', (path, rel) ->
           throw new Error()
         sinon.spy loggerStub, 'warn'
@@ -119,20 +132,24 @@ describe 'addHooks(runner, transactions, emitter, customConfig)', () ->
         loggerStub.info.restore()
         globStub.sync.restore()
 
-      it 'should log an info with hookfiles paths', ->
-        addHooks(runner, transactions)
-        assert.ok loggerStub.info.called
-        assert.equal loggerStub.info.firstCall.args[0], 'Found Hookfiles: file1.xml,file2.md'
+      it 'should log an info with hookfiles paths', (done) ->
+        addHooks runner, transactions, (err) ->
+          return done err if err
+          assert.ok loggerStub.info.called
+          assert.equal loggerStub.info.firstCall.args[0], 'Found Hookfiles: file1.xml,file2.md'
+          done()
 
-      it 'should log a warning', ->
-        addHooks(runner, transactions)
-        assert.ok loggerStub.warn.called
+      it 'should log a warning', (done) ->
+        addHooks runner, transactions, (err) ->
+          return done err if err
+          assert.ok loggerStub.warn.called
+          done()
 
   describe 'when sandboxed mode is off', () ->
     describe 'when hooks are passed as a string from Dredd class', () ->
       it 'should throw a "not implemented" exception'
 
-  describe.only 'when sandboxed mode is on', () ->
+  describe 'when sandboxed mode is on', () ->
     describe 'when hookfiles option is given', () ->
       runner = {}
       beforeEach ->
@@ -140,7 +157,7 @@ describe 'addHooks(runner, transactions, emitter, customConfig)', () ->
           configuration:
             options:
               hookfiles: './test/fixtures/sandboxed-hook.js'
-              sanbdbox: true
+              sandbox: true
 
         sinon.spy loggerStub, 'warn'
         sinon.spy loggerStub, 'info'

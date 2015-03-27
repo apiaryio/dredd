@@ -547,7 +547,7 @@ describe 'TransactionRunner', ()->
     transaction = {}
     transactions = {}
 
-    beforeEach () ->
+    beforeEach (done) ->
       transaction =
         name: 'Group Machine > Machine > Delete Message > Bogus example name'
         id: 'POST /machines'
@@ -580,7 +580,7 @@ describe 'TransactionRunner', ()->
       transactions = {}
       transactions[transaction.name] = clone transaction, false
       runner = new Runner(configuration)
-      addHooks runner, transactions
+      addHooks runner, transactions, done
 
     afterEach () ->
       nock.cleanAll()
