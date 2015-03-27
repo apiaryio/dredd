@@ -14,13 +14,19 @@ sandboxHooksCode = (hooksCode, callback) ->
   var afterEach = _hooks.afterEach;
 
   #{hooksCode}
+  try {
+    var output = _hooks.dumpHooksFunctionsToStrings()
+  } catch(e) {
+    console.log(e.message)
+    console.log(e.stack)
+    throw(e)
+  }
 
-  var output = _hooks.dumpHooksFunctionsToStrings()
   output
   """
 
   pitboss = new Pitboss wrappedCode
-  pitboss.run {libraries: {"_Hooks": '../../../lib/hooks'}}, (err, result) ->
+  pitboss.run {libraries: {"_Hooks": '../../../lib/hooks', "console", "console"}}, (err, result) ->
     return callback err if err
     callback(undefined, result)
 

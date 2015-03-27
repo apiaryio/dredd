@@ -7,6 +7,7 @@ fs = require 'fs'
 Hooks = require './hooks'
 logger = require './logger'
 sandboxHooksCode = require './sandbox-hooks-code'
+mergeSandboxedHooks = require './merge-sandboxed-hooks'
 
 addHooks = (runner, transactions, callback) ->
 
@@ -56,7 +57,7 @@ addHooks = (runner, transactions, callback) ->
           sandboxHooksCode data, (sandboxError, result) ->
             return callback(sandboxError) if sandboxError
 
-            # TODO merge hooks here
+            runner.hooks = mergeSandboxedHooks(runner.hooks, result)
 
             callback()
 

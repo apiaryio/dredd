@@ -48,8 +48,14 @@ class Hooks
 
     hookTargets = Object.keys toReturn
     for hookTarget in hookTargets
-      for index, value of @[hookTarget]
-        toReturn[hookTarget][index] = value.toString()
+      if Array.isArray @[hookTarget]
+        for index, hookFunc of @[hookTarget]
+          toReturn[hookTarget][index] = hookFunc.toString()
+
+      else if typeof(@[hookTarget]) == 'object' and not Array.isArray(@[hookTarget])
+        for transactionName, funcArray of @[hookTarget]
+          for index, hookFunc of funcArray
+            toReturn[hookTarget][transactionName][index] = hookFunc.toString()
 
     return toReturn
 

@@ -96,8 +96,6 @@ describe 'Hooks', () ->
       properties = [
         'beforeAllHooks'
         'beforeEachHooks'
-        'beforeHooks'
-        'afterHooks'
         'afterEachHooks'
         'afterAllHooks'
       ]
@@ -107,17 +105,40 @@ describe 'Hooks', () ->
           object = hooks.dumpHooksFunctionsToStrings()
           assert.property object, property
 
+        it 'should be an array', () ->
+          object = hooks.dumpHooksFunctionsToStrings()
+          assert.isArray object[property]
 
-        describe "all members under property '#{property}'", () ->
+        describe "all array members under property '#{property}'", () ->
           it 'should be a string', () ->
             object = hooks.dumpHooksFunctionsToStrings()
             for key, value of object[property] then do (key, value) ->
               assert.isString value, "on #{property}['#{key}']"
 
+      properties = [
+        'beforeHooks'
+        'afterHooks'
+      ]
 
+      for property in properties then do (property) ->
+        it "should have property '#{property}'", () ->
+          object = hooks.dumpHooksFunctionsToStrings()
+          assert.property object, property
 
+        it 'should be an object', () ->
+          object = hooks.dumpHooksFunctionsToStrings()
+          assert.isObject object[property]
 
+        describe 'each object value', () ->
+          it 'should be an array', () ->
+            object = hooks.dumpHooksFunctionsToStrings()
+            for key, value of object[property] then do (key, value) ->
+              assert.isArray object[property][key], "at hooks.dumpHooksFunctionsToStrings()[#{property}][#{key}]"
 
-
-
+        describe 'each member in that array', () ->
+          it 'should be a string', () ->
+            object = hooks.dumpHooksFunctionsToStrings()
+            for transactionName, funcArray of object[property] then do (transactionName, funcArray) ->
+              for index, func of funcArray
+                assert.isString object[property][transactionName][index], "at hooks.dumpHooksFunctionsToStrings()[#{property}][#{transactionName}][#{index}]"
 

@@ -79,10 +79,10 @@ describe 'sandboxHooksCode(hooksCode, callback)', () ->
           return true;
         }
 
-        before(dummyFunc);
-        after(dummyFunc);
-        beforeAll('Transaction Name', dummyFunc);
-        afterAll('Transaction Name', dummyFunc);
+        beforeAll(dummyFunc);
+        beforeEach(dummyFunc);
+        before('Transaction Name', dummyFunc);
+        after('Transaction Name', dummyFunc);
         beforeEach(dummyFunc);
         afterEach(dummyFunc);
         """
