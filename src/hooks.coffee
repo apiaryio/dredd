@@ -1,6 +1,4 @@
-async = require 'async'
-
-# Do not add any functinoality to this class unless you want expose it to the Hooks
+# Do not add any functinoality to this class unless you want expose it to the Hooks API
 # This class is only an interface for users of Dredd hooks.
 
 class Hooks
@@ -36,5 +34,19 @@ class Hooks
       hooks[name].push hook
     else
       hooks[name] = [hook]
+
+  dumpHooksFunctionsToStrings: () ->
+    # prepare JSON friendly object
+    toReturn = JSON.parse(JSON.stringify(@))
+
+    # don't fiddle with transactions, they are not part of sandboxed sync API
+    delete toReturn['transactions']
+
+    hookTargets = Object.keys toReturn
+    for hookTarget in hookTargets
+      for index, value of @[hookTarget]
+        toReturn[hookTarget][index] = value.toString()
+
+    return toReturn
 
 module.exports = Hooks
