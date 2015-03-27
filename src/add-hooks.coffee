@@ -27,7 +27,7 @@ addHooks = (runner, transactions, callback) ->
 
     logger.info 'Found Hookfiles: ' + files
 
-    # Running in node sendboxed mode
+    # Running in not sendboxed mode
     if not runner.configuration.options.sandbox == true
       try
         for file in files
