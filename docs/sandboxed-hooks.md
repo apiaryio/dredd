@@ -2,16 +2,22 @@
 Sandboxed hooks cen be used for running untrusted hook code. In each hook file you can use following functions:
 
 `before(transcactionName, function)`
+
 `after(transactionName, function)`
+
 `beforeAll(function)`
+
 `afterAll(function)`
+
 `beforeEach(function)`
+
 `afterEach(function)`
 
 
 - [Transasction]() object is passed as a first argument to the hook function.
 - Sandboxed hooks doesn't have asynchronous API. Loading of hooks and each hook is ran in it's own isolated, sandboxed context.
 - Hook maximum execution time is 500ms.
+- Memory limit is 1M
 - Inside each hook you can access `stash` object variable which is passed between contexts of each hook function execution.
 - Hook code is evaluated as `use strict`
 
