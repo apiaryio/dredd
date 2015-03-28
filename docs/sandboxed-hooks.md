@@ -20,11 +20,38 @@ Sandboxed hooks cen be used for running untrusted hook code. In each hook file y
 - Memory limit is 1M
 - Inside each hook you can access `stash` object variable which is passed between contexts of each hook function execution.
 - Hook code is evaluated as `use strict`
+- Sandboxed mode does not support CoffeScript hooks
 
 
 ## Examples
 
-### Good
+## CLI switch
+
+```
+$ dredd blueprint.md http://localhost:3000 --hokfiles path/to/hookfile.js --sandbox
+```
+
+## JS API
+
+```javascript
+Dredd = require('dredd');
+configuration = {
+  server: "http://localhost",
+  options: {
+    path: "./test/fixtures/single-get.apib",
+    sandbox: true,
+    hookfiles: './test/fixtures/sandboxed-hook.js',
+  }
+};
+dredd = new Dredd(configuration);
+
+dred.run(function(error, stats){
+  // your callback code here
+});
+```
+
+
+### Stashing example
 ```javascript
 
 after('First action', function(transaction){
@@ -40,7 +67,7 @@ before('Second action', funciton(transaction){
 ```
 
 
-### Bad, throwing an exception
+### Throwing an exception, hook function context is not shared
 ```javascript
 var myObject = {};
 
