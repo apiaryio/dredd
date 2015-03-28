@@ -3,11 +3,14 @@ path = require 'path'
 proxyquire = require('proxyquire').noCallThru()
 glob = require 'glob'
 fs = require 'fs'
+async = require 'async'
 
 Hooks = require './hooks'
 logger = require './logger'
 sandboxHooksCode = require './sandbox-hooks-code'
 mergeSandboxedHooks = require './merge-sandboxed-hooks'
+
+
 
 addHooks = (runner, transactions, callback) ->
 
@@ -21,8 +24,28 @@ addHooks = (runner, transactions, callback) ->
 
   pattern = runner?.configuration?.options?.hookfiles
   if not pattern
-    return callback()
+    if runner.configuration.hooksData?
+      if runner.configuration.options.sandbox == true
+        if typeof(runner.configuration.hooksData) != 'object' or Array.isArray(runner.configuration.hooksData) != false
+          return callback(new Error "hooksData option must be an object e.g. {'filename.js':'console.log(\"Hey!\")'}")
 
+        # run code in sandbox
+        async.eachSeries Object.keys(runner.configuration.hooksData), (key, next) ->
+          data = runner.configuration.hooksData[key]
+
+          # run code in sandbox
+          sandboxHooksCode data, (sandboxError, result) ->
+            return next(sandboxError) if sandboxError
+
+            # merge stringified hooks
+            runner.hooks = mergeSandboxedHooks(runner.hooks, result)
+            next()
+
+        , callback
+      # else
+      #   callback(new Error "Sandbox mode must me on for loading hooks from strings")
+    else
+      return callback()
   else
     files = glob.sync pattern
 
