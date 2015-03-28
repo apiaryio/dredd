@@ -27,7 +27,7 @@ addHooks = (runner, transactions, callback) ->
     if runner.configuration.hooksData?
       if runner.configuration.options.sandbox == true
         if typeof(runner.configuration.hooksData) != 'object' or Array.isArray(runner.configuration.hooksData) != false
-          return callback(new Error "hooksData option must be an object e.g. {'filename.js':'console.log(\"Hey!\")'}")
+          return callback(new Error("hooksData option must be an object e.g. {'filename.js':'console.log(\"Hey!\")'}"))
 
         # run code in sandbox
         async.eachSeries Object.keys(runner.configuration.hooksData), (key, next) ->
@@ -42,8 +42,12 @@ addHooks = (runner, transactions, callback) ->
             next()
 
         , callback
-      # else
-      #   callback(new Error "Sandbox mode must me on for loading hooks from strings")
+      else
+        msg = """
+        Not sandboxed hooks loading from strings is not implemented,
+        Sandbox mode must me on for loading hooks from strings"
+        """
+        callback(new Error(msg))
     else
       return callback()
   else

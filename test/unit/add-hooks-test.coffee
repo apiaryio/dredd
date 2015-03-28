@@ -242,9 +242,24 @@ describe 'addHooks(runner, transactions, callback)', () ->
     describe 'when multiple hook files and hook code strings are processed', () ->
       it 'should not overwrite previous content of hooks'
 
-  describe 'when sandboxed mode is off', () ->
     describe 'when hooks are passed as a string from Dredd class', () ->
-      it 'should throw a "not implemented" exception'
+      runner = {}
+      beforeEach ->
+        runner =
+          configuration:
+            hooksData:
+              "some-filename.js": """
+              after('Machines > Machines collection > Get Machines', function(transaction){
+                transaction['fail'] = 'failed in sandboxed hook';
+              });
+              """
+            options: {}
+
+      it 'should throw a "not implemented" exception', (done) ->
+        addHooks runner, transactions, (err) ->
+          assert.isDefined err
+          assert.include err.message, 'not implemented'
+          done()
 
 
 
