@@ -2,6 +2,7 @@
 {EventEmitter} = require 'events'
 proxyquire = require 'proxyquire'
 nock = require 'nock'
+nock.enableNetConnect()
 clone = require 'clone'
 sinon = require 'sinon'
 loggerStub = require '../../../src/logger'
@@ -23,6 +24,12 @@ describe 'ApiaryReporter', () ->
   afterEach () ->
     sinon.stub loggerStub.info.restore()
     sinon.stub loggerStub.complete.restore()
+
+  before () ->
+    nock.disableNetConnect()
+
+  after () ->
+    nock.enableNetConnect()
 
   describe 'without API key or without suite', () ->
     stats = {}

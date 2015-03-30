@@ -3,6 +3,8 @@ require 'coffee-errors'
 {assert} = require 'chai'
 clone = require 'clone'
 nock = require 'nock'
+nock.enableNetConnect()
+
 proxyquire = require 'proxyquire'
 sinon = require 'sinon'
 express = require 'express'
@@ -40,9 +42,11 @@ describe 'TransactionRunner', ()->
 
   before () ->
     loggerStub.transports.console.silent = true
+    nock.disableNetConnect()
 
   after () ->
     loggerStub.transports.console.silent = false
+    nock.enableNetConnect()
 
   describe 'constructor', () ->
 
@@ -1238,6 +1242,12 @@ describe 'TransactionRunner', ()->
           done()
 
     describe 'with hook modifying the transaction body and backend Express app using the body parser', () ->
+      before () ->
+        nock.enableNetConnect()
+
+      after () ->
+        nock.disableNetConnect()
+
       it 'should perform the transaction and don\'t hang', (done) ->
         nock.cleanAll()
 
