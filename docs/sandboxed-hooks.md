@@ -1,7 +1,9 @@
 # Sandboxed Hooks
-Sandboxed hooks cen be used for running untrusted hook code. In each hook file you can use following functions:
 
-`before(transcactionName, function)`
+Sandboxed hooks can be used for running untrusted hook code.
+In each hook file you can use following functions:
+
+`before(transactionName, function)`
 
 `after(transactionName, function)`
 
@@ -14,13 +16,13 @@ Sandboxed hooks cen be used for running untrusted hook code. In each hook file y
 `afterEach(function)`
 
 
-- [Transasction]() object is passed as a first argument to the hook function.
-- Sandboxed hooks doesn't have asynchronous API. Loading of hooks and each hook is ran in it's own isolated, sandboxed context.
+- [Transaction]() object is passed as a first argument to the hook function.
+- Sandboxed hooks don't have asynchronous API. Loading of hooks and each hook happens in it's own isolated, sandboxed context.
 - Hook maximum execution time is 500ms.
 - Memory limit is 1M
-- Inside each hook you can access `stash` object variable which is passed between contexts of each hook function execution.
-- Hook code is evaluated as `use strict`
-- Sandboxed mode does not support CoffeScript hooks
+- Inside each hook you can access global `stash` object variable which is passed between contexts of each hook function execution. This `stash` object purpose is to allow _transportation_ of user defined values of type `String`, `Number`, `Boolean`, `null` or `Object` and `Array` (no `Functions` or callbacks).
+- Hook code is evaluated with `"use strict"` directive - [details at MDN](https://mdn.io/use+strict)
+- Sandboxed mode does not support hooks written in CoffeScript language
 
 
 ## Examples
@@ -28,7 +30,7 @@ Sandboxed hooks cen be used for running untrusted hook code. In each hook file y
 ## CLI switch
 
 ```
-$ dredd blueprint.md http://localhost:3000 --hokfiles path/to/hookfile.js --sandbox
+$ dredd blueprint.md http://localhost:3000 --hookfiles path/to/hookfile.js --sandbox
 ```
 
 ## JS API
@@ -45,7 +47,7 @@ configuration = {
 };
 dredd = new Dredd(configuration);
 
-dred.run(function(error, stats){
+dredd.run(function(error, stats){
   // your callback code here
 });
 ```
@@ -60,8 +62,8 @@ after('First action', function(transaction){
 
 before('Second action', funciton(transaction){
   newBody = JSON.parse(transaction.request.body);
-  newBody[id] = stash['id'];
-  transasction.request.body = JSON.stringify(newBody);
+  newBody['id'] = stash['id'];
+  transaction.request.body = JSON.stringify(newBody);
 })
 
 ```
@@ -77,12 +79,12 @@ after('First action', function(transaction){
 
 before('Second action', funciton(transaction){
   newBody = JSON.parse(transaction.request.body);
-  newBody[id] = myObject['id'];
-  transasction.request.body = JSON.stringify(newBody);
+  newBody'[id'] = myObject['id'];
+  transaction.request.body = JSON.stringify(newBody);
 })
 
 ```
 
-This will explode with: `ReferenceError: myOjcet is not defined`
+This will explode with: `ReferenceError: myObject is not defined`
 
 
