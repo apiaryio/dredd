@@ -43,13 +43,16 @@ class TransactionRunner
         hookFn = hooks[hookFnIndex]
         try
           if legacy
+            # Legacy mode is only for running beforeAll and afterAll hooks with old API
+            # i.e. callback as a first argument
+
             @runLegacyHook hookFn, data, (err) =>
               if err
                 error = new Error err
                 @emitError(data, error)
               callback()
           else
-            @runHook hookFn, data, (err) ->
+            @runHook hookFn, data, (err) =>
               if err
                 error = new Error err
                 @emitError(data, error)

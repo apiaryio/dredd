@@ -1284,6 +1284,35 @@ describe 'TransactionRunner', ()->
           assert.equal receivedRequests.length, 1
           done()
 
+  describe 'runHooksForData(hooks, data, legacy = true, callback)', () ->
+    describe 'when legacy is false', () ->
+      describe 'and an exception in hook appears', () ->
+        before () ->
+          configuration =
+            emitter: new EventEmitter()
+
+          runner = new Runner configuration
+
+          sinon.stub configuration.emitter, 'emit'
+
+        after () ->
+          configuration.emitter.emit.restore()
+
+        it 'should be called with warning containing error message', (done) ->
+          hook = """
+          function(transcaction){
+            throw(new Error("Throwed message"))
+          }
+          """
+
+          runner.runHooksForData [hook], {}, false, () ->
+            assert.ok configuration.emitter.emit.calledWith "test error"
+            messages = []
+            callCount = configuration.emitter.emit.callCount
+            for callNo in [0.. callCount - 1]
+              messages.push configuration.emitter.emit.getCall(callNo).args[1].message
+            done()
+
   describe 'runHoook(hook, tranasction, callback)', () ->
     describe 'when sandbox mode is on (hook function is a string)', () ->
 
