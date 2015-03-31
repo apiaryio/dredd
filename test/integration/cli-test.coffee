@@ -927,7 +927,7 @@ describe "Command line interface", () ->
     it 'stdout shoud contain sandbox messagae', () ->
       assert.include stdout, 'Loading hookfiles in sandboxed context'
 
- describe.skip "Using workaround for hooks in ruby", () ->
+ describe "Using workaround for hooks in ruby", () ->
     resourceRequested = false
 
     before (done) ->
