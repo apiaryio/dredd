@@ -85,14 +85,12 @@ class TransactionRunner
     @configuration.emitter.emit 'test error', error, test if error
 
   # Will be used runHook instead in next major release, see deprecation warning
-  runLegacyHook: (hook, transactions, callback) ->
+  runLegacyHook: (hook, data, callback) ->
     # not sandboxed mode - hook is a function
     if typeof(hook) == 'function'
       if hook.length is 1
         # sync api
 
-        # TODO: if it throw an exception here, nothing heppens probably,
-        # replicate, mitigate
         logger.warn "DEPRECATION WARNING!"
         logger.warn "You are using only one argument for the `beforeAll` or `afterAll` hook function."
         logger.warn "One argument hook functions will be treated as synchronous in next major release."
@@ -105,23 +103,28 @@ class TransactionRunner
         logger.warn " - Second passed argument will be a optional callback function for async"
         logger.warn " - `transactions` object in `hooks` module object will be removed"
         logger.warn " - Manipulation of transactions will have to be performed on first function argument"
+
+        # DEPRECATION WARNING
+        # this will not be supported in future
+        # hook function will be called with data synchronously and
+        # callbeck will be called immediatelly and not passed as a second argument
         hook callback
 
       else if hook.length is 2
         # async api
-        hook transactions, ->
+        hook data, ->
           callback()
 
     # sandboxed mode - hook is a string - only sync API
     if typeof(hook) == 'string'
       wrappedCode = """
       // run the hook
-      var func = #{hook}
-      func(transactions)
+      var _func = #{hook}
+      _func(_data)
 
       // setup the return object
       var output = {};
-      output["transactions"] = transactions;
+      output["data"] = _data;
       output["stash"] = stash;
       output;
       """
@@ -130,27 +133,27 @@ class TransactionRunner
         timeout: 500
       }
 
-      pitboss.run {context: {transactions: transactions, stash: @hookStash}, libraries: ['console']}, (err, result) =>
+      pitboss.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result) =>
         return callback(err) if err
         # reference to `transaction` get lost here if whole object is assigned
         # this is wokraround how to copy proprties
         # clone doesn't work either
-        for key, value of result.transactions
-          transactions[key] = value
+        for key, value of result.data
+          data[key] = value
         @hookStash = result.stash
         callback()
 
 
-  runHook: (hook, transaction, callback) ->
+  runHook: (hook, data, callback) ->
     # not sandboxed mode - hook is a function
     if typeof(hook) == 'function'
       if hook.length is 1
         # sync api
-        hook transaction
+        hook data
         callback()
       else if hook.length is 2
         # async api
-        hook transaction, ->
+        hook data, ->
           callback()
 
     # sandboxed mode - hook is a string - only sync API
@@ -158,12 +161,12 @@ class TransactionRunner
 
       wrappedCode = """
       // run the hook
-      var func = #{hook}
-      func(transaction)
+      var _func = #{hook}
+      _func(_data)
 
       // setup the return object
       var output = {};
-      output["transaction"] = transaction;
+      output["data"] = _data;
       output["stash"] = stash;
       output;
       """
@@ -172,13 +175,13 @@ class TransactionRunner
         timeout: 500
       }
 
-      pitboss.run {context: {transaction: transaction, stash: @hookStash}, libraries: ['console']}, (err, result) =>
+      pitboss.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result) =>
         return callback(err) if err
         # reference to `transaction` get lost here if whole object is assigned
         # this is wokraround how to copy proprties
         # clone doesn't work either
-        for key, value of result.transaction
-          transaction[key] = value
+        for key, value of result.data
+          data[key] = value
         @hookStash = result.stash
         callback()
 
