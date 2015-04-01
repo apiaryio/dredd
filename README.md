@@ -108,8 +108,8 @@ Details of Hooks usage are described in [Dredd Hooks documentation](docs/hooks.m
 
 Here is a short list of some hooks features
 
-- `before`, `after`, `beforeAll`, `afterAll` events to be called before/after (all) transactions performed by Dredd
-- _synchronous_ or _asynchronous_ validation (opens possibilities to retrieve data during test run)
+- `before`, `after`, `beforeAll`, `afterAll`, `beforeEach` and `afterEach` events to be called before and after transactions performed by Dredd
+- _synchronous_ or _asynchronous_ evaluation (opens possibilities to retrieve data during test run)
 - programatically `fail` or `skip` a transaction
 - advanced usage can be e.g. to append _query-parameter(s)_ before a transaction is tested (you can do any other change to it)
 
