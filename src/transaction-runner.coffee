@@ -221,13 +221,7 @@ class TransactionRunner
 
     request['headers'] = flatHeaders
 
-    name = ''
-    name += origin['apiName'] if @multiBlueprint
-    name += ' > ' if @multiBlueprint and origin['resourceGroupName']
-    name += origin['resourceGroupName'] if origin['resourceGroupName']
-    name += ' > ' + origin['resourceName'] if origin['resourceName']
-    name += ' > ' + origin['actionName'] if origin['actionName']
-    name += ' > ' + origin['exampleName'] if origin['exampleName']
+    name = @getTransactionName transaction
 
     id = request['method'] + ' ' + request['uri']
 
@@ -442,5 +436,17 @@ class TransactionRunner
       transaction.request['headers']['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
       requestOptions.headers = transaction.request['headers']
 
+  getTransactionName: (transaction) ->
+    origin = transaction['origin']
+
+    name = ''
+    name += origin['apiName'] if @multiBlueprint
+    name += ' > ' if @multiBlueprint
+    name += origin['resourceGroupName'] if origin['resourceGroupName'] != ""
+    name += ' > ' if  origin['resourceGroupName'] != ""
+    name += origin['resourceName'] if origin['resourceName']
+    name += ' > ' + origin['actionName'] if origin['actionName']
+    name += ' > ' + origin['exampleName'] if origin['exampleName']
+    name
 
 module.exports = TransactionRunner

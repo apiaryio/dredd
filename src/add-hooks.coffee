@@ -11,8 +11,20 @@ sandboxHooksCode = require './sandbox-hooks-code'
 mergeSandboxedHooks = require './merge-sandboxed-hooks'
 
 
-
 addHooks = (runner, transactions, callback) ->
+
+  fixLegacyTransactionNames = (allHooks) ->
+    pattern = /^\s>\s/g
+    for hookType in ['beforeHooks', 'afterHooks']
+      for transactionName, hooks of allHooks[hookType]
+        if transactionName.match(pattern) != null
+          newTranscationName = transactionName.replace(pattern, '')
+          if allHooks[hookType][newTranscationName] != undefined
+            allHooks[hookType][newTranscationName] = hooks.concat allHooks[hookType][newTranscationName]
+          else
+            allHooks[hookType][newTranscationName] = hooks
+
+          delete allHooks[hookType][transactionName]
 
   runner.hooks = new Hooks()
   runner.hooks.transactions ?= {}
@@ -39,6 +51,10 @@ addHooks = (runner, transactions, callback) ->
 
             # merge stringified hooks
             runner.hooks = mergeSandboxedHooks(runner.hooks, result)
+
+            # Fixing #168 issue
+            fixLegacyTransactionNames runner.hooks
+
             next()
 
         , callback
@@ -62,6 +78,9 @@ addHooks = (runner, transactions, callback) ->
           proxyquire path.resolve((customConfigCwd or process.cwd()), file), {
             'hooks': runner.hooks
           }
+
+        # Fixing #168 issue
+        fixLegacyTransactionNames runner.hooks
         return callback()
       catch error
         logger.warn 'Skipping hook loading...'
@@ -87,7 +106,9 @@ addHooks = (runner, transactions, callback) ->
 
             runner.hooks = mergeSandboxedHooks(runner.hooks, result)
 
-            callback()
+            # Fixing #168 issue
+            fixLegacyTransactionNames runner.hooks
 
+            callback()
 
 module.exports = addHooks

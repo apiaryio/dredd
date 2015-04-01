@@ -878,7 +878,7 @@ describe "Command line interface", () ->
   describe "when called with additional --path argument which is a glob", () ->
     describe "and called with --names options", () ->
       before (done) ->
-        cmd = "./bin/dredd ./test/fixtures/multiple-examples.apib http://localhost --path=./test/fixtures/multifile/*.apib --names"
+        cmd = "./bin/dredd ./test/fixtures/multiple-examples.apib http://localhost --path=./test/fixtures/multifile/*.apib --names --no-color"
         execCommand cmd, () ->
           done()
 

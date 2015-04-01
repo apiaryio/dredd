@@ -262,5 +262,69 @@ describe 'addHooks(runner, transactions, callback)', () ->
           done()
 
 
+    describe 'when buggy transaction name is used (#168)', () ->
+      describe 'when sandboxed', () ->
+        it 'should remove leading " > " from transaction names', (done) ->
+          runner =
+            configuration:
+              hooksData:
+                "hookfile.js": """
+                after(' > Machines collection > Get Machines', function(transaction){
+                  transaction['fail'] = 'failed in sandboxed hook';
+                });
+                before(' > Machines collection > Get Machines', function(transaction){
+                  transaction['fail'] = 'failed in sandboxed hook';
+                });
+                """
+              options:
+                sandbox: true
+
+          addHooks runner, transactions, (err) ->
+            assert.notProperty runner.hooks.afterHooks, ' > Machines collection > Get Machines'
+            assert.notProperty runner.hooks.afterHooks, ' > Machines collection > Get Machines'
+            done()
+
+        it 'should contain transaction with fixed name', (done) ->
+          runner =
+            configuration:
+              hooksData:
+                "hookfile.js": """
+                after(' > Machines collection > Get Machines', function(transaction){
+                  transaction['fail'] = 'failed in sandboxed hook';
+                });
+                before(' > Machines collection > Get Machines', function(transaction){
+                  transaction['fail'] = 'failed in sandboxed hook';
+                });
+                """
+              options:
+                sandbox: true
+
+          addHooks runner, transactions, (err) ->
+            assert.property runner.hooks.afterHooks, 'Machines collection > Get Machines'
+            assert.property runner.hooks.afterHooks, 'Machines collection > Get Machines'
+            done()
+
+      describe 'when not sandboxed', () ->
+        it 'should remove leading " > " from transaction names', (done) ->
+          runner =
+            configuration:
+              options:
+                hookfiles: './test/fixtures/groupless-names.js'
+
+          addHooks runner, transactions, (err) ->
+            assert.notProperty runner.hooks.afterHooks, ' > Machines collection > Get Machines'
+            assert.notProperty runner.hooks.afterHooks, ' > Machines collection > Get Machines'
+            done()
+
+        it 'should contain transaction with fixed name', (done) ->
+          runner =
+            configuration:
+              options:
+                hookfiles: './test/fixtures/groupless-names.js'
+
+          addHooks runner, transactions, (err) ->
+            assert.property runner.hooks.afterHooks, 'Machines collection > Get Machines'
+            assert.property runner.hooks.afterHooks, 'Machines collection > Get Machines'
+            done()
 
 

@@ -441,8 +441,40 @@ describe "Dredd class Integration", () ->
       it 'should perform the request', () ->
         assert.isTrue requested
 
-
-  describe 'when i pass hooks code text to hooksCode option', () ->
+  describe 'when use old buggy (#168) path with leading whitespace in hooks', () ->
     describe 'and I run a test', () ->
-      it 'should pass no error'
-      it 'should execute'
+      requested = null
+      before (done) ->
+        cmd =
+          hooksData:
+            "hooks.js": """
+            before(' > Machines collection > Get Machines', function(transaction){
+              throw(new Error('Whitespace transaction name'));
+            });
+
+            before('Machines collection > Get Machines', function(transaction){
+              throw(new Error('Fixed transaction name'));
+            });
+
+            """
+          options:
+            path: "./test/fixtures/single-get-nogroup.apib"
+            sandbox: true
+
+        app = express()
+
+        app.get '/machines', (req, res) ->
+          requested = true
+          res.type('json').status(200).send [type: 'bulldozer', name: 'willy']
+
+        server = app.listen PORT, () ->
+          execCommand cmd, ->
+            server.close()
+
+        server.on 'close', done
+
+      it 'should execute hook with whitespaced name', () ->
+        assert.include stderr, 'Whitespace transaction name'
+
+      it 'should execute hook with fuxed name', () ->
+        assert.include stderr, 'Fixed transaction name'

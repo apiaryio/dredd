@@ -1419,3 +1419,26 @@ describe 'TransactionRunner', ()->
           return done new Error err if err
           done()
 
+  describe 'getNameForTransaction(hook, tranasction, callback)', () ->
+
+    before () ->
+      configuration = {}
+
+      runner = new Runner configuration
+
+    describe 'when the group name is empty', () ->
+
+      it 'should not contain leading " > "', () ->
+
+        transaction = {
+          origin: {
+            apiName: "booboo"
+            resourceGroupName: ""
+            resourceName: "resource"
+            actionName: "action"
+            exampleName: "example"
+          }
+        }
+
+        name = runner.getTransactionName transaction
+        assert.isNull name.match(/^\s>\s/g)
