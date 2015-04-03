@@ -2,7 +2,7 @@
 Hooks = require './hooks'
 
 sandboxHooksCode = (hooksCode, callback) ->
-  hooks = new Hooks
+  hooks = new Hooks()
   wrappedCode = """
   var _hooks = new _Hooks();
 
@@ -25,8 +25,10 @@ sandboxHooksCode = (hooksCode, callback) ->
   output
   """
 
-  pitboss = new Pitboss wrappedCode
+  pitboss = new Pitboss(wrappedCode)
   pitboss.run {libraries: {"_Hooks": '../../../lib/hooks', "console", "console"}}, (err, result) ->
+    pitboss.runner?.proc?.removeAllListeners 'exit'
+    pitboss.runner?.kill?()
     return callback err if err
     callback(undefined, result)
 

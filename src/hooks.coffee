@@ -4,10 +4,19 @@
 # This class is only an interface for users of Dredd hooks.
 
 class Hooks
+  names: [
+    'beforeHooks'
+    'afterHooks'
+    'beforeAllHooks'
+    'afterAllHooks'
+    'beforeEachHooks'
+    'afterEachHooks'
+  ]
+
   constructor: ->
+    @transactions = {}
     @beforeHooks = {}
     @afterHooks = {}
-    @transactions = {}
     @beforeAllHooks = []
     @afterAllHooks = []
     @beforeEachHooks = []
@@ -39,23 +48,22 @@ class Hooks
 
   # This is not part of hooks API
   # This is here only because it has to be injected into sandboxed context
-  dumpHooksFunctionsToStrings: () ->
+  dumpHooksFunctionsToStrings: =>
     # prepare JSON friendly object
-    toReturn = JSON.parse(JSON.stringify(@))
+    toReturn = {}
 
-    # don't fiddle with transactions, they are not part of sandboxed sync API
-    delete toReturn['transactions']
+    for property in @names
+      if Array.isArray @[property]
+        toReturn[property] = []
+        for index, hookFunc of @[property]
+          toReturn[property][index] = hookFunc.toString()
 
-    hookTargets = Object.keys toReturn
-    for hookTarget in hookTargets
-      if Array.isArray @[hookTarget]
-        for index, hookFunc of @[hookTarget]
-          toReturn[hookTarget][index] = hookFunc.toString()
-
-      else if typeof(@[hookTarget]) == 'object' and not Array.isArray(@[hookTarget])
-        for transactionName, funcArray of @[hookTarget]
+      else if typeof(@[property]) is 'object' and not Array.isArray(@[property])
+        toReturn[property] = {}
+        for transactionName, funcArray of @[property] when funcArray.length
+          toReturn[property][transactionName] = []
           for index, hookFunc of funcArray
-            toReturn[hookTarget][transactionName][index] = hookFunc.toString()
+            toReturn[property][transactionName][index] = hookFunc.toString()
 
     return toReturn
 

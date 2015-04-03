@@ -48,13 +48,13 @@ class TransactionRunner
 
             @runLegacyHook hookFn, data, (err) =>
               if err
-                error = new Error err
+                error = new Error(err)
                 @emitError(data, error)
               callback()
           else
             @runHook hookFn, data, (err) =>
               if err
-                error = new Error err
+                error = new Error(err)
                 @emitError(data, error)
               callback()
 
@@ -119,8 +119,8 @@ class TransactionRunner
     if typeof(hook) == 'string'
       wrappedCode = """
       // run the hook
-      var _func = #{hook}
-      _func(_data)
+      var _func = #{hook};
+      _func(_data);
 
       // setup the return object
       var output = {};
@@ -129,16 +129,18 @@ class TransactionRunner
       output;
       """
 
-      pitboss = new Pitboss wrappedCode, {
+      pitboss = new Pitboss(wrappedCode, {
         timeout: 500
-      }
+      })
 
-      pitboss.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result) =>
+      pitboss.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result = {}) =>
+        pitboss.runner?.proc?.removeAllListeners 'exit'
+        pitboss.runner?.kill?()
         return callback(err) if err
         # reference to `transaction` get lost here if whole object is assigned
         # this is wokraround how to copy proprties
         # clone doesn't work either
-        for key, value of result.data
+        for key, value of result.data or {}
           data[key] = value
         @hookStash = result.stash
         callback()
@@ -161,8 +163,8 @@ class TransactionRunner
 
       wrappedCode = """
       // run the hook
-      var _func = #{hook}
-      _func(_data)
+      var _func = #{hook};
+      _func(_data);
 
       // setup the return object
       var output = {};
@@ -171,16 +173,18 @@ class TransactionRunner
       output;
       """
 
-      pitboss = new Pitboss wrappedCode, {
+      pitboss = new Pitboss(wrappedCode, {
         timeout: 500
-      }
+      })
 
-      pitboss.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result) =>
+      pitboss.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result = {}) =>
+        pitboss.runner?.proc?.removeAllListeners 'exit'
+        pitboss.runner?.kill?()
         return callback(err) if err
         # reference to `transaction` get lost here if whole object is assigned
         # this is wokraround how to copy proprties
         # clone doesn't work either
-        for key, value of result.data
+        for key, value of result.data or {}
           data[key] = value
         @hookStash = result.stash
         callback()

@@ -10,8 +10,8 @@ logger = require './logger'
 sandboxHooksCode = require './sandbox-hooks-code'
 mergeSandboxedHooks = require './merge-sandboxed-hooks'
 
-
 addHooks = (runner, transactions, callback) ->
+  # Note: runner.configuration.options must be defined
 
   fixLegacyTransactionNames = (allHooks) ->
     pattern = /^\s>\s/g
@@ -42,12 +42,12 @@ addHooks = (runner, transactions, callback) ->
           return callback(new Error("hooksData option must be an object e.g. {'filename.js':'console.log(\"Hey!\")'}"))
 
         # run code in sandbox
-        async.eachSeries Object.keys(runner.configuration.hooksData), (key, next) ->
+        async.eachSeries Object.keys(runner.configuration.hooksData), (key, nextHook) ->
           data = runner.configuration.hooksData[key]
 
           # run code in sandbox
           sandboxHooksCode data, (sandboxError, result) ->
-            return next(sandboxError) if sandboxError
+            return nextHook(sandboxError) if sandboxError
 
             # merge stringified hooks
             runner.hooks = mergeSandboxedHooks(runner.hooks, result)
@@ -55,60 +55,65 @@ addHooks = (runner, transactions, callback) ->
             # Fixing #168 issue
             fixLegacyTransactionNames runner.hooks
 
-            next()
+            nextHook()
 
         , callback
       else
         msg = """
         Not sandboxed hooks loading from strings is not implemented,
-        Sandbox mode must me on for loading hooks from strings"
+        Sandbox mode must be enabled when loading hooks from strings."
         """
         callback(new Error(msg))
     else
       return callback()
   else
-    files = glob.sync pattern
+    patternArray = [].concat pattern
 
-    logger.info 'Found Hookfiles: ' + files
+    async.eachSeries patternArray, (item, nextPattern) ->
+      files = glob.sync item
 
-    # Running in not sendboxed mode
-    if not runner.configuration.options.sandbox == true
-      try
-        for file in files
-          proxyquire path.resolve((customConfigCwd or process.cwd()), file), {
-            'hooks': runner.hooks
-          }
+      logger.info 'Found Hookfiles: ' + files
 
-        # Fixing #168 issue
-        fixLegacyTransactionNames runner.hooks
-        return callback()
-      catch error
-        logger.warn 'Skipping hook loading...'
-        logger.warn 'Error reading hook files (' + files + ')'
-        logger.warn 'This probably means one or more of your hookfiles is invalid.'
-        logger.warn 'Message: ' + error.message if error.message?
-        logger.warn 'Stack: ' + error.stack if error.stack?
-        return callback()
+      # Running in not sandboxed mode
+      if not runner.configuration.options.sandbox == true
+        try
+          for file in files
+            proxyquire path.resolve((customConfigCwd or process.cwd()), file), {
+              'hooks': runner.hooks
+            }
 
-    # Running in sendboxed mode
-    else
-      logger.info 'Loading hookfiles in sandboxed context' + files
-      for file in files
-        resolvedPath = path.resolve((customConfigCwd or process.cwd()), file)
+          # Fixing #168 issue
+          fixLegacyTransactionNames runner.hooks
+          return nextPattern()
+        catch error
+          logger.warn 'Skipping hook loading...'
+          logger.warn 'Error reading hook files (' + files + ')'
+          logger.warn 'This probably means one or more of your hookfiles is invalid.'
+          logger.warn 'Message: ' + error.message if error.message?
+          logger.warn 'Stack: ' + error.stack if error.stack?
+          return nextPattern()
 
-        # load hook file content
-        fs.readFile resolvedPath, 'utf8', (readingError, data) ->
-          return callback readingError if readingError
+      # Running in sandboxed mode
+      else
+        logger.info 'Loading hookfiles in sandboxed context' + files
+        async.eachSeries files, (fileName, nextFile) ->
+          resolvedPath = path.resolve((customConfigCwd or process.cwd()), fileName)
 
-          # run code in sandbox
-          sandboxHooksCode data, (sandboxError, result) ->
-            return callback(sandboxError) if sandboxError
+          # load hook file content
+          fs.readFile resolvedPath, 'utf8', (readingError, data) ->
+            return nextFile(readingError) if readingError
 
-            runner.hooks = mergeSandboxedHooks(runner.hooks, result)
+            # run code in sandbox
+            sandboxHooksCode data, (sandboxError, result) ->
+              return nextFile(sandboxError) if sandboxError
 
-            # Fixing #168 issue
-            fixLegacyTransactionNames runner.hooks
+              runner.hooks = mergeSandboxedHooks(runner.hooks, result)
 
-            callback()
+              # Fixing #168 issue
+              fixLegacyTransactionNames runner.hooks
+
+              nextFile()
+        , nextPattern
+    , callback
 
 module.exports = addHooks
