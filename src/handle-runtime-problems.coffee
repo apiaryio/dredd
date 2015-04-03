@@ -21,6 +21,6 @@ handleRuntimeProblems = (runtime) ->
         ' > ' + origin['resourceName'] + \
         ' > ' + origin['actionName']
 
-    return new Error "Error parsing ast to blueprint."
+    return new Error("Error parsing ast to blueprint.")
 
 module.exports = handleRuntimeProblems

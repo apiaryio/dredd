@@ -19,6 +19,7 @@ applyConfiguration = (config) ->
     blueprintPath: null
     server: null
     emitter: new EventEmitter
+    hooksCode: null
     custom: { # used for custom settings of various APIs or reporters
       # Keep commented-out, so these values are actually set by DreddCommand
       # cwd: process.cwd()
@@ -41,6 +42,7 @@ applyConfiguration = (config) ->
       sorted: false
       names: false
       hookfiles: null
+      sandbox: false
 
   # normalize options and config
   for own key, value of config

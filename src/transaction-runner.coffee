@@ -6,6 +6,7 @@ os = require 'os'
 chai = require 'chai'
 gavel = require 'gavel'
 async = require 'async'
+{Pitboss} = require 'pitboss'
 
 flattenHeaders = require './flatten-headers'
 addHooks = require './add-hooks'
@@ -16,6 +17,7 @@ logger = require './logger'
 
 class TransactionRunner
   constructor: (@configuration) ->
+    @hookStash = {}
 
   config: (config) ->
     @configuration = config
@@ -27,33 +29,54 @@ class TransactionRunner
     async.mapSeries transactions, @configureTransaction, (err, results) ->
       transactions = results
 
-    hooks = addHooks @, transactions, @configuration.emitter, @configuration.custom
-    @executeAllTransactions(transactions, hooks, callback)
+    addHooks @, transactions, (addHooksError) =>
+      callback addHooksError if addHooksError
+      @executeAllTransactions(transactions, @hooks, callback)
 
-  runHooksForTransaction: (hooksForTransaction, transaction, callback) ->
-    if hooksForTransaction? and Array.isArray hooksForTransaction
+
+  # Tha `data` argument can be transactions or transaction object
+  runHooksForData: (hooks, data, legacy = false, callback) ->
+    if hooks? and Array.isArray hooks
       logger.debug 'Running hooks...'
 
-      runHookWithTransaction = (hookFnIndex, callback) =>
-        hookFn = hooksForTransaction[hookFnIndex]
+      runHookWithData = (hookFnIndex, callback) =>
+        hookFn = hooks[hookFnIndex]
         try
-          @runHook hookFn, transaction, callback
-        catch error
-          unless error instanceof chai.AssertionError
-            @emitError(transaction, error)
+          if legacy
+            # Legacy mode is only for running beforeAll and afterAll hooks with old API
+            # i.e. callback as a first argument
+
+            @runLegacyHook hookFn, data, (err) =>
+              if err
+                error = new Error(err)
+                @emitError(data, error)
+              callback()
           else
-            transaction.message = "Failed assertion in hooks: " + error.message
-            transaction.test?.status = 'fail'
-            @configuration.emitter.emit 'test fail', transaction.test
+            @runHook hookFn, data, (err) =>
+              if err
+                error = new Error(err)
+                @emitError(data, error)
+              callback()
+
+        catch error
+          if error instanceof chai.AssertionError
+            data.message = "Failed assertion in hooks: " + error.message
+            data.test?.status = 'fail'
+            @configuration.emitter.emit 'test fail', data.test
+          else
+            @emitError(data, error)
+
           callback()
 
-      async.timesSeries hooksForTransaction.length, runHookWithTransaction, ->
+      async.timesSeries hooks.length, runHookWithData, ->
         callback()
 
     else
       callback()
 
   emitError: (transaction, error) ->
+    # TODO investigate how event handler looks like, because it couldn't be able
+    # to handle transactions instead of transaction
     test =
       status: ''
       title: transaction.id
@@ -61,15 +84,112 @@ class TransactionRunner
       origin: transaction.origin
     @configuration.emitter.emit 'test error', error, test if error
 
-  runHook: (hook, transaction, callback) ->
-    if hook.length is 1
-      # syncronous, no callback
-      hook transaction
-      callback()
-    else if hook.length is 2
-      # async
-      hook transaction, ->
+  # Will be used runHook instead in next major release, see deprecation warning
+  runLegacyHook: (hook, data, callback) ->
+    # not sandboxed mode - hook is a function
+    if typeof(hook) == 'function'
+      if hook.length is 1
+        # sync api
+
+        logger.warn "DEPRECATION WARNING!"
+        logger.warn "You are using only one argument for the `beforeAll` or `afterAll` hook function."
+        logger.warn "One argument hook functions will be treated as synchronous in next major release."
+        logger.warn "To keep the async behaviour, just define hook function with two parameters. "
+        logger.warn ""
+        logger.warn "Api of the hooks functions will be unified soon across all hook functions:"
+        logger.warn " - `beforeAll` and `afterAll` hooks will support sync API depending on number of arguments"
+        logger.warn " - API of callback all functions will be the same"
+        logger.warn " - First passed argument will be a `transactions` object"
+        logger.warn " - Second passed argument will be a optional callback function for async"
+        logger.warn " - `transactions` object in `hooks` module object will be removed"
+        logger.warn " - Manipulation of transactions will have to be performed on first function argument"
+
+        # DEPRECATION WARNING
+        # this will not be supported in future
+        # hook function will be called with data synchronously and
+        # callbeck will be called immediatelly and not passed as a second argument
+        hook callback
+
+      else if hook.length is 2
+        # async api
+        hook data, ->
+          callback()
+
+    # sandboxed mode - hook is a string - only sync API
+    if typeof(hook) == 'string'
+      wrappedCode = """
+      // run the hook
+      var _func = #{hook};
+      _func(_data);
+
+      // setup the return object
+      var output = {};
+      output["data"] = _data;
+      output["stash"] = stash;
+      output;
+      """
+
+      pitboss = new Pitboss(wrappedCode, {
+        timeout: 500
+      })
+
+      pitboss.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result = {}) =>
+        pitboss.runner?.proc?.removeAllListeners 'exit'
+        pitboss.runner?.kill?()
+        return callback(err) if err
+        # reference to `transaction` get lost here if whole object is assigned
+        # this is wokraround how to copy proprties
+        # clone doesn't work either
+        for key, value of result.data or {}
+          data[key] = value
+        @hookStash = result.stash
         callback()
+
+
+  runHook: (hook, data, callback) ->
+    # not sandboxed mode - hook is a function
+    if typeof(hook) == 'function'
+      if hook.length is 1
+        # sync api
+        hook data
+        callback()
+      else if hook.length is 2
+        # async api
+        hook data, ->
+          callback()
+
+    # sandboxed mode - hook is a string - only sync API
+    if typeof(hook) == 'string'
+
+      wrappedCode = """
+      // run the hook
+      var _func = #{hook};
+      _func(_data);
+
+      // setup the return object
+      var output = {};
+      output["data"] = _data;
+      output["stash"] = stash;
+      output;
+      """
+
+      pitboss = new Pitboss(wrappedCode, {
+        timeout: 500
+      })
+
+      pitboss.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result = {}) =>
+        pitboss.runner?.proc?.removeAllListeners 'exit'
+        pitboss.runner?.kill?()
+        return callback(err) if err
+        # reference to `transaction` get lost here if whole object is assigned
+        # this is wokraround how to copy proprties
+        # clone doesn't work either
+        for key, value of result.data or {}
+          data[key] = value
+        @hookStash = result.stash
+        callback()
+
+
 
   configureTransaction: (transaction, callback) =>
     configuration = @configuration
@@ -105,13 +225,7 @@ class TransactionRunner
 
     request['headers'] = flatHeaders
 
-    name = ''
-    name += origin['apiName'] if @multiBlueprint
-    name += ' > ' if @multiBlueprint and origin['resourceGroupName']
-    name += origin['resourceGroupName'] if origin['resourceGroupName']
-    name += ' > ' + origin['resourceName'] if origin['resourceName']
-    name += ' > ' + origin['actionName'] if origin['actionName']
-    name += ' > ' + origin['exampleName'] if origin['exampleName']
+    name = @getTransactionName transaction
 
     id = request['method'] + ' ' + request['uri']
 
@@ -161,7 +275,7 @@ class TransactionRunner
     # /end warning
 
     # run beforeAll hooks
-    hooks.runBeforeAll () =>
+    @runHooksForData hooks.beforeAllHooks, transactions, true, () =>
 
       # Iterate over transactions' transaction
       # Because async changes the way referencing of properties work,
@@ -169,21 +283,27 @@ class TransactionRunner
       async.timesSeries transactions.length, (transactionIndex, iterationCallback) =>
         transaction = transactions[transactionIndex]
 
-        # run before hooks
-        @runHooksForTransaction hooks.beforeHooks[transaction.name], transaction, () =>
+        # run beforeEach hooks
+        @runHooksForData hooks.beforeEachHooks, transaction, false, () =>
 
-          # execute and validate HTTP transaction
-          @executeTransaction transaction, () =>
+          # run before hooks
+          @runHooksForData hooks.beforeHooks[transaction.name], transaction, false, () =>
 
-            # run after hooks
-            @runHooksForTransaction hooks.afterHooks[transaction.name], transaction, () =>
+            # execute and validate HTTP transaction
+            @executeTransaction transaction, () =>
 
-              # decide and emit result
-              @emitResult transaction, iterationCallback
-      , () ->
+              # run afterEach hooks
+              @runHooksForData hooks.afterEachHooks, transaction, false, () =>
+
+                # run after hooks
+                @runHooksForData hooks.afterHooks[transaction.name], transaction, false, () =>
+
+                  # decide and emit result
+                  @emitResult transaction, iterationCallback
+      , () =>
 
         #runAfterHooks
-        hooks.runAfterAll(callback)
+        @runHooksForData hooks.afterAllHooks, transactions, true, callback
 
   executeTransaction: (transaction, callback) =>
     configuration = @configuration
@@ -320,5 +440,17 @@ class TransactionRunner
       transaction.request['headers']['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
       requestOptions.headers = transaction.request['headers']
 
+  getTransactionName: (transaction) ->
+    origin = transaction['origin']
+
+    name = ''
+    name += origin['apiName'] if @multiBlueprint
+    name += ' > ' if @multiBlueprint
+    name += origin['resourceGroupName'] if origin['resourceGroupName'] != ""
+    name += ' > ' if  origin['resourceGroupName'] != ""
+    name += origin['resourceName'] if origin['resourceName']
+    name += ' > ' + origin['actionName'] if origin['actionName']
+    name += ' > ' + origin['exampleName'] if origin['exampleName']
+    name
 
 module.exports = TransactionRunner

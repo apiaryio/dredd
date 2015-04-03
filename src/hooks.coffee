@@ -1,15 +1,26 @@
-async = require 'async'
 
-# Do not add any functinoality to this class unless you want expose it to the Hooks
+# READ THIS! Disclaimer:
+# Do not add any functionality to this class unless you want to expose it to the Hooks API.
 # This class is only an interface for users of Dredd hooks.
 
 class Hooks
+  names: [
+    'beforeHooks'
+    'afterHooks'
+    'beforeAllHooks'
+    'afterAllHooks'
+    'beforeEachHooks'
+    'afterEachHooks'
+  ]
+
   constructor: ->
+    @transactions = {}
     @beforeHooks = {}
     @afterHooks = {}
-    @transactions = {}
     @beforeAllHooks = []
     @afterAllHooks = []
+    @beforeEachHooks = []
+    @afterEachHooks = []
 
   before: (name, hook) =>
     @addHook(@beforeHooks, name, hook)
@@ -23,16 +34,37 @@ class Hooks
   afterAll: (hook) =>
     @afterAllHooks.push hook
 
+  beforeEach: (hook) =>
+    @beforeEachHooks.push hook
+
+  afterEach: (hook) =>
+    @afterEachHooks.push hook
+
   addHook: (hooks, name, hook) ->
     if hooks[name]
       hooks[name].push hook
     else
       hooks[name] = [hook]
 
-  runBeforeAll: (callback) =>
-    async.series @beforeAllHooks, callback
+  # This is not part of hooks API
+  # This is here only because it has to be injected into sandboxed context
+  dumpHooksFunctionsToStrings: =>
+    # prepare JSON friendly object
+    toReturn = {}
 
-  runAfterAll: (callback) =>
-    async.series @afterAllHooks, callback
+    for property in @names
+      if Array.isArray @[property]
+        toReturn[property] = []
+        for index, hookFunc of @[property]
+          toReturn[property][index] = hookFunc.toString()
+
+      else if typeof(@[property]) is 'object' and not Array.isArray(@[property])
+        toReturn[property] = {}
+        for transactionName, funcArray of @[property] when funcArray.length
+          toReturn[property][transactionName] = []
+          for index, hookFunc of funcArray
+            toReturn[property][transactionName][index] = hookFunc.toString()
+
+    return toReturn
 
 module.exports = Hooks

@@ -9,14 +9,25 @@ pathStub = require 'path'
 loggerStub = require '../../src/logger'
 hooksStub = require '../../src/hooks'
 
+proxyquireStub = require 'proxyquire'
+proxyquireSpy = sinon.spy proxyquireStub.noCallThru()
+proxyquireStub.noCallThru = () ->
+  proxyquireSpy
+
+sandboxHooksCodeSpy = sinon.spy require '../../src/sandbox-hooks-code'
+fsStub = require 'fs'
+
 addHooks = proxyquire  '../../src/add-hooks', {
   'logger': loggerStub,
   'glob': globStub,
   'pathStub': pathStub,
-  'hooks': hooksStub
+  'hooks': hooksStub,
+  'proxyquire': proxyquireStub
+  './sandbox-hooks-code': sandboxHooksCodeSpy
+  'fs': fsStub
 }
 
-describe 'addHooks(runner, transactions, emitter, customConfig)', () ->
+describe 'addHooks(runner, transactions, callback)', () ->
 
   transactions = {}
   server = null
@@ -33,12 +44,14 @@ describe 'addHooks(runner, transactions, emitter, customConfig)', () ->
         options:
           hookfiles: null
 
-    it 'should create hooks instance at runner.hooks', ->
-      hooks = addHooks(runner, transactions)
-      assert.isDefined hooks
-      assert.instanceOf hooks, hooksStub
-      assert.strictEqual hooks, runner.hooks
-      assert.deepProperty runner, 'hooks.transactions'
+    it 'should create hooks instance at runner.hooks', (done)->
+      addHooks runner, transactions, (err) ->
+        return err if err
+        assert.isDefined runner.hooks
+        assert.instanceOf runner.hooks, hooksStub
+        assert.strictEqual runner.hooks, runner.hooks
+        assert.deepProperty runner, 'hooks.transactions'
+        done()
 
   describe 'with no pattern', () ->
 
@@ -55,29 +68,34 @@ describe 'addHooks(runner, transactions, emitter, customConfig)', () ->
     after () ->
       globStub.sync.restore()
 
-    it 'should not expand any glob', ()->
-      addHooks(runner, transactions)
-      assert.ok globStub.sync.notCalled
+    it 'should not expand any glob', (done) ->
+      addHooks runner, transactions, (err) ->
+        assert.ok globStub.sync.notCalled
+        done()
 
   describe 'with valid pattern', () ->
     runner = null
-    runnerSource =
-      configuration:
-        options:
-          hookfiles: './**/*_hooks.*'
+    beforeEach ->
+      runner =
+        configuration:
+          options:
+            hookfiles: './**/*_hooks.*'
 
-    before ->
-      runner = clone runnerSource
-
-    it 'should return files', () ->
+    it 'should return files', (done) ->
       sinon.spy globStub, 'sync'
-      addHooks(runner, transactions)
-      assert.ok globStub.sync.called
-      globStub.sync.restore()
+      addHooks runner, transactions, (err) ->
+        return done err if err
+        assert.ok globStub.sync.called
+        globStub.sync.restore()
+        done()
 
     describe 'when files are valid js/coffeescript', () ->
+      runner = null
       before () ->
-        runner = clone(runnerSource)
+        runner =
+          configuration:
+            options:
+              hookfiles: './**/*_hooks.*'
         sinon.stub globStub, 'sync', (pattern) ->
           ['file1.js', 'file2.coffee']
         sinon.stub pathStub, 'resolve', (path, rel) ->
@@ -87,14 +105,20 @@ describe 'addHooks(runner, transactions, emitter, customConfig)', () ->
         globStub.sync.restore()
         pathStub.resolve.restore()
 
-      it 'should load the files', () ->
-        addHooks(runner, transactions)
-        assert.ok pathStub.resolve.called
+      it 'should load the files', (done) ->
+        addHooks runner, transactions, (err) ->
+          return done err if err
+          assert.ok pathStub.resolve.called
+          done()
 
     describe 'when there is an error reading the hook files', () ->
-
+      runner = null
       beforeEach ->
-        runner = clone(runnerSource)
+        runner =
+          configuration:
+            options:
+              hookfiles: './**/*_hooks.*'
+
         sinon.stub pathStub, 'resolve', (path, rel) ->
           throw new Error()
         sinon.spy loggerStub, 'warn'
@@ -108,11 +132,199 @@ describe 'addHooks(runner, transactions, emitter, customConfig)', () ->
         loggerStub.info.restore()
         globStub.sync.restore()
 
-      it 'should log an info with hookfiles paths', ->
-        addHooks(runner, transactions)
-        assert.ok loggerStub.info.called
-        assert.equal loggerStub.info.firstCall.args[0], 'Found Hookfiles: file1.xml,file2.md'
+      it 'should log an info with hookfiles paths', (done) ->
+        addHooks runner, transactions, (err) ->
+          return done err if err
+          assert.ok loggerStub.info.called
+          assert.equal loggerStub.info.firstCall.args[0], 'Found Hookfiles: file1.xml,file2.md'
+          done()
 
-      it 'should log a warning', ->
-        addHooks(runner, transactions)
-        assert.ok loggerStub.warn.called
+      it 'should log a warning', (done) ->
+        addHooks runner, transactions, (err) ->
+          return done err if err
+          assert.ok loggerStub.warn.called
+          done()
+
+
+
+  describe 'when sandboxed mode is on', () ->
+    describe 'when hookfiles option is given', () ->
+      runner = {}
+      beforeEach ->
+        runner =
+          configuration:
+            options:
+              hookfiles: './test/fixtures/sandboxed-hook.js'
+              sandbox: true
+
+        sinon.spy loggerStub, 'warn'
+        sinon.spy loggerStub, 'info'
+        sinon.spy fsStub, 'readFile'
+        proxyquireSpy.reset()
+        sandboxHooksCodeSpy.reset()
+
+      afterEach ->
+        loggerStub.warn.restore()
+        loggerStub.info.restore()
+        fsStub.readFile.restore()
+        proxyquireSpy.reset()
+        sandboxHooksCodeSpy.reset()
+
+      it 'should not use proxyquire', (done) ->
+        addHooks runner, transactions, (err) ->
+          return done err if err
+          assert.isFalse proxyquireSpy.called
+          done()
+
+      it 'should load files from the filesystem', (done) ->
+        addHooks runner, transactions, (err) ->
+          return done err if err
+          assert.isTrue fsStub.readFile.called
+          done()
+
+      it 'should run the loaded code', (done) ->
+        addHooks runner, transactions, (err) ->
+          return err if err
+          assert.isTrue sandboxHooksCodeSpy.called
+          done()
+
+      it 'should add hook functions strings to the runner object', (done) ->
+        addHooks runner, transactions, (err) ->
+          return err if err
+          assert.property runner.hooks.afterHooks, 'Machines > Machines collection > Get Machines'
+          done()
+
+    describe 'when hookfiles option is not given and hooks are passed as a string from Dredd class', () ->
+      runner = {}
+      beforeEach ->
+        runner =
+          configuration:
+            hooksData:
+              "some-filename.js": """
+              after('Machines > Machines collection > Get Machines', function(transaction){
+                transaction['fail'] = 'failed in sandboxed hook';
+              });
+              """
+            options:
+              sandbox: true
+
+        sinon.spy loggerStub, 'warn'
+        sinon.spy loggerStub, 'info'
+        sinon.spy fsStub, 'readFile'
+        proxyquireSpy.reset()
+        sandboxHooksCodeSpy.reset()
+
+      afterEach ->
+        loggerStub.warn.restore()
+        loggerStub.info.restore()
+        fsStub.readFile.restore()
+        proxyquireSpy.reset()
+        sandboxHooksCodeSpy.reset()
+
+      it 'should not use proxyquire', (done) ->
+        addHooks runner, transactions, (err) ->
+          return done err if err
+          assert.isFalse proxyquireSpy.called
+          done()
+
+      it 'should run the loaded code', (done) ->
+        addHooks runner, transactions, (err) ->
+          return err if err
+          assert.isTrue sandboxHooksCodeSpy.called
+          done()
+
+      it 'should add hook functions strings to the runner object', (done) ->
+        addHooks runner, transactions, (err) ->
+          return err if err
+          assert.property runner.hooks.afterHooks, 'Machines > Machines collection > Get Machines'
+          done()
+
+    describe 'when multiple hook files and hook code strings are processed', () ->
+      it 'should not overwrite previous content of hooks'
+
+    describe 'when hooks are passed as a string from Dredd class', () ->
+      runner = {}
+      beforeEach ->
+        runner =
+          configuration:
+            hooksData:
+              "some-filename.js": """
+              after('Machines > Machines collection > Get Machines', function(transaction){
+                transaction['fail'] = 'failed in sandboxed hook';
+              });
+              """
+            options: {}
+
+      it 'should throw a "not implemented" exception', (done) ->
+        addHooks runner, transactions, (err) ->
+          assert.isDefined err
+          assert.include err.message, 'not implemented'
+          done()
+
+
+    describe 'when buggy transaction name is used (#168)', () ->
+      describe 'when sandboxed', () ->
+        it 'should remove leading " > " from transaction names', (done) ->
+          runner =
+            configuration:
+              hooksData:
+                "hookfile.js": """
+                after(' > Machines collection > Get Machines', function(transaction){
+                  transaction['fail'] = 'failed in sandboxed hook';
+                });
+                before(' > Machines collection > Get Machines', function(transaction){
+                  transaction['fail'] = 'failed in sandboxed hook';
+                });
+                """
+              options:
+                sandbox: true
+
+          addHooks runner, transactions, (err) ->
+            assert.notProperty runner.hooks.afterHooks, ' > Machines collection > Get Machines'
+            assert.notProperty runner.hooks.afterHooks, ' > Machines collection > Get Machines'
+            done()
+
+        it 'should contain transaction with fixed name', (done) ->
+          runner =
+            configuration:
+              hooksData:
+                "hookfile.js": """
+                after(' > Machines collection > Get Machines', function(transaction){
+                  transaction['fail'] = 'failed in sandboxed hook';
+                });
+                before(' > Machines collection > Get Machines', function(transaction){
+                  transaction['fail'] = 'failed in sandboxed hook';
+                });
+                """
+              options:
+                sandbox: true
+
+          addHooks runner, transactions, (err) ->
+            assert.property runner.hooks.afterHooks, 'Machines collection > Get Machines'
+            assert.property runner.hooks.afterHooks, 'Machines collection > Get Machines'
+            done()
+
+      describe 'when not sandboxed', () ->
+        it 'should remove leading " > " from transaction names', (done) ->
+          runner =
+            configuration:
+              options:
+                hookfiles: './test/fixtures/groupless-names.js'
+
+          addHooks runner, transactions, (err) ->
+            assert.notProperty runner.hooks.afterHooks, ' > Machines collection > Get Machines'
+            assert.notProperty runner.hooks.afterHooks, ' > Machines collection > Get Machines'
+            done()
+
+        it 'should contain transaction with fixed name', (done) ->
+          runner =
+            configuration:
+              options:
+                hookfiles: './test/fixtures/groupless-names.js'
+
+          addHooks runner, transactions, (err) ->
+            assert.property runner.hooks.afterHooks, 'Machines collection > Get Machines'
+            assert.property runner.hooks.afterHooks, 'Machines collection > Get Machines'
+            done()
+
+

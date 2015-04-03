@@ -7,7 +7,7 @@ Hooks = require '../../src/hooks'
 
 describe 'Hooks', () ->
 
-  describe 'when adding before hook', () ->
+  describe '#before', () ->
     hooks = null
 
     before () ->
@@ -18,7 +18,7 @@ describe 'Hooks', () ->
     it 'should add to hook collection', () ->
       assert.property hooks.beforeHooks, 'beforeHook'
 
-  describe 'when adding after hook', () ->
+  describe '#after', () ->
     hooks = null
 
     before () ->
@@ -29,32 +29,116 @@ describe 'Hooks', () ->
     it 'should add to hook collection', () ->
       assert.property hooks.afterHooks, 'afterHook'
 
-  describe 'when adding beforeAll hooks', () ->
+  describe '#beforeAll', () ->
+    hooks = null
 
-    it 'should invoke registered callbacks', (testDone) ->
-      callback = sinon.stub()
-      callback.callsArg(0)
-
+    before () ->
       hooks = new Hooks()
-      hooks.beforeAll callback
-      hooks.beforeAll (done) ->
-        assert.ok typeof done is 'function'
-        assert.ok callback.called
-        done()
-      hooks.runBeforeAll (done) ->
-        testDone()
+      hooks.beforeAll () ->
+        ""
 
-  describe 'when adding afterAll hooks', () ->
+    it 'should add to hook collection', () ->
+      assert.lengthOf hooks.beforeAllHooks, 1
 
-    it 'should callback if registered', (testDone) ->
-      callback = sinon.stub()
-      callback.callsArg(0)
+  describe '#afterAll', () ->
+    hooks = null
 
+    before () ->
       hooks = new Hooks()
-      hooks.afterAll callback
-      hooks.afterAll (done) ->
-        assert.ok(typeof done is 'function')
-        assert.ok callback.called
-        done()
-      hooks.runAfterAll (done) ->
-        testDone()
+      hooks.afterAll () ->
+        ""
+
+    it 'should add to hook collection', () ->
+      assert.lengthOf hooks.afterAllHooks, 1
+
+  describe '#beforeEach', () ->
+    hooks = null
+
+    before () ->
+      hooks = new Hooks()
+      hooks.beforeEach () ->
+        ""
+
+    it 'should add to hook collection', () ->
+      assert.lengthOf hooks.beforeEachHooks, 1
+
+  describe '#afterEach', () ->
+    hooks = null
+
+    before () ->
+      hooks = new Hooks()
+      hooks.afterEach () ->
+        ""
+
+    it 'should add to hook collection', () ->
+      assert.lengthOf hooks.afterEachHooks, 1
+
+  describe '#dumpHooksFunctionsToStrings', () ->
+    hooks = null
+
+    beforeEach () ->
+      hooks = new Hooks()
+      hook = (data, callback) ->
+        return true
+
+      hooks.beforeAll hook
+      hooks.beforeEach hook
+      hooks.before 'Transaction Name', hook
+      hooks.after 'Transaction Name', hook
+      hooks.afterEach hook
+      hooks.afterAll hook
+
+
+    it 'should return an object', () ->
+      assert.isObject hooks.dumpHooksFunctionsToStrings()
+
+    describe 'returned object', () ->
+      properties = [
+        'beforeAllHooks'
+        'beforeEachHooks'
+        'afterEachHooks'
+        'afterAllHooks'
+      ]
+
+      for property in properties then do (property) ->
+        it "should have property '#{property}'", () ->
+          object = hooks.dumpHooksFunctionsToStrings()
+          assert.property object, property
+
+        it 'should be an array', () ->
+          object = hooks.dumpHooksFunctionsToStrings()
+          assert.isArray object[property]
+
+        describe "all array members under property '#{property}'", () ->
+          it 'should be a string', () ->
+            object = hooks.dumpHooksFunctionsToStrings()
+            for key, value of object[property] then do (key, value) ->
+              assert.isString value, "on #{property}['#{key}']"
+
+      properties = [
+        'beforeHooks'
+        'afterHooks'
+      ]
+
+      for property in properties then do (property) ->
+        it "should have property '#{property}'", () ->
+          object = hooks.dumpHooksFunctionsToStrings()
+          assert.property object, property
+
+        it 'should be an object', () ->
+          object = hooks.dumpHooksFunctionsToStrings()
+          assert.isObject object[property]
+
+        describe 'each object value', () ->
+          it 'should be an array', () ->
+            object = hooks.dumpHooksFunctionsToStrings()
+            for key, value of object[property] then do (key, value) ->
+              assert.isArray object[property][key], "at hooks.dumpHooksFunctionsToStrings()[#{property}][#{key}]"
+
+        describe 'each member in that array', () ->
+          it 'should be a string', () ->
+            object = hooks.dumpHooksFunctionsToStrings()
+            for transactionName, funcArray of object[property] then do (transactionName, funcArray) ->
+              for index, func of funcArray
+                assert.isString object[property][transactionName][index], "at hooks.dumpHooksFunctionsToStrings()[#{property}][#{transactionName}][#{index}]"
+

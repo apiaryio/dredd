@@ -31,7 +31,7 @@ So you can use wildcard(s) to traverse the file tree and read files with your ho
 dredd single_get.md http://machines.apiary.io --hookfiles=*_hooks.*
 ```
 
-## Hook types: `before`, `after`, `beforeAll`, `afterAll`
+## Hook types: `before`, `after`, `beforeAll`, `afterAll`, `beforeEach`, `afterEach`
 
 Dredd provides four types of hooks. _Single transaction hooks_ or _all transactions hooks_.
 
@@ -51,36 +51,44 @@ If you use __all transactions hooks__, please use only one argument–the actual
 
 ### Hook types examples
 
-Let's have an example hookfile `machines_hooks.coffee`:
+Let's have an example hookfile `machines_hooks.js`:
 
-```coffee
-{before, after} = require 'hooks'
+```javascript
+var hooks = require('hooks');
+var before = hooks.before;
+var after = hooks.after;
 
-before "Machines > Machines collection > Get Machines", (transaction) ->
-  console.log "before"
+before("Machines > Machines collection > Get Machines", function (transaction) {
+  console.log("before");
+});
 
-after "Machines > Machines collection > Get Machines", (transaction) ->
-  console.log "after"
+after("Machines > Machines collection > Get Machines", function (transaction) {}
+  console.log("after");
+});
 ```
 
 Usage of asynchronous `beforeAll` and `afterAll` hooks:
 
-```coffee
-{beforeAll, afterAll, transactions} = require 'hooks'
+```javascript
+var hooks = require('hooks');
+var beforeAll = hooks.beforeAll;
+var afterAll = hooks.afterAll;
 
-beforeAll (done) ->
-  # do setup
-  done()
+beforeAll(function (transactions, done) {
+  // do setup
+  done();
+});
 
-afterAll (done) ->
-  # do teardown
-  done()
+afterAll(function (transactions, done) {
+  // do teardown
+  done();
+});
 ```
 
 If `beforeAll` and `afterAll` are called multiple times, the callbacks
 are executed serially (in the order hook files were loaded from filesystem).
 
-All compiled `transactions` are populated in `hooks` module object, so you can work with them in `beforeAll` hook
+All compiled `transactions` are passed as a first argument in `beforeAll` and `afterAll` hook and are populated on the `hooks` object.
 
 ## Synchronous vs. Asynchronous hook
 
@@ -93,16 +101,16 @@ __Optional__ second argument for the hook function is a __callback__.
 
 More about the `transaction` object can be found in [transaction object documentation](transaction.md).
 
-```coffee
-{before} = require 'hooks'
+```javascript
+var before = require('hooks').before
 
-before 'Machines > Machines collection > Get Machines', (transaction, callback) {
+before('Machines > Machines collection > Get Machines', function (transaction, callback) {
   // ... your own asynchronous task here
   // ...
   // ..
   // once finished, just call callback
   callback();
-}
+});
 ```
 
 
@@ -112,18 +120,22 @@ Transaction can be skipped or failed. Just set the appropriate property.
 
 Skipping a validation with hooks:
 
-```coffee
-{before} = require 'hooks'
-before "Machines > Machines collection > Get Machines", (transaction) ->
-  transaction.skip = true
+```javascript
+var before = require('hooks').before;
+
+before("Machines > Machines collection > Get Machines", function (transaction) {
+  transaction.skip = true;
+});
 ```
 
 Failing a validation with hooks:
 
-```coffee
-{before} = require 'hooks'
-before "Machines > Machines collection > Get Machines", (transaction) ->
-  transaction.fail = "Some failing message"
+```javascript
+var before = require('hooks').before;
+
+before("Machines > Machines collection > Get Machines", function (transaction) {
+  transaction.fail = "Some failing message";
+});
 ```
 
 
@@ -135,35 +147,34 @@ before "Machines > Machines collection > Get Machines", (transaction) ->
 You can also require [Chai](http://chaijs.com/) and use its `assert`, `should` or `expect` interface in
 hooks and write your custom expectations. Dredd catches Chai's expectation error in hooks and makes transaction to fail.
 
-```coffee
-{before, after} = require 'hooks'
-{assert} = require 'chai'
+```javascript
+var hooks = require('hooks');
+var before = hooks.before;
+var after = hooks.after;
+var assert = require('chai').assert;
 
-after "Machines > Machines collection > Get Machines", (transaction) ->
-  assert.isBelow transaction.real.body.length, 100
+after("Machines > Machines collection > Get Machines", function (transaction) {
+  assert.isBelow(transaction.real.body.length, 100);
+});
 ```
 
 
+## `beforeEach` and `afterEach` hooks
+
 ### Append Query Parameter to every URL
 
-```coffee
-hooks = require 'hooks'
+```javascript
+var hooks = require 'hooks'
 
-# workaround helper for "before each" hooks
-hooks._beforeEach = (hookFn) ->
-  hooks.beforeAll (done) ->
-    for transactionKey, transaction of hooks.transactions or {}
-      hooks.beforeHooks[transaction.name] ?= []
-      hooks.beforeHooks[transaction.name].unshift hookFn
-    done()
-
-hooks._beforeEach (transaction) ->
-  # add query parameter to each transaction here
-  paramToAdd = "foo=bar"
-  if transaction.fullPath.indexOf('?') > -1
-    transaction.fullPath += "&" + paramToAdd
-  else
-    transaction.fullPath += "?" + paramToAdd
+hooks.beforeEach(function (transaction) {
+  // add query parameter to each transaction here
+  var paramToAdd = "foo=bar";
+  if transaction.fullPath.indexOf('?') > -1) {
+    transaction.fullPath += "&" + paramToAdd;
+  } else {
+    transaction.fullPath += "?" + paramToAdd;
+  };
+});
 ```
 
 
@@ -174,7 +185,7 @@ And also you have a function to retrieve the token from the OAuth provider
 of your choice somewhere inside your custom hook.
 
 ```javascript
-var OAuth2 = OAuth.OAuth2;
+var OAuth2 = require('oauth').OAuth2;
 
 // your twitter application
 var twitterConsumerKey = process.env.TWITTER_CONSUMER_KEY;
@@ -189,7 +200,7 @@ retrieveOauth2Token = function(callback) {
   );
   oauth2.getOAuthAccessToken('',
     {'grant_type':'client_credentials'},
-    function (e, access_token, refresh_token, results){
+    function (e, access_token, refresh_token, results) {
       callback("bearer:" + access_token);
   });
 }
@@ -201,7 +212,7 @@ hooks.beforeAll(function(done) {
     return done();
   }
   else {
-    retrieveOauth2Token(function(token){
+    retrieveOauth2Token(function (token) {
       retrievedPlaintextToken = token;
       done();
     });

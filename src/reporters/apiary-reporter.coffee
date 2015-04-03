@@ -153,7 +153,7 @@ class ApiaryReporter
         try
           parsedBody = JSON.parse buffer
         catch e
-          throw new Error "Apiary reporter: Failed to JSON parse Apiary API response body: \n #{buffer}"
+          throw new Error("Apiary reporter: Failed to JSON parse Apiary API response body: \n #{buffer}")
 
 
         if @verbose

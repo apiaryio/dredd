@@ -62,6 +62,10 @@ Let's have a look at an example configuration first. (Please also see [options s
 
   'emitter': EventEmitterInstance, // optional - listen to test progress, your own instance of EventEmitter
 
+  'hooksData': {
+    'pathToHook' : '...'
+  }
+
   'data': {
     'path/to/file': '...'
   }
@@ -88,6 +92,12 @@ __Optional__ Object with keys as `filename` and value as `blueprint`-code.
 
 Useful when you don't want to operate on top of filesystem and want to pass
 code of your API Blueprints as a string. You get the point.
+
+#### hooksData (Object)
+
+__Optional__ Object with keys as `filename` and strings with JavaScript hooks code.
+
+Load hooks file code from string. Must be used together with sandboxed mode.
 
 ```javascript
 {

@@ -3,6 +3,8 @@ require 'coffee-errors'
 {assert} = require 'chai'
 clone = require 'clone'
 nock = require 'nock'
+nock.enableNetConnect()
+
 proxyquire = require 'proxyquire'
 sinon = require 'sinon'
 express = require 'express'
@@ -40,9 +42,11 @@ describe 'TransactionRunner', ()->
 
   before () ->
     loggerStub.transports.console.silent = true
+    nock.disableNetConnect()
 
   after () ->
     loggerStub.transports.console.silent = false
+    nock.enableNetConnect()
 
   describe 'constructor', () ->
 
@@ -546,7 +550,7 @@ describe 'TransactionRunner', ()->
     transaction = {}
     transactions = {}
 
-    beforeEach () ->
+    beforeEach (done) ->
       transaction =
         name: 'Group Machine > Machine > Delete Message > Bogus example name'
         id: 'POST /machines'
@@ -579,7 +583,7 @@ describe 'TransactionRunner', ()->
       transactions = {}
       transactions[transaction.name] = clone transaction, false
       runner = new Runner(configuration)
-      addHooks runner, transactions
+      addHooks runner, transactions, done
 
     afterEach () ->
       nock.cleanAll()
@@ -655,55 +659,316 @@ describe 'TransactionRunner', ()->
           assert.ok loggerStub.info.calledWith "second"
           done()
 
-    describe 'with a beforeAll hook', () ->
-      beforeAll = sinon.stub()
-      beforeAll.callsArg(0)
+    describe '*All hooks with legacy async interface (fist argument is a callback)', () ->
+      describe 'with a beforeAll hook', () ->
+        legacyApiFunction = (callback) ->
+          callback()
 
-      beforeEach () ->
-        runner.hooks.beforeAll beforeAll
+        beforeAllStub = sinon.spy(legacyApiFunction)
 
-      it 'should run the hooks', (done) ->
-        runner.executeAllTransactions [], runner.hooks, () ->
-          assert.ok beforeAll.called
-          done()
+        beforeEach () ->
+          runner.hooks.beforeAll beforeAllStub
 
-    describe 'with an afterAll hook', () ->
-      afterAll = sinon.stub()
-      afterAll.callsArg(0)
+        it 'should run the hooks', (done) ->
+          runner.executeAllTransactions [], runner.hooks, () ->
+            assert.ok beforeAllStub.called
+            done()
 
-      beforeEach () ->
-        runner.hooks.afterAll afterAll
+      describe 'with an afterAll hook', () ->
+        legacyApiFunction = (callback) ->
+          callback()
 
-      it 'should run the hooks', (done) ->
-        runner.executeAllTransactions [], runner.hooks, () ->
-          assert.ok afterAll.called
-          done()
+        afterAllStub = sinon.spy legacyApiFunction
 
-    describe 'with multiple hooks for the same events', () ->
-      beforeAll1 = sinon.stub()
-      beforeAll2 = sinon.stub()
-      afterAll1 = sinon.stub()
-      afterAll2 = sinon.stub()
+        beforeEach () ->
+          runner.hooks.afterAll afterAllStub
+
+        it 'should run the hooks', (done) ->
+          runner.executeAllTransactions [], runner.hooks, () ->
+            assert.ok afterAllStub.called
+            done()
+
+      describe 'with multiple hooks for the same events', () ->
+        legacyApiFunction = (callback) ->
+          callback()
+
+        beforeAllStub1 = sinon.spy(legacyApiFunction)
+        beforeAllStub2 = sinon.spy(legacyApiFunction)
+        afterAllStub1 = sinon.spy(legacyApiFunction)
+        afterAllStub2 = sinon.spy(legacyApiFunction)
+
+        beforeEach () ->
+          runner.hooks.beforeAll beforeAllStub1
+          runner.hooks.afterAll afterAllStub1
+          runner.hooks.afterAll afterAllStub2
+          runner.hooks.beforeAll beforeAllStub2
+
+        it 'should run all the events in order', (done) ->
+          runner.executeAllTransactions [], runner.hooks, () ->
+            assert.ok beforeAllStub1.calledBefore(beforeAllStub2)
+            assert.ok beforeAllStub2.called
+            assert.ok afterAllStub1.calledBefore(afterAllStub2)
+            assert.ok afterAllStub2.called
+            done()
+
+    describe '*All hooks with standard async API (first argument transactions, second callback)', () ->
+
+      describe 'with a beforeAll hook', () ->
+        hook = (transactions, callback) ->
+          callback()
+
+        beforeAllStub = sinon.spy(hook)
+
+        beforeEach () ->
+          runner.hooks.beforeAll beforeAllStub
+
+        it 'should run the hooks', (done) ->
+          runner.executeAllTransactions [], runner.hooks, () ->
+            assert.ok beforeAllStub.called
+            done()
+
+      describe 'with an afterAll hook', () ->
+        hook = (transactions, callback) ->
+          callback()
+
+        afterAllStub = sinon.spy hook
+
+        beforeEach () ->
+          runner.hooks.afterAll afterAllStub
+
+        it 'should run the hooks', (done) ->
+          runner.executeAllTransactions [], runner.hooks, () ->
+            assert.ok afterAllStub.called
+            done()
+
+      describe 'with multiple hooks for the same events', () ->
+        hook = (transactions, callback) ->
+          callback()
+
+        beforeAllStub1 = sinon.spy(hook)
+        beforeAllStub2 = sinon.spy(hook)
+        afterAllStub1 = sinon.spy(hook)
+        afterAllStub2 = sinon.spy(hook)
+
+        beforeEach () ->
+          runner.hooks.beforeAll beforeAllStub1
+          runner.hooks.afterAll afterAllStub1
+          runner.hooks.afterAll afterAllStub2
+          runner.hooks.beforeAll beforeAllStub2
+
+        it 'should run all the events in order', (done) ->
+          runner.executeAllTransactions [], runner.hooks, () ->
+            assert.ok beforeAllStub1.calledBefore(beforeAllStub2)
+            assert.ok beforeAllStub2.called
+            assert.ok afterAllStub1.calledBefore(afterAllStub2)
+            assert.ok afterAllStub2.called
+            done()
+
+    describe '*All hooks with sandboxed API (functions as strings)', () ->
+      describe 'with a beforeAll hook', () ->
+
+        beforeEach () ->
+          sinon.stub configuration.emitter, 'emit'
+
+        afterEach () ->
+          configuration.emitter.emit.restore()
+
+        it 'should run the code and emit an error', (done) ->
+          functionString = """
+          function(transactions){
+            throw(new Error('Exploded inside sandbox'));
+          }
+          """
+          runner.hooks.beforeAll functionString
+
+          runner.executeAllTransactions [], runner.hooks, () ->
+            call = configuration.emitter.emit.getCall(0)
+            assert.ok configuration.emitter.emit.calledWith "test error"
+            done()
+
+        it 'should not have access to require', (done) ->
+          functionString = """
+          function(transactions){
+            require('fs');
+          }
+          """
+          runner.hooks.beforeAll functionString
+
+          runner.executeAllTransactions [], runner.hooks, () ->
+            call = configuration.emitter.emit.getCall(0)
+            assert.ok configuration.emitter.emit.calledWith "test error"
+            assert.include call.args[1].message, 'require'
+            done()
+
+        it 'should not have aceess to current context', (done) ->
+          contextVar = "this"
+          functionString = """
+          function(transaction){
+            contextVar = "that";
+          }
+          """
+          runner.hooks.beforeAll functionString
+
+          runner.executeAllTransactions [], runner.hooks, () ->
+            call = configuration.emitter.emit.getCall(0)
+            assert.ok configuration.emitter.emit.calledWith "test error"
+            assert.include call.args[1].message, 'contextVar'
+            done()
+
+        it 'should have access to the hook stash', (done) ->
+          functionString = """
+          function(transaction){
+            stash['prop'] = 'that';
+          }
+          """
+          runner.hooks.beforeAll functionString
+
+          runner.executeAllTransactions [], runner.hooks, () ->
+            assert.notOk configuration.emitter.emit.calledWith "test error"
+            done()
+
+        it 'should be able to modify hook stash', (done) ->
+          functionString = """
+          function(transaction){
+            stash['prop'] = 'that';
+          }
+          """
+          runner.hooks.beforeAll functionString
+
+          runner.executeAllTransactions [], runner.hooks, () ->
+            assert.notOk configuration.emitter.emit.calledWith "test error"
+            assert.property runner.hookStash, 'prop'
+            done()
+
+        it 'should be able to modify transactions', (done) ->
+          functionString = """
+          function(transactions){
+            transactions['prop'] = 'that';
+          }
+          """
+          runner.hooks.beforeAll functionString
+
+          transactions = {'some': 'mess'}
+
+          runner.executeAllTransactions transactions, runner.hooks, () ->
+            call = configuration.emitter.emit.getCall(0)
+            assert.notOk configuration.emitter.emit.calledWith "test error"
+            assert.property transactions, 'prop'
+            done()
+
+    describe '*Each hooks with standard async API (first argument transactions, second callback)', () ->
+
+      transactionsForExecution = []
 
       before () ->
-        beforeAll1.callsArg(0)
-        beforeAll2.callsArg(0)
-        afterAll1.callsArg(0)
-        afterAll2.callsArg(0)
+        transaction =
+          name: 'Group Machine > Machine > Delete Message > Bogus example name'
+          id: 'POST /machines'
+          host: 'localhost'
+          port: '3000'
+          request:
+            body: '{\n  "type": "bulldozer",\n  "name": "willy"}\n'
+            headers:
+              'Content-Type': 'application/json'
+              'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)'
+              'Content-Length': 44
+            uri: '/machines'
+            method: 'POST'
+          expected:
+            headers: 'content-type': 'application/json'
+            body: '{\n  "type": "bulldozer",\n  "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n'
+            statusCode: '202'
+          origin:
+            resourceGroupName: 'Group Machine'
+            resourceName: 'Machine'
+            actionName: 'Delete Message'
+            exampleName: 'Bogus example name'
+          fullPath: '/machines'
 
-      beforeEach () ->
-        runner.hooks.beforeAll beforeAll1
-        runner.hooks.afterAll afterAll1
-        runner.hooks.afterAll afterAll2
-        runner.hooks.beforeAll beforeAll2
+        for i in [1,2]
+          clonedTransaction = clone transaction
+          clonedTransaction['name'] = clonedTransaction['name'] + " #{i}"
+          transactionsForExecution.push clonedTransaction
 
-      it 'should run all the events in order', (done) ->
-        runner.executeAllTransactions [], runner.hooks, () ->
-          assert.ok beforeAll1.calledBefore(beforeAll2)
-          assert.ok beforeAll2.called
-          assert.ok afterAll1.calledBefore(afterAll2)
-          assert.ok afterAll2.called
-          done()
+      describe 'with a beforeEach hook', () ->
+        hook = (transactions, callback) ->
+          callback()
+
+        beforeEachStub = sinon.spy(hook)
+
+        beforeEach () ->
+          runner.hooks.beforeEach beforeEachStub
+          server = nock('http://localhost:3000').
+            post('/machines', {"type":"bulldozer","name":"willy"}).
+            reply transactionsForExecution[0]['expected']['status'],
+              transactionsForExecution[0]['expected']['body'],
+              {'Content-Type': 'application/json'}
+
+        afterEach () ->
+          beforeEachStub.reset()
+          nock.cleanAll()
+
+        it 'should run the hooks', (done) ->
+          runner.executeAllTransactions transactionsForExecution, runner.hooks, () ->
+            assert.ok beforeEachStub.called
+            done()
+
+        it 'should run the hook for each transaction', (done) ->
+          runner.executeAllTransactions transactionsForExecution, runner.hooks, () ->
+            assert.equal beforeEachStub.callCount, transactionsForExecution.length
+            done()
+
+
+      describe 'with a afterEach hook', () ->
+        hook = (transactions, callback) ->
+          callback()
+
+        afterEachStub = sinon.spy(hook)
+
+        beforeEach () ->
+          runner.hooks.afterEach afterEachStub
+          server = nock('http://localhost:3000').
+            post('/machines', {"type":"bulldozer","name":"willy"}).
+            reply transactionsForExecution[0]['expected']['status'],
+              transactionsForExecution[0]['expected']['body'],
+              {'Content-Type': 'application/json'}
+
+        afterEach () ->
+          afterEachStub.reset()
+          nock.cleanAll()
+
+        it 'should run the hooks', (done) ->
+          runner.executeAllTransactions transactionsForExecution, runner.hooks, () ->
+            assert.ok afterEachStub.called
+            done()
+
+        it 'should run the hook for each transaction', (done) ->
+          runner.executeAllTransactions transactionsForExecution, runner.hooks, () ->
+            assert.equal afterEachStub.callCount, transactionsForExecution.length
+            done()
+
+      describe 'with multiple hooks for the same events', () ->
+        legacyApiFunction = (transactions, callback) ->
+          callback()
+
+        beforeAllStub1 = sinon.spy(legacyApiFunction)
+        beforeAllStub2 = sinon.spy(legacyApiFunction)
+        afterAllStub1 = sinon.spy(legacyApiFunction)
+        afterAllStub2 = sinon.spy(legacyApiFunction)
+
+        beforeEach () ->
+          runner.hooks.beforeAll beforeAllStub1
+          runner.hooks.afterAll afterAllStub1
+          runner.hooks.afterAll afterAllStub2
+          runner.hooks.beforeAll beforeAllStub2
+
+        it 'should run all the events in order', (done) ->
+          runner.executeAllTransactions [], runner.hooks, () ->
+            assert.ok beforeAllStub1.calledBefore(beforeAllStub2)
+            assert.ok beforeAllStub2.called
+            assert.ok afterAllStub1.calledBefore(afterAllStub2)
+            assert.ok afterAllStub2.called
+            done()
 
     describe 'with before hook that throws an error', () ->
       beforeEach () ->
@@ -976,6 +1241,12 @@ describe 'TransactionRunner', ()->
           done()
 
     describe 'with hook modifying the transaction body and backend Express app using the body parser', () ->
+      before () ->
+        nock.enableNetConnect()
+
+      after () ->
+        nock.disableNetConnect()
+
       it 'should perform the transaction and don\'t hang', (done) ->
         nock.cleanAll()
 
@@ -1012,3 +1283,161 @@ describe 'TransactionRunner', ()->
           assert.equal receivedRequests.length, 1
           done()
 
+  describe 'runHooksForData(hooks, data, legacy = true, callback)', () ->
+    describe 'when legacy is false', () ->
+      describe 'and an exception in hook appears', () ->
+        before () ->
+          configuration =
+            emitter: new EventEmitter()
+
+          runner = new Runner configuration
+
+          sinon.stub configuration.emitter, 'emit'
+
+        after () ->
+          configuration.emitter.emit.restore()
+
+        it 'should be called with warning containing error message', (done) ->
+          hook = """
+          function(transcaction){
+            throw(new Error("Throwed message"))
+          }
+          """
+
+          runner.runHooksForData [hook], {}, false, () ->
+            assert.ok configuration.emitter.emit.calledWith "test error"
+            messages = []
+            callCount = configuration.emitter.emit.callCount
+            for callNo in [0.. callCount - 1]
+              messages.push configuration.emitter.emit.getCall(callNo).args[1].message
+            done()
+
+  describe 'runHoook(hook, tranasction, callback)', () ->
+    describe 'when sandbox mode is on (hook function is a string)', () ->
+
+      before () ->
+        configuration = {}
+
+        runner = new Runner configuration
+
+      it 'should execute the code of hook', (done) ->
+        hook = """
+        function(transaction){
+          throw(new Error('Exploded inside a sandboxed hook'));
+        }
+        """
+        runner.runHook hook, {}, (err) ->
+          assert.include err, 'sandbox'
+          done()
+
+      it 'should not have aceess to current context', (done) ->
+        contextVar = "this"
+        hook = """
+        function(transaction){
+          contextVar = "that";
+        }
+        """
+        runner.runHook hook, {}, (err) ->
+          assert.include err, 'contextVar'
+          done()
+
+      it 'should not have access to require', (done) ->
+        hook = """
+        function(transaction){
+          require('fs');
+        }
+        """
+        runner.runHook hook, {}, (err) ->
+          assert.include err, 'require'
+          done()
+
+      it 'should have access to the hook stash', (done) ->
+        hook = """
+        function(transaction){
+          stash['prop'] = 'that';
+        }
+        """
+        runner.runHook hook, {}, (err) ->
+          return done new Error err if err
+          assert.isUndefined err
+          done()
+
+      it 'should be able to modify hook stash', (done) ->
+        hook = """
+        function(transaction){
+          stash['prop'] = 'that';
+        }
+        """
+        runner.runHook hook, {}, (err) ->
+          return done new Error err if err
+          assert.property runner.hookStash, 'prop'
+          done()
+
+
+      it 'should be able to modify hook stash multiple times', (done) ->
+        hook = """
+        function(transaction){
+          stash['prop'] = 'that';
+        }
+        """
+        runner.runHook hook, {}, (err) ->
+          return done new Error err if err
+          assert.property runner.hookStash, 'prop'
+
+          hook = """
+          function(transaction){
+            stash['prop2'] = 'that';
+          }
+          """
+          runner.runHook hook, {}, (err) ->
+            return done new Error err if err
+            assert.property runner.hookStash, 'prop'
+            assert.property runner.hookStash, 'prop2'
+
+            done()
+
+      it 'should be able to modify the transaction', (done) ->
+        hook = """
+        function(transaction){
+          transaction['prop'] = 'that';
+        }
+        """
+        transaction = {'some': 'mess'}
+        runner.runHook hook, transaction, (err) ->
+          return done new Error err if err
+          assert.property transaction, 'prop'
+          done()
+
+      it 'should have access to console', (done) ->
+        hook = """
+        function(transaction){
+          console.log('console test');
+        }
+        """
+        runner.runHook hook, {}, (err) ->
+          return done new Error err if err
+          done()
+
+  describe 'getNameForTransaction(hook, tranasction, callback)', () ->
+
+    before () ->
+      configuration = {}
+
+      runner = new Runner configuration
+
+    describe 'when the group name is empty', () ->
+
+      it 'should not contain leading " > "', () ->
+
+        transaction = {
+          origin: {
+            apiName: "booboo"
+            resourceGroupName: ""
+            resourceName: "resource"
+            actionName: "action"
+            exampleName: "example"
+          }
+        }
+
+        name = runner.getTransactionName transaction
+        assert.isNull name.match(/^\s>\s/g)
