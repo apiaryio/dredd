@@ -4,15 +4,6 @@
 # This class is only an interface for users of Dredd hooks.
 
 class Hooks
-  names: [
-    'beforeHooks'
-    'afterHooks'
-    'beforeAllHooks'
-    'afterAllHooks'
-    'beforeEachHooks'
-    'afterEachHooks'
-  ]
-
   constructor: ->
     @transactions = {}
     @beforeHooks = {}
@@ -51,8 +42,16 @@ class Hooks
   dumpHooksFunctionsToStrings: =>
     # prepare JSON friendly object
     toReturn = {}
+    names = [
+      'beforeHooks'
+      'afterHooks'
+      'beforeAllHooks'
+      'afterAllHooks'
+      'beforeEachHooks'
+      'afterEachHooks'
+    ]
 
-    for property in @names
+    for property in names
       if Array.isArray @[property]
         toReturn[property] = []
         for index, hookFunc of @[property]
