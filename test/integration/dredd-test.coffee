@@ -368,7 +368,7 @@ describe "Dredd class Integration", () ->
       it 'should exit with status 0', ->
         assert.equal exitStatus, 0
 
-  describe 'when i use sandbox and hoofiles option', () ->
+  describe 'when i use sandbox and hookfiles option', () ->
     describe 'and I run a test', () ->
       requested = null
       before (done) ->

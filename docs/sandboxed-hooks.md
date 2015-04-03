@@ -16,73 +16,77 @@ In each hook file you can use following functions:
 `afterEach(function)`
 
 
-- [Transaction]() object is passed as a first argument to the hook function.
+- [Transaction](transaction.md) object is passed as a first argument to the hook function.
 - Sandboxed hooks don't have asynchronous API. Loading of hooks and each hook happens in it's own isolated, sandboxed context.
 - Hook maximum execution time is 500ms.
 - Memory limit is 1M
-- Inside each hook you can access global `stash` object variable which is passed between contexts of each hook function execution. This `stash` object purpose is to allow _transportation_ of user defined values of type `String`, `Number`, `Boolean`, `null` or `Object` and `Array` (no `Functions` or callbacks).
+- You can access global `stash` object variable in each separate hook file.
+  `stash` is passed between contexts of each hook function execution.
+  This `stash` object purpose is to allow _transportation_ of user defined values
+  of type `String`, `Number`, `Boolean`, `null` or `Object` and `Array` (no `Functions` or callbacks).
 - Hook code is evaluated with `"use strict"` directive - [details at MDN](https://mdn.io/use+strict)
 - Sandboxed mode does not support hooks written in CoffeScript language
 
 
 ## Examples
 
-## CLI switch
+### CLI switch
 
 ```
 $ dredd blueprint.md http://localhost:3000 --hookfiles path/to/hookfile.js --sandbox
 ```
 
-## JS API
+### JS API
 
 ```javascript
-Dredd = require('dredd');
-configuration = {
+var Dredd = require('dredd');
+var configuration = {
   server: "http://localhost",
   options: {
     path: "./test/fixtures/single-get.apib",
     sandbox: true,
-    hookfiles: './test/fixtures/sandboxed-hook.js',
+    hookfiles: ['./test/fixtures/sandboxed-hook.js']
   }
 };
-dredd = new Dredd(configuration);
+var dredd = new Dredd(configuration);
 
-dredd.run(function(error, stats){
+dredd.run(function (error, stats) {
   // your callback code here
 });
 ```
 
 
 ### Stashing example
+
 ```javascript
-
-after('First action', function(transaction){
+after('First action', function (transaction) {
   stash['id'] = JSON.parse(transaction.real.response);
-})
+});
 
-before('Second action', funciton(transaction){
+before('Second action', function (transaction) {
   newBody = JSON.parse(transaction.request.body);
   newBody['id'] = stash['id'];
   transaction.request.body = JSON.stringify(newBody);
-})
-
+});
 ```
 
 
-### Throwing an exception, hook function context is not shared
+### Hook function context is not shared
+
+Note: __This is wrong__. It throws an exception.
+
 ```javascript
 var myObject = {};
 
-after('First action', function(transaction){
+after('First action', function (transaction) {
   myObject['id'] = JSON.parse(transaction.real.response);
-})
+});
 
-before('Second action', funciton(transaction){
+before('Second action', function (transaction) {
   newBody = JSON.parse(transaction.request.body);
-  newBody'[id'] = myObject['id'];
+  newBody['id'] = myObject['id'];
   transaction.request.body = JSON.stringify(newBody);
-})
-
+});
 ```
 
 This will explode with: `ReferenceError: myObject is not defined`

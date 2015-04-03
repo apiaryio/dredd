@@ -51,7 +51,6 @@ describe 'TransactionRunner', ()->
   describe 'constructor', () ->
 
     beforeEach () ->
-      console.log configuration
       runner = new Runner(configuration)
 
     it 'should copy configuration', () ->

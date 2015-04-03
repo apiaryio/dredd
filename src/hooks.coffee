@@ -1,6 +1,6 @@
 
 # READ THIS! Disclaimer:
-# Do not add any functinoality to this class unless you want expose it to the Hooks API
+# Do not add any functionality to this class unless you want to expose it to the Hooks API.
 # This class is only an interface for users of Dredd hooks.
 
 class Hooks

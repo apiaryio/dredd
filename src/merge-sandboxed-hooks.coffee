@@ -1,6 +1,6 @@
 clone = require 'clone'
 
-mergeSendboxedHooks = (original, toMerge) ->
+mergeSandboxedHooks = (original, toMerge) ->
 
   newHooks = clone original
 
@@ -9,9 +9,9 @@ mergeSendboxedHooks = (original, toMerge) ->
       newHooks[target] =  newHooks[target].concat functions
     else if typeof(functions) == "object" and not Array.isArray functions
       for transactionName, funcArray of functions
-        newHooks[target][transactionName] = [] if not newHooks[target][transactionName]
+        newHooks[target][transactionName] ?= []
         newHooks[target][transactionName] = newHooks[target][transactionName].concat funcArray
 
   return newHooks
 
-module.exports = mergeSendboxedHooks
+module.exports = mergeSandboxedHooks

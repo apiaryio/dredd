@@ -53,7 +53,7 @@ If you use __all transactions hooks__, please use only one argument–the actual
 
 Let's have an example hookfile `machines_hooks.js`:
 
-```javscript
+```javascript
 var hooks = require('hooks');
 var before = hooks.before;
 var after = hooks.after;
@@ -74,13 +74,13 @@ var hooks = require('hooks');
 var beforeAll = hooks.beforeAll;
 var afterAll = hooks.afterAll;
 
-beforeAll(function (transactions, done){
-  # do setup
+beforeAll(function (transactions, done) {
+  // do setup
   done();
 });
 
 afterAll(function (transactions, done) {
-  # do teardown
+  // do teardown
   done();
 });
 ```
@@ -88,7 +88,7 @@ afterAll(function (transactions, done) {
 If `beforeAll` and `afterAll` are called multiple times, the callbacks
 are executed serially (in the order hook files were loaded from filesystem).
 
-All compiled `transactions` are pasesd as a first argument in `beforeAll` and `afterAll` hook and are populated on the `hooks` object.
+All compiled `transactions` are passed as a first argument in `beforeAll` and `afterAll` hook and are populated on the `hooks` object.
 
 ## Synchronous vs. Asynchronous hook
 
@@ -121,17 +121,18 @@ Transaction can be skipped or failed. Just set the appropriate property.
 Skipping a validation with hooks:
 
 ```javascript
-var before = require('hooks').before
+var before = require('hooks').before;
 
 before("Machines > Machines collection > Get Machines", function (transaction) {
   transaction.skip = true;
-)};
+});
 ```
 
 Failing a validation with hooks:
 
 ```javascript
-var before = require('hooks').before
+var before = require('hooks').before;
+
 before("Machines > Machines collection > Get Machines", function (transaction) {
   transaction.fail = "Some failing message";
 });
@@ -147,7 +148,7 @@ You can also require [Chai](http://chaijs.com/) and use its `assert`, `should` o
 hooks and write your custom expectations. Dredd catches Chai's expectation error in hooks and makes transaction to fail.
 
 ```javascript
-var hooks = require (hooks');
+var hooks = require('hooks');
 var before = hooks.before;
 var after = hooks.after;
 var assert = require('chai').assert;
@@ -165,10 +166,10 @@ after("Machines > Machines collection > Get Machines", function (transaction) {
 ```javascript
 var hooks = require 'hooks'
 
-hooks.beforeEach( function (transaction) {}
-  # add query parameter to each transaction here
-  var paramToAdd = "foo=bar"
-  if transaction.fullPath.indexOf('?') > -1){
+hooks.beforeEach(function (transaction) {
+  // add query parameter to each transaction here
+  var paramToAdd = "foo=bar";
+  if transaction.fullPath.indexOf('?') > -1) {
     transaction.fullPath += "&" + paramToAdd;
   } else {
     transaction.fullPath += "?" + paramToAdd;
@@ -184,7 +185,7 @@ And also you have a function to retrieve the token from the OAuth provider
 of your choice somewhere inside your custom hook.
 
 ```javascript
-var OAuth2 = OAuth.OAuth2;
+var OAuth2 = require('oauth').OAuth2;
 
 // your twitter application
 var twitterConsumerKey = process.env.TWITTER_CONSUMER_KEY;
@@ -199,7 +200,7 @@ retrieveOauth2Token = function(callback) {
   );
   oauth2.getOAuthAccessToken('',
     {'grant_type':'client_credentials'},
-    function (e, access_token, refresh_token, results){
+    function (e, access_token, refresh_token, results) {
       callback("bearer:" + access_token);
   });
 }
@@ -211,7 +212,7 @@ hooks.beforeAll(function(done) {
     return done();
   }
   else {
-    retrieveOauth2Token(function(token){
+    retrieveOauth2Token(function (token) {
       retrievedPlaintextToken = token;
       done();
     });
