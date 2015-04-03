@@ -7,29 +7,42 @@ describe 'mergeSandboxedHooks', () ->
   it 'should be a defined function', () ->
     assert.isFunction mergeSandboxedHooks
 
+  originObject = {
+    beforeAll: ['original']
+    beforeEach: ['original']
+    before: {"Transaction Name": ["original"]}
+    after: {"Transaction Name": ["original"]}
+    afterEach: ['original']
+    afterAll: ['original']
+  }
+
+  toBeMergedObject = {
+    beforeAll: ['merged']
+    beforeEach: ['merged']
+    before: {"Transaction Name": ["merged"]}
+    after: {"Transaction Name": ["merged"]}
+    afterEach: ['merged']
+    afterAll: ['merged']
+  }
+
   originalHooks = {}
   hooksToBeMerged = {}
   object = null
-  beforeEach () ->
-    originalHooks = clone {
-      beforeAll: ['original']
-      beforeEach: ['original']
-      before: {"Transaction Name": ["original"]}
-      after: {"Transaction Name": ["original"]}
-      afterEach: ['original']
-      afterAll: ['original']
-    }
 
-    hooksToBeMerged = clone {
-      beforeAll: ['merged']
-      beforeEach: ['merged']
-      before: {"Transaction Name": ["merged"]}
-      after: {"Transaction Name": ["merged"]}
-      afterEach: ['merged']
-      afterAll: ['merged']
-    }
+  beforeEach () ->
+    originalHooks = clone originObject
+    hooksToBeMerged = clone toBeMergedObject
+
   it 'should return an object', () ->
     assert.isObject mergeSandboxedHooks(originalHooks, hooksToBeMerged)
+
+  it 'should not change origin hooks object', () ->
+    mergeSandboxedHooks(originalHooks, hooksToBeMerged)
+    assert.deepEqual originalHooks, originObject
+
+  it 'should not change to-be-merged hooks object', () ->
+    mergeSandboxedHooks(originalHooks, hooksToBeMerged)
+    assert.deepEqual hooksToBeMerged, toBeMergedObject
 
   describe 'returned obejct', () ->
     beforeEach () ->

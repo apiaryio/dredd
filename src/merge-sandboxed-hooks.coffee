@@ -6,7 +6,7 @@ mergeSandboxedHooks = (original, toMerge) ->
 
   for target, functions of toMerge
     if Array.isArray functions
-      newHooks[target] =  newHooks[target].concat functions
+      newHooks[target] = newHooks[target].concat functions
     else if typeof(functions) == "object" and not Array.isArray functions
       for transactionName, funcArray of functions
         newHooks[target][transactionName] ?= []
