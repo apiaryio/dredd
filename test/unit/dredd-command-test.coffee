@@ -6,6 +6,9 @@ proxyquire = require('proxyquire').noCallThru()
 
 packageJson = require '../../package.json'
 loggerStub = require '../../src/logger'
+interactiveConfigStub = require '../../src/interactive-config'
+configUtilsStub = require '../../src/config-utils'
+
 options = require '../../src/options'
 
 PORT = 9876
@@ -26,10 +29,12 @@ dreddStub = proxyquire '../../src/dredd', {
   './transaction-runner': transactionRunner
   './logger': loggerStub
 }
-DreddCommand = proxyquire '../../src/command', {
+DreddCommand = proxyquire '../../src/dredd-command', {
   './dredd': dreddStub
   'console': loggerStub
+  './interactive-init': interactiveConfigStub
 }
+
 
 execCommand = (custom = {}, cb) ->
   stdout = ''
@@ -43,7 +48,7 @@ execCommand = (custom = {}, cb) ->
       finished = true
       exitStatus = (code ? 0)
       cb null, stdout, stderr, (code ? 0)
-  ).warmUp().takeoff()
+  ).run()
   return
 
 describe "DreddCommand class", () ->
@@ -95,15 +100,15 @@ describe "DreddCommand class", () ->
       dc = DreddCommand({exit: (code) ->
         hasCalledExit = true
       })
-      dc.warmUp()?.takeoff?()
+      dc.run()
 
     it 'has argv property set to object with properties from optimist', ->
       assert.isObject dc.argv
       assert.property dc.argv, '_'
       assert.isArray dc.argv['_']
 
-    it 'does not set finished to true (keeps false)', ->
-      assert.isFalse dc.finished
+    it 'should set finished to true (keeps false)', ->
+      assert.isTrue dc.finished
 
     it 'ends with an error message about missing blueprint-file', ->
       assert.include stderr, 'Must specify path to blueprint file.'
@@ -115,7 +120,7 @@ describe "DreddCommand class", () ->
       assert.isNotNull hasCalledExit
 
 
-  describe 'warmUp', ->
+  describe 'run', ->
     dc = null
     initDreddStub = null
     initConfigSpy = null
@@ -129,8 +134,12 @@ describe "DreddCommand class", () ->
           argv: ['./file.apib', 'http://localhost:3000']
           env: {'NO_KEY': 'NO_VAL'}
       })
-      initDreddStub = sinon.stub dc, 'initDredd', ->
-        return 'myDreddInstance'
+
+      initDreddStub = sinon.stub dc, 'initDredd', (configuration) ->
+        dredd = new dreddStub configuration
+        sinon.stub dredd, 'run'
+        return dredd
+
       initConfigSpy = sinon.spy dc, 'initConfig'
       lastArgvIsApiEndpointSpy = sinon.spy dc, 'lastArgvIsApiEndpoint'
       takeRestOfParamsAsPathSpy = sinon.spy dc, 'takeRestOfParamsAsPath'
@@ -143,7 +152,7 @@ describe "DreddCommand class", () ->
 
     describe 'with mocked initDredd', ->
       before ->
-        dc.warmUp()
+        dc.run()
 
       it 'should call initConfig', ->
         assert.equal initConfigSpy.called, 1
@@ -159,44 +168,72 @@ describe "DreddCommand class", () ->
         assert.property dc.initDredd.firstCall.args[0], 'server'
         assert.property dc.initDredd.firstCall.args[0], 'options'
         assert.property dc.initDredd.firstCall.args[0], 'custom'
-        assert.equal dc.dreddInstance, 'myDreddInstance'
 
+        assert.isObject dc.dreddInstance
 
-  describe 'takeoff without argv set', ->
-    dc = null
-    runDreddStub = null
-    exitCalled = null
-    beforeEach ->
-      dc = new DreddCommand({
-        exit: ->
-          exitCalled = true
-      })
-      dc.dreddInstance = 'dreddInstance'
-      runDreddStub = sinon.stub dc, 'runDredd', ->
+    describe "when custom option is present", () ->
+      it 'should parse custom options'
+      it 'the custom option should become an object'
 
-    afterEach ->
-      dc.runDredd.restore()
+    describe "when .dredd.yml file is present", () ->
+      it 'should load it'
 
-    describe 'with finished set to false', ->
-      it 'should not call exit callback', ->
-        assert.isNull exitCalled
-      it 'does call runDredd just once with dreddInstance as first argument', ->
-        runDreddStub.reset()
-        dc.takeoff()
-        assert.equal dc.runDredd.called, 1
-        assert.isArray dc.runDredd.firstCall.args
-        assert.lengthOf dc.runDredd.firstCall.args, 1
-        assert.deepEqual dc.runDredd.firstCall.args, ['dreddInstance']
+    describe "when load option is present", () ->
+      it 'should load given file instead of .dredd.yml'
 
-    describe 'with finished set to true', ->
-      it 'does not call runDredd at all', ->
-        runDreddStub.reset()
-        dc.finished = true
-        dc.takeoff()
-        assert.equal dc.runDredd.called, 0
+    describe "when config file is not parseable", () ->
+      it 'should gracefuly end'
 
+    describe "when server option is given", () ->
+      it 'should run the server'
 
-  describe 'takeoff with argv set to load regular blueprint', ->
+      describe "when test run finishes", () ->
+        it 'should kill the server'
+
+  #
+  # This should be removed. DreddCommand should be -> NEVER <- called without Argv, it makes to
+  # call command runner without ARGV
+  #
+
+  # describe.only 'run without argv set', ->
+  #   dc = null
+  #   runDreddStub = null
+  #   exitCalled = null
+
+  #   beforeEach () ->
+  #     dc = new DreddCommand({
+  #       exit: ->
+  #         exitCalled = true
+  #     })
+  #     dc.dreddInstance = 'dreddInstance'
+  #     runDreddStub = sinon.stub dc, 'runDredd', ->
+  #     dc.run()
+
+  #   afterEach ->
+  #     dc.runDredd.restore()
+
+  #   describe 'with finished set to false', ->
+  #     # This is probably wrong expectation, exit should be called because command edns in this case
+  #     #it 'should not call exit callback', ->
+  #     #  assert.isNull exitCalled
+
+  #     it 'should call exit callback', ->
+  #       assert.isTrue exitCalled, true
+
+  #     it 'does call runDredd just once with dreddInstance as first argument', ->
+  #       assert.equal dc.runDredd.called, true
+  #       assert.isArray dc.runDredd.firstCall.args
+  #       assert.lengthOf dc.runDredd.firstCall.args, 1
+  #       assert.deepEqual dc.runDredd.firstCall.args, ['dreddInstance']
+
+  #   describe 'with finished set to true', ->
+  #     it 'does not call runDredd at all', ->
+  #       runDreddStub.reset()
+  #       dc.finished = true
+  #       dc.run()
+  #       assert.equal dc.runDredd.called, 0
+
+  describe 'run with argv set to load regular blueprint', ->
     dc = null
     runDreddStub = null
     returnGood = true
@@ -221,10 +258,9 @@ describe "DreddCommand class", () ->
           exitStatus = code
           server.close()
       })
-      dc.warmUp()
 
       server = app.listen PORT, () ->
-        dc.takeoff()
+        dc.run()
 
       server.on 'close', done
 
@@ -252,7 +288,7 @@ describe "DreddCommand class", () ->
         assert.equal dc.dreddInstance.configuration.server, "http://localhost:#{PORT}"
 
 
-  describe "when called w/ OR wo/ special arguments", () ->
+  describe "when called w/ OR wo/ exitting arguments", () ->
     describe '--help', ->
       before (done) ->
         execCommand argv: ['--help'], ->
@@ -272,6 +308,24 @@ describe "DreddCommand class", () ->
 
       it 'prints out version', ->
         assert.include stdout, "#{packageJson.name} v#{packageJson.version}"
+
+    describe '"init"', ->
+      before (done) ->
+        sinon.stub interactiveConfigStub, 'run', (config, cb) ->
+          cb()
+        sinon.stub configUtilsStub, 'save'
+        execCommand argv: ['init'], ->
+          done()
+
+      after () ->
+        interactiveConfigStub.run.restore()
+        configUtilsStub.save.restore()
+
+      it 'should run interactive config', ->
+        assert.isTrue interactiveConfigStub.run.called
+
+      it 'should save configuration', ->
+        assert.isTrue configUtilsStub.save.called
 
     describe 'without argv', ->
       before (done) ->

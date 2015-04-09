@@ -26,6 +26,8 @@
     "glob": "^5.0.3",
     "html": "~0.0.7",
     "htmlencode": "~0.0.4",
+    "inquirer": "^0.8.2",
+    "js-yaml": "^3.2.7",
     "markdown-it": "^4.0.1",
     "node-uuid": "~1.4.2",
     "optimist": "~0.6.1",

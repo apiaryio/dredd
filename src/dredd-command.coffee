@@ -1,9 +1,12 @@
 path = require 'path'
 optimist = require 'optimist'
 console = require 'console'
+fs = require 'fs'
 
 parsePackageJson = require './parse-package-json'
 Dredd = require './dredd'
+interactiveConfig = require './interactive-config'
+configUtils = require './config-utils'
 
 version = parsePackageJson path.join(__dirname, '../package.json')
 
@@ -26,18 +29,19 @@ class DreddCommand
 
     @finished = false
 
-  warmUp: ->
-    @finished = false
-
+  setOptimistArgv: ->
     @optimist = optimist(@custom['argv'], @custom['cwd'])
 
     @optimist.usage(
       """
       Usage:
-        dredd <path or URL to blueprint> <api_endpoint> [OPTIONS]
+        $ dredd init
+
+      Or:
+        $ dredd <path or URL to blueprint> <api_endpoint> [OPTIONS]
 
       Example:
-        dredd ./apiary.md http://localhost:3000 --dry-run
+        $ dredd ./apiary.md http://localhost:3000 --dry-run
       """
     )
     .options(Dredd.options)
@@ -45,14 +49,22 @@ class DreddCommand
 
     @argv = @optimist.argv
 
-    argError = false
-
+  setExitOrCallbeck: ->
     if not @cb
-      @exit and (@exit is process.exit) and @sigIntEventAdd = true
-      @_processExit = @exit or process.exit
+      if @exit and (@exit is process.exit)
+        @sigIntEventAdd = true
+
+      if @exit
+        @_processExit = ((code) ->
+          @finished = true
+          @exit(code)
+        ).bind @
+      else
+        @_processExit = process.exit
+
     else
       @_processExit = ((code) ->
-        if @finished then return
+
         @finished = true
         if @sigIntEventAdded
           process.removeEventListener 'SIGINT', @commandSigInt
@@ -60,38 +72,98 @@ class DreddCommand
         return @
       ).bind @
 
-    if @argv.help is true
-      @optimist.showHelp(console.error)
-      return @_processExit(0)
+  moveBlueprintArgToPath: () ->
+    # transform path and p argument to array if it's not
+    if !Array.isArray(@argv['path'])
+      @argv['path'] = @argv['p'] = [@argv['path']]
 
-    if @argv.version is true
-      console.log version
-      return @_processExit(0)
+  checkRequiredArgs: () ->
+    argError = false
 
+    # if blueprint is missing
     if not @argv._[0]?
       console.error("\nError: Must specify path to blueprint file.")
       argError = true
 
+    # if endpoint is missing
     if not @argv._[1]?
       console.error("\nError: Must specify api endpoint.")
       argError = true
 
+    # show help if argument is missing
     if argError
       console.error("\n")
       @optimist.showHelp(console.error)
       return @_processExit(1)
 
-    # transform path and p argument to array if it's not
-    if !Array.isArray(@argv['path'])
-      @argv['path'] = @argv['p'] = [@argv['path']]
+
+  runExitingActions: () ->
+    # run interactive config
+    if @argv["_"][0] == "init" or @argv.init == true
+      @finished = true
+      interactiveConfig.run @argv, (config) =>
+        configUtils.save(config)
+
+        console.log ""
+        console.log "Configuration saved to dredd.yml"
+        console.log ""
+        console.log "Run test now, with:"
+        console.log ""
+        console.log "  $ dredd"
+        console.log ""
+
+        return @_processExit(0)
+
+    # show help
+    else if @argv.help is true
+      @optimist.showHelp(console.error)
+      return @_processExit(0)
+
+    # show version
+    else if @argv.version is true
+      console.log version
+      return @_processExit(0)
+
+  loadDreddFile: () ->
+    if fs.existsSync './dredd.yml'
+      console.log 'Configuration dredd.yml found, ignoring other arguments.'
+      @argv = configUtils.load()
+
+  parseCustomConfig: () ->
+    @argv.custom = configUtils.parseCustom @argv.custom
+
+  run: ->
+    @setOptimistArgv()
+    return if @finished
+
+    @setExitOrCallbeck()
+    return if @finished
+
+    @parseCustomConfig()
+    return if @finished
+
+    @runExitingActions()
+    return if @finished
+
+    @loadDreddFile()
+    return if @finished
+
+    @checkRequiredArgs()
+    return if @finished
+
+    @moveBlueprintArgToPath()
+    return if @finished
 
     configurationForDredd = @initConfig()
     @dreddInstance = @initDredd configurationForDredd
-    return @
+
+    @runDredd @dreddInstance
+
 
   lastArgvIsApiEndpoint: ->
-    # some shells are automatically expanding globs and concating result as arguments
-    # so I'm taking last argument as API endpoint server URL and removing it forom optimist's args
+    # when blueprint path is a glob, some shells are automatically expanding globs and concating
+    # result as arguments so I'm taking last argument as API endpoint server URL and removing it
+    #  forom optimist's args
     @server = @argv._[@argv._.length - 1]
     @argv._.splice(@argv._.length - 1, 1)
     return @
@@ -125,11 +197,6 @@ class DreddCommand
   commandSigInt: ->
     console.log "\nShutting down from SIGINT (Ctrl-C)"
     @dreddInstance.transactionsComplete => @_processExit(0)
-
-  takeoff: ->
-    if @finished then return
-
-    @runDredd @dreddInstance
 
   runDredd: (dreddInstance) ->
     if @sigIntEventAdd

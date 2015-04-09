@@ -28,7 +28,7 @@ dreddStub = proxyquire '../../src/dredd', {
   './transaction-runner': transactionRunner
   './logger': loggerStub
 }
-DreddCommand = proxyquire '../../src/command', {
+DreddCommand = proxyquire '../../src/dredd-command', {
   './dredd': dreddStub
   'console': loggerStub
 }
@@ -45,7 +45,7 @@ execCommand = (custom = {}, cb) ->
       finished = true
       exitStatus = (code ? 0)
       cb null, stdout, stderr, (code ? 0)
-  ).warmUp().takeoff()
+  ).run()
   return
 
 describe "DreddCommand class Integration", () ->

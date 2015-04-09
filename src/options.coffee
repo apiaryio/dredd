@@ -14,6 +14,21 @@ options =
     description: "Load and run non trusted hooks code in sandboxed container"
     default: false
 
+  server:
+    alias: 'g'
+    description: 'Run API backend server command and kill it after Dredd execution. E.g. `rails server`'
+    default: null
+
+  init:
+    alias: 'i'
+    description: "Run interactive configuration. Creates .dredd.yml configuration file."
+    default: false
+
+  custom:
+    alias: 'j'
+    description: "Pass custom key-value configuration data delimited by a colon. E.g. -j 'a:b'"
+    default: []
+
   names:
     alias: 'n'
     description: 'Only list names of requests (for use in a hookfile). No requests are made.'

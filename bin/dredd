@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-var DreddCommand = require('../lib/command');
+var DreddCommand = require('../lib/dredd-command');
 
 var dreddCli = new DreddCommand({
   custom: {
@@ -9,4 +9,4 @@ var dreddCli = new DreddCommand({
   exit: process.exit
 });
 
-dreddCli.warmUp().takeoff();
+dreddCli.run();
