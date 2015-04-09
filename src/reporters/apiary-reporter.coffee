@@ -16,6 +16,7 @@ class ApiaryReporter
     @endedAt = null
     @remoteId = null
     @config = config
+    console.log config
     @reportUrl = null
     @configureEmitter emitter
     @errors = []
@@ -30,16 +31,31 @@ class ApiaryReporter
       logger.warn "Apiary reporter environment variable APIARY_API_KEY or APIARY_API_NAME not defined."
     @configuration.apiSuite ?= 'public'
 
+
+  # THIS IS HIGHWAY TO HELL! Everything should have one single interafce
   _get: (customProperty, envProperty, defaultVal) ->
     returnVal = defaultVal
+
+    # this will be deprecated
     if @config.custom?[customProperty]?
       returnVal = @config.custom[customProperty]
+
+    # this will be the ONLY supported way how to configure this reporter
+    else if @config.options?.custom?[customProperty]?
+      returnVal = @config.options.custom[customProperty]
+
+    # this will be deprecated
     else if @config.custom?.apiaryReporterEnv?[customProperty]?
       returnVal = @config.custom.apiaryReporterEnv[customProperty]
+
+    # this will be deprecated
     else if @config.custom?.apiaryReporterEnv?[envProperty]?
       returnVal = @config.custom.apiaryReporterEnv[envProperty]
+
+    # this will be supported for backward compatibility, but can be removed in future.
     else if process.env[envProperty]?
       returnVal = process.env[envProperty]
+
     return returnVal
 
   _getKeys: ->

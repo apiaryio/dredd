@@ -2,6 +2,7 @@ path = require 'path'
 optimist = require 'optimist'
 console = require 'console'
 fs = require 'fs'
+{exec} = require('child_process')
 
 parsePackageJson = require './parse-package-json'
 Dredd = require './dredd'
@@ -49,7 +50,7 @@ class DreddCommand
 
     @argv = @optimist.argv
 
-  setExitOrCallbeck: ->
+  setExitOrCallback: ->
     if not @cb
       if @exit and (@exit is process.exit)
         @sigIntEventAdd = true
@@ -57,10 +58,14 @@ class DreddCommand
       if @exit
         @_processExit = ((code) ->
           @finished = true
+          @serverProcess.kill('SIGKILL') if @serverProcess?
           @exit(code)
         ).bind @
       else
-        @_processExit = process.exit
+        @_processExit = ((code) ->
+          @serverProcess.kill('SIGKILL') if @serverProcess?
+          process.exit code
+        ).bind @
 
     else
       @_processExit = ((code) ->
@@ -132,11 +137,38 @@ class DreddCommand
   parseCustomConfig: () ->
     @argv.custom = configUtils.parseCustom @argv.custom
 
+  runServerAndThenDredd: (callback) ->
+    if @argv['server']?
+      @serverProcess = exec @argv['server']
+      console.log "Starting server with command: #{@argv['server']}"
+
+      @serverProcess.stdout.on 'data', (data) ->
+        process.stdout.write data.toString()
+
+      @serverProcess.stderr.on 'data', (data) ->
+        process.stdout.write data.toString()
+
+      @serverProcess.on 'error', (error) ->
+        console.log error
+        console.log "Server command failed, exitting..."
+        @_processExit(2)
+
+      waitSecs = parseInt(@argv['server-wait'])
+      waitMilis = waitSecs * 1000
+      console.log "Wating #{waitSecs} seconds for backend server to start..."
+
+      @wait = setTimeout () =>
+        @runDredd @dreddInstance
+      , waitMilis
+
+    else
+      @runDredd @dreddInstance
+
   run: ->
     @setOptimistArgv()
     return if @finished
 
-    @setExitOrCallbeck()
+    @setExitOrCallback()
     return if @finished
 
     @parseCustomConfig()
@@ -157,8 +189,7 @@ class DreddCommand
     configurationForDredd = @initConfig()
     @dreddInstance = @initDredd configurationForDredd
 
-    @runDredd @dreddInstance
-
+    @runServerAndThenDredd()
 
   lastArgvIsApiEndpoint: ->
     # when blueprint path is a glob, some shells are automatically expanding globs and concating
@@ -211,6 +242,7 @@ class DreddCommand
         if error.stack
           console.error error.stack
         return @_processExit(1)
+
       if (stats.failures + stats.errors) > 0
         @_processExit(1)
       else

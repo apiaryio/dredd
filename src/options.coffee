@@ -19,6 +19,10 @@ options =
     description: 'Run API backend server command and kill it after Dredd execution. E.g. `rails server`'
     default: null
 
+  "server-wait":
+    description: "Set delay time in seconds between running a server and test run."
+    default: 3
+
   init:
     alias: 'i'
     description: "Run interactive configuration. Creates .dredd.yml configuration file."
