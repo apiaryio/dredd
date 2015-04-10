@@ -16,7 +16,6 @@ class ApiaryReporter
     @endedAt = null
     @remoteId = null
     @config = config
-    console.log config
     @reportUrl = null
     @configureEmitter emitter
     @errors = []
