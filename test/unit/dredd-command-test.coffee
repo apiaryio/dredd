@@ -191,8 +191,8 @@ describe "DreddCommand class", () ->
         it 'should kill the server'
 
   #
-  # This should be removed. DreddCommand should be -> NEVER <- called without Argv, it makes to
-  # call command runner without ARGV
+  # This should be removed. DreddCommand should be -> NEVER <- called without Argv, it makes no
+  # sense to call command runner without ARGV
   #
 
   # describe.only 'run without argv set', ->
