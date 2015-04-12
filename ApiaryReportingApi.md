@@ -252,6 +252,7 @@ HOST: http://api.apiary.io/
   - _id (string) ... Unique object id. DO NOT USE IT WHEN CREATING! Used in post body only for purpose of testing this blueprint.
   - testRunId (string) ... Reference to the parent test run identificator
   - origin (object) ... Origin path (position, location) of the step in the blueprint AST
+    - uriTemplate (string) ... URI Template used as source for URL of this step
     - filename (string) .. File name of original blueprint
     - resourceGroupName (string) ... Group name
     - resourceName (string) ... Resource name
@@ -262,7 +263,7 @@ HOST: http://api.apiary.io/
     - Values
       - `passed`
       - `failed`
-  - resultData (obejct) ... Data from step execution
+  - resultData (object) ... Data from step execution
     - request  ... [Real HTTP Request](https://www.relishapp.com/apiary/gavel/v/0-1/docs/data-model#http-request)
     - realResponse ... [Real HTTP response](https://www.relishapp.com/apiary/gavel/v/0-1/docs/data-model#http-response)
     - expected Response ... [Expected HTTP Response](https://www.relishapp.com/apiary/gavel/v/0-1/docs/data-model#expected-http-response)
@@ -294,6 +295,7 @@ HOST: http://api.apiary.io/
         "testRunId": "507f1f77bcf86cd799439011",
         "origin": {
           "filename": "./apiary.apib",
+          "uriTemplate": "/",
           "resourceGroupName": "Machines",
           "resourceName": "Machines collection",
           "actionName": "Create a machine",
@@ -356,6 +358,7 @@ HOST: http://api.apiary.io/
         "testRunId": "507f1f77bcf86cd799439011",
         "origin": {
           "filename": "./apiary.apib",
+          "uriTemplate": "/",
           "resourceGroupName": "Machines",
           "resourceName": "Machines collection",
           "actionName": "Create a machine",
@@ -396,6 +399,7 @@ HOST: http://api.apiary.io/
           "testRunId": "507f1f77bcf86cd799439011",
           "origin": {
             "filename": "./apiary.apib",
+            "uriTemplate": "/",
             "resourceGroupName": "Machines",
             "resourceName": "Machines collection",
             "actionName": "Create a machine",
@@ -442,6 +446,7 @@ HOST: http://api.apiary.io/
         "testRunId": "507f1f77bcf86cd799439011",
         "origin": {
           "filename": "./apiary.apib",
+          "uriTemplate": "/",
           "resourceGroupName": "Machines",
           "resourceName": "Machines collection",
           "actionName": "Create a machine",
