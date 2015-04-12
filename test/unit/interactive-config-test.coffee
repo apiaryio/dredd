@@ -1,5 +1,4 @@
 {assert} = require 'chai'
-stdin = require('mock-stdin').stdin()
 sinon = require 'sinon'
 proxyquire = require 'proxyquire'
 inquirerStub= require 'inquirer'
