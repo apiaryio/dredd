@@ -221,6 +221,14 @@ describe 'ApiaryReporter', () ->
             assert.isObject blueprint.parsed.sourcemap
           done()
 
+      it 'should have various needed keys in test-run payload sent to apiary', (done) ->
+        emitter = new EventEmitter
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {server: 'http://my.server.co:8080', custom:apiaryReporterEnv:env}
+        emitter.emit 'start', blueprintData, () ->
+          parsedBody = JSON.parse requestBody
+          assert.propertyVal parsedBody, 'endpoint', 'http://my.server.co:8080'
+          done()
+
     describe 'when adding passing test', () ->
       call = null
       runId = '507f1f77bcf86cd799439011'
