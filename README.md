@@ -189,6 +189,8 @@ Make sure to follow Dredd [issues page][issues].
 
 To learn more about the future of API Blueprint & Testing visit [apiaryio/api-blueprint#21](https://github.com/apiaryio/api-blueprint/issues/21).
 
+To build docs, install [Docker](https://www.docker.com/) and run `./build-docs.sh`. To see HTML version, open `docs/build/html/index.html`. 
+
 [API Blueprint]: http://apiblueprint.org/
 [test coverage]: https://coveralls.io/r/apiaryio/dredd?branch=master
 [Travis CI]: https://travis-ci.org/
