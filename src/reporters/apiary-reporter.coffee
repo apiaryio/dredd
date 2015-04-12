@@ -68,6 +68,7 @@ class ApiaryReporter
 
       data =
         blueprints: blueprints
+        endpoint: @config.server
         agent: @_get('dreddAgent', 'DREDD_AGENT') || @_get('user', 'USER')
         agentRunUuid: @uuid
         hostname: @_get('dreddHostname', 'DREDD_HOSTNAME') || os.hostname()

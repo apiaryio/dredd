@@ -12,6 +12,7 @@ HOST: http://api.apiary.io/
 
 - Attributes
   - _id (string, `507f1f77bcf86cd799439011`) ... Unique object id. DO NOT USE IT WHEN CREATING! Used in post body only for purpose of testing this blueprint.
+  - endpoint (string, required, 'http://localhost:3000') ... protocol with hostname and optional PORT in URL format, root for all transactions in this Test Run
   - reportUrl (string, required, `https://absolutely.fency.url/wich-can-change/some/id`) ... Report UI URL
   - blueprints (array, required) ... Array of blueprints used for the test run
       - filename (string, required) ... file name
@@ -53,6 +54,7 @@ HOST: http://api.apiary.io/
         ```
         {
           "_id": "507f1f77bcf86cd799439011",
+          "endpoint": "http://localhost:3000",
           "blueprints": [
             {
               "raw": "",
@@ -93,6 +95,7 @@ HOST: http://api.apiary.io/
         ```
         {
           "_id": "507f1f77bcf86cd799439011",
+          "endpoint": "http://localhost:3000",
           "reportUrl": "https://absolutely.fency.url/wich-can-change/some/id",
           "blueprints": [
             {
@@ -141,6 +144,7 @@ HOST: http://api.apiary.io/
         [
           {
             "_id": "507f1f77bcf86cd799439011",
+            "endpoint": "http://localhost:3000",
             "reportUrl": "https://absolutely.fency.url/wich-can-change/some/id",
             "blueprints": [
               {
@@ -210,6 +214,7 @@ HOST: http://api.apiary.io/
         ```
         {
           "_id": "507f1f77bcf86cd799439011",
+          "endpoint": "http://localhost:3000",
           "reportUrl": "https://absolutely.fency.url/wich-can-change/some/id",
           "blueprints": [
             {
