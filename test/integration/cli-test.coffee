@@ -964,7 +964,7 @@ describe "Command line interface", () ->
 
   # WARNING: this text is excluded from code coverage
   # it for some reason decreases coverage on local and in coveralls
-  describe.only 'when using --server', () ->
+  describe 'when using --server', () ->
     resourceRequested = false
 
     before (done) ->

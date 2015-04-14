@@ -6,7 +6,7 @@ class BaseReporter
     @configureEmitter emitter
 
   configureEmitter: (emitter) =>
-    emitter.on 'start', (rawBlueprint, callback)=>
+    emitter.on 'start', (rawBlueprint, callback) =>
       @stats.start = new Date()
       callback()
 

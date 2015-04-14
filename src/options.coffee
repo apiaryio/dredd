@@ -25,7 +25,7 @@ options =
 
   init:
     alias: 'i'
-    description: "Run interactive configuration. Creates .dredd.yml configuration file."
+    description: "Run interactive configuration. Creates dredd.yml configuration file."
     default: false
 
   custom:

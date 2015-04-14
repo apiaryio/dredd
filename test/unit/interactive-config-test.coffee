@@ -9,7 +9,7 @@ interactiveConfig = proxyquire '../../src/interactive-config', {
   'fs': fsStub
 }
 
-describe "interactiveConfig", () ->
+describe 'interactiveConfig', () ->
   it 'exports a object', () ->
     assert.isObject interactiveConfig
 
@@ -34,12 +34,12 @@ describe "interactiveConfig", () ->
     describe 'when no apiary config passed', () ->
       before () ->
         answers =
-          blueprint: 'apiary.apib',
-          server: 'rails server',
-          endpoint: 'http://localhost:3000',
-          apiary: true,
-          apiaryApiKey: 'key',
-          apiaryApiName: 'name',
+          blueprint: 'apiary.apib'
+          server: 'rails server'
+          endpoint: 'http://localhost:3000'
+          apiary: true
+          apiaryApiKey: 'key'
+          apiaryApiName: 'name'
           ciAdd: true
 
         config =
@@ -55,12 +55,12 @@ describe "interactiveConfig", () ->
             done()
 
         it 'should have properties set from the config on proper places', () ->
-            assert.equal object['_'][0], "apiary.apib"
-            assert.equal object['_'][1], "http://localhost:3000"
-            assert.equal object['server'], "rails server"
-            assert.equal object['reporter'], "apiary"
-            assert.equal object['custom']['apiaryApiKey'], 'key'
-            assert.equal object['custom']['apiaryApiName'], 'name'
+          assert.equal object['_'][0], 'apiary.apib'
+          assert.equal object['_'][1], 'http://localhost:3000'
+          assert.equal object['server'], 'rails server'
+          assert.equal object['reporter'], 'apiary'
+          assert.equal object['custom']['apiaryApiKey'], 'key'
+          assert.equal object['custom']['apiaryApiName'], 'name'
 
     describe 'when apiary config passed from cli', () ->
       before () ->
@@ -74,7 +74,7 @@ describe "interactiveConfig", () ->
           '_': []
           reporter: 'apiary'
           custom:
-            apiaryApiKey: "123123123"
+            apiaryApiKey: '123123123'
             apiaryApiName: 'asdadqweqweq'
 
 
@@ -87,10 +87,10 @@ describe "interactiveConfig", () ->
             done()
 
         it 'should have properties set from the config on proper places', () ->
-            assert.equal object['_'][0], "apiary.apib"
-            assert.equal object['_'][1], "http://localhost:3000"
+            assert.equal object['_'][0], 'apiary.apib'
+            assert.equal object['_'][1], 'http://localhost:3000'
 
-            assert.equal object['reporter'], "apiary"
+            assert.equal object['reporter'], 'apiary'
             assert.equal object['custom']['apiaryApiKey'], '123123123'
             assert.equal object['custom']['apiaryApiName'], 'asdadqweqweq'
 

@@ -16,8 +16,8 @@ interactiveConfig.prompt = (config = {}, callback) ->
   questions.push {
     type: "input"
     name: "server"
-    message: "Command to start API backend server"
-    default: config['server'] || "rails server"
+    message: "Command to start API backend server e.g. (bundle exec rails server)"
+    default: config['server']
   }
 
   questions.push {
@@ -57,7 +57,7 @@ interactiveConfig.prompt = (config = {}, callback) ->
   questions.push {
     type: "confirm"
     name: "travisAdd"
-    message: "Found Travis CI configurtation, do you want to add Dredd to the build?"
+    message: "Found Travis CI configuration, do you want to add Dredd to the build?"
     default: true
     when: () -> fs.existsSync '.travis.yml'
   }
@@ -65,7 +65,7 @@ interactiveConfig.prompt = (config = {}, callback) ->
   questions.push {
     type: "confirm"
     name: "circleAdd"
-    message: "Found CircleCI configurtation, do you want to add Dredd to the build?"
+    message: "Found CircleCI configuration, do you want to add Dredd to the build?"
     default: true
     when: () -> fs.existsSync 'circle.yml'
   }
@@ -81,25 +81,30 @@ interactiveConfig.prompt = (config = {}, callback) ->
   inquirer.prompt questions, callback
 
 interactiveConfig.processAnswers = (config, answers, callback) ->
-  config['_'] = [] if not config['_']
+  config ?= {}
+
+  config['_'] ?= []
   config['_'][0] = answers['blueprint']
   config['_'][1] = answers['endpoint']
-  config['server'] = answers['server']
+  config['server'] = answers['server'] || null
 
   config['reporter'] = "apiary" if answers['apiary'] == true
-  config['custom']['apiaryApiKey'] = answers['apiaryApiKey'] if answers['apiaryApiKey']?
+
+  config['custom'] ?= {}
+
+  config['custom']['apiaryApiKey']  = answers['apiaryApiKey']  if answers['apiaryApiKey']?
   config['custom']['apiaryApiName'] = answers['apiaryApiName'] if answers['apiaryApiName']?
-
-
 
   interactiveConfig.updateCircle() if answers['circleAdd'] or answers['circleCreate']
   interactiveConfig.updateTravis() if answers['travisAdd'] == true
 
   callback(config)
+  return
 
 interactiveConfig.run = (config, callback) ->
   interactiveConfig.prompt config, (answers) ->
     interactiveConfig.processAnswers config, answers, callback
+  return
 
 interactiveConfig.updateCircle = () ->
   file = "circle.yml"
@@ -109,16 +114,17 @@ interactiveConfig.updateCircle = () ->
   else
     config = {}
 
-  config['dependencies'] = {} unless config['dependencies']?
-  config['dependencies']['pre'] = [] unless config['dependencies']['pre']
+  config['dependencies'] ?= {}
+  config['dependencies']['pre'] ?= []
   config['dependencies']['pre'].push("npm install -g dredd")if config['dependencies']['pre'].indexOf("npm install -g dredd") == -1
 
-  config['test'] = {} unless config['test']?
-  config['test']['pre'] = [] unless config['test']['pre']
+  config['test'] ?= {}
+  config['test']['pre'] ?= []
   config['test']['pre'].push("dredd") if config['test']['pre'].indexOf("dredd") == -1
 
   yamlData = yaml.safeDump config
   fs.writeFileSync file, yamlData
+  return
 
 interactiveConfig.updateTravis = () ->
   file = ".travis.yml"
@@ -128,14 +134,15 @@ interactiveConfig.updateTravis = () ->
   else
     config = {}
 
-  config['before_install'] = [] unless config['before_install']?
+  config['before_install'] ?= []
   config['before_install'].push("npm install -g dredd") if config['before_install'].indexOf("npm install -g dredd") == -1
 
-  config['before_script'] = [] unless config['before_script']?
+  config['before_script'] ?= []
   config['before_script'].push("dredd") if config['before_script'].indexOf("dredd") == -1
 
   yamlData = yaml.safeDump config
   fs.writeFileSync file, yamlData
+  return
 
 
 
