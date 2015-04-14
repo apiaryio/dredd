@@ -4,7 +4,7 @@ yaml = require 'js-yaml'
 configUtils = {}
 
 configUtils.save = (args, path) ->
-  path = './dredd.yml' unless path?
+  path ?= './dredd.yml'
 
   args['blueprint'] = args['_'][0]
   args['endpoint'] = args['_'][1]
@@ -20,7 +20,7 @@ configUtils.save = (args, path) ->
 
 
 configUtils.load = (path) ->
-  path = './dredd.yml' unless path?
+  path ?= './dredd.yml'
 
   yamlData = fs.readFileSync path
   data = yaml.safeLoad yamlData
