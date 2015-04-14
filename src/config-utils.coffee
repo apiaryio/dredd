@@ -1,10 +1,13 @@
 fs = require 'fs'
 yaml = require 'js-yaml'
+clone = require 'clone'
 
 configUtils = {}
 
-configUtils.save = (args, path) ->
+configUtils.save = (argsOrigin, path) ->
   path ?= './dredd.yml'
+
+  args = clone argsOrigin
 
   args['blueprint'] = args['_'][0]
   args['endpoint'] = args['_'][1]
