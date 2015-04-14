@@ -34,6 +34,8 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
       else
         origin['resourceName'] = resource['uriTemplate']
 
+      origin['uriTemplate'] = "#{resource['uriTemplate']}"
+
       for action in resource['actions']
         if action['name'] != ""
           origin['actionName'] = action['name']

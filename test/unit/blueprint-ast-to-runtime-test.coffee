@@ -9,14 +9,14 @@ describe "blueprintAstToRuntime()", () ->
     data = blueprintAstToRuntime blueprintAst, filename
 
   describe 'its return', () ->
-    it 'shuold return an object', () ->
+    it 'should return an object', () ->
       assert.isObject data
 
     ['transactions', 'errors', 'warnings'].forEach (key) ->
       it 'should have key \'' + key + "'", () ->
         assert.include Object.keys(data), key
 
-    describe 'transcactions', () ->
+    describe 'transactions', () ->
       it 'should not be empty', () ->
         assert.notEqual data['transactions'].length, 0
 
@@ -62,6 +62,10 @@ describe "blueprintAstToRuntime()", () ->
           transactions.forEach (transaction, index) ->
             assert.property transaction['origin'], 'apiName', 'Transaction index ' + index
             assert.equal transaction['origin']['apiName'], 'Machines API', 'Transaction index ' + index
+
+        it 'have uriTemplate property', () ->
+          transactions.forEach (transaction, index) ->
+            assert.property transaction['origin'], 'uriTemplate'
 
       describe 'value under request key', () ->
         ['uri','method','headers','body'].forEach (key) ->
