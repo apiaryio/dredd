@@ -9,8 +9,7 @@
   "scripts": {
     "pretest": "coffeelint ./src",
     "test": "scripts/test",
-    "prepublish": "scripts/prepublish",
-    "postinstall": "scripts/build"
+    "prepublish": "scripts/prepublish"
   },
   "repository": {
     "type": "git",
