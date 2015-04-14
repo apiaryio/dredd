@@ -1,10 +1,12 @@
 {assert} = require 'chai'
 sinon = require 'sinon'
 proxyquire = require 'proxyquire'
-inquirerStub= require 'inquirer'
+inquirerStub = require 'inquirer'
+fsStub = require 'fs'
 
 interactiveConfig = proxyquire '../../src/interactive-config', {
   'inquirer': inquirerStub
+  'fs': fsStub
 }
 
 describe "interactiveConfig", () ->
@@ -95,6 +97,33 @@ describe "interactiveConfig", () ->
   describe '.run(config, callback)', () ->
     it 'is a defined function', () ->
       assert.isFunction interactiveConfig.run
+
+
+  describe '.updateCircle()', () ->
+
+    beforeEach () ->
+      sinon.stub fsStub, 'writeFileSync'
+
+    afterEach () ->
+      fsStub.writeFileSync.restore()
+
+    it 'should save the file', () ->
+      interactiveConfig.updateCircle()
+      assert.isTrue fsStub.writeFileSync.called
+
+    it 'should save proper config', () ->
+
+  describe '.updateTravis()', () ->
+
+    beforeEach () ->
+      sinon.stub fsStub, 'writeFileSync'
+
+    afterEach () ->
+      fsStub.writeFileSync.restore()
+
+    it 'should save the file', () ->
+      interactiveConfig.updateTravis()
+      assert.isTrue fsStub.writeFileSync.called
 
 
 

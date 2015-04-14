@@ -139,6 +139,7 @@ class DreddCommand
 
   runServerAndThenDredd: (callback) ->
     if @argv['server']?
+
       @serverProcess = exec @argv['server']
       console.log "Starting server with command: #{@argv['server']}"
 
@@ -189,7 +190,15 @@ class DreddCommand
     configurationForDredd = @initConfig()
     @dreddInstance = @initDredd configurationForDredd
 
-    @runServerAndThenDredd()
+
+    try
+      @runServerAndThenDredd()
+    catch e
+      console.log e.message
+      console.log e.stack
+      @_processExit(2)
+
+
 
   lastArgvIsApiEndpoint: ->
     # when blueprint path is a glob, some shells are automatically expanding globs and concating

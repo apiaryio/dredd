@@ -15,6 +15,6 @@ cp -r ./test ./src-cov/test
 cp ./package.json ./src-cov
 
 # Excluding test breaking coveralls report :( Reporting to coveralls.io for further investigation 
-find ./src-cov/test/ | grep "\-test" | xargs $MOCHA  --reporter $REPORTER --compilers 'coffee:coffee-script/register' -i -g 'Using workaround for hooks in ruby'
+find ./src-cov/test/ | grep "\-test" | xargs $MOCHA  --reporter $REPORTER --compilers 'coffee:coffee-script/register' -i -g 'Using workaround for hooks in ruby' -g 'when using --server'
 
 rm -rf ./src-cov

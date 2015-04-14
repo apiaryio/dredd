@@ -40,7 +40,7 @@ interactiveConfig.prompt = (config = {}, callback) ->
     name: "apiaryApiKey"
     message: "Please enter Apiary API key or leave empty for anonymous reporter"
     default: config['custom']?['apiaryApiKey']
-    when: (answers) -> (answers['apiary'] == true && ! config['cusotom']?['apiaryApiKey']?)
+    when: (answers) -> (answers['apiary'] == true && ! config['custom']?['apiaryApiKey']?)
   }
 
   questions.push {
@@ -48,7 +48,10 @@ interactiveConfig.prompt = (config = {}, callback) ->
     name: "apiaryApiName"
     message: "Please enter Apiary API name"
     default: config['custom']?['apiaryApiName']
-    when: (answers) -> (answers['apiary'] == true && ! config['custom']?['apiaryApiName']?)
+    when: (answers) -> (
+      (answers['apiary'] == true && ! config['custom']?['apiaryApiName']?) &&
+      (answers['apiary'] == true && answers['apiaryApiKey'] != '')
+    )
   }
 
   questions.push {
@@ -69,19 +72,13 @@ interactiveConfig.prompt = (config = {}, callback) ->
 
 
   questions.push {
-    type: "rawlist"
-    name: "ciCreate"
-    message: "Dredd is best served with Continous Intregration. Create CI config for Dredd?"
-    choices: [
-      'CircleCI'
-      'Travis CI'
-      'Do not create CI configuration now.'
-    ]
+    type: "confirm"
+    name: "circleCreate"
+    message: "Dredd is best served with Continous Intregration. Create CircleCI config for Dredd?"
     when: (answers) -> (! fs.existsSync('circle.yml') && ! fs.existsSync('.travis.yml'))
   }
 
-  inquirer.prompt questions, (answers) ->
-    callback(answers)
+  inquirer.prompt questions, callback
 
 interactiveConfig.processAnswers = (config, answers, callback) ->
   config['_'] = [] if not config['_']
@@ -95,16 +92,14 @@ interactiveConfig.processAnswers = (config, answers, callback) ->
 
 
 
-  interactiveConfig.updateCircle() if answers['ciCreate'] == 'CircleCI' or answers['circleAdd']
-  interactiveConfig.updateTravis() if answers['ciCreate'] == 'Travis CI' or answers['travisAdd']
+  interactiveConfig.updateCircle() if answers['circleAdd'] or answers['circleCreate']
+  interactiveConfig.updateTravis() if answers['travisAdd'] == true
 
   callback(config)
 
 interactiveConfig.run = (config, callback) ->
   interactiveConfig.prompt config, (answers) ->
-    interactiveConfig.processAnswers config, answers, (newConfig) ->
-      callback(newConfig)
-
+    interactiveConfig.processAnswers config, answers, callback
 
 interactiveConfig.updateCircle = () ->
   file = "circle.yml"

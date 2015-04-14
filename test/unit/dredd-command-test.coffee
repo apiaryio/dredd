@@ -8,8 +8,9 @@ packageJson = require '../../package.json'
 loggerStub = require '../../src/logger'
 interactiveConfigStub = require '../../src/interactive-config'
 configUtilsStub = require '../../src/config-utils'
-
 options = require '../../src/options'
+
+childProcessStub = require 'child_process'
 
 PORT = 9876
 
@@ -33,6 +34,7 @@ DreddCommand = proxyquire '../../src/dredd-command', {
   './dredd': dreddStub
   'console': loggerStub
   './interactive-init': interactiveConfigStub
+  'child_process': childProcessStub
 }
 
 
@@ -190,49 +192,6 @@ describe "DreddCommand class", () ->
       describe "when test run finishes", () ->
         it 'should kill the server'
 
-  #
-  # This should be removed. DreddCommand should be -> NEVER <- called without Argv, it makes no
-  # sense to call command runner without ARGV
-  #
-
-  # describe.only 'run without argv set', ->
-  #   dc = null
-  #   runDreddStub = null
-  #   exitCalled = null
-
-  #   beforeEach () ->
-  #     dc = new DreddCommand({
-  #       exit: ->
-  #         exitCalled = true
-  #     })
-  #     dc.dreddInstance = 'dreddInstance'
-  #     runDreddStub = sinon.stub dc, 'runDredd', ->
-  #     dc.run()
-
-  #   afterEach ->
-  #     dc.runDredd.restore()
-
-  #   describe 'with finished set to false', ->
-  #     # This is probably wrong expectation, exit should be called because command edns in this case
-  #     #it 'should not call exit callback', ->
-  #     #  assert.isNull exitCalled
-
-  #     it 'should call exit callback', ->
-  #       assert.isTrue exitCalled, true
-
-  #     it 'does call runDredd just once with dreddInstance as first argument', ->
-  #       assert.equal dc.runDredd.called, true
-  #       assert.isArray dc.runDredd.firstCall.args
-  #       assert.lengthOf dc.runDredd.firstCall.args, 1
-  #       assert.deepEqual dc.runDredd.firstCall.args, ['dreddInstance']
-
-  #   describe 'with finished set to true', ->
-  #     it 'does not call runDredd at all', ->
-  #       runDreddStub.reset()
-  #       dc.finished = true
-  #       dc.run()
-  #       assert.equal dc.runDredd.called, 0
-
   describe 'run with argv set to load regular blueprint', ->
     dc = null
     runDreddStub = null
@@ -335,3 +294,28 @@ describe "DreddCommand class", () ->
       it 'prints out an error message', ->
         assert.include stderr, 'Error: Must specify'
 
+  # describe.only 'when using --server', () ->
+
+  #   beforeEach (done) ->
+
+  #     sinon.stub childProcessStub, 'exec'
+  #     sinon.stub transactionRunner.prototype, 'executeAllTransactions', (cb) -> cb()
+  #     dc = new DreddCommand({
+  #       exit: (status) ->
+  #         done()
+
+  #       custom:
+  #         argv: [
+  #           "./test/fixtures/single-get.apib"
+  #           "http://localhost:#{PORT}"
+  #           "--server"
+  #           "./test/fixtures/scripts/fake-server.sh"
+  #         ]
+  #     }).run()
+
+  #   afterEach () ->
+  #     childProcessStub.exec.restore()
+
+
+  #   it 'stdout shoud run child process', () ->
+  #     assert.isTrue childProcessStub.exec.called
