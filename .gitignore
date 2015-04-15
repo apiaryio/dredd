@@ -6,3 +6,4 @@ cov.html
 *.DS_Store
 /.idea
 /npm-debug.log
+/site
