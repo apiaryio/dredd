@@ -59,3 +59,9 @@ $ dredd
 [Jenkins]: http://jenkins-ci.org/
 [Gavel]: http://blog.apiary.io/2013/07/24/Bam-this-is-Gavel/
 [behavior specification]: https://www.relishapp.com/apiary/gavel/docs
+
+## Editing documentation
+
+The documentation for Dredd is written using [MkDocs](http://www.mkdocs.org/). To contribute to Dredd's documentation, you will need to follow the [MkDocs installation instructions](http://www.mkdocs.org/#installation). Once installed, you may use `mkdocs serve` from the Dredd directory to run the local server for the documentation.
+
+
