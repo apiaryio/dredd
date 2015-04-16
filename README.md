@@ -16,17 +16,7 @@ Dredd uses the [Gavel][] for judging if a particular API response is valid
 or if it isn't. If you are curious about how decisions are made, please refer
 to Gavel's [behavior specification][].
 
-View the [full documentation](http://dredd.readthedocs.org/en/latest/) for how to use all of Dredd's features.
-
 ![Dredd API Blueprint testing tool](https://raw.github.com/apiaryio/dredd/master/img/Dredd.png)
-
-## Installation
-[Node.js][] and [NPM][] are required.
-
-    $ npm install -g dredd
-
-[Node.js]: https://nodejs.org/
-[NPM]: https://npmjs.org/
 
 ## Get Started Testing API Documentation and backend
 
@@ -52,7 +42,9 @@ View the [full documentation](http://dredd.readthedocs.org/en/latest/) for how t
 
 ## Documentation
 
-The documentation for Dredd is written using [MkDocs](http://www.mkdocs.org/). To contribute to Dredd's documentation, you will need to follow the [MkDocs installation instructions](http://www.mkdocs.org/#installation). Once installed, you may use `mkdocs serve` from the Dredd directory to run the local server for the documentation.
+**View the [full documentation](http://dredd.readthedocs.org/en/latest/) for how to use all of Dredd's features.**
+
+
 
 ## Contribution
 
