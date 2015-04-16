@@ -18,166 +18,33 @@ to Gavel's [behavior specification][].
 
 ![Dredd API Blueprint testing tool](https://raw.github.com/apiaryio/dredd/master/img/Dredd.png)
 
-## Installation
-[Node.js][] and [NPM][] is required.
-
-    $ npm install -g dredd
-
-[Node.js]: https://nodejs.org/
-[NPM]: https://npmjs.org/
-
 ## Get Started Testing API Documentation and backend
 
-Create a new documentation file in [API Blueprint][] format in `blueprint.md`
+1. I you don't have [Node.js](https://nodejs.org/) installed, you may want to use [NVM](https://github.com/creationix/nvm)
+1. Create an API blueprint in `blueprint.md`
+1. Install Dredd
 
-```
-# GET /
-+ Response 200 (application/json; charset=utf-8)
+    ```
+    $ npm install -g dredd
+    ```
 
-      {"message": "Hello World!"}
-```
+1. Run interactive configuration:
 
-Let's create a backend for example in [Express.js][]. To install it:
+    ```
+    $ dredd init
+    ```
 
-```sh
-$ npm install express
-```
+1. Run dredd
 
-Create file with backend application in `app.js`:
+    ```
+    $ dredd
+    ```
 
-```javascript
-var express = require('express');
-var app = express();
+## Documentation
 
-app.get('/', function (req, res) {
-  res.json({message: 'Hello World!'});
-})
-
-var server = app.listen(3000);
-```
-
-Run the API application on background:
-
-```sh
-$ node app.js &
-```
-
-Finally, run Dredd for validation:
-
-```sh
-$ dredd blueprint.md http://localhost:3000
-```
-
-Celebrate! Your API is in sync with your documentation:
-
-```
-info: Beginning Dredd testing...
-warn: Parser warning:  (10) message-body asset is expected to be a pre-formatted code block, every of its line indented by exactly 8 spaces or 2 tabs 62:30
-pass: GET / duration: 12ms
-complete: 1 passing, 0 failing, 0 errors, 0 skipped
-complete: Tests took 19ms
-```
-
-See [dredd-example](https://github.com/apiaryio/dredd-example) repo
-for real-life example in continous integration.
-
-## Writing validatable blueprints
-
-If you are using [URI templates][URIt] in your blueprint,
-you have to provide example values in the blueprint's [URI parameter syntax][UPS]
-to provide values for each URI parameter substitution.
-Every resource in the blueprint defined by URI template without specifying
-example values is not validatable, it's considered as an ambigous transaction
-and skipped. In case of any ambigous transaction Dredd will throw a warning and
-let you know what parameter example value is not defined in the blueprint.
-
-[UPS]: https://github.com/apiaryio/api-blueprint/blob/master/API%20Blueprint%20Specification.md#def-uriparameters-section
-[URIt]: http://tools.ietf.org/html/rfc6570
-
-## Hooks
-
-If you want to execute some code before and after each request,
-Dredd can be configured to use hookfiles to do basic setup/teardown between
-each validation (specified with the `--hookfiles` flag). Hookfiles can be
-in JavaScript or [CoffeeScript][], and must import the hook methods.
-
-Requests (also referred as _Transactions_) are identified by their name, which is derived from the structure
-of the blueprint. You can print a list of the generated names with `--names`.
-
-Details of Hooks usage are described in [Dredd Hooks documentation](docs/hooks.md).
-
-Here is a short list of some hooks features
-
-- `before`, `after`, `beforeAll`, `afterAll`, `beforeEach` and `afterEach` events to be called before and after transactions performed by Dredd
-- _synchronous_ or _asynchronous_ evaluation (opens possibilities to retrieve data during test run)
-- programatically `fail` or `skip` a transaction
-- advanced usage can be e.g. to append _query-parameter(s)_ before a transaction is tested (you can do any other change to it)
+**View the [full documentation](http://dredd.readthedocs.org/en/latest/) for how to use all of Dredd's features.**
 
 
-## Command Line Options
-
-    $ dredd --help
-    Usage:
-      dredd <path or URL to blueprint> <api_endpoint> [OPTIONS]
-
-    Example:
-      dredd ./apiary.md http://localhost:3000 --dry-run
-
-    Options:
-      --dry-run, -y        Do not run any real HTTP transaction, only parse
-                           blueprint and compile transactions.       [default: null]
-      --hookfiles, -f      Specifes a pattern to match files with before/after
-                           hooks for running tests                   [default: null]
-      --names, -n          Only list names of requests (for use in a hookfile). No
-                           requests are made.                       [default: false]
-      --only, -x           Run only specified transaction name. Can be used
-                           multiple times                              [default: []]
-      --reporter, -r       Output additional report format. This option can be used
-                           multiple times to add multiple reporters. Options:
-                           junit, nyan, dot, markdown, html, apiary.
-                                                                       [default: []]
-      --output, -o         Specifies output file when using additional file-based
-                           reporter. This option can be used multiple times if
-                           multiple file-based reporters are used.
-                                                                       [default: []]
-      --header, -h         Extra header to include in every request. This option
-                           can be used multiple times to add multiple headers.
-                                                                       [default: []]
-      --sorted, -s         Sorts requests in a sensible way so that objects are not
-                           modified before they are created. Order: CONNECT,
-                           OPTIONS, POST, GET, HEAD, PUT, PATCH, DELETE, TRACE.
-                                                                    [default: false]
-      --user, -u           Basic Auth credentials in the form username:password.
-                                                                     [default: null]
-      --inline-errors, -e  Determines whether failures and errors are displayed as
-                           they occur (true) or agregated and displayed at the end
-                           (false).
-                                                                    [default: false]
-      --details, -d        Determines whether request/response details are included
-                           in passing tests.
-                                                                    [default: false]
-      --method, -m         Restrict tests to a particular HTTP method (GET, PUT,
-                           POST, DELETE, PATCH). This option can be used multiple
-                           times to allow multiple methods.
-                                                                       [default: []]
-      --color, -c          Determines whether console output should include colors.
-                                                                     [default: true]
-      --level, -l          The level of logging to output. Options: silly, debug,
-                           verbose, info, warn, error.
-                                                                   [default: "info"]
-      --timestamp, -t      Determines whether console output should include
-                           timestamps.
-                                                                    [default: false]
-      --silent, -q         Silences commandline output.
-                                                                    [default: false]
-      --path, -p           Additional blueprint paths or URLs. Can be used multiple
-                           times with glob pattern for paths.          [default: []]
-      --help               Show usage information.
-
-      --version            Show version number.
-
-Additionally, boolean flags can be negated by prefixing `no-`,
-for example: `--no-color --no-inline-errors`.
 
 ## Contribution
 

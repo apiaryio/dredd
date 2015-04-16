@@ -1,124 +1,195 @@
-# Dredd Hooks documentation
+# Hook Scripts
 
-Dredd can load JavaScript or CoffeeScript files and process them.
-The interface to communicate and actually use hooks is achieved through
-requiring virtual `hooks` dependency provided by Dredd.
+Similar to any other testing framework, Dredd supports executing code around each test step. Hooks are code blocks executed in defined stage of [execution lifecycle](usage.md#dredd-execution-lifecycle) In the hooks code you have an access to compiled HTTP [transaction object](#transaction-object-structure) which you can modify. Default path to hook file is `./dreddhooks.js` or `dredhooks.coffee`. Hooks are usually used for:
 
-------
+- loading db fixtures
+- cleanup after test steps
+- passing data between transactions (saving state from responses)
+- modifying request generated from blueprint
+- changing generated expectations
+- setting custom expectations
 
-## Getting transaction names
+## Using Hook Files
 
-You'd need __names__ of your transactions (_actions_) before proceeding further.
-In order to do that please run Dredd with the `--names` argument as the last one
-and it'll print all available names of transactions.
+To use a hook file with Dredd, use the `--hookfiles` flag in the command line. You can use this flag multiple times or use a [glob](http://npmjs.com/package/glob) expression for loading multiple hook files.
 
-If you have an API Blueprint in `single_get.md` file, you can retrieve all
-transaction names like this:
+Example:
+```sh
+$ dredd single_get.md http://machines.apiary.io --hookfiles=*_hooks.*
+```
+
+## Getting Transaction Names
+
+Dredd uses the __transaction names__ of the compiled HTTP transactions (_actions_) from the API Blueprint for addressing specific test steps. In order to do that please run Dredd with the `--names` argument last and it will print all available names of transactions. For example, given an API Blueprint file `blueprint.md` as following:
+
+```markdown
+FORMAT: 1A
+
+# Machines API
+
+# Group Machines
+
+# Machines collection [/machines]
+
+## Get Machines [GET]
+
+- Response 200 (application/json; charset=utf-8)
+
+    [{"type": "bulldozer", "name": "willy"}]
+
+```
+
+Run this command to retrieve all transaction names:
 
 ```sh
 $ dredd single_get.md http://machines.apiary.io --names
 info: Machines > Machines collection > Get Machines
 ```
 
-## To run Dredd with hooks
+The `Machines > Machines collection > Get Machines` is the name of a transaction which you can use in your hooks. See [Hooks JavaScript API Reference](#hooks-javascript-api-reference) for how this is used.
 
-Dredd uses [glob](http://npmjs.com/package/glob) when searching for files.
-So you can use wildcard(s) to traverse the file tree and read files with your hooks.
+##  Types of Hooks
 
-**Example:** Run validation with hooks from file names ending with `_hooks` without extensions:
+Dredd supports following types of hooks:
 
-```sh
-dredd single_get.md http://machines.apiary.io --hookfiles=*_hooks.*
-```
+- `beforeAll` called at the beginning of the whole test run
+- `beforeEach` called before each HTTP transaction
+- `before` called before some specific HTTP transaction
+- `after` called after some specific HTTP transaction regardless its result
+- `beforeEach` called after each HTTP transaction
+- `afterAll` called after whole test run
 
-## Hook types: `before`, `after`, `beforeAll`, `afterAll`, `beforeEach`, `afterEach`
+## Hooks JavaScript API Reference
 
-Dredd provides four types of hooks. _Single transaction hooks_ or _all transactions hooks_.
+- For `before`, `after`, `beforeEach`, and `afterEach`, a [Transaction Object](#transaction-object-structure) is passed as the first argument to the hook function.
+- An array of Transaction Objects is passed to `beforeEach` and `afterEach`.
+- The second argument is an optional callback function for async execution.
+- Any modifications on the `transaction` object is propagated to the actual HTTP transactions
 
-You must provide __transaction name__ in order to tell what function the
-__single transaction hook__ should be called upon.
-The first argument is a _string_ (transaction name), second argument is
-the _function_.
-
-If you use __all transactions hooks__, please use only one argument–the actual hook __function__.
-
-- `before` hooks are called before every single transaction
-- `after` hooks are called after every single transaction,
-  regardless its success or failure status
-- `beforeAll` hooks are called at the beginning of the whole test
-- `afterAll` hooks are called after all transactions have set their end status
-
-
-### Hook types examples
-
-Let's have an example hookfile `machines_hooks.js`:
+### Sync API
 
 ```javascript
-var hooks = require('hooks');
-var before = hooks.before;
-var after = hooks.after;
 
-before("Machines > Machines collection > Get Machines", function (transaction) {
+var hooks = require('hooks');
+
+hooks.beforeAll(function(transactions){
+  console.log('beforeEach');
+});
+
+hooks.beforeEach(function(transactions){
+  console.log('beforeEach');
+});
+
+hooks.before("Machines > Machines collection > Get Machines", function (transaction) {
   console.log("before");
 });
 
-after("Machines > Machines collection > Get Machines", function (transaction) {}
+hooks.after("Machines > Machines collection > Get Machines", function (transaction) {}
   console.log("after");
 });
+
+hooks.beforeEach(function(transactions){
+  console.log('beforeEach');
+});
+
+hooks.beforeAll(function(transactions){
+  console.log('beforeAll');
+})
 ```
 
-Usage of asynchronous `beforeAll` and `afterAll` hooks:
+### Async API
+
+When the callback is used in the hook function, callbacks can handle asynchronous function calls.
 
 ```javascript
 var hooks = require('hooks');
-var beforeAll = hooks.beforeAll;
-var afterAll = hooks.afterAll;
 
-beforeAll(function (transactions, done) {
-  // do setup
+hooks.beforeAll(function(transactions, done){
+  console.log('beforeEach');
   done();
 });
 
-afterAll(function (transactions, done) {
-  // do teardown
+hooks.beforeEach(function(transactions, done){
+  console.log('beforeEach');
   done();
 });
-```
 
-If `beforeAll` and `afterAll` are called multiple times, the callbacks
-are executed serially (in the order hook files were loaded from filesystem).
-
-All compiled `transactions` are passed as a first argument in `beforeAll` and `afterAll` hook and are populated on the `hooks` object.
-
-## Synchronous vs. Asynchronous hook
-
-Hooks can be executed both synchronously and asynchronously. __Hook is a function__.
-
-First argument received in hook function is always a transaction object and it __must__ be defined in the function arguments.
-
-__Optional__ second argument for the hook function is a __callback__.
-
-
-More about the `transaction` object can be found in [transaction object documentation](transaction.md).
-
-```javascript
-var before = require('hooks').before
-
-before('Machines > Machines collection > Get Machines', function (transaction, callback) {
-  // ... your own asynchronous task here
-  // ...
-  // ..
-  // once finished, just call callback
-  callback();
+hooks.before("Machines > Machines collection > Get Machines", function (transaction, done) {
+  console.log("before");
+  done();
 });
+
+hooks.after("Machines > Machines collection > Get Machines", function (transaction, done) {}
+  console.log("after");
+  done();
+});
+
+hooks.beforeEach(function(transactions, done){
+  console.log('beforeEach');
+  done();
+});
+
+hooks.beforeAll(function(transactions, done){
+  console.log('beforeAll');
+  done();
+})
 ```
 
+### Transaction Object Structure
 
-## Fail or Skip a transaction inside a hook
+Transaction object is used as a first argument for hook functions.
+Following is description is in a [MSON](https://github.com/apiaryio/mson) format
 
-Transaction can be skipped or failed. Just set the appropriate property.
+- transaction (object)
+    - name: `"Hello, world! > Retrieve Message"` (string) Transaction identification name used for referencing
+    - host: `"localhost"` (string) hostname without port
+    - port: `3000` (number)
+    - protocol: `"https:"` (string)
 
-Skipping a validation with hooks:
+    - request (object) Request compiled from blueprint
+        - body `"Hello world!\n"` (string)
+        - headers (object)
+        - uri `"/message"` (string)
+        - method
+
+    - expected (object) Expected response from blueprint
+        - statusCode `"200"` (string)
+        - headers (object)
+        - body (string)
+
+    - real (object) System under test response data. Present only in `after` hook.
+        - statusCode `"200"` (string)
+        - headers (object)
+        - body (string)
+
+    - origin (object)  Reference to the original bleuprint
+        - filename `"./blueprint.md"` (string)
+        - apiName `"My Api"` (string)
+        - resourceGroupName `"Greetings"` (string)
+        - resourceName `"Hello, world!"` (string)
+        - actionName `"Retreive Message"` (string)
+        - exampleName `"First example"` (string)
+
+    - skip `false` (boolean) Set to `true` to skip this transcition
+    - fail `false` (boolean/string) Set to `true` or string with message and transaction will result in fail
+
+    - test (object) Result of [Gavel][] validation, same object is passed to reporters
+        - status `"fail"` (string) Test status - phase
+        - start `"2015-03-19T00:58:32.796Z"` (string) Start time in [UTC ISO 8601][]
+        - valid `false` (boolean) Test result
+
+    - results (object) Results from [Gavel][] in it's format
+        - version `"2"` (string) Gavel Validation version
+        - statusCode (object) Validation results for status code
+        - headers (object) Validation results for headers
+        - body (object) Validation results for body
+
+[UTC ISO 8601]: http://wikipedia.org/wiki/ISO_8601
+[Gavel]: https://www.relishapp.com/apiary/gavel/docs
+
+### How to Skip Tests
+
+Any test step can can be skipped by setting `skip` property of the `transaction` object to `true`.
 
 ```javascript
 var before = require('hooks').before;
@@ -128,7 +199,37 @@ before("Machines > Machines collection > Get Machines", function (transaction) {
 });
 ```
 
-Failing a validation with hooks:
+### Sharing Data Between Steps in Request Stash
+
+You may pass data between test steps using the response stash.
+
+```javascript
+var hooks = require('hooks');
+var before = hooks.before;
+var after = hooks.after;
+
+var responseStash = {};
+
+after("Machines > Machines collection > Create Machine", function (transaction) {
+
+  // saving HTTP response to the stash
+  responseStash[transaction.name] = transaction.real;
+});
+
+
+before("Machines > Machine > Delete a machine", function (transaction) {
+  //reusing data from previouse response here
+  machineId = JSON.parse(requestStash['Machines > Machines collection > Create Machine'])['id'];
+
+  //replacing id in url with stashed id from previous response
+  url = transaction.request.url;
+  transaction.request.url = url.replace('42', machineId);
+});
+```
+
+### Failing Tests Programmatically
+
+You can fail any step by setting `fail` property on `transaction` object to `true` or any string with descriptive message.
 
 ```javascript
 var before = require('hooks').before;
@@ -138,19 +239,13 @@ before("Machines > Machines collection > Get Machines", function (transaction) {
 });
 ```
 
+### Using Chai Assertions
 
-## Advanced Examples
-
-
-### Using Chai assertions to fail a transaction
-
-You can also require [Chai](http://chaijs.com/) and use its `assert`, `should` or `expect` interface in
-hooks and write your custom expectations. Dredd catches Chai's expectation error in hooks and makes transaction to fail.
+Inside hook files, you can require [Chai](http://chaijs.com/) and use its `assert`, `should` or `expect` interface in hooks and write your custom expectations. Dredd catches Chai's expectation error in hooks and makes transaction to fail.
 
 ```javascript
 var hooks = require('hooks');
 var before = hooks.before;
-var after = hooks.after;
 var assert = require('chai').assert;
 
 after("Machines > Machines collection > Get Machines", function (transaction) {
@@ -158,69 +253,129 @@ after("Machines > Machines collection > Get Machines", function (transaction) {
 });
 ```
 
+## Sandbox Mode
 
-## `beforeEach` and `afterEach` hooks
+The Sandbox mode can be used for running untrusted hook code. It can be activated with a CLI switch or with the JS API.
+In each hook file you can use following functions:
 
-### Append Query Parameter to every URL
+`before(transactionName, function)`
+
+`after(transactionName, function)`
+
+`beforeAll(function)`
+
+`afterAll(function)`
+
+`beforeEach(function)`
+
+`afterEach(function)`
+
+- A [Transaction Object](#transaction-object-structure) is passed as a first argument to the hook function for `before`, `after`, `beforeEach`, and `afterEach`.
+- An array of Transaction Objects is passed to `beforeEach` and `afterEach`.
+- Sandboxed hooks don't have an asynchronous API. Loading and running of each hook happens in it's own isolated, sandboxed context.
+- Hook maximum execution time is 500ms.
+- Memory limit is 1M
+- You can access global `stash` object variables in each separate hook file.
+  `stash` is passed between contexts of each hook function execution.
+  This `stash` object purpose is to allow _transportation_ of user defined values
+  of type `String`, `Number`, `Boolean`, `null` or `Object` and `Array` (no `Functions` or callbacks).
+- Hook code is evaluated with `"use strict"` directive - [details at MDN](https://mdn.io/use+strict)
+- Sandboxed mode does not support hooks written in CoffeScript language
+
+### CLI Switch
+
+Sandboxed hooks may be used with the `--sandbox` argument on the command line.
+
+```shell
+$ dredd blueprint.md http://localhost:3000 --hookfiles path/to/hookfile.js --sandbox
+```
+
+### JS API Option
+
+Dredd can be configured in JavaScript
 
 ```javascript
-var hooks = require 'hooks'
+var Dredd = require('dredd');
+var configuration = {
+  server: "http://localhost",
+  options: {
+    path: "./test/fixtures/single-get.apib",
+    sandbox: true,
+    hookfiles: ['./test/fixtures/sandboxed-hook.js']
+  }
+};
+var dredd = new Dredd(configuration);
 
-hooks.beforeEach(function (transaction) {
-  // add query parameter to each transaction here
-  var paramToAdd = "foo=bar";
-  if transaction.fullPath.indexOf('?') > -1) {
+dredd.run(function (error, stats) {
+  // your callback code here
+});
+```
+
+### Request Stash in Sandbox Mode
+
+```javascript
+after('First action', function (transaction) {
+  stash['id'] = JSON.parse(transaction.real.response);
+});
+
+before('Second action', function (transaction) {
+  newBody = JSON.parse(transaction.request.body);
+  newBody['id'] = stash['id'];
+  transaction.request.body = JSON.stringify(newBody);
+});
+```
+
+### Hook function context is not shared
+
+When sandboxed, hook function context is not shared between step hook functions.
+
+Note: __This is wrong__. It throws an exception.
+
+```javascript
+var myObject = {};
+
+after('First action', function (transaction) {
+  myObject['id'] = JSON.parse(transaction.real.response);
+});
+
+before('Second action', function (transaction) {
+  newBody = JSON.parse(transaction.request.body);
+  newBody['id'] = myObject['id'];
+  transaction.request.body = JSON.stringify(newBody);
+});
+```
+
+This will explode with: `ReferenceError: myObject is not defined`
+
+## Advanced Hook Examples
+
+### Modifying Transactions Prior to Execution
+
+```javascript
+var hooks = require('hooks');
+var before = hooks.before;
+
+before("Machines > Machines collection > Get Machines", function (transaction) {
+  // parse request body from blueprint
+  requestBody = JSON.parse(transasction.request.body);
+
+  // modify request body here
+  requestBody['someKey'] = 'someNewValue';
+});
+```
+
+### Adding URI Query Parameters to All Requests
+
+```javascript
+var hooks = require('hooks');
+
+hooks.beforeEach(function(transaction){
+  # add query parameter to each transaction here
+  var paramToAdd = "api-key=23456"
+  if(transaction.fullPath.indexOf('?') > -1){
     transaction.fullPath += "&" + paramToAdd;
-  } else {
+  } else{
     transaction.fullPath += "?" + paramToAdd;
-  };
-});
-```
-
-
-### Using OAuth
-
-Let's say you have installed the [oauth](http://www.npmjs.org/package/oauth) package.
-And also you have a function to retrieve the token from the OAuth provider
-of your choice somewhere inside your custom hook.
-
-```javascript
-var OAuth2 = require('oauth').OAuth2;
-
-// your twitter application
-var twitterConsumerKey = process.env.TWITTER_CONSUMER_KEY;
-var twitterConsumerSecret = process.env.TWITTER_CONSUMER_SECRET;
-
-retrieveOauth2Token = function(callback) {
-  var oauth2 = new OAuth2(
-    yourTwitterConsumerKey,
-    yourTwitterConsumerSecret,
-    'https://api.twitter.com/',
-    null, 'oauth2/token', null
-  );
-  oauth2.getOAuthAccessToken('',
-    {'grant_type':'client_credentials'},
-    function (e, access_token, refresh_token, results) {
-      callback("bearer:" + access_token);
-  });
-}
-
-var hooks = require("hooks");
-var retrievedPlaintextToken = '';
-hooks.beforeAll(function(done) {
-  if (retrievedPlaintextToken) {
-    return done();
   }
-  else {
-    retrieveOauth2Token(function (token) {
-      retrievedPlaintextToken = token;
-      done();
-    });
-  }
-});
-
+};
 ```
-
-This way you can retrieve the token. To actually use it as a query parameter,
-you can use similar approach from the Append Query Parameter example above.
-
