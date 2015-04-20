@@ -1,15 +1,14 @@
 language: node_js
 node_js:
-  - 0.10
+  - "0.10"
 sudo: false
 before_install:
-  - npm install -g npm@1.4.28
+  - npm install -g npm@2.6.x
 notifications:
   email:
     recipients:
-      - z@apiary.io
-      - ladislav@apiary.io
       - adam@apiary.io
+      - kubula@apiary.io
     on_success: change
     on_failure: always
   hipchat:
@@ -20,4 +19,3 @@ notifications:
     format: html
 after_success:
   - ./scripts/coveralls
-
