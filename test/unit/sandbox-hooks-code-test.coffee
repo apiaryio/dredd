@@ -18,12 +18,13 @@ describe 'sandboxHooksCode(hooksCode, callback)', () ->
 
   describe 'context of code adding hooks', () ->
     it 'should not have access to this context', (done) ->
-      contextVar = ''
+      contextVar = 'a'
       hooksCode = """
       contextVar = "b";
       """
       sandboxHooksCode hooksCode, (err, result) ->
-        assert.include err, 'contextVar'
+        assert.isUndefined err
+        assert.equal contextVar, 'a'
         done()
 
     it 'should not have access to require', (done) ->

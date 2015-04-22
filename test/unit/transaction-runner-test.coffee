@@ -810,9 +810,8 @@ describe 'TransactionRunner', ()->
           runner.hooks.beforeAll functionString
 
           runner.executeAllTransactions [], runner.hooks, () ->
-            call = configuration.emitter.emit.getCall(0)
-            assert.ok configuration.emitter.emit.calledWith "test error"
-            assert.include call.args[1].message, 'contextVar'
+            assert.isFalse configuration.emitter.emit.called
+            assert.equal contextVar, 'this'
             done()
 
         it 'should have access to the hook stash', (done) ->
@@ -1312,7 +1311,7 @@ describe 'TransactionRunner', ()->
               messages.push configuration.emitter.emit.getCall(callNo).args[1].message
             done()
 
-  describe 'runHoook(hook, tranasction, callback)', () ->
+  describe 'runHoook(hook, transaction, callback)', () ->
     describe 'when sandbox mode is on (hook function is a string)', () ->
 
       before () ->
@@ -1338,7 +1337,8 @@ describe 'TransactionRunner', ()->
         }
         """
         runner.runHook hook, {}, (err) ->
-          assert.include err, 'contextVar'
+          assert.isUndefined err
+          assert.equal contextVar, 'this'
           done()
 
       it 'should not have access to require', (done) ->
@@ -1418,7 +1418,7 @@ describe 'TransactionRunner', ()->
           return done new Error err if err
           done()
 
-  describe 'getNameForTransaction(hook, tranasction, callback)', () ->
+  describe 'getNameForTransaction(hook, transaction, callback)', () ->
 
     before () ->
       configuration = {}
