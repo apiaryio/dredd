@@ -23,7 +23,6 @@ describe 'sandboxHooksCode(hooksCode, callback)', () ->
       contextVar = "b";
       """
       sandboxHooksCode hooksCode, (err, result) ->
-        assert.isUndefined err
         assert.equal contextVar, 'a'
         done()
 

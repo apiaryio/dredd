@@ -810,7 +810,6 @@ describe 'TransactionRunner', ()->
           runner.hooks.beforeAll functionString
 
           runner.executeAllTransactions [], runner.hooks, () ->
-            assert.isFalse configuration.emitter.emit.called
             assert.equal contextVar, 'this'
             done()
 
@@ -1336,8 +1335,7 @@ describe 'TransactionRunner', ()->
           contextVar = "that";
         }
         """
-        runner.runHook hook, {}, (err) ->
-          assert.isUndefined err
+        runner.runHook hook, {}, () ->
           assert.equal contextVar, 'this'
           done()
 
