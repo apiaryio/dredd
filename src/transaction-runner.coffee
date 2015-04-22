@@ -6,7 +6,7 @@ os = require 'os'
 chai = require 'chai'
 gavel = require 'gavel'
 async = require 'async'
-{Pitboss} = require 'pitboss'
+{Pitboss} = require 'pitboss-ng'
 
 flattenHeaders = require './flatten-headers'
 addHooks = require './add-hooks'
