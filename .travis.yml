@@ -1,9 +1,15 @@
 language: node_js
+
 node_js:
   - "0.10"
+  - "0.12"
+  - "iojs"
+
 sudo: false
+
 before_install:
   - npm install -g npm@2.6.x
+
 notifications:
   email:
     recipients:
@@ -17,5 +23,6 @@ notifications:
     template:
       - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a>/<a href="%{compare_url}">Change view</a>)'
     format: html
+
 after_success:
   - ./scripts/coveralls
