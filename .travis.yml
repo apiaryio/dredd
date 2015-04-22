@@ -7,9 +7,6 @@ node_js:
 
 sudo: false
 
-before_install:
-  - npm install -g npm@2.6.x
-
 notifications:
   email:
     recipients:
