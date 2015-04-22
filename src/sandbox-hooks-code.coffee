@@ -1,4 +1,4 @@
-{Pitboss} = require 'pitboss'
+{Pitboss} = require 'pitboss-ng'
 Hooks = require './hooks'
 
 sandboxHooksCode = (hooksCode, callback) ->
