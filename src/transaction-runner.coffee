@@ -129,13 +129,12 @@ class TransactionRunner
       output;
       """
 
-      pitboss = new Pitboss(wrappedCode, {
+      sandbox = new Pitboss(wrappedCode, {
         timeout: 500
       })
 
-      pitboss.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result = {}) =>
-        pitboss.runner?.proc?.removeAllListeners 'exit'
-        pitboss.runner?.kill?()
+      sandbox.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result = {}) =>
+        sandbox.kill()
         return callback(err) if err
         # reference to `transaction` get lost here if whole object is assigned
         # this is wokraround how to copy proprties
@@ -173,13 +172,12 @@ class TransactionRunner
       output;
       """
 
-      pitboss = new Pitboss(wrappedCode, {
+      sandbox = new Pitboss(wrappedCode, {
         timeout: 500
       })
 
-      pitboss.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result = {}) =>
-        pitboss.runner?.proc?.removeAllListeners 'exit'
-        pitboss.runner?.kill?()
+      sandbox.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result = {}) =>
+        sandbox.kill()
         return callback(err) if err
         # reference to `transaction` get lost here if whole object is assigned
         # this is wokraround how to copy proprties
