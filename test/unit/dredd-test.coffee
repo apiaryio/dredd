@@ -3,7 +3,7 @@ sinon = require 'sinon'
 proxyquire = require('proxyquire').noCallThru()
 
 fsStub = require 'fs'
-Drafter = require 'drafter'
+DrafterClassStub = require 'drafter'
 requestStub = require 'request'
 loggerStub = require '../../src/logger'
 
@@ -11,7 +11,7 @@ blueprintAstToRuntime = require '../../src/blueprint-ast-to-runtime'
 blueprintAstToRuntimeStub = sinon.spy blueprintAstToRuntime
 
 Dredd = proxyquire '../../src/dredd', {
-  'drafter': Drafter
+  'drafter': DrafterClassStub
   'request': requestStub
   './blueprint-ast-to-runtime': blueprintAstToRuntimeStub
   'fs': fsStub
@@ -24,11 +24,11 @@ describe 'Dredd class', () ->
   dredd = {}
 
   beforeEach () ->
-    # sinon.spy Drafter::, 'make'
+    sinon.spy DrafterClassStub::, 'make'
     sinon.spy fsStub, 'readFile'
 
   afterEach () ->
-    # Drafter::make.restore()
+    DrafterClassStub::make.restore()
     fsStub.readFile.restore()
 
   describe 'with legacy configuration', () ->
@@ -82,13 +82,12 @@ describe 'Dredd class', () ->
         dredd.runner.executeTransaction.restore()
         done()
 
-    it.skip 'should parse blueprint to ast', (done) ->
-      # invalid - because Drafter is always instantiated
+    it 'should parse blueprint to ast', (done) ->
       dredd = new Dredd(configuration)
       sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
         callback()
       dredd.run (error) ->
-        # assert.ok Drafter::make.called
+        assert.ok DrafterClassStub::make.called
         dredd.runner.executeTransaction.restore()
         done()
 
