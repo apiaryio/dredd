@@ -3,7 +3,7 @@ sinon = require 'sinon'
 proxyquire = require('proxyquire').noCallThru()
 
 fsStub = require 'fs'
-protagonistStub = require 'protagonist'
+DrafterClassStub = require 'drafter'
 requestStub = require 'request'
 loggerStub = require '../../src/logger'
 
@@ -11,7 +11,7 @@ blueprintAstToRuntime = require '../../src/blueprint-ast-to-runtime'
 blueprintAstToRuntimeStub = sinon.spy blueprintAstToRuntime
 
 Dredd = proxyquire '../../src/dredd', {
-  'protagonist': protagonistStub
+  'drafter': DrafterClassStub
   'request': requestStub
   './blueprint-ast-to-runtime': blueprintAstToRuntimeStub
   'fs': fsStub
@@ -24,11 +24,11 @@ describe 'Dredd class', () ->
   dredd = {}
 
   beforeEach () ->
-    sinon.spy protagonistStub, 'parse'
+    sinon.spy DrafterClassStub::, 'make'
     sinon.spy fsStub, 'readFile'
 
   afterEach () ->
-    protagonistStub.parse.restore()
+    DrafterClassStub::make.restore()
     fsStub.readFile.restore()
 
   describe 'with legacy configuration', () ->
@@ -87,7 +87,7 @@ describe 'Dredd class', () ->
       sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
         callback()
       dredd.run (error) ->
-        assert.ok protagonistStub.parse.called
+        assert.ok DrafterClassStub::make.called
         dredd.runner.executeTransaction.restore()
         done()
 

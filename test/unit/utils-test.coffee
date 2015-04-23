@@ -1,6 +1,6 @@
 {assert} = require 'chai'
 
-protagonist = require 'protagonist'
+Drafter = require 'drafter'
 blueprintUtils = require '../../src/blueprint-utils'
 
 describe 'blueprintUtils', () ->
@@ -55,7 +55,8 @@ describe 'blueprintUtils', () ->
 
               ok indentation
       """
-      protagonist.parse blueprint, (err, results) ->
+      drafter = new Drafter
+      drafter.make blueprint, (err, results) ->
         return done err if err
         assert.isObject results
         assert.property results, 'warnings'
@@ -121,7 +122,8 @@ describe 'blueprintUtils', () ->
 
                 yup!
         """
-        protagonist.parse blueprint, (err, results) ->
+        drafter = new Drafter
+        drafter.make blueprint, (err, results) ->
           warnings = results.warnings or []
           ranges = (blueprintUtils.warningLocationToRanges(warn.location, blueprint) for warn in warnings)
           done err

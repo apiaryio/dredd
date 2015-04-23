@@ -3,7 +3,7 @@ require 'setimmediate'
 
 glob = require 'glob'
 fs = require 'fs'
-protagonist = require 'protagonist'
+Drafter = require 'drafter'
 async = require 'async'
 request = require 'request'
 url = require 'url'
@@ -146,8 +146,9 @@ class Dredd
     # parse all file blueprints
     parseBlueprints = (cb) ->
       async.each Object.keys(config.data), (file, parseCallback) ->
-        protagonist.parse config.data[file]['raw'], (protagonistError, result) ->
-          return parseCallback protagonistError if protagonistError
+        drafter = new Drafter
+        drafter.make config.data[file]['raw'], (drafterError, result) ->
+          return parseCallback drafterError if drafterError
           config.data[file]['parsed'] = result
           parseCallback()
       , (err) ->
