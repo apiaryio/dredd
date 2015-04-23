@@ -3,56 +3,7 @@ module.exports = {
     filename: "./path/to/blueprint.file"
     raw:  "# GET /message\n+ Response 200 (text/plain)\n\n      Hello World!\n"
     parsed: {
-      "ast": {
-        "_version": "2.1",
-        "metadata": [],
-        "name": "",
-        "description": "",
-        "resourceGroups": [
-          {
-            "name": "",
-            "description": "",
-            "resources": [
-              {
-                "name": "",
-                "description": "",
-                "uriTemplate": "/message",
-                "model": {},
-                "parameters": [],
-                "actions": [
-                  {
-                    "name": "",
-                    "description": "",
-                    "method": "GET",
-                    "parameters": [],
-                    "examples": [
-                      {
-                        "name": "",
-                        "description": "",
-                        "requests": [],
-                        "responses": [
-                          {
-                            "name": "200",
-                            "description": "",
-                            "headers": [
-                              {
-                                "name": "Content-Type",
-                                "value": "text/plain"
-                              }
-                            ],
-                            "body": "  Hello World!\n",
-                            "schema": ""
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
+      "_version": 19,
       "warnings": [
         {
           "code": 10,
@@ -65,77 +16,7 @@ module.exports = {
           ]
         }
       ],
-      "sourcemap": {
-        "metadata": [],
-        "name": [],
-        "description": [],
-        "resourceGroups": [
-          {
-            "name": [],
-            "description": [],
-            "resources": [
-              {
-                "name": [],
-                "description": [],
-                "uriTemplate": [
-                  [
-                    0,
-                    15
-                  ]
-                ],
-                "model": {},
-                "parameters": [],
-                "actions": [
-                  {
-                    "name": [],
-                    "description": [],
-                    "method": [
-                      [
-                        0,
-                        15
-                      ]
-                    ],
-                    "parameters": [],
-                    "examples": [
-                      {
-                        "name": [],
-                        "description": [],
-                        "requests": [],
-                        "responses": [
-                          {
-                            "name": [
-                              [
-                                17,
-                                27
-                              ]
-                            ],
-                            "description": [],
-                            "headers": [
-                              [
-                                [
-                                  17,
-                                  27
-                                ]
-                              ]
-                            ],
-                            "body": [
-                              [
-                                48,
-                                15
-                              ]
-                            ],
-                            "schema": []
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+      "error": null
     }
   }
 }

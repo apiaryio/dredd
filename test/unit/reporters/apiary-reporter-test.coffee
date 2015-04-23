@@ -200,7 +200,7 @@ describe 'ApiaryReporter', () ->
           assert.isNotNull apiaryReporter.reportUrl
           done()
 
-      it 'should have blueprints key in the request and it should be an array and members should have propers structure', (done) ->
+      it 'should have blueprints key in the request and it should be an array and members should have proper structure', (done) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         emitter.emit 'start', blueprintData, () ->
@@ -213,12 +213,10 @@ describe 'ApiaryReporter', () ->
             assert.property blueprint, 'filename'
             assert.propertyVal blueprint, 'filename', './path/to/blueprint.file'
             assert.property blueprint, 'parsed'
-            assert.property blueprint.parsed, 'ast'
-            assert.property blueprint.parsed, 'warnings'
-            assert.property blueprint.parsed, 'sourcemap'
-            assert.isObject blueprint.parsed.ast
+            assert.deepProperty blueprint, 'parsed._version'
+            assert.deepProperty blueprint, 'parsed.warnings'
+            assert.notProperty blueprint.parsed, 'ast'
             assert.isArray blueprint.parsed.warnings
-            assert.isObject blueprint.parsed.sourcemap
           done()
 
       it 'should have various needed keys in test-run payload sent to apiary', (done) ->
