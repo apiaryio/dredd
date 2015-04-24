@@ -294,6 +294,14 @@ describe "DreddCommand class", () ->
       it 'prints out an error message', ->
         assert.include stderr, 'Error: Must specify'
 
+
+  describe 'when configuration was saved', () ->
+    describe 'and I pass another CLI argument', () ->
+      it 'should override existing configuration', () ->
+
+
+
+
   # describe.only 'when using --server', () ->
 
   #   beforeEach (done) ->

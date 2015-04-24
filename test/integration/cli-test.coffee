@@ -962,7 +962,7 @@ describe "Command line interface", () ->
     it 'stdout shoud contain sandbox messagae', () ->
       assert.include stdout, 'Loading hookfiles in sandboxed context'
 
-  # WARNING: this text is excluded from code coverage
+  # WARNING: this test is excluded from code coverage
   # it for some reason decreases coverage on local and in coveralls
   describe 'when using --server', () ->
     resourceRequested = false
