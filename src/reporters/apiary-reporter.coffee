@@ -1,8 +1,11 @@
-uuid = require 'node-uuid'
 http = require 'http'
 https = require 'https'
 os = require 'os'
 url = require 'url'
+
+clone = require 'clone'
+uuid = require 'node-uuid'
+
 packageConfig = require './../../package.json'
 logger = require './../logger'
 
@@ -29,7 +32,6 @@ class ApiaryReporter
     if not @configuration.apiToken? and not @configuration.apiSuite?
       logger.warn "Apiary reporter environment variable APIARY_API_KEY or APIARY_API_NAME not defined."
     @configuration.apiSuite ?= 'public'
-
 
   # THIS IS HIGHWAY TO HELL! Everything should have one single interafce
   _get: (customProperty, envProperty, defaultVal) ->
@@ -79,7 +81,7 @@ class ApiaryReporter
       # transform blueprints data to array
       blueprints = []
       for blueprintPath, blueprintData of blueprintsData
-        blueprints.push blueprintData
+        blueprints.push @_limitBlueprintDataToSend blueprintData
 
       data =
         blueprints: blueprints
@@ -132,6 +134,20 @@ class ApiaryReporter
         reportUrl = @reportUrl || "https://app.apiary.io/#{@configuration.apiSuite}/tests/run/#{@remoteId}"
         logger.complete "See results in Apiary at: #{reportUrl}"
         callback()
+
+  _limitBlueprintDataToSend: (blueprintData = {}) ->
+    # {raw, filename, parsed} = blueprintData
+    returnedData = {}
+
+    returnedData.raw = blueprintData.raw
+    returnedData.filename = blueprintData.filename
+
+    returnedData.parsed =
+      # omit parsed.ast, it might change in future (depends heavily on protagonist/drafter versions)
+      _version: blueprintData.parsed._version
+      warnings: clone blueprintData.parsed.warnings
+      error: blueprintData.parsed.error
+    return returnedData
 
   _transformTestToReporter: (test) ->
     data =

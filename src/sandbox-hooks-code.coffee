@@ -1,4 +1,4 @@
-{Pitboss} = require 'pitboss'
+{Pitboss} = require 'pitboss-ng'
 Hooks = require './hooks'
 
 sandboxHooksCode = (hooksCode, callback) ->
@@ -25,10 +25,9 @@ sandboxHooksCode = (hooksCode, callback) ->
   output
   """
 
-  pitboss = new Pitboss(wrappedCode)
-  pitboss.run {libraries: {"_Hooks": '../../../lib/hooks', "console", "console"}}, (err, result) ->
-    pitboss.runner?.proc?.removeAllListeners 'exit'
-    pitboss.runner?.kill?()
+  sandbox = new Pitboss(wrappedCode)
+  sandbox.run {libraries: {"_Hooks": '../../../lib/hooks', "console", "console"}}, (err, result) ->
+    sandbox.kill()
     return callback err if err
     callback(undefined, result)
 
