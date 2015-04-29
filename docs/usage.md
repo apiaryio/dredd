@@ -94,7 +94,7 @@ Example dredd.yml configuration:
 
 ```yaml
 reporter: apiary
-color:
+custom:
   - "apiaryApiKey:yourSecretApiaryAPiKey"
   - "apiaryApiName:apiName"
 dry-run: null
