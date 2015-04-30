@@ -20,7 +20,7 @@ to Gavel's [behavior specification][].
 
 ## Get Started Testing API Documentation and backend
 
-1. I you don't have [Node.js](https://nodejs.org/) installed, you may want to use [NVM](https://github.com/creationix/nvm)
+1. If you don't have [Node.js](https://nodejs.org/) installed, you may want to use [NVM](https://github.com/creationix/nvm)
 1. Create an API blueprint in `blueprint.md`
 1. Install Dredd
 
