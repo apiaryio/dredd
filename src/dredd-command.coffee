@@ -32,6 +32,7 @@ class DreddCommand
 
   setOptimistArgv: ->
     @optimist = optimist(@custom['argv'], @custom['cwd'])
+    @cliArgv = @optimist.argv
 
     @optimist.usage(
       """
@@ -133,6 +134,12 @@ class DreddCommand
     if fs.existsSync './dredd.yml'
       console.log 'Configuration dredd.yml found, ignoring other arguments.'
       @argv = configUtils.load()
+
+    # overwrite saved config with cli arguments
+    for key, value of @cliArgv
+      if key != "_" and key != "$0"
+        @argv[key] = value
+
 
   parseCustomConfig: () ->
     @argv.custom = configUtils.parseCustom @argv.custom
