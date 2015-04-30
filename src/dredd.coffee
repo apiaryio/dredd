@@ -28,6 +28,10 @@ removeDuplicates = (arr) ->
 
 class Dredd
   constructor: (config) ->
+    @init(config)
+
+  # this is here only because there there is no way how to spy a constructor in CoffeScript
+  init: (config) ->
     @tests = []
     @stats =
       tests: 0

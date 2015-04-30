@@ -40,7 +40,12 @@ interactiveConfig.prompt = (config = {}, callback) ->
     name: "apiaryApiKey"
     message: "Please enter Apiary API key or leave empty for anonymous reporter"
     default: config['custom']?['apiaryApiKey']
-    when: (answers) -> (answers['apiary'] == true && ! config['custom']?['apiaryApiKey']?)
+    when: (answers) ->
+      # it's not GA on the Apiary side yet
+      if process.env['APIARY_BETA']?
+        (answers['apiary'] == true && ! config['custom']?['apiaryApiKey']?)
+      else
+        false
   }
 
   questions.push {
@@ -48,10 +53,15 @@ interactiveConfig.prompt = (config = {}, callback) ->
     name: "apiaryApiName"
     message: "Please enter Apiary API name"
     default: config['custom']?['apiaryApiName']
-    when: (answers) -> (
-      (answers['apiary'] == true && ! config['custom']?['apiaryApiName']?) &&
-      (answers['apiary'] == true && answers['apiaryApiKey'] != '')
-    )
+    when: (answers) ->
+      # it's not GA on the Apiary side yet
+      if process.env['APIARY_BETA']?
+        (
+          (answers['apiary'] == true && ! config['custom']?['apiaryApiName']?) &&
+          (answers['apiary'] == true && answers['apiaryApiKey'] != '')
+        )
+      else
+        false
   }
 
   questions.push {

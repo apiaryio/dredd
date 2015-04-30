@@ -1,16 +1,16 @@
 {assert} = require 'chai'
 sinon = require 'sinon'
 express = require 'express'
-
 proxyquire = require('proxyquire').noCallThru()
 
+options = require '../../src/options'
 packageJson = require '../../package.json'
+
+childProcessStub = require 'child_process'
 loggerStub = require '../../src/logger'
 interactiveConfigStub = require '../../src/interactive-config'
 configUtilsStub = require '../../src/config-utils'
-options = require '../../src/options'
-
-childProcessStub = require 'child_process'
+fsStub = require 'fs'
 
 PORT = 9876
 
@@ -22,19 +22,24 @@ stdout = ''
 addHooksStub = proxyquire '../../src/add-hooks', {
   './logger': loggerStub
 }
+
 transactionRunner = proxyquire '../../src/transaction-runner', {
   './add-hooks': addHooksStub
   './logger': loggerStub
 }
+
 dreddStub = proxyquire '../../src/dredd', {
   './transaction-runner': transactionRunner
   './logger': loggerStub
 }
+
 DreddCommand = proxyquire '../../src/dredd-command', {
   './dredd': dreddStub
   'console': loggerStub
   './interactive-init': interactiveConfigStub
   'child_process': childProcessStub
+  './config-utils': configUtilsStub
+  'fs': fsStub
 }
 
 
@@ -173,25 +178,6 @@ describe "DreddCommand class", () ->
 
         assert.isObject dc.dreddInstance
 
-    describe "when custom option is present", () ->
-      it 'should parse custom options'
-      it 'the custom option should become an object'
-
-    describe "when .dredd.yml file is present", () ->
-      it 'should load it'
-
-    describe "when load option is present", () ->
-      it 'should load given file instead of .dredd.yml'
-
-    describe "when config file is not parseable", () ->
-      it 'should gracefuly end'
-
-    describe "when server option is given", () ->
-      it 'should run the server'
-
-      describe "when test run finishes", () ->
-        it 'should kill the server'
-
   describe 'run with argv set to load regular blueprint', ->
     dc = null
     runDreddStub = null
@@ -294,7 +280,85 @@ describe "DreddCommand class", () ->
       it 'prints out an error message', ->
         assert.include stderr, 'Error: Must specify'
 
-  # describe.only 'when using --server', () ->
+
+  describe 'when configuration was saved', () ->
+    before (done) ->
+      sinon.spy dreddStub.prototype, 'init'
+      sinon.stub dreddStub.prototype, 'run', (cb) ->
+        stats =
+          tests: 0
+          failures: 0
+          errors: 0
+          passes: 0
+          skipped: 0
+          start: 0
+          end: 0
+          duration: 0
+        cb(null, stats)
+
+      sinon.stub interactiveConfigStub, 'run', (config, cb) ->
+        cb()
+
+      sinon.stub fsStub, 'existsSync', () -> true
+
+      sinon.stub configUtilsStub, 'load', () ->
+        {
+          "_": [ 'blueprint', 'endpoint' ]
+          'dry-run': true
+          hookfiles: null
+          sandbox: false
+          save: null
+          load: null
+          server: null
+          init: false
+          custom: []
+          names: false
+          only: []
+          reporter: []
+          output: []
+          header: []
+          sorted: false
+          user: null
+          'inline-errors': false
+          details: false
+          method: []
+          color: true
+          level: 'info'
+          timestamp: false
+          silent: false
+          path: []
+          '$0': 'node ./bin/dredd'
+        }
+
+      execCommand argv: ['--names'], ->
+        done()
+
+    after () ->
+      dreddStub.prototype.run.restore()
+      dreddStub.prototype.init.restore()
+      interactiveConfigStub.run.restore()
+      configUtilsStub.load.restore()
+      fsStub.existsSync.restore()
+
+    describe 'and I pass another CLI argument', () ->
+      it 'should want to exit with status 0', () ->
+        console.log stderr
+        assert.equal exitStatus, 0
+
+      it 'should call dredd run', () ->
+        assert.isTrue dreddStub.prototype.run.called
+
+      it 'should override existing configuration', () ->
+        assert.isTrue dreddStub.prototype.init.called
+        call = dreddStub.prototype.init.getCall(0)
+        passedConf = call.args[0]
+        assert.propertyVal passedConf.options, 'names', true
+
+
+
+
+
+  # describe 'when using --server', () ->
 
   #   beforeEach (done) ->
 
