@@ -56,7 +56,7 @@ Dredd supports following types of hooks:
 - `beforeEach` called before each HTTP transaction
 - `before` called before some specific HTTP transaction
 - `after` called after some specific HTTP transaction regardless its result
-- `beforeEach` called after each HTTP transaction
+- `afterEach` called after each HTTP transaction
 - `afterAll` called after whole test run
 
 ## Hooks JavaScript API Reference
@@ -357,7 +357,7 @@ var before = hooks.before;
 
 before("Machines > Machines collection > Get Machines", function (transaction) {
   // parse request body from blueprint
-  requestBody = JSON.parse(transasction.request.body);
+  requestBody = JSON.parse(transaction.request.body);
 
   // modify request body here
   requestBody['someKey'] = 'someNewValue';
