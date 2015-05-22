@@ -17,13 +17,13 @@
   },
   "dependencies": {
     "advisable": "~0.2.0",
-    "async": "~0.9.0",
+    "async": "^1.0.0",
     "chai": "^2.1.0",
     "clone": "^1.0.0",
     "coffee-script": "^1.9.1",
     "drafter": "~0.2.5",
     "file": "~0.2.2",
-    "gavel": "0.5.0",
+    "gavel": "0.5.1",
     "glob": "^5.0.3",
     "html": "~0.0.7",
     "htmlencode": "~0.0.4",
@@ -37,7 +37,7 @@
     "request": "^2.53.0",
     "setimmediate": "^1.0.2",
     "uri-template": "~1.0.0",
-    "winston": "^0.9.0"
+    "winston": "^1.0.0"
   },
   "devDependencies": {
     "body-parser": "^1.12.0",
