@@ -37,6 +37,13 @@ worker.stderr.on 'data', (data) ->
 worker.on 'error', (error) ->
   console.log error
 
+# Wait before connecting to a worker
+# Hack for blocking sleep, loading of hooks in dredd is not async
+# TODO Move connecting to worker to async beforeAll hook
+now = new Date().getTime()
+while new Date().getTime() < now + 1000
+  true
+
 workerClient = net.connect port: WORKER_PORT, host: WORKER_HOST, () ->
   # Do something when dredd starts
   # message =
@@ -69,6 +76,7 @@ workerClient.on 'data', (data) ->
       else
         console.log 'UUID not present in message: ', JSON.stringify(message, null ,2)
 
+# Wait before starting a test
 # Hack for blocking sleep, loading of hooks in dredd is not async
 # TODO Move connecting to worker to async beforeAll hook
 now = new Date().getTime()
