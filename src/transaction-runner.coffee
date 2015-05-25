@@ -17,6 +17,7 @@ logger = require './logger'
 
 class TransactionRunner
   constructor: (@configuration) ->
+    @logs = []
     @hookStash = {}
 
   config: (config) ->

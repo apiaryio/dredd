@@ -56,6 +56,12 @@ describe 'TransactionRunner', ()->
     it 'should copy configuration', () ->
       assert.ok runner.configuration.server
 
+    it 'should have an empty hookStash object', () ->
+      assert.deepEqual runner.hookStash, {}
+
+    it 'should have an empty array of logs object', () ->
+      assert.deepEqual runner.logs, []
+
   describe 'config(config)', () ->
     describe 'when single file in data is present', () ->
       it 'should set multiBlueprint to false', () ->
@@ -663,29 +669,39 @@ describe 'TransactionRunner', ()->
       describe 'with a beforeAll hook', () ->
         legacyApiFunction = (callback) ->
           callback()
+        anotherLegacyApiFunction = (cb) ->
+          cb()
 
         beforeAllStub = sinon.spy(legacyApiFunction)
+        beforeAllStubAnother = sinon.spy anotherLegacyApiFunction
 
         beforeEach () ->
           runner.hooks.beforeAll beforeAllStub
+          runner.hooks.beforeAll beforeAllStubAnother
 
         it 'should run the hooks', (done) ->
           runner.executeAllTransactions [], runner.hooks, () ->
             assert.ok beforeAllStub.called
+            assert.ok beforeAllStubAnother.called
             done()
 
       describe 'with an afterAll hook', () ->
         legacyApiFunction = (callback) ->
           callback()
+        anotherLegacyApiFunction = (cb) ->
+          cb()
 
         afterAllStub = sinon.spy legacyApiFunction
+        afterAllStubAnother = sinon.spy anotherLegacyApiFunction
 
         beforeEach () ->
           runner.hooks.afterAll afterAllStub
+          runner.hooks.afterAll afterAllStubAnother
 
         it 'should run the hooks', (done) ->
           runner.executeAllTransactions [], runner.hooks, () ->
             assert.ok afterAllStub.called
+            assert.ok afterAllStubAnother.called
             done()
 
       describe 'with multiple hooks for the same events', () ->
@@ -707,6 +723,7 @@ describe 'TransactionRunner', ()->
           runner.executeAllTransactions [], runner.hooks, () ->
             assert.ok beforeAllStub1.calledBefore(beforeAllStub2)
             assert.ok beforeAllStub2.called
+            assert.ok beforeAllStub2.calledBefore(afterAllStub1)
             assert.ok afterAllStub1.calledBefore(afterAllStub2)
             assert.ok afterAllStub2.called
             done()
@@ -760,6 +777,7 @@ describe 'TransactionRunner', ()->
           runner.executeAllTransactions [], runner.hooks, () ->
             assert.ok beforeAllStub1.calledBefore(beforeAllStub2)
             assert.ok beforeAllStub2.called
+            assert.ok beforeAllStub2.calledBefore(afterAllStub1)
             assert.ok afterAllStub1.calledBefore(afterAllStub2)
             assert.ok afterAllStub2.called
             done()
