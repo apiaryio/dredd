@@ -1,3 +1,4 @@
+util = require 'util'
 
 # READ THIS! Disclaimer:
 # Do not add any functionality to this class unless you want to expose it to the Hooks API.
@@ -51,7 +52,7 @@ class Hooks
     # append to array of logs to allow further operations, e.g. send all hooks logs to Apiary
     @logs?.push? {
       timestamp: Date.now()
-      content: content?.toString?() or "#{content}"
+      content: if typeof content is 'object' then util.format(content) else "#{content}"
     }
     return
 

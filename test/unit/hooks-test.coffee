@@ -12,8 +12,8 @@ describe 'Hooks', () ->
 
     it 'should not add @logs or @logger when constructor options are empty', () ->
       hooks = new Hooks()
-      assert.isNull hooks.logs
-      assert.isNull hooks.logger
+      assert.isUndefined hooks.logs
+      assert.isUndefined hooks.logger
 
     it 'should add @logs and @logger from passed options', () ->
       options =

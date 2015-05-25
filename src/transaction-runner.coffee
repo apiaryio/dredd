@@ -125,10 +125,15 @@ class TransactionRunner
       var _func = #{hook};
       _func(_data);
 
+      function log (type, content) {
+        logs.push({'timestamp': Date.now(), 'content': ''.concat(content || type)});
+      };
+
       // setup the return object
       var output = {};
       output["data"] = _data;
       output["stash"] = stash;
+      output["logs"] = logs;
       output;
       """
 
@@ -136,7 +141,7 @@ class TransactionRunner
         timeout: 500
       })
 
-      sandbox.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result = {}) =>
+      sandbox.run {context: {"_data": data, stash: @hookStash, logs: []}, libraries: ['console']}, (err, result = {}) =>
         sandbox.kill()
         return callback(err) if err
         # reference to `transaction` gets lost here if whole object is assigned
@@ -145,6 +150,8 @@ class TransactionRunner
         for key, value of result.data or {}
           data[key] = value
         @hookStash = result.stash
+        for log in result.logs or []
+          @logs.push log
         callback()
 
 
@@ -168,10 +175,15 @@ class TransactionRunner
       var _func = #{hook};
       _func(_data);
 
+      function log (type, content) {
+        logs.push({'timestamp': Date.now(), 'content': ''.concat(content || type)});
+      };
+
       // setup the return object
       var output = {};
       output["data"] = _data;
       output["stash"] = stash;
+      output["logs"] = logs;
       output;
       """
 
@@ -179,7 +191,7 @@ class TransactionRunner
         timeout: 500
       })
 
-      sandbox.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result = {}) =>
+      sandbox.run {context: {"_data": data, stash: @hookStash, logs: []}, libraries: ['console']}, (err, result = {}) =>
         sandbox.kill()
         return callback(err) if err
         # reference to `transaction` gets lost here if whole object is assigned
@@ -188,6 +200,8 @@ class TransactionRunner
         for key, value of result.data or {}
           data[key] = value
         @hookStash = result.stash
+        for log in result.logs or []
+          @logs.push log
         callback()
 
 
