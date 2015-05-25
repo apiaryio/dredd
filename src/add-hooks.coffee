@@ -26,7 +26,8 @@ addHooks = (runner, transactions, callback) ->
 
           delete allHooks[hookType][transactionName]
 
-  runner.hooks = new Hooks()
+  runner.logs ?= []
+  runner.hooks = new Hooks(logs: runner.logs, logger: logger)
   runner.hooks.transactions ?= {}
 
   customConfigCwd = runner?.configuration?.custom?.cwd

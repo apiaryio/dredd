@@ -4,7 +4,8 @@
 # This class is only an interface for users of Dredd hooks.
 
 class Hooks
-  constructor: ->
+  constructor: (options = {}) ->
+    {@logs, @logger} = options
     @transactions = {}
     @beforeHooks = {}
     @afterHooks = {}
@@ -36,6 +37,23 @@ class Hooks
       hooks[name].push hook
     else
       hooks[name] = [hook]
+
+  log: (logVariant, content) =>
+    if arguments.length is 2 and logVariant in ['info', 'debug', 'warn', 'verbose', 'error']
+      loggerLevel = "#{logVariant}"
+    else
+      content = logVariant
+      loggerLevel = 'info'
+
+    # log to logger
+    @logger?[loggerLevel]? content
+
+    # append to array of logs to allow further operations, e.g. send all hooks logs to Apiary
+    @logs?.push? {
+      timestamp: Date.now()
+      content: content?.toString?() or "#{content}"
+    }
+    return
 
   # This is not part of hooks API
   # This is here only because it has to be injected into sandboxed context

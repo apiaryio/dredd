@@ -1,4 +1,5 @@
 require 'coffee-errors'
+clone = require 'clone'
 sinon = require 'sinon'
 {assert} = require 'chai'
 
@@ -6,6 +7,60 @@ sinon = require 'sinon'
 Hooks = require '../../src/hooks'
 
 describe 'Hooks', () ->
+
+  describe 'constructor', ->
+
+    it 'should not add @logs or @logger when constructor options are empty', () ->
+      hooks = new Hooks()
+      assert.isNull hooks.logs
+      assert.isNull hooks.logger
+
+    it 'should add @logs and @logger from passed options', () ->
+      options =
+        logs: [{content: 'message1'}, {content: 'message2'}]
+        logger:
+          info: ->
+          error: ->
+
+      hooks = new Hooks(options)
+      assert.strictEqual hooks.logs, options.logs
+      assert.strictEqual hooks.logger, options.logger
+
+  describe '#log', ->
+    options = null
+
+    beforeEach ->
+      options =
+        logs: [{content: 'message1'}, {content: 'message2'}]
+        logger:
+          info: ->
+          error: ->
+      sinon.spy options.logger, 'info'
+      sinon.spy options.logger, 'error'
+
+    afterEach ->
+      options.logger.info.restore()
+      options.logger.error.restore()
+
+    it 'should call @logger.info when hooks.log is called with 1 argument', ->
+      hooks = new Hooks options
+      hooks.log 'messageX'
+      assert.isTrue options.logger.info.called
+      assert.isFalse options.logger.error.called
+      assert.deepProperty hooks.logs[2], 'timestamp'
+      assert.deepPropertyVal hooks.logs[2], 'content', 'messageX'
+      assert.deepPropertyVal hooks.logs[0], 'content', 'message1'
+      assert.deepPropertyVal hooks.logs[1], 'content', 'message2'
+
+    it 'should call @logger.error when hooks.log is called with arguments "error", "message"', ->
+      hooks = new Hooks options
+      hooks.log 'error', 'messageError'
+      assert.isFalse options.logger.info.called
+      assert.isTrue options.logger.error.called
+      assert.deepProperty hooks.logs[2], 'timestamp'
+      assert.deepPropertyVal hooks.logs[2], 'content', 'messageError'
+      assert.deepPropertyVal hooks.logs[0], 'content', 'message1'
+      assert.deepPropertyVal hooks.logs[1], 'content', 'message2'
 
   describe '#before', () ->
     hooks = null

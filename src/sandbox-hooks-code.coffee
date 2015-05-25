@@ -12,14 +12,15 @@ sandboxHooksCode = (hooksCode, callback) ->
   var afterAll = _hooks.afterAll;
   var beforeEach = _hooks.beforeEach;
   var afterEach = _hooks.afterEach;
+  var log = _hooks.log;
 
   #{hooksCode}
   try {
-    var output = _hooks.dumpHooksFunctionsToStrings()
+    var output = _hooks.dumpHooksFunctionsToStrings();
   } catch(e) {
-    console.log(e.message)
-    console.log(e.stack)
-    throw(e)
+    console.log(e.message);
+    console.log(e.stack);
+    throw(e);
   }
 
   output
