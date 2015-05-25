@@ -58,7 +58,7 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
           }
 
         # expand URI parameters
-        if action.attributes?.uriTemplate? and action.attributes?.uriTemplate != ''
+        if action.attributes?.uriTemplate
           uri = action.attributes.uriTemplate
         else
           uri = resource['uriTemplate']
