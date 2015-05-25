@@ -84,6 +84,7 @@ class TransactionRunner
       title: transaction.id
       message: transaction.name
       origin: transaction.origin
+      startedAt: transaction.startedAt
     @configuration.emitter.emit 'test error', error, test if error
 
   # Will be used runHook instead in next major release, see deprecation warning
@@ -324,11 +325,14 @@ class TransactionRunner
       method: transaction.request['method']
       headers: transaction.request.headers
 
+    transaction.startedAt = Date.now()
+
     test =
       status: ''
       title: transaction.id
       message: transaction.name
       origin: transaction.origin
+      startedAt: transaction.startedAt
 
     configuration.emitter.emit 'test start', test
 

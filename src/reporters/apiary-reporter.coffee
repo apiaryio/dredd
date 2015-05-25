@@ -126,6 +126,7 @@ class ApiaryReporter
         endedAt: Math.round(new Date().getTime() / 1000)
         result: @stats
         status: if (@stats['failures'] > 0 or @stats['errors'] > 0) then 'failed' else 'passed'
+        logs: @runner.logs if @runner?.logs?.length
 
       path = '/apis/' + @configuration['apiSuite'] + '/tests/run/' + @remoteId
 
@@ -156,6 +157,7 @@ class ApiaryReporter
       origin: test['origin']
       duration: test['duration']
       result: test['status']
+      startedAt: test['startedAt']
       resultData:
         request: test['request']
         realResponse: test['actual']
