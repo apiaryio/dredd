@@ -197,15 +197,16 @@ class TransactionRunner
     request = transaction['request']
     response = transaction['response']
 
-    parsedUrl = url.parse configuration['server']
+    # parse the server URL just once
+    @parsedUrl ?= url.parse configuration['server']
 
     # joins paths regardless of slashes
     # there may be a nice way in the future: https://github.com/joyent/node/issues/2216
     # note that path.join will fail on windows, and url.resolve can have undesirable behavior depending on slashes
-    if parsedUrl['path'] is "/"
+    if @parsedUrl['path'] is "/"
       fullPath = request['uri']
     else
-      fullPath = '/' + [parsedUrl['path'].replace(/^\/|\/$/g, ""), request['uri'].replace(/^\/|\/$/g, "")].join("/")
+      fullPath = '/' + [@parsedUrl['path'].replace(/^\/|\/$/g, ""), request['uri'].replace(/^\/|\/$/g, "")].join("/")
 
     flatHeaders = flattenHeaders request['headers']
 
@@ -240,13 +241,13 @@ class TransactionRunner
     configuredTransaction =
       name: name
       id: id
-      host: parsedUrl['hostname']
-      port: parsedUrl['port']
+      host: @parsedUrl['hostname']
+      port: @parsedUrl['port']
       request: request
       expected: expected
       origin: origin
       fullPath: fullPath
-      protocol: parsedUrl.protocol
+      protocol: @parsedUrl.protocol
       skip: false
 
     return callback(null, configuredTransaction)
