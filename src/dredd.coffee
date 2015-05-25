@@ -46,8 +46,8 @@ class Dredd
     @configuration = applyConfiguration(config, @stats)
     @configuration.options ?= {}
 
-    configureReporters @configuration, @stats, @tests
     @runner = new Runner @configuration
+    configureReporters @configuration, @stats, @tests, @runner
 
   run: (callback) ->
     config = @configuration

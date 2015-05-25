@@ -10,7 +10,7 @@ packageConfig = require './../../package.json'
 logger = require './../logger'
 
 class ApiaryReporter
-  constructor: (emitter, stats, tests, config) ->
+  constructor: (emitter, stats, tests, config, runner) ->
     @type = "cli"
     @stats = stats
     @tests = tests
@@ -19,6 +19,7 @@ class ApiaryReporter
     @endedAt = null
     @remoteId = null
     @config = config
+    @runner = runner
     @reportUrl = null
     @configureEmitter emitter
     @errors = []

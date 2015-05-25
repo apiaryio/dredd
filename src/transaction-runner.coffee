@@ -25,13 +25,14 @@ class TransactionRunner
     @multiBlueprint = Object.keys(@configuration.data).length > 1
 
   run: (transactions, callback) ->
+
     transactions = if @configuration.options['sorted'] then sortTransactions(transactions) else transactions
 
-    async.mapSeries transactions, @configureTransaction, (err, results) ->
+    async.mapSeries transactions, @configureTransaction.bind(@), (err, results) ->
       transactions = results
 
     addHooks @, transactions, (addHooksError) =>
-      callback addHooksError if addHooksError
+      return callback addHooksError if addHooksError
       @executeAllTransactions(transactions, @hooks, callback)
 
 
@@ -137,8 +138,8 @@ class TransactionRunner
       sandbox.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result = {}) =>
         sandbox.kill()
         return callback(err) if err
-        # reference to `transaction` get lost here if whole object is assigned
-        # this is wokraround how to copy proprties
+        # reference to `transaction` gets lost here if whole object is assigned
+        # this is workaround how to copy properties
         # clone doesn't work either
         for key, value of result.data or {}
           data[key] = value
@@ -180,14 +181,13 @@ class TransactionRunner
       sandbox.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result = {}) =>
         sandbox.kill()
         return callback(err) if err
-        # reference to `transaction` get lost here if whole object is assigned
-        # this is wokraround how to copy proprties
+        # reference to `transaction` gets lost here if whole object is assigned
+        # this is workaround how to copy properties
         # clone doesn't work either
         for key, value of result.data or {}
           data[key] = value
         @hookStash = result.stash
         callback()
-
 
 
   configureTransaction: (transaction, callback) =>
@@ -266,7 +266,7 @@ class TransactionRunner
     # in TransactionRunner.run call. Because addHooks creates
     # hooks.transactions as an object `{}` with transaction.name keys
     # and value is every transaction, we do not fill transactions
-    # from executeAllTransactions here, because it's supposed to an Array here.
+    # from executeAllTransactions here. Transactions is supposed to be an Array here!
     unless hooks.transactions?
       hooks.transactions = {}
       for transaction in transactions
@@ -364,10 +364,10 @@ class TransactionRunner
         res.on 'data', (chunk) ->
           buffer = buffer + chunk
 
-        req.on 'error', (error) ->
+        res.on 'error', (error) ->
           configuration.emitter.emit 'test error', error, test if error
 
-        res.on 'end', ->
+        res.once 'end', ->
 
           # The data models as used here must conform to Gavel.js
           # as defined in `http-response.coffee`
@@ -421,6 +421,10 @@ class TransactionRunner
 
       try
         req = transport.request requestOptions, handleRequest
+
+        req.on 'error', (error) ->
+          configuration.emitter.emit 'test error', error, test if error
+
         req.write transaction.request['body'] if transaction.request['body'] != ''
         req.end()
       catch error
