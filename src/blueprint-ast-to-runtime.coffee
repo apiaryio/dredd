@@ -34,6 +34,7 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
       else
         origin['resourceName'] = resource['uriTemplate']
 
+      # Get rid with polluting of origin with not related data!
       origin['uriTemplate'] = "#{resource['uriTemplate']}"
 
       for action in resource['actions']
@@ -57,7 +58,12 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
           }
 
         # expand URI parameters
-        uriResult = expandUriTemplateWithParameters resource['uriTemplate'], parameters
+        if action.attributes?.uriTemplate
+          uri = action.attributes.uriTemplate
+        else
+          uri = resource['uriTemplate']
+
+        uriResult = expandUriTemplateWithParameters uri, parameters
 
         for message in uriResult['warnings']
           runtime['warnings'].push {

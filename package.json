@@ -23,7 +23,7 @@
     "coffee-script": "^1.9.1",
     "drafter": "~0.2.5",
     "file": "~0.2.2",
-    "gavel": "0.5.1",
+    "gavel": "0.5.2",
     "glob": "^5.0.3",
     "html": "~0.0.7",
     "htmlencode": "~0.0.4",

@@ -1,5 +1,9 @@
 {assert} = require 'chai'
+Drafter = require 'drafter'
+fs = require 'fs'
+
 blueprintAstToRuntime = require '../../src/blueprint-ast-to-runtime'
+
 
 describe "blueprintAstToRuntime()", () ->
   blueprintAst = require '../fixtures/blueprint-ast'
@@ -182,4 +186,30 @@ describe "blueprintAstToRuntime()", () ->
 
     it 'should let example name intact', () ->
       assert.equal transactions[0]['origin']['exampleName'], ""
+
+  describe 'when arbitrary action is present', () ->
+    transactions = null
+
+    before (done) ->
+      filename = './test/fixtures/arbitrary-action.md'
+      code = fs.readFileSync(filename).toString()
+      drafter = new Drafter
+      drafter.make code, (drafterError, result) ->
+        done(drafterError) if drafterError
+        transactions = blueprintAstToRuntime(result['ast'], filename)['transactions']
+        done()
+
+
+    it 'first (normal) action should have resource uri', ->
+      assert.equal transactions[0].request.uri, '/resource/1'
+
+    it 'first (normal) action should have its method', ->
+      assert.equal transactions[0].request.method, 'POST'
+
+    it 'second (arbitrary) action should have uri from the action', ->
+      assert.equal transactions[1].request.uri, '/resource-cool-url/othervalue'
+
+    it 'second (arbitrary) action should have its method', ->
+      assert.equal transactions[1].request.method, 'GET'
+
 
