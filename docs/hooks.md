@@ -162,7 +162,7 @@ Following is description is in a [MSON](https://github.com/apiaryio/mson) format
         - headers (object)
         - body (string)
 
-    - origin (object)  Reference to the original bleuprint
+    - origin (object)  Reference to the original blueprint
         - filename `"./blueprint.md"` (string)
         - apiName `"My Api"` (string)
         - resourceGroupName `"Greetings"` (string)
