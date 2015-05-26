@@ -5,6 +5,6 @@ hooks = require('hooks');
 
 hooks.before('Machines > Machines collection > Get Machines', function(transaction, done) {
   transaction.request.headers['header'] = '123232323';
-  console.log('before');
+  hooks.log('before');
   return done();
 });

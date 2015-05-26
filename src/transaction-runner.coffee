@@ -15,6 +15,27 @@ packageConfig = require './../package.json'
 logger = require './logger'
 
 
+# use "lib" folder, because pitboss-ng does not support "coffee-script:register" out of the box now
+sandboxedLogLibraryPath = '../../../lib/hooks-log-sandboxed'
+
+
+sandboxedWrappedCode = (hookCode) ->
+  return """
+    // run the hook
+    var log = _log.bind(null, logs);
+
+    var _func = #{hookCode};
+    _func(_data);
+
+    // setup the return object
+    var output = {};
+    output["data"] = _data;
+    output["stash"] = stash;
+    output["logs"] = logs;
+    output;
+  """
+
+
 class TransactionRunner
   constructor: (@configuration) ->
     @logs = []
@@ -120,28 +141,21 @@ class TransactionRunner
 
     # sandboxed mode - hook is a string - only sync API
     if typeof(hook) == 'string'
-      wrappedCode = """
-      // run the hook
-      var _func = #{hook};
-      _func(_data);
-
-      function log (type, content) {
-        logs.push({'timestamp': Date.now(), 'content': ''.concat(content || type)});
-      };
-
-      // setup the return object
-      var output = {};
-      output["data"] = _data;
-      output["stash"] = stash;
-      output["logs"] = logs;
-      output;
-      """
+      wrappedCode = sandboxedWrappedCode hook
 
       sandbox = new Pitboss(wrappedCode, {
         timeout: 500
       })
 
-      sandbox.run {context: {"_data": data, stash: @hookStash, logs: []}, libraries: ['console']}, (err, result = {}) =>
+      sandbox.run
+        context:
+          "_data": data
+          stash: @hookStash
+          logs: []
+        libraries:
+          console: 'console'
+          _log: sandboxedLogLibraryPath
+      , (err, result = {}) =>
         sandbox.kill()
         return callback(err) if err
         # reference to `transaction` gets lost here if whole object is assigned
@@ -169,29 +183,21 @@ class TransactionRunner
 
     # sandboxed mode - hook is a string - only sync API
     if typeof(hook) == 'string'
-
-      wrappedCode = """
-      // run the hook
-      var _func = #{hook};
-      _func(_data);
-
-      function log (type, content) {
-        logs.push({'timestamp': Date.now(), 'content': ''.concat(content || type)});
-      };
-
-      // setup the return object
-      var output = {};
-      output["data"] = _data;
-      output["stash"] = stash;
-      output["logs"] = logs;
-      output;
-      """
+      wrappedCode = sandboxedWrappedCode hook
 
       sandbox = new Pitboss(wrappedCode, {
         timeout: 500
       })
 
-      sandbox.run {context: {"_data": data, stash: @hookStash, logs: []}, libraries: ['console']}, (err, result = {}) =>
+      sandbox.run
+        context:
+          "_data": data
+          stash: @hookStash
+          logs: []
+        libraries:
+          console: 'console'
+          _log: sandboxedLogLibraryPath
+      , (err, result = {}) =>
         sandbox.kill()
         return callback(err) if err
         # reference to `transaction` gets lost here if whole object is assigned

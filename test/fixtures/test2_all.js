@@ -1,13 +1,13 @@
-var hooks;
+var hooks, log;
 
 hooks = require('hooks');
 
 hooks.beforeAll(function(done) {
-  console.log('*** beforeAll');
+  hooks.log('*** beforeAll');
   done();
 });
 
 hooks.before('Machines > Machines collection > Get Machines', function(transaction, done) {
-  console.log('*** before');
+  hooks.log('*** before');
   return done();
 });

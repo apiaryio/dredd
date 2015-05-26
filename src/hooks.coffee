@@ -1,4 +1,4 @@
-util = require 'util'
+hooksLog = require './hooks-log'
 
 # READ THIS! Disclaimer:
 # Do not add any functionality to this class unless you want to expose it to the Hooks API.
@@ -39,21 +39,10 @@ class Hooks
     else
       hooks[name] = [hook]
 
-  log: (logVariant, content) =>
-    if arguments.length is 2 and logVariant in ['info', 'debug', 'warn', 'verbose', 'error']
-      loggerLevel = "#{logVariant}"
-    else
-      content = logVariant
-      loggerLevel = 'info'
-
-    # log to logger
-    @logger?[loggerLevel]? content
-
-    # append to array of logs to allow further operations, e.g. send all hooks logs to Apiary
-    @logs?.push? {
-      timestamp: Date.now()
-      content: if typeof content is 'object' then util.format(content) else "#{content}"
-    }
+  # log(logVariant, content)
+  # log(content)
+  log: (args...) =>
+    @logs = hooksLog @logs, @logger, args...
     return
 
   # This is not part of hooks API

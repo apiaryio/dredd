@@ -96,7 +96,7 @@ addHooks = (runner, transactions, callback) ->
 
       # Running in sandboxed mode
       else
-        logger.info 'Loading hookfiles in sandboxed context' + files
+        logger.info 'Loading hookfiles in sandboxed context: ' + files
         async.eachSeries files, (fileName, nextFile) ->
           resolvedPath = path.resolve((customConfigCwd or process.cwd()), fileName)
 

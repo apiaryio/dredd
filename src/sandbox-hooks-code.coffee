@@ -31,5 +31,7 @@ sandboxHooksCode = (hooksCode, callback) ->
     sandbox.kill()
     return callback err if err
     callback(undefined, result)
+    return
+  return
 
 module.exports = sandboxHooksCode

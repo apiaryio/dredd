@@ -299,6 +299,7 @@ describe "Command line interface", () ->
 
       before (done) ->
         cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --reporter apiary --hookfiles=./test/fixtures/hooks_log.coffee"
+        stderr = stdout = ''
 
         apiary = express()
         app = express()
@@ -345,7 +346,7 @@ describe "Command line interface", () ->
       it 'should exit with status 0', ()->
         assert.equal exitStatus, 0
 
-      it 'should print log to console too', ()->
+      it 'should print log to console too (thanks to logger)', ()->
         assert.include (stdout + stderr), 'using hooks.log to debug'
 
       it 'should use toString when using log in hooks too', ->
@@ -391,6 +392,7 @@ describe "Command line interface", () ->
 
       before (done) ->
         cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --reporter apiary --level=info --sandbox --hookfiles=./test/fixtures/sandboxed_hooks_log.js"
+        stderr = stdout = ''
 
         apiary = express()
         app = express()
@@ -880,7 +882,7 @@ describe "Command line interface", () ->
     containsLine = (str, expected) ->
       lines = str.split('\n')
       for line in lines
-        if line is expected
+        if line.indexOf(expected) > -1
           return true
       return false
 
@@ -906,8 +908,8 @@ describe "Command line interface", () ->
       server.on 'close', done
 
     it 'should execute the before and after events', () ->
-      assert.ok containsLine(output.stdout, 'beforeAll')
-      assert.ok containsLine(output.stdout, 'afterAll')
+      assert.ok containsLine(output.stdout, 'hooks.beforeAll'), (stdout)
+      assert.ok containsLine(output.stdout, 'hooks.afterAll'), (stdout)
 
   describe 'when describing both hooks and events in hookfiles', () ->
     output = {}
@@ -915,8 +917,8 @@ describe "Command line interface", () ->
       ret = []
       lines = str.split('\n')
       for line in lines
-        if line.indexOf('*** ') is 0
-          ret.push(line.substr(4))
+        if line.indexOf('*** ') > -1
+          ret.push(line.substr(line.indexOf('*** ') + 4))
       return ret.join(',')
 
     before (done) ->
@@ -1046,7 +1048,7 @@ describe "Command line interface", () ->
         assert.include stdout, 'after message'
 
       it 'should exit with status 0', () ->
-        assert.equal exitStatus, 0
+        assert.equal exitStatus, 0, (stdout+stderr)
 
       it 'server should receive 3 requests', () ->
         assert.lengthOf receivedRequests, 3
@@ -1145,7 +1147,7 @@ describe "Command line interface", () ->
     resourceRequested = false
 
     before (done) ->
-      cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --server ./test/fixtures/scripts/dummy-server.sh --no-color"
+      cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --server ./test/fixtures/scripts/dummy-server.sh --no-color --server-wait=1"
 
       app = express()
 
