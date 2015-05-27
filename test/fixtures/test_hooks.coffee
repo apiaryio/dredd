@@ -1,4 +1,4 @@
-{after,log} = require 'hooks'
+{after} = require 'hooks'
 
 after "Machines > Machines collection > Get Machines", (transaction) ->
-  log "after"
+  console.log "after"

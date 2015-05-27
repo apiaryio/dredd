@@ -1,10 +1,10 @@
-{after, log} = require 'hooks'
+{after} = require 'hooks'
 
 after "Name API > /name > GET", (transaction) ->
-  log "after name"
+  console.log "after name"
 
 after "Greeting API > /greeting > GET", (transaction) ->
-  log "after greeting"
+  console.log "after greeting"
 
 after "Message API > /message > GET", (transaction) ->
-  log "after message"
+  console.log "after message"
