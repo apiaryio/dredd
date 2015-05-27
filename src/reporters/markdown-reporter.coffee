@@ -38,8 +38,7 @@ class MarkdownReporter extends EventEmitter
 
     emitter.on 'end', (callback) =>
       fs.writeFile @path, @buf, (err) ->
-        if err
-          logger.error err
+        logger.error err if err
         callback()
 
     emitter.on 'test start', (test) =>

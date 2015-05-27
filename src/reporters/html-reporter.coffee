@@ -40,8 +40,7 @@ class HtmlReporter extends EventEmitter
     emitter.on 'end', (callback) =>
       html = md.render @buf
       fs.writeFile @path, html, (err) ->
-        if err
-          logger.error err
+        logger.error err if err
         callback()
 
     emitter.on 'test start', (test) =>
