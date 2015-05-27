@@ -111,15 +111,13 @@ class ApiaryReporter
       data = @_transformTestToReporter test
       path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
       @_performRequest path, 'POST', data, (error, response, parsedBody) ->
-        if error
-          logger.error error
+        logger.error error if error
 
     emitter.on 'test fail', (test) =>
       data = @_transformTestToReporter test
       path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
       @_performRequest path, 'POST', data, (error, response, parsedBody) ->
-        if error
-          logger.error error
+        logger.error error if error
 
     emitter.on 'end', (callback) =>
       data =
@@ -131,8 +129,7 @@ class ApiaryReporter
       path = '/apis/' + @configuration['apiSuite'] + '/tests/run/' + @remoteId
 
       @_performRequest path, 'PATCH', data, (error, response, parsedBody) =>
-        if error
-          logger.error error
+        logger.error error if error
         reportUrl = @reportUrl || "https://app.apiary.io/#{@configuration.apiSuite}/tests/run/#{@remoteId}"
         logger.complete "See results in Apiary at: #{reportUrl}"
         callback()
