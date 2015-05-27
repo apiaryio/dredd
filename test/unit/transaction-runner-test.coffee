@@ -1348,7 +1348,7 @@ describe 'TransactionRunner', ()->
               messages.push configuration.emitter.emit.getCall(callNo).args[1].message
             done()
 
-  describe 'runHoook(hook, transaction, callback)', () ->
+  describe 'runHook(hook, transaction, callback)', () ->
     describe 'when sandbox mode is on (hook function is a string)', () ->
 
       before () ->
@@ -1447,21 +1447,22 @@ describe 'TransactionRunner', ()->
       it 'should have access to log', (done) ->
         hook = """
         function(transaction){
-          log('console test');
+          log('log test');
         }
         """
         runner.runHook hook, {}, (err) ->
           return done new Error err if err
           done()
 
-      it 'should have access to console', (done) ->
+      it 'should NOT have access to console', (done) ->
         hook = """
         function(transaction){
           console.log('console test');
         }
         """
         runner.runHook hook, {}, (err) ->
-          return done new Error err if err
+          assert.isDefined err
+          assert.include err, 'console'
           done()
 
   describe 'getNameForTransaction(hook, transaction, callback)', () ->

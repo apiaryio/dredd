@@ -342,7 +342,6 @@ describe "DreddCommand class", () ->
 
     describe 'and I pass another CLI argument', () ->
       it 'should want to exit with status 0', () ->
-        console.log stderr
         assert.equal exitStatus, 0
 
       it 'should call dredd run', () ->

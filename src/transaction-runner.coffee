@@ -169,7 +169,6 @@ class TransactionRunner
           stash: @hookStash
           logs: []
         libraries:
-          console: 'console'
           _log: sandboxedLogLibraryPath
       , (err, result = {}) =>
         sandbox.kill()
@@ -202,7 +201,6 @@ class TransactionRunner
           stash: @hookStash
           logs: []
         libraries:
-          console: 'console'
           _log: sandboxedLogLibraryPath
       , (err, result = {}) =>
         sandbox.kill()
