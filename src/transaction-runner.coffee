@@ -111,7 +111,7 @@ class TransactionRunner
   sandboxedWrappedCode: (hookCode) ->
     return """
       // run the hook
-      var log = _log.bind(null, logs);
+      var log = _log.bind(null, _logs);
 
       var _func = #{hookCode};
       _func(_data);
@@ -120,9 +120,29 @@ class TransactionRunner
       var output = {};
       output["data"] = _data;
       output["stash"] = stash;
-      output["logs"] = logs;
+      output["logs"] = _logs;
       output;
     """
+
+
+  runSandboxedHookFromString: (hookString, data, callback) ->
+    wrappedCode = @sandboxedWrappedCode hookString
+
+    sandbox = new Pitboss(wrappedCode, {
+      timeout: 500
+    })
+
+    sandbox.run
+      context:
+        '_data': data
+        '_logs': []
+        'stash': @hookStash
+      libraries:
+        '_log': sandboxedLogLibraryPath
+    , (err, result = {}) =>
+      sandbox.kill()
+      @sandboxedHookResultsHandler err, data, result, callback
+
 
   # Will be used runHook instead in next major release, see deprecation warning
   runLegacyHook: (hook, data, callback) ->
@@ -157,22 +177,7 @@ class TransactionRunner
 
     # sandboxed mode - hook is a string - only sync API
     if typeof(hook) == 'string'
-      wrappedCode = @sandboxedWrappedCode hook
-
-      sandbox = new Pitboss(wrappedCode, {
-        timeout: 500
-      })
-
-      sandbox.run
-        context:
-          "_data": data
-          stash: @hookStash
-          logs: []
-        libraries:
-          _log: sandboxedLogLibraryPath
-      , (err, result = {}) =>
-        sandbox.kill()
-        @sandboxedHookResultsHandler err, data, result, callback
+      @runSandboxedHookFromString hook, data, callback
 
 
   runHook: (hook, data, callback) ->
@@ -189,22 +194,7 @@ class TransactionRunner
 
     # sandboxed mode - hook is a string - only sync API
     if typeof(hook) == 'string'
-      wrappedCode = @sandboxedWrappedCode hook
-
-      sandbox = new Pitboss(wrappedCode, {
-        timeout: 500
-      })
-
-      sandbox.run
-        context:
-          "_data": data
-          stash: @hookStash
-          logs: []
-        libraries:
-          _log: sandboxedLogLibraryPath
-      , (err, result = {}) =>
-        sandbox.kill()
-        @sandboxedHookResultsHandler err, data, result, callback
+      @runSandboxedHookFromString hook, data, callback
 
 
   configureTransaction: (transaction, callback) =>
