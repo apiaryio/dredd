@@ -147,11 +147,9 @@ describe 'TransactionRunner', ()->
 
     describe 'when an additional header has a colon', ()->
       beforeEach () ->
-        configuration.options.header = ["MyCustomDate:Wed, 10 Sep 2014 12:34:26 GMT"]
-        runner = new Runner(configuration)
-
-      afterEach () ->
-        configuration.options.header = []
+        conf = clone configuration
+        conf.options.header = ["MyCustomDate:Wed, 10 Sep 2014 12:34:26 GMT"]
+        runner = new Runner(conf)
 
       it 'should include the entire value in the header', (done)->
         runner.configureTransaction transaction, (err, configuredTransaction) ->
@@ -168,6 +166,21 @@ describe 'TransactionRunner', ()->
           assert.ok configuredTransaction.request
           assert.ok configuredTransaction.expected
           assert.strictEqual transaction.origin, configuredTransaction.origin
+          done()
+
+    describe 'when endpoint URL contains PORT and path', ->
+      beforeEach ->
+        configurationWithPath = clone configuration
+        configurationWithPath.server = 'https://hostname.tld:9876/my/path/to/api/'
+        runner = new Runner configurationWithPath
+
+      it 'should join the endpoint path with transaction uriTemplate together', (done) ->
+        runner.configureTransaction transaction, (err, configuredTransaction) ->
+          assert.equal configuredTransaction.id, 'POST /machines'
+          assert.strictEqual configuredTransaction.host, 'hostname.tld'
+          assert.equal configuredTransaction.port, 9876
+          assert.strictEqual configuredTransaction.protocol, 'https:'
+          assert.strictEqual configuredTransaction.fullPath, '/my/path/to/api' + '/machines'
           done()
 
   describe 'executeTransaction(transaction, callback)', () ->
