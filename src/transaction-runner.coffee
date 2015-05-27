@@ -88,7 +88,7 @@ class TransactionRunner
       title: transaction.id
       message: transaction.name
       origin: transaction.origin
-      startedAt: transaction.startedAt
+      startedAt: transaction.startedAt # number in miliseconds (UNIX-like timestamp * 1000 precision)
     @configuration.emitter.emit 'test error', error, test if error
 
 
@@ -344,7 +344,7 @@ class TransactionRunner
       method: transaction.request['method']
       headers: transaction.request.headers
 
-    transaction.startedAt = Date.now()
+    transaction.startedAt = Date.now() # number in miliseconds (UNIX-like timestamp * 1000 precision)
 
     test =
       status: ''
