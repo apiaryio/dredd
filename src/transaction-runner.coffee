@@ -19,23 +19,6 @@ logger = require './logger'
 sandboxedLogLibraryPath = '../../../lib/hooks-log-sandboxed'
 
 
-sandboxedWrappedCode = (hookCode) ->
-  return """
-    // run the hook
-    var log = _log.bind(null, logs);
-
-    var _func = #{hookCode};
-    _func(_data);
-
-    // setup the return object
-    var output = {};
-    output["data"] = _data;
-    output["stash"] = stash;
-    output["logs"] = logs;
-    output;
-  """
-
-
 class TransactionRunner
   constructor: (@configuration) ->
     @logs = []
@@ -108,6 +91,39 @@ class TransactionRunner
       startedAt: transaction.startedAt
     @configuration.emitter.emit 'test error', error, test if error
 
+
+  sandboxedHookResultsHandler: (err, data, results = {}, callback) ->
+    return callback err if err
+    # reference to `transaction` gets lost here if whole object is assigned
+    # this is workaround how to copy properties
+    # clone doesn't work either
+    for key, value of results.data or {}
+      data[key] = value
+    @hookStash = results.stash
+
+    @logs ?= []
+    for log in results.logs or []
+      @logs.push log
+    callback()
+    return
+
+
+  sandboxedWrappedCode: (hookCode) ->
+    return """
+      // run the hook
+      var log = _log.bind(null, logs);
+
+      var _func = #{hookCode};
+      _func(_data);
+
+      // setup the return object
+      var output = {};
+      output["data"] = _data;
+      output["stash"] = stash;
+      output["logs"] = logs;
+      output;
+    """
+
   # Will be used runHook instead in next major release, see deprecation warning
   runLegacyHook: (hook, data, callback) ->
     # not sandboxed mode - hook is a function
@@ -141,7 +157,7 @@ class TransactionRunner
 
     # sandboxed mode - hook is a string - only sync API
     if typeof(hook) == 'string'
-      wrappedCode = sandboxedWrappedCode hook
+      wrappedCode = @sandboxedWrappedCode hook
 
       sandbox = new Pitboss(wrappedCode, {
         timeout: 500
@@ -157,16 +173,7 @@ class TransactionRunner
           _log: sandboxedLogLibraryPath
       , (err, result = {}) =>
         sandbox.kill()
-        return callback(err) if err
-        # reference to `transaction` gets lost here if whole object is assigned
-        # this is workaround how to copy properties
-        # clone doesn't work either
-        for key, value of result.data or {}
-          data[key] = value
-        @hookStash = result.stash
-        for log in result.logs or []
-          @logs.push log
-        callback()
+        @sandboxedHookResultsHandler err, data, result, callback
 
 
   runHook: (hook, data, callback) ->
@@ -183,7 +190,7 @@ class TransactionRunner
 
     # sandboxed mode - hook is a string - only sync API
     if typeof(hook) == 'string'
-      wrappedCode = sandboxedWrappedCode hook
+      wrappedCode = @sandboxedWrappedCode hook
 
       sandbox = new Pitboss(wrappedCode, {
         timeout: 500
@@ -199,16 +206,7 @@ class TransactionRunner
           _log: sandboxedLogLibraryPath
       , (err, result = {}) =>
         sandbox.kill()
-        return callback(err) if err
-        # reference to `transaction` gets lost here if whole object is assigned
-        # this is workaround how to copy properties
-        # clone doesn't work either
-        for key, value of result.data or {}
-          data[key] = value
-        @hookStash = result.stash
-        for log in result.logs or []
-          @logs.push log
-        callback()
+        @sandboxedHookResultsHandler err, data, result, callback
 
 
   configureTransaction: (transaction, callback) =>

@@ -872,6 +872,26 @@ describe 'TransactionRunner', ()->
             assert.property transactions, 'prop'
             done()
 
+        it 'should be able to call "log" from inside the function', (done) ->
+          functionString = """
+          function(transactions){
+            log(transactions[Object.keys(transactions)[0]]);
+            transactions['prop'] = 'that';
+          }
+          """
+          runner.hooks.beforeAll functionString
+
+          transactions = {'some': 'mess'}
+
+          runner.executeAllTransactions transactions, runner.hooks, () ->
+            call = configuration.emitter.emit.getCall(0)
+            assert.notOk configuration.emitter.emit.calledWith "test error"
+            assert.property transactions, 'prop'
+            assert.isArray runner.logs
+            assert.lengthOf runner.logs, 1
+            assert.propertyVal runner.logs[0], 'content', 'mess'
+            done()
+
     describe '*Each hooks with standard async API (first argument transactions, second callback)', () ->
 
       transactionsForExecution = []
@@ -1422,6 +1442,16 @@ describe 'TransactionRunner', ()->
         runner.runHook hook, transaction, (err) ->
           return done new Error err if err
           assert.property transaction, 'prop'
+          done()
+
+      it 'should have access to log', (done) ->
+        hook = """
+        function(transaction){
+          log('console test');
+        }
+        """
+        runner.runHook hook, {}, (err) ->
+          return done new Error err if err
           done()
 
       it 'should have access to console', (done) ->
