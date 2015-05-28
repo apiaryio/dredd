@@ -79,6 +79,7 @@ FORMAT: 1A
 
 ## Create an item [POST]
 + Response 201
+
 ```
 
 In this case, you will have to write a `before` hook for adding a database fixture creating a category executed before HTTP call to action creating item in this category.
@@ -120,7 +121,7 @@ If you want to test some sequence of HTTP steps (workflow or scenario) in you AP
 
 Unlike API reference testing, scenarios or workflows steps are in **shared context**, so you may want to [pass data between transcations](hooks.md#sharing-data-between-steps-in-request-stash).
 
-### Exapmle
+### Example
 
 Having following workfow blueprint:
 
@@ -160,7 +161,7 @@ FORMAT: 1A
 
 ```
 
-Retreive transactions names with:
+Retrieve transactions names with:
 
 ```
 $ dredd blueprint.md localhost:3000 --names
@@ -203,14 +204,14 @@ before('/cars/{id} > PATCH', function(transaction){
 
 Generally, if you want to add Dredd to your existing test suite, you can just save Dredd configuration to the `dredd.yml` and add call for `dredd` command to your task runner.
 
-In some eco-systems, there is native support for adding Dredd to the
+In some eco-systems, there is native support for adding Dredd to
 
 - [grunt-dredd](https://github.com/mfgea/grunt-dredd) a grunt task wrapper
 - [dredd-rack]( https://github.com/gonzalo-bulnes/dredd-rack) a rake task and rack wrapper
 
 ## Continuous Integration
 
-If you didn't make Dredd part to your testing suite which is run in Continuous integration. You can run `dredd init` which will generate a `dredd.yml` configuration file and modify or generat CI configuration.
+If you didn't make Dredd part to your testing suite which is run in Continuous integration. You can run `dredd init` which will generate a `dredd.yml` configuration file and modify or generate CI configuration.
 
 If you want to add Dredd to your build manually without use of `dredd.yml` configuration, just add following configuration to your build.
 
@@ -237,11 +238,13 @@ before_script:
 ### Authenticated APIs
 
 Using HTTP basic authentication with a CLI argument
+
 ```
 --user user:password
 ```
 
 If you don't want to add some header directly to the blueprint, you can add header to all requests from command line:
+
 ```
 --headers "Authorization: Basic YmVuOnBhc3M="
 ```
@@ -249,11 +252,11 @@ If you don't want to add some header directly to the blueprint, you can add head
 Adding URL query parameter to all requests
 
 Dredd supports all possible authentications of HTTP API like:
-      - basic
-      - digest
-      - oauth 1.0a
-      - oauth 2.0
-      - adding csrf tokens
+  - basic
+  - digest
+  - OAuth 1.0a
+  - OAuth 2.0
+  - adding CSRF tokens
 
 ## Using Multipart Requests
 
@@ -285,7 +288,7 @@ In following request, dredd will automaticaly add `LF` to all lines in request b
 
 ## Multiple Requests/Responses in One Action
 
-> Disclaimer: This is a wokraround until native support for adding custom URI parmeters under example and request section will be available in the API Blueprint.
+> Disclaimer: This is a workaround until native support for adding custom URI parmeters under example and request section will be available in the API Blueprint.
 
 ```markdown
 FORMAT: 1A
@@ -295,7 +298,7 @@ FORMAT: 1A
 ## Resource [/resource/{id}]
 
 + Parameters
-	+ id (required, `42`)
+  + id (required, `42`)
 
 ###  Update resource [PATCH]
 
@@ -316,12 +319,14 @@ FORMAT: 1A
 + Response 400 (application/vnd.error+json)
 
         {"message": "Validation failed"}
+
 ```
 
 
 If you need to use different URI address for each example, you can [modify transaction before its execution](hooks.md#modifying-transactions-prior-to-execution) in hooks.
 
 Dredd will compile following transaction names:
+
 ```
 $ dredd blueprint.md localhost --names
 info: Beginning Dredd testing...
