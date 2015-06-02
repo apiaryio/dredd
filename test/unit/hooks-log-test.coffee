@@ -41,7 +41,7 @@ describe 'hooksLog()', () ->
 
     it 'should push message to the passed array and return the new array', ->
       originLogs = []
-      data = hooksLog originLogs, loggerStub, 'log', 'one message'
+      data = hooksLog originLogs, loggerStub, 'one message'
       assert.isArray data
       assert.lengthOf data, 1
       assert.strictEqual data, originLogs
@@ -50,7 +50,7 @@ describe 'hooksLog()', () ->
 
     it 'should push message to undefined logs and return new array instead', ->
       originLogs = undefined
-      data = hooksLog originLogs, loggerStub, 'log', 'another message'
+      data = hooksLog originLogs, loggerStub, 'another message'
       assert.isArray data
       assert.lengthOf data, 1
       assert.isUndefined originLogs
@@ -59,62 +59,20 @@ describe 'hooksLog()', () ->
 
     it 'should append message to an existing logs array', ->
       originLogs = clone exampleLogs
-      data = hooksLog originLogs, loggerStub, 'log', 'some other idea'
+      data = hooksLog originLogs, loggerStub, 'some other idea'
       assert.isArray data
       assert.lengthOf data, 2
       assert.deepEqual data, originLogs
       assert.deepEqual data[0], exampleLogs[0]
       assert.deepPropertyVal data[1], 'content', 'some other idea'
 
-    it 'should use "hook" log variant when "hook" log variant is used', ->
-      hooksLog [], loggerStub, 'hook', 'there is a log'
+    it 'should use "hook" logger level', ->
+      hooksLog [], loggerStub, 'there is a log'
 
       assert.isTrue loggerStub.hook.called
+      assert.equal  loggerStub.hook.callCount, 1
 
       assert.isFalse loggerStub.log.called
       assert.isFalse loggerStub.debug.called
 
       assert.equal loggerStub.hook.getCall(0).args[0], 'there is a log'
-
-    it 'should use "hook" log variant when "log" log variant is used', ->
-      hooksLog [], loggerStub, 'log', 'writing there'
-
-      assert.isTrue loggerStub.hook.called
-
-      assert.isFalse loggerStub.log.called
-      assert.isFalse loggerStub.debug.called
-
-      assert.equal loggerStub.hook.getCall(0).args[0], 'writing there'
-
-    it 'should use "debug" log variant when "debug" log variant is used', ->
-      hooksLog [], loggerStub, 'debug', 'writing elsewhere'
-
-      assert.isFalse loggerStub.hook.called
-      assert.isFalse loggerStub.log.called
-
-      assert.isTrue loggerStub.debug.called
-
-      assert.equal loggerStub.debug.callCount, 1
-      assert.equal loggerStub.debug.getCall(0).args[0], 'writing elsewhere'
-
-    it 'should use "hook" log variant when "unknown" log variant is used', ->
-      hooksLog [], loggerStub, 'unknown', 'logging something else'
-
-      assert.isTrue loggerStub.hook.called
-
-      assert.isFalse loggerStub.log.called
-      assert.isFalse loggerStub.debug.called
-
-      assert.equal loggerStub.hook.callCount, 1
-      assert.equal loggerStub.hook.getCall(0).args[0], 'logging something else'
-
-    it 'should fallback to "hook" log variant when using not enough arguments', ->
-      hooksLog [], loggerStub, 'writing without log variant'
-
-      assert.isTrue loggerStub.hook.called
-
-      assert.isFalse loggerStub.log.called
-      assert.isFalse loggerStub.debug.called
-
-      assert.equal loggerStub.hook.callCount, 1
-      assert.equal loggerStub.hook.getCall(0).args[0], 'writing without log variant'

@@ -5,8 +5,8 @@ logger = null
 
 # sandboxed 'log' function
 # - "logs" must be an Array
-hooksLogSandboxed = (logs = [], args...) ->
-  logs = hooksLog logs, logger, args...
+hooksLogSandboxed = (logs = [], content) ->
+  logs = hooksLog logs, logger, content
   return logs
 
 module.exports = hooksLogSandboxed

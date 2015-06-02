@@ -1,16 +1,9 @@
 util = require 'util'
 
-hooksLog = (logs = [], logger, logVariant, content) ->
-  if arguments.length is 4 and logVariant in ['info', 'debug', 'warn', 'verbose', 'error', 'log']
-    loggerLevel = "#{logVariant}"
-    loggerLevel = 'hook' if loggerLevel is 'log'
-  else
-    loggerLevel = 'hook'
-    if arguments.length is 3
-      content = logVariant
+hooksLog = (logs = [], logger, content) ->
 
   # log to logger
-  logger?[loggerLevel]? content
+  logger?.hook? content
 
   # append to array of logs to allow further operations, e.g. send all hooks logs to Apiary
   logs?.push? {

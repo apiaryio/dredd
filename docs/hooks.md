@@ -275,8 +275,6 @@ In each hook file you can use following functions:
 
 `log(string)`
 
-`log(logLevel, string)` - here `logLevel [string]` can be (e.g. `"info"` or `"verbose"`) used to silence some verbose logging messages when you don't need them to be printed. It obeys the used `--level` option. E.g `log('verbose', "something not that important, but good for debugging.")`
-
 - A [Transaction Object](#transaction-object-structure) is passed as a first argument to the hook function for `before`, `after`, `beforeEach`, and `afterEach`.
 - An array of Transaction Objects is passed to `beforeEach` and `afterEach`.
 - Sandboxed hooks don't have an asynchronous API. Loading and running of each hook happens in it's own isolated, sandboxed context.
@@ -288,7 +286,7 @@ In each hook file you can use following functions:
   of type `String`, `Number`, `Boolean`, `null` or `Object` and `Array` (no `Functions` or callbacks).
 - Hook code is evaluated with `"use strict"` directive - [details at MDN](https://mdn.io/use+strict)
 - Sandboxed mode does not support hooks written in CoffeScript language
-- You can print to console (via Dredd's logger) with `log` function, taking into account the used logging level `--level` option
+- You can print to console (via Dredd's logger) with `log` function, taking into account the used logging level `--level` option (levels: `error > warn > hook > info`)
 
 ### CLI Switch
 

@@ -1,5 +1,5 @@
 before("Machines > Machines collection > Get Machines", function (transaction) {
-  log('error', 'Sandboxed error object');
+  log('shall not print, but be present in logs');
 });
 
 after("Machines > Machines collection > Get Machines", function (transaction) {

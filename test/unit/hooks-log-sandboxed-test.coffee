@@ -18,7 +18,7 @@ describe 'hooksLogSandboxed()', () ->
   describe 'basic functionality', ->
     it 'should push message to the passed array and return the new array', ->
       originLogs = []
-      data = hooksLogSandboxed originLogs, 'log', 'one message'
+      data = hooksLogSandboxed originLogs, 'one message'
       assert.isArray data
       assert.lengthOf data, 1
       assert.strictEqual data, originLogs
@@ -27,7 +27,7 @@ describe 'hooksLogSandboxed()', () ->
 
     it 'should push message to undefined logs and return new array instead', ->
       originLogs = undefined
-      data = hooksLogSandboxed originLogs, 'log', 'another message'
+      data = hooksLogSandboxed originLogs, 'another message'
       assert.isArray data
       assert.lengthOf data, 1
       assert.isUndefined originLogs
@@ -36,7 +36,7 @@ describe 'hooksLogSandboxed()', () ->
 
     it 'should append message to an existing logs array', ->
       originLogs = clone exampleLog
-      data = hooksLogSandboxed originLogs, 'log', 'some other idea'
+      data = hooksLogSandboxed originLogs, 'some other idea'
       assert.isArray data
       assert.lengthOf data, 2
       assert.deepEqual data, originLogs
@@ -46,20 +46,6 @@ describe 'hooksLogSandboxed()', () ->
   describe 'passes arguments further to hooks-log', ->
     beforeEach ->
       hooksLogStubSpy.reset()
-
-    it 'should pass all three arguments along to hooks-log', ->
-      originLogs = clone exampleLog
-      data = hooksLogSandboxed originLogs, 'log', 'writing there'
-      assert.isTrue hooksLogStubSpy.called
-      assert.equal hooksLogStubSpy.callCount, 1
-      call = hooksLogStubSpy.getCall(0)
-      assert.deepEqual call.args[0][0], exampleLog[0]
-      assert.isNull call.args[1] # second argument is logger, but sandbox log does not use it
-      assert.equal call.args[2], 'log'
-      assert.equal call.args[3], 'writing there'
-      assert.isUndefined call.args[4]
-      assert.isArray data
-      assert.lengthOf data, 2
 
     it 'should pass two arguments if only two were used', ->
       originLogs = clone exampleLog

@@ -347,6 +347,7 @@ describe "Command line interface", () ->
         assert.equal exitStatus, 0
 
       it 'should print log to console too (thanks to logger)', ()->
+        # because --level=info is lower than --level=hook
         assert.include (stdout + stderr), 'using hooks.log to debug'
 
       it 'should use toString when using log in hooks too', ->
@@ -439,13 +440,10 @@ describe "Command line interface", () ->
       it 'should exit with status 0', ()->
         assert.equal exitStatus, 0
 
-      it 'should not print to console too', ->
-        # because we are running in sandboxed mode
+      it 'should not contain the logs from hooks in console output', ->
+        # because we are running in sandboxed mode with higher --level
         assert.notInclude (stdout + stderr), 'using sandboxed hooks.log'
-
-      it 'should not contain the error log from hooks', ->
-        # because we are running in sandboxed mode
-        assert.notInclude (stdout + stderr), 'Error object!'
+        assert.notInclude (stdout + stderr), 'shall not print'
 
       it 'should send result stats in PATCH request to Apiary with logs', ()->
         assert.isObject receivedRequest
@@ -455,7 +453,7 @@ describe "Command line interface", () ->
         assert.isArray receivedRequest.logs
         assert.lengthOf receivedRequest.logs, 2
         assert.property receivedRequest.logs[0], 'timestamp'
-        assert.deepPropertyVal receivedRequest.logs[0], 'content', 'Sandboxed error object'
+        assert.deepPropertyVal receivedRequest.logs[0], 'content', 'shall not print, but be present in logs'
         assert.property receivedRequest.logs[1], 'timestamp'
         assert.deepPropertyVal receivedRequest.logs[1], 'content', 'using sandboxed hooks.log'
 

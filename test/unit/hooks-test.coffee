@@ -52,16 +52,6 @@ describe 'Hooks', () ->
       assert.deepPropertyVal hooks.logs[1], 'content', 'message2'
       assert.deepPropertyVal hooks.logs[2], 'content', 'messageX'
 
-    it 'should call @logger.error when hooks.log is called with arguments "error", "message"', ->
-      hooks = new Hooks options
-      hooks.log 'error', 'messageError'
-      assert.isFalse options.logger.hook.called
-      assert.isTrue options.logger.error.called
-      assert.deepProperty hooks.logs[2], 'timestamp'
-      assert.deepPropertyVal hooks.logs[0], 'content', 'message1'
-      assert.deepPropertyVal hooks.logs[1], 'content', 'message2'
-      assert.deepPropertyVal hooks.logs[2], 'content', 'messageError'
-
   describe '#before', () ->
     hooks = null
 
