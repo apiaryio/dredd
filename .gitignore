@@ -1,5 +1,6 @@
 node_modules
 src-cov
+HISTORY-Dredd.md
 /lib
 cov.html
 .vagrant
