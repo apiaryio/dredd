@@ -18,11 +18,11 @@ addHooks = (runner, transactions, callback) ->
     for hookType in ['beforeHooks', 'afterHooks']
       for transactionName, hooks of allHooks[hookType]
         if transactionName.match(pattern) != null
-          newTranscationName = transactionName.replace(pattern, '')
-          if allHooks[hookType][newTranscationName] != undefined
-            allHooks[hookType][newTranscationName] = hooks.concat allHooks[hookType][newTranscationName]
+          newTransactionName = transactionName.replace(pattern, '')
+          if allHooks[hookType][newTransactionName] != undefined
+            allHooks[hookType][newTransactionName] = hooks.concat allHooks[hookType][newTransactionName]
           else
-            allHooks[hookType][newTranscationName] = hooks
+            allHooks[hookType][newTransactionName] = hooks
 
           delete allHooks[hookType][transactionName]
 
