@@ -26,7 +26,8 @@ addHooks = (runner, transactions, callback) ->
 
           delete allHooks[hookType][transactionName]
 
-  runner.hooks = new Hooks()
+  runner.logs ?= []
+  runner.hooks = new Hooks(logs: runner.logs, logger: logger)
   runner.hooks.transactions ?= {}
 
   customConfigCwd = runner?.configuration?.custom?.cwd
@@ -95,7 +96,7 @@ addHooks = (runner, transactions, callback) ->
 
       # Running in sandboxed mode
       else
-        logger.info 'Loading hookfiles in sandboxed context' + files
+        logger.info 'Loading hookfiles in sandboxed context: ' + files
         async.eachSeries files, (fileName, nextFile) ->
           resolvedPath = path.resolve((customConfigCwd or process.cwd()), fileName)
 

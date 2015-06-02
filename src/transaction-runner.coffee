@@ -15,8 +15,13 @@ packageConfig = require './../package.json'
 logger = require './logger'
 
 
+# use "lib" folder, because pitboss-ng does not support "coffee-script:register" out of the box now
+sandboxedLogLibraryPath = '../../../lib/hooks-log-sandboxed'
+
+
 class TransactionRunner
   constructor: (@configuration) ->
+    @logs = []
     @hookStash = {}
 
   config: (config) ->
@@ -24,13 +29,14 @@ class TransactionRunner
     @multiBlueprint = Object.keys(@configuration.data).length > 1
 
   run: (transactions, callback) ->
+
     transactions = if @configuration.options['sorted'] then sortTransactions(transactions) else transactions
 
-    async.mapSeries transactions, @configureTransaction, (err, results) ->
+    async.mapSeries transactions, @configureTransaction.bind(@), (err, results) ->
       transactions = results
 
     addHooks @, transactions, (addHooksError) =>
-      callback addHooksError if addHooksError
+      return callback addHooksError if addHooksError
       @executeAllTransactions(transactions, @hooks, callback)
 
 
@@ -82,7 +88,61 @@ class TransactionRunner
       title: transaction.id
       message: transaction.name
       origin: transaction.origin
+      startedAt: transaction.startedAt # number in miliseconds (UNIX-like timestamp * 1000 precision)
     @configuration.emitter.emit 'test error', error, test if error
+
+
+  sandboxedHookResultsHandler: (err, data, results = {}, callback) ->
+    return callback err if err
+    # reference to `transaction` gets lost here if whole object is assigned
+    # this is workaround how to copy properties
+    # clone doesn't work either
+    for key, value of results.data or {}
+      data[key] = value
+    @hookStash = results.stash
+
+    @logs ?= []
+    for log in results.logs or []
+      @logs.push log
+    callback()
+    return
+
+
+  sandboxedWrappedCode: (hookCode) ->
+    return """
+      // run the hook
+      var log = _log.bind(null, _logs);
+
+      var _func = #{hookCode};
+      _func(_data);
+
+      // setup the return object
+      var output = {};
+      output["data"] = _data;
+      output["stash"] = stash;
+      output["logs"] = _logs;
+      output;
+    """
+
+
+  runSandboxedHookFromString: (hookString, data, callback) ->
+    wrappedCode = @sandboxedWrappedCode hookString
+
+    sandbox = new Pitboss(wrappedCode, {
+      timeout: 500
+    })
+
+    sandbox.run
+      context:
+        '_data': data
+        '_logs': []
+        'stash': @hookStash
+      libraries:
+        '_log': sandboxedLogLibraryPath
+    , (err, result = {}) =>
+      sandbox.kill()
+      @sandboxedHookResultsHandler err, data, result, callback
+
 
   # Will be used runHook instead in next major release, see deprecation warning
   runLegacyHook: (hook, data, callback) ->
@@ -117,32 +177,7 @@ class TransactionRunner
 
     # sandboxed mode - hook is a string - only sync API
     if typeof(hook) == 'string'
-      wrappedCode = """
-      // run the hook
-      var _func = #{hook};
-      _func(_data);
-
-      // setup the return object
-      var output = {};
-      output["data"] = _data;
-      output["stash"] = stash;
-      output;
-      """
-
-      sandbox = new Pitboss(wrappedCode, {
-        timeout: 500
-      })
-
-      sandbox.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result = {}) =>
-        sandbox.kill()
-        return callback(err) if err
-        # reference to `transaction` get lost here if whole object is assigned
-        # this is wokraround how to copy proprties
-        # clone doesn't work either
-        for key, value of result.data or {}
-          data[key] = value
-        @hookStash = result.stash
-        callback()
+      @runSandboxedHookFromString hook, data, callback
 
 
   runHook: (hook, data, callback) ->
@@ -159,34 +194,7 @@ class TransactionRunner
 
     # sandboxed mode - hook is a string - only sync API
     if typeof(hook) == 'string'
-
-      wrappedCode = """
-      // run the hook
-      var _func = #{hook};
-      _func(_data);
-
-      // setup the return object
-      var output = {};
-      output["data"] = _data;
-      output["stash"] = stash;
-      output;
-      """
-
-      sandbox = new Pitboss(wrappedCode, {
-        timeout: 500
-      })
-
-      sandbox.run {context: {"_data": data, stash: @hookStash}, libraries: ['console']}, (err, result = {}) =>
-        sandbox.kill()
-        return callback(err) if err
-        # reference to `transaction` get lost here if whole object is assigned
-        # this is wokraround how to copy proprties
-        # clone doesn't work either
-        for key, value of result.data or {}
-          data[key] = value
-        @hookStash = result.stash
-        callback()
-
+      @runSandboxedHookFromString hook, data, callback
 
 
   configureTransaction: (transaction, callback) =>
@@ -195,15 +203,16 @@ class TransactionRunner
     request = transaction['request']
     response = transaction['response']
 
-    parsedUrl = url.parse configuration['server']
+    # parse the server URL just once
+    @parsedUrl ?= url.parse configuration['server']
 
     # joins paths regardless of slashes
     # there may be a nice way in the future: https://github.com/joyent/node/issues/2216
     # note that path.join will fail on windows, and url.resolve can have undesirable behavior depending on slashes
-    if parsedUrl['path'] is "/"
+    if @parsedUrl['path'] is "/"
       fullPath = request['uri']
     else
-      fullPath = '/' + [parsedUrl['path'].replace(/^\/|\/$/g, ""), request['uri'].replace(/^\/|\/$/g, "")].join("/")
+      fullPath = '/' + [@parsedUrl['path'].replace(/^\/|\/$/g, ""), request['uri'].replace(/^\/|\/$/g, "")].join("/")
 
     flatHeaders = flattenHeaders request['headers']
 
@@ -238,13 +247,13 @@ class TransactionRunner
     configuredTransaction =
       name: name
       id: id
-      host: parsedUrl['hostname']
-      port: parsedUrl['port']
+      host: @parsedUrl['hostname']
+      port: @parsedUrl['port']
       request: request
       expected: expected
       origin: origin
       fullPath: fullPath
-      protocol: parsedUrl.protocol
+      protocol: @parsedUrl.protocol
       skip: false
 
     return callback(null, configuredTransaction)
@@ -265,7 +274,7 @@ class TransactionRunner
     # in TransactionRunner.run call. Because addHooks creates
     # hooks.transactions as an object `{}` with transaction.name keys
     # and value is every transaction, we do not fill transactions
-    # from executeAllTransactions here, because it's supposed to an Array here.
+    # from executeAllTransactions here. Transactions is supposed to be an Array here!
     unless hooks.transactions?
       hooks.transactions = {}
       for transaction in transactions
@@ -323,11 +332,14 @@ class TransactionRunner
       method: transaction.request['method']
       headers: transaction.request.headers
 
+    transaction.startedAt = Date.now() # number in miliseconds (UNIX-like timestamp * 1000 precision)
+
     test =
       status: ''
       title: transaction.id
       message: transaction.name
       origin: transaction.origin
+      startedAt: transaction.startedAt
 
     configuration.emitter.emit 'test start', test
 
@@ -363,10 +375,10 @@ class TransactionRunner
         res.on 'data', (chunk) ->
           buffer = buffer + chunk
 
-        req.on 'error', (error) ->
+        res.on 'error', (error) ->
           configuration.emitter.emit 'test error', error, test if error
 
-        res.on 'end', ->
+        res.once 'end', ->
 
           # The data models as used here must conform to Gavel.js
           # as defined in `http-response.coffee`
@@ -420,6 +432,10 @@ class TransactionRunner
 
       try
         req = transport.request requestOptions, handleRequest
+
+        req.on 'error', (error) ->
+          configuration.emitter.emit 'test error', error, test if error
+
         req.write transaction.request['body'] if transaction.request['body'] != ''
         req.end()
       catch error

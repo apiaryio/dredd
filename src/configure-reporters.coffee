@@ -16,7 +16,7 @@ intersection = (a, b) ->
   [a, b] = [b, a] if a.length > b.length
   value for value in a when value in b
 
-configureReporters = (config, stats, tests) ->
+configureReporters = (config, stats, tests, runner) ->
   baseReporter = new BaseReporter(config.emitter, stats, tests)
   reporters = config.options.reporter
   outputs = config.options.output
@@ -44,7 +44,7 @@ configureReporters = (config, stats, tests) ->
       when 'markdown'
         mdReporter = new MarkdownReporter(emitter, stats, tests, path, config.options.details)
       when 'apiary'
-        apiaryReporter = new ApiaryReporter(emitter, stats, tests, config)
+        apiaryReporter = new ApiaryReporter(emitter, stats, tests, config, runner)
       # else
       #   Cannot happen, due to 'intersection' usage
       #   logger.warn "Invalid reporter #{reporter} selected, ignoring."

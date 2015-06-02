@@ -104,8 +104,7 @@ class XUnitReporter extends EventEmitter
           }, false
           xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>'
           fs.writeFile path, xmlHeader + '\n' + newStats + '\n' + restOfFile + '</testsuite>', (err) ->
-            if err
-              logger.error err
+            logger.error err if err
             callback()
         else
           callback()

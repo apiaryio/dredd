@@ -8,12 +8,14 @@ Similar to any other testing framework, Dredd supports executing code around eac
 - modifying request generated from blueprint
 - changing generated expectations
 - setting custom expectations
+- debugging via logging stuff
 
 ## Using Hook Files
 
 To use a hook file with Dredd, use the `--hookfiles` flag in the command line. You can use this flag multiple times or use a [glob](http://npmjs.com/package/glob) expression for loading multiple hook files.
 
 Example:
+
 ```sh
 $ dredd single_get.md http://machines.apiary.io --hookfiles=*_hooks.*
 ```
@@ -65,35 +67,35 @@ Dredd supports following types of hooks:
 - An array of Transaction Objects is passed to `beforeEach` and `afterEach`.
 - The second argument is an optional callback function for async execution.
 - Any modifications on the `transaction` object is propagated to the actual HTTP transactions
+- We use `hooks.log` function here to print various debug message.
 
 ### Sync API
 
 ```javascript
-
 var hooks = require('hooks');
 
 hooks.beforeAll(function(transactions){
-  console.log('beforeEach');
+  hooks.log('beforeEach');
 });
 
 hooks.beforeEach(function(transactions){
-  console.log('beforeEach');
+  hooks.log('beforeEach');
 });
 
 hooks.before("Machines > Machines collection > Get Machines", function (transaction) {
-  console.log("before");
+  hooks.log("before");
 });
 
 hooks.after("Machines > Machines collection > Get Machines", function (transaction) {}
-  console.log("after");
+  hooks.log("after");
 });
 
 hooks.beforeEach(function(transactions){
-  console.log('beforeEach');
+  hooks.log('beforeEach');
 });
 
 hooks.beforeAll(function(transactions){
-  console.log('beforeAll');
+  hooks.log('beforeAll');
 })
 ```
 
@@ -105,32 +107,32 @@ When the callback is used in the hook function, callbacks can handle asynchronou
 var hooks = require('hooks');
 
 hooks.beforeAll(function(transactions, done){
-  console.log('beforeEach');
+  hooks.log('beforeEach');
   done();
 });
 
 hooks.beforeEach(function(transactions, done){
-  console.log('beforeEach');
+  hooks.log('beforeEach');
   done();
 });
 
 hooks.before("Machines > Machines collection > Get Machines", function (transaction, done) {
-  console.log("before");
+  hooks.log("before");
   done();
 });
 
 hooks.after("Machines > Machines collection > Get Machines", function (transaction, done) {}
-  console.log("after");
+  hooks.log("after");
   done();
 });
 
 hooks.beforeEach(function(transactions, done){
-  console.log('beforeEach');
+  hooks.log('beforeEach');
   done();
 });
 
 hooks.beforeAll(function(transactions, done){
-  console.log('beforeAll');
+  hooks.log('beforeAll');
   done();
 })
 ```
@@ -145,11 +147,12 @@ Following is description is in a [MSON](https://github.com/apiaryio/mson) format
     - host: `"localhost"` (string) hostname without port
     - port: `3000` (number)
     - protocol: `"https:"` (string)
+    - fullPath: `"/message"` (string) expanded URI-Template with parameters (if any) used for the real HTTP(s) request
 
     - request (object) Request compiled from blueprint
         - body `"Hello world!\n"` (string)
         - headers (object)
-        - uri `"/message"` (string)
+        - uri `"/message"` (string) informative uri about the request
         - method
 
     - expected (object) Expected response from blueprint
@@ -270,6 +273,8 @@ In each hook file you can use following functions:
 
 `afterEach(function)`
 
+`log(string)`
+
 - A [Transaction Object](#transaction-object-structure) is passed as a first argument to the hook function for `before`, `after`, `beforeEach`, and `afterEach`.
 - An array of Transaction Objects is passed to `beforeEach` and `afterEach`.
 - Sandboxed hooks don't have an asynchronous API. Loading and running of each hook happens in it's own isolated, sandboxed context.
@@ -281,6 +286,7 @@ In each hook file you can use following functions:
   of type `String`, `Number`, `Boolean`, `null` or `Object` and `Array` (no `Functions` or callbacks).
 - Hook code is evaluated with `"use strict"` directive - [details at MDN](https://mdn.io/use+strict)
 - Sandboxed mode does not support hooks written in CoffeScript language
+- You can print to console (via Dredd's logger) with `log` function, taking into account the used logging level `--level` option (levels: `error > warn > hook > info`)
 
 ### CLI Switch
 
@@ -361,6 +367,9 @@ before("Machines > Machines collection > Get Machines", function (transaction) {
 
   // modify request body here
   requestBody['someKey'] = 'someNewValue';
+
+  // stringify the new body to request
+  transaction.request.body = JSON.stringify(requestBody);
 });
 ```
 
@@ -370,7 +379,7 @@ before("Machines > Machines collection > Get Machines", function (transaction) {
 var hooks = require('hooks');
 
 hooks.beforeEach(function(transaction){
-  # add query parameter to each transaction here
+  // add query parameter to each transaction here
   var paramToAdd = "api-key=23456"
   if(transaction.fullPath.indexOf('?') > -1){
     transaction.fullPath += "&" + paramToAdd;

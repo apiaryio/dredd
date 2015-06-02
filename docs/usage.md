@@ -239,13 +239,13 @@ This section provides the order in which Dredd executes to give a better underst
 2. Pre-run blueprint check
     - Missing example values for URI template parameters
     - Required parameters present in URI
-    - Mot parseable json bodies
-    - Mot valid uri parameters
-    - Onvalid uri templates
+    - Report non-parseable JSON bodies
+    - Report invalid URI parameters
+    - Report Invalid URI templates
 3. Compile HTTP transactions from blueprints
-    - Onherit headers
-    - Onherit parameters
-    - Expand uri templates with parameters
+    - Inherit headers
+    - Inherit parameters
+    - Expand URI templates with parameters
 4. Load hooks
 5. Test run
     - Report test run `start`
@@ -260,7 +260,7 @@ This section provides the order in which Dredd executes to give a better underst
         - Run `after` hook
         - Run `afterEach` hook
         - Report `test end` with result for in-progress reporting
-    - Run `afterAll` Hooks
+    - Run `afterAll` hooks
 6. Report test run `end` with result statistics
 
 [Gavel]: http://blog.apiary.io/2013/07/24/Bam-this-is-Gavel/

@@ -56,6 +56,12 @@ describe 'TransactionRunner', ()->
     it 'should copy configuration', () ->
       assert.ok runner.configuration.server
 
+    it 'should have an empty hookStash object', () ->
+      assert.deepEqual runner.hookStash, {}
+
+    it 'should have an empty array of logs object', () ->
+      assert.deepEqual runner.logs, []
+
   describe 'config(config)', () ->
     describe 'when single file in data is present', () ->
       it 'should set multiBlueprint to false', () ->
@@ -141,11 +147,9 @@ describe 'TransactionRunner', ()->
 
     describe 'when an additional header has a colon', ()->
       beforeEach () ->
-        configuration.options.header = ["MyCustomDate:Wed, 10 Sep 2014 12:34:26 GMT"]
-        runner = new Runner(configuration)
-
-      afterEach () ->
-        configuration.options.header = []
+        conf = clone configuration
+        conf.options.header = ["MyCustomDate:Wed, 10 Sep 2014 12:34:26 GMT"]
+        runner = new Runner(conf)
 
       it 'should include the entire value in the header', (done)->
         runner.configureTransaction transaction, (err, configuredTransaction) ->
@@ -162,6 +166,21 @@ describe 'TransactionRunner', ()->
           assert.ok configuredTransaction.request
           assert.ok configuredTransaction.expected
           assert.strictEqual transaction.origin, configuredTransaction.origin
+          done()
+
+    describe 'when endpoint URL contains PORT and path', ->
+      beforeEach ->
+        configurationWithPath = clone configuration
+        configurationWithPath.server = 'https://hostname.tld:9876/my/path/to/api/'
+        runner = new Runner configurationWithPath
+
+      it 'should join the endpoint path with transaction uriTemplate together', (done) ->
+        runner.configureTransaction transaction, (err, configuredTransaction) ->
+          assert.equal configuredTransaction.id, 'POST /machines'
+          assert.strictEqual configuredTransaction.host, 'hostname.tld'
+          assert.equal configuredTransaction.port, 9876
+          assert.strictEqual configuredTransaction.protocol, 'https:'
+          assert.strictEqual configuredTransaction.fullPath, '/my/path/to/api' + '/machines'
           done()
 
   describe 'executeTransaction(transaction, callback)', () ->
@@ -663,29 +682,39 @@ describe 'TransactionRunner', ()->
       describe 'with a beforeAll hook', () ->
         legacyApiFunction = (callback) ->
           callback()
+        anotherLegacyApiFunction = (cb) ->
+          cb()
 
         beforeAllStub = sinon.spy(legacyApiFunction)
+        beforeAllStubAnother = sinon.spy anotherLegacyApiFunction
 
         beforeEach () ->
           runner.hooks.beforeAll beforeAllStub
+          runner.hooks.beforeAll beforeAllStubAnother
 
         it 'should run the hooks', (done) ->
           runner.executeAllTransactions [], runner.hooks, () ->
             assert.ok beforeAllStub.called
+            assert.ok beforeAllStubAnother.called
             done()
 
       describe 'with an afterAll hook', () ->
         legacyApiFunction = (callback) ->
           callback()
+        anotherLegacyApiFunction = (cb) ->
+          cb()
 
         afterAllStub = sinon.spy legacyApiFunction
+        afterAllStubAnother = sinon.spy anotherLegacyApiFunction
 
         beforeEach () ->
           runner.hooks.afterAll afterAllStub
+          runner.hooks.afterAll afterAllStubAnother
 
         it 'should run the hooks', (done) ->
           runner.executeAllTransactions [], runner.hooks, () ->
             assert.ok afterAllStub.called
+            assert.ok afterAllStubAnother.called
             done()
 
       describe 'with multiple hooks for the same events', () ->
@@ -707,6 +736,7 @@ describe 'TransactionRunner', ()->
           runner.executeAllTransactions [], runner.hooks, () ->
             assert.ok beforeAllStub1.calledBefore(beforeAllStub2)
             assert.ok beforeAllStub2.called
+            assert.ok beforeAllStub2.calledBefore(afterAllStub1)
             assert.ok afterAllStub1.calledBefore(afterAllStub2)
             assert.ok afterAllStub2.called
             done()
@@ -760,6 +790,7 @@ describe 'TransactionRunner', ()->
           runner.executeAllTransactions [], runner.hooks, () ->
             assert.ok beforeAllStub1.calledBefore(beforeAllStub2)
             assert.ok beforeAllStub2.called
+            assert.ok beforeAllStub2.calledBefore(afterAllStub1)
             assert.ok afterAllStub1.calledBefore(afterAllStub2)
             assert.ok afterAllStub2.called
             done()
@@ -852,6 +883,26 @@ describe 'TransactionRunner', ()->
             call = configuration.emitter.emit.getCall(0)
             assert.notOk configuration.emitter.emit.calledWith "test error"
             assert.property transactions, 'prop'
+            done()
+
+        it 'should be able to call "log" from inside the function', (done) ->
+          functionString = """
+          function(transactions){
+            log(transactions[Object.keys(transactions)[0]]);
+            transactions['prop'] = 'that';
+          }
+          """
+          runner.hooks.beforeAll functionString
+
+          transactions = {'some': 'mess'}
+
+          runner.executeAllTransactions transactions, runner.hooks, () ->
+            call = configuration.emitter.emit.getCall(0)
+            assert.notOk configuration.emitter.emit.calledWith "test error"
+            assert.property transactions, 'prop'
+            assert.isArray runner.logs
+            assert.lengthOf runner.logs, 1
+            assert.propertyVal runner.logs[0], 'content', 'mess'
             done()
 
     describe '*Each hooks with standard async API (first argument transactions, second callback)', () ->
@@ -1310,7 +1361,7 @@ describe 'TransactionRunner', ()->
               messages.push configuration.emitter.emit.getCall(callNo).args[1].message
             done()
 
-  describe 'runHoook(hook, transaction, callback)', () ->
+  describe 'runHook(hook, transaction, callback)', () ->
     describe 'when sandbox mode is on (hook function is a string)', () ->
 
       before () ->
@@ -1406,14 +1457,25 @@ describe 'TransactionRunner', ()->
           assert.property transaction, 'prop'
           done()
 
-      it 'should have access to console', (done) ->
+      it 'should have access to log', (done) ->
+        hook = """
+        function(transaction){
+          log('log test');
+        }
+        """
+        runner.runHook hook, {}, (err) ->
+          return done new Error err if err
+          done()
+
+      it 'should NOT have access to console', (done) ->
         hook = """
         function(transaction){
           console.log('console test');
         }
         """
         runner.runHook hook, {}, (err) ->
-          return done new Error err if err
+          assert.isDefined err
+          assert.include err, 'console'
           done()
 
   describe 'getNameForTransaction(hook, transaction, callback)', () ->

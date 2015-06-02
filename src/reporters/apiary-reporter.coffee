@@ -10,7 +10,7 @@ packageConfig = require './../../package.json'
 logger = require './../logger'
 
 class ApiaryReporter
-  constructor: (emitter, stats, tests, config) ->
+  constructor: (emitter, stats, tests, config, runner) ->
     @type = "cli"
     @stats = stats
     @tests = tests
@@ -19,6 +19,7 @@ class ApiaryReporter
     @endedAt = null
     @remoteId = null
     @config = config
+    @runner = runner
     @reportUrl = null
     @configureEmitter emitter
     @errors = []
@@ -110,27 +111,25 @@ class ApiaryReporter
       data = @_transformTestToReporter test
       path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
       @_performRequest path, 'POST', data, (error, response, parsedBody) ->
-        if error
-          logger.error error
+        logger.error error if error
 
     emitter.on 'test fail', (test) =>
       data = @_transformTestToReporter test
       path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
       @_performRequest path, 'POST', data, (error, response, parsedBody) ->
-        if error
-          logger.error error
+        logger.error error if error
 
     emitter.on 'end', (callback) =>
       data =
         endedAt: Math.round(new Date().getTime() / 1000)
         result: @stats
         status: if (@stats['failures'] > 0 or @stats['errors'] > 0) then 'failed' else 'passed'
+        logs: @runner.logs if @runner?.logs?.length
 
       path = '/apis/' + @configuration['apiSuite'] + '/tests/run/' + @remoteId
 
       @_performRequest path, 'PATCH', data, (error, response, parsedBody) =>
-        if error
-          logger.error error
+        logger.error error if error
         reportUrl = @reportUrl || "https://app.apiary.io/#{@configuration.apiSuite}/tests/run/#{@remoteId}"
         logger.complete "See results in Apiary at: #{reportUrl}"
         callback()
@@ -155,6 +154,7 @@ class ApiaryReporter
       origin: test['origin']
       duration: test['duration']
       result: test['status']
+      startedAt: test['startedAt']
       resultData:
         request: test['request']
         realResponse: test['actual']

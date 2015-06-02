@@ -12,7 +12,7 @@ config =
     complete: 7
     actual: 8
     expected: 9
-    diff: 10
+    hook: 10
     request: 11
     skip: 12
     warn: 13
@@ -32,7 +32,7 @@ config =
     complete: 'green'
     actual: 'red'
     expected: 'red'
-    diff: 'red'
+    hook: 'green'
     request: 'green'
     skip: 'yellow'
     error: 'red'

@@ -55,14 +55,14 @@ describe "DreddCommand class Integration", () ->
   before ->
     for method in ['warn', 'error'] then do (method) ->
       sinon.stub loggerStub, method, (chunk) -> stderr += "\n#{method}: #{chunk}"
-    for method in ['log', 'info', 'silly', 'verbose', 'test', 'diff', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual'] then do (method) ->
+    for method in ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual'] then do (method) ->
       sinon.stub loggerStub, method, (chunk) -> stdout += "\n#{method}: #{chunk}"
     return
 
   after ->
     for method in ['warn', 'error']
       loggerStub[method].restore()
-    for method in ['log', 'info', 'silly', 'verbose', 'test', 'diff', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual']
+    for method in ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual']
       loggerStub[method].restore()
     return
 

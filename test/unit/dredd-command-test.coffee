@@ -65,14 +65,14 @@ describe "DreddCommand class", () ->
   before ->
     for method in ['warn', 'error'] then do (method) ->
       sinon.stub loggerStub, method, (chunk) -> stderr += "\n#{method}: #{chunk}"
-    for method in ['log', 'info', 'silly', 'verbose', 'test', 'diff', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual'] then do (method) ->
+    for method in ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual'] then do (method) ->
       sinon.stub loggerStub, method, (chunk) -> stdout += "\n#{method}: #{chunk}"
     return
 
   after ->
     for method in ['warn', 'error']
       loggerStub[method].restore()
-    for method in ['log', 'info', 'silly', 'verbose', 'test', 'diff', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual']
+    for method in ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual']
       loggerStub[method].restore()
     return
 
@@ -342,7 +342,6 @@ describe "DreddCommand class", () ->
 
     describe 'and I pass another CLI argument', () ->
       it 'should want to exit with status 0', () ->
-        console.log stderr
         assert.equal exitStatus, 0
 
       it 'should call dredd run', () ->

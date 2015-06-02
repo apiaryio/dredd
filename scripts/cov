@@ -5,6 +5,8 @@
 # Example:
 # ./scripts/cov html-cov > cov.html
 
+rm -rf ./src-cov
+
 COV=./node_modules/coffee-coverage/bin/coffeecoverage
 MOCHA=./node_modules/mocha/bin/mocha
 

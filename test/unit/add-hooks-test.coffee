@@ -40,6 +40,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
 
   describe 'constructor', ->
     runner =
+      logs: ['item']
       configuration:
         options:
           hookfiles: null
@@ -52,6 +53,18 @@ describe 'addHooks(runner, transactions, callback)', () ->
         assert.strictEqual runner.hooks, runner.hooks
         assert.deepProperty runner, 'hooks.transactions'
         done()
+
+
+    it 'should pass runner.logs to runner.hooks.logs', (done)->
+      addHooks runner, transactions, (err) ->
+        return err if err
+        assert.isDefined runner.hooks
+        assert.instanceOf runner.hooks, hooksStub
+        assert.deepProperty runner, 'hooks.logs'
+        assert.isDefined runner.hooks.logs
+        assert.strictEqual runner.hooks.logs, runner.logs
+        done()
+
 
   describe 'with no pattern', () ->
 

@@ -61,6 +61,8 @@ describe 'ApiaryReporter', () ->
         title: "POST /machines"
         message: "headers: Value of the ‘content-type’ must be application/json.\nbody: No validator found for real data media type 'text/plain' and expected data media type 'application/json'.\nstatusCode: Real and expected data does not match.\n"
 
+        startedAt: (1234567890 * 1000) # JavaScript Date.now() timestamp (UNIX-like timestamp * 1000 precision)
+
         origin:
           filename: './test/fixtures/multifile/greeting.apib'
           apiName: 'Greeting API'
@@ -262,6 +264,14 @@ describe 'ApiaryReporter', () ->
         parsedBody = JSON.parse requestBody
         assert.property parsedBody['origin'], 'filename'
 
+      it 'should have startedAt timestamp in the request', () ->
+        emitter = new EventEmitter
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+        apiaryReporter.remoteId = runId
+        emitter.emit 'test pass', test
+        parsedBody = JSON.parse requestBody
+        assert.propertyVal parsedBody, 'startedAt', (1234567890 * 1000)
+
     describe 'when adding failing test', () ->
       call = null
       runId = '507f1f77bcf86cd799439011'
@@ -284,10 +294,18 @@ describe 'ApiaryReporter', () ->
     describe 'when ending', () ->
       call = null
       runId = '507f1f77bcf86cd799439011'
+      requestBody = null
 
       beforeEach () ->
         uri = '/apis/public/tests/run/' + runId
+        # this is a hack how to get access to the performed request from nock
+        # nock isn't able to provide it
+        getBody = (body) ->
+          requestBody = body
+          return body
+
         call = nock(env['APIARY_API_URL']).
+          filteringRequestBody(getBody).
           patch(uri).
           reply(201, {"_id": runId})
 
@@ -314,6 +332,19 @@ describe 'ApiaryReporter', () ->
         apiaryReporter.reportUrl = "https://absolutely.fency.url/wich-can-change/some/id"
         emitter.emit 'end', () ->
           assert.ok loggerStub.complete.calledWith 'See results in Apiary at: https://absolutely.fency.url/wich-can-change/some/id'
+          done()
+
+      it 'should send runner.logs to Apiary at the end of testRun', (done) ->
+        emitter = new EventEmitter
+        logMessages = ['a', 'b']
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}, {logs: clone(logMessages)}
+        apiaryReporter.remoteId = runId
+        emitter.emit 'end', () ->
+          assert.isString requestBody
+          parsedBody = JSON.parse requestBody
+          assert.isObject parsedBody
+          assert.property parsedBody, 'logs'
+          assert.deepEqual parsedBody.logs, logMessages
           done()
 
   describe 'with Apiary API token and suite id', () ->
@@ -346,6 +377,9 @@ describe 'ApiaryReporter', () ->
         status: "fail"
         title: "POST /machines"
         message: "headers: Value of the ‘content-type’ must be application/json.\nbody: No validator found for real data media type 'text/plain' and expected data media type 'application/json'.\nstatusCode: Real and expected data does not match.\n"
+
+        startedAt: (1234567890 * 1000) # JavaScript Date.now() timestamp (UNIX-like timestamp * 1000 precision)
+
         actual:
           statusCode: 400
           headers:

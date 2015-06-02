@@ -1,5 +1,5 @@
 {afterAll} = require 'hooks'
 
 afterAll (done) ->
-  console.log "afterAll"
+  console.log "hooks.afterAll"
   done()

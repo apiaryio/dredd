@@ -1,10 +1,12 @@
+hooksLog = require './hooks-log'
 
 # READ THIS! Disclaimer:
 # Do not add any functionality to this class unless you want to expose it to the Hooks API.
 # This class is only an interface for users of Dredd hooks.
 
 class Hooks
-  constructor: ->
+  constructor: (options = {}) ->
+    {@logs, @logger} = options
     @transactions = {}
     @beforeHooks = {}
     @afterHooks = {}
@@ -36,6 +38,12 @@ class Hooks
       hooks[name].push hook
     else
       hooks[name] = [hook]
+
+  # log(logVariant, content)
+  # log(content)
+  log: (args...) =>
+    @logs = hooksLog @logs, @logger, args...
+    return
 
   # This is not part of hooks API
   # This is here only because it has to be injected into sandboxed context

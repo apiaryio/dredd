@@ -5,7 +5,7 @@ clone = require 'clone'
 bodyParser = require 'body-parser'
 fs = require 'fs'
 
-PORT = 3333
+PORT = 8887
 CMD_PREFIX = ''
 
 stderr = ''
@@ -289,6 +289,183 @@ describe "Command line interface", () ->
         assert.deepProperty receivedRequest, 'resultData.result.body.validator'
         assert.deepProperty receivedRequest, 'resultData.result.headers.validator'
         assert.deepProperty receivedRequest, 'resultData.result.statusCode.validator'
+
+
+    describe "when using reporter -r apiary with hooks.log used in hookfile", () ->
+      server = null
+      server2 = null
+      receivedRequest = null
+      receivedStep = null
+
+      before (done) ->
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --reporter apiary --hookfiles=./test/fixtures/hooks_log.coffee"
+        stderr = stdout = ''
+
+        apiary = express()
+        app = express()
+
+        apiary.use bodyParser.json(size:'5mb')
+
+        apiary.patch '/apis/*', (req, res) ->
+          if req.body and req.url.indexOf('/tests/run') > -1
+            receivedRequest ?= clone(req.body)
+          res.type('json').status(200).send
+            _id: 'xyz_ABC_id'
+            testRunId: '7890_testRunId'
+            reportUrl: 'http://url.me/test/run/7890_id'
+
+        apiary.post '/apis/*', (req, res) ->
+          if req.body and req.url.indexOf('/tests/steps') > -1
+            receivedStep ?= clone(req.body)
+          res.type('json').status(201).send
+            _id: 'xyz_ABC_id'
+            testRunId: '7890_testRunId'
+            reportUrl: 'http://url.me/test/run/7890_id'
+
+        apiary.all '*', (req, res) ->
+          res.type 'json'
+          res.send {}
+
+        app.get '/machines', (req, res) ->
+          machine =
+            type: 'bulldozer'
+            name: 'willy'
+          response = [machine]
+          res.type('json').status(200).send response
+
+        server = app.listen PORT, () ->
+          server2 = apiary.listen (PORT+1), ->
+            env = clone process.env
+            env['APIARY_API_URL'] = "http://127.0.0.1:#{PORT+1}"
+            execCommand cmd, {env}, () ->
+              server2.close ->
+                server.close ->
+
+        server.once 'close', done
+
+      it 'should exit with status 0', ()->
+        assert.equal exitStatus, 0
+
+      it 'should print log to console too (thanks to logger)', ()->
+        # because --level=info is lower than --level=hook
+        assert.include (stdout + stderr), 'using hooks.log to debug'
+
+      it 'should use toString when using log in hooks too', ->
+        assert.include (stdout + stderr), 'Error object!'
+
+      it 'should send result stats in PATCH request to Apiary with logs', ()->
+        assert.isObject receivedRequest
+        assert.deepPropertyVal receivedRequest, 'status', 'passed'
+        assert.deepProperty receivedRequest, 'endedAt'
+        assert.deepProperty receivedRequest, 'logs'
+        assert.isArray receivedRequest.logs
+        assert.lengthOf receivedRequest.logs, 3
+        assert.property receivedRequest.logs[0], 'timestamp'
+        assert.include receivedRequest.logs[0].content, 'Error object!'
+        assert.property receivedRequest.logs[1], 'timestamp'
+        assert.deepPropertyVal receivedRequest.logs[1], 'content', 'true'
+        assert.property receivedRequest.logs[2], 'timestamp'
+        assert.deepPropertyVal receivedRequest.logs[2], 'content', 'using hooks.log to debug'
+        assert.deepProperty receivedRequest, 'result.tests'
+        assert.deepProperty receivedRequest, 'result.failures'
+        assert.deepProperty receivedRequest, 'result.errors'
+        assert.deepProperty receivedRequest, 'result.passes'
+        assert.deepProperty receivedRequest, 'result.start'
+        assert.deepProperty receivedRequest, 'result.end'
+
+      it 'should send testStep with startedAt larger than before hook log timestamp', () ->
+        assert.isObject receivedStep
+        assert.isNumber receivedStep.startedAt
+        assert.operator receivedStep.startedAt, '>=', receivedRequest.logs[0].timestamp
+        assert.operator receivedStep.startedAt, '>=', receivedRequest.logs[1].timestamp
+
+      it 'should send testStep with startedAt smaller than after hook log timestamp', () ->
+        assert.isObject receivedStep
+        assert.isNumber receivedStep.startedAt
+        assert.operator receivedStep.startedAt, '<=', receivedRequest.logs[2].timestamp
+
+
+    describe "when being in sandbox and while using reporter -r apiary with hooks.log used in hookfile", () ->
+      server = null
+      server2 = null
+      receivedRequest = null
+      receivedStep = null
+
+      before (done) ->
+        cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --reporter apiary --level=info --sandbox --hookfiles=./test/fixtures/sandboxed_hooks_log.js"
+        stderr = stdout = ''
+
+        apiary = express()
+        app = express()
+
+        app.get '/machines', (req, res) ->
+          machine =
+            type: 'bulldozer'
+            name: 'willy'
+          response = [machine]
+          res.type('json').status(200).send response
+
+        apiary.use bodyParser.json(size:'5mb')
+
+        apiary.patch '/apis/*', (req, res) ->
+          if req.body and req.url.indexOf('/tests/run') > -1
+            receivedRequest ?= clone(req.body)
+          res.type('json').status(200).send
+            _id: 'ABC_123_id'
+            testRunId: '5555_my_testRunId'
+            reportUrl: 'http://url.different.tld/test/run/abcd_id'
+
+        apiary.post '/apis/*', (req, res) ->
+          if req.body and req.url.indexOf('/tests/steps') > -1
+            receivedStep ?= clone(req.body)
+          res.type('json').status(201).send
+            _id: 'ABC_123_id'
+            testRunId: '5555_my_testRunId'
+            reportUrl: 'http://url.different.tld/test/run/abcd_id'
+
+        apiary.all '*', (req, res) ->
+          res.type 'json'
+          res.send {}
+
+        server = app.listen PORT, () ->
+          server2 = apiary.listen (PORT+1), ->
+            env = clone process.env
+            env['APIARY_API_URL'] = "http://127.0.0.1:#{PORT+1}"
+            execCommand cmd, {env}, () ->
+              server2.close ->
+                server.close ->
+
+        server.once 'close', done
+
+      it 'should exit with status 0', ()->
+        assert.equal exitStatus, 0
+
+      it 'should not contain the logs from hooks in console output', ->
+        # because we are running in sandboxed mode with higher --level
+        assert.notInclude (stdout + stderr), 'using sandboxed hooks.log'
+        assert.notInclude (stdout + stderr), 'shall not print'
+
+      it 'should send result stats in PATCH request to Apiary with logs', ()->
+        assert.isObject receivedRequest
+        assert.deepPropertyVal receivedRequest, 'status', 'passed'
+        assert.deepProperty receivedRequest, 'endedAt'
+        assert.deepProperty receivedRequest, 'logs'
+        assert.isArray receivedRequest.logs
+        assert.lengthOf receivedRequest.logs, 2
+        assert.property receivedRequest.logs[0], 'timestamp'
+        assert.deepPropertyVal receivedRequest.logs[0], 'content', 'shall not print, but be present in logs'
+        assert.property receivedRequest.logs[1], 'timestamp'
+        assert.deepPropertyVal receivedRequest.logs[1], 'content', 'using sandboxed hooks.log'
+
+      it 'should send testStep with startedAt larger than before hook log timestamp', () ->
+        assert.isObject receivedStep
+        assert.isNumber receivedStep.startedAt
+        assert.operator receivedStep.startedAt, '>=', receivedRequest.logs[0].timestamp
+
+      it 'should send testStep with startedAt smaller than after hook log timestamp', () ->
+        assert.isObject receivedStep
+        assert.isNumber receivedStep.startedAt
+        assert.operator receivedStep.startedAt, '<=', receivedRequest.logs[1].timestamp
 
 
     describe "when using additional reporters with -r", () ->
@@ -703,7 +880,7 @@ describe "Command line interface", () ->
     containsLine = (str, expected) ->
       lines = str.split('\n')
       for line in lines
-        if line is expected
+        if line.indexOf(expected) > -1
           return true
       return false
 
@@ -729,8 +906,8 @@ describe "Command line interface", () ->
       server.on 'close', done
 
     it 'should execute the before and after events', () ->
-      assert.ok containsLine(output.stdout, 'beforeAll')
-      assert.ok containsLine(output.stdout, 'afterAll')
+      assert.ok containsLine(output.stdout, 'hooks.beforeAll'), (stdout)
+      assert.ok containsLine(output.stdout, 'hooks.afterAll'), (stdout)
 
   describe 'when describing both hooks and events in hookfiles', () ->
     output = {}
@@ -738,8 +915,8 @@ describe "Command line interface", () ->
       ret = []
       lines = str.split('\n')
       for line in lines
-        if line.indexOf('*** ') is 0
-          ret.push(line.substr(4))
+        if line.indexOf('*** ') > -1
+          ret.push(line.substr(line.indexOf('*** ') + 4))
       return ret.join(',')
 
     before (done) ->
@@ -869,7 +1046,7 @@ describe "Command line interface", () ->
         assert.include stdout, 'after message'
 
       it 'should exit with status 0', () ->
-        assert.equal exitStatus, 0
+        assert.equal exitStatus, 0, (stdout+stderr)
 
       it 'server should receive 3 requests', () ->
         assert.lengthOf receivedRequests, 3
@@ -968,7 +1145,7 @@ describe "Command line interface", () ->
     resourceRequested = false
 
     before (done) ->
-      cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --server ./test/fixtures/scripts/dummy-server.sh --no-color"
+      cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --server ./test/fixtures/scripts/dummy-server.sh --no-color --server-wait=1"
 
       app = express()
 
