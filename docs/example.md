@@ -57,3 +57,7 @@ For more complex examples applications, please refer to:
 
 - [Express.js example application](http://github.com/apiaryio/dredd-example)
 - [Ruby on Rails example application](https://github.com/theodorton/dredd-test-rails)
+
+
+[API Blueprint]: http://apiblueprint.org/
+[Express.js]: http://expressjs.com/starter/hello-world.html
