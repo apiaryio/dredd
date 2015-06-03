@@ -1,12 +1,13 @@
 {
   "name": "dredd",
-  "version": "0.5.5",
+  "version": "0.6.0",
   "description": "API Blueprint testing tool",
   "main": "lib/dredd.js",
   "bin": {
     "dredd": "bin/dredd"
   },
   "scripts": {
+    "changelist": "github-changes -o apiaryio -r dredd --only-pulls --use-commit-body --file HISTORY-Dredd.md",
     "pretest": "coffeelint ./src",
     "test": "scripts/test",
     "prepublish": "scripts/prepublish"
@@ -47,6 +48,7 @@
     "coffeelint": "^1.9.2",
     "coveralls": "~2.11.2",
     "express": "^4.12.1",
+    "github-changes": "^1.0.0",
     "jscoverage": "~0.5.9",
     "mocha": "^2.1.0",
     "mocha-lcov-reporter": "0.0.2",

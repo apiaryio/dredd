@@ -207,7 +207,7 @@ Generally, if you want to add Dredd to your existing test suite, you can just sa
 In some eco-systems, there is native support for adding Dredd to
 
 - [grunt-dredd](https://github.com/mfgea/grunt-dredd) a grunt task wrapper
-- [dredd-rack]( https://github.com/gonzalo-bulnes/dredd-rack) a rake task and rack wrapper
+- [dredd-rack](https://github.com/gonzalo-bulnes/dredd-rack) a rake task and rack wrapper
 
 ## Continuous Integration
 
