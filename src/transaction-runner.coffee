@@ -264,9 +264,9 @@ class TransactionRunner
         if transaction.fail
           transaction.test.status = 'fail'
           transaction.test.message = "Failed in after hook: " + transaction.fail
-          @configuration.emitter.emit 'test fail', transaction.test
+          @configuration.emitter.emit 'test fail', transaction.test, () ->
         else
-          @configuration.emitter.emit 'test pass', transaction.test
+          @configuration.emitter.emit 'test pass', transaction.test, () ->
     callback()
 
   executeAllTransactions: (transactions, hooks, callback) =>
@@ -341,16 +341,16 @@ class TransactionRunner
       origin: transaction.origin
       startedAt: transaction.startedAt
 
-    configuration.emitter.emit 'test start', test
+    configuration.emitter.emit 'test start', test, () ->
 
     if transaction.skip
       # manually set to skip a test (can be done in hooks too)
-      configuration.emitter.emit 'test skip', test
+      configuration.emitter.emit 'test skip', test, () ->
       return callback()
     else if transaction.fail
       # manually set to fail a test in hooks
       test.message = "Failed in before hook: " + transaction.fail
-      configuration.emitter.emit 'test fail', test
+      configuration.emitter.emit 'test fail', test, () ->
       return callback()
     else if configuration.options['dry-run']
       logger.info "Dry run, skipping API Tests..."
@@ -361,11 +361,11 @@ class TransactionRunner
       transaction.skip = true
       return callback()
     else if configuration.options.method.length > 0 and not (transaction.request.method in configuration.options.method)
-      configuration.emitter.emit 'test skip', test
+      configuration.emitter.emit 'test skip', test, () ->
       transaction.skip = true
       return callback()
     else if configuration.options.only.length > 0 and not (transaction.name in configuration.options.only)
-      configuration.emitter.emit 'test skip', test
+      configuration.emitter.emit 'test skip', test, () ->
       transaction.skip = true
       return callback()
     else
@@ -376,7 +376,9 @@ class TransactionRunner
           buffer = buffer + chunk
 
         res.on 'error', (error) ->
-          configuration.emitter.emit 'test error', error, test if error
+          if error
+            configuration.emitter.emit 'test error', error, test, () ->
+
           return callback()
 
         res.once 'end', ->
@@ -391,7 +393,8 @@ class TransactionRunner
           transaction['real'] = real
 
           gavel.isValid real, transaction.expected, 'response', (isValidError, isValid) ->
-            configuration.emitter.emit 'test error', isValidError, test if isValidError
+            if isValidError
+              configuration.emitter.emit 'test error', isValidError, test, () ->
 
             test.start = test.start
             test.title = transaction.id
@@ -406,7 +409,7 @@ class TransactionRunner
 
             gavel.validate real, transaction.expected, 'response', (validateError, result) ->
               if not isValidError and validateError
-                configuration.emitter.emit 'test error', validateError, test
+                configuration.emitter.emit 'test error', validateError, test, () ->
 
               message = ''
 
@@ -423,7 +426,7 @@ class TransactionRunner
               transaction.test = test
 
               if test.valid == false
-                configuration.emitter.emit 'test fail', test
+                configuration.emitter.emit 'test fail', test, () ->
 
               return callback()
 
@@ -435,13 +438,13 @@ class TransactionRunner
         req = transport.request requestOptions, handleRequest
 
         req.on 'error', (error) ->
-          configuration.emitter.emit 'test error', error, test if error
+          configuration.emitter.emit 'test error', error, test, () ->
           return callback()
 
         req.write transaction.request['body'] if transaction.request['body'] != ''
         req.end()
       catch error
-        configuration.emitter.emit 'test error', error, test if error
+        configuration.emitter.emit 'test error', error, test, () ->
         return callback()
 
   isMultipart: (requestOptions) ->

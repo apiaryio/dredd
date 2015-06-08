@@ -24,6 +24,7 @@ class ApiaryReporter
     @configureEmitter emitter
     @errors = []
     @verbose = @_get('dreddRestDebug', 'DREDD_REST_DEBUG', null)?
+    @serverError = false
     @configuration =
       apiUrl: @_get 'apiaryApiUrl', 'APIARY_API_URL', 'https://api.apiary.io'
       apiToken: @_get 'apiaryApiKey', 'APIARY_API_KEY', null
@@ -67,6 +68,7 @@ class ApiaryReporter
 
   configureEmitter: (emitter) =>
     emitter.on 'start', (blueprintsData, callback) =>
+      return callback() if @serverError == true
       @uuid = uuid.v4()
       @startedAt = Math.round(new Date().getTime() / 1000)
 
@@ -107,19 +109,24 @@ class ApiaryReporter
 
           callback()
 
-    emitter.on 'test pass', (test) =>
+    emitter.on 'test pass', (test, callback) =>
+      return callback() if @serverError == true
       data = @_transformTestToReporter test
       path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
       @_performRequest path, 'POST', data, (error, response, parsedBody) ->
         logger.error error if error
+        callback()
 
-    emitter.on 'test fail', (test) =>
+    emitter.on 'test fail', (test, callback) =>
+      return callback() if @serverError == true
       data = @_transformTestToReporter test
       path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
       @_performRequest path, 'POST', data, (error, response, parsedBody) ->
         logger.error error if error
+        callback()
 
     emitter.on 'end', (callback) =>
+      return callback() if @serverError == true
       data =
         endedAt: Math.round(new Date().getTime() / 1000)
         result: @stats
@@ -222,10 +229,27 @@ class ApiaryReporter
       if @verbose
         logger.log 'Starting REST Reporter HTTPS Request'
       req = https.request options, handleRequest
+
+      req.on 'error', (error) =>
+        @serverError = true
+        if error.code == 'ECONNREFUSED'
+          logger.error "Apiary reporter: Error connecting to Apiary test reporting API."
+          callback()
+        else
+          return callback error, req, null
+
     else
       if @verbose
         logger.log 'Starting REST Reporter HTTP Response'
       req = http.request options, handleRequest
+
+      req.on 'error', (error) =>
+        @serverError = true
+        if error.code == 'ECONNREFUSED'
+          logger.error "Apiary reporter: Error connecting to Apiary test reporting API."
+          callback()
+        else
+          callback error, req, null
 
     req.write JSON.stringify body
     req.end()

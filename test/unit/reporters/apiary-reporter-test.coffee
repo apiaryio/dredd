@@ -20,10 +20,14 @@ describe 'ApiaryReporter', () ->
   beforeEach () ->
     sinon.stub loggerStub, 'info'
     sinon.stub loggerStub, 'complete'
+    sinon.stub loggerStub, 'error'
+    sinon.stub loggerStub, 'warn'
 
   afterEach () ->
     sinon.stub loggerStub.info.restore()
     sinon.stub loggerStub.complete.restore()
+    sinon.stub loggerStub.error.restore()
+    sinon.stub loggerStub.warn.restore()
 
   before () ->
     nock.disableNetConnect()
@@ -147,6 +151,27 @@ describe 'ApiaryReporter', () ->
       nock.cleanAll()
       done()
 
+    describe "_performRequest", () ->
+      describe 'when server is not available', () ->
+        beforeEach () ->
+          nock.enableNetConnect()
+          nock.cleanAll()
+
+        it 'should log human readable message', (done) ->
+          emitter = new EventEmitter
+          apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+          apiaryReporter._performRequest '/', 'POST', '', () ->
+            assert.ok loggerStub.error.calledWith 'Apiary reporter: Error connecting to Apiary test reporting API.'
+            done()
+
+        it 'should set server error to true', (done) ->
+          emitter = new EventEmitter
+          apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+          apiaryReporter._performRequest '/', 'POST', '', () ->
+            assert.isTrue apiaryReporter.serverError
+            done()
+
+
     describe 'when starting', () ->
       call = null
       runId = '507f1f77bcf86cd799439011'
@@ -229,6 +254,15 @@ describe 'ApiaryReporter', () ->
           assert.propertyVal parsedBody, 'endpoint', 'http://my.server.co:8080'
           done()
 
+      describe 'serverError is true', () ->
+        it 'should not do anything', (done) ->
+          emitter = new EventEmitter
+          apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+          apiaryReporter.serverError = true
+          emitter.emit 'start', blueprintData, () ->
+            assert.isFalse call.isDone()
+            done()
+
     describe 'when adding passing test', () ->
       call = null
       runId = '507f1f77bcf86cd799439011'
@@ -249,28 +283,41 @@ describe 'ApiaryReporter', () ->
           post(uri).
           reply(201, {"_id": runId})
 
-      it 'should call "create new test step" HTTP resource', () ->
+      it 'should call "create new test step" HTTP resource', (done) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
-        emitter.emit 'test pass', test
-        assert.isTrue call.isDone()
+        emitter.emit 'test pass', test, () ->
+          assert.isTrue call.isDone()
+          done()
 
-      it 'should have origin with filename in the request', () ->
+      it 'should have origin with filename in the request', (done) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
-        emitter.emit 'test pass', test
-        parsedBody = JSON.parse requestBody
-        assert.property parsedBody['origin'], 'filename'
+        emitter.emit 'test pass', test, () ->
+          parsedBody = JSON.parse requestBody
+          assert.property parsedBody['origin'], 'filename'
+          done()
 
-      it 'should have startedAt timestamp in the request', () ->
+      it 'should have startedAt timestamp in the request', (done) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
-        emitter.emit 'test pass', test
-        parsedBody = JSON.parse requestBody
-        assert.propertyVal parsedBody, 'startedAt', (1234567890 * 1000)
+        emitter.emit 'test pass', test, () ->
+          parsedBody = JSON.parse requestBody
+          assert.propertyVal parsedBody, 'startedAt', (1234567890 * 1000)
+          done()
+
+      describe 'serverError is true', () ->
+        it 'should not do anything', (done) ->
+          emitter = new EventEmitter
+          apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+          apiaryReporter.remoteId = runId
+          apiaryReporter.serverError = true
+          emitter.emit 'test pass', test, () ->
+            assert.isFalse call.isDone()
+            done()
 
     describe 'when adding failing test', () ->
       call = null
@@ -283,13 +330,23 @@ describe 'ApiaryReporter', () ->
           post(uri).
           reply(201, {"_id": runId})
 
-      it 'should call "create new test step" HTTP resource', () ->
+      it 'should call "create new test step" HTTP resource', (done) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
-        emitter.emit 'test fail', test
-        assert.isTrue call.isDone()
+        emitter.emit 'test fail', test, () ->
+          assert.isTrue call.isDone()
+          done()
 
+      describe 'serverError is true', () ->
+        it 'should not do anything', (done) ->
+          emitter = new EventEmitter
+          apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+          apiaryReporter.remoteId = runId
+          apiaryReporter.serverError = true
+          emitter.emit 'test fail', test, () ->
+            assert.isFalse call.isDone()
+            done()
 
     describe 'when ending', () ->
       call = null
@@ -317,7 +374,7 @@ describe 'ApiaryReporter', () ->
           assert.isTrue call.isDone()
           done()
 
-      it 'should return generated url if no reportUrl is not available', (done) ->
+      it 'should return generated url if no reportUrl is available', (done) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
@@ -346,6 +403,16 @@ describe 'ApiaryReporter', () ->
           assert.property parsedBody, 'logs'
           assert.deepEqual parsedBody.logs, logMessages
           done()
+
+      describe 'serverError is true', () ->
+        it 'should not do enything', (done) ->
+          emitter = new EventEmitter
+          apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+          apiaryReporter.remoteId = runId
+          apiaryReporter.serverError = true
+          emitter.emit 'end', () ->
+            assert.isFalse call.isDone()
+            done()
 
   describe 'with Apiary API token and suite id', () ->
     stats = {}
@@ -515,12 +582,13 @@ describe 'ApiaryReporter', () ->
           matchHeader('Authentication', 'Token ' + env['APIARY_API_KEY']).
           reply(201, {"_id": runId})
 
-      it 'should call "create new test step" HTTP resource', () ->
+      it 'should call "create new test step" HTTP resource', (done) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
-        emitter.emit 'test pass', test
-        assert.isTrue call.isDone()
+        emitter.emit 'test pass', test, () ->
+          assert.isTrue call.isDone()
+          done()
 
     describe 'when adding failing test', () ->
       call = null
@@ -534,12 +602,13 @@ describe 'ApiaryReporter', () ->
           matchHeader('Authentication', 'Token ' + env['APIARY_API_KEY']).
           reply(201, {"_id": runId})
 
-      it 'should call "create new test step" HTTP resource', () ->
+      it 'should call "create new test step" HTTP resource', (done) ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
-        emitter.emit 'test fail', test
-        assert.isTrue call.isDone()
+        emitter.emit 'test fail', test, () ->
+          assert.isTrue call.isDone()
+          done()
 
 
     describe 'when ending', () ->
