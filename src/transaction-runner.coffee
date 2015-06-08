@@ -377,6 +377,7 @@ class TransactionRunner
 
         res.on 'error', (error) ->
           configuration.emitter.emit 'test error', error, test if error
+          return callback()
 
         res.once 'end', ->
 
@@ -435,6 +436,7 @@ class TransactionRunner
 
         req.on 'error', (error) ->
           configuration.emitter.emit 'test error', error, test if error
+          return callback()
 
         req.write transaction.request['body'] if transaction.request['body'] != ''
         req.end()

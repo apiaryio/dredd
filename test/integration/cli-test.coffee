@@ -227,6 +227,27 @@ describe "Command line interface", () ->
       it 'exit status should be 1', () ->
         assert.equal exitStatus, 1
 
+    describe "when server is not running", () ->
+
+      before (done) ->
+        cmd = "./bin/dredd ./test/fixtures/apiary.apib http://localhost:#{PORT} --no-color"
+        execCommand cmd, done
+
+      it 'exit status should be 1', () ->
+        assert.equal exitStatus, 1
+
+      it 'should return a understandable message', () ->
+        assert.include stdout, 'Error connecting'
+
+      it 'should report error for all transactions', () ->
+        occurences = (stdout.match(/Error connecting/g) || []).length
+        assert.equal occurences, 5
+
+      it 'should return stats', () ->
+        assert.include stdout, '5 errors'
+
+      #['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
+
   describe "when called with arguments", () ->
     describe "when using reporter -r apiary", () ->
       server = null

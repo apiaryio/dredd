@@ -420,6 +420,23 @@ describe 'TransactionRunner', ()->
           assert.ok server.isDone()
           done()
 
+
+    describe 'when server is not running', () ->
+      beforeEach () ->
+        sinon.spy configuration.emitter, 'emit'
+        runner = new Runner(configuration)
+
+      afterEach () ->
+        configuration.emitter.emit.restore()
+
+      it 'should report a error', (done) ->
+        runner.executeTransaction transaction, () ->
+          assert.ok configuration.emitter.emit.called
+          events = Object.keys(configuration.emitter.emit.args).map (value, index) ->
+            configuration.emitter.emit.args[value][0]
+          assert.include events, 'test error'
+          done()
+
   describe 'executeTransaction(transaction, callback) multipart', () ->
     multiPartTransaction = null
     notMultiPartTransaction = null

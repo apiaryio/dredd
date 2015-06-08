@@ -56,9 +56,17 @@ class CliReporter
         @errors.push test
 
     emitter.on 'test error', (error, test) =>
+      if error.code == 'ECONNREFUSED'
+        test.message = "Error connecting to server under test!"
+
       if not @inlineErrors
         @errors.push test
+
       logger.error test.title  + " duration: #{test.duration}ms"
-      logger.error error.stack
+
+      if error.code == 'ECONNREFUSED'
+        logger.error test.message
+      else
+        logger.error error.stack
 
 module.exports = CliReporter
