@@ -225,8 +225,8 @@ before("Machines > Machine > Delete a machine", function (transaction) {
   machineId = JSON.parse(requestStash['Machines > Machines collection > Create Machine'])['id'];
 
   //replacing id in url with stashed id from previous response
-  url = transaction.request.url;
-  transaction.request.url = url.replace('42', machineId);
+  url = transaction.fullPath;
+  transaction.fullPath = url.replace('42', machineId);
 });
 ```
 
@@ -355,7 +355,7 @@ This will explode with: `ReferenceError: myObject is not defined`
 
 ## Advanced Hook Examples
 
-### Modifying Transactions Prior to Execution
+### Modifying Transaction Request Body Prior to Execution
 
 ```javascript
 var hooks = require('hooks');
@@ -373,7 +373,7 @@ before("Machines > Machines collection > Get Machines", function (transaction) {
 });
 ```
 
-### Adding URI Query Parameters to All Requests
+### Adding or Changing URI Query Parameters to All Requests
 
 ```javascript
 var hooks = require('hooks');
