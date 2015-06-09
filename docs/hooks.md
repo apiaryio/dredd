@@ -4,6 +4,7 @@ Similar to any other testing framework, Dredd supports executing code around eac
 
 - loading db fixtures
 - cleanup after test steps
+- handling authentication and sessions
 - passing data between transactions (saving state from responses)
 - modifying request generated from blueprint
 - changing generated expectations
@@ -387,4 +388,23 @@ hooks.beforeEach(function(transaction){
     transaction.fullPath += "?" + paramToAdd;
   }
 };
+```
+
+### Handling sessions
+
+```javascript
+hooks = require('hooks');
+stash = {}
+
+// hook to retrieve session on a login
+hooks.after('Auth > /remoteauth/userpass > POST', function(transaction){
+  stash['token'] = JSON.parse(transaction.real.body)['sessionId'];
+});
+
+// hook to set the session cookie in all following requests
+hooks.beforeEach(function(transaction){
+  if(stash['token'] != undefined){
+    transaction.request['headers']['Cookie'] = "id=" + stash['token']
+  };
+});
 ```
