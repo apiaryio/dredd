@@ -430,7 +430,7 @@ describe 'ApiaryReporter', () ->
           error = new Error 'some error'
           emitter.emit 'test error', test, error, () ->
             assert.isArray JSON.parse(requestBody)['resultData']['errors']
-            assert.include JSON.parse(requestBody)['resultData']['errors'].join(), "Unhandled error occured when executing the transaciton."
+            assert.include JSON.parse(requestBody)['resultData']['errors'].join(), "Unhandled error occured when executing the transaction."
             done()
 
 
