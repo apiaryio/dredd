@@ -338,13 +338,110 @@ describe 'ApiaryReporter', () ->
           assert.isTrue call.isDone()
           done()
 
-      describe 'serverError is true', () ->
+      describe 'when serverError is true', () ->
         it 'should not do anything', (done) ->
           emitter = new EventEmitter
           apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
           apiaryReporter.remoteId = runId
           apiaryReporter.serverError = true
           emitter.emit 'test fail', test, () ->
+            assert.isFalse call.isDone()
+            done()
+
+    describe 'when adding test with error', () ->
+      call = null
+      runId = '507f1f77bcf86cd799439011'
+      test = null
+      requestBody = null
+
+      beforeEach () ->
+        uri = '/apis/public/tests/steps?testRunId=' + runId
+
+        # this is a hack how to get access to the performed request from nock
+        # nock isn't able to provide it
+        getBody = (body) ->
+          requestBody = body
+          return body
+
+        call = nock(env['APIARY_API_URL']).
+          filteringRequestBody(getBody).
+          post(uri).
+          reply(201, {"_id": runId})
+
+      connectionErrors = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
+
+      for errType in connectionErrors then do (errType) ->
+        describe "when error type is #{errType}", () ->
+          it 'should call "create new test step" HTTP resource', (done) ->
+            emitter = new EventEmitter
+            apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+            apiaryReporter.remoteId = runId
+            error = new Error 'some error'
+            error.code = errType
+            emitter.emit 'test error', test, error, () ->
+              assert.isTrue call.isDone()
+              done()
+
+          it 'should set result to error', (done) ->
+            emitter = new EventEmitter
+            apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+            apiaryReporter.remoteId = runId
+            error = new Error 'some error'
+            error.code = errType
+            emitter.emit 'test error', test, error, () ->
+              assert.equal JSON.parse(requestBody)['result'], 'error'
+              done()
+
+
+          it 'should set error message', (done) ->
+            emitter = new EventEmitter
+            apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+            apiaryReporter.remoteId = runId
+            error = new Error 'some error'
+            error.code = errType
+            emitter.emit 'test error', test, error, () ->
+              assert.isArray JSON.parse(requestBody)['resultData']['errors']
+              assert.include JSON.parse(requestBody)['resultData']['errors'].join(), "Error connecting to server under test!"
+              done()
+
+      describe 'when any other error', () ->
+        it 'should call "create new test step" HTTP resource', (done) ->
+          emitter = new EventEmitter
+          apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+          apiaryReporter.remoteId = runId
+          error = new Error 'some error'
+          emitter.emit 'test error', test, error, () ->
+            assert.isTrue call.isDone()
+            done()
+
+        it 'should set result to error', (done) ->
+          emitter = new EventEmitter
+          apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+          apiaryReporter.remoteId = runId
+          error = new Error 'some error'
+          emitter.emit 'test error', test, error, () ->
+            assert.equal JSON.parse(requestBody)['result'], 'error'
+            done()
+
+        it 'should set descriptive error', (done) ->
+          emitter = new EventEmitter
+          apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+          apiaryReporter.remoteId = runId
+          error = new Error 'some error'
+          emitter.emit 'test error', test, error, () ->
+            assert.isArray JSON.parse(requestBody)['resultData']['errors']
+            assert.include JSON.parse(requestBody)['resultData']['errors'].join(), "Unhandled error occured when executing the transaciton."
+            done()
+
+
+      describe 'when serverError is true', () ->
+        it 'should not do anything', (done) ->
+          emitter = new EventEmitter
+          apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+          apiaryReporter.remoteId = runId
+          apiaryReporter.serverError = true
+          error = new Error 'some error'
+          emitter.emit 'test error', test, error, () ->
             assert.isFalse call.isDone()
             done()
 

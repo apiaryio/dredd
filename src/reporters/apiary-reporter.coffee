@@ -125,6 +125,22 @@ class ApiaryReporter
         logger.error error if error
         callback()
 
+    emitter.on 'test error', (test, error, callback) =>
+      return callback() if @serverError == true
+      data = @_transformTestToReporter test
+      data.result = 'error'
+
+      connectionErrors = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
+      if connectionErrors.indexOf(error.code) > -1
+        data.resultData.errors.push "Error connecting to server under test!"
+      else
+        data.resultData.errors.push "Unhandled error occured when executing the transaciton."
+
+      path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
+      @_performRequest path, 'POST', data, (error, response, parsedBody) ->
+        logger.error error if error
+        callback()
+
     emitter.on 'end', (callback) =>
       return callback() if @serverError == true
       data =
@@ -167,6 +183,9 @@ class ApiaryReporter
         realResponse: test['actual']
         expectedResponse: test['expected']
         result: test['results']
+        warinings: []
+        errors: []
+
     return data
 
   _performRequest: (path, method, body, callback) =>
