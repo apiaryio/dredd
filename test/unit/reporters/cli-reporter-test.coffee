@@ -142,17 +142,21 @@ describe 'CliReporter', () ->
     afterEach () ->
       loggerStub.error.restore()
 
-    it 'should write error to the console', () ->
-      emitter = new EventEmitter()
-      cliReporter = new CliReporter(emitter, {}, {}, false)
-      error = new Error('connect')
-      error.code = 'ECONNREFUSED'
-      emitter.emit 'test error', error, test
+    connectionErrors = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
 
-      messages = Object.keys(loggerStub.error.args).map (value, index) ->
-        loggerStub.error.args[index][0]
+    for errType in connectionErrors then do (errType) ->
+      describe "when error type #{errType}", () ->
+        it 'should write error to the console', () ->
+          emitter = new EventEmitter()
+          cliReporter = new CliReporter(emitter, {}, {}, false)
+          error = new Error('connect')
+          error.code = errType
+          emitter.emit 'test error', error, test
 
-      assert.include messages.join(), 'Error connecting'
+          messages = Object.keys(loggerStub.error.args).map (value, index) ->
+            loggerStub.error.args[index][0]
+
+          assert.include messages.join(), 'Error connecting'
 
   describe 'when adding skipped test', () ->
 

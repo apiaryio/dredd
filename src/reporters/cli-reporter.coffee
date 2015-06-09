@@ -56,7 +56,8 @@ class CliReporter
         @errors.push test
 
     emitter.on 'test error', (error, test) =>
-      if error.code == 'ECONNREFUSED'
+      connectionErrors = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
+      if connectionErrors.indexOf(error.code) > -1
         test.message = "Error connecting to server under test!"
 
       if not @inlineErrors
@@ -64,7 +65,7 @@ class CliReporter
 
       logger.error test.title  + " duration: #{test.duration}ms"
 
-      if error.code == 'ECONNREFUSED'
+      if connectionErrors.indexOf(error.code) > -1
         logger.error test.message
       else
         logger.error error.stack
