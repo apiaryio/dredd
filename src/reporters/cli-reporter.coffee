@@ -56,9 +56,18 @@ class CliReporter
         @errors.push test
 
     emitter.on 'test error', (error, test) =>
+      connectionErrors = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
+      if connectionErrors.indexOf(error.code) > -1
+        test.message = "Error connecting to server under test!"
+
       if not @inlineErrors
         @errors.push test
+
       logger.error test.title  + " duration: #{test.duration}ms"
-      logger.error error.stack
+
+      if connectionErrors.indexOf(error.code) > -1
+        logger.error test.message
+      else
+        logger.error error.stack
 
 module.exports = CliReporter

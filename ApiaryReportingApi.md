@@ -34,7 +34,7 @@ HOST: http://api.apiary.io/
       - `success`
       - `fail`
       - `running`
-  - result (object) Result reportt
+  - result (object) Result report
     - tests
     - failures
     - passes
@@ -272,11 +272,14 @@ HOST: http://api.apiary.io/
     - Values
       - `passed`
       - `failed`
+      - `error`
   - resultData (object) ... Data from step execution
     - request  ... [Real HTTP Request](https://www.relishapp.com/apiary/gavel/v/0-1/docs/data-model#http-request)
     - realResponse ... [Real HTTP response](https://www.relishapp.com/apiary/gavel/v/0-1/docs/data-model#http-response)
     - expected Response ... [Expected HTTP Response](https://www.relishapp.com/apiary/gavel/v/0-1/docs/data-model#expected-http-response)
     - result ... [Validation result output](https://www.relishapp.com/apiary/gavel/v/0-1/docs/data-validators-and-output-format#validators-output-format)
+    - errors (array) ... Errors when executing the step
+    - warnings (array) ... Warnings when executing the step
   - stepType (string, `exampleNameTransactionName`) ... Type of the step, should be HTTP or Cucumber for instance
 
 ### Test steps collection [/apis/{suite}/tests/steps{?testRunId,include}]

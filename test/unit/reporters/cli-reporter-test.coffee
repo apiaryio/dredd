@@ -31,7 +31,7 @@ describe 'CliReporter', () ->
     it 'should write starting to the console', (done) ->
       emitter = new EventEmitter()
       cliReporter = new CliReporter(emitter, {}, {}, true)
-      emitter.emit 'start', '', () -> 
+      emitter.emit 'start', '', () ->
         assert.ok loggerStub.info.calledOnce
         done()
 
@@ -128,6 +128,35 @@ describe 'CliReporter', () ->
       cliReporter = new CliReporter(emitter, {}, {}, false)
       emitter.emit 'test error', new Error('Error'), test
       assert.ok loggerStub.error.calledTwice
+
+
+  describe 'when adding error test with connection refused', () ->
+    before () ->
+      test =
+        status: 'error'
+        title: 'Error Test'
+
+    beforeEach () ->
+      sinon.spy loggerStub, 'error'
+
+    afterEach () ->
+      loggerStub.error.restore()
+
+    connectionErrors = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
+
+    for errType in connectionErrors then do (errType) ->
+      describe "when error type #{errType}", () ->
+        it 'should write error to the console', () ->
+          emitter = new EventEmitter()
+          cliReporter = new CliReporter(emitter, {}, {}, false)
+          error = new Error('connect')
+          error.code = errType
+          emitter.emit 'test error', error, test
+
+          messages = Object.keys(loggerStub.error.args).map (value, index) ->
+            loggerStub.error.args[index][0]
+
+          assert.include messages.join(), 'Error connecting'
 
   describe 'when adding skipped test', () ->
 
