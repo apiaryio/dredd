@@ -9,6 +9,8 @@ uuid = require 'node-uuid'
 packageConfig = require './../../package.json'
 logger = require './../logger'
 
+CONNECTION_ERRORS = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
+
 class ApiaryReporter
   constructor: (emitter, stats, tests, config, runner) ->
     @type = "cli"
@@ -130,11 +132,10 @@ class ApiaryReporter
       data = @_transformTestToReporter test
       data.result = 'error'
 
-      connectionErrors = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
-      if connectionErrors.indexOf(error.code) > -1
+      if CONNECTION_ERRORS.indexOf(error.code) > -1
         data.resultData.errors.push "Error connecting to server under test!"
       else
-        data.resultData.errors.push "Unhandled error occured when executing the transaciton."
+        data.resultData.errors.push "Unhandled error occured when executing the transaction."
 
       path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
       @_performRequest path, 'POST', data, (error, response, parsedBody) ->
@@ -183,7 +184,7 @@ class ApiaryReporter
         realResponse: test['actual']
         expectedResponse: test['expected']
         result: test['results']
-        warinings: []
+        warnings: []
         errors: []
 
     return data
@@ -251,7 +252,7 @@ class ApiaryReporter
 
       req.on 'error', (error) =>
         @serverError = true
-        if error.code == 'ECONNREFUSED'
+        if CONNECTION_ERRORS.indexOf(error.code) > -1
           logger.error "Apiary reporter: Error connecting to Apiary test reporting API."
           callback()
         else
