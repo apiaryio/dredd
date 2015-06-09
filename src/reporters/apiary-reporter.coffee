@@ -246,12 +246,12 @@ class ApiaryReporter
       logger.log 'Rest Reporter Request:', JSON.stringify(info, null, 2)
 
     handleReqError = (error) =>
-        @serverError = true
-        if CONNECTION_ERRORS.indexOf(error.code) > -1
-          logger.error "Apiary reporter: Error connecting to Apiary test reporting API."
-          callback()
-        else
-          return callback error, req, null
+      @serverError = true
+      if CONNECTION_ERRORS.indexOf(error.code) > -1
+        logger.error "Apiary reporter: Error connecting to Apiary test reporting API."
+        callback()
+      else
+        return callback error, req, null
 
     if @configuration.apiUrl?.indexOf('https') is 0
       if @verbose
