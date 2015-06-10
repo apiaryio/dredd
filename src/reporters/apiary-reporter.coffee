@@ -135,10 +135,16 @@ class ApiaryReporter
       data = @_transformTestToReporter test
       data.result = 'error'
 
+      data['resultData']['result']['general'] ?= []
+
       if CONNECTION_ERRORS.indexOf(error.code) > -1
-        data.resultData.errors.push "Error connecting to server under test!"
+        data['resultData']['result']['general'].push {
+          severity: 'error', message: "Error connecting to server under test!"
+        }
       else
-        data.resultData.errors.push "Unhandled error occured when executing the transaction."
+        data['resultData']['result']['general'].push {
+          severity: 'error', message: "Unhandled error occured when executing the transaction."
+        }
 
       path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
       @_performRequest path, 'POST', data, (error, response, parsedBody) ->
@@ -187,8 +193,6 @@ class ApiaryReporter
         realResponse: test['actual']
         expectedResponse: test['expected']
         result: test['results']
-        warnings: []
-        errors: []
 
     return data
 

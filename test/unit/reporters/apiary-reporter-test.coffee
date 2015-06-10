@@ -408,8 +408,9 @@ describe 'ApiaryReporter', () ->
             error = new Error 'some error'
             error.code = errType
             emitter.emit 'test error', test, error, () ->
-              assert.isArray JSON.parse(requestBody)['resultData']['errors']
-              assert.include JSON.parse(requestBody)['resultData']['errors'].join(), "Error connecting to server under test!"
+              assert.isArray JSON.parse(requestBody)['resultData']['result']['general']
+              assert.include JSON.parse(requestBody)['resultData']['result']['general'].map((value,index) -> JSON.stringify(value)).join(),
+                "Error connecting to server under test!"
               done()
 
       describe 'when any other error', () ->
@@ -437,8 +438,9 @@ describe 'ApiaryReporter', () ->
           apiaryReporter.remoteId = runId
           error = new Error 'some error'
           emitter.emit 'test error', test, error, () ->
-            assert.isArray JSON.parse(requestBody)['resultData']['errors']
-            assert.include JSON.parse(requestBody)['resultData']['errors'].join(), "Unhandled error occured when executing the transaction."
+            assert.isArray JSON.parse(requestBody)['resultData']['result']['general']
+            assert.include JSON.parse(requestBody)['resultData']['result']['general'].map((value,index) -> JSON.stringify(value)).join(),
+             "Unhandled error occured when executing the transaction."
             done()
 
 
