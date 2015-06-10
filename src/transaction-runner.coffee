@@ -420,6 +420,8 @@ class TransactionRunner
 
               test.message = message
               test.results = result
+              test.results['general'] = []
+
               test.valid = isValid
 
               # propagate test to after hooks
