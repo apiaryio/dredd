@@ -99,6 +99,9 @@ class ApiaryReporter
         status: 'running'
         agentEnvironment: ciEnvVars
 
+      if @configuration['apiToken']? and @configuration['apiSuite']?
+        data.public = false
+
       path = '/apis/' + @configuration['apiSuite'] + '/tests/runs'
 
       @_performRequest path, 'POST', data, (error, response, parsedBody) =>

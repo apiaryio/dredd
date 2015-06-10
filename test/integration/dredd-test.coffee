@@ -107,10 +107,13 @@ describe "Dredd class Integration", () ->
         assert.equal exitStatus, 1
 
 
-  describe "when using reporter -r apiary in DREDD_REST_DEBUG mode", () ->
+  describe "when using reporter -r apiary in DREDD_REST_DEBUG mode with custom apiaryApiKey and apiaryApiName", () ->
     server = null
     server2 = null
     receivedRequest = null
+    receivedRequestTestRuns = null
+    receivedHeaders = null
+    receivedHeadersRuns = null
     exitStatus = null
 
     before (done) ->
@@ -120,7 +123,12 @@ describe "Dredd class Integration", () ->
           reporter: ["apiary"]
         custom:
           apiaryApiUrl: "http://127.0.0.1:#{PORT+1}"
+          apiaryApiKey: 'the-key'
+          apiaryApiName: 'the-api-name'
           dreddRestDebug: '1'
+
+      receivedHeaders = {}
+      receivedHeadersRuns = {}
 
       apiary = express()
       app = express()
@@ -130,6 +138,10 @@ describe "Dredd class Integration", () ->
       apiary.post '/apis/*', (req, res) ->
         if req.body and req.url.indexOf('/tests/steps') > -1
           receivedRequest ?= clone(req.body)
+          receivedHeaders[key.toLowerCase()] = val for key, val of req.headers
+        if req.body and req.url.indexOf('/tests/runs') > -1
+          receivedRequestTestRuns ?= clone(req.body)
+          receivedHeadersRuns[key.toLowerCase()] = val for key, val of req.headers
         res.type('json')
         res.status(201).send
           _id: '1234_id'
@@ -151,8 +163,16 @@ describe "Dredd class Integration", () ->
 
       server.on 'close', done
 
-    it 'should print warning about missing APIARY_API_KEY and APIARY_API_NAME', () ->
-      assert.include stderr, 'Apiary reporter environment variable APIARY_API_KEY or APIARY_API_NAME not defined.'
+    it 'should not print warning about missing APIARY_API_KEY and APIARY_API_NAME', () ->
+      assert.notInclude stderr, 'Apiary reporter environment variable APIARY_API_KEY or APIARY_API_NAME not defined.'
+
+    it 'should contain Authentication header thanks to apiaryApiKey and apiaryApiName configuration', ->
+      assert.propertyVal receivedHeaders, 'authentication', 'Token the-key'
+      assert.propertyVal receivedHeadersRuns, 'authentication', 'Token the-key'
+
+    it 'should send the test-run as a non-public one', ()->
+      assert.isObject receivedRequestTestRuns
+      assert.propertyVal receivedRequestTestRuns, 'public', false
 
     it 'should print using the new reporter', () ->
       assert.include stdout, 'http://url.me/test/run/1234_id'
