@@ -254,6 +254,14 @@ describe 'ApiaryReporter', () ->
           assert.propertyVal parsedBody, 'endpoint', 'http://my.server.co:8080'
           done()
 
+      it 'should send the test-run as public one', (done) ->
+        emitter = new EventEmitter
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {server: 'http://my.server.co:8080', custom:apiaryReporterEnv:env}
+        emitter.emit 'start', blueprintData, () ->
+          parsedBody = JSON.parse requestBody
+          assert.strictEqual parsedBody.public, true
+          done()
+
       describe 'serverError is true', () ->
         it 'should not do anything', (done) ->
           emitter = new EventEmitter
@@ -623,10 +631,18 @@ describe 'ApiaryReporter', () ->
       call = null
       runId = '507f1f77bcf86cd799439011'
       reportUrl = "https://absolutely.fency.url/wich-can-change/some/id"
+      requestBody = null
 
       beforeEach () ->
         uri = '/apis/' + env['APIARY_API_NAME'] + '/tests/runs'
+
+        requestBody = null
+        getBody = (body) ->
+          requestBody = body
+          return body
+
         call = nock(env['APIARY_API_URL']).
+          filteringRequestBody(getBody).
           post(uri).
           matchHeader('Authentication', 'Token ' + env['APIARY_API_KEY']).
           reply(201, {"_id": runId, "reportUrl": reportUrl})
@@ -666,6 +682,13 @@ describe 'ApiaryReporter', () ->
           assert.isNotNull apiaryReporter.reportUrl
           done()
 
+      it 'should send the test-run as non-public', (done) ->
+        emitter = new EventEmitter
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {server: 'http://my.server.co:8080', custom:apiaryReporterEnv:env}
+        emitter.emit 'start', blueprintData, () ->
+          parsedBody = JSON.parse requestBody
+          assert.strictEqual parsedBody.public, false
+          done()
 
     describe 'when adding passing test', () ->
       call = null
