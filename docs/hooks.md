@@ -1,11 +1,15 @@
 # Hook Scripts
 
-Similar to any other testing framework, Dredd supports executing code around each test step. Hooks are code blocks executed in defined stage of [execution lifecycle](usage.md#dredd-execution-lifecycle) In the hooks code you have an access to compiled HTTP [transaction object](#transaction-object-structure) which you can modify. Default path to hook file is `./dreddhooks.js` or `dredhooks.coffee`. Hooks are usually used for:
+Similar to any other testing framework, Dredd supports executing code around each test step.
+Hooks are code blocks executed in defined stage of [execution lifecycle](usage.md#dredd-execution-lifecycle).
+In the hooks code you have an access to compiled HTTP [transaction object](#transaction-object-structure) which you can modify.
+
+Hooks are usually used for:
 
 - loading db fixtures
-- cleanup after test steps
+- cleanup after test step or steps
 - handling authentication and sessions
-- passing data between transactions (saving state from responses)
+- passing data between transactions (saving state from responses to _stash_)
 - modifying request generated from blueprint
 - changing generated expectations
 - setting custom expectations
@@ -13,7 +17,8 @@ Similar to any other testing framework, Dredd supports executing code around eac
 
 ## Using Hook Files
 
-To use a hook file with Dredd, use the `--hookfiles` flag in the command line. You can use this flag multiple times or use a [glob](http://npmjs.com/package/glob) expression for loading multiple hook files.
+To use a hook file with Dredd, use the `--hookfiles` flag in the command line.
+You can use this flag multiple times or use a [glob](http://npmjs.com/package/glob) expression for loading multiple hook files.
 
 Example:
 
@@ -23,7 +28,9 @@ $ dredd single_get.md http://machines.apiary.io --hookfiles=*_hooks.*
 
 ## Getting Transaction Names
 
-Dredd uses the __transaction names__ of the compiled HTTP transactions (_actions_) from the API Blueprint for addressing specific test steps. In order to do that please run Dredd with the `--names` argument last and it will print all available names of transactions. For example, given an API Blueprint file `blueprint.md` as following:
+Dredd uses the __transaction names__ of the compiled HTTP transactions (_actions_) from the API Blueprint for addressing specific test steps.
+In order to do that (retrieve transaction names) please run Dredd with the `--names` argument last and it will print all available names of transactions.
+For example, given an API Blueprint file `blueprint.md` as following:
 
 ```markdown
 FORMAT: 1A
@@ -49,9 +56,10 @@ $ dredd single_get.md http://machines.apiary.io --names
 info: Machines > Machines collection > Get Machines
 ```
 
-The `Machines > Machines collection > Get Machines` is the name of a transaction which you can use in your hooks. See [Hooks JavaScript API Reference](#hooks-javascript-api-reference) for how this is used.
+The `Machines > Machines collection > Get Machines` is the name of a transaction which you can use in your hooks.
+See [Hooks JavaScript API Reference](#hooks-javascript-api-reference) for broader information of how is it used.
 
-##  Types of Hooks
+## Types of Hooks
 
 Dredd supports following types of hooks:
 
@@ -65,21 +73,21 @@ Dredd supports following types of hooks:
 ## Hooks JavaScript API Reference
 
 - For `before`, `after`, `beforeEach`, and `afterEach`, a [Transaction Object](#transaction-object-structure) is passed as the first argument to the hook function.
-- An array of Transaction Objects is passed to `beforeEach` and `afterEach`.
+- An array of Transaction Objects is passed to `beforeAll` and `afterAll`.
 - The second argument is an optional callback function for async execution.
-- Any modifications on the `transaction` object is propagated to the actual HTTP transactions
-- We use `hooks.log` function here to print various debug message.
+- Any modifications on the `transaction` object is propagated to the actual HTTP transactions.
+- You can use `hooks.log` function inside the hook to print yours debug messages and informations.
 
 ### Sync API
 
 ```javascript
 var hooks = require('hooks');
 
-hooks.beforeAll(function(transactions){
-  hooks.log('beforeEach');
+hooks.beforeAll(function (transactions) {
+  hooks.log('beforeAll');
 });
 
-hooks.beforeEach(function(transactions){
+hooks.beforeEach(function (transaction) {
   hooks.log('beforeEach');
 });
 
@@ -87,16 +95,16 @@ hooks.before("Machines > Machines collection > Get Machines", function (transact
   hooks.log("before");
 });
 
-hooks.after("Machines > Machines collection > Get Machines", function (transaction) {}
+hooks.after("Machines > Machines collection > Get Machines", function (transaction) {
   hooks.log("after");
 });
 
-hooks.beforeEach(function(transactions){
-  hooks.log('beforeEach');
+hooks.afterEach(function (transaction) {
+  hooks.log('afterEach');
 });
 
-hooks.beforeAll(function(transactions){
-  hooks.log('beforeAll');
+hooks.afterAll(function (transactions) {
+  hooks.log('afterAll');
 })
 ```
 
@@ -107,12 +115,12 @@ When the callback is used in the hook function, callbacks can handle asynchronou
 ```javascript
 var hooks = require('hooks');
 
-hooks.beforeAll(function(transactions, done){
-  hooks.log('beforeEach');
+hooks.beforeAll(function (transactions, done) {
+  hooks.log('beforeAll');
   done();
 });
 
-hooks.beforeEach(function(transactions, done){
+hooks.beforeEach(function (transaction, done) {
   hooks.log('beforeEach');
   done();
 });
@@ -122,18 +130,18 @@ hooks.before("Machines > Machines collection > Get Machines", function (transact
   done();
 });
 
-hooks.after("Machines > Machines collection > Get Machines", function (transaction, done) {}
+hooks.after("Machines > Machines collection > Get Machines", function (transaction, done) {
   hooks.log("after");
   done();
 });
 
-hooks.beforeEach(function(transactions, done){
-  hooks.log('beforeEach');
+hooks.afterEach(function (transaction, done) {
+  hooks.log('afterEach');
   done();
 });
 
-hooks.beforeAll(function(transactions, done){
-  hooks.log('beforeAll');
+hooks.afterAll(function (transactions, done) {
+  hooks.log('afterAll');
   done();
 })
 ```
@@ -379,7 +387,7 @@ before("Machines > Machines collection > Get Machines", function (transaction) {
 ```javascript
 var hooks = require('hooks');
 
-hooks.beforeEach(function(transaction){
+hooks.beforeEach(function (transaction) {
   // add query parameter to each transaction here
   var paramToAdd = "api-key=23456"
   if(transaction.fullPath.indexOf('?') > -1){
@@ -387,7 +395,7 @@ hooks.beforeEach(function(transaction){
   } else{
     transaction.fullPath += "?" + paramToAdd;
   }
-};
+});
 ```
 
 ### Handling sessions
@@ -397,14 +405,14 @@ hooks = require('hooks');
 stash = {}
 
 // hook to retrieve session on a login
-hooks.after('Auth > /remoteauth/userpass > POST', function(transaction){
+hooks.after('Auth > /remoteauth/userpass > POST', function (transaction) {
   stash['token'] = JSON.parse(transaction.real.body)['sessionId'];
 });
 
 // hook to set the session cookie in all following requests
-hooks.beforeEach(function(transaction){
+hooks.beforeEach(function (transaction) {
   if(stash['token'] != undefined){
-    transaction.request['headers']['Cookie'] = "id=" + stash['token']
+    transaction.request['headers']['Cookie'] = "id=" + stash['token'];
   };
 });
 ```

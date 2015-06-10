@@ -6,7 +6,7 @@ This is an example how to create a simple [Express.js][] API backend applicatoin
 
 Create a new documentation file in [API Blueprint][] format in `blueprint.md`
 
-```
+```markdown
 # GET /
 + Response 200 (application/json; charset=utf-8)
 

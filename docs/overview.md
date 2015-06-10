@@ -98,19 +98,19 @@ Now, create a `dreddhooks.js` with a pseudo `db` adapter.
 ```javascript
 db = require('db');
 hooks = require('hooks');
-beforeAll( function() {
+beforeAll(function() {
   db.cleanUp();
 });
 
-afterEach( function() {
+afterEach(function(transaction) {
   db.cleanUp();
 });
 
-before('Category > Delete a category', function(){
+before('Category > Delete a category', function() {
   db.createCategory({id:42});
 });
 
-before('Category Items > Create an item', function(){
+before('Category Items > Create an item', function() {
   db.createCategory({id:42});
 });
 ```
@@ -178,24 +178,24 @@ hooks = require('hooks');
 stash = {}
 
 // stash a retreived token
-after('/login > POST', function(transaction){
+after('/login > POST', function (transaction) {
   stash['token'] = JSON.parse(transaction.real.body)['token'];
 });
 
 //add token to all HTTP transcations
-beforeEach(function(transaction){
+beforeEach(function (transaction) {
   if(stash['token'] != undefined){
     transcation['headers']['X-Api-Key'] = stash['token']
   };
 });
 
 //stash returned car ID
-after('/cars > GET', function(transaction){
+after('/cars > GET', function (transaction) {
   stash['carId'] = JSON.parse(transaction.real.body)['id'];
 });
 
 //replace car ID in request for Car resource modification
-before('/cars/{id} > PATCH', function(transaction){
+before('/cars/{id} > PATCH', function (transaction) {
   transaction.request.url = transaction.request.url.replace('42', stas['carId'])
 })
 ```
