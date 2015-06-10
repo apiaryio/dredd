@@ -84,11 +84,12 @@ Options:
 
 ### Dredd Configuration File
 
-Configuration for Dredd may be stored in a configuration file called `dredd.yml`.
+Configuration for Dredd may be stored in a configuration file named `dredd.yml`.
 
 > Disclaimer: this is unstable feature:
 
-Command-line interface uses `dredd.yml` confiuration file for persistent configuration. Its structure is same as [Configuration object for Dredd Class](#configuration-object-for-dredd-class).
+Command-line interface uses `dredd.yml` configuration file to persist configuration.
+Its structure is same as [Configuration object for Dredd Class](#configuration-object-for-dredd-class).
 
 Example dredd.yml configuration:
 
@@ -135,7 +136,7 @@ var dredd = new Dredd(configuration);
 Then you need to run the Dredd Testing. So do it.
 
 ```javascript
-dredd.run(function(err, stats){
+dredd.run(function (err, stats) {
   // err is present if anything went wrong
   // otherwise stats is an object with useful statistics
 });
