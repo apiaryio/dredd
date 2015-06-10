@@ -64,4 +64,7 @@ $ dredd
 
 The documentation for Dredd is written using [MkDocs](http://www.mkdocs.org/). To contribute to Dredd's documentation, you will need to follow the [MkDocs installation instructions](http://www.mkdocs.org/#installation). Once installed, you may use `mkdocs serve` from the Dredd directory to run the local server for the documentation.
 
+## Changelog updates
 
+Changes are provided in a human-readable format in [changelog](CHANGELOG.md) file.
+In order to generate pull-request commit messages with authors, please run `npm run changelist`. You can then hand-tweak the Changelog file from the generated content of `HISTORY-Dredd.md` file.
