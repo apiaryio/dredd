@@ -66,8 +66,15 @@ class TransactionRunner
 
         catch error
           if error instanceof chai.AssertionError
-            data.message = "Failed assertion in hooks: " + error.message
+            message = "Failed assertion in hooks: " + error.message
+
+            data['results'] ?= {}
+            data['results']['general'] ?= []
+            data['results']['general'].push { severity: 'error', message: message }
+
+            data.message = message
             data.test?.status = 'fail'
+
             @configuration.emitter.emit 'test fail', data.test
           else
             @emitError(data, error)
@@ -263,7 +270,17 @@ class TransactionRunner
       if transaction.test.valid == true
         if transaction.fail
           transaction.test.status = 'fail'
-          transaction.test.message = "Failed in after hook: " + transaction.fail
+
+          message = "Failed in after hook: " + transaction.fail
+          transaction.test.message = message
+
+          transaction['results'] ?= {}
+          transaction['results']['general'] ?= []
+
+          transaction['results']['general'].push {severity: 'error', message: message}
+
+          transaction['test']['results'] = transaction['results']
+
           @configuration.emitter.emit 'test fail', transaction.test, () ->
         else
           @configuration.emitter.emit 'test pass', transaction.test, () ->
@@ -315,6 +332,7 @@ class TransactionRunner
   executeTransaction: (transaction, callback) =>
     configuration = @configuration
 
+
     # Add length of body if no Content-Length present
     # Doing here instead of in configureTransaction, because request body can be edited in before hook
 
@@ -343,13 +361,22 @@ class TransactionRunner
 
     configuration.emitter.emit 'test start', test, () ->
 
+    transaction['results'] ?= {}
+    transaction['results']['general'] ?= []
+
     if transaction.skip
       # manually set to skip a test (can be done in hooks too)
       configuration.emitter.emit 'test skip', test, () ->
       return callback()
     else if transaction.fail
       # manually set to fail a test in hooks
-      test.message = "Failed in before hook: " + transaction.fail
+      message = "Failed in before hook: " + transaction.fail
+      test.message = message
+
+      transaction['results']['general'].push {severity: 'error', message: message}
+
+      test['results'] = transaction['results']
+
       configuration.emitter.emit 'test fail', test, () ->
       return callback()
     else if configuration.options['dry-run']
@@ -407,20 +434,24 @@ class TransactionRunner
             else
               test.status = "fail"
 
-            gavel.validate real, transaction.expected, 'response', (validateError, result) ->
+            gavel.validate real, transaction.expected, 'response', (validateError, gavelResult) ->
               if not isValidError and validateError
                 configuration.emitter.emit 'test error', validateError, test, () ->
 
               message = ''
 
-              for resultKey, data of result
+              for resultKey, data of gavelResult
                 if resultKey isnt 'version'
                   for entityResult in data['results']
                     message += resultKey + ": " + entityResult['message'] + "\n"
 
               test.message = message
-              test.results = result
-              test.results['general'] = []
+
+              transaction.results ?= {}
+              for key in Object.keys gavelResult
+                transaction.results[key] = gavelResult[key]
+
+              test.results = transaction.results
 
               test.valid = isValid
 
