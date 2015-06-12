@@ -328,19 +328,62 @@ describe 'TransactionRunner', ()->
           done()
 
     describe 'when a test has been manually set to skip in a hook', () ->
+      clonedTransaction = null
 
-      beforeEach () ->
+      beforeEach (done) ->
         sinon.stub configuration.emitter, 'emit'
+
+        clonedTransaction = clone(transaction)
+
         runner = new Runner(configuration)
+
+        addHooks runner, [clonedTransaction], (err) ->
+          done err if err
+
+          runner.hooks.beforeHooks =
+            'Group Machine > Machine > Delete Message > Bogus example name' : [
+              (transaction) ->
+                transaction.skip = true
+            ]
+          done()
 
       afterEach () ->
         configuration.emitter.emit.restore()
 
       it 'should skip the test', (done) ->
-        transaction.skip = true
-        runner.executeTransaction transaction, () ->
+        runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
           assert.ok configuration.emitter.emit.calledWith 'test skip'
           done()
+
+      it 'should add skip message as a warning under `general` to the results on transaction', (done) ->
+        runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+          messages = clonedTransaction['results']['general'].map (value, index) -> value['message']
+          assert.include messages.join(), 'skipped'
+          done()
+
+      it 'should add fail message as a warning under `general` to the results on test passed to the emitter', (done) ->
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+            messages = []
+            callCount = configuration.emitter.emit.callCount
+            for callNo in [0.. callCount - 1]
+              messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general'].map(
+                (value, index) -> value['message']
+              )
+            assert.include messages.join(), 'skipped'
+            done()
+
+      it 'should set status `skip` on test passed to the emitter', (done) ->
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+            tests = []
+            callCount = Object.keys(configuration.emitter.emit.args).map (value, index) ->
+              args = configuration.emitter.emit.args[value]
+              tests.push args[1] if args[0] == 'test skip'
+
+            assert.equal tests.length, 1
+
+            assert.equal tests[0]['status'], 'skip'
+            done()
+
 
     describe 'when server uses https', () ->
 

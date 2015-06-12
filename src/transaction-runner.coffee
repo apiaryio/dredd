@@ -373,12 +373,21 @@ class TransactionRunner
 
     if transaction.skip
       # manually set to skip a test (can be done in hooks too)
+      message = "Skipped in before hook"
+      transaction['results']['general'].push {severity: "warning", message: message}
+
+      test['results'] = transaction['results']
+      test['status'] = 'skip'
+
       configuration.emitter.emit 'test skip', test, () ->
       return callback()
+
     else if transaction.fail
       # manually set to fail a test in hooks
       message = "Failed in before hook: " + transaction.fail
-      test.message = message
+
+      test['message'] = message
+      test['status'] = 'fail'
 
       transaction['results']['general'].push {severity: 'error', message: message}
 

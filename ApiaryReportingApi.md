@@ -270,9 +270,11 @@ HOST: http://api.apiary.io/
   - duration (number) ... Test duration in seconds
   - result (string) ... Result of step execution
     - Values
-      - `passed`
-      - `failed`
+      - `pass`
+      - `fail`
       - `error`
+      - `skip`
+
   - resultData (object) ... Data from step execution
     - request  ... [Real HTTP Request](https://www.relishapp.com/apiary/gavel/v/0-1/docs/data-model#http-request)
     - realResponse ... [Real HTTP response](https://www.relishapp.com/apiary/gavel/v/0-1/docs/data-model#http-response)

@@ -114,7 +114,7 @@ class ApiaryReporter
 
           callback()
 
-    emitter.on 'test pass', (test, callback) =>
+    _createStep = (test, callback) =>
       return callback() if @serverError == true
       data = @_transformTestToReporter test
       path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
@@ -122,13 +122,11 @@ class ApiaryReporter
         logger.error error if error
         callback()
 
-    emitter.on 'test fail', (test, callback) =>
-      return callback() if @serverError == true
-      data = @_transformTestToReporter test
-      path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
-      @_performRequest path, 'POST', data, (error, response, parsedBody) ->
-        logger.error error if error
-        callback()
+    emitter.on 'test pass', _createStep
+
+    emitter.on 'test fail', _createStep
+
+    emitter.on 'test skip', _createStep
 
     emitter.on 'test error', (test, error, callback) =>
       return callback() if @serverError == true
