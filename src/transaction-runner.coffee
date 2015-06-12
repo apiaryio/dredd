@@ -73,7 +73,14 @@ class TransactionRunner
             data['results']['general'].push { severity: 'error', message: message }
 
             data.message = message
-            data.test?.status = 'fail'
+
+            data['test'] ?= {}
+            data['test']['status'] = 'fail'
+
+            data['test']['results'] ?= {}
+
+            for key, value of data.results
+              data['test']['results'][key] = value
 
             @configuration.emitter.emit 'test fail', data.test
           else

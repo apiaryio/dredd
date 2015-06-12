@@ -1094,11 +1094,22 @@ describe 'TransactionRunner', ()->
           assert.ok configuration.emitter.emit.calledWith "test fail"
           done()
 
-      it 'should add fail message as a error under `general` to the results', (done) ->
+      it 'should add fail message as a error under `general` to the results on transaction', (done) ->
         runner.executeAllTransactions [transaction], runner.hooks, () ->
           messages = transaction['results']['general'].map (value, index) -> value['message']
           assert.include messages.join(), 'expected false to be truthy'
           done()
+
+      it 'should add fail message as a error under `general` to the results on test passed to the emitter', (done) ->
+          runner.executeAllTransactions [transaction], runner.hooks, () ->
+            messages = []
+            callCount = configuration.emitter.emit.callCount
+            for callNo in [0.. callCount - 1]
+              messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general'].map(
+                (value, index) -> value['message']
+              )
+            assert.include messages.join(), 'expected false to be truthy'
+            done()
 
     describe 'with after hook that throws a chai expectation error', () ->
       beforeEach () ->
@@ -1127,13 +1138,22 @@ describe 'TransactionRunner', ()->
           assert.equal transaction.test.status, 'fail'
           done()
 
-      it 'should add fail message as a error under `general` to the results', (done) ->
+      it 'should add fail message as a error under `general` to the results on transaction', (done) ->
         runner.executeAllTransactions [transaction], runner.hooks, () ->
           messages = transaction['results']['general'].map (value, index) -> value['message']
           assert.include messages.join(), 'expected false to be truthy'
           done()
 
-
+      it 'should add fail message as a error under `general` to the results on test passed to the emitter', (done) ->
+          runner.executeAllTransactions [transaction], runner.hooks, () ->
+            messages = []
+            callCount = configuration.emitter.emit.callCount
+            for callNo in [0.. callCount - 1]
+              messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general'].map(
+                (value, index) -> value['message']
+              )
+            assert.include messages.join(), 'expected false to be truthy'
+            done()
 
     describe 'with hook failing the transaction', () ->
       describe 'in before hook', () ->
@@ -1178,11 +1198,23 @@ describe 'TransactionRunner', ()->
             assert.include messages.join(), "Failed in before hook:"
             done()
 
-        it 'should add fail message as a error under `general` to the results', (done) ->
+        it 'should add fail message as a error under `general` to the results on the transaction', (done) ->
           runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
             messages = clonedTransaction['results']['general'].map (value, index) -> value['message']
             assert.include messages.join(), 'Message before'
             done()
+
+
+        it 'should add fail message as a error under `general` to the results on test passed to the emitter', (done) ->
+            runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+              messages = []
+              callCount = configuration.emitter.emit.callCount
+              for callNo in [0.. callCount - 1]
+                messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general'].map(
+                  (value, index) -> value['message']
+                )
+              assert.include messages.join(), 'Message before'
+              done()
 
         describe 'when message is set to fail also in after hook', () ->
           beforeEach () ->
@@ -1198,7 +1230,7 @@ describe 'TransactionRunner', ()->
               callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
                 messages.push configuration.emitter.emit.getCall(callNo).args[1].message
-              assert.notInclude messages, "Message after fail"
+              assert.notInclude messages.join(), "Message after fail"
               done()
 
           it 'should not mention after hook in the error message', (done) ->
@@ -1207,14 +1239,25 @@ describe 'TransactionRunner', ()->
               callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
                 messages.push configuration.emitter.emit.getCall(callNo).args[1].message
-              assert.notInclude messages, "Failed in after hook:"
+              assert.notInclude messages.join(), "Failed in after hook:"
               done()
 
-          it 'should not add fail message as a error under `general` to the results', (done) ->
+          it 'should not add fail message as a error under `general` to the results on the transaction', (done) ->
             runner.executeAllTransactions [transaction], runner.hooks, () ->
               messages = transaction['results']['general'].map (value, index) -> value['message']
               assert.notInclude messages.join(), 'Message after fail'
               done()
+
+          it 'should not add fail message as a error under `general` to the results on test passed to the emitter', (done) ->
+              runner.executeAllTransactions [transaction], runner.hooks, () ->
+                messages = []
+                callCount = configuration.emitter.emit.callCount
+                for callNo in [0.. callCount - 1]
+                  messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general'].map(
+                    (value, index) -> value['message']
+                  )
+                assert.notInclude messages.join(), 'Message after fail'
+                done()
 
       describe 'in after hook when transaction fails ', () ->
         modifiedTransaction = {}
@@ -1267,11 +1310,22 @@ describe 'TransactionRunner', ()->
             assert.notInclude messages, "Failed in after hook:"
             done()
 
-        it 'should not add fail message as a error under `general` to the results', (done) ->
+        it 'should not add fail message as a error under `general` to the results on the transaction', (done) ->
           runner.executeAllTransactions [modifiedTransaction], runner.hooks, () ->
             messages = modifiedTransaction['results']['general'].map (value, index) -> value['message']
             assert.notInclude messages.join(), 'Message after fail'
             done()
+
+        it 'should not add fail message as a error under `general` to the results on test passed to the emitter', (done) ->
+            runner.executeAllTransactions [modifiedTransaction], runner.hooks, () ->
+              messages = []
+              callCount = configuration.emitter.emit.callCount
+              for callNo in [0.. callCount - 1]
+                messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general'].map(
+                  (value, index) -> value['message']
+                )
+              assert.notInclude messages.join(), 'Message after fail'
+              done()
 
       describe 'in after hook when transaction passes ', () ->
         beforeEach () ->
@@ -1324,11 +1378,23 @@ describe 'TransactionRunner', ()->
             assert.equal transaction.test.status, 'fail'
             done()
 
-        it 'should not add fail message as a error under `general` to the results', (done) ->
+        it 'should add fail message as a error under `general` to the results', (done) ->
           runner.executeAllTransactions [transaction], runner.hooks, () ->
             messages = transaction['results']['general'].map (value, index) -> value['message']
             assert.include messages.join(), 'Message after pass'
             done()
+
+        it 'should not add fail message as a error under `general` to the results on test passed to the emitter', (done) ->
+            runner.executeAllTransactions [transaction], runner.hooks, () ->
+              messages = []
+              callCount = configuration.emitter.emit.callCount
+              for callNo in [0.. callCount - 1]
+                messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general'].map(
+                  (value, index) -> value['message']
+                )
+              assert.include messages.join(), 'Message after pass'
+              done()
+
 
     describe 'without hooks', () ->
       beforeEach () ->
