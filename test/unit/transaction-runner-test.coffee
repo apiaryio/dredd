@@ -1296,7 +1296,6 @@ describe 'TransactionRunner', ()->
             assert.include messages.join(), 'Message before'
             done()
 
-
         it 'should add fail message as a error under `general` to the results on test passed to the emitter', (done) ->
             runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
               messages = []
@@ -1490,7 +1489,6 @@ describe 'TransactionRunner', ()->
                 )
               assert.include messages.join(), 'Message after pass'
               done()
-
 
     describe 'without hooks', () ->
       beforeEach () ->
