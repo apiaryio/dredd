@@ -9,14 +9,19 @@ class Hooks
     {@logs, @logger} = options
     @transactions = {}
     @beforeHooks = {}
+    @beforeValidationHooks = {}
     @afterHooks = {}
     @beforeAllHooks = []
     @afterAllHooks = []
     @beforeEachHooks = []
+    @beforeEachValidationHooks = []
     @afterEachHooks = []
 
   before: (name, hook) =>
     @addHook(@beforeHooks, name, hook)
+
+  beforeValidation: (name, hook) =>
+    @addHook(@beforeValidationHooks, name, hook)
 
   after: (name, hook) =>
     @addHook(@afterHooks, name, hook)
@@ -29,6 +34,9 @@ class Hooks
 
   beforeEach: (hook) =>
     @beforeEachHooks.push hook
+
+  beforeEachValidation: (hook) =>
+    @beforeEachValidationHooks.push hook
 
   afterEach: (hook) =>
     @afterEachHooks.push hook
@@ -52,10 +60,12 @@ class Hooks
     toReturn = {}
     names = [
       'beforeHooks'
+      'beforeValidationHooks'
       'afterHooks'
       'beforeAllHooks'
       'afterAllHooks'
       'beforeEachHooks'
+      'beforeEachValidationHooks'
       'afterEachHooks'
     ]
 

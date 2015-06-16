@@ -47,7 +47,7 @@ describe 'Dredd class', () ->
 
       fn = () ->
         dredd = new Dredd(configuration)
-        sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+        sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
           callback()
         dredd.run (error) ->
           assert.ok dredd.runner.executeTransaction.called
@@ -75,7 +75,7 @@ describe 'Dredd class', () ->
 
     it 'should load the file on given path', (done) ->
       dredd = new Dredd(configuration)
-      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
       dredd.run (error) ->
         assert.ok fsStub.readFile.calledWith configuration.options.path[0]
@@ -84,7 +84,7 @@ describe 'Dredd class', () ->
 
     it 'should parse blueprint to ast', (done) ->
       dredd = new Dredd(configuration)
-      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
       dredd.run (error) ->
         assert.ok DrafterClassStub::make.called
@@ -93,7 +93,7 @@ describe 'Dredd class', () ->
 
     it 'should not pass any error to the callback function', (done) ->
       dredd = new Dredd(configuration)
-      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
       dredd.run (error) ->
         assert.isNull(error)
@@ -102,7 +102,7 @@ describe 'Dredd class', () ->
 
     it 'should pass the reporter as second argument', (done) ->
       dredd = new Dredd(configuration)
-      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
       dredd.run (error, reporter) ->
         assert.isDefined reporter
@@ -111,7 +111,7 @@ describe 'Dredd class', () ->
 
     it 'should convert ast to runtime', (done) ->
       dredd = new Dredd(configuration)
-      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
       dredd.run (error) ->
         assert.ok blueprintAstToRuntimeStub.called
@@ -128,7 +128,7 @@ describe 'Dredd class', () ->
         dredd = new Dredd(configuration)
 
       beforeEach () ->
-        sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+        sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
           callback()
 
       afterEach () ->
@@ -178,7 +178,7 @@ describe 'Dredd class', () ->
         dredd = new Dredd(configuration)
 
       beforeEach () ->
-        sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+        sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
           callback()
 
       afterEach () ->
@@ -216,7 +216,7 @@ describe 'Dredd class', () ->
                       {"a":"b"}'
               """
         dredd = new Dredd(configuration)
-        sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+        sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
           callback()
 
       afterEach () ->
@@ -252,7 +252,7 @@ describe 'Dredd class', () ->
           configuration.options ?= {}
           configuration.options.path = ['./test/fixtures/apiary.apib']
           localdredd = new Dredd(configuration)
-          sinon.stub localdredd.runner, 'executeTransaction', (transaction, callback) ->
+          sinon.stub localdredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
             callback()
 
         afterEach ->
@@ -291,7 +291,7 @@ describe 'Dredd class', () ->
           done err
 
       beforeEach () ->
-        sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+        sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
           callback()
 
       afterEach () ->
@@ -417,7 +417,7 @@ describe 'Dredd class', () ->
       dredd = new Dredd(configuration)
 
     beforeEach () ->
-      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
 
     afterEach () ->
@@ -472,7 +472,7 @@ describe 'Dredd class', () ->
           silent: true
           path: ['./balony/path.apib']
       dredd = new Dredd(configuration)
-      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
 
     afterEach () ->
@@ -497,7 +497,7 @@ describe 'Dredd class', () ->
           path: ['./test/fixtures/error-uri-template.apib']
 
       dredd = new Dredd(configuration)
-      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
 
     afterEach () ->
@@ -523,7 +523,7 @@ describe 'Dredd class', () ->
           path: ['./test/fixtures/warning-ambigous.apib']
       sinon.spy loggerStub, 'warn'
       dredd = new Dredd(configuration)
-      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
 
     afterEach () ->
@@ -553,7 +553,7 @@ describe 'Dredd class', () ->
           silent: true
           path: ['./test/fixtures/warning-ambigous.apib']
       dredd = new Dredd(configuration)
-      sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
+      sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
 
     afterEach () ->
@@ -563,6 +563,3 @@ describe 'Dredd class', () ->
       dredd.run (error) ->
         assert.ok blueprintAstToRuntimeStub.called
         done()
-
-
-

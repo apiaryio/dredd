@@ -66,6 +66,8 @@ Dredd supports following types of hooks:
 - `beforeAll` called at the beginning of the whole test run
 - `beforeEach` called before each HTTP transaction
 - `before` called before some specific HTTP transaction
+- `beforeEachValidation` called before each HTTP transaction is validated
+- `beforeValidation` called before some specific HTTP transaction is validated
 - `after` called after some specific HTTP transaction regardless its result
 - `afterEach` called after each HTTP transaction
 - `afterAll` called after whole test run
