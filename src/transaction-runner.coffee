@@ -296,7 +296,12 @@ class TransactionRunner
           # run before hooks
           @runHooksForData hooks.beforeHooks[transaction.name], transaction, false, () =>
 
-            # execute and validate HTTP transaction
+            # This method:
+            # - executes a request
+            # - recieves a response
+            # - runs beforeValidation hooks
+            # - runs beforeEachValidation hooks
+            # - runs Gavel validation
             @executeTransaction transaction, hooks, () =>
 
               # run afterEach hooks
