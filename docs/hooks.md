@@ -401,8 +401,8 @@ hooks.beforeEach(function (transaction) {
 ### Handling sessions
 
 ```javascript
-hooks = require('hooks');
-stash = {}
+var hooks = require('hooks');
+var stash = {};
 
 // hook to retrieve session on a login
 hooks.after('Auth > /remoteauth/userpass > POST', function (transaction) {
@@ -414,5 +414,18 @@ hooks.beforeEach(function (transaction) {
   if(stash['token'] != undefined){
     transaction.request['headers']['Cookie'] = "id=" + stash['token'];
   };
+});
+```
+
+
+### Remove traling newline character for in expected plain text bodies
+
+```javascript
+var hooks = require('hooks');
+
+hooks.beforeEach(function(transaction) {
+    if (transaction.expected.headers['Content-Type'] === 'text/plain') {
+        transaction.expected.body = transaction.expected.body.replace(/^\s+|\s+$/g, "");
+    }
 });
 ```
