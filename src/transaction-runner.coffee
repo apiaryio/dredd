@@ -299,8 +299,8 @@ class TransactionRunner
             # This method:
             # - executes a request
             # - recieves a response
-            # - runs beforeValidation hooks
             # - runs beforeEachValidation hooks
+            # - runs beforeValidation hooks
             # - runs Gavel validation
             @executeTransaction transaction, hooks, () =>
 
@@ -453,7 +453,7 @@ class TransactionRunner
 
         test.message = message
         test.results = result
-        test.results['general'] = []
+        test.results['general'] ?= []
 
         test.valid = isValid
 
