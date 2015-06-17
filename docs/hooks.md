@@ -74,7 +74,7 @@ Dredd supports following types of hooks:
 
 ## Hooks JavaScript API Reference
 
-- For `before`, `after`, `beforeEach`, and `afterEach`, a [Transaction Object](#transaction-object-structure) is passed as the first argument to the hook function.
+- For `before`, `after`, `beforeValidation`, `beforeEach`, `afterEach` and `beforeEachValidation` a [Transaction Object](#transaction-object-structure) is passed as the first argument to the hook function.
 - An array of Transaction Objects is passed to `beforeAll` and `afterAll`.
 - The second argument is an optional callback function for async execution.
 - Any modifications on the `transaction` object is propagated to the actual HTTP transactions.
@@ -93,8 +93,16 @@ hooks.beforeEach(function (transaction) {
   hooks.log('beforeEach');
 });
 
+hooks.beforeEachValidation(function (transaction) {
+  hooks.log('beforeEachValidation');
+});
+
 hooks.before("Machines > Machines collection > Get Machines", function (transaction) {
   hooks.log("before");
+});
+
+hooks.before("Machines > Machines collection > Get Machines", function (transaction) {
+  hooks.log("beforeValidation");
 });
 
 hooks.after("Machines > Machines collection > Get Machines", function (transaction) {
@@ -127,8 +135,18 @@ hooks.beforeEach(function (transaction, done) {
   done();
 });
 
+hooks.beforeEachValidation(function (transaction, done) {
+  hooks.log('beforeEachValidation');
+  done();
+});
+
 hooks.before("Machines > Machines collection > Get Machines", function (transaction, done) {
   hooks.log("before");
+  done();
+});
+
+hooks.beforeValidation("Machines > Machines collection > Get Machines", function (transaction, done) {
+  hooks.log("beforeValidation");
   done();
 });
 
@@ -274,6 +292,8 @@ In each hook file you can use following functions:
 
 `before(transactionName, function)`
 
+`beforeValidation(transactionName, function)`
+
 `after(transactionName, function)`
 
 `beforeAll(function)`
@@ -281,6 +301,8 @@ In each hook file you can use following functions:
 `afterAll(function)`
 
 `beforeEach(function)`
+
+`beforeEachValidation(function)`
 
 `afterEach(function)`
 

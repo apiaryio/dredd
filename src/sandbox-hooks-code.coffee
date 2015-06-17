@@ -12,6 +12,9 @@ sandboxHooksCode = (hooksCode, callback) ->
   var afterAll = _hooks.afterAll;
   var beforeEach = _hooks.beforeEach;
   var afterEach = _hooks.afterEach;
+  var beforeValidation = _hooks.beforeValidation;
+  var beforeEachValidation = _hooks.beforeEachValidation;
+
   var log = _hooks.log;
 
   #{hooksCode}

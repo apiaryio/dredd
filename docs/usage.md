@@ -257,7 +257,9 @@ This section provides the order in which Dredd executes to give a better underst
         - Run `before` hook
         - Send HTTP request
         - Receive HTTP response
-        - Run [Gavel][] validation
+        - Run `beforeEachValidation` hook
+        - Run `beforeValidation` hook
+        - Perform [Gavel][] validation
         - Run `after` hook
         - Run `afterEach` hook
         - Report `test end` with result for in-progress reporting

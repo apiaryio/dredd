@@ -63,6 +63,17 @@ describe 'Hooks', () ->
     it 'should add to hook collection', () ->
       assert.property hooks.beforeHooks, 'beforeHook'
 
+  describe '#beforeValidation', () ->
+    hooks = null
+
+    before () ->
+      hooks = new Hooks()
+      hooks.beforeValidation 'beforeValidationHook', () ->
+        ""
+
+    it 'should add to hook collection', () ->
+      assert.property hooks.beforeValidationHooks, 'beforeValidationHook'
+
   describe '#after', () ->
     hooks = null
 
@@ -107,6 +118,18 @@ describe 'Hooks', () ->
     it 'should add to hook collection', () ->
       assert.lengthOf hooks.beforeEachHooks, 1
 
+  describe '#beforeEachValidation', () ->
+    hooks = null
+
+    before () ->
+      hooks = new Hooks()
+      hooks.beforeEachValidation () ->
+        ""
+
+    it 'should add to hook collection', () ->
+      assert.lengthOf hooks.beforeEachValidationHooks, 1
+
+
   describe '#afterEach', () ->
     hooks = null
 
@@ -143,6 +166,7 @@ describe 'Hooks', () ->
         'beforeEachHooks'
         'afterEachHooks'
         'afterAllHooks'
+        'beforeEachValidationHooks'
       ]
 
       for property in properties then do (property) ->
@@ -163,6 +187,7 @@ describe 'Hooks', () ->
       properties = [
         'beforeHooks'
         'afterHooks'
+        'beforeValidationHooks'
       ]
 
       for property in properties then do (property) ->
