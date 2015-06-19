@@ -1,0 +1,2 @@
+#!/bin/sh
+find ./test/ -name '*-test.coffee' | xargs ./node_modules/mocha/bin/mocha -w --reporter spec --compilers 'coffee:coffee-script/register'

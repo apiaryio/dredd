@@ -1,0 +1,6 @@
+src/
+.travis.yml
+HISTORY-Dredd.md
+.git*
+.vagrant
+.npmignore

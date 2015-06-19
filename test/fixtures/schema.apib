@@ -1,0 +1,43 @@
+FORMAT: 1A
+
+# API
+Demonstrates dredd schema test issue [#46](https://github.com/apiaryio/dredd/issues/46). Original API blueprint by @mgaut72. 
+
+# Group Session
+
+## Session [/]
+
+### Log a user in [GET]
++ Response 200 (application/json; charset=utf-8)
+
+    + Body
+
+            {
+                "data": {
+                    "token": "234khsdfs9d8fsdf",
+                    "expires": 1424641830
+                }
+            }
+
+    + Schema
+
+            {
+                "type":"object",
+                "required":true,
+                "properties":{
+                    "data": {
+                        "type":"object",
+                        "required":true,
+                        "properties":{
+                            "expires": {
+                                "type":"number",
+                                "required":true
+                            },
+                            "token": {
+                                "type":"string",
+                                "required":true
+                            }
+                        }
+                    }
+                }
+            }

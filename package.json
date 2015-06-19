@@ -1,0 +1,42 @@
+{
+  "name": "http-transaction-compiler",
+  "version": "0.0.1",
+  "description": "Compile concrete HTTP transactions from API BLueprint",
+  "main": "lib/http-transaction-compiler.js",
+  "scripts": {
+    "changelist": "github-changes -o apiaryio -r http-transaction-compiler --only-pulls --use-commit-body --file HISTORY-http-transaction-compiler.md",
+    "pretest": "coffeelint ./src",
+    "test": "scripts/test",
+    "prepublish": "scripts/prepublish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/apiaryio/http-transaction-compiler"
+  },
+  "dependencies": {
+    "clone": "^1.0.0",
+    "uri-template": "~1.0.0"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.9.1",
+    "drafter": "~0.2.5",
+    "chai": "^2.1.0",
+    "coffee-coverage": "^0.6.0",
+    "coffee-errors": "~0.8.6",
+    "coffeelint": "^1.9.2",
+    "coveralls": "~2.11.2",
+    "jscoverage": "~0.5.9",
+    "mocha": "^2.1.0",
+    "mocha-lcov-reporter": "0.0.2"
+  },
+  "keywords": [
+    "api",
+    "test",
+    "testing",
+    "documenation",
+    "integration",
+    "acceptance"
+  ],
+  "author": "Adam Kliment <adam@apiary.io>",
+  "license": "MIT"
+}

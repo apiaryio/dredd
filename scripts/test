@@ -1,0 +1,5 @@
+#!/bin/sh
+./scripts/build
+./scripts/mocha 2>&1
+
+

@@ -1,0 +1,8 @@
+site_name: Dredd
+pages:
+  - ['index.md', 'Dredd', 'Home']
+  - ['overview.md',  'Dredd', 'Overview']
+  - ['usage.md', 'Using Dredd', 'Usage']
+  - ['hooks.md', 'Using Dredd', 'Hooks']
+  - ['example.md', 'Example', 'Full Example']
+repo_url: 'https://github.com/apiaryio/dredd'

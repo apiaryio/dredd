@@ -1,0 +1,25 @@
+language: node_js
+
+node_js:
+  - "0.10"
+  - "0.12"
+  - "iojs"
+
+sudo: false
+
+notifications:
+  email:
+    recipients:
+      - adam@apiary.io
+      - kubula@apiary.io
+    on_success: change
+    on_failure: always
+  hipchat:
+    rooms:
+      secure: "QGWyFDPoKcj97epznHoyriuS/eJIbgZtTAVVM6M3IpgwgTX2LuiGVJbUvZy1BDlp31sYTLslrZ4zHeBwbOoy8zrM0KW8pr+pvgzO+EAsNchd9Ox9SqA0E/4gnaRg0myZIb67YM0hB9NEXT5sAOv9EoEae2SXw2KeoX1Myg+wsI4="
+    template:
+      - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a>/<a href="%{compare_url}">Change view</a>)'
+    format: html
+
+after_success:
+  - ./scripts/coveralls

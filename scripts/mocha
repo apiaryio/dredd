@@ -1,0 +1,3 @@
+#!/bin/sh
+cd $(dirname $0)/..
+./node_modules/.bin/mocha --timeout 120000 --reporter spec --compilers 'coffee:coffee-script/register' --recursive './test/**/*-test.coffee'
