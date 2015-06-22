@@ -135,12 +135,6 @@ hooks.beforeEach(function (transaction, done) {
   done();
 });
 
-
-hooks.before("Machines > Machines collection > Get Machines", function (transaction, done) {
-  hooks.log("before");
-  done();
-});
-
 hooks.beforeEachValidation(function (transaction, done) {
   hooks.log('beforeEachValidation');
   done();
@@ -150,6 +144,13 @@ hooks.beforeValidation("Machines > Machines collection > Get Machines", function
   hooks.log("beforeValidation");
   done();
 });
+
+hooks.before("Machines > Machines collection > Get Machines", function (transaction, done) {
+  hooks.log("before");
+  done();
+});
+
+
 
 hooks.after("Machines > Machines collection > Get Machines", function (transaction, done) {
   hooks.log("after");
