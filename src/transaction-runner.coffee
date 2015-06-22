@@ -296,8 +296,13 @@ class TransactionRunner
           # run before hooks
           @runHooksForData hooks.beforeHooks[transaction.name], transaction, false, () =>
 
-            # execute and validate HTTP transaction
-            @executeTransaction transaction, () =>
+            # This method:
+            # - executes a request
+            # - recieves a response
+            # - runs beforeEachValidation hooks
+            # - runs beforeValidation hooks
+            # - runs Gavel validation
+            @executeTransaction transaction, hooks, () =>
 
               # run afterEach hooks
               @runHooksForData hooks.afterEachHooks, transaction, false, () =>
@@ -312,7 +317,11 @@ class TransactionRunner
         #runAfterHooks
         @runHooksForData hooks.afterAllHooks, transactions, true, callback
 
-  executeTransaction: (transaction, callback) =>
+  executeTransaction: (transaction, hooks, callback) =>
+    unless callback
+      callback = hooks
+      hooks = null
+
     configuration = @configuration
 
     # Add length of body if no Content-Length present
@@ -371,7 +380,7 @@ class TransactionRunner
     else
       buffer = ""
 
-      handleRequest = (res) ->
+      handleRequest = (res) =>
         res.on 'data', (chunk) ->
           buffer = buffer + chunk
 
@@ -381,7 +390,7 @@ class TransactionRunner
 
           return callback()
 
-        res.once 'end', ->
+        res.once 'end', =>
 
           # The data models as used here must conform to Gavel.js
           # as defined in `http-response.coffee`
@@ -392,45 +401,9 @@ class TransactionRunner
 
           transaction['real'] = real
 
-          gavel.isValid real, transaction.expected, 'response', (isValidError, isValid) ->
-            if isValidError
-              configuration.emitter.emit 'test error', isValidError, test, () ->
-
-            test.start = test.start
-            test.title = transaction.id
-            test.actual = real
-            test.expected = transaction.expected
-            test.request = transaction.request
-
-            if isValid
-              test.status = "pass"
-            else
-              test.status = "fail"
-
-            gavel.validate real, transaction.expected, 'response', (validateError, result) ->
-              if not isValidError and validateError
-                configuration.emitter.emit 'test error', validateError, test, () ->
-
-              message = ''
-
-              for resultKey, data of result
-                if resultKey isnt 'version'
-                  for entityResult in data['results']
-                    message += resultKey + ": " + entityResult['message'] + "\n"
-
-              test.message = message
-              test.results = result
-              test.results['general'] = []
-
-              test.valid = isValid
-
-              # propagate test to after hooks
-              transaction.test = test
-
-              if test.valid == false
-                configuration.emitter.emit 'test fail', test, () ->
-
-              return callback()
+          @runHooksForData hooks?.beforeEachValidationHooks, transaction, false, () =>
+            @runHooksForData hooks?.beforeValidationHooks[transaction.name], transaction, false, () =>
+              @validateTransaction test, transaction, callback
 
       transport = if transaction.protocol is 'https:' then https else http
       if transaction.request['body'] and @isMultipart requestOptions
@@ -447,6 +420,49 @@ class TransactionRunner
         req.end()
       catch error
         configuration.emitter.emit 'test error', error, test, () ->
+        return callback()
+
+  validateTransaction: (test, transaction, callback) ->
+    configuration = @configuration
+
+    gavel.isValid transaction.real, transaction.expected, 'response', (isValidError, isValid) ->
+      if isValidError
+        configuration.emitter.emit 'test error', isValidError, test, () ->
+
+      test.start = test.start
+      test.title = transaction.id
+      test.actual = transaction.real
+      test.expected = transaction.expected
+      test.request = transaction.request
+
+      if isValid
+        test.status = "pass"
+      else
+        test.status = "fail"
+
+      gavel.validate transaction.real, transaction.expected, 'response', (validateError, result) ->
+        if not isValidError and validateError
+          configuration.emitter.emit 'test error', validateError, test, () ->
+
+        message = ''
+
+        for resultKey, data of result
+          if resultKey isnt 'version'
+            for entityResult in data['results']
+              message += resultKey + ": " + entityResult['message'] + "\n"
+
+        test.message = message
+        test.results = result
+        test.results['general'] ?= []
+
+        test.valid = isValid
+
+        # propagate test to after hooks
+        transaction.test = test
+
+        if test.valid == false
+          configuration.emitter.emit 'test fail', test, () ->
+
         return callback()
 
   isMultipart: (requestOptions) ->

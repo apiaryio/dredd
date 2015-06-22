@@ -42,6 +42,8 @@ describe 'sandboxHooksCode(hooksCode, callback)', () ->
       'afterAll'
       'beforeEach'
       'afterEach'
+      'beforeEachValidation'
+      'beforeValidation'
     ]
 
     for name in functions then do (name) ->
@@ -70,6 +72,8 @@ describe 'sandboxHooksCode(hooksCode, callback)', () ->
       'afterHooks'
       'afterEachHooks'
       'afterAllHooks'
+      'beforeValidationHooks'
+      'beforeEachValidationHooks'
     ]
 
     for property in properties then do (property) ->
@@ -85,6 +89,8 @@ describe 'sandboxHooksCode(hooksCode, callback)', () ->
         after('Transaction Name', dummyFunc);
         beforeEach(dummyFunc);
         afterEach(dummyFunc);
+        beforeEachValidation(dummyFunc);
+        beforeValidation('Transaction Name', dummyFunc);
         """
 
         sandboxHooksCode hooksCode, (err, result) ->
