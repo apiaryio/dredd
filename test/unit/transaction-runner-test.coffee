@@ -357,7 +357,7 @@ describe 'TransactionRunner', ()->
 
       it 'should add skip message as a warning under `general` to the results on transaction', (done) ->
         runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
-          messages = clonedTransaction['results']['general'].map (value, index) -> value['message']
+          messages = clonedTransaction['results']['general']['results'].map (value, index) -> value['message']
           assert.include messages.join(), 'skipped'
           done()
 
@@ -366,7 +366,7 @@ describe 'TransactionRunner', ()->
             messages = []
             callCount = configuration.emitter.emit.callCount
             for callNo in [0.. callCount - 1]
-              messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general'].map(
+              messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
                 (value, index) -> value['message']
               )
             assert.include messages.join(), 'skipped'
@@ -1139,7 +1139,7 @@ describe 'TransactionRunner', ()->
 
       it 'should add fail message as a error under `general` to the results on transaction', (done) ->
         runner.executeAllTransactions [transaction], runner.hooks, () ->
-          messages = transaction['results']['general'].map (value, index) -> value['message']
+          messages = transaction['results']['general']['results'].map (value, index) -> value['message']
           assert.include messages.join(), 'expected false to be truthy'
           done()
 
@@ -1148,7 +1148,7 @@ describe 'TransactionRunner', ()->
             messages = []
             callCount = configuration.emitter.emit.callCount
             for callNo in [0.. callCount - 1]
-              messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general'].map(
+              messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
                 (value, index) -> value['message']
               )
             assert.include messages.join(), 'expected false to be truthy'
@@ -1183,7 +1183,7 @@ describe 'TransactionRunner', ()->
 
       it 'should add fail message as a error under `general` to the results on transaction', (done) ->
         runner.executeAllTransactions [transaction], runner.hooks, () ->
-          messages = transaction['results']['general'].map (value, index) -> value['message']
+          messages = transaction['results']['general']['results'].map (value, index) -> value['message']
           assert.include messages.join(), 'expected false to be truthy'
           done()
 
@@ -1192,7 +1192,7 @@ describe 'TransactionRunner', ()->
             messages = []
             callCount = configuration.emitter.emit.callCount
             for callNo in [0.. callCount - 1]
-              messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general'].map(
+              messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
                 (value, index) -> value['message']
               )
             assert.include messages.join(), 'expected false to be truthy'
@@ -1243,7 +1243,7 @@ describe 'TransactionRunner', ()->
 
         it 'should add fail message as a error under `general` to the results on the transaction', (done) ->
           runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
-            messages = clonedTransaction['results']['general'].map (value, index) -> value['message']
+            messages = clonedTransaction['results']['general']['results'].map (value, index) -> value['message']
             assert.include messages.join(), 'Message before'
             done()
 
@@ -1253,7 +1253,7 @@ describe 'TransactionRunner', ()->
               messages = []
               callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
-                messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general'].map(
+                messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
                   (value, index) -> value['message']
                 )
               assert.include messages.join(), 'Message before'
@@ -1287,7 +1287,7 @@ describe 'TransactionRunner', ()->
 
           it 'should not add fail message as a error under `general` to the results on the transaction', (done) ->
             runner.executeAllTransactions [transaction], runner.hooks, () ->
-              messages = transaction['results']['general'].map (value, index) -> value['message']
+              messages = transaction['results']['general']['results'].map (value, index) -> value['message']
               assert.notInclude messages.join(), 'Message after fail'
               done()
 
@@ -1296,7 +1296,7 @@ describe 'TransactionRunner', ()->
                 messages = []
                 callCount = configuration.emitter.emit.callCount
                 for callNo in [0.. callCount - 1]
-                  messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general'].map(
+                  messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
                     (value, index) -> value['message']
                   )
                 assert.notInclude messages.join(), 'Message after fail'
@@ -1355,7 +1355,7 @@ describe 'TransactionRunner', ()->
 
         it 'should not add fail message as a error under `general` to the results on the transaction', (done) ->
           runner.executeAllTransactions [modifiedTransaction], runner.hooks, () ->
-            messages = modifiedTransaction['results']['general'].map (value, index) -> value['message']
+            messages = modifiedTransaction['results']['general']['results'].map (value, index) -> value['message']
             assert.notInclude messages.join(), 'Message after fail'
             done()
 
@@ -1364,7 +1364,7 @@ describe 'TransactionRunner', ()->
               messages = []
               callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
-                messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general'].map(
+                messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
                   (value, index) -> value['message']
                 )
               assert.notInclude messages.join(), 'Message after fail'
@@ -1423,7 +1423,7 @@ describe 'TransactionRunner', ()->
 
         it 'should add fail message as a error under `general` to the results', (done) ->
           runner.executeAllTransactions [transaction], runner.hooks, () ->
-            messages = transaction['results']['general'].map (value, index) -> value['message']
+            messages = transaction['results']['general']['results'].map (value, index) -> value['message']
             assert.include messages.join(), 'Message after pass'
             done()
 
@@ -1432,7 +1432,7 @@ describe 'TransactionRunner', ()->
               messages = []
               callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
-                messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general'].map(
+                messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
                   (value, index) -> value['message']
                 )
               assert.include messages.join(), 'Message after pass'

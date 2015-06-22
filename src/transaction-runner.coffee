@@ -6,6 +6,7 @@ os = require 'os'
 chai = require 'chai'
 gavel = require 'gavel'
 async = require 'async'
+clone = require 'clone'
 {Pitboss} = require 'pitboss-ng'
 
 flattenHeaders = require './flatten-headers'
@@ -69,18 +70,23 @@ class TransactionRunner
             message = "Failed assertion in hooks: " + error.message
 
             data['results'] ?= {}
-            data['results']['general'] ?= []
-            data['results']['general'].push { severity: 'error', message: message }
+            data['results']['general'] ?= {}
+            data['results']['general']['results'] ?= []
+            data['results']['general']['results'].push { severity: 'error', message: message }
 
-            data.message = message
+            data['message'] = message
 
             data['test'] ?= {}
             data['test']['status'] = 'fail'
 
             data['test']['results'] ?= {}
 
-            for key, value of data.results
-              data['test']['results'][key] = value
+            for key, value of data['results']
+              if key != 'version'
+                data['test']['results'][key] ?= {}
+                data['test']['results'][key]['results'] ?= []
+                data['test']['results'][key]['results'] =
+                  data['test']['results'][key]['results'].concat value
 
             @configuration.emitter.emit 'test fail', data.test
           else
@@ -283,10 +289,20 @@ class TransactionRunner
 
           transaction['results'] ?= {}
           transaction['results']['general'] ?= []
+          transaction['results']['general']['results'] ?= []
 
-          transaction['results']['general'].push {severity: 'error', message: message}
+          transaction['results']['general']['results'].push {severity: 'error', message: message}
 
-          transaction['test']['results'] = transaction['results']
+
+          transaction['test'] ?= {}
+          transaction['test']['results'] ?= {}
+
+          for key, value of transaction['results']
+            if key != 'version'
+              transaction['test']['results'][key] ?= {}
+              transaction['test']['results'][key]['results'] ?= []
+              transaction['test']['results'][key]['results'] =
+                transaction['test']['results'][key]['results'].concat(value)
 
           @configuration.emitter.emit 'test fail', transaction.test, () ->
         else
@@ -369,12 +385,13 @@ class TransactionRunner
     configuration.emitter.emit 'test start', test, () ->
 
     transaction['results'] ?= {}
-    transaction['results']['general'] ?= []
+    transaction['results']['general'] ?= {}
+    transaction['results']['general']['results'] ?= []
 
     if transaction.skip
       # manually set to skip a test (can be done in hooks too)
       message = "Skipped in before hook"
-      transaction['results']['general'].push {severity: "warning", message: message}
+      transaction['results']['general']['results'].push {severity: "warning", message: message}
 
       test['results'] = transaction['results']
       test['status'] = 'skip'
@@ -385,11 +402,10 @@ class TransactionRunner
     else if transaction.fail
       # manually set to fail a test in hooks
       message = "Failed in before hook: " + transaction.fail
+      transaction['results']['general']['results'].push {severity: 'error', message: message}
 
       test['message'] = message
       test['status'] = 'fail'
-
-      transaction['results']['general'].push {severity: 'error', message: message}
 
       test['results'] = transaction['results']
 
@@ -464,8 +480,15 @@ class TransactionRunner
               test.message = message
 
               transaction.results ?= {}
-              for key in Object.keys gavelResult
-                transaction.results[key] = gavelResult[key]
+
+              for key, value of gavelResult
+                if transaction['results'][key]?['results']?
+                  beforeResults = clone transaction['results'][key]['results']
+
+                transaction['results'][key] = value
+
+                if beforeResults?
+                  transaction['results'][key]['results'] = transaction['results'][key]['results'].concat beforeResults
 
               test.results = transaction.results
 
