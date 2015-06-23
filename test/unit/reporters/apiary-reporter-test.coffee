@@ -364,7 +364,7 @@ describe 'ApiaryReporter', () ->
 
       beforeEach () ->
         clonedTest = clone(test)
-        test.status = 'skip'
+        clonedTest.status = 'skip'
 
         uri = '/apis/public/tests/steps?testRunId=' + runId
 
@@ -383,7 +383,7 @@ describe 'ApiaryReporter', () ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
-        emitter.emit 'test skip', test, () ->
+        emitter.emit 'test skip', clonedTest, () ->
           assert.isTrue call.isDone()
           done()
 
@@ -391,7 +391,7 @@ describe 'ApiaryReporter', () ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
-        emitter.emit 'test skip', test, () ->
+        emitter.emit 'test skip', clonedTest, () ->
           assert.equal JSON.parse(requestBody)['result'], 'skip'
           done()
 
@@ -401,7 +401,7 @@ describe 'ApiaryReporter', () ->
           apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
           apiaryReporter.remoteId = runId
           apiaryReporter.serverError = true
-          emitter.emit 'test skip', test, () ->
+          emitter.emit 'test skip', clonedTest, () ->
             assert.isFalse call.isDone()
             done()
 
