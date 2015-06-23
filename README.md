@@ -18,7 +18,7 @@ to Gavel's [behavior specification][].
 
 ![Dredd API Blueprint testing tool](https://raw.github.com/apiaryio/dredd/master/img/Dredd.png)
 
-## Get Started Testing API Documentation and backend
+## Get Started Testing your API backend with your API Documentation
 
 - If you don't have [Node.js](https://nodejs.org/) installed, you may want to use [NVM](https://github.com/creationix/nvm)
 - Create an API blueprint in `blueprint.md`
