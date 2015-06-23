@@ -477,9 +477,9 @@ class TransactionRunner
                   for entityResult in data['results']
                     message += resultKey + ": " + entityResult['message'] + "\n"
 
-              test.message = message
+              test['message'] = message
 
-              transaction.results ?= {}
+              transaction['results'] ?= {}
 
               for key, value of gavelResult
                 if transaction['results'][key]?['results']?
@@ -490,12 +490,12 @@ class TransactionRunner
                 if beforeResults?
                   transaction['results'][key]['results'] = transaction['results'][key]['results'].concat beforeResults
 
-              test.results = transaction.results
+              test['results'] = transaction.['results']
 
-              test.valid = isValid
+              test['valid'] = isValid
 
               # propagate test to after hooks
-              transaction.test = test
+              transaction['test'] = test
 
               if test.valid == false
                 configuration.emitter.emit 'test fail', test, () ->
