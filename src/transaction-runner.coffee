@@ -490,7 +490,7 @@ class TransactionRunner
                 if beforeResults?
                   transaction['results'][key]['results'] = transaction['results'][key]['results'].concat beforeResults
 
-              test['results'] = transaction.['results']
+              test['results'] = transaction['results']
 
               test['valid'] = isValid
 
