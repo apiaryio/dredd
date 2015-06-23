@@ -342,8 +342,8 @@ describe 'TransactionRunner', ()->
 
           runner.hooks.beforeHooks =
             'Group Machine > Machine > Delete Message > Bogus example name' : [
-              (transaction) ->
-                clonedTransaction.skip = true
+              (hookTransaction) ->
+                hookTransaction.skip = true
             ]
           done()
 
@@ -1254,8 +1254,8 @@ describe 'TransactionRunner', ()->
           clonedTransaction = clone(transaction)
           runner.hooks.beforeHooks =
             'Group Machine > Machine > Delete Message > Bogus example name' : [
-              (transaction) ->
-                clonedTransaction.fail = "Message before"
+              (hookTransaction) ->
+                hookTransaction.fail = "Message before"
             ]
           sinon.stub configuration.emitter, 'emit'
 
@@ -1314,8 +1314,8 @@ describe 'TransactionRunner', ()->
             clonedTransaction = clone(transaction)
             runner.hooks.afterHooks =
               'Group Machine > Machine > Delete Message > Bogus example name' : [
-                (transaction) ->
-                  clonedTransaction.fail = "Message after"
+                (hookTransaction) ->
+                  hookTransaction.fail = "Message after"
               ]
 
           it 'should not pass the failing message to the emitter', (done) ->
@@ -1361,8 +1361,8 @@ describe 'TransactionRunner', ()->
 
           runner.hooks.afterHooks =
             'Group Machine > Machine > Delete Message > Bogus example name' : [
-              (transaction) ->
-                modifiedTransaction.fail = "Message after fail"
+              (hookTransaction) ->
+                hookTransaction.fail = "Message after fail"
             ]
           sinon.stub configuration.emitter, 'emit'
 
@@ -1427,8 +1427,8 @@ describe 'TransactionRunner', ()->
           clonedTransaction = clone transaction
           runner.hooks.afterHooks =
             'Group Machine > Machine > Delete Message > Bogus example name' : [
-              (transaction) ->
-                clonedTransaction.fail = "Message after pass"
+              (hookTransaction) ->
+                hookTransaction.fail = "Message after pass"
             ]
           sinon.stub configuration.emitter, 'emit'
 
