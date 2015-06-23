@@ -1,4 +1,4 @@
-# Dredd — HTTP API Validation Tool
+# Dredd — HTTP API Testing Framework
 
 [![Build Status](https://travis-ci.org/apiaryio/dredd.png?branch=master)](https://travis-ci.org/apiaryio/dredd)
 [![Dependency Status](https://david-dm.org/apiaryio/dredd.png)](https://david-dm.org/apiaryio/dredd)

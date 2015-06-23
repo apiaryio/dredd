@@ -677,6 +677,11 @@ describe 'TransactionRunner', ()->
             (transaction) ->
               loggerStub.info "before"
           ]
+        runner.hooks.beforeValidationHooks =
+          'Group Machine > Machine > Delete Message > Bogus example name': [
+            (transaction) ->
+              loggerStub.info "beforeValidation"
+          ]
         runner.hooks.afterHooks =
           'Group Machine > Machine > Delete Message > Bogus example name': [
             (transaction, done) ->
@@ -690,6 +695,7 @@ describe 'TransactionRunner', ()->
       it 'should run the hooks', (done) ->
         runner.executeAllTransactions [transaction], runner.hooks, () ->
           assert.ok loggerStub.info.calledWith "before"
+          assert.ok loggerStub.info.calledWith "beforeValidation"
           assert.ok loggerStub.info.calledWith "after"
           done()
 
@@ -701,6 +707,11 @@ describe 'TransactionRunner', ()->
           'Group Machine > Machine > Delete Message > Bogus example name' : [
             (transaction) ->
               loggerStub.info "before"
+          ]
+        runner.hooks.beforeValidationHooks =
+          'Group Machine > Machine > Delete Message > Bogus example name' : [
+            (transaction) ->
+              loggerStub.info "beforeValidation"
           ]
         runner.hooks.afterHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
@@ -716,6 +727,7 @@ describe 'TransactionRunner', ()->
         runner.hooks.transactions = null
         runner.executeAllTransactions [transaction], runner.hooks, () ->
           assert.ok loggerStub.info.calledWith "before"
+          assert.ok loggerStub.info.calledWith "beforeValidation"
           assert.ok loggerStub.info.calledWith "after"
           done()
 
@@ -1011,7 +1023,7 @@ describe 'TransactionRunner', ()->
           runner.hooks.beforeEach beforeEachStub
           server = nock('http://localhost:3000').
             post('/machines', {"type":"bulldozer","name":"willy"}).
-            reply transactionsForExecution[0]['expected']['status'],
+            reply transactionsForExecution[0]['expected']['statusCode'],
               transactionsForExecution[0]['expected']['body'],
               {'Content-Type': 'application/json'}
 
@@ -1029,6 +1041,43 @@ describe 'TransactionRunner', ()->
             assert.equal beforeEachStub.callCount, transactionsForExecution.length
             done()
 
+      describe 'with a beforeEachValidation hook', () ->
+        hook = (transaction, callback) ->
+          transaction.real.statusCode = '403';
+          callback()
+
+        beforeEachValidationStub = sinon.spy(hook)
+
+        beforeEach () ->
+          runner.hooks.beforeEachValidation beforeEachValidationStub
+          server = nock('http://localhost:3000').
+            post('/machines', {"type":"bulldozer","name":"willy"}).
+            reply transactionsForExecution[0]['expected']['statusCode'],
+              transactionsForExecution[0]['expected']['body'],
+              {'Content-Type': 'application/json'}
+
+        afterEach () ->
+          beforeEachValidationStub.reset()
+          nock.cleanAll()
+
+        it 'should run the hooks', (done) ->
+          transaction = clone(transactionsForExecution[0]);
+          runner.executeAllTransactions [transaction], runner.hooks, () ->
+            assert.ok beforeEachValidationStub.called
+            assert.equal transaction.test.status, 'fail'
+            done()
+
+        it 'should run before gavel', (done) ->
+          transaction = clone(transactionsForExecution[0]);
+          transaction.expected.statusCode = '403';
+          runner.executeAllTransactions [transaction], runner.hooks, () ->
+            assert.equal transaction.test.status, 'pass'
+            done()
+
+        it 'should run the hook for each transaction', (done) ->
+          runner.executeAllTransactions transactionsForExecution, runner.hooks, () ->
+            assert.equal beforeEachValidationStub.callCount, transactionsForExecution.length
+            done()
 
       describe 'with a afterEach hook', () ->
         hook = (transactions, callback) ->
@@ -1040,7 +1089,7 @@ describe 'TransactionRunner', ()->
           runner.hooks.afterEach afterEachStub
           server = nock('http://localhost:3000').
             post('/machines', {"type":"bulldozer","name":"willy"}).
-            reply transactionsForExecution[0]['expected']['status'],
+            reply transactionsForExecution[0]['expected']['statusCode'],
               transactionsForExecution[0]['expected']['body'],
               {'Content-Type': 'application/json'}
 
