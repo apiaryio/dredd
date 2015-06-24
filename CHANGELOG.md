@@ -1,5 +1,29 @@
 ## Change Log
 
+### v0.6.1
+
+  **New** Added `beforeValidation` and `beforeEachValidation` hooks
+
+  **New** Added `general` property under results object for each `testStep` and `transaction` for adding other then Gavel errors
+
+  **New** Connection errors are handled in scope of each step, emmited to reporter as `test error` and added as a general error `general`
+
+  **New** Apiary reporter failure is gracefully handled and will not brake build
+
+
+
+- [#229](https://github.com/apiaryio/dredd/pull/229) Clean beforeResults for every gavelResult iteration (@netmilk)
+- [#222](https://github.com/apiaryio/dredd/pull/222) Report skipped and programatically failed transactions (@netmilk)
+- [#228](https://github.com/apiaryio/dredd/pull/228) Updated the MkDocs config from the deprecated format (@d0ugal)
+- [#224](https://github.com/apiaryio/dredd/pull/224) Support for before validation hooks (@netmilk, @nevir)
+- [#219](https://github.com/apiaryio/dredd/pull/219) Connection errors in gavel error interface (@netmilk)
+- [#218](https://github.com/apiaryio/dredd/pull/218) Public:true/false Apiary reporter, based on token and api-name (suite) existence (@kuba-kubula)
+- [#216](https://github.com/apiaryio/dredd/pull/216) Update documentation, fix a few typos/leftovers, line wrapping, how-to changelog (@kuba-kubula)
+- [#212](https://github.com/apiaryio/dredd/pull/212) Gracefully handle connection errors to server under test (@netmilk)
+- [#214](https://github.com/apiaryio/dredd/pull/214) Fixed example with modifying request URI, closes #186 (@netmilk)
+- [#213](https://github.com/apiaryio/dredd/pull/213) Example for session handling in hooks (@netmilk)
+
+
 ### v0.6.0
 
 - [#202](https://github.com/apiaryio/dredd/pull/202) Hooks logging, sending logs to apiary-reporter, transaction.startedAt (@kuba-kubula)
