@@ -290,9 +290,7 @@ class TransactionRunner
           transaction['results'] ?= {}
           transaction['results']['general'] ?= []
           transaction['results']['general']['results'] ?= []
-
           transaction['results']['general']['results'].push {severity: 'error', message: message}
-
 
           transaction['test'] ?= {}
           transaction['test']['results'] ?= {}
@@ -506,16 +504,17 @@ class TransactionRunner
 
         message = ''
 
-        for resultKey, data of gavelResult
+        for own resultKey, data of gavelResult or {}
           if resultKey isnt 'version'
-            for entityResult in data['results']
+            for entityResult in data['results'] or []
               message += resultKey + ": " + entityResult['message'] + "\n"
 
         test['message'] = message
 
         transaction['results'] ?= {}
 
-        for key, value of gavelResult
+        for own key, value of gavelResult or {}
+          beforeResults = null
           if transaction['results'][key]?['results']?
             beforeResults = clone transaction['results'][key]['results']
 
@@ -531,7 +530,7 @@ class TransactionRunner
         # propagate test to after hooks
         transaction['test'] = test
 
-        if test.valid == false
+        if test['valid'] == false
           configuration.emitter.emit 'test fail', test, () ->
 
         return callback()
