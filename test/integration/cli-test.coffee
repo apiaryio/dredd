@@ -1111,7 +1111,7 @@ describe "Command line interface", () ->
         res.status(200).send response
 
       server = app.listen PORT, () ->
-        execCommand cmd, () ->
+        execCommand cmd, (cmdRrr, thisStdout, thisStderr, thisCode) ->
           server.close()
 
       server.on 'close', done
@@ -1122,7 +1122,16 @@ describe "Command line interface", () ->
     it 'exit status should be 0', () ->
       assert.equal exitStatus, 1
 
-    it 'stdout shoud contain fail message', () ->
+    it 'stdout should contain `ruby before validation hook` string', () ->
+      assert.include stdout, 'ruby before validation hook'
+
+    it 'stdout should contain `ruby before hook` string', () ->
+      assert.include stdout, 'ruby before hook'
+
+    it 'stdout should contain `ruby after hook` string', () ->
+      assert.include stdout, 'ruby after hook'
+
+    it 'stdout should contain fail message', () ->
       assert.include stdout, 'Yay! Failed in ruby!'
 
   describe "Using sandboxed hooks", () ->

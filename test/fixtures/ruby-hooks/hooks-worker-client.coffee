@@ -1,38 +1,25 @@
 hooks = require 'hooks'
 net = require 'net'
 EventEmitter = require('events').EventEmitter
-{exec} = require('child_process')
+{spawn} = require('child_process')
 
 HOOK_TIMEOUT = 5000
 WORKER_HOST = 'localhost'
 WORKER_PORT = 61321
 WORKER_MESSAGE_DELIMITER = "\n"
-WORKER_COMMAND = 'ruby ./test/fixtures/ruby-hooks/dredd-worker.rb'
+WORKER_COMMAND = ['ruby' ,['./test/fixtures/ruby-hooks/dredd-worker.rb']]
 
 emitter = new EventEmitter
 
-hooks.beforeEach = (hookFn) ->
-  hooks.beforeAll (done) ->
-    for transactionKey, transaction of hooks.transactions or {}
-      hooks.beforeHooks[transaction.name] ?= []
-      hooks.beforeHooks[transaction.name].unshift hookFn
-    done()
+worker = spawn.apply null, WORKER_COMMAND
 
-hooks.afterEach = (hookFn) ->
-  hooks.beforeAll (done) ->
-    for transactionKey, transaction of hooks.transactions or {}
-      hooks.afterHooks[transaction.name] ?= []
-      hooks.afterHooks[transaction.name].unshift hookFn
-    done()
-
-worker = exec WORKER_COMMAND
-console.log 'Spawning ruby worker'
+console.log 'Spawning worker'
 
 worker.stdout.on 'data', (data) ->
-  console.log data.toString()
+  console.log "Hook worker stdout:", data.toString()
 
 worker.stderr.on 'data', (data) ->
-  console.log data.toString()
+  console.log "Hook worker stderr:", data.toString()
 
 worker.on 'error', (error) ->
   console.log error
@@ -105,12 +92,42 @@ hooks.beforeEach (transaction, callback) ->
   # register event for the sent transaction
   emitter.on uuid, (receivedMessage) ->
     clearTimeout timeout
-    # workaround forassigning transacition
+    # workaround for assigning transacition
     # this does not work:
     # transaction = receivedMessage.transaction
     for key, value of receivedMessage.transaction
       transaction[key] = value
     callback()
+
+hooks.beforeEachValidation (transaction, callback) ->
+  # avoiding dependency on external module here.
+  uuid = Date.now().toString() + '-' + Math. random().toString(36).substring(7)
+
+  # send transaction to the worker
+  message =
+    event: 'beforeValidation'
+    uuid: uuid
+    transaction: transaction
+
+  workerClient.write JSON.stringify message
+  workerClient.write WORKER_MESSAGE_DELIMITER
+
+  # set timeout for the hook
+  timeout = setTimeout () ->
+    transaction.fail = 'Hook timed out.'
+    callback()
+  , HOOK_TIMEOUT
+
+  # register event for the sent transaction
+  emitter.on uuid, (receivedMessage) ->
+    clearTimeout timeout
+    # workaround for assigning transacition
+    # this does not work:
+    # transaction = receivedMessage.transaction
+    for key, value of receivedMessage.transaction
+      transaction[key] = value
+    callback()
+
 
 hooks.afterEach (transaction, callback) ->
   # avoiding dependency on external module here.
@@ -132,7 +149,7 @@ hooks.afterEach (transaction, callback) ->
 
   emitter.on uuid, (receivedMessage) ->
     clearTimeout timeout
-    # workaround forassigning transacition
+    # workaround for assigning transacition
     # this does not work:
     # transaction = receivedMessage.transaction
     for key, value of receivedMessage.transaction

@@ -1,16 +1,27 @@
 require 'socket'
 require 'json'
 
+
+# Disables stdout buffering. This makes node.js able to capture stdout of this process with no delay
+# http://stackoverflow.com/questions/23001033/how-to-live-stream-output-from-ruby-script-using-child-process-spawn
+$stdout.sync = true
+
 HOST = '127.0.0.1'
 PORT = 61321
 MESSAGE_DELIMITER = "\n"
 
 @before_hooks = {}
+@before_validation_hooks = {}
 @after_hooks = {}
 
 def before transaction_name, &block
   @before_hooks[transaction_name] = [] if @before_hooks[transaction_name].nil?
   @before_hooks[transaction_name].push block
+end
+
+def before_validation transaction_name, &block
+  @before_validation_hooks[transaction_name] = [] if @before_validation_hooks[transaction_name].nil?
+  @before_validation_hooks[transaction_name].push block
 end
 
 def after transaction_name, &block
@@ -21,6 +32,17 @@ end
 def run_before_hooks_for_transaction transaction
   transaction_name = transaction["name"]
   hooks = @before_hooks[transaction_name]
+  if hooks.kind_of? Array
+    hooks.each do |hook_proc|
+      hook_proc.call transaction
+    end
+  end
+  return transaction
+end
+
+def run_before_validation_hooks_for_transaction transaction
+  transaction_name = transaction["name"]
+  hooks = @before_validation_hooks[transaction_name]
   if hooks.kind_of? Array
     hooks.each do |hook_proc|
       hook_proc.call transaction
@@ -43,8 +65,13 @@ end
 def process_message message, client
   event = message['event']
   transaction = message['transaction']
+
   if event == "before"
     transaction = run_before_hooks_for_transaction transaction
+  end
+
+  if event == "beforeValidation"
+    transaction = run_before_validation_hooks_for_transaction transaction
   end
 
   if event == "after"
@@ -98,29 +125,32 @@ end
 # Register hooks here!
 #
 
-# If you want to pass output from ruby worker to Dredd report,
-# you have to use STDERR.puts. Puts to stdout is swalowed somewhere
-#
-
 # Tranasction object in the block is passed back to Dredd, so you can
 # modify it, save response to stash, or programatically fail the transaction
 # by setting trabsaction['fail'] to some message
 #
 # Let's inspect transaction object:
 #
-# STDERR.puts JSON.pretty_generate(transaction)
+# puts JSON.pretty_generate(transaction)
 
 stash = ""
 
+before 'Machines > Machines collection > Get Machines' do |transaction|
+  puts 'ruby before hook'
+end
+
+before_validation 'Machines > Machines collection > Get Machines' do |transaction|
+  puts 'ruby before validation hook'
+end
+
 after 'Machines > Machines collection > Get Machines' do |transaction|
-   STDERR.puts 'After hook in Ruby'
-   STDERR.puts 'Stash content: ' + stash
-   transaction['fail'] = 'Yay! Failed in ruby!'
+  puts 'ruby after hook'
+  puts 'Stash content: ' + stash
+  transaction['fail'] = 'Yay! Failed in ruby!'
 end
 
 
 # Run hooks server
-STDERR.puts 'Dredd Ruby hooks worker is running'
+puts 'Dredd Ruby hooks worker is running'
 
 run_server
-
