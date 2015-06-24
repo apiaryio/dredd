@@ -1097,7 +1097,7 @@ describe "Command line interface", () ->
     resourceRequested = false
 
     before (done) ->
-      cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --hookfiles=./test/fixtures/ruby-hooks/hooks-worker-client.coffee"
+      cmd = "export TEST_DREDD_WORKER=true; ./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --hookfiles=./test/fixtures/ruby-hooks/hooks-worker-client.coffee"
 
       app = express()
 
@@ -1112,6 +1112,7 @@ describe "Command line interface", () ->
 
       server = app.listen PORT, () ->
         execCommand cmd, (cmdRrr, thisStdout, thisStderr, thisCode) ->
+          console.log thisStdout
           server.close()
 
       server.on 'close', done
@@ -1122,17 +1123,50 @@ describe "Command line interface", () ->
     it 'exit status should be 0', () ->
       assert.equal exitStatus, 1
 
-    it 'stdout should contain `ruby before validation hook` string', () ->
-      assert.include stdout, 'ruby before validation hook'
+    it 'request should contain `ruby before validation hook` string in proper order', () ->
+      assert.include stdout, "ruby before validation hook"
 
     it 'stdout should contain `ruby before hook` string', () ->
-      assert.include stdout, 'ruby before hook'
+      assert.include stdout, "ruby before hook"
 
     it 'stdout should contain `ruby after hook` string', () ->
-      assert.include stdout, 'ruby after hook'
+      assert.include stdout, "ruby after hook"
 
-    it 'stdout should contain fail message', () ->
-      assert.include stdout, 'Yay! Failed in ruby!'
+    it 'stdout should contain `ruby before each validation hook` string', () ->
+      assert.include stdout, "ruby before each validation hook"
+
+    it 'stdout should contain `ruby before each hook` string', () ->
+      assert.include stdout, "ruby before each hook"
+
+    it 'stdout should contain `ruby after each hook` string', () ->
+      assert.include stdout, "ruby after each hook"
+
+    it 'stdout should contain `ruby before all hook` string', () ->
+      assert.include stdout, "ruby before all hook"
+
+    it 'stdout should contain `ruby after all hook` string', () ->
+      assert.include stdout, "ruby after all hook"
+
+    hookTypes = [
+      'before all'
+      'before each'
+      'before'
+      'before each validation'
+      'before validation'
+      'after'
+      'after each'
+      'after all'
+    ]
+
+    for hookType, index in hookTypes then do (hookType, index) ->
+      it "hook type ' #{hookType}'should be able to modify the request under property 'modified_in_hooks' with index #{index}", () ->
+        jsonArray = stdout.split("CHOP HERE")[1]
+        mods = JSON.parse jsonArray
+
+        assert.equal mods[index], "ruby #{hookType} mod"
+
+    it "stdout should contain fail message 'Yay! Failed in ruby!'", () ->
+      assert.include stdout, "Yay! Failed in ruby!"
 
   describe "Using sandboxed hooks", () ->
     resourceRequested = false

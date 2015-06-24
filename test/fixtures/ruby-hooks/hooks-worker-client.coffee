@@ -78,7 +78,7 @@ hooks.beforeEach (transaction, callback) ->
   message =
     event: 'before'
     uuid: uuid
-    transaction: transaction
+    data: transaction
 
   workerClient.write JSON.stringify message
   workerClient.write WORKER_MESSAGE_DELIMITER
@@ -94,8 +94,8 @@ hooks.beforeEach (transaction, callback) ->
     clearTimeout timeout
     # workaround for assigning transacition
     # this does not work:
-    # transaction = receivedMessage.transaction
-    for key, value of receivedMessage.transaction
+    # transaction = receivedMessage.data
+    for key, value of receivedMessage.data
       transaction[key] = value
     callback()
 
@@ -107,7 +107,7 @@ hooks.beforeEachValidation (transaction, callback) ->
   message =
     event: 'beforeValidation'
     uuid: uuid
-    transaction: transaction
+    data: transaction
 
   workerClient.write JSON.stringify message
   workerClient.write WORKER_MESSAGE_DELIMITER
@@ -123,8 +123,8 @@ hooks.beforeEachValidation (transaction, callback) ->
     clearTimeout timeout
     # workaround for assigning transacition
     # this does not work:
-    # transaction = receivedMessage.transaction
-    for key, value of receivedMessage.transaction
+    # transaction = receivedMessage.data
+    for key, value of receivedMessage.data
       transaction[key] = value
     callback()
 
@@ -137,7 +137,7 @@ hooks.afterEach (transaction, callback) ->
   message =
     event: 'after'
     uuid: uuid
-    transaction: transaction
+    data: transaction
 
   workerClient.write JSON.stringify message
   workerClient.write WORKER_MESSAGE_DELIMITER
@@ -151,11 +151,77 @@ hooks.afterEach (transaction, callback) ->
     clearTimeout timeout
     # workaround for assigning transacition
     # this does not work:
-    # transaction = receivedMessage.transaction
-    for key, value of receivedMessage.transaction
+    # transaction = receivedMessage.data
+    for key, value of receivedMessage.data
       transaction[key] = value
     callback()
 
-hooks.afterAll (callback) ->
+hooks.beforeAll (transactions, callback) ->
+  # avoiding dependency on external module here.
+  uuid = Date.now().toString() + '-' + Math. random().toString(36).substring(7)
+
+  # send transaction to the worker
+  message =
+    event: 'beforeAll'
+    uuid: uuid
+    data: transactions
+
+  workerClient.write JSON.stringify message
+  workerClient.write WORKER_MESSAGE_DELIMITER
+
+  timeout = setTimeout () ->
+    console.log 'Hook timeouted.'
+    callback()
+  , HOOK_TIMEOUT
+
+  emitter.on uuid, (receivedMessage) ->
+    clearTimeout timeout
+
+    # workaround for assigning transacitions
+    # this does not work:
+    # transactions = receivedMessage.data
+    for value, index in receivedMessage.data
+      transactions[index] = value
+    callback()
+
+hooks.afterAll (transactions, callback) ->
+  # avoiding dependency on external module here.
+  uuid = Date.now().toString() + '-' + Math. random().toString(36).substring(7)
+
+  # send transaction to the worker
+  message =
+    event: 'afterAll'
+    uuid: uuid
+    data: transactions
+
+  workerClient.write JSON.stringify message
+  workerClient.write WORKER_MESSAGE_DELIMITER
+
+  timeout = setTimeout () ->
+    console.log 'Hook timeouted.'
+    callback()
+  , HOOK_TIMEOUT
+
+  emitter.on uuid, (receivedMessage) ->
+    clearTimeout timeout
+
+    # workaround for assigning transacition
+    # this does not work:
+    # transactions = receivedMessage.data
+    for value, index in receivedMessage.data
+      transactions[index] = value
+    callback()
+
+
+hooks.afterAll (transactions, callback) ->
   worker.kill 'SIGKILL'
+
+  # this is needed to for transaction modification integration tests
+  # it can be refactored to expectations on received body in the express app in tests
+  # in test/unit/transaction-runner-test.coffee > Command line interface > Using workaround for hooks in ruby
+
+  if process.env['TEST_DREDD_WORKER'] == "true"
+    console.log 'CHOP HERE'
+    console.log JSON.stringify transactions[0]['hooks_modifications'], null, 2
+    console.log 'CHOP HERE'
   callback()
