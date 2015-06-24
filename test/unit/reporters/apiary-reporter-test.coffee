@@ -356,6 +356,56 @@ describe 'ApiaryReporter', () ->
             assert.isFalse call.isDone()
             done()
 
+    describe 'when adding skipped test', () ->
+      call = null
+      runId = '507f1f77bcf86cd799439011'
+      clonedTest = null
+      requestBody = null
+
+      beforeEach () ->
+        clonedTest = clone(test)
+        clonedTest.status = 'skip'
+
+        uri = '/apis/public/tests/steps?testRunId=' + runId
+
+        # this is a hack how to get access to the performed request from nock
+        # nock isn't able to provide it
+        getBody = (body) ->
+          requestBody = body
+          return body
+
+        call = nock(env['APIARY_API_URL']).
+          filteringRequestBody(getBody).
+          post(uri).
+          reply(201, {"_id": runId})
+
+      it 'should call "create new test step" HTTP resource', (done) ->
+        emitter = new EventEmitter
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+        apiaryReporter.remoteId = runId
+        emitter.emit 'test skip', clonedTest, () ->
+          assert.isTrue call.isDone()
+          done()
+
+      it 'should send status skipped', (done) ->
+        emitter = new EventEmitter
+        apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+        apiaryReporter.remoteId = runId
+        emitter.emit 'test skip', clonedTest, () ->
+          assert.equal JSON.parse(requestBody)['result'], 'skip'
+          done()
+
+      describe 'when serverError is true', () ->
+        it 'should not do anything', (done) ->
+          emitter = new EventEmitter
+          apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+          apiaryReporter.remoteId = runId
+          apiaryReporter.serverError = true
+          emitter.emit 'test skip', clonedTest, () ->
+            assert.isFalse call.isDone()
+            done()
+
+
     describe 'when adding test with error', () ->
       call = null
       runId = '507f1f77bcf86cd799439011'
