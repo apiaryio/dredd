@@ -7,7 +7,7 @@
     "dredd": "bin/dredd"
   },
   "scripts": {
-    "changelist": "github-changes -o apiaryio -r dredd --only-pulls --use-commit-body --file CHANGELOG-Generated.md",
+    "changelist": "github-changes -o apiaryio -r dredd --only-pulls --use-commit-body --file CHANGELOG-Generated.md -a",
     "pretest": "coffeelint ./src",
     "test": "scripts/test",
     "prepublish": "scripts/prepublish"
