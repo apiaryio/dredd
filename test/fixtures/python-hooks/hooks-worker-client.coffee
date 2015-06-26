@@ -7,7 +7,7 @@ HOOK_TIMEOUT = 5000
 WORKER_HOST = 'localhost'
 WORKER_PORT = 61321
 WORKER_MESSAGE_DELIMITER = "\n"
-WORKER_COMMAND = ['ruby' ,['./test/fixtures/ruby-hooks/dredd-worker.rb', './test/fixtures/ruby-hooks/hookfile*.rb']]
+WORKER_COMMAND = ['python2' ,['./test/fixtures/python-hooks/dredd.py']]
 
 emitter = new EventEmitter
 
