@@ -1112,7 +1112,10 @@ describe "Command line interface", () ->
 
       server = app.listen PORT, () ->
         execCommand cmd, (cmdRrr, thisStdout, thisStderr, thisCode) ->
-          console.log thisStdout
+
+          # Uncomment this to debug output from the worker
+          #console.log thisStdout
+
           server.close()
 
       server.on 'close', done
@@ -1168,6 +1171,9 @@ describe "Command line interface", () ->
     it "stdout should contain fail message 'Yay! Failed in ruby!'", () ->
       assert.include stdout, "Yay! Failed in ruby!"
 
+    it "worker should expand globs from the argv aguments", () ->
+      assert.include stdout, "ruby hooks second file"
+
   # WARNING: this text is excluded from code coverage
   # it for some reason decreases coverage only in  coveralls
   describe "Using workaround for hooks in python", () ->
@@ -1189,7 +1195,10 @@ describe "Command line interface", () ->
 
       server = app.listen PORT, () ->
         execCommand cmd, (cmdRrr, thisStdout, thisStderr, thisCode) ->
-          console.log thisStdout
+
+          # Uncomment this to debug output from the worker
+          #console.log thisStdout
+
           server.close()
 
       server.on 'close', done
@@ -1244,7 +1253,6 @@ describe "Command line interface", () ->
 
     it "stdout should contain fail message 'Yay! Failed in python!'", () ->
       assert.include stdout, "Yay! Failed in python!"
-
 
   describe "Using sandboxed hooks", () ->
     resourceRequested = false
