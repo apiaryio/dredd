@@ -1168,6 +1168,9 @@ describe "Command line interface", () ->
     it "stdout should contain fail message 'Yay! Failed in ruby!'", () ->
       assert.include stdout, "Yay! Failed in ruby!"
 
+    it "worker should expand globs from the argv aguments", () ->
+      assert.include stdout, "ruby hooks second file"
+
   describe "Using sandboxed hooks", () ->
     resourceRequested = false
 
