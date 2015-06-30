@@ -26,22 +26,22 @@ else
 
 pathGlobs = [].concat hooks?.configuration?.options?.hookfiles
 
-worker = spawn workerCommand, pathGlobs
+hooks.worker = spawn workerCommand, pathGlobs
 
 console.log "Spawning `#{language}` hooks worker"
 
-worker.stdout.on 'data', (data) ->
+hooks.worker.stdout.on 'data', (data) ->
   console.log "Hook worker stdout:", data.toString()
 
-worker.stderr.on 'data', (data) ->
+hooks.worker.stderr.on 'data', (data) ->
   console.log "Hook worker stderr:", data.toString()
 
-worker.on 'close', (status) ->
+hooks.worker.on 'close', (status) ->
   console.log "Hook worker exited with status: #{status}"
   if status > 0
     process.exit status
 
-worker.on 'error', (error) ->
+hooks.worker.on 'error', (error) ->
   console.log error
 
 # Wait before connecting to a worker
@@ -51,7 +51,7 @@ now = new Date().getTime()
 while new Date().getTime() < now + 1000
   true
 
-workerClient = net.connect port: WORKER_PORT, host: WORKER_HOST, () ->
+hooks.workerClient = net.connect port: WORKER_PORT, host: WORKER_HOST, () ->
   # Do something when dredd starts
   # message =
   #   event: 'hooksInit'
@@ -59,14 +59,14 @@ workerClient = net.connect port: WORKER_PORT, host: WORKER_HOST, () ->
   # worker.write JSON.stringify message
   # worker.write WORKER_MESSAGE_DELIMITER
 
-workerClient.on 'error', (error) ->
+hooks.workerClient.on 'error', (error) ->
   console.log 'Error connecting to the hook worker. Is the worker running?'
   console.log error
   process.exit(1)
 
 workerBuffer = ""
 
-workerClient.on 'data', (data) ->
+hooks.workerClient.on 'data', (data) ->
   process.stdout.write data.toString()
   workerBuffer += data.toString()
   if data.toString().indexOf(WORKER_MESSAGE_DELIMITER) > -1
@@ -102,8 +102,8 @@ hooks.beforeEach (transaction, callback) ->
     uuid: uuid
     data: transaction
 
-  workerClient.write JSON.stringify message
-  workerClient.write WORKER_MESSAGE_DELIMITER
+  hooks.workerClient.write JSON.stringify message
+  hooks.workerClient.write WORKER_MESSAGE_DELIMITER
 
   # set timeout for the hook
   timeout = setTimeout () ->
@@ -131,8 +131,8 @@ hooks.beforeEachValidation (transaction, callback) ->
     uuid: uuid
     data: transaction
 
-  workerClient.write JSON.stringify message
-  workerClient.write WORKER_MESSAGE_DELIMITER
+  hooks.workerClient.write JSON.stringify message
+  hooks.workerClient.write WORKER_MESSAGE_DELIMITER
 
   # set timeout for the hook
   timeout = setTimeout () ->
@@ -161,8 +161,8 @@ hooks.afterEach (transaction, callback) ->
     uuid: uuid
     data: transaction
 
-  workerClient.write JSON.stringify message
-  workerClient.write WORKER_MESSAGE_DELIMITER
+  hooks.workerClient.write JSON.stringify message
+  hooks.workerClient.write WORKER_MESSAGE_DELIMITER
 
   timeout = setTimeout () ->
     transaction.fail = 'Hook timed out.'
@@ -188,8 +188,8 @@ hooks.beforeAll (transactions, callback) ->
     uuid: uuid
     data: transactions
 
-  workerClient.write JSON.stringify message
-  workerClient.write WORKER_MESSAGE_DELIMITER
+  hooks.workerClient.write JSON.stringify message
+  hooks.workerClient.write WORKER_MESSAGE_DELIMITER
 
   timeout = setTimeout () ->
     console.log 'Hook timeouted.'
@@ -216,8 +216,8 @@ hooks.afterAll (transactions, callback) ->
     uuid: uuid
     data: transactions
 
-  workerClient.write JSON.stringify message
-  workerClient.write WORKER_MESSAGE_DELIMITER
+  hooks.workerClient.write JSON.stringify message
+  hooks.workerClient.write WORKER_MESSAGE_DELIMITER
 
   timeout = setTimeout () ->
     console.log 'Hook timeouted.'
@@ -236,7 +236,7 @@ hooks.afterAll (transactions, callback) ->
 
 
 hooks.afterAll (transactions, callback) ->
-  worker.kill 'SIGKILL'
+  hooks.worker.kill 'SIGKILL'
 
   # this is needed to for transaction modification integration tests
   # it can be refactored to expectations on received body in the express app in tests
