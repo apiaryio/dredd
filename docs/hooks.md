@@ -80,6 +80,8 @@ Dredd supports following types of hooks:
 - Any modifications on the `transaction` object is propagated to the actual HTTP transactions.
 - You can use `hooks.log` function inside the hook to print yours debug messages and informations.
 
+- [`configuration`](https://dredd.readthedocs.org/en/latest/usage/#configuration-object-for-dredd-class) object is populated on the `hooks` object
+
 ### Sync API
 
 ```javascript

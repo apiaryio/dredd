@@ -86,6 +86,36 @@ describe 'addHooks(runner, transactions, callback)', () ->
         assert.ok globStub.sync.notCalled
         done()
 
+  describe 'with non `nodejs` language option', () ->
+    runner = null
+
+    beforeEach ->
+      runner =
+        configuration:
+          options:
+            language: 'ruby'
+            hookfiles: './some/ruby/file.rb'
+
+      sinon.stub globStub, 'sync', (pattern) ->
+        ['./hooks-worker-client']
+
+      proxyquireSpy.reset()
+
+    afterEach ->
+      proxyquireSpy.reset()
+      globStub.sync.restore()
+
+
+
+    it 'should proxyquire the hook worker client file', (done) ->
+      addHooks runner, transactions, (err) ->
+        return done err if err
+        call = proxyquireSpy.getCall(0)
+        filename = call.args[0]
+        assert.include filename, 'hooks-worker-client'
+        done()
+
+
   describe 'with valid pattern', () ->
     runner = null
     beforeEach ->
@@ -112,7 +142,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
         sinon.stub globStub, 'sync', (pattern) ->
           ['file1.js', 'file2.coffee']
         sinon.stub pathStub, 'resolve', (path, rel) ->
-          ""
+          '/Users/netmilk/projects/dredd/file2.coffee'
 
       after () ->
         globStub.sync.restore()
@@ -124,46 +154,18 @@ describe 'addHooks(runner, transactions, callback)', () ->
           assert.ok pathStub.resolve.called
           done()
 
-    describe 'when there is an error reading the hook files', () ->
-      runner = null
-      beforeEach ->
-        runner =
-          configuration:
-            options:
-              hookfiles: './**/*_hooks.*'
-
-        sinon.stub pathStub, 'resolve', (path, rel) ->
-          throw new Error()
-        sinon.spy loggerStub, 'warn'
-        sinon.spy loggerStub, 'info'
-        sinon.stub globStub, 'sync', (pattern) ->
-          ['file1.xml', 'file2.md']
-
-      afterEach ->
-        pathStub.resolve.restore()
-        loggerStub.warn.restore()
-        loggerStub.info.restore()
-        globStub.sync.restore()
-
-      it 'should log an info with hookfiles paths', (done) ->
+      it 'should add configuration object to the hooks object proxyquired to the each hookfile', (done) ->
         addHooks runner, transactions, (err) ->
           return done err if err
-          assert.ok loggerStub.info.called
-          assert.equal loggerStub.info.firstCall.args[0], 'Found Hookfiles: file1.xml,file2.md'
+          call = proxyquireSpy.getCall(0)
+          hooksObject = call.args[1]['hooks']
+          assert.property hooksObject, 'configuration'
           done()
-
-      it 'should log a warning', (done) ->
-        addHooks runner, transactions, (err) ->
-          return done err if err
-          assert.ok loggerStub.warn.called
-          done()
-
-
 
   describe 'when sandboxed mode is on', () ->
     describe 'when hookfiles option is given', () ->
       runner = {}
-      beforeEach ->
+      beforeEach (done) ->
         runner =
           configuration:
             options:
@@ -175,13 +177,15 @@ describe 'addHooks(runner, transactions, callback)', () ->
         sinon.spy fsStub, 'readFile'
         proxyquireSpy.reset()
         sandboxHooksCodeSpy.reset()
+        done()
 
-      afterEach ->
+      afterEach (done) ->
         loggerStub.warn.restore()
         loggerStub.info.restore()
         fsStub.readFile.restore()
         proxyquireSpy.reset()
         sandboxHooksCodeSpy.reset()
+        done()
 
       it 'should not use proxyquire', (done) ->
         addHooks runner, transactions, (err) ->
@@ -252,9 +256,6 @@ describe 'addHooks(runner, transactions, callback)', () ->
           assert.property runner.hooks.afterHooks, 'Machines > Machines collection > Get Machines'
           done()
 
-    describe 'when multiple hook files and hook code strings are processed', () ->
-      it 'should not overwrite previous content of hooks'
-
     describe 'when hooks are passed as a string from Dredd class', () ->
       runner = {}
       beforeEach ->
@@ -317,27 +318,27 @@ describe 'addHooks(runner, transactions, callback)', () ->
             assert.property runner.hooks.afterHooks, 'Machines collection > Get Machines'
             done()
 
-      describe 'when not sandboxed', () ->
-        it 'should remove leading " > " from transaction names', (done) ->
-          runner =
-            configuration:
-              options:
-                hookfiles: './test/fixtures/groupless-names.js'
+  describe 'when not sandboxed', () ->
+    it 'should remove leading " > " from transaction names', (done) ->
+      runner =
+        configuration:
+          options:
+            hookfiles: './test/fixtures/groupless-names.js'
 
-          addHooks runner, transactions, (err) ->
-            assert.notProperty runner.hooks.afterHooks, ' > Machines collection > Get Machines'
-            assert.notProperty runner.hooks.afterHooks, ' > Machines collection > Get Machines'
-            done()
+      addHooks runner, transactions, (err) ->
+        assert.notProperty runner.hooks.afterHooks, ' > Machines collection > Get Machines'
+        assert.notProperty runner.hooks.afterHooks, ' > Machines collection > Get Machines'
+        done()
 
-        it 'should contain transaction with fixed name', (done) ->
-          runner =
-            configuration:
-              options:
-                hookfiles: './test/fixtures/groupless-names.js'
+    it 'should contain transaction with fixed name', (done) ->
+      runner =
+        configuration:
+          options:
+            hookfiles: './test/fixtures/groupless-names.js'
 
-          addHooks runner, transactions, (err) ->
-            assert.property runner.hooks.afterHooks, 'Machines collection > Get Machines'
-            assert.property runner.hooks.afterHooks, 'Machines collection > Get Machines'
-            done()
+      addHooks runner, transactions, (err) ->
+        assert.property runner.hooks.afterHooks, 'Machines collection > Get Machines'
+        assert.property runner.hooks.afterHooks, 'Machines collection > Get Machines'
+        done()
 
 

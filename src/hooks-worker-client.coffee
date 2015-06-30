@@ -7,19 +7,39 @@ HOOK_TIMEOUT = 5000
 WORKER_HOST = 'localhost'
 WORKER_PORT = 61321
 WORKER_MESSAGE_DELIMITER = "\n"
-WORKER_COMMAND = ['ruby' ,['./test/fixtures/ruby-hooks/dredd-worker.rb', './test/fixtures/ruby-hooks/hookfile*.rb']]
+
 
 emitter = new EventEmitter
 
-worker = spawn.apply null, WORKER_COMMAND
+language = hooks?.configuration?.options?.language
 
-console.log 'Spawning worker'
+
+# Select worker based on option, use option string as command if not match anyting
+if language == 'ruby'
+  workerCommand = 'dredd-worker-ruby'
+else if language = 'python'
+  workerCommand = 'dredd-worker-python'
+else if language = 'nodejs'
+  throw new Error 'Hooks worker should not be used for nodejs. Use Dredds\' native node hooks instead'
+else
+  workerCommand = language
+
+pathGlobs = [].concat hooks?.configuration?.options?.hookfiles
+
+worker = spawn workerCommand, pathGlobs
+
+console.log "Spawning `#{language}` hooks worker"
 
 worker.stdout.on 'data', (data) ->
   console.log "Hook worker stdout:", data.toString()
 
 worker.stderr.on 'data', (data) ->
   console.log "Hook worker stderr:", data.toString()
+
+worker.on 'close', (status) ->
+  console.log "Hook worker exited with status: #{status}"
+  if status > 0
+    process.exit status
 
 worker.on 'error', (error) ->
   console.log error
@@ -42,7 +62,7 @@ workerClient = net.connect port: WORKER_PORT, host: WORKER_HOST, () ->
 workerClient.on 'error', (error) ->
   console.log 'Error connecting to the hook worker. Is the worker running?'
   console.log error
-  process.exit()
+  process.exit(1)
 
 workerBuffer = ""
 
