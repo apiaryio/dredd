@@ -5,9 +5,21 @@ describe 'Hooks worker client', () ->
 
     describe 'when --language ruby option is given', () ->
       it 'should spawn the server process with command "dredd-worker-ruby"'
+      it 'should pass --hookfiles option as a array of arguments'
+
+      describe 'when the worker  is not installed', () ->
+        it 'should exit with 1'
+        it 'should write a hint how to install'
+
 
     describe 'when --language python option is given', () ->
       it 'should spawn the server process with command "dredd-worker-python"'
+      it 'should pass --hookfiles option as a array of arguments'
+
+      describe 'when the worker  is not installed', () ->
+        it 'should exit with 1'
+        it 'should write a hint how to install'
+
 
     describe 'when --language ./eny/other-command is giveb', () ->
       it 'should run this command given as language option'
@@ -15,6 +27,7 @@ describe 'Hooks worker client', () ->
     it 'should pipe spawned process stderr to the Dredd process stderr'
 
     it 'should pipe spawned process stdut to the Dredd process stdout'
+
     it 'should Dredd with status > 1 when spawned process ends with exit status > 0'
 
     it 'should connect to the server'
