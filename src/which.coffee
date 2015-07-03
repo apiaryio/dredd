@@ -1,5 +1,5 @@
-childProcess = require 'child_process'
+spawnSync = require 'spawn-sync'
 
 module.exports =
   which: (command) ->
-    childProcess.spawnSync("which", [command]).status == 0
+    spawnSync("which", [command]).status == 0
