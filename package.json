@@ -1,6 +1,6 @@
 {
   "name": "dredd",
-  "version": "0.6.2pre",
+  "version": "0.6.2pre2",
   "description": "API Blueprint testing tool",
   "main": "lib/dredd.js",
   "bin": {

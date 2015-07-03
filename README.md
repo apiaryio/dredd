@@ -8,13 +8,21 @@
 
 [![NPM](https://nodei.co/npm/dredd.png)](https://nodei.co/npm/dredd/)
 
-Dredd is a command-line tool for validating API documentation written in [API Blueprint][]
+Dredd is a language agnostic command-line tool for validating API documentation written in [API Blueprint][]
 format against its backend implementation. With Dredd you can easily plug your
 API documentation into the Continous Integration system like [Travis CI][]
 or [Jenkins][] and have API documentation up-to-date, all the time.
 Dredd uses the [Gavel][] for judging if a particular API response is valid
 or if it isn't. If you are curious about how decisions are made, please refer
 to Gavel's [behavior specification][].
+
+Dredd supports writing [hooks](hook.md) glue code for testing statefull servers, workflows and loading fixtures in:
+
+- [Ruby](hooks-ruby.md)
+- [Python](hooks-python.md)
+- [Node.js](hooks-node.md)
+
+Your welcome to [write support for hooks in your language](hooks-python.md) if
 
 ![Dredd API Blueprint testing tool](https://raw.github.com/apiaryio/dredd/master/img/Dredd.png)
 

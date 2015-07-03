@@ -8,7 +8,7 @@
 
 ![Dredd API Blueprint testing tool](https://raw.github.com/apiaryio/dredd/master/img/Dredd.png)
 
-Dredd is a command-line tool for validating API documentation written in the [API Blueprint][]
+Dredd is a language agnostic command-line tool for testing API documentation written in the [API Blueprint][]
 format against its backend implementation. With Dredd you can easily plug your
 API documentation into the Continous Integration systems like [Travis CI][]
 or [Jenkins][] and have API documentation up-to-date all the time.
@@ -16,34 +16,25 @@ Dredd uses [Gavel][] for judging if a particular API response is valid
 or if it isn't. If you are curious about how decisions are made, please refer
 to Gavel's [behavior specification][].
 
-## Quickstart
+Dredd supports writing [hooks](hook.md) glue code for testing statefull servers, workflows and loading fixtures in:
 
-- If you don't have [Node.js](https://nodejs.org/) installed, you may want to use [NVM](https://github.com/creationix/nvm)
-- Create an API blueprint in `blueprint.md`
-- Install Dredd if you haven't already
-
-```
-$ npm install -g dredd
-```
-
-- Run interactive configuration:
-
-```
-$ dredd init
-```
-
-- Run dredd
-
-```
-$ dredd
-```
+- [Ruby](hooks_ruby).md
+- [Python](hooks_python.md)
+- [Node.js](hooks.md)
+- Addd your language here
 
 ## Documentation Reference
 
 1. [Overview](overview.md)
-1. [Usage](usage.md)
-1. [Hooks](hooks.md)
-1. [Example](example.md)
+2. [Quickstart](quickstart.md)
+3. [Usage](usage.md)
+4. [Hooks](hooks.md)
+5. [Ruby Hooks](hooks-ruby.md)
+6. [Python Hooks](hooks-python.md)
+7. [Node.js Hooks](hooks-nodejs.md)
+8. [Sandboxed JavaScript Hooks](hooks-js-sandbox.md)
+9. [Hooks in new language](hooks-new-language.md)
+10. [Example](example.md)
 
 ## Useful Links
 
