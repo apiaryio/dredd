@@ -166,6 +166,10 @@ class DreddCommand
         console.log "Server command failed, exitting..."
         @_processExit(2)
 
+      # Ensure server is not running when dredd exits prematurely somewhere
+      process.on 'exit', () ->
+        @serverProcess.kill('SIGKILL') if @serverProcess?
+
       waitSecs = parseInt(@argv['server-wait'], 10)
       waitMilis = waitSecs * 1000
       console.log "Waiting #{waitSecs} seconds for server command to start..."
