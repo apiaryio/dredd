@@ -7,9 +7,6 @@ node_js:
 
 sudo: false
 
-before_script:
-  - gem install dredd_worker
-
 notifications:
   email:
     recipients:
