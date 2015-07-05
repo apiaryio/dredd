@@ -14,11 +14,11 @@ API documentation into the Continous Integration systems like [Travis CI][]
 or [Jenkins][] and have API documentation up-to-date all the time.
 Dredd uses [Gavel][] for judging if a particular API response is valid
 or if it isn't. If you are curious about how decisions are made, please refer
-to Gavel's [behavior specification][].
+to Gavel's [behavior specification][https://www.relishapp.com/apiary/gavel/docs].
 
 Dredd supports writing [hooks](hook.md) glue code for testing statefull servers, workflows and loading fixtures in:
 
-- [Ruby](hooks_ruby).md
+- [Ruby](hooks_ruby.md)
 - [Python](hooks_python.md)
 - [Node.js](hooks.md)
 - Addd your language here

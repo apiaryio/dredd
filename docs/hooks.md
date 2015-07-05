@@ -86,6 +86,8 @@ Dredd supports following types of hooks:
 - `afterEach` called after each HTTP transaction
 - `afterAll` called after whole test run
 
+Refer to [Dredd execution lifecycle](usage.md#dredd-execution-lifecycle) when is each hook executed.
+
 ### Transaction Object Structure
 
 Transaction object is used as a first argument for hook functions.

@@ -1,5 +1,7 @@
 # Writing Dredd Hooks In Python
 
+Ruby hooks are using [Dredd's hooks handler socket interface](hooks-new-language.md). For using ruby hooks in Dredd you have to have [Dredd already installed](quickstart.md)
+
 ## Installation
 
 ```
@@ -14,123 +16,177 @@ $ dredd apiary.apib http://localhost:3000 --language python --hookfiles=./hooks*
 
 ## API Reference
 
+Module `dredd_hooks` imports following decorators:
 
-## Examples
+1. `@before_each`, `before_each_validation`, `after_each`
+  - wraps a function and passes [Transaction object](hooks.md#transaction-object-structure) as a first argument to its
 
+2. `before`, `before_validation`, `after`
+  - accepts [transacion name](hooks.md#getting-transaction-names) as a first argument
+  - wraps a function and sends a [Transaction object](hooks.md#transaction-object-structure) as a first argument to it
+
+3. `before_all`, `after_all`
+  - wraps a function and passes an Array of [Transaction objects](hooks.md#transaction-object-structure)as a first argument to it
+
+
+Refer to [Dredd execution lifecycle](usage.md#dredd-execution-lifecycle) to find when is each hook function executed.
+
+### Using Python API
+
+Example usage of all methods in
+
+```python
+import dredd_hooks as dredd
+
+@hooks.before_all
+def my_before_all_hook(transactions):
+  print 'before all'
+
+@hooks.before_each
+def my_before_all_hook(transactions):
+  print 'before each'
+
+@hooks.before
+def my_before_hook(transaction):
+  print 'before'
+
+@hooks.before_each_validation
+def my_before_validation_hook(transaction):
+  print 'before each validation'
+
+@hooks.before_validation
+def my_before_validation_hook(transaction):
+  print 'before validations'
+
+@hooks.after
+def my_after_hook(transaction):
+  print 'after'
+
+@hooks.after_each
+def after_each(transaction):
+  print 'after_each'
+
+@hooks.after_all
+def my_after_all_hook(transaction):
+  print 'after_all'
+
+```
+
+## Exapmles
 
 ### How to Skip Tests
 
 Any test step can can be skipped by setting `skip` property of the `transaction` object to `true`.
 
-```javascript
-var before = require('hooks').before;
+```python
+import dredd_hooks as hooks
 
-before("Machines > Machines collection > Get Machines", function (transaction) {
-  transaction.skip = true;
-});
+@hooks.before("Machines > Machines collection > Get Machines")
+def ship_test(transaction):
+  transaction['skip'] = true
 ```
 
 ### Sharing Data Between Steps in Request Stash
 
-You may pass data between test steps using the response stash.
+If you want to test some API workflow, you may pass data between test steps using the response stash.
 
-```javascript
-var hooks = require('hooks');
-var before = hooks.before;
-var after = hooks.after;
+```ruby
+import json as json
+import dredd_hooks as hooks
 
-var responseStash = {};
+response_stash = {}
 
-after("Machines > Machines collection > Create Machine", function (transaction) {
+@hooks.after("Machines > Machines collection > Create Machine")
+def save_response_to_stash(transaction):
+  # saving HTTP response to the stash
+  response_stash[transaction['name']] = transaction['real']
 
-  // saving HTTP response to the stash
-  responseStash[transaction.name] = transaction.real;
-});
+@hooks.before("Machines > Machine > Delete a machine")
+def add_machine_id_to_request(transaction):
+  #reusing data from previouse response here
+  parsed_body = json.load request_stash['Machines > Machines collection > Create Machine']
+  machine_id = parsed_body['id']
 
-
-before("Machines > Machine > Delete a machine", function (transaction) {
-  //reusing data from previouse response here
-  machineId = JSON.parse(requestStash['Machines > Machines collection > Create Machine'])['id'];
-
-  //replacing id in url with stashed id from previous response
-  url = transaction.fullPath;
-  transaction.fullPath = url.replace('42', machineId);
-});
+  #replacing id in url with stashed id from previous response
+  transaction['fullPath'].gsub! '42', machine_id
 ```
 
 ### Failing Tests Programmatically
 
 You can fail any step by setting `fail` property on `transaction` object to `true` or any string with descriptive message.
 
-```javascript
-var before = require('hooks').before;
+```python
+import dredd_hooks as hooks
 
-before("Machines > Machines collection > Get Machines", function (transaction) {
-  transaction.fail = "Some failing message";
-});
+@hooks.before("Machines > Machines collection > Get Machines")
+def fail_transaction(transaction):
+  transaction['fail'] = "Some failing message"
 ```
 
 ### Modifying Transaction Request Body Prior to Execution
 
-```javascript
-var hooks = require('hooks');
-var before = hooks.before;
+```python
+import json as json
+import dredd_hooks as hooks
 
-before("Machines > Machines collection > Get Machines", function (transaction) {
-  // parse request body from blueprint
-  requestBody = JSON.parse(transaction.request.body);
+@hoos.before("Machines > Machines collection > Get Machines")
+def add_value_to_body(transaction):
+  # parse request body from blueprint
+  request_body = JSON.parse transaction['request']['body']
 
-  // modify request body here
-  requestBody['someKey'] = 'someNewValue';
+  # modify request body here
+  request_body['someKey'] = 'some new value'
 
-  // stringify the new body to request
-  transaction.request.body = JSON.stringify(requestBody);
-});
+  # stringify the new body to request
+  transaction['request']['body'] = json.dumps(request_body)
 ```
 
 ### Adding or Changing URI Query Parameters to All Requests
 
-```javascript
-var hooks = require('hooks');
+```python
+import dredd_hooks as hooks
 
-hooks.beforeEach(function (transaction) {
-  // add query parameter to each transaction here
-  var paramToAdd = "api-key=23456"
-  if(transaction.fullPath.indexOf('?') > -1){
-    transaction.fullPath += "&" + paramToAdd;
-  } else{
-    transaction.fullPath += "?" + paramToAdd;
-  }
-});
+@hooks.before_each
+def add_api_key(transaction):
+  # add query parameter to each transaction here
+  param_to_add = "api-key=23456"
+
+  if '?' in transaction['fullPath']:
+    transaction['fullPath'] += "&" + param_to_add
+  else:
+    transaction['fullPath'] += "?" + param_to_add
 ```
 
 ### Handling sessions
 
-```javascript
-var hooks = require('hooks');
-var stash = {};
+```python
+import json as json
+import dredd_hooks as hooks
 
-// hook to retrieve session on a login
-hooks.after('Auth > /remoteauth/userpass > POST', function (transaction) {
-  stash['token'] = JSON.parse(transaction.real.body)['sessionId'];
-});
+stash = {}
 
-// hook to set the session cookie in all following requests
-hooks.beforeEach(function (transaction) {
-  if(stash['token'] != undefined){
-    transaction.request['headers']['Cookie'] = "id=" + stash['token'];
-  };
-});
+# hook to retrieve session on a login
+@hooks.after('Auth > /remoteauth/userpass > POST')
+def stash_session_id(transaction):
+  parsed_body = JSON.load transaction['real']['body']
+  stash['token'] = parsed_body['sessionId']
+
+# hook to set the session cookie in all following requests
+@hooks.before_each
+def add_session_cookie(transaction):
+  if 'token' not in stash:
+    transaction['request']['headers']['Cookie'] = "id=" + stash['token']
 ```
+
 
 ### Remove traling newline character for in expected plain text bodies
 
-```javascript
-var hooks = require('hooks');
+```python
+import re as re
+import dredd_hooks as hooks
 
-hooks.beforeEach(function(transaction) {
-    if (transaction.expected.headers['Content-Type'] === 'text/plain') {
-        transaction.expected.body = transaction.expected.body.replace(/^\s+|\s+$/g, "");
-    }
-});
+@hooks.before_each
+def remove_trailing_newline(transaction):
+  if transaction['expected']['headers']['Content-Type'] == 'text/plain':
+    transaction['expected']['body'] = re.sub(/^\s+|\s+$/g, "", transaction['expected']['body'])
 ```

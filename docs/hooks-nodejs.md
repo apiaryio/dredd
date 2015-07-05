@@ -22,11 +22,11 @@ $ dredd apiary.apib http://localhost:30000 --hookfiles=./hooks*.js
 var hooks = require('hooks');
 
 hooks.beforeAll(function (transactions) {
-  hooks.log('beforeAll');
+  hooks.log('before all');
 });
 
 hooks.beforeEach(function (transaction) {
-  hooks.log('beforeEach');
+  hooks.log('before each');
 });
 
 hooks.before("Machines > Machines collection > Get Machines", function (transaction) {
@@ -34,11 +34,11 @@ hooks.before("Machines > Machines collection > Get Machines", function (transact
 });
 
 hooks.beforeEachValidation(function (transaction) {
-  hooks.log('beforeEachValidation');
+  hooks.log('before each validation');
 });
 
 hooks.beforeValidation("Machines > Machines collection > Get Machines", function (transaction) {
-  hooks.log("beforeValidation");
+  hooks.log("before validation");
 });
 
 hooks.after("Machines > Machines collection > Get Machines", function (transaction) {
@@ -46,11 +46,11 @@ hooks.after("Machines > Machines collection > Get Machines", function (transacti
 });
 
 hooks.afterEach(function (transaction) {
-  hooks.log('afterEach');
+  hooks.log('after each');
 });
 
 hooks.afterAll(function (transactions) {
-  hooks.log('afterAll');
+  hooks.log('after all');
 })
 ```
 
@@ -62,12 +62,12 @@ When the callback is used in the hook function, callbacks can handle asynchronou
 var hooks = require('hooks');
 
 hooks.beforeAll(function (transactions, done) {
-  hooks.log('beforeAll');
+  hooks.log('before all');
   done();
 });
 
 hooks.beforeEach(function (transaction, done) {
-  hooks.log('beforeEach');
+  hooks.log('before each');
   done();
 });
 
@@ -77,12 +77,12 @@ hooks.before("Machines > Machines collection > Get Machines", function (transact
 });
 
 hooks.beforeEachValidation(function (transaction, done) {
-  hooks.log('beforeEachValidation');
+  hooks.log('before each validation');
   done();
 });
 
 hooks.beforeValidation("Machines > Machines collection > Get Machines", function (transaction, done) {
-  hooks.log("beforeValidation");
+  hooks.log("before validation");
   done();
 });
 
@@ -92,12 +92,12 @@ hooks.after("Machines > Machines collection > Get Machines", function (transacti
 });
 
 hooks.afterEach(function (transaction, done) {
-  hooks.log('afterEach');
+  hooks.log('after each');
   done();
 });
 
 hooks.afterAll(function (transactions, done) {
-  hooks.log('afterAll');
+  hooks.log('after all');
   done();
 })
 ```
