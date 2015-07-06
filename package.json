@@ -1,17 +1,17 @@
 {
-  "name": "http-transaction-compiler",
+  "name": "blueprint-transactions",
   "version": "0.0.1",
-  "description": "Compile concrete HTTP transactions from API BLueprint",
-  "main": "lib/http-transaction-compiler.js",
+  "description": "Compile concrete HTTP transactions from API Blueprint AST",
+  "main": "lib/blueprint-transactions.js",
   "scripts": {
-    "changelist": "github-changes -o apiaryio -r http-transaction-compiler --only-pulls --use-commit-body --file HISTORY-http-transaction-compiler.md",
+    "changelist": "github-changes -o apiaryio -r http-compiler --only-pulls --use-commit-body --file CHANGELOG-generated.md",
     "pretest": "coffeelint ./src",
     "test": "scripts/test",
     "prepublish": "scripts/prepublish"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/apiaryio/http-transaction-compiler"
+    "url": "https://github.com/apiaryio/blueprint-transactions"
   },
   "dependencies": {
     "clone": "^1.0.0",
