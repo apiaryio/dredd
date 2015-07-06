@@ -34,7 +34,7 @@ Dredd supports writing [hooks](hook.md) glue code for testing statefull servers,
 7. [Node.js Hooks](hooks-nodejs.md)
 8. [Sandboxed JavaScript Hooks](hooks-js-sandbox.md)
 9. [Hooks in new language](hooks-new-language.md)
-10. [Example](example.md)
+10. [Example application](example.md)
 
 ## Useful Links
 
