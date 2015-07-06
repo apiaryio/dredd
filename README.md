@@ -36,5 +36,4 @@ Any contribution is more than welcome!
 
 Fork, write tests, write clean, readable code which communicate, use `scripts/bdd`, keep the [test coverage][] and create a pull request.
 
-
 [test coverage]: https://coveralls.io/r/apiaryio/blueprint-transactinos?branch=master
