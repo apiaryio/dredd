@@ -1,6 +1,9 @@
 # Writing Dredd Hooks In Ruby
 
-Ruby hooks are using [Dredd's hooks handler socket interface](hooks-new-language.md). For using ruby hooks in Dredd you have to have [Dredd already installed](quickstart.md)
+[![Build Status](https://travis-ci.org/apiaryio/dredd-hooks-ruby.svg?branch=master)](https://travis-ci.org/apiaryio/dredd-hooks-ruby)
+[GitHub repository](https://github.com/apiaryio/dredd-hooks-ruby)
+
+Ruby hooks are using [Dredd's hooks handler socket interface](hooks-new-language.md). For using Ruby hooks in Dredd you have to have [Dredd already installed](quickstart.md)
 
 ## Installation
 

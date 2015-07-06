@@ -1,6 +1,10 @@
 # Writing Dredd Hooks In Python
 
-Ruby hooks are using [Dredd's hooks handler socket interface](hooks-new-language.md). For using ruby hooks in Dredd you have to have [Dredd already installed](quickstart.md)
+[![Build Status](https://travis-ci.org/apiaryio/dredd-hooks-pyhon.svg?branch=master)](https://travis-ci.org/apiaryio/dredd-hooks-python)
+[GitHub repository](https://github.com/apiaryio/dredd-hooks-python)
+
+
+Python hooks are using [Dredd's hooks handler socket interface](hooks-new-language.md). For using Python hooks in Dredd you have to have [Dredd already installed](quickstart.md)
 
 ## Installation
 
@@ -90,7 +94,7 @@ def ship_test(transaction):
 
 If you want to test some API workflow, you may pass data between test steps using the response stash.
 
-```ruby
+```python
 import json as json
 import dredd_hooks as hooks
 
