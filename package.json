@@ -1,7 +1,7 @@
 {
   "name": "blueprint-transactions",
   "version": "0.0.1",
-  "description": "Compile concrete HTTP transactions from API Blueprint AST",
+  "description": "Compile HTTP transactions (request-response pairs) from API Blueprint AST",
   "main": "lib/blueprint-transactions.js",
   "scripts": {
     "changelist": "github-changes -o apiaryio -r http-compiler --only-pulls --use-commit-body --file CHANGELOG-generated.md",
