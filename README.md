@@ -21,8 +21,9 @@ Dredd supports writing [hooks](hook.md) glue code for testing statefull servers,
 - [Ruby](hooks-ruby.md)
 - [Python](hooks-python.md)
 - [Node.js](hooks-node.md)
+- *Addd your language here*
 
-Your welcome to [write support for hooks in your language](hooks-python.md) if
+You're welcome to [write support for hooks in your language](hooks-python.md) if
 
 ![Dredd API Blueprint testing tool](https://raw.github.com/apiaryio/dredd/master/img/Dredd.png)
 
@@ -51,8 +52,6 @@ $ dredd
 ## Documentation
 
 **View the [full documentation](http://dredd.readthedocs.org/en/latest/) for how to use all of Dredd's features.**
-
-
 
 ## Contribution
 

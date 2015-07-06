@@ -1,6 +1,6 @@
 node_modules
 src-cov
-HISTORY-Generated.md
+CHANGELOG-Generated.md
 /lib
 cov.html
 .vagrant

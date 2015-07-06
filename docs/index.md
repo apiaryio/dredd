@@ -14,14 +14,14 @@ API documentation into the Continous Integration systems like [Travis CI][]
 or [Jenkins][] and have API documentation up-to-date all the time.
 Dredd uses [Gavel][] for judging if a particular API response is valid
 or if it isn't. If you are curious about how decisions are made, please refer
-to Gavel's [behavior specification][https://www.relishapp.com/apiary/gavel/docs].
+to Gavel's [behavior specification][].
 
 Dredd supports writing [hooks](hook.md) glue code for testing statefull servers, workflows and loading fixtures in:
 
 - [Ruby](hooks_ruby.md)
 - [Python](hooks_python.md)
 - [Node.js](hooks.md)
-- Addd your language here
+- *Addd your language here*
 
 ## Documentation Reference
 
@@ -58,4 +58,4 @@ The documentation for Dredd is written using [MkDocs](http://www.mkdocs.org/). T
 ## Changelog updates
 
 Changes are provided in a human-readable format in [changelog](CHANGELOG.md) file.
-In order to generate pull-request commit messages with authors, please run `npm run changelist`. You can then hand-tweak the Changelog file from the generated content of `HISTORY-Dredd.md` file.
+In order to generate pull-request commit messages with authors, please run `npm run changelist`. You can then hand-tweak the Changelog file from the generated content of `CHANGELOG-Generated.md` file.
