@@ -1,5 +1,11 @@
 ## Change Log
 
+### v1.0.0
+
+  **New** Language agnostic bridge for hooks in Python and Ruby
+
+- [#230](https://github.com/apiaryio/dredd/pull/230) Language agnostic hooks bridge & transaction compiler extraction (@netmilk, @w-vi, @kuba-kubula)
+
 ### v0.6.1
 
   **New** Added `beforeValidation` and `beforeEachValidation` hooks
