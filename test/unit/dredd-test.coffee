@@ -7,13 +7,12 @@ DrafterClassStub = require 'drafter'
 requestStub = require 'request'
 loggerStub = require '../../src/logger'
 
-blueprintAstToRuntime = require '../../src/blueprint-ast-to-runtime'
-blueprintAstToRuntimeStub = sinon.spy blueprintAstToRuntime
+blueprintTransactionsStub = require 'blueprint-transactions'
 
 Dredd = proxyquire '../../src/dredd', {
   'drafter': DrafterClassStub
   'request': requestStub
-  './blueprint-ast-to-runtime': blueprintAstToRuntimeStub
+  'blueprint-transactions': blueprintTransactionsStub
   'fs': fsStub
   './logger': loggerStub
 }
@@ -110,11 +109,12 @@ describe 'Dredd class', () ->
         done()
 
     it 'should convert ast to runtime', (done) ->
+      sinon.spy blueprintTransactionsStub, 'compile'
       dredd = new Dredd(configuration)
       sinon.stub dredd.runner, 'executeTransaction', (transaction, callback) ->
         callback()
       dredd.run (error) ->
-        assert.ok blueprintAstToRuntimeStub.called
+        assert.ok blueprintTransactionsStub.compile.called
         dredd.runner.executeTransaction.restore()
         done()
 
@@ -561,7 +561,7 @@ describe 'Dredd class', () ->
 
     it 'should execute the runtime', (done) ->
       dredd.run (error) ->
-        assert.ok blueprintAstToRuntimeStub.called
+        assert.ok dredd.runner.executeTransaction.called
         done()
 
 

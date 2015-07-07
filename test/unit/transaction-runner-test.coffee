@@ -102,6 +102,7 @@ describe 'TransactionRunner', ()->
 
     beforeEach () ->
       transaction =
+        name: "Machines API > Group Machine > Machine > Delete Message > Bogus example name"
         request:
           body: "{\n  \"type\": \"bulldozer\",\n  \"name\": \"willy\"}\n"
           headers:
@@ -1494,27 +1495,3 @@ describe 'TransactionRunner', ()->
           assert.isDefined err
           assert.include err, 'console'
           done()
-
-  describe 'getNameForTransaction(hook, transaction, callback)', () ->
-
-    before () ->
-      configuration = {}
-
-      runner = new Runner configuration
-
-    describe 'when the group name is empty', () ->
-
-      it 'should not contain leading " > "', () ->
-
-        transaction = {
-          origin: {
-            apiName: "booboo"
-            resourceGroupName: ""
-            resourceName: "resource"
-            actionName: "action"
-            exampleName: "example"
-          }
-        }
-
-        name = runner.getTransactionName transaction
-        assert.isNull name.match(/^\s>\s/g)
