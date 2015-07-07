@@ -21,7 +21,7 @@ Dredd supports writing [hooks](hook.md) glue code for testing statefull servers,
 - [Ruby](hooks_ruby.md)
 - [Python](hooks_python.md)
 - [Node.js](hooks.md)
-- *Addd your language here*
+- *Add your language here*
 
 ## Documentation Reference
 

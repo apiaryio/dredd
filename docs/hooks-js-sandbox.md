@@ -8,7 +8,7 @@ $ dredd apiary.apib http://localhost:3000 --sandbox --hookfiles=./hooks*.jss
 
 ### Dredd JS API Option
 
-Sndbox mode can be enabled in Dredd JavaScript API
+Sandbox mode can be enabled in Dredd JavaScript API
 
 ```javascript
 var Dredd = require('dredd');
@@ -50,8 +50,8 @@ In each hook file you can use following functions:
 
 `log(string)`
 
-- A [Transaction Object](#transaction-object-structure) is passed as a first argument to the hook function for `before`, `after`, `beforeEach`, and `afterEach`.
-- An array of Transaction Objects is passed to `beforeEach` and `afterEach`.
+- A [Transaction Object](#transaction-object-structure) is passed as a first argument to the hook function for `before`, `after`, `beforeEach`,`afterEach`, `beforeValidation` and `beforeEachValidation`.
+- An array of Transaction Objects is passed to `beforeAll` and `afterAll`.
 - Sandboxed hooks don't have an asynchronous API. Loading and running of each hook happens in it's own isolated, sandboxed context.
 - Hook maximum execution time is 500ms.
 - Memory limit is 1M
