@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/apiaryio/dredd-hooks-python.svg?branch=master)](https://travis-ci.org/apiaryio/dredd-hooks-python)
 
 
+[GitHub repository](https://github.com/apiaryio/dredd-hooks-python)
+
 Python hooks are using [Dredd's hooks handler socket interface](hooks-new-language.md). For using Python hooks in Dredd you have to have [Dredd already installed](quickstart.md)
 
 ## Installation
