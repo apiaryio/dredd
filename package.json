@@ -40,7 +40,7 @@
     "spawn-sync": "^1.0.11",
     "uri-template": "~1.0.0",
     "winston": "^1.0.0",
-    "blueprint-transactions": "^0.0.1"
+    "blueprint-transactions": "^0.0.2"
   },
   "devDependencies": {
     "body-parser": "^1.12.0",
