@@ -11,8 +11,8 @@ $ dredd apiary.apib http://localhost:30000 --hookfiles=./hooks*.js
 - For `before`, `after`, `beforeValidation`, `beforeEach`, `afterEach` and `beforeEachValidation` a [Transaction Object](https://dredd.readthedocs.org/en/latest/hooks/#transaction-object-structure) is passed as the first argument to the hook function.
 - An array of Transaction Objects is passed to `beforeAll` and `afterAll`.
 - The second argument is an optional callback function for async execution.
-- Any modifications on the `transaction` object is propagated to the actual HTTP transactions.
-- You can use `hooks.log` function inside the hook to print yours debug messages and informations.
+- Any modifications on the `transaction` object are propagated to the actual HTTP transactions.
+- You can use `hooks.log` function inside the hook function to print yours debug messages and informations.
 
 - [`configuration`](https://dredd.readthedocs.org/en/latest/usage/#configuration-object-for-dredd-class) object is populated on the `hooks` object
 
@@ -106,7 +106,7 @@ hooks.afterAll(function (transactions, done) {
 
 ### How to Skip Tests
 
-Any test step can can be skipped by setting `skip` property of the `transaction` object to `true`.
+Any test step can be skipped by setting `skip` property of the `transaction` object to `true`.
 
 ```javascript
 var before = require('hooks').before;
@@ -136,10 +136,10 @@ after("Machines > Machines collection > Create Machine", function (transaction) 
 
 before("Machines > Machine > Delete a machine", function (transaction) {
   //reusing data from previouse response here
-  machineId = JSON.parse(requestStash['Machines > Machines collection > Create Machine'])['id'];
+  var machineId = JSON.parse(requestStash['Machines > Machines collection > Create Machine'])['id'];
 
   //replacing id in url with stashed id from previous response
-  url = transaction.fullPath;
+  var url = transaction.fullPath;
   transaction.fullPath = url.replace('42', machineId);
 });
 ```
@@ -178,7 +178,7 @@ var before = hooks.before;
 
 before("Machines > Machines collection > Get Machines", function (transaction) {
   // parse request body from blueprint
-  requestBody = JSON.parse(transaction.request.body);
+  var requestBody = JSON.parse(transaction.request.body);
 
   // modify request body here
   requestBody['someKey'] = 'someNewValue';
@@ -224,14 +224,14 @@ hooks.beforeEach(function (transaction) {
 ```
 
 
-### Remove traling newline character for in expected plain text bodies
+### Remove trailing newline character in expected _plain text_ bodies
 
 ```javascript
 var hooks = require('hooks');
 
 hooks.beforeEach(function(transaction) {
-    if (transaction.expected.headers['Content-Type'] === 'text/plain') {
-        transaction.expected.body = transaction.expected.body.replace(/^\s+|\s+$/g, "");
-    }
+  if (transaction.expected.headers['Content-Type'] === 'text/plain') {
+    transaction.expected.body = transaction.expected.body.replace(/^\s+|\s+$/g, "");
+  }
 });
 ```
