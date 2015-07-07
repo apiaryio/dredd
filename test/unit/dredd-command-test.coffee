@@ -256,8 +256,8 @@ describe "DreddCommand class", () ->
 
     describe '"init"', ->
       before (done) ->
-        sinon.stub interactiveConfigStub, 'run', (config, cb) ->
-          cb()
+        sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
+          cb({language: 'nodejs'})
         sinon.stub configUtilsStub, 'save'
         execCommand argv: ['init'], ->
           done()

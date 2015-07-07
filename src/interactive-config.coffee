@@ -28,6 +28,18 @@ interactiveConfig.prompt = (config = {}, callback) ->
   }
 
   questions.push {
+    type: "list"
+    name: "language"
+    message: "Programming language of hooks"
+    default: "nodejs"
+    choices: [
+      "ruby"
+      "python"
+      "nodejs"
+    ]
+  }
+
+  questions.push {
     type: "confirm"
     name: "apiary"
     message: "Do you want to use Apiary test inspector?"
@@ -97,6 +109,8 @@ interactiveConfig.processAnswers = (config, answers, callback) ->
   config['_'][0] = answers['blueprint']
   config['_'][1] = answers['endpoint']
   config['server'] = answers['server'] || null
+
+  config['language'] = answers['language']
 
   config['reporter'] = "apiary" if answers['apiary'] == true
 

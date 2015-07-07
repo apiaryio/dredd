@@ -1090,41 +1090,6 @@ describe "Command line interface", () ->
       it 'should exit with status 0', () ->
         assert.equal exitStatus, 0
 
-
-  # WARNING: this text is excluded from code coverage
-  # it for some reason decreases coverage only in  coveralls
-  describe "Using workaround for hooks in ruby", () ->
-    resourceRequested = false
-
-    before (done) ->
-      cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --hookfiles=./test/fixtures/ruby-hooks/hooks-worker-client.coffee"
-
-      app = express()
-
-      app.get '/machines', (req, res) ->
-        resourceRequested = true
-        res.setHeader 'Content-Type', 'application/json'
-        machine =
-          type: 'bulldozer'
-          name: 'willy'
-        response = [machine]
-        res.status(200).send response
-
-      server = app.listen PORT, () ->
-        execCommand cmd, () ->
-          server.close()
-
-      server.on 'close', done
-
-    it 'should hit the resource', () ->
-      assert.ok resourceRequested
-
-    it 'exit status should be 0', () ->
-      assert.equal exitStatus, 1
-
-    it 'stdout shoud contain fail message', () ->
-      assert.include stdout, 'Yay! Failed in ruby!'
-
   describe "Using sandboxed hooks", () ->
     resourceRequested = false
 

@@ -109,12 +109,19 @@ class DreddCommand
       @finished = true
       interactiveConfig.run @argv, (config) =>
         configUtils.save(config)
-
         console.log ""
         console.log "Configuration saved to dredd.yml"
         console.log ""
-        console.log "Run test now, with:"
+        if config['language'] == "nodejs"
+          console.log "Run test now, with:"
+        else
+          console.log "Install hooks handler and run Dredd test with:"
         console.log ""
+        if config['language'] == 'ruby'
+          console.log "  $ gem install dredd_hooks"
+        else if config['language'] == 'python'
+          console.log "  $ pip install dredd_hooks"
+
         console.log "  $ dredd"
         console.log ""
 
@@ -166,6 +173,14 @@ class DreddCommand
         console.log "Server command failed, exitting..."
         @_processExit(2)
 
+      # Ensure server is not running when dredd exits prematurely somewhere
+      process.on 'beforeExit', () ->
+        @serverProcess.kill('SIGKILL') if @serverProcess?
+
+      # Ensure server is not running when dredd exits prematurely somewhere
+      process.on 'exit', () ->
+        @serverProcess.kill('SIGKILL') if @serverProcess?
+
       waitSecs = parseInt(@argv['server-wait'], 10)
       waitMilis = waitSecs * 1000
       console.log "Waiting #{waitSecs} seconds for server command to start..."
@@ -196,8 +211,8 @@ class DreddCommand
       console.log e.message
       console.log e.stack
       @_processExit(2)
-
     return
+
 
 
   lastArgvIsApiEndpoint: ->

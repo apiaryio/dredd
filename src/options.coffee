@@ -9,6 +9,11 @@ options =
     description: 'Specifes a pattern to match files with before/after hooks for running tests'
     default: null
 
+  language:
+    alias: "a"
+    description: "Language of hookfiles. Possible options are: nodejs, ruby, python"
+    default: "nodejs"
+
   sandbox:
     alias: 'b'
     description: "Load and run non trusted hooks code in sandboxed container"

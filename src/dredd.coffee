@@ -13,7 +13,7 @@ options = require './options'
 Runner = require './transaction-runner'
 applyConfiguration = require './apply-configuration'
 handleRuntimeProblems = require './handle-runtime-problems'
-blueprintAstToRuntime = require './blueprint-ast-to-runtime'
+blueprintTransactions = require 'blueprint-transactions'
 configureReporters = require './configure-reporters'
 blueprintUtils = require './blueprint-utils'
 
@@ -176,7 +176,7 @@ class Dredd
 
         # extract http transactions for each ast
         for file, data of config.data
-          runtime = blueprintAstToRuntime data['parsed']['ast'], file
+          runtime = blueprintTransactions.compile data['parsed']['ast'], file
 
           runtimes['warnings'] = runtimes['warnings'].concat(runtime['warnings'])
           runtimes['errors'] = runtimes['errors'].concat(runtime['errors'])

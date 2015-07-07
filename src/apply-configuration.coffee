@@ -43,6 +43,7 @@ applyConfiguration = (config) ->
       names: false
       hookfiles: null
       sandbox: false
+      language: 'nodejs'
 
   # normalize options and config
   for own key, value of config

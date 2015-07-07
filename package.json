@@ -1,6 +1,6 @@
 {
   "name": "dredd",
-  "version": "0.6.1",
+  "version": "0.6.2pre3",
   "description": "API Blueprint testing tool",
   "main": "lib/dredd.js",
   "bin": {
@@ -37,8 +37,10 @@
     "proxyquire": "~1.4.x",
     "request": "^2.53.0",
     "setimmediate": "^1.0.2",
+    "spawn-sync": "^1.0.11",
     "uri-template": "~1.0.0",
-    "winston": "^1.0.0"
+    "winston": "^1.0.0",
+    "blueprint-transactions": "^0.0.2"
   },
   "devDependencies": {
     "body-parser": "^1.12.0",

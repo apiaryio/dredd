@@ -2,10 +2,17 @@ site_name: Dredd
 pages:
 - Dredd:
   - Home: index.md
+  - Quickstart: quickstart.md
   - Overview: overview.md
+
 - Using Dredd:
   - Usage: usage.md
   - Hooks: hooks.md
+  - Ruby Hooks: hooks-ruby.md
+  - Python Hooks: hooks-python.md
+  - Node.js Hooks: hooks-nodejs.md
+  - JavaScript Sandbox Hooks: hooks-js-sandbox.md
+  - Hooks in other languages: hooks-new-language.md
 - Example:
   - Full Example: example.md
 
