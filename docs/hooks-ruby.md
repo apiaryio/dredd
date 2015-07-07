@@ -21,10 +21,11 @@ $ dredd apiary.apib http://localhost:3000 --language ruby --hookfiles=./hooks*.r
 
 Including module `Dredd::Hooks:Methods` expands current scope with methods
 
+1. `@before_each`, `before_each_validation`, `after_each`
   - accepts a block as a first argument passing a [Transaction object](hooks.md#transaction-object-structure) as a first argument
 
 2. `before`, `before_validation`, `after`
-  - accepts [transacion name](hooks.md#getting-transaction-names) as a first argument
+  - accepts [transaction name](hooks.md#getting-transaction-names) as a first argument
   - accepts a block as a second argument passing a [Transaction object](hooks.md#transaction-object-structure) as a first argument of it
 
 3. `before_all`, `after_all`
@@ -68,19 +69,16 @@ after_each do |transaction|
   puts 'after_each'
 end
 
-after_all do |transaction|
+after_all do |transactions|
   puts 'after_all'
 end
 ```
 
-## Exapmles
-
-
-
+## Examples
 
 ### How to Skip Tests
 
-Any test step can can be skipped by setting `skip` property of the `transaction` object to `true`.
+Any test step can be skipped by setting `skip` property of the `transaction` object to `true`.
 
 ```ruby
 include DreddHooks:Methods
@@ -150,7 +148,7 @@ end
 ```ruby
 include DreddHooks:Methods
 
-hooks.before_each do |transaction)|
+hooks.before_each do |transaction|
 
   # add query parameter to each transaction here
   param_to_add = "api-key=23456"
@@ -165,7 +163,8 @@ end
 
 ### Handling sessions
 
-```rubys
+```ruby
+require 'json'
 include DreddHooks:Methods
 
 stash = {}

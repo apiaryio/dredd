@@ -19,7 +19,7 @@ Dredd automatically generates expectations on HTTP responses based on examples i
 - All JSON keys on any level given in the example must be present in the response JSON
 - Response JSON values must be of the same JSON primitive type
 - All JSON values can differ
-- Arrays can have have additional items, type or structure is not valdated.
+- Arrays can have additional items, type or structure is not valdated.
 - Plain text must match perfectly
 - If JSON Schema v4 or JSON Schema v3 is given in the blueprint, JSON response must be valid against this schema and JSON example is ignored.
 

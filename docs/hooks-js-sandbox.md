@@ -32,25 +32,25 @@ dredd.run(function (error, stats) {
 The Sandbox mode can be used for running untrusted hook code. It can be activated with a CLI switch or with the JS API.
 In each hook file you can use following functions:
 
+`beforeAll(function)`
+
+`beforeEach(function)`
+
 `before(transactionName, function)`
+
+`beforeEachValidation(function)`
 
 `beforeValidation(transactionName, function)`
 
 `after(transactionName, function)`
 
-`beforeAll(function)`
+`afterEach(function)`
 
 `afterAll(function)`
 
-`beforeEach(function)`
-
-`beforeEachValidation(function)`
-
-`afterEach(function)`
-
 `log(string)`
 
-- A [Transaction Object](#transaction-object-structure) is passed as a first argument to the hook function for `before`, `after`, `beforeEach`,`afterEach`, `beforeValidation` and `beforeEachValidation`.
+- A [Transaction Object](#transaction-object-structure) is passed as a first argument to the hook function for `before`, `after`, `beforeEach`, `afterEach`, `beforeValidation` and `beforeEachValidation`.
 - An array of Transaction Objects is passed to `beforeAll` and `afterAll`.
 - Sandboxed hooks don't have an asynchronous API. Loading and running of each hook happens in it's own isolated, sandboxed context.
 - Hook maximum execution time is 500ms.
@@ -80,7 +80,7 @@ before('Second action', function (transaction) {
 
 ### Hook function context is not shared
 
-When sandboxed, hook function context is not shared between step hook functions.
+When __sandboxed__, hook function __context is not shared__ between even the same step hook functions.
 
 Note: __This is wrong__. It throws an exception.
 

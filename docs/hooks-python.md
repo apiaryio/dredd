@@ -22,14 +22,14 @@ $ dredd apiary.apib http://localhost:3000 --language python --hookfiles=./hooks*
 Module `dredd_hooks` imports following decorators:
 
 1. `@before_each`, `before_each_validation`, `after_each`
-  - wraps a function and passes [Transaction object](hooks.md#transaction-object-structure) as a first argument to its
+  - wraps a function and passes [Transaction object](hooks.md#transaction-object-structure) as a first argument to it
 
 2. `before`, `before_validation`, `after`
-  - accepts [transacion name](hooks.md#getting-transaction-names) as a first argument
+  - accepts [transaction name](hooks.md#getting-transaction-names) as a first argument
   - wraps a function and sends a [Transaction object](hooks.md#transaction-object-structure) as a first argument to it
 
 3. `before_all`, `after_all`
-  - wraps a function and passes an Array of [Transaction objects](hooks.md#transaction-object-structure)as a first argument to it
+  - wraps a function and passes an Array of [Transaction objects](hooks.md#transaction-object-structure) as a first argument to it
 
 
 Refer to [Dredd execution lifecycle](usage.md#dredd-execution-lifecycle) to find when is each hook function executed.
@@ -46,7 +46,7 @@ def my_before_all_hook(transactions):
   print 'before all'
 
 @hooks.before_each
-def my_before_all_hook(transactions):
+def my_before_each_hook(transaction):
   print 'before each'
 
 @hooks.before
@@ -54,7 +54,7 @@ def my_before_hook(transaction):
   print 'before'
 
 @hooks.before_each_validation
-def my_before_validation_hook(transaction):
+def my_before_each_validation_hook(transaction):
   print 'before each validation'
 
 @hooks.before_validation
@@ -66,27 +66,27 @@ def my_after_hook(transaction):
   print 'after'
 
 @hooks.after_each
-def after_each(transaction):
+def my_after_each(transaction):
   print 'after_each'
 
 @hooks.after_all
-def my_after_all_hook(transaction):
+def my_after_all_hook(transactions):
   print 'after_all'
 
 ```
 
-## Exapmles
+## Examples
 
 ### How to Skip Tests
 
-Any test step can can be skipped by setting `skip` property of the `transaction` object to `true`.
+Any test step can be skipped by setting `skip` property of the `transaction` object to `true`.
 
 ```python
 import dredd_hooks as hooks
 
 @hooks.before("Machines > Machines collection > Get Machines")
 def ship_test(transaction):
-  transaction['skip'] = true
+  transaction['skip'] = True
 ```
 
 ### Sharing Data Between Steps in Request Stash

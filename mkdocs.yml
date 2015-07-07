@@ -12,7 +12,7 @@ pages:
   - Python Hooks: hooks-python.md
   - Node.js Hooks: hooks-nodejs.md
   - JavaScript Sandbox Hooks: hooks-js-sandbox.md
-  - Hooks in other langauges: hooks-new-language.md
+  - Hooks in other languages: hooks-new-language.md
 - Example:
   - Full Example: example.md
 

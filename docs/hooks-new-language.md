@@ -4,14 +4,14 @@
 
 Dredd comes with concept of hooks language abstraction bridge via simple TCP socket.
 
-When you run Dredd with `--langauge` argument, it runs the command in argument and tries to connect to localhost port `61321`. If cannection to the hook handling serevr was'nt sucecssful it exits with `3`.
+When you run Dredd with `--language` argument, it runs the command in argument and tries to connect to localhost port `61321`. If connection to the hook handling server wasn't successful, it exits with exit code `3`.
 
-Dredd internally registers a function for each [type of hooks](hooks.md#types-of-hooks) and when this function is executed it assigns execution `uuid` to the event, serializes received function parameters (a [Transaction object](hooks.md#transaction-object-structure) or Array of it), sends it to the TCP socket to be handled (executed) in other language and waits until messaage with same `uuid` is received. After data reception it assigns received `data` back to the transaction, so other language can interact with transactions same way like [native Node.js hooks](hooks-node.md).
+Dredd internally registers a function for each [type of hooks](hooks.md#types-of-hooks) and when this function is executed it assigns execution `uuid` to that event, serializes received function parameters (a [Transaction object](hooks.md#transaction-object-structure) or an Array of it), sends it to the TCP socket to be handled (executed) in other language and waits until message with same `uuid` is received. After data reception it assigns received `data` back to the transaction, so other language can interact with transactions same way like [native Node.js hooks](hooks-node.md).
 
 
 ## What to implement
 
-If you want to write a hook handler for your language you will have to implement:s
+If you want to write a hook handler for your language you will have to implement:
 
 - CLI Command with TCP socket server
 - Hooks API in your language for registering code being executed during the [Dredd lifecycle](usage.md#dredd-execution-lifecycle):
@@ -24,33 +24,32 @@ If you want to write a hook handler for your language you will have to implement
   - after each transaction
   - after all transactions
 
-
 - When CLI command is executed
-  - it loades files specified as CLI server arguments
-    - it exposes API similar to theese in [Ruby](hooks-ruby.md), [Python](hooks-python.md) and [Node.js](hooks-node.md) to each loaded file
+  - it loads files specified as CLI server arguments
+    - it exposes API similar to these in [Ruby](hooks-ruby.md), [Python](hooks-python.md) and [Node.js](hooks-node.md) to each loaded file
     - it registers functions declared in files for later execution
 
-  - starts a TCP socket server and starts listeneing on localhost port `61321`.
+  - starts a TCP socket server and starts listening on localhost port `61321`.
 
-- When any data is recieved by the server
+- When any data is received by the server
   - Adds every received character to a buffer
 
   - When delimiting newline (`"\n"`) character is received
     - It parses the [message](#tcp-socket-message-format) in the buffer as JSON
     - It looks for `event` key in received object and executes appropriate registered hooks functions
 
-    - When the hook function is executed
+    - When the hook function is being executed
       - It passes value of `data` key from received object to the executed function
       - Hook function is able to modify data
 
     - When function was executed
       - It should serialize message to JSON
       - Send the serialized message back to the socket with same `uuid` as received
-      - Send a newliene character as message delimiter
+      - Send a newline character as message delimiter
 
 ## Language agnostic test suite
 
-Dredd hooks language abstraction bridge comes with [the language agnostic test suite](https://github.com/apiaryio/dredd-hooks-template). It's written in Gherkin - language for writing [Cucumber](https://github.com/cucumber/cucumber/wiki/A-Table-Of-Content) scenarios and [Aruba CLI testing framework](https://github.com/cucumber/aruba) and it tests your new language handelr integration with CLI Dredd and expected behavior from user's perspective.
+Dredd hooks language abstraction bridge comes with [the language agnostic test suite](https://github.com/apiaryio/dredd-hooks-template). It's written in Gherkin - language for writing [Cucumber](https://github.com/cucumber/cucumber/wiki/A-Table-Of-Content) scenarios and [Aruba CLI testing framework](https://github.com/cucumber/aruba) and it tests your new language handler integration with CLI Dredd and expected behavior from user's perspective.
 
 ## TCP Socket Message format
 
@@ -71,7 +70,7 @@ Dredd hooks language abstraction bridge comes with [the language agnostic test s
 
 ## Need help? No problem!
 
-If you can any questions, please:
+If you have any questions, please:
 
-- Have a look to the [Ruby](https://github.com/apiaryio/dredd-hooks-ruby) and [Pyhon](https://github.com/apiaryio/dredd-hooks-python) hook handlers codebase for inspiration
+- Have a look at the [Ruby](https://github.com/apiaryio/dredd-hooks-ruby) and [Python](https://github.com/apiaryio/dredd-hooks-python) hook handlers codebase for inspiration
 - File an [issue in Dredd repository](https://github.com/apiaryio/dredd/issues/new)
