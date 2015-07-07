@@ -252,8 +252,6 @@ class TransactionRunner
 
     request['headers'] = flatHeaders
 
-    name = @getTransactionName transaction
-
     id = request['method'] + ' ' + request['uri']
 
     # The data models as used here must conform to Gavel.js
@@ -264,8 +262,14 @@ class TransactionRunner
       statusCode: response['status']
     expected['bodySchema'] = response['schema'] if response['schema']
 
+    # Backward compatible transaction name hack. Transaction names will be replaced by
+    # Canonical Transaction Paths: https://github.com/apiaryio/dredd/issues/227
+
+    unless @multiBlueprint
+      transaction.name = transaction.name.replace("#{transaction.origin.apiName} > ", "")
+
     configuredTransaction =
-      name: name
+      name: transaction.name
       id: id
       host: @parsedUrl['hostname']
       port: @parsedUrl['port']
@@ -546,18 +550,5 @@ class TransactionRunner
       transaction.request['body'] = transaction.request['body'].replace(/\n/g, '\r\n')
       transaction.request['headers']['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
       requestOptions.headers = transaction.request['headers']
-
-  getTransactionName: (transaction) ->
-    origin = transaction['origin']
-
-    name = ''
-    name += origin['apiName'] if @multiBlueprint
-    name += ' > ' if @multiBlueprint
-    name += origin['resourceGroupName'] if origin['resourceGroupName'] != ""
-    name += ' > ' if  origin['resourceGroupName'] != ""
-    name += origin['resourceName'] if origin['resourceName']
-    name += ' > ' + origin['actionName'] if origin['actionName']
-    name += ' > ' + origin['exampleName'] if origin['exampleName']
-    name
 
 module.exports = TransactionRunner
