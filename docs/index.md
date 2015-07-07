@@ -16,11 +16,11 @@ Dredd uses [Gavel][] for judging if a particular API response is valid
 or if it isn't. If you are curious about how decisions are made, please refer
 to Gavel's [behavior specification][].
 
-Dredd supports writing [hooks](hook.md) glue code for testing statefull servers, workflows and loading fixtures in:
+Dredd supports writing [hooks](hooks.md) glue code for testing statefull servers, workflows and loading fixtures in:
 
 - [Ruby](hooks-ruby.md)
 - [Python](hooks-python.md)
-- [Node.js](hooks.md)
+- [Node.js](hooks-nodejs.md)
 - *Add your language here*
 
 ## Documentation Reference
