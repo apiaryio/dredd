@@ -1,7 +1,6 @@
 # Writing Dredd Hooks In Python
 
-[![Build Status](https://travis-ci.org/apiaryio/dredd-hooks-pyhon.svg?branch=master)](https://travis-ci.org/apiaryio/dredd-hooks-python)
-[GitHub repository](https://github.com/apiaryio/dredd-hooks-python)
+[![Circle CI](https://circleci.com/gh/apiaryio/dredd-hooks-python.svg?style=svg&circle-token=fabe4e989063164814e78dab78acb58d99e95a2f)](https://circleci.com/gh/apiaryio/dredd-hooks-python)
 
 
 Python hooks are using [Dredd's hooks handler socket interface](hooks-new-language.md). For using Python hooks in Dredd you have to have [Dredd already installed](quickstart.md)
@@ -15,7 +14,7 @@ $ pip install dredd_hooks
 ## Usage
 
 ```
-$ dredd apiary.apib http://localhost:3000 --language python --hookfiles=./hooks*.rb
+$ dredd apiary.apib http://localhost:3000 --language python --hookfiles=./hooks*.py
 ```
 
 ## API Reference
@@ -40,7 +39,7 @@ Refer to [Dredd execution lifecycle](usage.md#dredd-execution-lifecycle) to find
 Example usage of all methods in
 
 ```python
-import dredd_hooks as dredd
+import dredd_hooks as hooks
 
 @hooks.before_all
 def my_before_all_hook(transactions):
@@ -95,7 +94,7 @@ def ship_test(transaction):
 If you want to test some API workflow, you may pass data between test steps using the response stash.
 
 ```python
-import json as json
+import json
 import dredd_hooks as hooks
 
 response_stash = {}
@@ -130,7 +129,7 @@ def fail_transaction(transaction):
 ### Modifying Transaction Request Body Prior to Execution
 
 ```python
-import json as json
+import json
 import dredd_hooks as hooks
 
 @hoos.before("Machines > Machines collection > Get Machines")
@@ -164,7 +163,7 @@ def add_api_key(transaction):
 ### Handling sessions
 
 ```python
-import json as json
+import json
 import dredd_hooks as hooks
 
 stash = {}
@@ -186,7 +185,7 @@ def add_session_cookie(transaction):
 ### Remove traling newline character for in expected plain text bodies
 
 ```python
-import re as re
+import re
 import dredd_hooks as hooks
 
 @hooks.before_each
