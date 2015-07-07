@@ -1,6 +1,6 @@
 # Writing Dredd Hooks In Python
 
-[![Circle CI](https://circleci.com/gh/apiaryio/dredd-hooks-python.svg?style=svg&circle-token=fabe4e989063164814e78dab78acb58d99e95a2f)](https://circleci.com/gh/apiaryio/dredd-hooks-python)
+[![Build Status](https://travis-ci.org/apiaryio/dredd-hooks-python.svg?branch=master)](https://travis-ci.org/apiaryio/dredd-hooks-python)
 
 
 Python hooks are using [Dredd's hooks handler socket interface](hooks-new-language.md). For using Python hooks in Dredd you have to have [Dredd already installed](quickstart.md)
