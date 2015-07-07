@@ -18,8 +18,8 @@ to Gavel's [behavior specification][].
 
 Dredd supports writing [hooks](hook.md) glue code for testing statefull servers, workflows and loading fixtures in:
 
-- [Ruby](hooks_ruby.md)
-- [Python](hooks_python.md)
+- [Ruby](hooks-ruby.md)
+- [Python](hooks-python.md)
 - [Node.js](hooks.md)
 - *Add your language here*
 
