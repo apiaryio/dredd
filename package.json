@@ -1,6 +1,6 @@
 {
   "name": "blueprint-transactions",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Compile HTTP transactions (request-response pairs) from API Blueprint AST",
   "main": "lib/blueprint-transactions.js",
   "scripts": {

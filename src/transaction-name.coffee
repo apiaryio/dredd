@@ -2,8 +2,8 @@ module.exports = (transaction) ->
   origin = transaction['origin']
 
   name = ''
-  name += origin['apiName'] if @multiBlueprint
-  name += ' > ' if @multiBlueprint
+  name += origin['apiName']
+  name += ' > '
   name += origin['resourceGroupName'] if origin['resourceGroupName'] != ""
   name += ' > ' if  origin['resourceGroupName'] != ""
   name += origin['resourceName'] if origin['resourceName']
