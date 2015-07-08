@@ -1,4 +1,4 @@
-## Cannonical path convention for transaction names
+## Canonical path convention for transaction names
 
 - when processing multiple blueprint, `API Name` is a part of the transaction name
   - when there is no API Name in the blueprint, it will use `filename` instead

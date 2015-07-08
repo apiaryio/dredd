@@ -26,11 +26,11 @@ $ dredd init
 ❯ ruby
   python
   nodejs
-? Dredd is best served with Continous Integration. Create CircleCI config for Dredd? Yes
+? Dredd is best served with Continuous Integration. Create CircleCI config for Dredd? Yes
 
 ```
 
-- Install [Ruby](hooks-ruby.md) or [Python](hooks-python.md) hander if needed
+- Install [Ruby](hooks-ruby.md) or [Python](hooks-python.md) handler if needed
 
 - Run dredd
 

@@ -19,7 +19,7 @@ Dredd automatically generates expectations on HTTP responses based on examples i
 - All JSON keys on any level given in the example must be present in the response JSON
 - Response JSON values must be of the same JSON primitive type
 - All JSON values can differ
-- Arrays can have additional items, type or structure is not valdated.
+- Arrays can have additional items, type or structure is not validated.
 - Plain text must match perfectly
 - If JSON Schema v4 or JSON Schema v3 is given in the blueprint, JSON response must be valid against this schema and JSON example is ignored.
 
@@ -119,11 +119,11 @@ before('Category Items > Create an item', function() {
 
 If you want to test some sequence of HTTP steps (workflow or scenario) in you API apart of your API reference or a non RESTful API HTTP workflow, you can run Dredd with multiple blueprints by adding  `--path` argument
 
-Unlike API reference testing, scenarios or workflows steps are in **shared context**, so you may want to [pass data between transcations](hooks.md#sharing-data-between-steps-in-request-stash).
+Unlike API reference testing, scenarios or workflows steps are in **shared context**, so you may want to [pass data between transactions](hooks.md#sharing-data-between-steps-in-request-stash).
 
 ### Example
 
-Having following workfow blueprint:
+Having following workflow blueprint:
 
 ```markdown
 FORMAT: 1A
@@ -177,15 +177,15 @@ db = require('db');
 hooks = require('hooks');
 stash = {}
 
-// stash a retreived token
+// stash a retrieved token
 after('/login > POST', function (transaction) {
   stash['token'] = JSON.parse(transaction.real.body)['token'];
 });
 
-//add token to all HTTP transcations
+//add token to all HTTP transactions
 beforeEach(function (transaction) {
   if(stash['token'] != undefined){
-    transcation['headers']['X-Api-Key'] = stash['token']
+    transaction['headers']['X-Api-Key'] = stash['token']
   };
 });
 
@@ -196,7 +196,7 @@ after('/cars > GET', function (transaction) {
 
 //replace car ID in request for Car resource modification
 before('/cars/{id} > PATCH', function (transaction) {
-  transaction.request.url = transaction.request.url.replace('42', stas['carId'])
+  transaction.request.url = transaction.request.url.replace('42', stash['carId'])
 })
 ```
 
@@ -260,7 +260,7 @@ Dredd supports all possible authentications of HTTP API like:
 
 ## Using Multipart Requests
 
-In following request, dredd will automaticaly add `LF` to all lines in request body.
+In following request, dredd will automatically add `LF` to all lines in request body.
 
 ```markdown
 # POST /images
@@ -288,7 +288,7 @@ In following request, dredd will automaticaly add `LF` to all lines in request b
 
 ## Multiple Requests/Responses in One Action
 
-> Disclaimer: This is a workaround until native support for adding custom URI parmeters under example and request section will be available in the API Blueprint.
+> Disclaimer: This is a workaround until native support for adding custom URI parameters under example and request section will be available in the API Blueprint.
 
 ```markdown
 FORMAT: 1A
@@ -312,7 +312,7 @@ FORMAT: 1A
         { "color": "yellow", "id": 1 }
 
 
-+ Request Edge Case (applicatipn)
++ Request Edge Case (application)
 
         { "weight": "1"}
 

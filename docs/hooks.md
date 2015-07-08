@@ -121,10 +121,10 @@ Following is description is in a [MSON](https://github.com/apiaryio/mson) format
         - apiName `"My Api"` (string)
         - resourceGroupName `"Greetings"` (string)
         - resourceName `"Hello, world!"` (string)
-        - actionName `"Retreive Message"` (string)
+        - actionName `"Retrieve Message"` (string)
         - exampleName `"First example"` (string)
 
-    - skip `false` (boolean) Set to `true` to skip this transcition
+    - skip `false` (boolean) Set to `true` to skip this transaction
     - fail `false` (boolean/string) Set to `true` or string with message and transaction will result in fail
 
     - test (object) Result of [Gavel][] validation, same object is passed to reporters

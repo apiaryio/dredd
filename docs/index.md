@@ -10,7 +10,7 @@
 
 Dredd is a language agnostic command-line tool for testing API documentation written in the [API Blueprint][]
 format against its backend implementation. With Dredd you can easily plug your
-API documentation into the Continous Integration systems like [Travis CI][]
+API documentation into the Continuous Integration systems like [Travis CI][]
 or [Jenkins][] and have API documentation up-to-date all the time.
 Dredd uses [Gavel][] for judging if a particular API response is valid
 or if it isn't. If you are curious about how decisions are made, please refer
