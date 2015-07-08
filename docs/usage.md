@@ -21,7 +21,7 @@ Example:
 Options:
   --dry-run, -y        Do not run any real HTTP transaction, only parse
                        blueprint and compile transactions.       [default: null]
-  --hookfiles, -f      Specifes a pattern to match files with before/after
+  --hookfiles, -f      Specifies a pattern to match files with before/after
                        hooks for running tests                   [default: null]
   --sandbox, -b        Load and run non trusted hooks code in sandboxed
                        container                                [default: false]
@@ -55,7 +55,7 @@ Options:
   --user, -u           Basic Auth credentials in the form username:password.
                                                                  [default: null]
   --inline-errors, -e  Determines whether failures and errors are displayed as
-                       they occur (true) or agregated and displayed at the end
+                       they occur (true) or aggregated and displayed at the end
                        (false).
                                                                 [default: false]
   --details, -d        Determines whether request/response details are included

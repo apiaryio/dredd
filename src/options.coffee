@@ -6,7 +6,7 @@ options =
 
   hookfiles:
     alias: 'f'
-    description: 'Specifes a pattern to match files with before/after hooks for running tests'
+    description: 'Specifies a pattern to match files with before/after hooks for running tests'
     default: null
 
   language:
@@ -85,7 +85,7 @@ options =
     alias: "e"
     description: """
       Determines whether failures and errors are displayed as they \
-      occur (true) or agregated and displayed at the end (false).\n"""
+      occur (true) or aggregated and displayed at the end (false).\n"""
     default: false
 
   details:

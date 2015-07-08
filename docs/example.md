@@ -1,6 +1,6 @@
 # Dredd Example with API Backend Application
 
-This is an example how to create a simple [Express.js][] API backend applicatoin tested with Dredd
+This is an example how to create a simple [Express.js][] API backend application tested with Dredd
 
 ## Create API Blueprint File
 

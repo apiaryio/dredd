@@ -23,7 +23,7 @@ $ dredd apiary.apib http://localhost:3000 --language python --hookfiles=./hooks*
 
 Module `dredd_hooks` imports following decorators:
 
-1. `@before_each`, `before_each_validation`, `after_each`
+1. `before_each`, `before_each_validation`, `after_each`
   - wraps a function and passes [Transaction object](hooks.md#transaction-object-structure) as a first argument to it
 
 2. `before`, `before_validation`, `after`
@@ -34,7 +34,7 @@ Module `dredd_hooks` imports following decorators:
   - wraps a function and passes an Array of [Transaction objects](hooks.md#transaction-object-structure) as a first argument to it
 
 
-Refer to [Dredd execution lifecycle](usage.md#dredd-execution-lifecycle) to find when is each hook function executed.
+Refer to [Dredd execution life-cycle](usage.md#dredd-execution-lifecycle) to find when is each hook function executed.
 
 ### Using Python API
 
@@ -45,35 +45,35 @@ import dredd_hooks as hooks
 
 @hooks.before_all
 def my_before_all_hook(transactions):
-  print 'before all'
+  print('before all')
 
 @hooks.before_each
 def my_before_each_hook(transaction):
-  print 'before each'
+  print('before each')
 
 @hooks.before
 def my_before_hook(transaction):
-  print 'before'
+  print('before')
 
 @hooks.before_each_validation
 def my_before_each_validation_hook(transaction):
-  print 'before each validation'
+  print('before each validation')
 
 @hooks.before_validation
 def my_before_validation_hook(transaction):
-  print 'before validations'
+  print('before validations')
 
 @hooks.after
 def my_after_hook(transaction):
-  print 'after'
+  print('after')
 
 @hooks.after_each
 def my_after_each(transaction):
-  print 'after_each'
+  print('after_each')
 
 @hooks.after_all
 def my_after_all_hook(transactions):
-  print 'after_all'
+  print('after_all')
 
 ```
 
@@ -87,7 +87,7 @@ Any test step can be skipped by setting `skip` property of the `transaction` obj
 import dredd_hooks as hooks
 
 @hooks.before("Machines > Machines collection > Get Machines")
-def ship_test(transaction):
+def skip_test(transaction):
   transaction['skip'] = True
 ```
 
@@ -108,12 +108,11 @@ def save_response_to_stash(transaction):
 
 @hooks.before("Machines > Machine > Delete a machine")
 def add_machine_id_to_request(transaction):
-  #reusing data from previouse response here
-  parsed_body = json.load request_stash['Machines > Machines collection > Create Machine']
+  #reusing data from previous response here
+  parsed_body = json.loads(response_stash['Machines > Machines collection > Create Machine'])
   machine_id = parsed_body['id']
-
-  #replacing id in url with stashed id from previous response
-  transaction['fullPath'].gsub! '42', machine_id
+  #replacing id in URL with stashed id from previous response
+  transaction['fullPath'] = transaction['fullPath'].replace('42', machine_id)
 ```
 
 ### Failing Tests Programmatically
@@ -134,10 +133,10 @@ def fail_transaction(transaction):
 import json
 import dredd_hooks as hooks
 
-@hoos.before("Machines > Machines collection > Get Machines")
+@hooks.before("Machines > Machines collection > Get Machines")
 def add_value_to_body(transaction):
   # parse request body from blueprint
-  request_body = JSON.parse transaction['request']['body']
+  request_body = json.loads(transaction['request']['body'])
 
   # modify request body here
   request_body['someKey'] = 'some new value'
@@ -157,9 +156,9 @@ def add_api_key(transaction):
   param_to_add = "api-key=23456"
 
   if '?' in transaction['fullPath']:
-    transaction['fullPath'] += "&" + param_to_add
+    transaction['fullPath'] = ''.join((transaction['fullPath'], "&", param_to_add))
   else:
-    transaction['fullPath'] += "?" + param_to_add
+    transaction['fullPath'] = ''.join((transaction['fullPath'], "?", param_to_add))
 ```
 
 ### Handling sessions
@@ -173,7 +172,7 @@ stash = {}
 # hook to retrieve session on a login
 @hooks.after('Auth > /remoteauth/userpass > POST')
 def stash_session_id(transaction):
-  parsed_body = JSON.load transaction['real']['body']
+  parsed_body = json.loads(transaction['real']['body'])
   stash['token'] = parsed_body['sessionId']
 
 # hook to set the session cookie in all following requests
@@ -184,14 +183,13 @@ def add_session_cookie(transaction):
 ```
 
 
-### Remove traling newline character for in expected plain text bodies
+### Remove trailing newline character in expected _plain text_ bodies
 
 ```python
-import re
 import dredd_hooks as hooks
 
 @hooks.before_each
 def remove_trailing_newline(transaction):
   if transaction['expected']['headers']['Content-Type'] == 'text/plain':
-    transaction['expected']['body'] = re.sub(/^\s+|\s+$/g, "", transaction['expected']['body'])
+    transaction['expected']['body'] = transaction['expected']['body'].rstrip()
 ```
