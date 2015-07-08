@@ -48,7 +48,7 @@ describe 'Hooks worker client', () ->
         done()
       , 2200
 
-    it 'should pipe spawned process stdut to the Dredd process stdout', (done) ->
+    it 'should pipe spawned process stdout to the Dredd process stdout', (done) ->
       logs = []
       sinon.stub consoleStub, 'log', (msg1, msg2) ->
         logs.push msg1 + " " + msg2
@@ -57,7 +57,7 @@ describe 'Hooks worker client', () ->
       loadWorkerClient()
       setTimeout () ->
         consoleStub.log.restore()
-        assert.include logs, "Hook hadnler stdout: standard output text\n"
+        assert.include logs, "Hook handler stdout: standard output text\n"
         done()
       , 2200
 
@@ -320,11 +320,11 @@ describe 'Hooks worker client', () ->
             assert.equal receivedObject['event'], eventType
 
           if eventType.indexOf("All") > -1
-            it "key data should contain array of transcation objects", () ->
+            it "key data should contain array of transaction objects", () ->
               assert.isArray receivedObject['data']
               assert.propertyVal receivedObject['data'][0], 'key', 'value'
           else
-            it "key data should contain the transcation object", () ->
+            it "key data should contain the transaction object", () ->
               assert.isObject receivedObject['data']
               assert.propertyVal receivedObject['data'], 'key', 'value'
 
