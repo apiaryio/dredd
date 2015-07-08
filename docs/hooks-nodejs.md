@@ -12,7 +12,8 @@ $ dredd apiary.apib http://localhost:30000 --hookfiles=./hooks*.js
 - An array of Transaction Objects is passed to `beforeAll` and `afterAll`.
 - The second argument is an optional callback function for async execution.
 - Any modifications on the `transaction` object are propagated to the actual HTTP transactions.
-- You can use `hooks.log` function inside the hook function to print yours debug messages and informations.
+- You can use `hooks.log` function inside the hook function to print
+  yours debug messages and other information.
 
 - [`configuration`](https://dredd.readthedocs.org/en/latest/usage/#configuration-object-for-dredd-class) object is populated on the `hooks` object
 
@@ -135,10 +136,10 @@ after("Machines > Machines collection > Create Machine", function (transaction) 
 
 
 before("Machines > Machine > Delete a machine", function (transaction) {
-  //reusing data from previouse response here
+  //reusing data from previous response here
   var machineId = JSON.parse(requestStash['Machines > Machines collection > Create Machine'])['id'];
 
-  //replacing id in url with stashed id from previous response
+  //replacing id in URL with stashed id from previous response
   var url = transaction.fullPath;
   transaction.fullPath = url.replace('42', machineId);
 });
