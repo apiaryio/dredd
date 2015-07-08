@@ -46,7 +46,7 @@ before_all do |transactions|
   puts 'before all'
 end
 
-before_each do |transcation|
+before_each do |transaction|
   puts 'before each'
 ends
 
@@ -105,11 +105,11 @@ after "Machines > Machines collection > Create Machine" do |transaction|
 do
 
 before "Machines > Machine > Delete a machine" do |transaction|
-  #reusing data from previouse response here
-  parsed_body = JSON.parse request_stash['Machines > Machines collection > Create Machine']
+  #reusing data from previous response here
+  parsed_body = JSON.parse response_stash['Machines > Machines collection > Create Machine']
   machine_id = parsed_body['id']
 
-  #replacing id in url with stashed id from previous response
+  #replacing id in URL with stashed id from previous response
   transaction['fullPath'].gsub! '42', machine_id
 end
 ```
@@ -154,7 +154,7 @@ hooks.before_each do |transaction|
   # add query parameter to each transaction here
   param_to_add = "api-key=23456"
 
-  if transactio['fullPath'].include('?')
+  if transaction['fullPath'].include('?')
     transaction['fullPath'] += "&" + param_to_add
   else
     transaction['fullPath'] += "?" + param_to_add
@@ -185,7 +185,7 @@ end
 ```
 
 
-### Remove traling newline character for in expected plain text bodies
+### Remove trailing newline character for in expected plain text bodies
 
 ```ruby
 include DreddHooks:Methods
