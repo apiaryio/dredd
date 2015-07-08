@@ -20,7 +20,7 @@ emitter = new EventEmitter
 
 language = hooks?.configuration?.options?.language
 
-# Select handler based on option, use option string as command if not match anyting
+# Select handler based on option, use option string as command if not match anything
 if language == 'ruby'
   handlerCommand = 'dredd-hooks-ruby'
   unless which.which handlerCommand
@@ -54,7 +54,7 @@ handler = spawn handlerCommand, pathGlobs
 console.log "Spawning `#{language}` hooks handler"
 
 handler.stdout.on 'data', (data) ->
-  console.log "Hook hadnler stdout:", data.toString()
+  console.log "Hook handler stdout:", data.toString()
 
 handler.stderr.on 'data', (data) ->
   console.log "Hook handler stderr:", data.toString()
@@ -130,7 +130,7 @@ hooks.beforeEach (transaction, callback) ->
   # register event for the sent transaction
   messageHandler = (receivedMessage) ->
     clearTimeout timeout
-    # workaround for assigning transacition
+    # workaround for assigning transaction
     # this does not work:
     # transaction = receivedMessage.data
     for key, value of receivedMessage.data
@@ -163,7 +163,7 @@ hooks.beforeEachValidation (transaction, callback) ->
   # register event for the sent transaction
   messageHandler = (receivedMessage) ->
     clearTimeout timeout
-    # workaround for assigning transacition
+    # workaround for assigning transaction
     # this does not work:
     # transaction = receivedMessage.data
     for key, value of receivedMessage.data
@@ -197,7 +197,7 @@ hooks.afterEach (transaction, callback) ->
   # register event for the sent transaction
   messageHandler = (receivedMessage) ->
     clearTimeout timeout
-    # workaround for assigning transacition
+    # workaround for assigning transaction
     # this does not work:
     # transaction = receivedMessage.data
     for key, value of receivedMessage.data
@@ -230,7 +230,7 @@ hooks.beforeAll (transactions, callback) ->
   # register event for the sent transaction
   messageHandler = (receivedMessage) ->
     clearTimeout timeout
-    # workaround for assigning transacition
+    # workaround for assigning transaction
     # this does not work:
     # transaction = receivedMessage.data
     for value, index in receivedMessage.data
@@ -263,7 +263,7 @@ hooks.afterAll (transactions, callback) ->
   # register event for the sent transaction
   messageHandler = (receivedMessage) ->
     clearTimeout timeout
-    # workaround for assigning transacition
+    # workaround for assigning transaction
     # this does not work:
     # transaction = receivedMessage.data
     for value, index in receivedMessage.data
