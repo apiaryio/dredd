@@ -6,7 +6,7 @@
 [![Coverage Status](https://coveralls.io/repos/apiaryio/dredd/badge.png?branch=master)](https://coveralls.io/r/apiaryio/dredd?branch=master)
 [![Join the chat at https://gitter.im/apiaryio/dredd](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/apiaryio/dredd?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![NPM](https://nodei.co/npm/dredd.png)](https://nodei.co/npm/dredd/)
+![Dredd API Blueprint testing tool](https://raw.github.com/apiaryio/dredd/master/img/Dredd.png)
 
 Dredd is a language agnostic command-line tool for validating API documentation written in [API Blueprint][]
 format against its backend implementation. With Dredd you can easily plug your
@@ -24,8 +24,6 @@ Dredd supports writing [hooks](http://dredd.readthedocs.org/en/latest/hooks-ruby
 - *Add your language here*
 
 You're welcome to [write support for hooks in your language](hooks-python.md).
-
-![Dredd API Blueprint testing tool](https://raw.github.com/apiaryio/dredd/master/img/Dredd.png)
 
 ## Get Started Testing your API backend with your API Documentation
 
