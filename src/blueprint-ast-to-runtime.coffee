@@ -11,13 +11,26 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
     errors: []
     warnings: []
 
+  # path origin is predictible, consistent transaction paths (ids)
+  pathOrigin = {}
+
+  # TO BE DEPRECATED
+  # origin is old logic used for generating transaction names (> delimited)
+  # this is supposed to be eradicated and this logic will be moved to the
   origin = {}
+
+  # TO BE DEPRECATED: filename
+  # filename is used only for compiling to human readeable name in reporters
+  # and this logic will be moved to Dredd reporters
   origin['filename'] = filename
 
   if blueprintAst['name'] != ""
     origin['apiName'] = blueprintAst['name']
   else
     origin['apiName'] = origin['filename']
+
+  pathOrigin['apiName'] = blueprintAst['name']
+
 
   for resourceGroup, index in blueprintAst['resourceGroups']
     #should not be possible specify more than one unnamed group, must verify
@@ -26,21 +39,32 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
     # else
     #   origin['resourceGroupName'] = "Group #{index + 1}"
 
+    pathOrigin['resourceGroupName'] = resourceGroup['name']
+
     origin['resourceGroupName'] = resourceGroup['name']
 
     for resource in resourceGroup['resources']
+
       if resource['name'] != ""
+        pathOrigin['resourceName'] = resource['name']
         origin['resourceName'] = resource['name']
       else
+        pathOrigin['resourceName'] = resource['uriTemplate']
         origin['resourceName'] = resource['uriTemplate']
 
+
+      # TO BE DEPRECATED
+      # Remove this! It has nothing to do in origin!!!!
       # Get rid with polluting of origin with not related data!
+      # Put this through deprecation process, some users are already programming against it.
       origin['uriTemplate'] = "#{resource['uriTemplate']}"
 
       for action in resource['actions']
         if action['name'] != ""
+          pathOrigin['actionName'] = action['name']
           origin['actionName'] = action['name']
         else
+          pathOrigin['actionName'] = action['method']
           origin['actionName'] = action['method']
 
         actionParameters = convertAstMetadata action['parameters']
@@ -80,10 +104,20 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
 
         if uriResult['uri'] != null
           for example, exampleIndex in action['examples']
+
+            # Names can have empty example
             if action['examples'].length > 1 and example['name'] == ""
               origin['exampleName'] = "Example " + (exampleIndex + 1)
             else
               origin['exampleName'] = example['name']
+
+            # Paths can't have empty example
+            if example['name'] == ""
+              pathOrigin['exampleName'] = "Example " + (exampleIndex + 1)
+            else
+              pathOrigin['exampleName'] = example['name']
+
+
 
             result = exampleToHttpPayloadPair example
 
@@ -101,7 +135,10 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
             #   }
 
             transaction = result['pair']
+
             transaction['origin'] = clone origin
+            transaction['pathOrigin'] = clone pathOrigin
+
             transaction['request']['uri'] = uriResult['uri']
             transaction['request']['method'] = action['method']
 
