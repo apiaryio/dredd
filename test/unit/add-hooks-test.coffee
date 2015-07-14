@@ -38,6 +38,12 @@ describe 'addHooks(runner, transactions, callback)', () ->
   after () ->
     loggerStub.transports.console.silent = false
 
+  beforeEach () ->
+    sinon.stub hooksStub.prototype, 'processExit'
+
+  afterEach () ->
+    hooksStub.prototype.processExit.restore()
+
   describe 'constructor', ->
     runner =
       logs: ['item']

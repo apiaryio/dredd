@@ -17,6 +17,6 @@ cp -r ./test ./src-cov/test
 cp ./package.json ./src-cov
 
 # Excluding test breaking coveralls report :( Reporting to coveralls.io for further investigation
-$MOCHA --reporter $REPORTER --recursive --timeout 120000 --compilers 'coffee:coffee-script/register' -i -g 'Using workaround for hooks in ruby' -i -g 'when using --server' -i -g 'Command line interface' -i -g 'Using workaround for hooks in python' './src-cov/test/**/*-test.coffee'
+$MOCHA --reporter $REPORTER --recursive --timeout 120000 --compilers 'coffee:coffee-script/register' './src-cov/test/**/*-test.coffee'
 
 rm -rf ./src-cov
