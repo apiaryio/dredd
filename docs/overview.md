@@ -208,6 +208,7 @@ In some eco-systems, there is native support for adding Dredd to
 
 - [grunt-dredd](https://github.com/mfgea/grunt-dredd) a grunt task wrapper
 - [dredd-rack](https://github.com/gonzalo-bulnes/dredd-rack) a rake task and rack wrapper
+- [meteor-dredd](https://github.com/storeness/meteor-dredd) Dredd Integration for Velocity/Meteor
 
 ## Continuous Integration
 
