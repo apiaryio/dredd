@@ -22,9 +22,10 @@ You can interact with your server implementation in following languages:
 - [Ruby](hooks-ruby.md)
 - [Python](hooks-python.md)
 - [Node.js](hooks-nodejs.md)
+- [PHP](hooks-php.md)
 - [Sandboxed JavaScript](hooks-js-sandbox.md)
 
-Dredd doesn't speak your language? [**It's very easy to write support for your langauage.**](hooks-new-language.md) Your contribution is more than welcome!
+Dredd doesn't speak your language? [**It's very easy to write support for your language.**](hooks-new-language.md) Your contribution is more than welcome!
 
 
 ## Using Hook Files
