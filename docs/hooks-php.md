@@ -9,7 +9,7 @@ PHP hooks are using [Dredd's hooks handler socket interface](hooks-new-language.
 ## Installation
 
 ```
-$ composer require ddelnano/dredd-hooks-php --dev 
+$ composer require ddelnano/dredd-hooks-php:~1.0.0 --dev 
 ```
 
 ## Usage
