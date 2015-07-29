@@ -21,6 +21,7 @@ Dredd supports writing [hooks](http://dredd.readthedocs.org/en/latest/hooks/) gl
 - [Ruby](http://dredd.readthedocs.org/en/latest/hooks-ruby/)
 - [Python](http://dredd.readthedocs.org/en/latest/hooks-python/)
 - [Node.js](http://dredd.readthedocs.org/en/latest/hooks-nodejs/)
+- [PHP](http://dredd.readthedocs.org/en/latest/hooks-php/)
 - *Add your language here*
 
 You're welcome to [write support for hooks in your language](http://dredd.readthedocs.org/en/latest/hooks-new-language/).
