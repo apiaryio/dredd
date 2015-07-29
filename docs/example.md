@@ -57,6 +57,7 @@ For more complex examples applications, please refer to:
 
 - [Express.js example application](http://github.com/apiaryio/dredd-example)
 - [Ruby on Rails example application](https://github.com/theodorton/dredd-test-rails)
+- [Laravel example application](https://github.com/ddelnano/dredd-hooks-php/wiki/Laravel-Example)
 
 
 [API Blueprint]: http://apiblueprint.org/
