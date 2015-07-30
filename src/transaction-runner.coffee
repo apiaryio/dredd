@@ -8,6 +8,7 @@ gavel = require 'gavel'
 async = require 'async'
 clone = require 'clone'
 {Pitboss} = require 'pitboss-ng'
+urljoin = require 'url-join'
 
 flattenHeaders = require './flatten-headers'
 addHooks = require './add-hooks'
@@ -226,13 +227,8 @@ class TransactionRunner
     # parse the server URL just once
     @parsedUrl ?= url.parse configuration['server']
 
-    # joins paths regardless of slashes
-    # there may be a nice way in the future: https://github.com/joyent/node/issues/2216
-    # note that path.join will fail on windows, and url.resolve can have undesirable behavior depending on slashes
-    if @parsedUrl['path'] is "/"
-      fullPath = request['uri']
-    else
-      fullPath = '/' + [@parsedUrl['path'].replace(/^\/|\/$/g, ""), request['uri'].replace(/^\/|\/$/g, "")].join("/")
+    # join server URL and request uri and normalize the resulting url
+    fullPath = urljoin(this.parsedUrl['path'], request['uri'])
 
     flatHeaders = flattenHeaders request['headers']
 
