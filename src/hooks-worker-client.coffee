@@ -60,8 +60,8 @@ handler.stderr.on 'data', (data) ->
   console.log "Hook handler stderr:", data.toString()
 
 handler.on 'close', (status) ->
-  console.log "Hook handler exited with status: #{status}"
-  if status != 0
+  console.log "Hook handler closed with status: #{status}"
+  if status? and status != 0
     hooks.processExit 2
 
 handler.on 'error', (error) ->
