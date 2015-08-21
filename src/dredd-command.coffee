@@ -174,11 +174,11 @@ class DreddCommand
         @_processExit(2)
 
       # Ensure server is not running when dredd exits prematurely somewhere
-      process.on 'beforeExit', () ->
+      process.on 'beforeExit', () =>
         @serverProcess.kill('SIGKILL') if @serverProcess?
 
       # Ensure server is not running when dredd exits prematurely somewhere
-      process.on 'exit', () ->
+      process.on 'exit', () =>
         @serverProcess.kill('SIGKILL') if @serverProcess?
 
       waitSecs = parseInt(@argv['server-wait'], 10)
