@@ -1,5 +1,11 @@
 ## Change Log
 
+### v1.0.1
+
+- [#264](https://github.com/apiaryio/dredd/pull/264) **Fix**: Quick fix for the reporters issue #263 (@w-vi)
+- [#265](https://github.com/apiaryio/dredd/pull/265) **Fix**: On Travis CI use iojs-2.5.0 (@w-vi)
+- [#243](https://github.com/apiaryio/dredd/pull/243) **New/Docs**: Dredd + Meteor for known eco-system integrations (@MichaelHirn)
+
 ### v1.0.0
 
   **New** Language agnostic bridge for hooks in Python and Ruby
@@ -16,18 +22,16 @@
 
   **New** Apiary reporter failure is gracefully handled and will not brake build
 
-
-
-- [#229](https://github.com/apiaryio/dredd/pull/229) Clean beforeResults for every gavelResult iteration (@netmilk)
-- [#222](https://github.com/apiaryio/dredd/pull/222) Report skipped and programatically failed transactions (@netmilk)
-- [#228](https://github.com/apiaryio/dredd/pull/228) Updated the MkDocs config from the deprecated format (@d0ugal)
-- [#224](https://github.com/apiaryio/dredd/pull/224) Support for before validation hooks (@netmilk, @nevir)
-- [#219](https://github.com/apiaryio/dredd/pull/219) Connection errors in gavel error interface (@netmilk)
-- [#218](https://github.com/apiaryio/dredd/pull/218) Public:true/false Apiary reporter, based on token and api-name (suite) existence (@kuba-kubula)
-- [#216](https://github.com/apiaryio/dredd/pull/216) Update documentation, fix a few typos/leftovers, line wrapping, how-to changelog (@kuba-kubula)
-- [#212](https://github.com/apiaryio/dredd/pull/212) Gracefully handle connection errors to server under test (@netmilk)
-- [#214](https://github.com/apiaryio/dredd/pull/214) Fixed example with modifying request URI, closes #186 (@netmilk)
-- [#213](https://github.com/apiaryio/dredd/pull/213) Example for session handling in hooks (@netmilk)
+- [#229](https://github.com/apiaryio/dredd/pull/229) **Fix**: Clean beforeResults for every gavelResult iteration (@netmilk)
+- [#222](https://github.com/apiaryio/dredd/pull/222) **New**: Report skipped and programatically failed transactions (@netmilk)
+- [#228](https://github.com/apiaryio/dredd/pull/228) **Docs**: Updated the MkDocs config from the deprecated format (@d0ugal)
+- [#224](https://github.com/apiaryio/dredd/pull/224) **New**: Support for before validation hooks (@netmilk, @nevir)
+- [#219](https://github.com/apiaryio/dredd/pull/219) **New**: Connection errors in gavel error interface (@netmilk)
+- [#218](https://github.com/apiaryio/dredd/pull/218) **Fix**: Public:true/false Apiary reporter, based on token and api-name (suite) existence (@kuba-kubula)
+- [#216](https://github.com/apiaryio/dredd/pull/216) **Docs**: Update documentation, fix a few typos/leftovers, line wrapping, how-to changelog (@kuba-kubula)
+- [#212](https://github.com/apiaryio/dredd/pull/212) **Fix**: Gracefully handle connection errors to server under test (@netmilk)
+- [#214](https://github.com/apiaryio/dredd/pull/214) **Docs**: Fixed example with modifying request URI, closes #186 (@netmilk)
+- [#213](https://github.com/apiaryio/dredd/pull/213) **Docs**: Example for session handling in hooks (@netmilk)
 
 
 ### v0.6.0
