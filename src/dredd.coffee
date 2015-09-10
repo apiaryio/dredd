@@ -186,13 +186,25 @@ class Dredd
         return callback(runtimeError, stats) if runtimeError
         cb()
 
-    #start the runner
+    # start the runner
     startRunner = =>
+      # dredd can have registered more than one reporter
       reporterCount = config.emitter.listeners('start').length
-      config.emitter.emit 'start', config.data, =>
-        reporterCount--
-        if reporterCount is 0
 
+      # atomic state shared between reporters
+      reporterErrorOccurred = false
+
+      # when event start is emitted, function in callback is executed for each registered reporter by listeners
+      config.emitter.emit 'start', config.data, (reporterError) =>
+        reporterCount--
+
+        # if any error in one of reporters occurres, callback is called and other reporters are not executed
+        if reporterError and reporterErrorOccurred? and reporterErrorOccurred is false
+          reporterErrorOccurred = true
+          return callback(reporterError)
+
+        # last called reporter callback function starts the runner
+        if reporterCount is 0 and reporterErrorOccurred? and reporterErrorOccurred is false
           # run all transactions
           @runner.config(config)
           @runner.run runtimes['transactions'], =>

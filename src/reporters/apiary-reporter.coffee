@@ -104,10 +104,9 @@ class ApiaryReporter
 
       path = '/apis/' + @configuration['apiSuite'] + '/tests/runs'
 
-      @_performRequest path, 'POST', data, (error, response, parsedBody) =>
+      @_performRequestAsync path, 'POST', data, (error, response, parsedBody) =>
         if error
-          logger.error error
-          callback()
+          callback(error)
         else
           @remoteId = parsedBody['_id']
           @reportUrl = parsedBody['reportUrl'] if parsedBody['reportUrl']
@@ -194,6 +193,8 @@ class ApiaryReporter
 
     return data
 
+  # To be deprecated
+  # Will be replaced by _performRequestAsync (now implemented only for start event handler)
   _performRequest: (path, method, body, callback) =>
     buffer = ""
 
@@ -218,6 +219,87 @@ class ApiaryReporter
           parsedBody = JSON.parse buffer
         catch e
           throw new Error("Apiary reporter: Failed to JSON parse Apiary API response body: \n #{buffer}")
+
+
+        if @verbose
+          info =
+            headers: res.headers
+            statusCode: res.statusCode
+            body: parsedBody
+          logger.log 'Rest Reporter Response:', JSON.stringify(info, null, 2)
+
+        return callback(undefined, res, parsedBody)
+
+    parsedUrl = url.parse @configuration['apiUrl']
+    system = os.type() + ' ' + os.release() + '; ' + os.arch()
+
+    options =
+      host: parsedUrl['hostname']
+      port: parsedUrl['port']
+      path: path
+      method: method
+      headers:
+        'User-Agent': "Dredd REST Reporter/" + packageConfig['version'] + " (" + system + ")"
+        'Content-Type': 'application/json'
+
+    unless @configuration['apiToken'] == null
+      options.headers['Authentication'] = 'Token ' + @configuration['apiToken']
+
+    if @verbose
+      info =
+        options: options
+        body: body
+      logger.log 'Rest Reporter Request:', JSON.stringify(info, null, 2)
+
+    handleReqError = (error) =>
+      @serverError = true
+      if CONNECTION_ERRORS.indexOf(error.code) > -1
+        logger.error "Apiary reporter: Error connecting to Apiary test reporting API."
+        callback()
+      else
+        return callback error, req, null
+
+    if @configuration.apiUrl?.indexOf('https') is 0
+      if @verbose
+        logger.log 'Starting REST Reporter HTTPS Request'
+      req = https.request options, handleRequest
+
+      req.on 'error', handleReqError
+
+    else
+      if @verbose
+        logger.log 'Starting REST Reporter HTTP Response'
+      req = http.request options, handleRequest
+
+      req.on 'error', handleReqError
+
+    req.write JSON.stringify body
+    req.end()
+
+  _performRequestAsync: (path, method, body, callback) =>
+    buffer = ""
+
+    handleRequest = (res) =>
+      res.setEncoding 'utf8'
+
+      res.on 'data', (chunk) =>
+        if @verbose
+          logger.log 'REST Reporter HTTPS Response chunk: ' + chunk
+        buffer = buffer + chunk
+
+      res.on 'error', (error) =>
+        if @verbose
+          logger.log 'REST Reporter HTTPS Response error.'
+        return callback error, req, res
+
+      res.on 'end', =>
+        if @verbose
+          logger.log 'Rest Reporter Response ended'
+
+        try
+          parsedBody = JSON.parse buffer
+        catch e
+          callback new Error("Apiary reporter: Failed to JSON parse Apiary API response body: \n #{buffer}")
 
 
         if @verbose

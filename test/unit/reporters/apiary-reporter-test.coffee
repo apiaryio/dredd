@@ -171,6 +171,26 @@ describe 'ApiaryReporter', () ->
             assert.isTrue apiaryReporter.serverError
             done()
 
+    describe "_performRequestAsync", () ->
+      describe 'when server is not available', () ->
+        beforeEach () ->
+          nock.enableNetConnect()
+          nock.cleanAll()
+
+        it 'should log human readable message', (done) ->
+          emitter = new EventEmitter
+          apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+          apiaryReporter._performRequestAsync '/', 'POST', '', (error) ->
+            assert.isNotNull error
+            done()
+
+        it 'should set server error to true', (done) ->
+          emitter = new EventEmitter
+          apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
+          apiaryReporter._performRequestAsync '/', 'POST', '', () ->
+            assert.isTrue apiaryReporter.serverError
+            done()
+
 
     describe 'when starting', () ->
       call = null
