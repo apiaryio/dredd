@@ -287,7 +287,8 @@ describe "Command line interface", () ->
           server2 = apiary.listen (PORT+1), ->
             env = clone process.env
             env['APIARY_API_URL'] = "http://127.0.0.1:#{PORT+1}"
-            execCommand cmd, {env}, () ->
+            execCommand cmd, {env}, (error, stdout, stderr, exitStatus) ->
+
               server2.close ->
                 server.close ->
 

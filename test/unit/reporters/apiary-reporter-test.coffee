@@ -151,7 +151,7 @@ describe 'ApiaryReporter', () ->
       nock.cleanAll()
       done()
 
-    describe "_performRequest", () ->
+    describe "_performRequestAsync", () ->
       describe 'when server is not available', () ->
         beforeEach () ->
           nock.enableNetConnect()
@@ -160,14 +160,14 @@ describe 'ApiaryReporter', () ->
         it 'should log human readable message', (done) ->
           emitter = new EventEmitter
           apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
-          apiaryReporter._performRequest '/', 'POST', '', () ->
-            assert.ok loggerStub.error.calledWith 'Apiary reporter: Error connecting to Apiary test reporting API.'
+          apiaryReporter._performRequestAsync '/', 'POST', '', (error) ->
+            assert.isNotNull error
             done()
 
         it 'should set server error to true', (done) ->
           emitter = new EventEmitter
           apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
-          apiaryReporter._performRequest '/', 'POST', '', () ->
+          apiaryReporter._performRequestAsync '/', 'POST', '', () ->
             assert.isTrue apiaryReporter.serverError
             done()
 

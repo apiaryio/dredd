@@ -1,6 +1,8 @@
 {assert} = require 'chai'
 sinon = require 'sinon'
 proxyquire = require('proxyquire').noCallThru()
+bodyParser = require 'body-parser'
+express = require 'express'
 
 fsStub = require 'fs'
 DrafterClassStub = require 'drafter'
@@ -563,3 +565,85 @@ describe 'Dredd class', () ->
       dredd.run (error) ->
         assert.ok dredd.runner.executeTransaction.called
         done()
+
+  describe "#emitStart", () ->
+
+    describe 'no error in reporter occurs', () ->
+      PORT = 9876
+      dredd = null
+      apiaryServer = null
+
+      beforeEach (done) ->
+        configuration =
+          server: 'http://localhost:3000/'
+          options:
+            silent: true
+            reporter: ['apiary']
+            path: ['./test/fixtures/apiary.apib']
+            custom:
+              apiaryApiUrl: "http://127.0.0.1:#{PORT+1}"
+              apiaryApiKey: 'the-key'
+              apiaryApiName: 'the-api-name'
+              dreddRestDebug: '1'
+
+        dredd = new Dredd(configuration)
+
+        apiary = express()
+        apiary.use bodyParser.json(size:'5mb')
+
+        apiary.post '/apis/*', (req, res) ->
+          res.type('json')
+          res.status(201).send
+            _id: '1234_id'
+            testRunId: '6789_testRunId'
+            reportUrl: 'http://url.me/test/run/1234_id'
+
+        apiary.all '*', (req, res) ->
+          res.type 'json'
+          res.send {}
+
+        apiaryServer = apiary.listen (PORT+1), ->
+          done()
+
+      afterEach (done) ->
+        apiaryServer.close () ->
+          done()
+
+
+      it 'should call the callback', (done) ->
+        callback = sinon.spy (error) ->
+          done error if error
+          assert.ok callback.called
+          done()
+
+        dredd.emitStart callback
+
+    describe 'an error in the apiary reporter occurs', () ->
+      PORT = 9876
+      dredd = null
+      apiaryServer = null
+
+      beforeEach () ->
+        configuration =
+          server: 'http://localhost:3000/'
+          options:
+
+            reporter: ['apiary']
+            path: ['./test/fixtures/apiary.apib']
+            custom:
+              apiaryApiUrl: "http://127.0.0.1:#{PORT+1}"
+              apiaryApiKey: 'the-key'
+              apiaryApiName: 'the-api-name'
+              dreddRestDebug: '1'
+
+        dredd = new Dredd(configuration)
+
+      it 'should call the callback with error', (done) ->
+        callback = sinon.spy (error) ->
+          assert.isNotNull error
+          assert.ok callback.called
+          done()
+
+        dredd.emitStart callback
+
+

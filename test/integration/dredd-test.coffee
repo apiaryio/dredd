@@ -157,11 +157,16 @@ describe "Dredd class Integration", () ->
 
       server = app.listen PORT, () ->
         server2 = apiary.listen (PORT+1), ->
+
+          #Comment out this timeout to enable race condition bug
+          setTimeout () ->
+            undefined
+          , 100
+
           execCommand cmd, () ->
             server2.close ->
-              server.close ->
-
-      server.on 'close', done
+              server.close () ->
+                done()
 
     it 'should not print warning about missing APIARY_API_KEY and APIARY_API_NAME', () ->
       assert.notInclude stderr, 'Apiary reporter environment variable APIARY_API_KEY or APIARY_API_NAME not defined.'
@@ -185,7 +190,6 @@ describe "Dredd class Integration", () ->
       assert.deepProperty receivedRequest, 'resultData.result.body.validator'
       assert.deepProperty receivedRequest, 'resultData.result.headers.validator'
       assert.deepProperty receivedRequest, 'resultData.result.statusCode.validator'
-
 
       it 'prints out an error message', ->
         assert.notEqual exitStatus, 0
