@@ -5,14 +5,14 @@ bodyParser = require 'body-parser'
 express = require 'express'
 
 fsStub = require 'fs'
-DrafterClassStub = require 'drafter'
+protagonist = require 'protagonist'
 requestStub = require 'request'
 loggerStub = require '../../src/logger'
 
 blueprintTransactionsStub = require 'blueprint-transactions'
 
 Dredd = proxyquire '../../src/dredd', {
-  'drafter': DrafterClassStub
+  'protagonist': protagonist 
   'request': requestStub
   'blueprint-transactions': blueprintTransactionsStub
   'fs': fsStub
