@@ -111,6 +111,7 @@ Following is description is in a [MSON](https://github.com/apiaryio/mson) format
         - statusCode `"200"` (string)
         - headers (object)
         - body (string)
+        - schema (string)
 
     - real (object) System under test response data. Present only in `after` hook.
         - statusCode `"200"` (string)
