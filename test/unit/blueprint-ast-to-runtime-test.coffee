@@ -1,5 +1,5 @@
 {assert} = require 'chai'
-Drafter = require 'drafter'
+protagonist = require 'protagonist'
 fs = require 'fs'
 
 blueprintAstToRuntime = require '../../src/blueprint-ast-to-runtime'
@@ -193,9 +193,8 @@ describe "blueprintAstToRuntime()", () ->
     before (done) ->
       filename = './test/fixtures/arbitrary-action.md'
       code = fs.readFileSync(filename).toString()
-      drafter = new Drafter
-      drafter.make code, (drafterError, result) ->
-        done(drafterError) if drafterError
+      protagonist.parse code, (parseError, result) ->
+        done(parseError) if parseError
         transactions = blueprintAstToRuntime(result['ast'], filename)['transactions']
         done()
 
@@ -211,5 +210,3 @@ describe "blueprintAstToRuntime()", () ->
 
     it 'second (arbitrary) action should have its method', ->
       assert.equal transactions[1].request.method, 'GET'
-
-
