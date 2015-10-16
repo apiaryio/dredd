@@ -2,6 +2,10 @@
 
 - If you don't have [Node.js](https://nodejs.org/) installed, you may want to use [NVM](https://github.com/creationix/nvm)
 - Create an [API blueprint](https://apiblueprint.org/) in `apiary.apib`
+
+**Note:** Dredd works smoothly with node.js ~0.8.15, 0.10.x, 0.12.x
+and iojs v1.x.x. Support for node.js 4.x.x is on the way.
+
 ```
 # GET /message
 + Response 200 (text/plain)
