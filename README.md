@@ -92,7 +92,7 @@ Format of the transaction path is  a concatenation/serialization of the `origin`
 #### Some Action Name [GET]
 
 + Request (application/json)
-+ Response 200(application/json)
++ Response 200 (application/json)
 
 + Request (application/xml)
 + Response 200 (application/xml)
