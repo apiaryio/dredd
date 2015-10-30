@@ -13,8 +13,11 @@ This library takes API Blueprint AST and returns specific HTTP transactions (Req
 - Expands URI templates
 - Warns on undefined URI query and path parameters
 - Validates URI parameteres types
-- Assigns origin object pointing to the Blueprint AST
-- Compiles Transaction name string for each transaction
+- Selects first request and first response if multiple request or responses are given in the 
+- Assigns path origin object pointing to the Blueprint AST [DEPRECATED
+- Compiles [cannonical transction path](#canonical-transaction-paths) as a unique identifier for each transaction
+- Assigns origin object pointing to the Blueprint AST [DEPRECATED]
+- Compiles Transaction name string for each transaction [DEPRECATED]
 
 ## Installation
 
