@@ -33,3 +33,9 @@ describe 'blueprintTransactions', () ->
         it 'should have the "name" property set', () ->
           for transaction, index in returnedObject.transactions
             assert.property transaction, 'name', "Missing 'name' property on transaction #{index}"
+
+        it 'shoud have the "path" property set', () ->
+          for transaction, index in returnedObject.transactions
+            console.log transaction.path
+            assert.property transaction, 'path', "Missing 'path' property on transaction #{index}"
+
