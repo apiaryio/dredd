@@ -21,9 +21,9 @@ You can interact with your server implementation in following languages:
 
 - [Ruby](hooks-ruby.md)
 - [Python](hooks-python.md)
+- [Go](hooks-go.md)
 - [Node.js](hooks-nodejs.md)
 - [PHP](hooks-php.md)
-- [Go](hooks-go.md)
 - [Sandboxed JavaScript](hooks-js-sandbox.md)
 
 Dredd doesn't speak your language? [**It's very easy to write support for your language.**](hooks-new-language.md) Your contribution is more than welcome!

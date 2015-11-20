@@ -258,20 +258,15 @@ class ApiaryReporter
       else
         return callback error, req, null
 
+    if @verbose
+      logger.log 'Starting REST Reporter Request'
+
     if @configuration.apiUrl?.indexOf('https') is 0
-      if @verbose
-        logger.log 'Starting REST Reporter HTTPS Request'
       req = https.request options, handleResponse
-
-      req.on 'error', handleReqError
-
     else
-      if @verbose
-        logger.log 'Starting REST Reporter HTTP Response'
       req = http.request options, handleResponse
 
-      req.on 'error', handleReqError
-
+    req.on 'error', handleReqError
     req.write postData
     req.end()
 
