@@ -73,4 +73,5 @@ Dredd hooks language abstraction bridge comes with [the language agnostic test s
 If you have any questions, please:
 
 - Have a look at the [Ruby](https://github.com/apiaryio/dredd-hooks-ruby), [Python](https://github.com/apiaryio/dredd-hooks-python), and [PHP](https://github.com/ddelnano/dredd-hooks-php) hook handlers codebase for inspiration
+- If you’re writing a hook handler for a compiled language, check out the [Go](https://github.com/snikch/goodman) implementation
 - File an [issue in Dredd repository](https://github.com/apiaryio/dredd/issues/new)
