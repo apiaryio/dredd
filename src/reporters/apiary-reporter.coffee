@@ -171,7 +171,7 @@ class ApiaryReporter
     returnedData.filename = blueprintData.filename
 
     returnedData.parsed =
-      # omit parsed.ast, it might change in future (depends heavily on protagonist/drafter versions)
+      # omit parsed.ast, it might change in future (depends heavily on protagonist version)
       _version: blueprintData.parsed._version
       warnings: clone blueprintData.parsed.warnings
       error: blueprintData.parsed.error

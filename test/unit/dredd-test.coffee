@@ -5,14 +5,14 @@ bodyParser = require 'body-parser'
 express = require 'express'
 
 fsStub = require 'fs'
-DrafterClassStub = require 'drafter'
+protagonistStub = require 'protagonist'
 requestStub = require 'request'
 loggerStub = require '../../src/logger'
 
 blueprintTransactionsStub = require 'blueprint-transactions'
 
 Dredd = proxyquire '../../src/dredd', {
-  'drafter': DrafterClassStub
+  'protagonist': protagonistStub
   'request': requestStub
   'blueprint-transactions': blueprintTransactionsStub
   'fs': fsStub
@@ -25,11 +25,11 @@ describe 'Dredd class', () ->
   dredd = {}
 
   beforeEach () ->
-    sinon.spy DrafterClassStub::, 'make'
+    sinon.spy protagonistStub, 'parse'
     sinon.spy fsStub, 'readFile'
 
   afterEach () ->
-    DrafterClassStub::make.restore()
+    protagonistStub.parse.restore()
     fsStub.readFile.restore()
 
   describe 'with legacy configuration', () ->
@@ -88,7 +88,7 @@ describe 'Dredd class', () ->
       sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
       dredd.run (error) ->
-        assert.ok DrafterClassStub::make.called
+        assert.ok protagonistStub.parse.called
         dredd.runner.executeTransaction.restore()
         done()
 
@@ -645,5 +645,3 @@ describe 'Dredd class', () ->
           done()
 
         dredd.emitStart callback
-
-
