@@ -185,6 +185,13 @@ describe 'TransactionRunner', ()->
           assert.strictEqual configuredTransaction.fullPath, '/my/path/to/api' + '/machines'
           done()
 
+      it 'should keep trailing slash in url if present', (done) ->
+        transaction.request.uri = '/machines/'
+        runner.configureTransaction transaction, (err, configuredTransaction) ->
+          assert.equal configuredTransaction.id, 'POST /machines/'
+          assert.strictEqual configuredTransaction.fullPath, '/my/path/to/api' + '/machines/'
+          done()
+
   describe 'executeTransaction(transaction, callback)', () ->
 
     beforeEach () ->
