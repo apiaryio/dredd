@@ -40,7 +40,7 @@ Refer to [Dredd execution lifecycle](usage.md#dredd-execution-lifecycle) to find
 Example usage of all methods in
 
 ```ruby
-include DreddHooks:Methods
+include DreddHooks::Methods
 
 before_all do |transactions|
   puts 'before all'
