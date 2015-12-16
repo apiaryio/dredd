@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "advisable": "~0.2.0",
-    "async": "^0.9.x",
+    "async": "^1.5.0",
     "blueprint-transactions": "^0.0.2",
     "chai": "^3.4.1",
     "clone": "^1.0.0",
