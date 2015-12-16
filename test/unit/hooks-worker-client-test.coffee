@@ -61,12 +61,12 @@ describe 'Hooks worker client', () ->
         done()
       , 2200
 
-    it 'should exit Dredd with status > 1 when spawned process ends with exit status 2', (done) ->
+    it 'should exit Dredd with status > 1 when spawned process ends with exit status 3', (done) ->
       hooks.processExit.reset()
       hooks.configuration.options.language = './test/fixtures/scripts/exit_3.sh'
       loadWorkerClient()
       setTimeout () ->
-        assert.equal hooks.processExit.getCall(0).args[0], 2
+        assert.equal hooks.processExit.getCall(0).args[0], 3
         done()
       , 2200
 
