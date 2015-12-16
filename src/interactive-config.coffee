@@ -96,7 +96,7 @@ interactiveConfig.prompt = (config = {}, callback) ->
   questions.push {
     type: "confirm"
     name: "circleCreate"
-    message: "Dredd is best served with Continous Intregration. Create CircleCI config for Dredd?"
+    message: "Dredd is best served with Continuous Integration. Create CircleCI config for Dredd?"
     when: (answers) -> (! fs.existsSync('circle.yml') && ! fs.existsSync('.travis.yml'))
   }
 
