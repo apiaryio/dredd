@@ -40,7 +40,6 @@ describe 'ApiaryReporter', () ->
     tests = []
     test = {}
     emitter = {}
-    baseReporter = {}
 
     beforeEach (done) ->
       stats =
@@ -54,7 +53,6 @@ describe 'ApiaryReporter', () ->
         duration: 0
       tests = []
       emitter = new EventEmitter
-      #baseReporter = new BaseReporter(emitter, stats, tests)
       env = {'CIRCLE_VARIABLE': 'CIRCLE_VALUE'}
       env['APIARY_API_URL'] = "https://localhost:#{PORT}"
       delete env['APIARY_API_KEY']
@@ -577,7 +575,6 @@ describe 'ApiaryReporter', () ->
     test = {}
     emitter = {}
     env = {}
-    baseReporter = {}
 
     beforeEach (done) ->
       stats =
@@ -591,7 +588,6 @@ describe 'ApiaryReporter', () ->
         duration: 0
       tests = []
       emitter = new EventEmitter
-      #baseReporter = new BaseReporter(emitter, stats, tests)
 
       env = {}
       env['APIARY_API_URL'] = "https://localhost:#{PORT}"
