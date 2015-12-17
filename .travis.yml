@@ -1,11 +1,14 @@
+sudo: required
+dist: trusty
+
 language: node_js
 
 node_js:
   - "0.10"
   - "0.12"
   - "iojs-v2.5.0"
-
-sudo: false
+  - "4"
+  - "5"
 
 notifications:
   email:
