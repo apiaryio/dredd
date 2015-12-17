@@ -6,7 +6,7 @@
 [![Coverage Status](https://coveralls.io/repos/apiaryio/dredd/badge.svg?branch=master)](https://coveralls.io/r/apiaryio/dredd?branch=master)
 [![Join the chat at https://gitter.im/apiaryio/dredd](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/apiaryio/dredd?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-![Dredd API Blueprint testing tool](https://raw.github.com/apiaryio/dredd/master/img/Dredd.png?2)
+![Dredd — HTTP API Testing Framework](https://raw.github.com/apiaryio/dredd/master/img/Dredd.png?3)
 
 Dredd is a language agnostic command-line tool for validating API documentation written in [API Blueprint][]
 format against its backend implementation. With Dredd you can easily plug your
@@ -20,6 +20,7 @@ Dredd supports writing [hooks](http://dredd.readthedocs.org/en/latest/hooks/) gl
 
 - [Ruby](http://dredd.readthedocs.org/en/latest/hooks-ruby/)
 - [Python](http://dredd.readthedocs.org/en/latest/hooks-python/)
+- [Go](http://dredd.readthedocs.org/en/latest/hooks-go/)
 - [Node.js](http://dredd.readthedocs.org/en/latest/hooks-nodejs/)
 - [PHP](http://dredd.readthedocs.org/en/latest/hooks-php/)
 - *Add your language here*
