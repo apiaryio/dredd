@@ -48,8 +48,8 @@ $ dredd init
 $ dredd
 ```
 
-**Note:** Dredd works smoothly with node.js ~0.8.15, 0.10.x, 0.12.x
-  and iojs v1.x.x. Support for node.js 4.x.x is on the way.
+**Note:** Dredd works smoothly with node.js 5.x.x, 4.x.x, 0.12.x, 0.10.x, and
+  iojs v2.x.x.
 
 ## Documentation
 
