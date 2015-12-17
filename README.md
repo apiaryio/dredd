@@ -20,6 +20,7 @@ Dredd supports writing [hooks](http://dredd.readthedocs.org/en/latest/hooks/) gl
 
 - [Ruby](http://dredd.readthedocs.org/en/latest/hooks-ruby/)
 - [Python](http://dredd.readthedocs.org/en/latest/hooks-python/)
+- [Go](http://dredd.readthedocs.org/en/latest/hooks-go/)
 - [Node.js](http://dredd.readthedocs.org/en/latest/hooks-nodejs/)
 - [PHP](http://dredd.readthedocs.org/en/latest/hooks-php/)
 - *Add your language here*
