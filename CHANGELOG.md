@@ -1,5 +1,27 @@
 ## Change Log
 
+### v1.0.2
+
+**Support for Node 4 and 5, using Protagonist instead of Drafter.js**
+- [#309](https://github.com/apiaryio/dredd/pull/309) Use protagonist instead of drafter (@ascripcaru)
+- [#313](https://github.com/apiaryio/dredd/pull/313) Support node 4 and 5 in readme (@netmilk)
+- [#310](https://github.com/apiaryio/dredd/pull/310) Travis build with node 4 and 5 (@ascripcaru)
+- [#288](https://github.com/apiaryio/dredd/pull/288) Add info about supported Node.js versions (@w-vi)
+
+**Documentation for GO hooks**
+- [#281](https://github.com/apiaryio/dredd/pull/281) Add Go documentation (@snikch)
+- [#315](https://github.com/apiaryio/dredd/pull/315) Go hooks to readme (@netmilk)
+- [#314](https://github.com/apiaryio/dredd/pull/314) Updated logo image with GO (@honzajavorek)
+- [#304](https://github.com/apiaryio/dredd/pull/304) Update mkdocs.yml (@w-vi)
+
+**Refactored Apiary reporter for better integration testing in Node integrations**
+- [#275](https://github.com/apiaryio/dredd/pull/275) Apiary reporter not throwing anymore, only passing error to callback (@netmilk, @miiila)
+
+**Various typos fixed**
+- [#306](https://github.com/apiaryio/dredd/pull/306) Fixed typo (@netmilk)
+- [#307](https://github.com/apiaryio/dredd/pull/307) Fixing the example in Ruby Hooks docs (@netmilk)
+- [#274](https://github.com/apiaryio/dredd/pull/274) Fix spelling mistake on index.md (@NGMarmaduke)
+
 ### v1.0.1
 
 - [#264](https://github.com/apiaryio/dredd/pull/264) **Fix**: Quick fix for the reporters issue #263 (@w-vi)
