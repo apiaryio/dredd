@@ -383,6 +383,7 @@ class TransactionRunner
       path: transaction.fullPath
       method: transaction.request['method']
       headers: transaction.request.headers
+      rejectUnauthorized: not @configuration.options['nocheckcertificate']
 
     transaction.startedAt = Date.now() # number in miliseconds (UNIX-like timestamp * 1000 precision)
 

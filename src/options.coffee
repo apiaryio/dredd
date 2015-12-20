@@ -125,6 +125,10 @@ options =
     description: "Additional blueprint paths or URLs. Can be used multiple times with glob pattern for paths."
     default: []
 
+  nocheckcertificate:
+    description: "Don’t check the server certificate against the available certificate authorities."
+    default: false
+  
   help:
     description: "Show usage information.\n"
 

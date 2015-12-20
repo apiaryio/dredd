@@ -222,7 +222,9 @@ hooks.beforeAll (transactions, callback) ->
   message =
     event: 'beforeAll'
     uuid: uuid
-    data: transactions
+    data: 
+      transactions: transactions
+      options: hooks.configuration.options
 
   handlerClient.write JSON.stringify message
   handlerClient.write HANDLER_MESSAGE_DELIMITER
