@@ -86,8 +86,6 @@ Options:
 
 Configuration for Dredd may be stored in a configuration file named `dredd.yml`.
 
-> Disclaimer: this is unstable feature:
-
 Command-line interface uses `dredd.yml` configuration file to persist configuration.
 Its structure is same as [Configuration object for Dredd Class](#configuration-object-for-dredd-class).
 
