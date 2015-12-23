@@ -6,7 +6,7 @@ Dredd comes with concept of hooks language abstraction bridge via simple TCP soc
 
 When you run Dredd with `--language` argument, it runs the command in argument and tries to connect to localhost port `61321`. If connection to the hook handling server wasn't successful, it exits with exit code `3`.
 
-Dredd internally registers a function for each [type of hooks](hooks.md#types-of-hooks) and when this function is executed it assigns execution `uuid` to that event, serializes received function parameters (a [Transaction object](hooks.md#transaction-object-structure) or an Array of it), sends it to the TCP socket to be handled (executed) in other language and waits until message with same `uuid` is received. After data reception it assigns received `data` back to the transaction, so other language can interact with transactions same way like [native Node.js hooks](hooks-node.md).
+Dredd internally registers a function for each [type of hooks](hooks.md#types-of-hooks) and when this function is executed it assigns execution `uuid` to that event, serializes received function parameters (a [Transaction object](hooks.md#transaction-object-structure) or an Array of it), sends it to the TCP socket to be handled (executed) in other language and waits until message with same `uuid` is received. After data reception it assigns received `data` back to the transaction, so other language can interact with transactions same way like [native Node.js hooks](hooks-nodejs.md).
 
 
 ## What to implement
@@ -26,7 +26,7 @@ If you want to write a hook handler for your language you will have to implement
 
 - When CLI command is executed
   - it loads files specified as CLI server arguments
-    - it exposes API similar to these in [Ruby](hooks-ruby.md), [Python](hooks-python.md) and [Node.js](hooks-node.md) to each loaded file
+    - it exposes API similar to these in [Ruby](hooks-ruby.md), [Python](hooks-python.md) and [Node.js](hooks-nodejs.md) to each loaded file
     - it registers functions declared in files for later execution
 
   - starts a TCP socket server and starts listening on localhost port `61321`.
