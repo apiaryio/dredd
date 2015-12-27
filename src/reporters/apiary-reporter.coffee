@@ -126,11 +126,11 @@ class ApiaryReporter
 
     emitter.on 'test skip', _createStep
 
-    emitter.on 'test error', (test, error, callback) =>
+    emitter.on 'test error', (error, test, callback) =>
       return callback() if @serverError == true
       data = @_transformTestToReporter test
-      data.result = 'error'
 
+      data['resultData']['result'] ?= {}
       data['resultData']['result']['general'] ?= []
 
       if CONNECTION_ERRORS.indexOf(error.code) > -1

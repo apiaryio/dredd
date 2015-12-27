@@ -109,6 +109,7 @@ class TransactionRunner
       message: transaction.name
       origin: transaction.origin
       startedAt: transaction.startedAt # number in miliseconds (UNIX-like timestamp * 1000 precision)
+      request: transaction.request
     @configuration.emitter.emit 'test error', error, test if error
 
 
@@ -447,6 +448,9 @@ class TransactionRunner
 
         res.on 'error', (error) ->
           if error
+            test.title = transaction.id
+            test.expected = transaction.expected
+            test.request = transaction.request
             configuration.emitter.emit 'test error', error, test, () ->
 
           return callback()
@@ -475,6 +479,9 @@ class TransactionRunner
         req = transport.request requestOptions, handleRequest
 
         req.on 'error', (error) ->
+          test.title = transaction.id
+          test.expected = transaction.expected
+          test.request = transaction.request
           configuration.emitter.emit 'test error', error, test, () ->
           return callback()
 
