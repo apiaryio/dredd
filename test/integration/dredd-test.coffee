@@ -158,10 +158,11 @@ describe "Dredd class Integration", () ->
       server = app.listen PORT, () ->
         server2 = apiary.listen (PORT+1), ->
 
-          #Comment out this timeout to enable race condition bug
+          # Comment out this timeout to enable race condition bug
+          # Event loop get stuck or idle without this
           setTimeout () ->
             undefined
-          , 9000
+          , 1000
 
           execCommand cmd, () ->
             server2.close ->
@@ -221,6 +222,65 @@ describe "Dredd class Integration", () ->
       it 'prints out ok', ->
         assert.equal exitStatus, 0
 
+    describe "when using reporter -r apiary and the server isn't running", () ->
+      server = null
+      server2 = null
+      receivedRequest = null
+      exitStatus = null
+
+      before (done) ->
+        cmd =
+          options:
+            path: ["./test/fixtures/single-get.apib"]
+            reporter: ['apiary']
+          custom:
+            apiaryReporterEnv:
+              APIARY_API_URL: "http://127.0.0.1:#{PORT+1}"
+              DREDD_REST_DEBUG: '1'
+
+        apiary = express()
+
+        apiary.use bodyParser.json(size:'5mb')
+
+        apiary.post '/apis/*', (req, res) ->
+          if req.body and req.url.indexOf('/tests/steps') > -1
+            receivedRequest ?= clone(req.body)
+          res.type('json')
+          res.status(201).send
+            _id: '1234_id'
+            testRunId: '6789_testRunId'
+            reportUrl: 'http://url.me/test/run/1234_id'
+
+        apiary.all '*', (req, res) ->
+          res.type 'json'
+          res.send {}
+
+        server2 = apiary.listen (PORT+1), ->
+
+          # Comment out this timeout to enable race condition bug
+          # Event loop get stuck or idle without this
+          setTimeout () ->
+            undefined
+          , 1000
+
+          execCommand cmd, () ->
+            server2.close ->
+
+        server2.on 'close', done
+
+      it 'should print using the reporter', () ->
+        assert.include stdout, 'http://url.me/test/run/1234_id'
+
+      it 'should send results from gavel', () ->
+        assert.isObject receivedRequest
+        assert.deepProperty receivedRequest, 'resultData.request'
+        assert.deepProperty receivedRequest, 'resultData.expectedResponse'
+        assert.deepProperty receivedRequest, 'resultData.result.general'
+
+      it 'report should have message about server being down', () ->
+        message = receivedRequest['resultData']['result']['general'][0]['message']
+        assert.include message, 'connect'
+
     describe "when using reporter -r apiary", () ->
       server = null
       server2 = null
@@ -268,6 +328,13 @@ describe "Dredd class Integration", () ->
             , 500
 
             execCommand cmd, () ->
+
+              # Comment out this timeout to enable race condition bug
+              # Event loop get stuck or idle without this
+              setTimeout () ->
+                undefined
+              , 1000
+
               server2.close ->
                 server.close ->
 

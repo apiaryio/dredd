@@ -413,6 +413,8 @@ describe 'ApiaryReporter', () ->
       beforeEach () ->
         uri = '/apis/public/tests/steps?testRunId=' + runId
 
+        test['status'] = 'error'
+
         # this is a hack how to get access to the performed request from nock
         # nock isn't able to provide it
         getBody = (body) ->
@@ -434,7 +436,7 @@ describe 'ApiaryReporter', () ->
             apiaryReporter.remoteId = runId
             error = new Error 'some error'
             error.code = errType
-            emitter.emit 'test error', test, error, () ->
+            emitter.emit 'test error', error, test, () ->
               assert.isTrue call.isDone()
               done()
 
@@ -444,7 +446,7 @@ describe 'ApiaryReporter', () ->
             apiaryReporter.remoteId = runId
             error = new Error 'some error'
             error.code = errType
-            emitter.emit 'test error', test, error, () ->
+            emitter.emit 'test error', error, test, () ->
               assert.equal JSON.parse(requestBody)['result'], 'error'
               done()
 
@@ -455,7 +457,7 @@ describe 'ApiaryReporter', () ->
             apiaryReporter.remoteId = runId
             error = new Error 'some error'
             error.code = errType
-            emitter.emit 'test error', test, error, () ->
+            emitter.emit 'test error', error, test, () ->
               assert.isArray JSON.parse(requestBody)['resultData']['result']['general']
               assert.include JSON.parse(requestBody)['resultData']['result']['general'].map((value,index) -> JSON.stringify(value)).join(),
                 "Error connecting to server under test!"
@@ -467,7 +469,7 @@ describe 'ApiaryReporter', () ->
           apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
           apiaryReporter.remoteId = runId
           error = new Error 'some error'
-          emitter.emit 'test error', test, error, () ->
+          emitter.emit 'test error', error, test, () ->
             assert.isTrue call.isDone()
             done()
 
@@ -476,7 +478,7 @@ describe 'ApiaryReporter', () ->
           apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
           apiaryReporter.remoteId = runId
           error = new Error 'some error'
-          emitter.emit 'test error', test, error, () ->
+          emitter.emit 'test error', error, test, () ->
             assert.equal JSON.parse(requestBody)['result'], 'error'
             done()
 
@@ -485,7 +487,7 @@ describe 'ApiaryReporter', () ->
           apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
           apiaryReporter.remoteId = runId
           error = new Error 'some error'
-          emitter.emit 'test error', test, error, () ->
+          emitter.emit 'test error', error, test, () ->
             assert.isArray JSON.parse(requestBody)['resultData']['result']['general']
             assert.include JSON.parse(requestBody)['resultData']['result']['general'].map((value,index) -> JSON.stringify(value)).join(),
              "Unhandled error occured when executing the transaction."
@@ -499,7 +501,7 @@ describe 'ApiaryReporter', () ->
           apiaryReporter.remoteId = runId
           apiaryReporter.serverError = true
           error = new Error 'some error'
-          emitter.emit 'test error', test, error, () ->
+          emitter.emit 'test error', error, test, () ->
             assert.isFalse call.isDone()
             done()
 
