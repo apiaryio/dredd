@@ -23,8 +23,8 @@ Runner = proxyquire  '../../src/transaction-runner', {
   'http': httpStub
   'https': httpsStub
 }
-
 CliReporter = require '../../src/reporters/cli-reporter'
+Hooks = require '../../src/hooks'
 
 describe 'TransactionRunner', ()->
 
@@ -482,6 +482,484 @@ describe 'TransactionRunner', ()->
           assert.include events, 'test error'
           done()
 
+  describe 'exceuteAllTransactions(transactions, hooks, callback)', ->
+    runner = null
+    hooks = null
+    transactions = []
+    serverNock1 = null
+    serverNock2 = null
+    returnedError = null
+    spies = {}
+
+    beforeEach () ->
+      returnedError = null
+      transactions = []
+
+      for name in ['1', '2']
+        transaction = clone {
+          name: name
+          id: 'POST /machines' + name
+          host: 'localhost'
+          port: '3000'
+          request:
+            body: '{\n  "type": "bulldozer",\n  "name": "willy"}\n'
+            headers:
+              'Content-Type': 'application/json'
+              'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)'
+              'Content-Length': 44
+            uri: '/machines' + name
+            method: 'POST'
+          expected:
+            headers: 'content-type': 'application/json'
+            body: '{\n  "type": "bulldozer",\n  "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n'
+            statusCode: '202'
+          origin:
+            resourceGroupName: 'Group Machine'
+            resourceName: 'Machine'
+            actionName: 'Delete Message'
+            exampleName: 'Bogus example name'
+          fullPath: '/machines' + name
+        }
+
+        transactions.push transaction
+
+      runner = new Runner(configuration)
+      hooks = new Hooks(logs: [], logger: console)
+
+      spyNames = [
+        'beforeAllSpy'
+        'beforeEachSpy'
+        'beforeEachValidationSpy'
+        'beforeSpy'
+        'beforeValidationSpy'
+        'afterSpy'
+        'afterEachSpy'
+        'afterAllSpy'
+      ]
+
+      spies = {}
+      for name in spyNames
+        spies[name] = (data, hooksCallback) -> hooksCallback()
+        sinon.stub spies, name, (data, hooksCallback) -> hooksCallback()
+
+      hooks.beforeAll spies.beforeAllSpy
+      hooks.beforeEach spies.beforeEachSpy
+      hooks.beforeEachValidation spies.beforeEachValidationSpy
+      hooks.before '1', spies.beforeSpy
+      hooks.before '2', spies.beforeSpy
+      hooks.beforeValidation '1', spies.beforeValidationSpy
+      hooks.beforeValidation '2', spies.beforeValidationSpy
+      hooks.after '1', spies.afterSpy
+      hooks.after '2', spies.afterSpy
+      hooks.afterEach spies.afterEachSpy
+      hooks.afterAll spies.afterAllSpy
+
+      runner.hooks = hooks
+
+      serverNock1 = nock('http://localhost:3000').
+        post('/machines1', {"type":"bulldozer","name":"willy"}).
+        reply transaction['expected']['statusCode'],
+          transaction['expected']['body'],
+          {'Content-Type': 'application/json'}
+
+      serverNock2 = nock('http://localhost:3000').
+        post('/machines2', {"type":"bulldozer","name":"willy"}).
+        reply transaction['expected']['statusCode'],
+          transaction['expected']['body'],
+          {'Content-Type': 'application/json'}
+
+    afterEach () ->
+      nock.cleanAll()
+
+      for name, spy of spies then do (name, spy) ->
+        spies[name].restore()
+
+      runner = null
+      hooks = null
+      transactions = []
+      serverNock1 = null
+      serverNock2 = null
+      returnedError = null
+      spies = {}
+
+    describe 'when the hooks hadler is used', () ->
+      describe "and it doesn't crash", () ->
+
+        it 'should perform all transactions', (done) ->
+          runner.executeAllTransactions transactions, hooks, (error) ->
+            return done error if error
+            assert.isTrue serverNock1.isDone(), 'first resource'
+            assert.isTrue serverNock2.isDone(), 'second resource'
+            done()
+
+        it 'should execute all "all" hooks once', (done) ->
+
+          runner.executeAllTransactions transactions, hooks, (error) ->
+            return done error if error
+            for spyName, spy of spies
+              break if spyName != 'beforeAllSpy'
+              break if spyName != 'afterAllSpy'
+              assert.isTrue spies[spyName].called, spyName
+            done()
+
+        it 'should execute all other hooks once', (done) ->
+
+          runner.executeAllTransactions transactions, hooks, (error) ->
+            return done error if error
+            for spyName, spy of spies
+              break if spyName != 'beforeAllSpy'
+              break if spyName != 'afterAllSpy'
+              assert.isTrue spies[spyName].calledTwice, spyName
+            done()
+
+      describe 'and it crashes (hook handler error was set)', () ->
+        describe 'before any hook is executed', () ->
+          beforeEach (done) ->
+            runner.hookHandlerError = new Error 'handler died in before everything'
+            runner.executeAllTransactions transactions, hooks, (error) ->
+              #setting expectation for this error below in each describe block
+              returnedError = error
+              done()
+
+          it 'should not perform any transaction', () ->
+            assert.isFalse serverNock1.isDone(), 'first resource'
+            assert.isFalse serverNock2.isDone(), 'second resource'
+
+          it 'should not perform any hooks', () ->
+            for spyName,spy of spies
+              assert.isFalse spies[spyName].called, spyName
+
+          it 'should return the error', () ->
+            assert.include returnedError.message, 'everything'
+
+        describe 'after beforeAll hook is executed', () ->
+          beforeEach (done) ->
+            hookHandlerError = new Error 'handler died in beforeAll'
+
+            hooks.beforeAll (data, callback) ->
+              runner.hookHandlerError = hookHandlerError
+              callback()
+
+            runner.executeAllTransactions transactions, hooks, (error) ->
+              #setting expectation for this error below in each describe block
+              returnedError = error
+              done()
+
+          it 'should perform the beforeAll hook', () ->
+            assert.isTrue spies.beforeAllSpy.called
+
+          it 'should not perform any other hook', () ->
+            for spyName,spy of spies
+              break if spyName == 'beforeAllSpy'
+              assert.isFalse spies[spyName].called, spyName
+
+          it 'should not perform any transaction', () ->
+            assert.isFalse serverNock1.isDone(), 'first resource'
+            assert.isFalse serverNock2.isDone(), 'second resource'
+
+          it 'should return the error', () ->
+            assert.include returnedError.message, 'beforeAll'
+
+        describe 'after beforeEach hook is executed', () ->
+          beforeEach (done) ->
+            hookHandlerError = new Error 'handler died in beforeEach'
+
+            hooks.beforeEach (data, callback) ->
+              runner.hookHandlerError = hookHandlerError
+              callback()
+
+            runner.executeAllTransactions transactions, hooks, (error) ->
+              #setting expectation for this error below in each describe block
+              returnedError = error
+              done()
+
+          it 'should perform the beforeAll hook', () ->
+            assert.isTrue spies.beforeAllSpy.called
+
+          it 'should perform the beforeEach hook', () ->
+            assert.isTrue spies.beforeEachSpy.calledOnce
+
+          it 'should not perform any other hook', () ->
+            for spyName,spy of spies
+              break if spyName == 'beforeAllSpy'
+              break if spyName == 'beforeEachSpy'
+              assert.isFalse spies[spyName].called, spyName
+
+          it 'should not perform any transaction', () ->
+            assert.isFalse serverNock1.isDone(), 'first resource'
+            assert.isFalse serverNock2.isDone(), 'second resource'
+
+          it 'should return the error', () ->
+            assert.include returnedError.message, 'beforeEach'
+
+        describe 'after before hook is executed', () ->
+          beforeEach (done) ->
+            hookHandlerError = new Error 'handler died in before 1'
+
+            hooks.before '1', (data, callback) ->
+              runner.hookHandlerError = hookHandlerError
+              callback()
+
+            runner.executeAllTransactions transactions, hooks, (error) ->
+              #setting expectation for this error below in each describe block
+              returnedError = error
+              done()
+
+          it 'should perform the beforeAll hook', () ->
+            assert.isTrue spies.beforeAllSpy.called
+
+          it 'should perform the beforeEach hook', () ->
+            assert.isTrue spies.beforeEachSpy.calledOnce
+
+          it 'should perform the before hook', () ->
+            assert.isTrue spies.beforeSpy.calledOnce
+
+          it 'should not perform any other hook', () ->
+            for spyName,spy of spies
+              break if spyName == 'beforeAllSpy'
+              break if spyName == 'beforeEachSpy'
+              break if spyName == 'beforeSpy'
+              assert.isFalse spies[spyName].called, spyName
+
+          it 'should not perfotm any transaction', () ->
+            assert.isFalse serverNock1.isDone(), 'first resource'
+            assert.isFalse serverNock2.isDone(), 'second resource'
+
+          it 'should return the error', () ->
+            assert.include returnedError.message, 'before 1'
+
+        describe 'after beforeEachValidation hook is executed', () ->
+          beforeEach (done) ->
+            hookHandlerError = new Error 'handler died in before each validation'
+
+            hooks.beforeEachValidation (data, callback) ->
+              runner.hookHandlerError = hookHandlerError
+              callback()
+
+            runner.executeAllTransactions transactions, hooks, (error) ->
+              #setting expectation for this error below in each describe block
+              returnedError = error
+              done()
+
+          it 'should perform the beforeAll hook', () ->
+            assert.equal spies.beforeAllSpy.callCount, 1
+
+          it 'should perform the beforeEach hook', () ->
+            assert.equal spies.beforeEachSpy.callCount, 1
+
+          it 'should perform the before hook', () ->
+            assert.equal spies.beforeSpy.callCount, 1
+
+          it 'should perform the beforeEachValidation hook', () ->
+            assert.equal spies.beforeEachValidationSpy.callCount, 1
+
+          it 'should not perform any other hook', () ->
+            for spyName,spy of spies
+              break if spyName == 'beforeAllSpy'
+              break if spyName == 'beforeEachSpy'
+              break if spyName == 'beforeSpy'
+              break if spyName == 'beforeEachValidationSpy'
+
+              assert.isFalse spies[spyName].called, spyName
+
+          it 'should perform only the first transaction', () ->
+            assert.isTrue serverNock1.isDone(), 'first resource'
+            assert.isFalse serverNock2.isDone(), 'second resource'
+
+          it 'should return the error', () ->
+            assert.include returnedError.message, 'before each validation'
+
+        describe 'after beforeValidation hook is executed', () ->
+          beforeEach (done) ->
+            hookHandlerError = new Error 'handler died in before validation 1'
+
+            hooks.beforeValidation '1', (data, callback) ->
+              runner.hookHandlerError = hookHandlerError
+              callback()
+
+            runner.executeAllTransactions transactions, hooks, (error) ->
+              #setting expectation for this error below in each describe block
+              returnedError = error
+              done()
+
+          it 'should perform the beforeAll hook', () ->
+            assert.isTrue spies.beforeAllSpy.called
+
+          it 'should perform the beforeEach hook', () ->
+            assert.isTrue spies.beforeEachSpy.calledOnce
+
+          it 'should perform the before hook', () ->
+            assert.isTrue spies.beforeSpy.calledOnce
+
+          it 'should perform the beforeEachValidation hook', () ->
+            assert.isTrue spies.beforeEachValidationSpy.calledOnce
+
+          it 'should perform the beforeValidation', () ->
+            assert.isTrue spies.beforeValidationSpy.calledOnce
+
+          it 'should not perform any other hook', () ->
+            for spyName,spy of spies
+              break if spyName == 'beforeAllSpy'
+              break if spyName == 'beforeEachSpy'
+              break if spyName == 'beforeSpy'
+              break if spyName == 'beforeEachValidationSpy'
+              break if spyName == 'beforeValidationSpy'
+
+              assert.isFalse spies[spyName].called, spyName
+
+          it 'should perforom only first transaction', () ->
+            assert.isTrue serverNock1.isDone(), 'first resource'
+            assert.isFalse serverNock2.isDone(), 'second resource'
+
+          it 'should return the error', () ->
+            assert.include returnedError.message, 'before validation 1'
+
+        describe 'after afterEach hook is executed', () ->
+          beforeEach (done) ->
+            hookHandlerError = new Error 'handler died in after each'
+
+            hooks.afterEach (data, callback) ->
+              runner.hookHandlerError = hookHandlerError
+              callback()
+
+            runner.executeAllTransactions transactions, hooks, (error) ->
+              #setting expectation for this error below in each describe block
+              returnedError = error
+              done()
+
+          it 'should perform the beforeAll hook', () ->
+            assert.isTrue spies.beforeAllSpy.called
+
+          it 'should perform the beforeEach hook', () ->
+            assert.isTrue spies.beforeEachSpy.calledOnce
+
+          it 'should perform the before hook', () ->
+            assert.isTrue spies.beforeSpy.calledOnce
+
+          it 'should perform the beforeEachValidation hook', () ->
+            assert.isTrue spies.beforeEachValidationSpy.calledOnce
+
+          it 'should perform the beforeValidation', () ->
+            assert.isTrue spies.beforeValidationSpy.calledOnce
+
+          it 'should perform the afterEach hook', () ->
+            assert.isTrue spies.afterEachSpy.calledOnce
+
+          it 'should not perform any other hook', () ->
+            for spyName,spy of spies
+              break if spyName == 'beforeAllSpy'
+              break if spyName == 'beforeEachSpy'
+              break if spyName == 'beforeSpy'
+              break if spyName == 'beforeEachValidationSpy'
+              break if spyName == 'beforeValidationSpy'
+              break if spyName == 'afterEach'
+
+              assert.isFalse spies[spyName].called, spyName
+
+          it 'should not perform any other transaction', () ->
+            assert.isTrue serverNock1.isDone(), 'first resource'
+            assert.isFalse serverNock2.isDone(), 'second resource'
+
+
+          it 'should return the error', () ->
+            assert.include returnedError.message, 'after each'
+
+        describe 'after after hook is executed', () ->
+          beforeEach (done) ->
+            hookHandlerError = new Error 'handler died in after 1'
+
+            hooks.after '1', (data, callback) ->
+              runner.hookHandlerError = hookHandlerError
+              callback()
+
+            runner.executeAllTransactions transactions, hooks, (error) ->
+              #setting expectation for this error below in each describe block
+              returnedError = error
+              done()
+
+          it 'should perform the beforeAll hook', () ->
+            assert.isTrue spies.beforeAllSpy.called
+
+          it 'should perform the beforeEach hook', () ->
+            assert.isTrue spies.beforeEachSpy.calledOnce
+
+          it 'should perform the before hook', () ->
+            assert.isTrue spies.beforeSpy.calledOnce
+
+          it 'should perform the beforeEachValidation hook', () ->
+            assert.isTrue spies.beforeEachValidationSpy.calledOnce
+
+          it 'should perform the beforeValidation', () ->
+            assert.isTrue spies.beforeValidationSpy.calledOnce
+
+          it 'should perform the afterEach hook', () ->
+            assert.isTrue spies.afterEachSpy.calledOnce
+
+          it 'should perform the after hook', () ->
+            assert.isTrue spies.afterSpy.calledOnce
+
+          it 'should not perform any other hook', () ->
+            for spyName,spy of spies
+              break if spyName == 'beforeAllSpy'
+              break if spyName == 'beforeEachSpy'
+              break if spyName == 'beforeSpy'
+              break if spyName == 'beforeEachValidationSpy'
+              break if spyName == 'beforeValidationSpy'
+              break if spyName == 'afterEach'
+              break if spyName == 'after'
+              assert.isFalse spies[spyName].called, spyName
+
+          it 'should not perform any other transaction', () ->
+            assert.isTrue serverNock1.isDone(), 'first resource'
+            assert.isFalse serverNock2.isDone(), 'second resource'
+
+          it 'should return the error', () ->
+            assert.include returnedError.message, 'after 1'
+
+        describe 'after afterAll hook is executed', () ->
+          beforeEach (done) ->
+            hookHandlerError = new Error 'handler died in after all'
+
+            hooks.afterAll (data, callback) ->
+             runner.hookHandlerError = hookHandlerError
+             callback()
+
+            runner.executeAllTransactions transactions, hooks, (error) ->
+              #setting expectation for this error below in each describe block
+              returnedError = error
+              done()
+
+          it 'should perform the beforeAll hook', () ->
+            assert.isTrue spies.beforeAllSpy.called
+
+          it 'should perform the beforeEach hook', () ->
+            assert.isTrue spies.beforeEachSpy.calledTwice
+
+          it 'should perform the before hook', () ->
+            assert.isTrue spies.beforeSpy.calledTwice
+
+          it 'should perform the beforeEachValidation hook', () ->
+            assert.isTrue spies.beforeEachValidationSpy.calledTwice
+
+          it 'should perform the beforeValidation', () ->
+            assert.isTrue spies.beforeValidationSpy.calledTwice
+
+          it 'should perform the afterEach hook', () ->
+            assert.isTrue spies.afterEachSpy.calledTwice
+
+          it 'should perform the after hook', () ->
+            assert.isTrue spies.afterSpy.calledTwice
+
+          it 'should perform the afterAllhook', () ->
+            assert.isTrue spies.afterAllSpy.calledOnce
+
+          it 'should perform both transactions', () ->
+            assert.isTrue serverNock1.isDone(), 'first resource'
+            assert.isTrue serverNock2.isDone(), 'second resource'
+
+          it 'should return the error', () ->
+            assert.include returnedError.message, 'after all'
+
   describe 'executeTransaction(transaction, callback) multipart', () ->
     multiPartTransaction = null
     notMultiPartTransaction = null
@@ -647,7 +1125,7 @@ describe 'TransactionRunner', ()->
           method: 'POST'
         expected:
           headers: 'content-type': 'application/json'
-          body: '{\n  "type": "bulldozer",\n  "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n'
+          body: '{\n  "type": "bulldozer",\n "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n'
           statusCode: '202'
         origin:
           resourceGroupName: 'Group Machine'
@@ -662,6 +1140,7 @@ describe 'TransactionRunner', ()->
         reply transaction['expected']['statusCode'],
           transaction['expected']['body'],
           {'Content-Type': 'application/json'}
+
       transactions = {}
       transactions[transaction.name] = clone transaction, false
       runner = new Runner(configuration)
@@ -1504,7 +1983,8 @@ describe 'TransactionRunner', ()->
           done()
 
       it 'should pass the transactions', (done) ->
-        runner.executeAllTransactions [transaction], runner.hooks, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, (error) ->
+          done error if error
           assert.ok configuration.emitter.emit.calledWith "test pass"
           done()
 

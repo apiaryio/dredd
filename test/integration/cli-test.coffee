@@ -4,6 +4,9 @@ express = require 'express'
 clone = require 'clone'
 bodyParser = require 'body-parser'
 fs = require 'fs'
+syncExec = require 'sync-exec'
+net = require 'net'
+
 
 PORT = 8887
 CMD_PREFIX = ''
@@ -12,6 +15,10 @@ stderr = ''
 stdout = ''
 exitStatus = null
 requests = []
+
+isProcessRunning = (lookup) ->
+  result = syncExec "ps axu | grep #{lookup} | grep -v grep"
+  result.status == 0
 
 execCommand = (cmd, options = {}, callback) ->
   stderr = ''
@@ -249,6 +256,249 @@ describe "Command line interface", () ->
       #['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
 
   describe "when called with arguments", () ->
+
+    describe 'when using language hook handler and spawning the server', () ->
+
+      describe "and handler file desn't exist", () ->
+        apiHit = false
+
+        before (done) ->
+          languageCmd = "./foo/bar.sh"
+          hookfiles = "./test/fixtres/scripts/emptyfile"
+          cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --language #{languageCmd} --hookfiles #{hookfiles} --server-wait 0"
+          app = express()
+
+          app.get '/machines', (req, res) ->
+            apiHit = true
+
+            res.setHeader 'Content-Type', 'application/json'
+            machine =
+              type: 'bulldozer'
+              name: 'willy'
+            response = [machine]
+
+            res.status(200).send response
+
+          server = app.listen PORT, () ->
+            execCommand cmd, () ->
+              server.close()
+
+          server.on 'close', done
+
+        after () ->
+          syncExec "ps aux | grep test/fixtures/scripts/ | grep -v grep | awk '{print $2}' | xargs kill -9"
+
+        it 'should return with status 1', () ->
+          assert.equal exitStatus, 1
+
+        it 'should not return message containing exited or killed', () ->
+          assert.notInclude stderr, 'exited'
+          assert.notInclude stderr, 'killed'
+
+        it 'should not return message announing the fact', () ->
+          assert.include stderr, 'not found'
+
+        it 'should term or kill the server', () ->
+          assert.isFalse isProcessRunning("endless-nosigterm")
+
+        it 'should not execeute any transaction', () ->
+          assert.isFalse apiHit
+
+      describe 'and handler crashes before execution', () ->
+        apiHit = false
+
+        before (done) ->
+          languageCmd = "./test/fixtures/scripts/exit_3.sh"
+          hookfiles = "./test/fixtres/scripts/emptyfile"
+          cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --language #{languageCmd} --hookfiles #{hookfiles} --server-wait 0"
+          app = express()
+
+          app.get '/machines', (req, res) ->
+            apiHit = true
+
+            res.setHeader 'Content-Type', 'application/json'
+            machine =
+              type: 'bulldozer'
+              name: 'willy'
+            response = [machine]
+
+            res.status(200).send response
+
+          server = app.listen PORT, () ->
+            execCommand cmd, () ->
+              server.close()
+
+          server.on 'close', done
+
+        after () ->
+          syncExec "ps aux | grep test/fixtures/scripts/ | grep -v grep | awk '{print $2}' | xargs kill -9"
+
+        it 'should return with status 1', () ->
+          assert.equal exitStatus, 1
+
+        it 'should return message annoucing the fact', () ->
+          assert.include stderr, 'exited'
+
+        it 'should term or kill the server', () ->
+          assert.isFalse isProcessRunning("endless-nosigterm")
+
+        it 'should not execeute any transaction', () ->
+          assert.isFalse apiHit
+
+      describe "and handler is killed before execution", () ->
+        apiHit = false
+
+        before (done) ->
+          serverCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
+          languageCmd = "./test/fixtures/scripts/kill-self.sh"
+          hookFiles = "./test/fixtres/scripts/emptyfile"
+          cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --server #{serverCmd} --language #{languageCmd} --hookfiles #{hookFiles} --server-wait 0"
+
+          app = express()
+
+          app.get '/machines', (req, res) ->
+            apiHit = true
+
+            res.setHeader 'Content-Type', 'application/json'
+            machine =
+              type: 'bulldozer'
+              name: 'willy'
+            response = [machine]
+            res.status(200).send response
+
+          server = app.listen PORT, () ->
+            execCommand cmd, () ->
+              server.close()
+
+          server.on 'close', () ->
+            done()
+
+        after () ->
+          syncExec "ps aux | grep test/fixtures/scripts/ | grep -v grep | awk '{print $2}' | xargs kill -9"
+
+        it 'should return with status 1', () ->
+          assert.equal exitStatus, 1
+
+        it 'should return message annoucing the fact', () ->
+          assert.include stderr, 'killed'
+
+        it 'should term or kill the server', () ->
+          assert.isFalse isProcessRunning("endless-nosigterm")
+
+        it 'should not execeute any transaction', () ->
+          assert.isFalse apiHit
+
+
+      describe "and handler is killed during execution", () ->
+        apiHit = false
+
+        before (done) ->
+          serverCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
+          languageCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
+          hookFiles = "./test/fixtures/scripts/hooks-kill-after-all.coffee"
+          cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --server #{serverCmd} --language #{languageCmd} --hookfiles #{hookFiles} --server-wait 0"
+
+          killHandlerCmd = 'ps aux | grep "bash" | grep "endless-nosigterm.sh" | grep -v grep | awk \'{print $2}\' | xargs kill -9'
+
+          app = express()
+
+          app.get '/machines', (req, res) ->
+            apiHit = true
+
+            res.setHeader 'Content-Type', 'application/json'
+            machine =
+              type: 'bulldozer'
+              name: 'willy'
+            response = [machine]
+
+            exec killHandlerCmd, (error, stdout, stderr) ->
+              done error if error
+              res.status(200).send response
+
+          # TCP server echoing transactions back
+          hookServer = net.createServer (socket) ->
+
+            socket.on 'data', (data) ->
+              socket.write data
+
+          hookServer.listen 61321, () ->
+            server = app.listen PORT, () ->
+              execCommand cmd, () ->
+                server.close()
+
+            server.on 'close', () ->
+              hookServer.close()
+              done()
+
+        after () ->
+          syncExec "ps aux | grep test/fixtures/scripts/ | grep -v grep | awk '{print $2}' | xargs kill -9"
+
+        it 'should return with status 1', () ->
+          assert.equal exitStatus, 1
+
+        it 'should return message annoucing the fact', () ->
+          assert.include stderr, 'killed'
+
+        it 'should term or kill the server', () ->
+          assert.isFalse isProcessRunning("endless-nosigterm")
+
+        it 'should execeute the transaction', () ->
+          assert.isTrue apiHit
+
+      describe "and handler didn't quit but all Dredd tests were OK", () ->
+        apiHit = false
+
+        before (done) ->
+          serverCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
+          languageCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
+          hookFiles = "./test/fixtres/scripts/emptyfile"
+          cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --server '#{serverCmd}' --language '#{languageCmd}' --hookfiles #{hookFiles} --server-wait 0"
+
+          app = express()
+
+          app.get '/machines', (req, res) ->
+            apiHit = true
+            res.setHeader 'Content-Type', 'application/json'
+            machine =
+              type: 'bulldozer'
+              name: 'willy'
+            response = [machine]
+            res.status(200).send response
+
+          # TCP server echoing transactions back
+          hookServer = net.createServer (socket) ->
+
+            socket.on 'data', (data) ->
+              socket.write data
+
+          hookServer.listen 61321, () ->
+            server = app.listen PORT, () ->
+              execCommand cmd, () ->
+                server.close()
+
+            server.on 'close', () ->
+              hookServer.close()
+              done()
+
+        after () ->
+          syncExec "ps aux | grep test/fixtures/scripts/ | grep -v grep | awk '{print $2}' | xargs kill -9"
+
+        it 'should return with status 0', () ->
+          assert.equal exitStatus, 0
+
+        it 'should not return any killed or exited message', () ->
+          assert.notInclude stderr, 'killed'
+          assert.notInclude stderr, 'exited'
+
+        it 'should kill the handler', () ->
+          assert.isFalse isProcessRunning "dredd-fake-handler"
+
+        it 'should kill the server', () ->
+          assert.isFalse isProcessRunning "dredd-fake-server"
+
+        it 'should execeute some transaction', () ->
+          assert.isTrue apiHit
+
     describe "when using reporter -r apiary", () ->
       server = null
       server2 = null

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+command () {
+ ./scripts/mocha
+}
+
+iteration="0"
+while true 
+do
+  iteration=`echo $iteration+1 | bc`
+  echo "Starting iteration $iteration"
+  if ! command 
+  then
+    echo "Failed in iteration: $iteration"
+    exit 1
+  fi
+done

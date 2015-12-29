@@ -1,2 +1,2 @@
 #!/bin/bash
-exit 3
+exit 2

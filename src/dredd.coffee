@@ -191,8 +191,6 @@ class Dredd
 
       callback(null, @stats)
 
-
-
   # compile transcations from asts
   compileTransactions: (callback) ->
     @compiledTransactions['warnings'] = []

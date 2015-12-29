@@ -53,10 +53,6 @@ class Hooks
     @logs = hooksLog @logs, @logger, args...
     return
 
-  # wrapping process.exit for purpose of testing cross-language hooks handler
-  processExit: (code) ->
-    process.exit code
-
   # This is not part of hooks API
   # This is here only because it has to be injected into sandboxed context
   dumpHooksFunctionsToStrings: =>

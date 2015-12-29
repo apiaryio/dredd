@@ -2,23 +2,28 @@ path = require 'path'
 optimist = require 'optimist'
 console = require 'console'
 fs = require 'fs'
-{exec} = require('child_process')
+spawnArgs = require 'spawn-args'
+{spawn} = require('child_process')
 
 parsePackageJson = require './parse-package-json'
 Dredd = require './dredd'
 interactiveConfig = require './interactive-config'
 configUtils = require './config-utils'
+logger = require './logger'
 
 version = parsePackageJson path.join(__dirname, '../package.json')
 
+TERM_TIMEOUT = 1000
+TERM_RETRY = 500
+
 class DreddCommand
   constructor: (options = {}, @cb) ->
-    # support to call both 'new DreddCommand()' and/or 'DreddCommand()'
-    # without the "new" keyword
-    if not (@ instanceof DreddCommand)
-      return new DreddCommand(options, @cb)
-
+    @finished = false
     {@exit, @custom} = options
+
+    @serverProcessEnded = false
+
+    @setExitOrCallback()
 
     @custom ?= {}
 
@@ -27,8 +32,6 @@ class DreddCommand
 
     if not @custom.argv or not Array.isArray @custom.argv
       @custom.argv = []
-
-    @finished = false
 
   setOptimistArgv: ->
     @optimist = optimist(@custom['argv'], @custom['cwd'])
@@ -51,32 +54,67 @@ class DreddCommand
 
     @argv = @optimist.argv
 
+
+  # Gracefully terminate server
+  stopServer: (callback) ->
+    return callback() if ! @serverProcess?
+
+    term = () =>
+      logger.info 'Sending SIGTERM to the backend server'
+      @serverProcess.kill('SIGTERM')
+
+    kill = () =>
+      logger.info 'Killing backend server'
+      @serverProcess.kill('SIGKILL')
+
+    start = Date.now()
+    term()
+
+    waitForServerTermOrKill = () =>
+      if @serverProcessEnded == true
+        clearTimeout(timeout)
+        callback()
+      else
+        if (Date.now() - start) < TERM_TIMEOUT
+          term()
+          timeout = setTimeout waitForServerTermOrKill, TERM_RETRY
+        else
+          kill()
+          clearTimeout(timeout)
+          callback()
+
+    timeout = setTimeout waitForServerTermOrKill, TERM_RETRY
+
+
+  # This thing-a-ma-bob here is only for purpose of testing
+  # It's basically a dependency injection for the process.exit function
   setExitOrCallback: ->
     if not @cb
       if @exit and (@exit is process.exit)
         @sigIntEventAdd = true
 
       if @exit
-        @_processExit = ((code) ->
+        @_processExit = (exitStatus) =>
           @finished = true
-          @serverProcess.kill('SIGKILL') if @serverProcess?
-          @exit(code)
-        ).bind @
+
+          @stopServer () =>
+            @exit(exitStatus)
+
       else
-        @_processExit = ((code) ->
-          @serverProcess.kill('SIGKILL') if @serverProcess?
-          process.exit code
-        ).bind @
+        @_processExit = (exitStatus) =>
+
+          @stopServer () ->
+            process.exit exitStatus
 
     else
-      @_processExit = ((code) ->
-
+      @_processExit = (exitStatus) =>
         @finished = true
         if @sigIntEventAdded
+          @serverProcess.kill('SIGKILL') if @serverProcess?
+
           process.removeEventListener 'SIGINT', @commandSigInt
-        @cb code
+        @cb exitStatus
         return @
-      ).bind @
 
   moveBlueprintArgToPath: () ->
     # transform path and p argument to array if it's not
@@ -161,7 +199,11 @@ class DreddCommand
     if not @argv['server']?
       @runDredd @dreddInstance
     else
-      @serverProcess = exec @argv['server']
+      parsedArgs = spawnArgs(@argv['server'])
+      command = parsedArgs.shift()
+
+      @serverProcess = spawn command, parsedArgs
+
       console.log "Starting server with command: #{@argv['server']}"
 
       @serverProcess.stdout.setEncoding 'utf8'
@@ -174,9 +216,16 @@ class DreddCommand
       @serverProcess.stderr.on 'data', (data) ->
         process.stdout.write data.toString()
 
+      @serverProcess.on 'close' , (status) =>
+        @serverProcessEnded = true
+        if status?
+          logger.info 'Backend server exited'
+        else
+          logger.info 'Backend server was killed'
+
+
       @serverProcess.on 'error', (error) =>
-        console.log error
-        console.log "Server command failed, exitting..."
+        console.log "Server command failed, exitting Dredd..."
         @_processExit(2)
 
       # Ensure server is not running when dredd exits prematurely somewhere
@@ -198,7 +247,6 @@ class DreddCommand
   run: ->
     for task in [
       @setOptimistArgv
-      @setExitOrCallback
       @parseCustomConfig
       @runExitingActions
       @loadDreddFile
@@ -216,7 +264,8 @@ class DreddCommand
     catch e
       console.log e.message
       console.log e.stack
-      @_processExit(2)
+      @stopServer () =>
+        @_processExit(2)
     return
 
 
@@ -266,19 +315,21 @@ class DreddCommand
       process.on 'SIGINT', @commandSigInt
 
     dreddInstance.run (error, stats) =>
-      if error
-        if error.message
-          console.error error.message
-        if error.stack
-          console.error error.stack
-        return @_processExit(1)
-
-      if (stats.failures + stats.errors) > 0
-        @_processExit(1)
-      else
-        @_processExit(0)
-      return
+      @exitWithStatus(error, stats)
 
     return @
+
+  exitWithStatus: (error, stats) ->
+    if error
+      if error.message
+        logger.error error.message
+
+      return @_processExit(1)
+
+    if (stats.failures + stats.errors) > 0
+      @_processExit(1)
+    else
+      @_processExit(0)
+    return
 
 exports = module.exports = DreddCommand

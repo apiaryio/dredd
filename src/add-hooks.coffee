@@ -10,6 +10,8 @@ Hooks = require './hooks'
 logger = require './logger'
 sandboxHooksCode = require './sandbox-hooks-code'
 mergeSandboxedHooks = require './merge-sandboxed-hooks'
+HooksWorkerClient = require './hooks-worker-client'
+
 
 addHooks = (runner, transactions, callback) ->
   # Note: runner.configuration.options must be defined
@@ -80,15 +82,19 @@ addHooks = (runner, transactions, callback) ->
   # Loading hooks from string, sandbox mode must be enabled
   if not runner?.configuration?.options?.hookfiles
     if runner.configuration.hooksData?
+
       if runner.configuration.options.sandbox == true
         loadSandboxHooksFromStrings(callback)
       else
+        # not sandnoxed code can't be loaded from the string
         msg = """
         Not sandboxed hooks loading from strings is not implemented,
         Sandbox mode must be enabled when loading hooks from strings."
         """
         callback(new Error(msg))
     else
+
+      # no data found, doing nothing
       return callback()
 
   # Loading hookfiles from fs
@@ -98,39 +104,41 @@ addHooks = (runner, transactions, callback) ->
     # accessible in the node.js hooks API
     runner.hooks.configuration = clone runner?.configuration
 
+    # Expand globs
     files = []
+    globs = [].concat runner?.configuration?.options?.hookfiles
+    for globItem in globs
+      files = files.concat glob.sync(globItem)
 
-    # If the language is empty or it is not to nodejs
-    if runner?.configuration?.options?.language == "" or
-    runner?.configuration?.options?.language == undefined or
-    runner?.configuration?.options?.language == "nodejs"
-
-      # Expand globs
-      globs = [].concat runner?.configuration?.options?.hookfiles
-
-      for globItem in globs
-        files = files.concat glob.sync(globItem)
-
-      logger.info 'Found Hookfiles: ' + files
-
-    # If other language than nodejs, run (proxyquire) hooks worker client
-    # Worker client will start the worker server and pass the "hookfiles" options as CLI arguments to it
-    else
-      workerClientPath = path.resolve __dirname, './hooks-worker-client.js'
-      files = [workerClientPath]
+    logger.info 'Found Hookfiles: ' + files
 
     # Loading files in non sandboxed nodejs
     if not runner.configuration.options.sandbox == true
-      for file in files
-        loadHookFile file
 
-      return callback()
+      # If the language is empty or it is nodejs
+      if runner?.configuration?.options?.language == "" or
+      runner?.configuration?.options?.language == undefined or
+      runner?.configuration?.options?.language == "nodejs"
+
+        # load regular files from fs
+        for file in files
+          loadHookFile file
+
+        return callback()
+
+      # If other language than nodejs, run hooks worker client
+      # Worker client will start the worker server and pass the "hookfiles" options as CLI arguments to it
+      else
+        # start hooks worker
+        hooksWorkerClient = new HooksWorkerClient(runner)
+        hooksWorkerClient.start (error) ->
+          return callback(error)
 
     # Loading files in sandboxed mode
     else
 
+      # load sandbox files from fs
       logger.info 'Loading hookfiles in sandboxed context: ' + files
-
       async.eachSeries files, (fileName, nextFile) ->
         resolvedPath = path.resolve((customConfigCwd or process.cwd()), fileName)
         # load hook file content

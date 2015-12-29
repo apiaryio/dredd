@@ -1,13 +1,10 @@
 #!/bin/bash
-
 function term() {
-  echo 'exiting'
+  echo 'Caught SIGNTERM, exiting.'
   exit 0
 }
 
 trap 'term' SIGTERM
-
-echo "standard output text"
 
 while true
 do

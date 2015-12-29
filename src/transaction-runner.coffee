@@ -19,18 +19,17 @@ logger = require './logger'
 # use "lib" folder, because pitboss-ng does not support "coffee-script:register" out of the box now
 sandboxedLogLibraryPath = '../../../lib/hooks-log-sandboxed'
 
-
 class TransactionRunner
   constructor: (@configuration) ->
     @logs = []
     @hookStash = {}
+    @hookHandlerError = null
 
   config: (config) ->
     @configuration = config
     @multiBlueprint = Object.keys(@configuration.data).length > 1
 
   run: (transactions, callback) ->
-
     transactions = if @configuration.options['sorted'] then sortTransactions(transactions) else transactions
 
     async.mapSeries transactions, @configureTransaction.bind(@), (err, results) ->
@@ -40,6 +39,68 @@ class TransactionRunner
       return callback addHooksError if addHooksError
       @executeAllTransactions(transactions, @hooks, callback)
 
+  executeAllTransactions: (transactions, hooks, callback) ->
+    # Warning: Following lines is "differently" performed by 'addHooks'
+    # in TransactionRunner.run call. Because addHooks creates
+    # hooks.transactions as an object `{}` with transaction.name keys
+    # and value is every transaction, we do not fill transactions
+    # from executeAllTransactions here. Transactions is supposed to be an Array here!
+    unless hooks.transactions?
+      hooks.transactions = {}
+      for transaction in transactions
+        hooks.transactions[transaction.name] = transaction
+    # /end warning
+
+    return callback(@hookHandlerError) if @hookHandlerError?
+
+    # run beforeAll hooks
+    @runHooksForData hooks.beforeAllHooks, transactions, true, () =>
+      return callback(@hookHandlerError) if @hookHandlerError?
+
+      # Iterate over transactions' transaction
+      # Because async changes the way referencing of properties work,
+      # we need to work with indexes (keys) here, no other way of access.
+      async.timesSeries transactions.length, (transactionIndex, iterationCallback) =>
+        transaction = transactions[transactionIndex]
+
+        # run beforeEach hooks
+        @runHooksForData hooks.beforeEachHooks, transaction, false, () =>
+          return iterationCallback(@hookHandlerError) if @hookHandlerError?
+
+          # run before hooks
+          @runHooksForData hooks.beforeHooks[transaction.name], transaction, false, () =>
+            return iterationCallback(@hookHandlerError) if @hookHandlerError?
+
+            # This method:
+            # - skips and fails based on hooks or options
+            # - executes a request
+            # - recieves a response
+            # - runs beforeEachValidation hooks
+            # - runs beforeValidation hooks
+            # - runs Gavel validation
+            @executeTransaction transaction, hooks, () =>
+
+              return iterationCallback(@hookHandlerError) if @hookHandlerError?
+
+              # run afterEach hooks
+              @runHooksForData hooks.afterEachHooks, transaction, false, () =>
+                return iterationCallback(@hookHandlerError) if @hookHandlerError?
+
+                # run after hooks
+                @runHooksForData hooks.afterHooks[transaction.name], transaction, false, () =>
+                  return iterationCallback(@hookHandlerError) if @hookHandlerError?
+
+                  # decide and emit result
+                  @emitResult transaction, iterationCallback
+
+      , (iterationError) =>
+        return callback(iterationError) if iterationError
+
+        #runAfterHooks
+        @runHooksForData hooks.afterAllHooks, transactions, true, () =>
+          return callback(@hookHandlerError) if @hookHandlerError?
+
+          callback()
 
   # Tha `data` argument can be transactions or transaction object
   runHooksForData: (hooks, data, legacy = false, callback) ->
@@ -216,7 +277,6 @@ class TransactionRunner
     if typeof(hook) == 'string'
       @runSandboxedHookFromString hook, data, callback
 
-
   configureTransaction: (transaction, callback) =>
     configuration = @configuration
     origin = transaction['origin']
@@ -285,6 +345,8 @@ class TransactionRunner
   emitResult: (transaction, callback) ->
     if transaction.test # if transaction test was executed and was not skipped or failed
       if transaction.test.valid == true
+
+        # If the transaction is set programatically to fail by user in hooks
         if transaction.fail
           transaction.test.status = 'fail'
 
@@ -311,55 +373,7 @@ class TransactionRunner
           @configuration.emitter.emit 'test pass', transaction.test, () ->
     callback()
 
-  executeAllTransactions: (transactions, hooks, callback) =>
-    # Warning: Following lines is "differently" performed by 'addHooks'
-    # in TransactionRunner.run call. Because addHooks creates
-    # hooks.transactions as an object `{}` with transaction.name keys
-    # and value is every transaction, we do not fill transactions
-    # from executeAllTransactions here. Transactions is supposed to be an Array here!
-    unless hooks.transactions?
-      hooks.transactions = {}
-      for transaction in transactions
-        hooks.transactions[transaction.name] = transaction
-    # /end warning
-
-    # run beforeAll hooks
-    @runHooksForData hooks.beforeAllHooks, transactions, true, () =>
-
-      # Iterate over transactions' transaction
-      # Because async changes the way referencing of properties work,
-      # we need to work with indexes (keys) here, no other way of access.
-      async.timesSeries transactions.length, (transactionIndex, iterationCallback) =>
-        transaction = transactions[transactionIndex]
-
-        # run beforeEach hooks
-        @runHooksForData hooks.beforeEachHooks, transaction, false, () =>
-
-          # run before hooks
-          @runHooksForData hooks.beforeHooks[transaction.name], transaction, false, () =>
-
-            # This method:
-            # - executes a request
-            # - recieves a response
-            # - runs beforeEachValidation hooks
-            # - runs beforeValidation hooks
-            # - runs Gavel validation
-            @executeTransaction transaction, hooks, () =>
-
-              # run afterEach hooks
-              @runHooksForData hooks.afterEachHooks, transaction, false, () =>
-
-                # run after hooks
-                @runHooksForData hooks.afterHooks[transaction.name], transaction, false, () =>
-
-                  # decide and emit result
-                  @emitResult transaction, iterationCallback
-      , () =>
-
-        #runAfterHooks
-        @runHooksForData hooks.afterAllHooks, transactions, true, callback
-
-  executeTransaction: (transaction, hooks, callback) =>
+  executeTransaction: (transaction, hooks, callback) ->
     unless callback
       callback = hooks
       hooks = null
@@ -463,7 +477,9 @@ class TransactionRunner
           transaction['real'] = real
 
           @runHooksForData hooks?.beforeEachValidationHooks, transaction, false, () =>
+            return callback(@hookHandlerError) if @hookHandlerError?
             @runHooksForData hooks?.beforeValidationHooks[transaction.name], transaction, false, () =>
+              return callback(@hookHandlerError) if @hookHandlerError?
               @validateTransaction test, transaction, callback
 
 

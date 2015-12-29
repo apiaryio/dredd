@@ -161,7 +161,7 @@ describe "Dredd class Integration", () ->
           #Comment out this timeout to enable race condition bug
           setTimeout () ->
             undefined
-          , 100
+          , 9000
 
           execCommand cmd, () ->
             server2.close ->
@@ -260,6 +260,13 @@ describe "Dredd class Integration", () ->
 
         server = app.listen PORT, () ->
           server2 = apiary.listen (PORT+1), ->
+        # Race condition workaround
+        # Spawned process doesn't write to stdout before is terminated
+        setTimeout () ->
+            setTimeout () ->
+              undefined
+            , 500
+
             execCommand cmd, () ->
               server2.close ->
                 server.close ->
