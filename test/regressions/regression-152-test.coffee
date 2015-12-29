@@ -34,9 +34,9 @@ execCommand = (cmd, options = {}, callback) ->
     callback(undefined, stdout, stderr, exitStatus)
 
 
-describe "Regressions", () ->
+describe "Regression: Issue #152", () ->
 
-  describe 'issue 152 - modify transaction object inside beforeAll combined with beforeEach helper', () ->
+  describe 'Modify transaction object inside beforeAll combined with beforeEach helper', () ->
 
     receivedRequest = {}
 
