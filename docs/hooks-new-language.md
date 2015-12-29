@@ -8,12 +8,17 @@ When you run Dredd with `--language` argument, it runs the command in argument a
 
 Dredd internally registers a function for each [type of hooks](hooks.md#types-of-hooks) and when this function is executed it assigns execution `uuid` to that event, serializes received function parameters (a [Transaction object](hooks.md#transaction-object-structure) or an Array of it), sends it to the TCP socket to be handled (executed) in other language and waits until message with same `uuid` is received. After data reception it assigns received `data` back to the transaction, so other language can interact with transactions same way like [native Node.js hooks](hooks-nodejs.md).
 
+## Language agnostic test suite
+
+Dredd hooks language abstraction bridge comes with [the language agnostic test suite](https://github.com/apiaryio/dredd-hooks-template). It's written in Gherkin - language for writing [Cucumber](https://github.com/cucumber/cucumber/wiki/A-Table-Of-Content) scenarios and [Aruba CLI testing framework](https://github.com/cucumber/aruba) and it tests your new language handler integration with CLI Dredd and expected behavior from user's perspective.
 
 ## What to implement
 
 If you want to write a hook handler for your language you will have to implement:
 
-- CLI Command with TCP socket server
+- CLI Command runnning TCP socket server
+  - [Must return message `Starting` to stdout](https://github.com/apiaryio/dredd-hooks-template/blob/master/features/tcp_server.feature#L5)
+
 - Hooks API in your language for registering code being executed during the [Dredd lifecycle](usage.md#dredd-execution-lifecycle):
   - before all transactions
   - before each transaction
@@ -46,10 +51,6 @@ If you want to write a hook handler for your language you will have to implement
       - It should serialize message to JSON
       - Send the serialized message back to the socket with same `uuid` as received
       - Send a newline character as message delimiter
-
-## Language agnostic test suite
-
-Dredd hooks language abstraction bridge comes with [the language agnostic test suite](https://github.com/apiaryio/dredd-hooks-template). It's written in Gherkin - language for writing [Cucumber](https://github.com/cucumber/cucumber/wiki/A-Table-Of-Content) scenarios and [Aruba CLI testing framework](https://github.com/cucumber/aruba) and it tests your new language handler integration with CLI Dredd and expected behavior from user's perspective.
 
 ## TCP Socket Message format
 
