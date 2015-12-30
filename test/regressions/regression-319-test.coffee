@@ -22,10 +22,9 @@ runDredd = (descriptionFile, cb) ->
 
 
 parseOutput = (output) ->
+  # Parse individual entries (deals also with multi-line entries)
   entries = []
   entry = undefined
-
-  # Parse individual entries (deals also with multi-line entries)
   for line in output.split(/\r?\n/)
     match = line.match(/^(\w+): (.+)?$/)
     if match
@@ -48,99 +47,130 @@ parseOutput = (output) ->
 
 
 describe('Regression: Issue #319', ->
-  scenarios = [ # TODO missing scenarios
-    #   definedIn: 'Resource'
-    #   referencedIn: 'Action'
-    #   fixture: './test/fixtures/attributes-resource-action.apib'
-    # ,
-      definedIn: 'Resource'
-      referencedIn: 'Payload'
-      fixture: './test/fixtures/attributes-resource-payload.apib'
-    # ,
-    #   definedIn: 'Data Structures'
-    #   referencedIn: 'Action'
-    #   fixture: './test/fixtures/attributes-datastructures-action.apib'
-    # ,
-    #   definedIn: 'Data Structures'
-    #   referencedIn: 'Payload'
-    #   fixture: './test/fixtures/attributes-datastructures-payload.apib'
-  ]
+  results = undefined
 
-  payload =
+  brickTypePayload =
     id: ''
     name: ''
     colors: ['red', 'brown']
     dimensions: [[20, 30, 40]]
 
-  endpoints = [
-    path: '/bricks/XYZ42'
-    payload: payload
-    schema: # TODO truly correct schema for given payload
-      $schema: 'http://json-schema.org/draft-04/schema#'
-      type: 'object'
-  ,
-    path: '/bricks'
-    payload: [payload]
-    schema: # TODO truly correct schema for given payload
-      $schema: 'http://json-schema.org/draft-04/schema#'
-      type: 'array'
+  brickTypeSchema =
+    $schema: 'http://json-schema.org/draft-04/schema#'
+    type: 'object'
+
+  userPayload =
+    id: ''
+    name: ''
+    shoeSize: 42
+
+  userSchema = # TODO
+    $schema: 'http://json-schema.org/draft-04/schema#'
+    type: 'object'
+
+  userArrayPayload = [
+    userPayload
   ]
 
-  scenarios.forEach((scenario) ->
-    describe("Body Attributes from #{scenario.definedIn} are Referenced in #{scenario.referencedIn}", ->
-      results = undefined
+  userArraySchema = # TODO
+    $schema: 'http://json-schema.org/draft-04/schema#'
+    type: 'array'
 
-      before((done) ->
-        app = express()
+  before((done) ->
+    app = express()
 
-        # Attaching endpoints
-        endpoints.forEach((endpoint) ->
-          app.get(endpoint.path, (req, res) ->
-            res.setHeader('Content-Type', 'application/json')
-            res.status(200).send(endpoint.payload)
-          )
-        )
+    # Attaching endpoint for each testing scenario
+    app.get('/bricks/XYZ42', (req, res) ->
+      res.setHeader('Content-Type', 'application/json')
+      res.status(200).send(brickTypePayload)
+    )
+    app.post('/bricks', (req, res) ->
+      res.setHeader('Content-Type', 'application/json')
+      res.status(200).send(brickTypePayload)
+    )
+    app.get('/customers', (req, res) ->
+      res.setHeader('Content-Type', 'application/json')
+      res.status(200).send(userArrayPayload)
+    )
+    app.post('/customers', (req, res) ->
+      res.setHeader('Content-Type', 'application/json')
+      res.status(200).send(userPayload)
+    )
 
-        # Spinning up the Express server, running Dredd, and saving results
-        server = app.listen(PORT, ->
-          runDredd(scenario.fixture, (err, result) ->
-            results = parseOutput(result.stdout)
-            server.close(done)
-          )
-        )
+    # Spinning up the Express server, running Dredd, and saving results
+    server = app.listen(PORT, ->
+      runDredd('./test/fixtures/regression-319.apib', (err, result) ->
+        results = parseOutput(result.stdout)
+        server.close(done)
       )
+    )
+  )
 
-      it('should output no failures', ->
-        # Intentionally not testing just .length as this approach will output
-        # the difference
-        assert.deepEqual(results.failures, [])
-      )
-      it('should result in exactly two passing tests', ->
-        assert.include(results.summary, '2 passing')
-        assert.include(results.summary, '2 total')
-      )
+  it('outputs no failures', ->
+    # Intentionally not testing just '.length' as this approach will output the difference
+    assert.deepEqual(results.failures, [])
+  )
+  it('results in exactly four tests', ->
+    assert.include(results.summary, '4 total')
+  )
+  it('results in four passing tests', ->
+    assert.include(results.summary, '4 passing')
+  )
 
-      indexes = {
-        '/bricks/XYZ42': {expected: 1, actual: 2, schema: 0}
-        '/bricks': {expected: 4, actual: 5, schema: 1}
-      }
-      endpoints.forEach((endpoint) ->
-        {expected, actual, schema} = indexes[endpoint.path]
-
-        context("Endpoint '#{endpoint.path}'", ->
-          it("has correct 'expected' response body", ->
-            assert.deepEqual(results.bodies[expected], endpoint.payload)
-          )
-          it("has correct 'actual' response body", ->
-            # This should ALWAYS pass as we are testing something we actually
-            # returned to Dredd in the Express instance above
-            assert.deepEqual(results.bodies[actual], endpoint.payload)
-          )
-          it("has correct schema", ->
-            assert.deepEqual(results.schemas[schema], endpoint.schema)
-          )
-        )
-      )
+  describe('Attributes defined in resource are referenced from payload [GET /bricks/XYZ42]', ->
+    it('has no request body', ->
+      assert.isUndefined(results.bodies[0])
+    )
+    it('has correct ‘expected’ response body', ->
+      assert.deepEqual(results.bodies[1], brickTypePayload)
+    )
+    it('has correct ‘actual’ response body', ->
+      assert.deepEqual(results.bodies[2], brickTypePayload)
+    )
+    it('has correct schema', ->
+      assert.deepEqual(results.schemas[0], brickTypeSchema)
+    )
+  )
+  describe('Attributes defined in resource are referenced from action [POST /bricks]', ->
+    it('has correct request body', ->
+      assert.deepEqual(results.bodies[3], brickTypePayload)
+    )
+    it('has correct ‘expected’ response body', ->
+      assert.deepEqual(results.bodies[4], brickTypePayload)
+    )
+    it('has correct ‘actual’ response body', ->
+      assert.deepEqual(results.bodies[5], brickTypePayload)
+    )
+    it('has correct schema', ->
+      assert.deepEqual(results.schemas[1], brickTypeSchema)
+    )
+  )
+  describe('Attributes defined as data structure are referenced from payload [GET /customers]', ->
+    it('has no request body', ->
+      assert.isUndefined(results.bodies[6])
+    )
+    it('has correct ‘expected’ response body', ->
+      assert.deepEqual(results.bodies[7], userArrayPayload)
+    )
+    it('has correct ‘actual’ response body', ->
+      assert.deepEqual(results.bodies[8], userArrayPayload)
+    )
+    it('has correct schema', ->
+      assert.deepEqual(results.schemas[2], userArraySchema)
+    )
+  )
+  describe('Attributes defined as data structure are referenced from action [POST /customers]', ->
+    it('has correct request body', ->
+      assert.deepEqual(results.bodies[9], userPayload)
+    )
+    it('has correct ‘expected’ response body', ->
+      assert.deepEqual(results.bodies[10], userPayload)
+    )
+    it('has correct ‘actual’ response body', ->
+      assert.deepEqual(results.bodies[11], userPayload)
+    )
+    it('has correct schema', ->
+      assert.deepEqual(results.schemas[3], userSchema)
     )
   )
 )
