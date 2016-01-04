@@ -5,13 +5,13 @@ FORMAT: 1A
 ## Brick Type [/bricks/{id}]
 
 + Parameters
-  + id: XYZ42 - ID of a brick type.
+    + id: XYZ42 - ID of a brick type.
 + Attributes
-  + id
-  + name (string)
-  + colors: red, brown (array)
-  + dimensions (array)
-    + *20, 30, 40* (array[number], fixed)
+    + id
+    + name (string)
+    + colors: red, brown (array)
+    + dimensions (array)
+        + 20, 30, 40 (array[number])
 
 ### Get Particular Brick Type [GET]
 
@@ -19,7 +19,7 @@ Attributes defined in resource are referenced from payload.
 
 + Request (application/json)
 + Response 200 (application/json; charset=utf-8)
-  + Attributes (Brick Type)
+    + Attributes (Brick Type)
 
 ## Available Brick Types [/bricks]
 
@@ -30,7 +30,7 @@ Attributes defined in resource are referenced from action.
 + Attributes (Brick Type)
 + Request (application/json)
 + Response 200 (application/json; charset=utf-8)
-  + Attributes (Brick Type)
+    + Attributes (Brick Type)
 
 ## Customers [/customers]
 
@@ -40,7 +40,7 @@ Attributes defined as data structure are referenced from payload.
 
 + Request (application/json)
 + Response 200 (application/json; charset=utf-8)
-  + Attributes (array[User])
+    + Attributes (array[User])
 
 ### Add New Customer [POST]
 
@@ -49,7 +49,7 @@ Attributes defined as data structure are referenced from action.
 + Attributes (User)
 + Request (application/json)
 + Response 200 (application/json; charset=utf-8)
-  + Attributes (User)
+    + Attributes (User)
 
 ## Data Structures
 
