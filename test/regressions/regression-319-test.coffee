@@ -58,21 +58,30 @@ describe('Regression: Issue #319', ->
   brickTypeSchema =
     $schema: 'http://json-schema.org/draft-04/schema#'
     type: 'object'
+    properties:
+      id: {type: 'string'}
+      name: {type: 'string'}
+      colors: {type: 'array'}
+      dimensions: {type: 'array'}
 
   userPayload =
     id: ''
     name: ''
     shoeSize: 42
 
-  userSchema = # TODO
+  userSchema =
     $schema: 'http://json-schema.org/draft-04/schema#'
     type: 'object'
+    properties:
+      id: {type: 'string'}
+      name: {type: 'string'}
+      shoeSize: {type: 'number'}
 
   userArrayPayload = [
     userPayload
   ]
 
-  userArraySchema = # TODO
+  userArraySchema =
     $schema: 'http://json-schema.org/draft-04/schema#'
     type: 'array'
 
