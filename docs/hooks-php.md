@@ -8,6 +8,11 @@ PHP hooks are using [Dredd's hooks handler socket interface](hooks-new-language.
 
 ## Installation
 
+### Requirements
+ - php version >= 5.4
+
+Installing dredd-hooks-php can be easily installed through the package manager, composer.
+
 ```
 $ composer require ddelnano/dredd-hooks-php:~1.0.0 --dev 
 ```
