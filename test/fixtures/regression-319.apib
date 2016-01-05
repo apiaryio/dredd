@@ -1,0 +1,63 @@
+FORMAT: 1A
+
+# Building Supply Store API
+
+## Brick Type [/bricks/{id}]
+
++ Parameters
+    + id: XYZ42 - ID of a brick type.
++ Attributes
+    + id
+    + name (string, required)
+    + colors: red, brown (array)
+    + dimensions (array)
+        + 20, 30, 40 (array[number])
+
+### Get Particular Brick Type [GET]
+
+Attributes defined in resource are referenced from payload.
+
++ Request (application/json)
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (Brick Type)
+
+## Available Brick Types [/bricks]
+
+### Create a New Brick Type [POST]
+
+Attributes defined in resource are referenced from action.
+
++ Attributes (Brick Type)
++ Request (application/json)
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (Brick Type)
+
+## Customers [/customers]
+
+### Get All Customers [GET]
+
+Attributes defined as data structure are referenced from payload.
+
++ Request (application/json)
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (array[User])
+
+### Add New Customer [POST]
+
+Attributes defined as data structure are referenced from action.
+
++ Attributes (User)
++ Request (application/json)
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (User)
+
+## Data Structures
+
+### User (object)
+
++ id
++ name (string)
++ shoeSize: 42 (number)
++ address
+    + street
+    + city (string, nullable)
