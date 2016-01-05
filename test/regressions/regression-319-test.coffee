@@ -68,6 +68,9 @@ describe('Regression: Issue #319', ->
     id: ''
     name: ''
     shoeSize: 42
+    address:
+      city: null
+      street: ''
 
   userSchema =
     $schema: 'http://json-schema.org/draft-04/schema#'
@@ -76,6 +79,11 @@ describe('Regression: Issue #319', ->
       id: {type: 'string'}
       name: {type: 'string'}
       shoeSize: {type: 'number'}
+      address:
+        type: 'object'
+        properties:
+          city: {type: ['string', 'null']}
+          street: {type: 'string'}
 
   userArrayPayload = [
     userPayload
