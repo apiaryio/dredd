@@ -34,7 +34,7 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
     for uriParameter in uriParameters
       if Object.keys(parameters).indexOf(uriParameter) == -1
         ambigous = true
-        text = "\nAmbigous URI parameter in template: #{uriTemplate} " + \
+        text = "\nAmbiguous URI parameter in template: #{uriTemplate} " + \
                "\nParameter not defined in blueprint:" + \
                "'" + uriParameter + "'"
         result['warnings'].push text
@@ -46,7 +46,7 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
         if param['required'] == true
           if param['example'] == undefined or param['example'] == ""
             ambigous = true
-            text = "\nAmbigous URI parameter in template: #{uriTemplate} " + \
+            text = "\nAmbiguous URI parameter in template: #{uriTemplate} " + \
                    "\nNo example value for required parameter in blueprint:" + \
                    "'" + uriParameter + "'"
             result['warnings'].push text
