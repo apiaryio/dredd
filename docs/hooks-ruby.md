@@ -82,7 +82,7 @@ end
 Any test step can be skipped by setting `skip` property of the `transaction` object to `true`.
 
 ```ruby
-include DreddHooks:Methods
+include DreddHooks::Methods
 
 before "Machines > Machines collection > Get Machines" do |transaction|
   transaction['skip'] = true
@@ -95,7 +95,7 @@ If you want to test some API workflow, you may pass data between test steps usin
 
 ```ruby
 require 'json'
-include DreddHooks:Methods
+include DreddHooks::Methods
 
 response_stash = {}
 
@@ -119,7 +119,7 @@ end
 You can fail any step by setting `fail` property on `transaction` object to `true` or any string with descriptive message.
 
 ```ruby
-include DreddHooks:Methods
+include DreddHooks::Methods
 
 before "Machines > Machines collection > Get Machines" do |transaction|
   transaction['fail'] = "Some failing message"
@@ -130,7 +130,7 @@ end
 
 ```ruby
 require 'json'
-include DreddHooks:Methods
+include DreddHooks::Methods
 
 before "Machines > Machines collection > Get Machines" do |transaction|
   # parse request body from blueprint
@@ -147,7 +147,7 @@ end
 ### Adding or Changing URI Query Parameters to All Requests
 
 ```ruby
-include DreddHooks:Methods
+include DreddHooks::Methods
 
 hooks.before_each do |transaction|
 
@@ -166,7 +166,7 @@ end
 
 ```ruby
 require 'json'
-include DreddHooks:Methods
+include DreddHooks::Methods
 
 stash = {}
 
@@ -188,7 +188,7 @@ end
 ### Remove trailing newline character for in expected plain text bodies
 
 ```ruby
-include DreddHooks:Methods
+include DreddHooks::Methods
 
 before_each do |transaction|
   if transaction['expected']['headers']['Content-Type'] == 'text/plain'
