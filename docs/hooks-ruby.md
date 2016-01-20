@@ -179,7 +179,7 @@ end
 # hook to set the session cookie in all following requests
 hooks.beforeEach do |transaction|
   unless stash['token'].nil?
-    transaction['request']['headers']['Cookie'] = "id=" + stash['token']s
+    transaction['request']['headers']['Cookie'] = "id=" + stash['token']
   end
 end
 ```
