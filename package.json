@@ -14,20 +14,20 @@
     "url": "https://github.com/apiaryio/blueprint-transactions"
   },
   "dependencies": {
-    "clone": "^1.0.0",
-    "uri-template": "~1.0.0"
+    "clone": "^1.0.2",
+    "uri-template": "^1.0.0"
   },
   "devDependencies": {
-    "coffee-script": "^1.9.1",
-    "drafter": "~0.2.5",
-    "chai": "^2.1.0",
-    "coffee-coverage": "^0.6.0",
-    "coffee-errors": "~0.8.6",
-    "coffeelint": "^1.9.2",
-    "coveralls": "~2.11.2",
-    "jscoverage": "~0.5.9",
-    "mocha": "^2.1.0",
-    "mocha-lcov-reporter": "0.0.2"
+    "chai": "^3.4.1",
+    "coffee-coverage": "^1.0.1",
+    "coffee-errors": "^0.8.6",
+    "coffee-script": "^1.10.0",
+    "coffeelint": "^1.14.2",
+    "coveralls": "^2.11.6",
+    "drafter": "^0.2.8",
+    "jscoverage": "^0.6.0",
+    "mocha": "^2.3.4",
+    "mocha-lcov-reporter": "^1.0.0"
   },
   "keywords": [
     "api",
