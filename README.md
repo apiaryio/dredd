@@ -12,11 +12,11 @@ This library takes API Blueprint AST and returns specific HTTP transactions (Req
 - Inherits parameters from parent Resource and Action sections
 - Expands URI templates
 - Warns on undefined URI query and path parameters
-- Validates URI parameteres types
-- Selects first request and first response if multiple request or responses are given in the 
-- Assigns path origin object pointing to the Blueprint AST 
-- Compiles [cannonical transaction path](#canonical-transaction-paths) as a unique identifier for each transaction
-- Assigns origin object pointing to the Blueprint AST [DEPRECATED]
+- Validates URI parameters types
+- Selects first request and first response if multiple request or responses are given in the API Blueprint AST
+- Assigns path origin object pointing to the API Blueprint AST
+- Compiles [canonical transaction path](#canonical-transaction-paths) as a unique identifier for each transaction
+- Assigns origin object pointing to the API Blueprint AST [DEPRECATED]
 - Compiles Transaction name string for each transaction [DEPRECATED]
 
 ## Installation
@@ -41,12 +41,12 @@ Following is description is in a [MSON](https://github.com/apiaryio/mson) format
 
 - transaction (object)
     - name: `"Hello world! > Retrieve Message"` (string) Transaction identification name used for referencing
-    - path: `::Hello world!:Retreive Message:Example 1` (string) Transaction [cannonical path](#canonical-transaction-paths)
+    - path: `::Hello world!:Retreive Message:Example 1` (string) Transaction [canonical path](#canonical-transaction-paths)
 
     - request (object) Request compiled from blueprint
         - body `"Hello world!\n"` (string)
         - headers (object)
-        - uri `"/message"` (string) informative uri about the request
+        - uri `"/message"` (string) informative URI about the request
         - method
 
     - response (object) Expected response from blueprint
@@ -62,7 +62,7 @@ Following is description is in a [MSON](https://github.com/apiaryio/mson) format
         - actionName `"Retrieve Message"` (string)
         - exampleName `"First example"` (string)
 
-    - origin (object)  [DEPRECATED, will be moved to Dredd reporter] Reference to the original blueprint for the human readeable name
+    - origin (object)  [DEPRECATED, will be moved to Dredd reporter] Reference to the original blueprint for the human readable name
         - filename `"./blueprint.md"` (string)
         - apiName `"My Api"` (string)
         - resourceGroupName `"Greetings"` (string)
@@ -72,13 +72,13 @@ Following is description is in a [MSON](https://github.com/apiaryio/mson) format
 
 ## Canonical transaction paths
 
-Canonical transcation path is added to each compiled HTTP transciton as its identifier.
+Canonical transcation path is added to each compiled HTTP transaction as its identifier.
 
 Format of the transaction path is  a concatenation/serialization of the `origin` object:
 
 - Colon `:` character as a delimiter
 - Examples are identified by string "Example " + its index in array starting from 1 (not 0)
-- Colon character in API Name, Resource Name, Resource Group Name, Action Name or Example Name is escaed with backslash character `\`
+- Colon character in API Name, Resource Name, Resource Group Name, Action Name or Example Name is escaped with backslash character `\`
 - No other characters than colon `:` are escaped
 
 # Examples
