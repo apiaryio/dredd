@@ -12,18 +12,20 @@ This library takes API Blueprint AST and returns specific HTTP transactions (Req
 - Inherits parameters from parent Resource and Action sections
 - Expands URI templates
 - Warns on undefined URI query and path parameters
-- Validates URI parameters types
+- Validates URI parameter types
 - Selects first request and first response if multiple request or responses are given in the API Blueprint AST
 - Assigns path origin object pointing to the API Blueprint AST
 - Compiles [canonical transaction path](#canonical-transaction-paths) as a unique identifier for each transaction
 - Assigns origin object pointing to the API Blueprint AST [DEPRECATED]
 - Compiles Transaction name string for each transaction [DEPRECATED]
 
+
 ## Installation
 
 ```
 npm install blueprint-transactions
 ```
+
 
 ## Usage
 
@@ -35,40 +37,42 @@ transactions = compiler.compile(ast, './apiary.apib')
 
 `transactions` is now an Array of compiled [Transaction Objects](#compiled-transaction-object-structure)
 
+
 ### Compiled Transaction Object Structure
 
 Following is description is in a [MSON](https://github.com/apiaryio/mson) format
 
 - transaction (object)
-    - name: `"Hello world! > Retrieve Message"` (string) Transaction identification name used for referencing
-    - path: `::Hello world!:Retreive Message:Example 1` (string) Transaction [canonical path](#canonical-transaction-paths)
+    - name: `Hello world! > Retrieve Message` (string) - Transaction identification name used for referencing
+    - path: `::Hello world!:Retreive Message:Example 1` (string) - [Canonical transaction path](#canonical-transaction-paths)
 
-    - request (object) Request compiled from blueprint
-        - body `"Hello world!\n"` (string)
+    - request (object) - Request compiled from blueprint
+        - body: `Hello world!\n` (string)
         - headers (object)
-        - uri `"/message"` (string) informative URI about the request
+        - uri: `/message` (string) - Informative URI of the request
         - method
 
-    - response (object) Expected response from blueprint
-        - status `"200"` (string)
+    - response (object) - Expected response from blueprint
+        - status: `200` (string)
         - headers (object)
         - body (string)
         - schema (string)
 
-    - pathOrigin (object)  Reference to the original blueprint
-        - apiName `"My Api"` (string)
-        - resourceGroupName `"Greetings"` (string)
-        - resourceName `"Hello, world!"` (string)
-        - actionName `"Retrieve Message"` (string)
-        - exampleName `"First example"` (string)
+    - pathOrigin (object) - Reference to the original blueprint
+        - apiName: `My Api` (string)
+        - resourceGroupName: `Greetings` (string)
+        - resourceName: `Hello, world!` (string)
+        - actionName: `Retrieve Message` (string)
+        - exampleName: `First example` (string)
 
-    - origin (object)  [DEPRECATED, will be moved to Dredd reporter] Reference to the original blueprint for the human readable name
-        - filename `"./blueprint.md"` (string)
-        - apiName `"My Api"` (string)
-        - resourceGroupName `"Greetings"` (string)
-        - resourceName `"Hello, world!"` (string)
-        - actionName `"Retrieve Message"` (string)
-        - exampleName `"First example"` (string)
+    - origin (object) - [DEPRECATED, will be moved to Dredd reporter] Reference to the original blueprint for the human readable name
+        - filename: `./blueprint.md` (string)
+        - apiName: `My Api` (string)
+        - resourceGroupName: `Greetings` (string)
+        - resourceName: `Hello, world!` (string)
+        - actionName: `Retrieve Message` (string)
+        - exampleName: `First example` (string)
+
 
 ## Canonical transaction paths
 
@@ -81,7 +85,9 @@ Format of the transaction path is  a concatenation/serialization of the `origin`
 - Colon character in API Name, Resource Name, Resource Group Name, Action Name or Example Name is escaped with backslash character `\`
 - No other characters than colon `:` are escaped
 
+
 # Examples
+
 
 ## 1. Full notation with multiple request-response pairs
 
@@ -121,6 +127,7 @@ Format of the transaction path is  a concatenation/serialization of the `origin`
 Some API Name:Some Group Name:Some Resource Name:Some Action Name:Example 2
 ```
 
+
 ## 2. Full notation without group
 
 ```Markdown
@@ -153,6 +160,7 @@ Some API Name:Some Group Name:Some Resource Name:Some Action Name:Example 2
 Some API Name::Some Resource Name:Some Action Name:Example 1
 ```
 
+
 ## 3. Full notation without group and API name
 
 ```Markdown
@@ -182,6 +190,7 @@ Some API Name::Some Resource Name:Some Action Name:Example 1
 ```
 ::Some Resource Name:Some Action Name:Example 1
 ```
+
 
 ## 4. Full notation without group and API name with a colon
 
@@ -244,8 +253,6 @@ My API\: Revamp::Some Resource Name:Some Action Name:Example 1
 ```
 ::/message:GET:Example 1
 ```
-
-
 
 
 ## Contribution
