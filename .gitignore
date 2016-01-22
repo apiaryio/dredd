@@ -3,7 +3,6 @@ src-cov
 CHANGELOG-generated.md
 /lib
 cov.html
-.vagrant
 *.DS_Store
 /.idea
 /npm-debug.log
