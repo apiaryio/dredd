@@ -1,5 +1,0 @@
-#!/bin/sh
-./scripts/test-hook-handler-repo 'git@github.com:apiaryio/dredd-hooks-ruby.git' 'bundle install'
-./scripts/test-hook-handler-repo 'git@github.com:apiaryio/dredd-hooks-python.git' 'pip install .'
-./scripts/test-hook-handler-repo 'git@github.com:ddelnano/dredd-hooks-php.git' 'composer install'
-./scripts/test-hook-handler-repo 'git@github.com:snikch/goodman.git'
