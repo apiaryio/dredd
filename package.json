@@ -8,9 +8,14 @@
   },
   "scripts": {
     "changelist": "github-changes -o apiaryio -r dredd --only-pulls --use-commit-body --file CHANGELOG-Generated.md -a",
-    "pretest": "coffeelint ./src",
-    "test": "scripts/test",
-    "prepublish": "scripts/prepublish"
+    "lint": "coffeelint ./src",
+    "compile": "coffee -b -c -o lib/ src/",
+    "pretest": "npm run compile",
+    "test": "find ./test/ -name '*-test.coffee' | xargs mocha --compilers 'coffee:coffee-script/register' --reporter spec --timeout 120000 --recursive",
+    "bdd": "find ./test/ -name '*-test.coffee' | xargs mocha --compilers 'coffee:coffee-script/register' --reporter spec --timeout 120000 --recursive -w",
+    "test:hook-handlers": "./scripts/test-hook-handlers",
+    "prepublish": "npm run compile",
+    "coveralls": "./scripts/cov mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js"
   },
   "repository": {
     "type": "git",

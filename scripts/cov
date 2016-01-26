@@ -16,7 +16,6 @@ $COV --exclude node_modules,.git,test --path relative . ./src-cov 1>&2
 cp -r ./test ./src-cov/test
 cp ./package.json ./src-cov
 
-# Excluding test breaking coveralls report :( Reporting to coveralls.io for further investigation
 $MOCHA --reporter $REPORTER --recursive --timeout 120000 --compilers 'coffee:coffee-script/register' './src-cov/test/**/*-test.coffee'
 
 rm -rf ./src-cov
