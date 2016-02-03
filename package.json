@@ -11,8 +11,8 @@
     "lint": "coffeelint ./src",
     "compile": "coffee -b -c -o lib/ src/",
     "pretest": "npm run compile",
-    "test": "find ./test/ -name '*-test.coffee' | xargs mocha --compilers 'coffee:coffee-script/register' --reporter spec --timeout 120000 --recursive",
-    "bdd": "find ./test/ -name '*-test.coffee' | xargs mocha --compilers 'coffee:coffee-script/register' --reporter spec --timeout 120000 --recursive -w",
+    "test": "./scripts/test",
+    "test:bdd": "./scripts/test -w",
     "test:hook-handlers": "./scripts/test-hook-handlers",
     "prepublish": "npm run compile",
     "coveralls": "./scripts/cov mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js"
