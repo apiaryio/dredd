@@ -582,7 +582,7 @@ describe 'TransactionRunner', ()->
       returnedError = null
       spies = {}
 
-    describe 'when the hooks hadler is used', () ->
+    describe 'when the hooks handler is used', () ->
       describe "and it doesn't crash", () ->
 
         it 'should perform all transactions', (done) ->
@@ -721,7 +721,7 @@ describe 'TransactionRunner', ()->
               break if spyName == 'beforeSpy'
               assert.isFalse spies[spyName].called, spyName
 
-          it 'should not perfotm any transaction', () ->
+          it 'should not perform any transaction', () ->
             assert.isFalse serverNock1.isDone(), 'first resource'
             assert.isFalse serverNock2.isDone(), 'second resource'
 
@@ -807,7 +807,7 @@ describe 'TransactionRunner', ()->
 
               assert.isFalse spies[spyName].called, spyName
 
-          it 'should perforom only first transaction', () ->
+          it 'should perform only first transaction', () ->
             assert.isTrue serverNock1.isDone(), 'first resource'
             assert.isFalse serverNock2.isDone(), 'second resource'
 

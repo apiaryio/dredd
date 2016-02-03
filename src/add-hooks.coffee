@@ -86,7 +86,7 @@ addHooks = (runner, transactions, callback) ->
       if runner.configuration.options.sandbox == true
         loadSandboxHooksFromStrings(callback)
       else
-        # not sandnoxed code can't be loaded from the string
+        # not sandboxed code can't be loaded from the string
         msg = """
         Not sandboxed hooks loading from strings is not implemented,
         Sandbox mode must be enabled when loading hooks from strings."
@@ -131,8 +131,7 @@ addHooks = (runner, transactions, callback) ->
       else
         # start hooks worker
         hooksWorkerClient = new HooksWorkerClient(runner)
-        hooksWorkerClient.start (error) ->
-          return callback(error)
+        hooksWorkerClient.start callback
 
     # Loading files in sandboxed mode
     else

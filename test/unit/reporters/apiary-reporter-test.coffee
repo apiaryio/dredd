@@ -177,7 +177,7 @@ describe 'ApiaryReporter', () ->
       beforeEach () ->
         requestBody = null
         uri = '/apis/public/tests/runs'
-        reportUrl = "https://absolutely.fency.url/wich-can-change/some/id"
+        reportUrl = "https://absolutely.fancy.url/wich-can-change/some/id"
 
         # this is a hack how to get access to the performed request from nock
         # nock isn't able to provide it
@@ -541,9 +541,9 @@ describe 'ApiaryReporter', () ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
-        apiaryReporter.reportUrl = "https://absolutely.fency.url/wich-can-change/some/id"
+        apiaryReporter.reportUrl = "https://absolutely.fancy.url/wich-can-change/some/id"
         emitter.emit 'end', () ->
-          assert.ok loggerStub.complete.calledWith 'See results in Apiary at: https://absolutely.fency.url/wich-can-change/some/id'
+          assert.ok loggerStub.complete.calledWith 'See results in Apiary at: https://absolutely.fancy.url/wich-can-change/some/id'
           done()
 
       it 'should send runner.logs to Apiary at the end of testRun', (done) ->
@@ -678,7 +678,7 @@ describe 'ApiaryReporter', () ->
     describe 'when starting', () ->
       call = null
       runId = '507f1f77bcf86cd799439011'
-      reportUrl = "https://absolutely.fency.url/wich-can-change/some/id"
+      reportUrl = "https://absolutely.fancy.url/wich-can-change/some/id"
       requestBody = null
 
       beforeEach () ->
@@ -810,7 +810,7 @@ describe 'ApiaryReporter', () ->
         emitter = new EventEmitter
         apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
-        apiaryReporter.reportUrl = "https://absolutely.fency.url/wich-can-change/some/id"
+        apiaryReporter.reportUrl = "https://absolutely.fancy.url/wich-can-change/some/id"
         emitter.emit 'end', () ->
-          assert.ok loggerStub.complete.calledWith 'See results in Apiary at: https://absolutely.fency.url/wich-can-change/some/id'
+          assert.ok loggerStub.complete.calledWith 'See results in Apiary at: https://absolutely.fancy.url/wich-can-change/some/id'
           done()

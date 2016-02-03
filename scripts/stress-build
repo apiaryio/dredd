@@ -7,11 +7,11 @@ command () {
 }
 
 iteration="0"
-while true 
+while true
 do
   iteration=`echo $iteration+1 | bc`
   echo "Starting iteration $iteration"
-  if ! command 
+  if ! command
   then
     echo "Failed in iteration: $iteration"
     exit 1

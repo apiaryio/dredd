@@ -2,8 +2,9 @@ net = require 'net'
 
 {EventEmitter} = require 'events'
 child_process = require 'child_process'
-
 spawn = child_process.spawn
+
+generateUuid = require('node-uuid').v4
 
 # for stubbing in tests
 logger = require './logger'
@@ -41,14 +42,13 @@ class HooksWorkerClient
         @connectToHandler (connectHandlerError) =>
           return callback(connectHandlerError) if connectHandlerError
 
-          @registerHooks (registerHooksError) =>
+          @registerHooks (registerHooksError) ->
             return callback(registerHooksError) if registerHooksError
             callback()
 
   stop: (callback) ->
     @disconnectFromHandler()
-    @terminateHandler () ->
-      callback()
+    @terminateHandler callback
 
   terminateHandler: (callback) ->
     start = Date.now()
@@ -57,7 +57,7 @@ class HooksWorkerClient
 
     timeout = null
 
-    waitForHandlerTermOrKill = () =>
+    waitForHandlerTermOrKill = =>
       if @handlerEnded == true
         clearTimeout(timeout)
         callback()
@@ -74,7 +74,7 @@ class HooksWorkerClient
 
     timeout = setTimeout waitForHandlerTermOrKill, TERM_RETRY
 
-  disconnectFromHandler: () ->
+  disconnectFromHandler: ->
     @handlerClient.destroy()
 
   setCommandAndCheckForExecutables: (callback) ->
@@ -133,7 +133,7 @@ class HooksWorkerClient
 
     else
       @handlerCommand = @language
-      if ! which.which @handlerCommand
+      unless which.which @handlerCommand
         msg = "Hooks handler server command not found: #{@handlerCommand}"
         error = new Error msg
         return callback(error)
@@ -178,7 +178,7 @@ class HooksWorkerClient
 
   connectToHandler: (callback) ->
     start = Date.now()
-    waitForConnect = () =>
+    waitForConnect = =>
       if (Date.now() - start) < CONNECT_TIMEOUT
         clearTimeout(timeout)
 
@@ -201,19 +201,19 @@ class HooksWorkerClient
           error = new Error msg
           callback(error)
 
-    connectAndSetupClient = () =>
+    connectAndSetupClient = =>
       if @runner.hookHandlerError?
         return callback(@runner.hookHandlerError)
 
       @handlerClient = net.connect port: HANDLER_PORT, host: HANDLER_HOST
 
-      @handlerClient.on 'connect', () =>
+      @handlerClient.on 'connect', =>
         logger.info "Connected to the hook handler, waiting #{AFTER_CONNECT_WAIT / 1000}s to start testing."
         @clientConnected = true
         clearTimeout(timeout)
         setTimeout callback, AFTER_CONNECT_WAIT
 
-      @handlerClient.on 'close', () ->
+      @handlerClient.on 'close', ->
 
       @handlerClient.on 'error', (connectError) =>
         @connectError = connectError
@@ -236,7 +236,7 @@ class HooksWorkerClient
             if message.uuid?
               @emitter.emit message.uuid, message
             else
-              logger.log 'UUID not present in message: ', JSON.stringify(message, null ,2)
+              logger.log 'UUID not present in message: ', JSON.stringify(message, null, 2)
 
     timeout = setTimeout waitForConnect, CONNECT_RETRY
 
@@ -264,28 +264,27 @@ class HooksWorkerClient
         @handlerClient.write HANDLER_MESSAGE_DELIMITER
 
         # register event for the sent transaction
-        messageHandler = (receivedMessage) =>
+        messageHandler = (receivedMessage) ->
           clearTimeout timeout
 
-          # workaround for assigning transaction
-          # this does not work:
-          # transaction = receivedMessage.data
+          # We are directly modifying the `data` argument here. Neither direct
+          # assignment (`data = receivedMessage.data`) nor `clone()` will work...
 
-          # *All hoooks receive array of transactions
+          # *All hooks receive array of transactions
           if eventName.indexOf("All") > -1
             for value, index in receivedMessage.data
               data[index] = value
           # *Each hook receives single transaction
           else
-            for key, value of receivedMessage.data
+            for own key, value of receivedMessage.data
               data[key] = value
 
           hookCallback()
 
-        handleTimeout = () =>
+        handleTimeout = =>
           logger.warn 'Hook handling timed out.'
 
-          if ! eventName.indexOf("All") > -1
+          if eventName.indexOf("All") is -1
             data.fail = 'Hook timed out.'
 
           @emitter.removeListener uuid, messageHandler
@@ -299,7 +298,7 @@ class HooksWorkerClient
 
     @runner.hooks.afterAll (transactions, hookCallback) =>
 
-      # This is needed to for transaction modification integration tests.
+      # This is needed for transaction modification integration tests.
       if process.env['TEST_DREDD_HOOKS_HANDLER_ORDER'] == "true"
         logger.log 'FOR TESTING ONLY'
         for mod, index in transactions[0]['hooks_modifications']

@@ -259,12 +259,12 @@ describe "Command line interface", () ->
 
     describe 'when using language hook handler and spawning the server', () ->
 
-      describe "and handler file desn't exist", () ->
+      describe "and handler file doesn't exist", () ->
         apiHit = false
 
         before (done) ->
           languageCmd = "./foo/bar.sh"
-          hookfiles = "./test/fixtres/scripts/emptyfile"
+          hookfiles = "./test/fixtures/scripts/emptyfile"
           cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --language #{languageCmd} --hookfiles #{hookfiles} --server-wait 0"
           app = express()
 
@@ -295,13 +295,13 @@ describe "Command line interface", () ->
           assert.notInclude stderr, 'exited'
           assert.notInclude stderr, 'killed'
 
-        it 'should not return message announing the fact', () ->
+        it 'should not return message announcing the fact', () ->
           assert.include stderr, 'not found'
 
         it 'should term or kill the server', () ->
           assert.isFalse isProcessRunning("endless-nosigterm")
 
-        it 'should not execeute any transaction', () ->
+        it 'should not execute any transaction', () ->
           assert.isFalse apiHit
 
       describe 'and handler crashes before execution', () ->
@@ -309,7 +309,7 @@ describe "Command line interface", () ->
 
         before (done) ->
           languageCmd = "./test/fixtures/scripts/exit_3.sh"
-          hookfiles = "./test/fixtres/scripts/emptyfile"
+          hookfiles = "./test/fixtures/scripts/emptyfile"
           cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --language #{languageCmd} --hookfiles #{hookfiles} --server-wait 0"
           app = express()
 
@@ -336,13 +336,13 @@ describe "Command line interface", () ->
         it 'should return with status 1', () ->
           assert.equal exitStatus, 1
 
-        it 'should return message annoucing the fact', () ->
+        it 'should return message announcing the fact', () ->
           assert.include stderr, 'exited'
 
         it 'should term or kill the server', () ->
           assert.isFalse isProcessRunning("endless-nosigterm")
 
-        it 'should not execeute any transaction', () ->
+        it 'should not execute any transaction', () ->
           assert.isFalse apiHit
 
       describe "and handler is killed before execution", () ->
@@ -351,7 +351,7 @@ describe "Command line interface", () ->
         before (done) ->
           serverCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
           languageCmd = "./test/fixtures/scripts/kill-self.sh"
-          hookFiles = "./test/fixtres/scripts/emptyfile"
+          hookFiles = "./test/fixtures/scripts/emptyfile"
           cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --server #{serverCmd} --language #{languageCmd} --hookfiles #{hookFiles} --server-wait 0"
 
           app = express()
@@ -379,13 +379,13 @@ describe "Command line interface", () ->
         it 'should return with status 1', () ->
           assert.equal exitStatus, 1
 
-        it 'should return message annoucing the fact', () ->
+        it 'should return message announcing the fact', () ->
           assert.include stderr, 'killed'
 
         it 'should term or kill the server', () ->
           assert.isFalse isProcessRunning("endless-nosigterm")
 
-        it 'should not execeute any transaction', () ->
+        it 'should not execute any transaction', () ->
           assert.isFalse apiHit
 
 
@@ -436,13 +436,13 @@ describe "Command line interface", () ->
         it 'should return with status 1', () ->
           assert.equal exitStatus, 1
 
-        it 'should return message annoucing the fact', () ->
+        it 'should return message announcing the fact', () ->
           assert.include stderr, 'killed'
 
         it 'should term or kill the server', () ->
           assert.isFalse isProcessRunning("endless-nosigterm")
 
-        it 'should execeute the transaction', () ->
+        it 'should execute the transaction', () ->
           assert.isTrue apiHit
 
       describe "and handler didn't quit but all Dredd tests were OK", () ->
@@ -451,7 +451,7 @@ describe "Command line interface", () ->
         before (done) ->
           serverCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
           languageCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
-          hookFiles = "./test/fixtres/scripts/emptyfile"
+          hookFiles = "./test/fixtures/scripts/emptyfile"
           cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --server '#{serverCmd}' --language '#{languageCmd}' --hookfiles #{hookFiles} --server-wait 0"
 
           app = express()
@@ -496,7 +496,7 @@ describe "Command line interface", () ->
         it 'should kill the server', () ->
           assert.isFalse isProcessRunning "dredd-fake-server"
 
-        it 'should execeute some transaction', () ->
+        it 'should execute some transaction', () ->
           assert.isTrue apiHit
 
     describe "when using reporter -r apiary", () ->
