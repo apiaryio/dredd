@@ -3,7 +3,7 @@
 ## Usage
 
 ```
-$ dredd apiary.apib http://localhost:3000 --sandbox --hookfiles=./hooks*.jss
+$ dredd apiary.apib http://localhost:3000 --sandbox --hookfiles=./hooks*.js
 ```
 
 ### Dredd JS API Option
