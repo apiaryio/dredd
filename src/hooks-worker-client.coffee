@@ -1,14 +1,13 @@
 net = require 'net'
-
 {EventEmitter} = require 'events'
 child_process = require 'child_process'
-spawn = child_process.spawn
 
 generateUuid = require('node-uuid').v4
 
 # for stubbing in tests
 logger = require './logger'
 which = require './which'
+
 
 HOOK_TIMEOUT = 5000
 
@@ -251,8 +250,7 @@ class HooksWorkerClient
 
     for eventName in eachHookNames then do (eventName) =>
       @runner.hooks[eventName] (data, hookCallback) =>
-        # avoiding dependency on external module here.
-        uuid = Date.now().toString() + '-' + Math. random().toString(36).substring(7)
+        uuid = generateUuid()
 
         # send transaction to the handler
         message =

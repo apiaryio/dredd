@@ -4,7 +4,7 @@ os = require 'os'
 url = require 'url'
 
 clone = require 'clone'
-uuid = require 'node-uuid'
+generateUuid = require('node-uuid').v4
 
 packageConfig = require './../../package.json'
 logger = require './../logger'
@@ -71,7 +71,7 @@ class ApiaryReporter
   configureEmitter: (emitter) =>
     emitter.on 'start', (blueprintsData, callback) =>
       return callback() if @serverError == true
-      @uuid = uuid.v4()
+      @uuid = generateUuid()
       @startedAt = Math.round(new Date().getTime() / 1000)
 
       # Cycle through all keys from
