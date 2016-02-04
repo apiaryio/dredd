@@ -36,6 +36,7 @@ class TransactionRunner
     async.mapSeries transactions, @configureTransaction.bind(@), (err, results) ->
       transactions = results
 
+    # Remeainings of functional approach, probs to be eradicated
     addHooks @, transactions, (addHooksError) =>
       return callback addHooksError if addHooksError
       @executeAllTransactions(transactions, @hooks, callback)
@@ -109,6 +110,7 @@ class TransactionRunner
       message: transaction.name
       origin: transaction.origin
       startedAt: transaction.startedAt # number in miliseconds (UNIX-like timestamp * 1000 precision)
+      request: transaction.request
     @configuration.emitter.emit 'test error', error, test if error
 
 
@@ -243,6 +245,7 @@ class TransactionRunner
         packageConfig['version'] + \
         " (" + system + ")"
 
+    # Parse and add headers from the config to the transaction
     if configuration.options.header.length > 0
       for header in configuration.options.header
         splitIndex = header.indexOf(':')
@@ -359,17 +362,18 @@ class TransactionRunner
         #runAfterHooks
         @runHooksForData hooks.afterAllHooks, transactions, true, callback
 
-  executeTransaction: (transaction, hooks, callback) =>
-    unless callback
-      callback = hooks
-      hooks = null
+  getRequestOptionsFromTransaction: (transaction) ->
+    requestOptions =
+      host: transaction.host
+      port: transaction.port
+      path: transaction.fullPath
+      method: transaction.request['method']
+      headers: transaction.request.headers
 
-    configuration = @configuration
+    return requestOptions
 
-
-    # Add length of body if no Content-Length present
-    # Doing here instead of in configureTransaction, because request body can be edited in before hook
-
+  # Add length of body if no Content-Length present
+  setContentLength: (transaction) ->
     caseInsensitiveRequestHeadersMap = {}
     for key, value of transaction.request.headers
       caseInsensitiveRequestHeadersMap[key.toLowerCase()] = key
@@ -377,12 +381,15 @@ class TransactionRunner
     if not caseInsensitiveRequestHeadersMap['content-length'] and transaction.request['body'] != ''
       transaction.request.headers['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
 
-    requestOptions =
-      host: transaction.host
-      port: transaction.port
-      path: transaction.fullPath
-      method: transaction.request['method']
-      headers: transaction.request.headers
+  # This is actually doing more some pre-flight and confitional skipping of the transcation
+  # based on the configuration or hooks. TODO rename
+  executeTransaction: (transaction, hooks, callback) =>
+    unless callback
+      callback = hooks
+      hooks = null
+
+    # Doing here instead of in configureTransaction, because request body can be edited in before hook
+    @setContentLength(transaction)
 
     transaction.startedAt = Date.now() # number in miliseconds (UNIX-like timestamp * 1000 precision)
 
@@ -393,7 +400,7 @@ class TransactionRunner
       origin: transaction.origin
       startedAt: transaction.startedAt
 
-    configuration.emitter.emit 'test start', test, () ->
+    @configuration.emitter.emit 'test start', test, () ->
 
     transaction['results'] ?= {}
     transaction['results']['general'] ?= {}
@@ -407,7 +414,7 @@ class TransactionRunner
       test['results'] = transaction['results']
       test['status'] = 'skip'
 
-      configuration.emitter.emit 'test skip', test, () ->
+      @configuration.emitter.emit 'test skip', test, () ->
       return callback()
 
     else if transaction.fail
@@ -420,69 +427,86 @@ class TransactionRunner
 
       test['results'] = transaction['results']
 
-      configuration.emitter.emit 'test fail', test, () ->
+      @configuration.emitter.emit 'test fail', test, () ->
       return callback()
-    else if configuration.options['dry-run']
+    else if @configuration.options['dry-run']
       logger.info "Dry run, skipping API Tests..."
       transaction.skip = true
       return callback()
-    else if configuration.options.names
+    else if @configuration.options.names
       logger.info transaction.name
       transaction.skip = true
       return callback()
-    else if configuration.options.method.length > 0 and not (transaction.request.method in configuration.options.method)
-      configuration.emitter.emit 'test skip', test, () ->
+    else if @configuration.options.method.length > 0 and not (transaction.request.method in @configuration.options.method)
+      @configuration.emitter.emit 'test skip', test, () ->
       transaction.skip = true
       return callback()
-    else if configuration.options.only.length > 0 and not (transaction.name in configuration.options.only)
-      configuration.emitter.emit 'test skip', test, () ->
+    else if @configuration.options.only.length > 0 and not (transaction.name in @configuration.options.only)
+      @configuration.emitter.emit 'test skip', test, () ->
       transaction.skip = true
       return callback()
     else
-      buffer = ""
+      return @performRequestAndValidate(test, transaction, hooks, callback)
 
-      handleRequest = (res) =>
-        res.on 'data', (chunk) ->
-          buffer = buffer + chunk
+  # An actual HTTP request, before validation hooks triggering
+  # and the the response validation is invoked here
+  performRequestAndValidate: (test, transaction, hooks, callback) ->
 
-        res.on 'error', (error) ->
-          if error
-            configuration.emitter.emit 'test error', error, test, () ->
+    requestOptions = @getRequestOptionsFromTransaction(transaction)
 
-          return callback()
+    buffer = ""
 
-        res.once 'end', =>
+    handleRequest = (res) =>
+      res.on 'data', (chunk) ->
+        buffer = buffer + chunk
 
-          # The data models as used here must conform to Gavel.js
-          # as defined in `http-response.coffee`
-          real =
-            statusCode: res.statusCode
-            headers: res.headers
-            body: buffer
+      res.on 'error', (error) =>
+        if error
+          test.title = transaction.id
+          test.expected = transaction.expected
+          test.request = transaction.request
+          @configuration.emitter.emit 'test error', error, test, () ->
 
-          transaction['real'] = real
-
-          @runHooksForData hooks?.beforeEachValidationHooks, transaction, false, () =>
-            @runHooksForData hooks?.beforeValidationHooks[transaction.name], transaction, false, () =>
-              @validateTransaction test, transaction, callback
-
-
-      transport = if transaction.protocol is 'https:' then https else http
-      if transaction.request['body'] and @isMultipart requestOptions
-        @replaceLineFeedInBody transaction, requestOptions
-
-      try
-        req = transport.request requestOptions, handleRequest
-
-        req.on 'error', (error) ->
-          configuration.emitter.emit 'test error', error, test, () ->
-          return callback()
-
-        req.write transaction.request['body'] if transaction.request['body'] != ''
-        req.end()
-      catch error
-        configuration.emitter.emit 'test error', error, test, () ->
         return callback()
+
+      res.once 'end', =>
+
+        # The data models as used here must conform to Gavel.js
+        # as defined in `http-response.coffee`
+        real =
+          statusCode: res.statusCode
+          headers: res.headers
+          body: buffer
+
+        transaction['real'] = real
+
+        @runHooksForData hooks?.beforeEachValidationHooks, transaction, false, () =>
+          @runHooksForData hooks?.beforeValidationHooks[transaction.name], transaction, false, () =>
+            @validateTransaction test, transaction, callback
+
+
+    transport = if transaction.protocol is 'https:' then https else http
+    if transaction.request['body'] and @isMultipart requestOptions
+      @replaceLineFeedInBody transaction, requestOptions
+
+    try
+      req = transport.request requestOptions, handleRequest
+
+      req.on 'error', (error) =>
+        test.title = transaction.id
+        test.expected = transaction.expected
+        test.request = transaction.request
+        @configuration.emitter.emit 'test error', error, test, () ->
+        return callback()
+
+      req.write transaction.request['body'] if transaction.request['body'] != ''
+      req.end()
+    catch error
+      test.title = transaction.id
+      test.expected = transaction.expected
+      test.request = transaction.request
+      @configuration.emitter.emit 'test error', error, test, () ->
+      return callback()
 
   validateTransaction: (test, transaction, callback) ->
     configuration = @configuration
