@@ -592,7 +592,7 @@ describe 'TransactionRunner', ()->
             assert.isTrue serverNock2.isDone(), 'second resource'
             done()
 
-        it 'should execute all "all" hooks once', (done) ->
+        it 'should execute all ‘all’ hooks once', (done) ->
 
           runner.executeAllTransactions transactions, hooks, (error) ->
             return done error if error
@@ -626,13 +626,13 @@ describe 'TransactionRunner', ()->
             assert.isFalse serverNock2.isDone(), 'second resource'
 
           it 'should not perform any hooks', () ->
-            for spyName,spy of spies
+            for own spyName, spy of spies
               assert.isFalse spies[spyName].called, spyName
 
           it 'should return the error', () ->
             assert.include returnedError.message, 'everything'
 
-        describe 'after beforeAll hook is executed', () ->
+        describe 'after ‘beforeAll’ hook is executed', () ->
           beforeEach (done) ->
             hookHandlerError = new Error 'handler died in beforeAll'
 
@@ -645,11 +645,11 @@ describe 'TransactionRunner', ()->
               returnedError = error
               done()
 
-          it 'should perform the beforeAll hook', () ->
+          it 'should perform the ‘beforeAll’ hook', () ->
             assert.isTrue spies.beforeAllSpy.called
 
           it 'should not perform any other hook', () ->
-            for spyName,spy of spies
+            for own spyName, spy of spies
               break if spyName == 'beforeAllSpy'
               assert.isFalse spies[spyName].called, spyName
 
@@ -660,7 +660,7 @@ describe 'TransactionRunner', ()->
           it 'should return the error', () ->
             assert.include returnedError.message, 'beforeAll'
 
-        describe 'after beforeEach hook is executed', () ->
+        describe 'after ‘beforeEach’ hook is executed', () ->
           beforeEach (done) ->
             hookHandlerError = new Error 'handler died in beforeEach'
 
@@ -673,14 +673,14 @@ describe 'TransactionRunner', ()->
               returnedError = error
               done()
 
-          it 'should perform the beforeAll hook', () ->
+          it 'should perform the ‘beforeAll’ hook', () ->
             assert.isTrue spies.beforeAllSpy.called
 
-          it 'should perform the beforeEach hook', () ->
+          it 'should perform the ‘beforeEach’ hook', () ->
             assert.isTrue spies.beforeEachSpy.calledOnce
 
           it 'should not perform any other hook', () ->
-            for spyName,spy of spies
+            for own spyName, spy of spies
               break if spyName == 'beforeAllSpy'
               break if spyName == 'beforeEachSpy'
               assert.isFalse spies[spyName].called, spyName
@@ -692,7 +692,7 @@ describe 'TransactionRunner', ()->
           it 'should return the error', () ->
             assert.include returnedError.message, 'beforeEach'
 
-        describe 'after before hook is executed', () ->
+        describe 'after ‘before’ hook is executed', () ->
           beforeEach (done) ->
             hookHandlerError = new Error 'handler died in before 1'
 
@@ -705,17 +705,17 @@ describe 'TransactionRunner', ()->
               returnedError = error
               done()
 
-          it 'should perform the beforeAll hook', () ->
+          it 'should perform the ‘beforeAll’ hook', () ->
             assert.isTrue spies.beforeAllSpy.called
 
-          it 'should perform the beforeEach hook', () ->
+          it 'should perform the ‘beforeEach’ hook', () ->
             assert.isTrue spies.beforeEachSpy.calledOnce
 
-          it 'should perform the before hook', () ->
+          it 'should perform the ‘before’ hook', () ->
             assert.isTrue spies.beforeSpy.calledOnce
 
           it 'should not perform any other hook', () ->
-            for spyName,spy of spies
+            for own spyName, spy of spies
               break if spyName == 'beforeAllSpy'
               break if spyName == 'beforeEachSpy'
               break if spyName == 'beforeSpy'
@@ -728,7 +728,7 @@ describe 'TransactionRunner', ()->
           it 'should return the error', () ->
             assert.include returnedError.message, 'before 1'
 
-        describe 'after beforeEachValidation hook is executed', () ->
+        describe 'after ‘beforeEachValidation’ hook is executed', () ->
           beforeEach (done) ->
             hookHandlerError = new Error 'handler died in before each validation'
 
@@ -741,20 +741,20 @@ describe 'TransactionRunner', ()->
               returnedError = error
               done()
 
-          it 'should perform the beforeAll hook', () ->
+          it 'should perform the ‘beforeAll’ hook', () ->
             assert.equal spies.beforeAllSpy.callCount, 1
 
-          it 'should perform the beforeEach hook', () ->
+          it 'should perform the ‘beforeEach’ hook', () ->
             assert.equal spies.beforeEachSpy.callCount, 1
 
-          it 'should perform the before hook', () ->
+          it 'should perform the ‘before’ hook', () ->
             assert.equal spies.beforeSpy.callCount, 1
 
-          it 'should perform the beforeEachValidation hook', () ->
+          it 'should perform the ‘beforeEachValidation’ hook', () ->
             assert.equal spies.beforeEachValidationSpy.callCount, 1
 
           it 'should not perform any other hook', () ->
-            for spyName,spy of spies
+            for own spyName, spy of spies
               break if spyName == 'beforeAllSpy'
               break if spyName == 'beforeEachSpy'
               break if spyName == 'beforeSpy'
@@ -769,7 +769,7 @@ describe 'TransactionRunner', ()->
           it 'should return the error', () ->
             assert.include returnedError.message, 'before each validation'
 
-        describe 'after beforeValidation hook is executed', () ->
+        describe 'after ‘beforeValidation’ hook is executed', () ->
           beforeEach (done) ->
             hookHandlerError = new Error 'handler died in before validation 1'
 
@@ -782,23 +782,23 @@ describe 'TransactionRunner', ()->
               returnedError = error
               done()
 
-          it 'should perform the beforeAll hook', () ->
+          it 'should perform the ‘beforeAll’ hook', () ->
             assert.isTrue spies.beforeAllSpy.called
 
-          it 'should perform the beforeEach hook', () ->
+          it 'should perform the ‘beforeEach’ hook', () ->
             assert.isTrue spies.beforeEachSpy.calledOnce
 
-          it 'should perform the before hook', () ->
+          it 'should perform the ‘before’ hook', () ->
             assert.isTrue spies.beforeSpy.calledOnce
 
-          it 'should perform the beforeEachValidation hook', () ->
+          it 'should perform the ‘beforeEachValidation’ hook', () ->
             assert.isTrue spies.beforeEachValidationSpy.calledOnce
 
-          it 'should perform the beforeValidation', () ->
+          it 'should perform the ‘beforeValidation’ hook', () ->
             assert.isTrue spies.beforeValidationSpy.calledOnce
 
           it 'should not perform any other hook', () ->
-            for spyName,spy of spies
+            for own spyName, spy of spies
               break if spyName == 'beforeAllSpy'
               break if spyName == 'beforeEachSpy'
               break if spyName == 'beforeSpy'
@@ -814,57 +814,7 @@ describe 'TransactionRunner', ()->
           it 'should return the error', () ->
             assert.include returnedError.message, 'before validation 1'
 
-        describe 'after afterEach hook is executed', () ->
-          beforeEach (done) ->
-            hookHandlerError = new Error 'handler died in after each'
-
-            hooks.afterEach (data, callback) ->
-              runner.hookHandlerError = hookHandlerError
-              callback()
-
-            runner.executeAllTransactions transactions, hooks, (error) ->
-              #setting expectation for this error below in each describe block
-              returnedError = error
-              done()
-
-          it 'should perform the beforeAll hook', () ->
-            assert.isTrue spies.beforeAllSpy.called
-
-          it 'should perform the beforeEach hook', () ->
-            assert.isTrue spies.beforeEachSpy.calledOnce
-
-          it 'should perform the before hook', () ->
-            assert.isTrue spies.beforeSpy.calledOnce
-
-          it 'should perform the beforeEachValidation hook', () ->
-            assert.isTrue spies.beforeEachValidationSpy.calledOnce
-
-          it 'should perform the beforeValidation', () ->
-            assert.isTrue spies.beforeValidationSpy.calledOnce
-
-          it 'should perform the afterEach hook', () ->
-            assert.isTrue spies.afterEachSpy.calledOnce
-
-          it 'should not perform any other hook', () ->
-            for spyName,spy of spies
-              break if spyName == 'beforeAllSpy'
-              break if spyName == 'beforeEachSpy'
-              break if spyName == 'beforeSpy'
-              break if spyName == 'beforeEachValidationSpy'
-              break if spyName == 'beforeValidationSpy'
-              break if spyName == 'afterEach'
-
-              assert.isFalse spies[spyName].called, spyName
-
-          it 'should not perform any other transaction', () ->
-            assert.isTrue serverNock1.isDone(), 'first resource'
-            assert.isFalse serverNock2.isDone(), 'second resource'
-
-
-          it 'should return the error', () ->
-            assert.include returnedError.message, 'after each'
-
-        describe 'after after hook is executed', () ->
+        describe 'after ‘after’ hook is executed', () ->
           beforeEach (done) ->
             hookHandlerError = new Error 'handler died in after 1'
 
@@ -877,35 +827,34 @@ describe 'TransactionRunner', ()->
               returnedError = error
               done()
 
-          it 'should perform the beforeAll hook', () ->
+          it 'should perform the ‘beforeAll’ hook', () ->
             assert.isTrue spies.beforeAllSpy.called
 
-          it 'should perform the beforeEach hook', () ->
+          it 'should perform the ‘beforeEach’ hook', () ->
             assert.isTrue spies.beforeEachSpy.calledOnce
 
-          it 'should perform the before hook', () ->
+          it 'should perform the ‘before’ hook', () ->
             assert.isTrue spies.beforeSpy.calledOnce
 
-          it 'should perform the beforeEachValidation hook', () ->
+          it 'should perform the ‘beforeEachValidation’ hook', () ->
             assert.isTrue spies.beforeEachValidationSpy.calledOnce
 
-          it 'should perform the beforeValidation', () ->
+          it 'should perform the ‘beforeValidation’ hook', () ->
             assert.isTrue spies.beforeValidationSpy.calledOnce
 
-          it 'should perform the afterEach hook', () ->
+          it 'should perform the ‘afterEach’ hook', () ->
             assert.isTrue spies.afterEachSpy.calledOnce
 
-          it 'should perform the after hook', () ->
+          it 'should perform the ‘after’ hook', () ->
             assert.isTrue spies.afterSpy.calledOnce
 
           it 'should not perform any other hook', () ->
-            for spyName,spy of spies
+            for own spyName, spy of spies
               break if spyName == 'beforeAllSpy'
               break if spyName == 'beforeEachSpy'
               break if spyName == 'beforeSpy'
               break if spyName == 'beforeEachValidationSpy'
               break if spyName == 'beforeValidationSpy'
-              break if spyName == 'afterEach'
               break if spyName == 'after'
               assert.isFalse spies[spyName].called, spyName
 
@@ -916,7 +865,56 @@ describe 'TransactionRunner', ()->
           it 'should return the error', () ->
             assert.include returnedError.message, 'after 1'
 
-        describe 'after afterAll hook is executed', () ->
+        describe 'after ‘afterEach’ hook is executed', () ->
+          beforeEach (done) ->
+            hookHandlerError = new Error 'handler died in after each'
+
+            hooks.afterEach (data, callback) ->
+              runner.hookHandlerError = hookHandlerError
+              callback()
+
+            runner.executeAllTransactions transactions, hooks, (error) ->
+              #setting expectation for this error below in each describe block
+              returnedError = error
+              done()
+
+          it 'should perform the ‘beforeAll’ hook', () ->
+            assert.isTrue spies.beforeAllSpy.called
+
+          it 'should perform the ‘beforeEach’ hook', () ->
+            assert.isTrue spies.beforeEachSpy.calledOnce
+
+          it 'should perform the ‘before’ hook', () ->
+            assert.isTrue spies.beforeSpy.calledOnce
+
+          it 'should perform the ‘beforeEachValidation’ hook', () ->
+            assert.isTrue spies.beforeEachValidationSpy.calledOnce
+
+          it 'should perform the ‘beforeValidation’ hook', () ->
+            assert.isTrue spies.beforeValidationSpy.calledOnce
+
+          it 'should perform the ‘afterEach’ hook', () ->
+            assert.isTrue spies.afterEachSpy.calledOnce
+
+          it 'should not perform any other hook', () ->
+            for own spyName, spy of spies
+              break if spyName == 'beforeAllSpy'
+              break if spyName == 'beforeEachSpy'
+              break if spyName == 'beforeSpy'
+              break if spyName == 'beforeEachValidationSpy'
+              break if spyName == 'beforeValidationSpy'
+              break if spyName == 'after'
+              break if spyName == 'afterEach'
+              assert.isFalse spies[spyName].called, spyName
+
+          it 'should not perform any other transaction', () ->
+            assert.isTrue serverNock1.isDone(), 'first resource'
+            assert.isFalse serverNock2.isDone(), 'second resource'
+
+          it 'should return the error', () ->
+            assert.include returnedError.message, 'after each'
+
+        describe 'after ‘afterAll’ hook is executed', () ->
           beforeEach (done) ->
             hookHandlerError = new Error 'handler died in after all'
 
@@ -929,28 +927,28 @@ describe 'TransactionRunner', ()->
               returnedError = error
               done()
 
-          it 'should perform the beforeAll hook', () ->
+          it 'should perform the ‘beforeAll’ hook', () ->
             assert.isTrue spies.beforeAllSpy.called
 
-          it 'should perform the beforeEach hook', () ->
+          it 'should perform the ‘beforeEach’ hook', () ->
             assert.isTrue spies.beforeEachSpy.calledTwice
 
-          it 'should perform the before hook', () ->
+          it 'should perform the ‘before’ hook', () ->
             assert.isTrue spies.beforeSpy.calledTwice
 
-          it 'should perform the beforeEachValidation hook', () ->
+          it 'should perform the ‘beforeEachValidation’ hook', () ->
             assert.isTrue spies.beforeEachValidationSpy.calledTwice
 
-          it 'should perform the beforeValidation', () ->
+          it 'should perform the ‘beforeValidation’ hook', () ->
             assert.isTrue spies.beforeValidationSpy.calledTwice
 
-          it 'should perform the afterEach hook', () ->
+          it 'should perform the ‘afterEach’ hook', () ->
             assert.isTrue spies.afterEachSpy.calledTwice
 
-          it 'should perform the after hook', () ->
+          it 'should perform the ‘after’ hook', () ->
             assert.isTrue spies.afterSpy.calledTwice
 
-          it 'should perform the afterAllhook', () ->
+          it 'should perform the ‘afterAll’ hook', () ->
             assert.isTrue spies.afterAllSpy.calledOnce
 
           it 'should perform both transactions', () ->
@@ -1232,8 +1230,8 @@ describe 'TransactionRunner', ()->
           assert.ok loggerStub.info.calledWith "second"
           done()
 
-    describe '*All hooks with legacy async interface (fist argument is a callback)', () ->
-      describe 'with a beforeAll hook', () ->
+    describe '‘*All’ hooks with legacy async interface (fist argument is a callback)', () ->
+      describe 'with a ‘beforeAll’ hook', () ->
         legacyApiFunction = (callback) ->
           callback()
         anotherLegacyApiFunction = (cb) ->
@@ -1252,7 +1250,7 @@ describe 'TransactionRunner', ()->
             assert.ok beforeAllStubAnother.called
             done()
 
-      describe 'with an afterAll hook', () ->
+      describe 'with an ‘afterAll’ hook', () ->
         legacyApiFunction = (callback) ->
           callback()
         anotherLegacyApiFunction = (cb) ->
@@ -1295,9 +1293,9 @@ describe 'TransactionRunner', ()->
             assert.ok afterAllStub2.called
             done()
 
-    describe '*All hooks with standard async API (first argument transactions, second callback)', () ->
+    describe '‘*All’ hooks with standard async API (first argument transactions, second callback)', () ->
 
-      describe 'with a beforeAll hook', () ->
+      describe 'with a ‘beforeAll’ hook', () ->
         hook = (transactions, callback) ->
           callback()
 
@@ -1311,7 +1309,7 @@ describe 'TransactionRunner', ()->
             assert.ok beforeAllStub.called
             done()
 
-      describe 'with an afterAll hook', () ->
+      describe 'with an ‘afterAll’ hook', () ->
         hook = (transactions, callback) ->
           callback()
 
@@ -1349,8 +1347,8 @@ describe 'TransactionRunner', ()->
             assert.ok afterAllStub2.called
             done()
 
-    describe '*All hooks with sandboxed API (functions as strings)', () ->
-      describe 'with a beforeAll hook', () ->
+    describe '‘*All’ hooks with sandboxed API (functions as strings)', () ->
+      describe 'with a ‘beforeAll’ hook', () ->
 
         beforeEach () ->
           sinon.stub configuration.emitter, 'emit'
@@ -1493,7 +1491,7 @@ describe 'TransactionRunner', ()->
           clonedTransaction['name'] = clonedTransaction['name'] + " #{i}"
           transactionsForExecution.push clonedTransaction
 
-      describe 'with a beforeEach hook', () ->
+      describe 'with a ‘beforeEach’ hook', () ->
         hook = (transactions, callback) ->
           callback()
 
@@ -1521,7 +1519,7 @@ describe 'TransactionRunner', ()->
             assert.equal beforeEachStub.callCount, transactionsForExecution.length
             done()
 
-      describe 'with a beforeEachValidation hook', () ->
+      describe 'with a ‘beforeEachValidation’ hook', () ->
         hook = (transaction, callback) ->
           transaction.real.statusCode = '403';
           callback()
@@ -1559,7 +1557,7 @@ describe 'TransactionRunner', ()->
             assert.equal beforeEachValidationStub.callCount, transactionsForExecution.length
             done()
 
-      describe 'with a afterEach hook', () ->
+      describe 'with a ‘afterEach’ hook', () ->
         hook = (transactions, callback) ->
           callback()
 
@@ -1610,7 +1608,7 @@ describe 'TransactionRunner', ()->
             assert.ok afterAllStub2.called
             done()
 
-    describe 'with before hook that throws an error', () ->
+    describe 'with ‘before’ hook that throws an error', () ->
       beforeEach () ->
         runner.hooks.beforeHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
@@ -1627,7 +1625,7 @@ describe 'TransactionRunner', ()->
           assert.ok configuration.emitter.emit.calledWith "test error"
           done()
 
-    describe 'with after hook that throws an error', () ->
+    describe 'with ‘after’ hook that throws an error', () ->
       beforeEach () ->
         runner.hooks.afterHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
@@ -1644,7 +1642,7 @@ describe 'TransactionRunner', ()->
           assert.ok configuration.emitter.emit.calledWith "test error"
           done()
 
-    describe 'with before hook that throws a chai expectation error', () ->
+    describe 'with ‘before’ hook that throws a chai expectation error', () ->
       beforeEach () ->
         runner.hooks.beforeHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
@@ -1683,7 +1681,7 @@ describe 'TransactionRunner', ()->
             assert.include messages.join(), 'expected false to be truthy'
             done()
 
-    describe 'with after hook that throws a chai expectation error', () ->
+    describe 'with ‘after’ hook that throws a chai expectation error', () ->
       beforeEach () ->
         runner.hooks.afterHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
@@ -1728,7 +1726,7 @@ describe 'TransactionRunner', ()->
             done()
 
     describe 'with hook failing the transaction', () ->
-      describe 'in before hook', () ->
+      describe 'in ‘before’ hook', () ->
         clonedTransaction = null
         beforeEach () ->
           clonedTransaction = clone(transaction)
@@ -1787,7 +1785,7 @@ describe 'TransactionRunner', ()->
               assert.include messages.join(), 'Message before'
               done()
 
-        describe 'when message is set to fail also in after hook', () ->
+        describe 'when message is set to fail also in ‘after’ hook', () ->
           clonedTransaction = null
           beforeEach () ->
             clonedTransaction = clone(transaction)
@@ -1832,7 +1830,7 @@ describe 'TransactionRunner', ()->
                 assert.notInclude messages.join(), 'Message after fail'
                 done()
 
-      describe 'in after hook when transaction fails ', () ->
+      describe 'in ‘after’ hook when transaction fails ', () ->
         modifiedTransaction = {}
         beforeEach () ->
           modifiedTransaction = clone(transaction)
@@ -1900,7 +1898,7 @@ describe 'TransactionRunner', ()->
               assert.notInclude messages.join(), 'Message after fail'
               done()
 
-      describe 'in after hook when transaction passes ', () ->
+      describe 'in ‘after’ hook when transaction passes ', () ->
         clonedTransaction = null
         beforeEach () ->
           clonedTransaction = clone transaction
