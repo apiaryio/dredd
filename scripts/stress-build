@@ -1,4 +1,6 @@
 #!/bin/bash
+# This script is running the 'npm test' in a 'while true' cycle and it stops
+# if the test suite fails. It's for finding flaky tests.
 
 command () {
  ./scripts/mocha
