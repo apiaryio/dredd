@@ -1,22 +1,21 @@
-sudo: required
-dist: trusty
-
-language: node_js
-
+sudo: "required"
+dist: "trusty"
+language: "node_js"
+env:
+  global:
+    - secure: "STxhfQh/AHeyRJgErinjZrjnJDChHKLctjqAUDwiIWcZZonopfB8DNp6DgcCHj6FPCTfcHeWdjQjvOiC6ZZugMcMUwzhi+PdDR4kDVP3GoeaMcKC2ckkdjapcA+mnmJDLF35FjhK6PvR1zpRbwlwiYpIayKHEjdgEzna3RmfRH8="
 node_js:
   - "0.10"
   - "0.12"
   - "iojs-v2.5.0"
   - "4"
   - "5"
-
-notifications:
-  email:
-    recipients:
-      - adam@apiary.io
-      - kubula@apiary.io
-    on_success: change
-    on_failure: always
-
+before_install:
+  - "gem install travis"
+before_script:
+  - "npm run lint"
+script:
+  - "npm test"
+  - "npm run test:hook-handlers"
 after_success:
-  - ./scripts/coveralls
+  - "npm run coveralls"

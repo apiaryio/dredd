@@ -8,9 +8,14 @@
   },
   "scripts": {
     "changelist": "github-changes -o apiaryio -r dredd --only-pulls --use-commit-body --file CHANGELOG-Generated.md -a",
-    "pretest": "coffeelint ./src",
-    "test": "scripts/test",
-    "prepublish": "scripts/prepublish"
+    "lint": "coffeelint ./src",
+    "compile": "coffee -b -c -o lib/ src/",
+    "pretest": "npm run compile",
+    "test": "./scripts/test",
+    "test:bdd": "./scripts/test -w",
+    "test:hook-handlers": "coffee ./scripts/test-hook-handlers.coffee",
+    "prepublish": "npm run compile",
+    "coveralls": "./scripts/cov mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js"
   },
   "repository": {
     "type": "git",
@@ -55,7 +60,8 @@
     "mocha": "^2.1.0",
     "mocha-lcov-reporter": "1.0.0",
     "nock": "^3.4.1",
-    "sinon": "^1.12.2"
+    "sinon": "^1.12.2",
+    "sync-exec": "^0.6.2"
   },
   "keywords": [
     "api",

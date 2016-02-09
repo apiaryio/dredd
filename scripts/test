@@ -1,5 +1,11 @@
 #!/bin/sh
-./scripts/build
-./scripts/mocha 2>&1
+# Runs tests. All arguments given to this script will be passed to mocha.
 
+MOCHA=./node_modules/.bin/mocha
 
+find ./test/ -name '*-test.coffee' | xargs "$MOCHA" \
+  --compilers 'coffee:coffee-script/register' \
+  --reporter spec \
+  --timeout 120000 \
+  --recursive \
+  "$@"
