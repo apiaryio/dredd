@@ -2,6 +2,10 @@
 # where 'current Dredd' means whatever is currently in its repository under
 # the last commit on currently active branch.
 #
+# Purpose:
+#   Thanks to this we can be sure we did not break hook handler implementations
+#   with a new version of Dredd or with a major refactoring.
+#
 # Usage:
 #   The script is automatically ran by Travis CI in one of the builds in
 #   the build matrix every time the tested commit is tagged:
@@ -14,6 +18,39 @@
 #
 #       $ git commit -m 'Fixes everything, closes #123, tests hook handlers.'
 #       $ git push origin ...
+#
+# How it works:
+#   1. Every time commit is pushed to GitHub, Travis CI automatically starts
+#      a new build.
+#   2. The build is defined by contents of `.travis.yml`. It runs regular tests
+#      and then runs this script, `npm run test:hook-handlers`.
+#   3. This script...
+#       1. makes sure it is ran for just one build run within the build matrix.
+#       2. checks whether hook handler integration tests were triggered or not.
+#          **If the tested commit has tag or its commit message contains words
+#          "tests hook handlers", it continues.** Otherwise it skips the tests
+#          (ends immediately with 0 exit status code).
+#       3. creates special dependent integration branches for each hook handler
+#          implementation. In these branches, it takes whatever is in master
+#          branch of the hook handler repository with the only difference that
+#          instead of `npm i -g dredd` it links the Dredd from currently tested
+#          commit.
+#       4. pushes these dependent branches to GitHub, which triggers dependent
+#          Travis CI builds.
+#       5. polls for results of the dependent Travis CI builds.
+#       6. evaluates results of dependent builds and if any of them didn't pass,
+#          the script exits with non-zero code.
+#       7. makes sure it deletes the dependent git branches from GitHub before
+#          exiting.
+#
+# Known issues:
+#   * If `master` branch of hook handler repository becomes red, this whole
+#     build will fail and we won't be able to release new version of Dredd
+#     (not with green status). Instead, we should integrate with commit
+#     corresponding to the latest release of the hook handler implementation.
+#   * If the main Travis CI build where the script is being ran gets canceled,
+#     the script won't cleanup the dependent branches on GitHub.
+
 
 fs = require 'fs'
 execSync = require 'sync-exec'
