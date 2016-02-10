@@ -45,7 +45,6 @@
     "setimmediate": "^1.0.2",
     "spawn-args": "^0.1.0",
     "spawn-sync": "^1.0.11",
-    "sync-exec": "^0.6.2",
     "uri-template": "~1.0.0",
     "winston": "^1.0.0"
   },
