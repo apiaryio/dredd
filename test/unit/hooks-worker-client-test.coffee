@@ -176,6 +176,60 @@ describe 'Hooks worker client', () ->
             done()
           , 2200
 
+    describe 'when --language php option is given', () ->
+      beforeEach ->
+        sinon.stub childProcessStub, 'spawn', () ->
+          emitter = new EventEmitter
+          emitter.stdout = new EventEmitter
+          emitter.stderr = new EventEmitter
+          emitter
+
+        hooks['configuration'] =
+          options:
+            language: 'php'
+            hookfiles: "somefile.php"
+
+      afterEach ->
+        childProcessStub.spawn.restore()
+        hooks['configuration'] = undefined
+
+      it 'should spawn the server process with command "dredd-hooks-php"', () ->
+        loadWorkerClient()
+        assert.isTrue childProcessStub.spawn.called
+        assert.equal childProcessStub.spawn.getCall(0).args[0], 'dredd-hooks-php'
+
+      it 'should pass --hookfiles option as a array of arguments', () ->
+        loadWorkerClient()
+        assert.equal childProcessStub.spawn.getCall(0).args[1][0], 'somefile.php'
+
+      describe 'when the worker is not installed', () ->
+        it 'should exit with 1', (done) ->
+          hooks.processExit.reset()
+          sinon.stub whichStub, 'which', (command) -> false
+          loadWorkerClient()
+          setTimeout () ->
+            whichStub.which.restore()
+            assert.isTrue hooks.processExit.calledWith(1)
+            done()
+          , 2200
+
+        it 'should write a hint how to install', (done) ->
+          sinon.stub consoleStub, 'log'
+          sinon.stub whichStub, 'which', (command) -> false
+          loadWorkerClient()
+          setTimeout () ->
+            logs = []
+            for args in consoleStub.log.args
+              logs.push args.join(" ")
+
+            consoleStub.log.restore()
+            whichStub.which.restore()
+
+            assert.include logs.join(", "), "composer require ddelnano/dredd-hooks-php"
+            done()
+          , 2200
+
+
     describe 'when --language ./any/other-command is given', () ->
       beforeEach ->
         sinon.stub childProcessStub, 'spawn', () ->
