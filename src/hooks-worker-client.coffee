@@ -37,6 +37,14 @@ else if language == 'python'
     console.log "$ pip install dredd_hooks"
     hooks.processExit 1
 
+else if language == 'php'
+  handlerCommand = 'dredd-hooks-php'
+  unless which.which handlerCommand
+    console.log "PHP hooks handler server command not found: #{handlerCommand}"
+    console.log "Install php hooks handler by running:"
+    console.log "$ composer require ddelnano/dredd-hooks-php:~1.0.0 --dev"
+    hooks.processExit 1
+
 else if language == 'nodejs'
   throw new Error 'Hooks handler should not be used for nodejs. Use Dredds\' native node hooks instead'
 else
