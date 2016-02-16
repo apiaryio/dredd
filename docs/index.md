@@ -45,7 +45,6 @@ Dredd supports writing [hooks](hooks.md) glue code for testing stateful servers,
 - [Issues](https://github.com/apiaryio/dredd/issues?q=is%3Aopen)
 - [Virtual Environment](https://github.com/apiaryio/dredd/blob/master/VirtualDevelopmentEnvironment.md)
 - [Express.js example application](http://github.com/apiaryio/dredd-example)
-- [Ruby on Rails example application](https://github.com/theodorton/dredd-test-rails)
 
 [API Blueprint]: http://apiblueprint.org/
 [test coverage]: https://coveralls.io/r/apiaryio/dredd?branch=master
