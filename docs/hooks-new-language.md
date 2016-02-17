@@ -31,7 +31,7 @@ If you want to write a hook handler for your language you will have to implement
 
 - When CLI command is executed
   - it loads files specified as CLI server arguments
-    - it exposes API similar to these in [Ruby](hooks-ruby.md), [Python](hooks-python.md) and [Node.js](hooks-nodejs.md) to each loaded file
+    - it exposes API similar to those in [Ruby](hooks-ruby.md), [Python](hooks-python.md) and [Node.js](hooks-nodejs.md) to each loaded file
     - it registers functions declared in files for later execution
 
   - starts a TCP socket server and starts listening on localhost port `61321`.
@@ -73,6 +73,6 @@ If you want to write a hook handler for your language you will have to implement
 
 If you have any questions, please:
 
-- Have a look at the [Ruby](https://github.com/apiaryio/dredd-hooks-ruby), [Python](https://github.com/apiaryio/dredd-hooks-python), and [PHP](https://github.com/ddelnano/dredd-hooks-php) hook handlers codebase for inspiration
+- Have a look at the [Ruby](https://github.com/apiaryio/dredd-hooks-ruby), [Python](https://github.com/apiaryio/dredd-hooks-python), [Perl](https://github.com/apiaryio/dredd-hooks-perl), and [PHP](https://github.com/ddelnano/dredd-hooks-php) hook handlers codebase for inspiration
 - If you’re writing a hook handler for a compiled language, check out the [Go](https://github.com/snikch/goodman) implementation
 - File an [issue in Dredd repository](https://github.com/apiaryio/dredd/issues/new)
