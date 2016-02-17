@@ -254,7 +254,7 @@ describe "DreddCommand class", () ->
       it 'prints out version', ->
         assert.include stdout, "#{packageJson.name} v#{packageJson.version}"
 
-    describe '"init"', ->
+    describe '"init" (nodejs)', ->
       before (done) ->
         sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
           cb({language: 'nodejs'})
@@ -272,7 +272,7 @@ describe "DreddCommand class", () ->
       it 'should save configuration', ->
         assert.isTrue configUtilsStub.save.called
 
-    describe '"init"', ->
+    describe '"init" (python)', ->
       before (done) ->
         sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
           cb({language: 'python'})
@@ -291,7 +291,7 @@ describe "DreddCommand class", () ->
         assert.isTrue configUtilsStub.save.called
 
 
-    describe '"init"', ->
+    describe '"init" (php)', ->
       before (done) ->
         sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
           cb({language: 'php'})
@@ -309,7 +309,7 @@ describe "DreddCommand class", () ->
       it 'should save configuration', ->
         assert.isTrue configUtilsStub.save.called
 
-    describe '"init"', ->
+    describe '"init" (perl)', ->
       before (done) ->
         sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
           cb({language: 'perl'})
