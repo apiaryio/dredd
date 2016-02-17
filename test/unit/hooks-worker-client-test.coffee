@@ -229,6 +229,59 @@ describe 'Hooks worker client', () ->
             done()
           , 2200
 
+    describe 'when --language perl option is given', () ->
+      beforeEach ->
+        sinon.stub childProcessStub, 'spawn', () ->
+          emitter = new EventEmitter
+          emitter.stdout = new EventEmitter
+          emitter.stderr = new EventEmitter
+          emitter
+
+        hooks['configuration'] =
+          options:
+            language: 'perl'
+            hookfiles: "somefile.perl"
+
+      afterEach ->
+        childProcessStub.spawn.restore()
+        hooks['configuration'] = undefined
+
+      it 'should spawn the server process with command "dredd-hooks-perl"', () ->
+        loadWorkerClient()
+        assert.isTrue childProcessStub.spawn.called
+        assert.equal childProcessStub.spawn.getCall(0).args[0], 'dredd-hooks-perl'
+
+      it 'should pass --hookfiles option as a array of arguments', () ->
+        loadWorkerClient()
+        assert.equal childProcessStub.spawn.getCall(0).args[1][0], 'somefile.perl'
+
+      describe 'when the worker is not installed', () ->
+        it 'should exit with 1', (done) ->
+          hooks.processExit.reset()
+          sinon.stub whichStub, 'which', (command) -> false
+          loadWorkerClient()
+          setTimeout () ->
+            whichStub.which.restore()
+            assert.isTrue hooks.processExit.calledWith(1)
+            done()
+          , 2200
+
+        it 'should write a hint how to install', (done) ->
+          sinon.stub consoleStub, 'log'
+          sinon.stub whichStub, 'which', (command) -> false
+          loadWorkerClient()
+          setTimeout () ->
+            logs = []
+            for args in consoleStub.log.args
+              logs.push args.join(" ")
+
+            consoleStub.log.restore()
+            whichStub.which.restore()
+
+            assert.include logs.join(", "), "cpanm Dredd::Hooks"
+            done()
+          , 2200
+
 
     describe 'when --language ./any/other-command is given', () ->
       beforeEach ->
