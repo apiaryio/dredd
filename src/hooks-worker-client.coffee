@@ -45,6 +45,14 @@ else if language == 'php'
     console.log "$ composer require ddelnano/dredd-hooks-php:~1.0.0 --dev"
     hooks.processExit 1
 
+else if language == 'perl'
+  handlerCommand = 'dredd-hooks-perl'
+  unless which.which handlerCommand
+    console.log "Perl hooks handler server command not found: #{handlerCommand}"
+    console.log "Install perl hooks handler by running:"
+    console.log "$ cpanm Dredd::Hooks"
+    hooks.processExit 1
+
 else if language == 'nodejs'
   throw new Error 'Hooks handler should not be used for nodejs. Use Dredds\' native node hooks instead'
 else

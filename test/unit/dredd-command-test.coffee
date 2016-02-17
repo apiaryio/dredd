@@ -309,6 +309,24 @@ describe "DreddCommand class", () ->
       it 'should save configuration', ->
         assert.isTrue configUtilsStub.save.called
 
+    describe '"init"', ->
+      before (done) ->
+        sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
+          cb({language: 'perl'})
+        sinon.stub configUtilsStub, 'save'
+        execCommand argv: ['init'], ->
+          done()
+
+      after () ->
+        interactiveConfigStub.run.restore()
+        configUtilsStub.save.restore()
+
+      it 'should run interactive config', ->
+        assert.isTrue interactiveConfigStub.run.called
+
+      it 'should save configuration', ->
+        assert.isTrue configUtilsStub.save.called
+
     describe 'without argv', ->
       before (done) ->
         execCommand argv: [], ->
