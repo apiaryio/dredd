@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/ungrim97/Dredd-Hooks.svg?branch=master)](https://travis-ci.org/ungrim97/Dredd-Hooks.svg?branch=master)
 
 
-[GitHub repository](https://github.com/ungrim97/Dredd-Hooks
+[GitHub repository](https://github.com/ungrim97/Dredd-Hooks)
 
 Perl hooks are using [Dredd's hooks handler socket interface](hooks-new-language.md). For using Perl hooks in Dredd you have to have [Dredd already installed](quickstart.md)
 
