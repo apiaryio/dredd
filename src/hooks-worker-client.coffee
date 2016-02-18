@@ -42,7 +42,7 @@ else if language == 'php'
   unless which.which handlerCommand
     console.log "PHP hooks handler server command not found: #{handlerCommand}"
     console.log "Install php hooks handler by running:"
-    console.log "$ composer require ddelnano/dredd-hooks-php:~1.0.0 --dev"
+    console.log "$ composer require ddelnano/dredd-hooks-php --dev"
     hooks.processExit 1
 
 else if language == 'perl'

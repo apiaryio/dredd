@@ -122,7 +122,7 @@ class DreddCommand
         else if config['language'] == 'python'
           console.log "  $ pip install dredd_hooks"
         else if config['language'] == 'php'
-          console.log "  $ composer require ddelnano/dredd-hooks-php:~1.0.0 --dev"
+          console.log "  $ composer require ddelnano/dredd-hooks-php --dev"
         else if config['language'] == 'perl'
           console.log "  $ cpanm Dredd::Hooks"
         else if config['language'] == 'go'
