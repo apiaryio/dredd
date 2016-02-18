@@ -36,6 +36,9 @@ interactiveConfig.prompt = (config = {}, callback) ->
       "ruby"
       "python"
       "nodejs"
+      "php"
+      "perl"
+      "go"
     ]
   }
 

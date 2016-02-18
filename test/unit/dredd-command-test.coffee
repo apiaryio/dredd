@@ -254,10 +254,65 @@ describe "DreddCommand class", () ->
       it 'prints out version', ->
         assert.include stdout, "#{packageJson.name} v#{packageJson.version}"
 
-    describe '"init"', ->
+    describe '"init" (nodejs)', ->
       before (done) ->
         sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
           cb({language: 'nodejs'})
+        sinon.stub configUtilsStub, 'save'
+        execCommand argv: ['init'], ->
+          done()
+
+      after () ->
+        interactiveConfigStub.run.restore()
+        configUtilsStub.save.restore()
+
+      it 'should run interactive config', ->
+        assert.isTrue interactiveConfigStub.run.called
+
+      it 'should save configuration', ->
+        assert.isTrue configUtilsStub.save.called
+
+    describe '"init" (python)', ->
+      before (done) ->
+        sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
+          cb({language: 'python'})
+        sinon.stub configUtilsStub, 'save'
+        execCommand argv: ['init'], ->
+          done()
+
+      after () ->
+        interactiveConfigStub.run.restore()
+        configUtilsStub.save.restore()
+
+      it 'should run interactive config', ->
+        assert.isTrue interactiveConfigStub.run.called
+
+      it 'should save configuration', ->
+        assert.isTrue configUtilsStub.save.called
+
+
+    describe '"init" (php)', ->
+      before (done) ->
+        sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
+          cb({language: 'php'})
+        sinon.stub configUtilsStub, 'save'
+        execCommand argv: ['init'], ->
+          done()
+
+      after () ->
+        interactiveConfigStub.run.restore()
+        configUtilsStub.save.restore()
+
+      it 'should run interactive config', ->
+        assert.isTrue interactiveConfigStub.run.called
+
+      it 'should save configuration', ->
+        assert.isTrue configUtilsStub.save.called
+
+    describe '"init" (perl)', ->
+      before (done) ->
+        sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
+          cb({language: 'perl'})
         sinon.stub configUtilsStub, 'save'
         execCommand argv: ['init'], ->
           done()
