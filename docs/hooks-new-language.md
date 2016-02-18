@@ -73,6 +73,6 @@ If you want to write a hook handler for your language you will have to implement
 
 If you have any questions, please:
 
-- Have a look at the [Ruby](https://github.com/apiaryio/dredd-hooks-ruby), [Python](https://github.com/apiaryio/dredd-hooks-python), [Perl](https://github.com/apiaryio/dredd-hooks-perl), and [PHP](https://github.com/ddelnano/dredd-hooks-php) hook handlers codebase for inspiration
+- Have a look at the [Ruby](https://github.com/apiaryio/dredd-hooks-ruby), [Python](https://github.com/apiaryio/dredd-hooks-python), [Perl](https://github.com/ungrim97/Dredd-Hooks), and [PHP](https://github.com/ddelnano/dredd-hooks-php) hook handlers codebase for inspiration
 - If you’re writing a hook handler for a compiled language, check out the [Go](https://github.com/snikch/goodman) implementation
 - File an [issue in Dredd repository](https://github.com/apiaryio/dredd/issues/new)
