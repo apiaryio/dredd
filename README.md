@@ -10,10 +10,10 @@
 
 Dredd is a language agnostic command-line tool for validating API documentation written in [API Blueprint][]
 format against its backend implementation. With Dredd you can easily plug your
-API documentation into the Continous Integration system like [Travis CI][]
+API documentation into the Continuous Integration system like [Travis CI][]
 or [Jenkins][] and have API documentation up-to-date, all the time.
 Dredd uses the [Gavel][] for judging if a particular API response is valid
-or if it isn't. If you are curious about how decisions are made, please refer
+or not. If you are curious about how decisions are made, please refer
 to Gavel's [behavior specification][].
 
 Dredd supports writing [hooks](http://dredd.readthedocs.org/en/latest/hooks/) glue code for testing statefull servers, workflows and loading fixtures in:
@@ -54,7 +54,7 @@ $ dredd
 
 ## Documentation
 
-**View the [full documentation](http://dredd.readthedocs.org/en/latest/) for how to use all of Dredd's features.**
+**View the [full documentation](http://dredd.readthedocs.org/en/latest/) to learn how to use all of Dredd's features.**
 
 ## Contribution
 
@@ -64,7 +64,7 @@ then fork, write tests, write clean, readable code which communicate, use `scrip
 
 Make sure to follow Dredd [issues page][issues].
 
-To learn more about the future of API Blueprint & Testing visit [apiaryio/api-blueprint#21](https://github.com/apiaryio/api-blueprint/issues/21).
+To learn more about the future of API Blueprint & Testing please visit [apiaryio/api-blueprint#21](https://github.com/apiaryio/api-blueprint/issues/21).
 
 [API Blueprint]: http://apiblueprint.org/
 [test coverage]: https://coveralls.io/r/apiaryio/dredd?branch=master
