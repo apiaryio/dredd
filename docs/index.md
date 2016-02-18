@@ -23,6 +23,7 @@ Dredd supports writing [hooks](hooks.md) glue code for testing stateful servers,
 - [Node.js](hooks-nodejs.md)
 - [PHP](hooks-php.md)
 - [Go](hooks-go.md)
+- [Perl](hooks-perl.md)
 - [*Add your language here*](hooks-new-language.md)
 
 ## Documentation Reference

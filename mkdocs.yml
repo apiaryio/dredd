@@ -13,6 +13,7 @@ pages:
   - Node.js Hooks: hooks-nodejs.md
   - PHP Hooks: hooks-php.md
   - Go Hooks: hooks-go.md
+  - Perl Hooks: hooks-perl.md
   - JavaScript Sandbox Hooks: hooks-js-sandbox.md
   - Hooks in other languages: hooks-new-language.md
 - Example:
