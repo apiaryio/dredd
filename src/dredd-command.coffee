@@ -57,22 +57,22 @@ class DreddCommand
 
   # Gracefully terminate server
   stopServer: (callback) ->
-    return callback() if ! @serverProcess?
+    return callback() unless @serverProcess?
 
-    term = () =>
+    term = =>
       logger.info 'Sending SIGTERM to the backend server'
-      @serverProcess.kill('SIGTERM')
+      @serverProcess.kill 'SIGTERM'
 
-    kill = () =>
+    kill = =>
       logger.info 'Killing backend server'
-      @serverProcess.kill('SIGKILL')
+      @serverProcess.kill 'SIGKILL'
 
     start = Date.now()
     term()
 
-    waitForServerTermOrKill = () =>
+    waitForServerTermOrKill = =>
       if @serverProcessEnded == true
-        clearTimeout(timeout)
+        clearTimeout timeout
         callback()
       else
         if (Date.now() - start) < TERM_TIMEOUT
@@ -183,7 +183,7 @@ class DreddCommand
 
   loadDreddFile: () ->
     if fs.existsSync './dredd.yml'
-      console.log 'Configuration dredd.yml found, ignoring other arguments.'
+      logger.info 'Configuration dredd.yml found, ignoring other arguments.'
       @argv = configUtils.load()
 
     # overwrite saved config with cli arguments
@@ -204,7 +204,7 @@ class DreddCommand
 
       @serverProcess = spawn command, parsedArgs
 
-      console.log "Starting server with command: #{@argv['server']}"
+      logger.info "Starting server with command: #{@argv['server']}"
 
       @serverProcess.stdout.setEncoding 'utf8'
 
@@ -225,7 +225,7 @@ class DreddCommand
 
 
       @serverProcess.on 'error', (error) =>
-        console.log "Server command failed, exitting Dredd..."
+        logger.error "Server command failed, exiting Dredd..."
         @_processExit(2)
 
       # Ensure server is not running when dredd exits prematurely somewhere
@@ -238,7 +238,7 @@ class DreddCommand
 
       waitSecs = parseInt(@argv['server-wait'], 10)
       waitMilis = waitSecs * 1000
-      console.log "Waiting #{waitSecs} seconds for server command to start..."
+      logger.info "Waiting #{waitSecs} seconds for server command to start..."
 
       @wait = setTimeout =>
         @runDredd @dreddInstance
@@ -262,8 +262,8 @@ class DreddCommand
     try
       @runServerAndThenDredd()
     catch e
-      console.log e.message
-      console.log e.stack
+      logger.error e.message
+      logger.error e.stack
       @stopServer () =>
         @_processExit(2)
     return
@@ -305,7 +305,7 @@ class DreddCommand
     return dredd
 
   commandSigInt: ->
-    console.log "\nShutting down from SIGINT (Ctrl-C)"
+    logger.error "\nShutting down from SIGINT (Ctrl-C)"
     @dreddInstance.transactionsComplete => @_processExit(0)
 
   runDredd: (dreddInstance) ->

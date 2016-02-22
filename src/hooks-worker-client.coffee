@@ -303,10 +303,10 @@ class HooksWorkerClient
 
       # This is needed for transaction modification integration tests.
       if process.env['TEST_DREDD_HOOKS_HANDLER_ORDER'] == "true"
-        logger.log 'FOR TESTING ONLY'
+        console.error 'FOR TESTING ONLY'
         for mod, index in transactions[0]['hooks_modifications']
-          logger.log "#{index} #{mod}"
-        logger.log 'FOR TESTING ONLY'
+          console.error "#{index} #{mod}"
+        console.error 'FOR TESTING ONLY'
 
 
       @stop hookCallback

@@ -36,6 +36,7 @@ dreddStub = proxyquire '../../src/dredd', {
 DreddCommand = proxyquire '../../src/dredd-command', {
   './dredd': dreddStub
   'console': loggerStub
+  './logger': loggerStub
   './interactive-init': interactiveConfigStub
   'child_process': childProcessStub
   './config-utils': configUtilsStub
