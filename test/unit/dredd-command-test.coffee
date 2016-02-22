@@ -233,7 +233,7 @@ describe "DreddCommand class", () ->
         assert.equal dc.dreddInstance.configuration.server, "http://localhost:#{PORT}"
 
 
-  describe "when called w/ OR wo/ exitting arguments", () ->
+  describe "when called w/ OR wo/ exiting arguments", () ->
     describe '--help', ->
       before (done) ->
         execCommand argv: ['--help'], ->
