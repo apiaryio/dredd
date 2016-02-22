@@ -50,26 +50,30 @@ class HooksWorkerClient
     @terminateHandler callback
 
   terminateHandler: (callback) ->
-    start = Date.now()
-    logger.info 'Sending SIGTERM to the hooks handler'
-    @handler.kill 'SIGTERM'
+    term = =>
+      logger.info 'Sending SIGTERM to the hooks handler'
+      @handlerKilledIntentionally = true
+      @handler.kill 'SIGTERM'
 
-    timeout = null
+    kill = =>
+      logger.info 'Killing hooks handler'
+      @handler.kill 'SIGKILL'
+
+    start = Date.now()
+    term()
 
     waitForHandlerTermOrKill = =>
       if @handlerEnded == true
-        clearTimeout(timeout)
+        clearTimeout timeout
         callback()
       else
         if (Date.now() - start) < TERM_TIMEOUT
-          logger.info 'Sending SIGTERM to the hooks handler'
-          @handler.kill 'SIGTERM'
+          term()
+          timeout = setTimeout waitForHandlerTermOrKill, TERM_RETRY
         else
-          @handlerKilledIntentionally = true
-          logger.info 'Killing the hooks handler'
-          @handler.kill 'SIGKILL'
-
-        timeout = setTimeout waitForHandlerTermOrKill, TERM_RETRY
+          kill()
+          clearTimeout(timeout)
+          callback()
 
     timeout = setTimeout waitForHandlerTermOrKill, TERM_RETRY
 
@@ -155,16 +159,17 @@ class HooksWorkerClient
       logger.info "Hook handler stderr:", data.toString()
 
     @handler.on 'exit', (status) =>
-      # If killed there's no exit status code
-      if status? and status != 0
-        msg = "Hook handler '#{@handlerCommand}' exited with status: #{status}"
-        error = new Error msg
-        @runner.hookHandlerError = error
-
-      else if !status?
-        if @handlerKilledIntentionally == false
+      if status?
+        if status isnt 0
+          msg = "Hook handler '#{@handlerCommand}' exited with status: #{status}"
+          logger.error msg
+          error = new Error msg
+          @runner.hookHandlerError = error
+      else
+        # No exit status code means the hook handler was killed
+        unless @handlerKilledIntentionally
           msg = "Hook handler '#{@handlerCommand}' was killed"
-          console.log msg
+          logger.error msg
           error = new Error msg
           @runner.hookHandlerError = error
 
