@@ -12,7 +12,7 @@ MOCHA=./node_modules/.bin/mocha
 
 REPORTER=$1
 echo "Using Mocha reporter: $REPORTER" 1>&2
-$COV --exclude node_modules,.git,test --path relative . ./src-cov 1>&2
+$COV --exclude README.md,CHANGELOG.md,Vagrantfile,VirtualDevelopmentEnvironment.md,docs,img,scripts,node_modules,.git,test --path relative . ./src-cov 1>&2
 cp -r ./test ./src-cov/test
 cp ./package.json ./src-cov
 
