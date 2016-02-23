@@ -618,7 +618,7 @@ describe 'Hooks worker client', ->
             loadWorkerClient (err) ->
               assert.isUndefined err
               runner.hooks["#{eventType}Hooks"][0] sentData, ->
-              done()
+              done() # intentionally unindented!
 
         else
           beforeEach (done) ->
@@ -628,7 +628,7 @@ describe 'Hooks worker client', ->
             loadWorkerClient (err) ->
               assert.isUndefined err
               runner.hooks["#{eventType}Hooks"][0] sentData, ->
-              done()
+              done() # intentionally unindented!
 
         afterEach (done) ->
           hooksWorkerClient.stop done
