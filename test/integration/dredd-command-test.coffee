@@ -38,14 +38,14 @@ execCommand = (custom = {}, cb) ->
   stderr = ''
   exitStatus = null
   finished = false
-  dreddCommand = new DreddCommand({
-    custom: custom
-  }, (code) ->
+  dreddCommand = new DreddCommand {custom: custom}, (exitStatusCode) ->
     if not finished
       finished = true
-      exitStatus = (code ? 0)
-      cb null, stdout, stderr, (code ? 0)
-  ).run()
+      exitStatus = (exitStatusCode ? 0)
+      cb null, stdout, stderr, (exitStatusCode ? 0)
+
+
+  dreddCommand.run()
   return
 
 describe "DreddCommand class Integration", () ->

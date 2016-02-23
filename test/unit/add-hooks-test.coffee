@@ -8,6 +8,7 @@ globStub = require 'glob'
 pathStub = require 'path'
 loggerStub = require '../../src/logger'
 hooksStub = require '../../src/hooks'
+hooksWorkerClientStub = require '../../src/hooks-worker-client'
 
 proxyquireStub = require 'proxyquire'
 proxyquireSpy = sinon.spy proxyquireStub.noCallThru()
@@ -24,6 +25,7 @@ addHooks = proxyquire  '../../src/add-hooks', {
   'hooks': hooksStub,
   'proxyquire': proxyquireStub
   './sandbox-hooks-code': sandboxHooksCodeSpy
+  './hooks-worker-client': hooksWorkerClientStub
   'fs': fsStub
 }
 
@@ -37,12 +39,6 @@ describe 'addHooks(runner, transactions, callback)', () ->
 
   after () ->
     loggerStub.transports.console.silent = false
-
-  beforeEach () ->
-    sinon.stub hooksStub.prototype, 'processExit'
-
-  afterEach () ->
-    hooksStub.prototype.processExit.restore()
 
   describe 'constructor', ->
     runner =
@@ -102,23 +98,15 @@ describe 'addHooks(runner, transactions, callback)', () ->
             language: 'ruby'
             hookfiles: './some/ruby/file.rb'
 
-      sinon.stub globStub, 'sync', (pattern) ->
-        ['./hooks-worker-client']
-
-      proxyquireSpy.reset()
+      sinon.stub hooksWorkerClientStub.prototype, 'start', (cb) -> cb()
 
     afterEach ->
-      proxyquireSpy.reset()
-      globStub.sync.restore()
+      hooksWorkerClientStub.prototype.start.restore()
 
-
-
-    it 'should proxyquire the hook worker client file', (done) ->
+    it 'should start the hooks worker client', (done) ->
       addHooks runner, transactions, (err) ->
         return done err if err
-        call = proxyquireSpy.getCall(0)
-        filename = call.args[0]
-        assert.include filename, 'hooks-worker-client'
+        assert.isTrue hooksWorkerClientStub.prototype.start.called
         done()
 
 

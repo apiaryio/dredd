@@ -36,6 +36,7 @@ dreddStub = proxyquire '../../src/dredd', {
 DreddCommand = proxyquire '../../src/dredd-command', {
   './dredd': dreddStub
   'console': loggerStub
+  './logger': loggerStub
   './interactive-init': interactiveConfigStub
   'child_process': childProcessStub
   './config-utils': configUtilsStub
@@ -80,7 +81,7 @@ describe "DreddCommand class", () ->
   describe 'when initialized without "new" keyword', ->
     dc = null
     before ->
-      dc = DreddCommand()
+      dc = new DreddCommand
 
     it 'sets finished to false', ->
       assert.isFalse dc.finished
@@ -104,9 +105,9 @@ describe "DreddCommand class", () ->
     hasCalledExit = null
 
     before () ->
-      dc = DreddCommand({exit: (code) ->
+      dc = new DreddCommand {exit: (code) ->
         hasCalledExit = true
-      })
+      }
       dc.run()
 
     it 'has argv property set to object with properties from optimist', ->
@@ -233,7 +234,7 @@ describe "DreddCommand class", () ->
         assert.equal dc.dreddInstance.configuration.server, "http://localhost:#{PORT}"
 
 
-  describe "when called w/ OR wo/ exitting arguments", () ->
+  describe "when called w/ OR wo/ exiting arguments", () ->
     describe '--help', ->
       before (done) ->
         execCommand argv: ['--help'], ->
@@ -407,10 +408,6 @@ describe "DreddCommand class", () ->
         call = dreddStub.prototype.init.getCall(0)
         passedConf = call.args[0]
         assert.propertyVal passedConf.options, 'names', true
-
-
-
-
 
   # describe 'when using --server', () ->
 

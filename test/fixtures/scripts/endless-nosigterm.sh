@@ -1,15 +1,11 @@
 #!/bin/bash
-
 function term() {
-  echo 'exiting'
-  exit 0
+  echo 'ignoring sigterm'
 }
 
 trap 'term' SIGTERM
 
-echo "standard output text"
-
 while true
 do
-sleep 0.1
+sleep 1
 done
