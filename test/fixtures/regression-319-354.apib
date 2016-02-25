@@ -10,8 +10,7 @@ FORMAT: 1A
     + id
     + name (string, required)
     + colors: red, brown (array)
-    + dimensions (array)
-        + 20, 30, 40 (array[number])
+    + Include DimensionsMixin
 
 ### Get Particular Brick Type [GET]
 
@@ -40,16 +39,16 @@ Attributes defined as data structure are referenced from payload.
 
 + Request (application/json)
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (array[User])
+    + Attributes (array[Customer])
 
 ### Add New Customer [POST]
 
 Attributes defined as data structure are referenced from action.
 
-+ Attributes (User)
++ Attributes (Customer)
 + Request (application/json)
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (User)
+    + Attributes (Customer)
 
 ## Data Structures
 
@@ -58,6 +57,18 @@ Attributes defined as data structure are referenced from action.
 + id
 + name (string)
 + shoeSize: 42 (number)
+
+### Customer (User)
+
++ Include AddressMixin
+
+### AddressMixin (object)
+
 + address
     + street
     + city (string, nullable)
+
+### DimensionsMixin (object)
+
++ dimensions (array)
+    + 20, 30, 40 (array[number])
