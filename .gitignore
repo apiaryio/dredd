@@ -1,7 +1,9 @@
 node_modules
-src-cov
 CHANGELOG-Generated.md
 /lib
+/src-cov
+/lcov
+cov.info
 cov.html
 .vagrant
 *.DS_Store

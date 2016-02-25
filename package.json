@@ -15,7 +15,8 @@
     "test:bdd": "./scripts/test -w",
     "test:hook-handlers": "coffee ./scripts/test-hook-handlers.coffee",
     "prepublish": "npm run compile",
-    "coveralls": "./scripts/cov mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js"
+    "coverage": "./scripts/cov",
+    "coveralls": "npm run coverage && cat ./cov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "repository": {
     "type": "git",
@@ -58,6 +59,7 @@
     "express": "^4.12.1",
     "github-changes": "^1.0.0",
     "jscoverage": "~0.6.0",
+    "lcov-result-merger": "^1.0.2",
     "mocha": "^2.1.0",
     "mocha-lcov-reporter": "1.0.0",
     "nock": "^3.4.1",

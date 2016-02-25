@@ -6,7 +6,7 @@ syncExec = require 'sync-exec'
 bodyParser = require 'body-parser'
 
 
-DREDD_BIN = './bin/dredd'
+DREDD_BIN = require.resolve '../../../bin/dredd'
 
 
 execCommand = (cmd, options = {}, callback) ->
@@ -68,6 +68,7 @@ killAll = ->
 
 
 module.exports = {
+  DREDD_BIN
   execDredd
   startServer
   isProcessRunning

@@ -1,0 +1,48 @@
+#!/usr/bin/env node
+
+// This is a special version of ./bin/dredd, which is used as Dredd binary
+// during integration tests. It collects coverage stats and saves them in file.
+
+var fs = require('fs');
+
+var DreddCommand = require('../src/dredd-command');
+
+
+var dreddCli = new DreddCommand({
+  custom: {
+    cwd: process.cwd(),
+    argv: process.argv.slice(2)
+  },
+  exit: function(exitStatus) {
+    // Before Dredd exits, we need to collect coverage stats and save them to
+    // a file. We abuse 'mocha-lcov-reporter' to do this.
+
+    // Pretending there is Mocha runner
+    var EventEmitter = require('events').EventEmitter;
+    var runner = new EventEmitter();
+
+    // Monkey-patching 'process.stdout.write' to catch all stdout in a variable
+    var content = '';
+    var write = process.stdout.write;
+    process.stdout.write = function(stdout) {
+      content += stdout;
+    };
+
+    // Collecting the stats
+    var LCov = require('mocha-lcov-reporter');
+    LCov(runner);
+    runner.emit('end');
+
+    // Undo the monkey-patching
+    process.stdout.write = write;
+
+    // Save stats as lcov file
+    fs.appendFile('./lcov/dredd-bin.info', content, function (err) {
+      if (err) { console.error(err); }
+      process.exit(exitStatus);
+    });
+  }
+});
+
+
+dreddCli.run();

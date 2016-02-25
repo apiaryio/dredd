@@ -4,8 +4,8 @@
 MOCHA=./node_modules/.bin/mocha
 
 find ./test/ -name '*-test.coffee' | xargs "$MOCHA" \
-  --compilers 'coffee:coffee-script/register' \
-  --reporter spec \
-  --timeout 120000 \
+  --compilers='coffee:coffee-script/register' \
+  --reporter=spec \
+  --timeout=120000 \
   --recursive \
   "$@"

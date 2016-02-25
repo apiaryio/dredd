@@ -7,6 +7,7 @@ fs = require 'fs'
 
 PORT = 3333
 CMD_PREFIX = ''
+DREDD_BIN = require.resolve '../../bin/dredd'
 
 stderr = ''
 stdout = ''
@@ -41,7 +42,7 @@ describe "Regression: Issue #152", () ->
     receivedRequest = {}
 
     before (done) ->
-      cmd = "./bin/dredd ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/regression-152.coffee"
+      cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/regression-152.coffee"
 
       app = express()
 

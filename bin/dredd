@@ -1,5 +1,10 @@
 #!/usr/bin/env node
+
+// When changing this file, please don't forget to make corresponding changes
+// also in ./bin/dredd-coverage.
+
 var DreddCommand = require('../lib/dredd-command');
+
 
 var dreddCli = new DreddCommand({
   custom: {
@@ -8,5 +13,6 @@ var dreddCli = new DreddCommand({
   },
   exit: process.exit
 });
+
 
 dreddCli.run();
