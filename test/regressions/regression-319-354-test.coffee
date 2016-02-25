@@ -67,7 +67,7 @@ parseOutput = (output) ->
   return results
 
 
-describe 'Regression: Issue #319', ->
+describe 'Regression: Issues #319 and #354', ->
   results = undefined
 
   brickTypePayload =
@@ -135,7 +135,7 @@ describe 'Regression: Issue #319', ->
 
       # Spinning up the Express server, running Dredd, and saving results
       server = app.listen PORT, ->
-        runDredd './test/fixtures/regression-319.apib', (err, result) ->
+        runDredd './test/fixtures/regression-319-354.apib', (err, result) ->
           results = parseOutput result.stdout
           server.close done
 
@@ -219,7 +219,7 @@ describe 'Regression: Issue #319', ->
 
       # Spinning up the Express server, running Dredd, and saving results
       server = app.listen PORT, ->
-        runDredd './test/fixtures/regression-319.apib', (err, result) ->
+        runDredd './test/fixtures/regression-319-354.apib', (err, result) ->
           results = parseOutput result.stdout
           server.close done
 
