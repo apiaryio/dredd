@@ -657,3 +657,16 @@ describe 'Hooks worker client', ->
                 assert.equal sentData['key'], 'newValue'
                 done()
               , 200
+
+  describe 'timeout', ->
+    it 'is set to 5000 by default', (done) ->
+      hooksWorkerClient = new HooksWorkerClient(runner)
+      assert.equal hooksWorkerClient.timeout, 5000
+      done()
+
+    it 'can be set to 10000', (done) ->
+      runner.hooks.configuration.options['hook-worker-timeout'] = 10000
+
+      hooksWorkerClient = new HooksWorkerClient(runner)
+      assert.equal hooksWorkerClient.timeout, 10000
+      done()
