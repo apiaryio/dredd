@@ -131,4 +131,32 @@ options =
   version:
     description: "Show version number.\n"
 
+  'hook-worker-timeout':
+    description: "How long to wait for worker until it is considered timed out"
+    default: 5000
+
+  'hook-worker-connect-timeout':
+    default: 1500
+
+  'hook-worker-connect-retry':
+    default: 500
+
+  'hook-worker-after-connect-wait':
+    default: 100
+
+  'hook-worker-term-timeout':
+    default: 5000
+
+  'hook-worker-term-retry':
+    default: 500
+
+  'hook-worker-handler-host':
+    default: 'localhost'
+
+  'hook-worker-handler-port':
+    default: 61321
+
+  'hook-worker-handler-message-delimiter':
+    default: '\n'
+
 module.exports = options
