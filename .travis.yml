@@ -11,6 +11,7 @@ node_js:
   - "4"
   - "5"
 before_install:
+  - "npm -g install npm@latest"
   - "gem install travis"
 before_script:
   - "npm run lint"
