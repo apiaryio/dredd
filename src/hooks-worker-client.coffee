@@ -301,7 +301,8 @@ class HooksWorkerClient
 
     @runner.hooks.afterAll (transactions, hookCallback) =>
 
-      # This is needed for transaction modification integration tests.
+      # This is needed for transaction modification integration tests: 
+      # https://github.com/apiaryio/dredd-hooks-template/blob/master/features/execution_order.feature
       if process.env['TEST_DREDD_HOOKS_HANDLER_ORDER'] == "true"
         console.error 'FOR TESTING ONLY'
         for mod, index in transactions[0]['hooks_modifications']
