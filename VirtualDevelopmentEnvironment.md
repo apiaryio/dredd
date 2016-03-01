@@ -1,41 +1,50 @@
-## Virtual development environment
+# Virtual Development Environment
 
-It's recomended to use [Vagrant][] and [VirtualBox][] in order to achieve consistent development environment across all contributors.
+It's recomended to use [Vagrant][] and [VirtualBox][] in order to achieve
+consistent development environment across all contributors.
 
-### Installation
+## Installation
 
-- Download and install latest [VirtualBox][]
-- Download and install latest [Vagrant][]
-- Clone GitHub repo:
-    
-    ```
+1.  Download and install latest [VirtualBox][].
+2.  Download and install latest [Vagrant][].
+3.  Clone GitHub repo:
+
+    ```shell
     $ git clone git@github.com:apiaryio/dredd.git
     $ cd dredd
     ```
-- Import the vagrant box:
-    
-    ```
+
+4.  Import the Vagrant box:
+
+    ```shell
     $ vagrant box add precise64 http://files.vagrantup.com/precise64.box
     ```
-- Start virtual development environment:
-    
-    ```
+
+5.  Start virtual development environment:
+
+    ```shell
     $ vagrant up
     ```
-Please notice that you may be promted to enter your root password due to exporting shared folder over NFS to the virtual machine.
-- SSH to the virtual development environment:
-    
-    ```
+
+    > **Note:** You may be prompted to enter your root password due
+    > to exporting shared folder over NFS to the virtual machine.
+
+6.  SSH to the virtual development environment:
+
+    ```shell
     $ vagrant ssh
     ```
-- You will find your project shared in `/vagrant` inside the virtual envinronment
-    
-    ```
+
+7.  You will find your project shared in `/vagrant` inside the virtual environment:
+
+    ```shell
     $ cd /vagrant
     ```
-- Use your favorite local editor in your local folder to edit the code and run tests in the virtual environment
-    
-    ```
+
+8.  Use your favorite local editor in your local folder to edit the code and
+    run tests in the virtual environment:
+
+    ```shell
     $ npm install && npm test
     ```
 
