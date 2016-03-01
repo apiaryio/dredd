@@ -85,6 +85,23 @@ describe 'CLI - API Description Document', ->
       it 'should print error message to stderr', ->
         assert.include dreddCommand.stderr, 'not found'
 
+    describe 'When given path exists, but can\'t be read', ->
+      dreddCommand = undefined
+      args = [
+        './test/fixtures/'
+        "http://localhost:#{PORT}"
+      ]
+
+      beforeEach (done) ->
+        execDredd args, (err, commandInfo) ->
+          dreddCommand = commandInfo
+          done(err)
+
+      it 'should exit with status 1', ->
+        assert.equal dreddCommand.exitStatus, 1
+      it 'should print error message to stderr', ->
+        assert.include dreddCommand.stderr, 'Error when reading file'
+
 
   describe 'When loaded from URL', ->
 
