@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-// When changing this file, please don't forget to make corresponding changes
-// also in ./bin/dredd-coverage.
+var fs = require('fs');
 
 var DreddCommand = require('../lib/dredd-command');
 
@@ -11,8 +10,44 @@ var dreddCli = new DreddCommand({
     cwd: process.cwd(),
     argv: process.argv.slice(2)
   },
-  exit: process.exit
+  exit: exit
 });
+
+
+function exit(exitStatus) {
+  if (process.env.COLLECT_COVERAGE) {
+    // Before Dredd exits, we need to collect coverage stats and save them to
+    // a file. We abuse 'mocha-lcov-reporter' to do this.
+
+    // Pretending there is Mocha runner
+    var EventEmitter = require('events').EventEmitter;
+    var runner = new EventEmitter();
+
+    // Monkey-patching 'process.stdout.write' to catch all stdout in a variable
+    var content = '';
+    var write = process.stdout.write;
+    process.stdout.write = function(stdout) {
+      content += stdout;
+    };
+
+    // Collecting the stats
+    var LCov = require('mocha-lcov-reporter');
+    LCov(runner);
+    runner.emit('end');
+
+    // Undo the monkey-patching
+    process.stdout.write = write;
+
+    // Save stats as lcov file
+    fs.appendFile('./lcov/dredd-bin.info', content, function (err) {
+      if (err) { console.error(err); }
+      process.exit(exitStatus);
+    });
+  } else {
+    // Regular exit, no coverage collecting
+    process.exit(exitStatus);
+  }
+}
 
 
 dreddCli.run();

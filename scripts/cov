@@ -19,13 +19,11 @@ mkdir ./src-cov ./lcov
 $COV --exclude node_modules,.git,test --path=relative . ./src-cov 1>&2
 cp ./package.json ./src-cov
 cp -r ./test ./src-cov/test
-
-# Special version of ./bin/dredd
-mkdir ./src-cov/bin
-cp ./bin/dredd-coverage ./src-cov/bin/dredd
-chmod +x ./src-cov/bin/dredd
+cp -r ./bin ./src-cov/bin
+chmod +x ./src-cov/bin/*
 
 # Testing
+export COLLECT_COVERAGE='true'
 find ./src-cov/test/ -name '*-test.coffee' | xargs "$MOCHA" \
   --compilers='coffee:coffee-script/register' \
   --reporter='mocha-lcov-reporter' \
