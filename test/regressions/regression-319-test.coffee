@@ -5,11 +5,12 @@ clone = require 'clone'
 
 
 PORT = 3333
+DREDD_BIN = require.resolve '../../bin/dredd'
 
 
 runDredd = (descriptionFile, cb) ->
   result = {}
-  cmd = "./bin/dredd #{descriptionFile} http://localhost:#{PORT} -ed"
+  cmd = "#{DREDD_BIN} #{descriptionFile} http://localhost:#{PORT} -ed"
 
   cli = exec cmd, (err, stdout, stderr) ->
     result.exitStatus = err?.code or null

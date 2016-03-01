@@ -3,7 +3,7 @@
 # if the test suite fails. It's for finding flaky tests.
 
 command () {
- ./scripts/mocha
+ ./scripts/test
 }
 
 iteration="0"

@@ -5,21 +5,33 @@
 # Example:
 # ./scripts/cov html-cov > cov.html
 
-rm -rf ./src-cov
 
 COV=./node_modules/coffee-coverage/bin/coffeecoverage
 MOCHA=./node_modules/.bin/mocha
+MERGER=./node_modules/.bin/lcov-result-merger
 
-REPORTER=$1
-echo "Using Mocha reporter: $REPORTER" 1>&2
-$COV --exclude node_modules,.git,test --path relative . ./src-cov 1>&2
-cp -r ./test ./src-cov/test
+
+# Cleanup & preparation
+rm -rf ./src-cov ./lcov ./cov.info
+mkdir ./src-cov ./lcov
+
+# Creating directory with instrumented JS code
+$COV --exclude node_modules,.git,test --path=relative . ./src-cov 1>&2
 cp ./package.json ./src-cov
+cp -r ./test ./src-cov/test
+cp -r ./bin ./src-cov/bin
+chmod +x ./src-cov/bin/*
 
+# Testing
+export COLLECT_COVERAGE='true'
 find ./src-cov/test/ -name '*-test.coffee' | xargs "$MOCHA" \
-  --compilers 'coffee:coffee-script/register' \
-  --reporter "$REPORTER" \
-  --timeout 120000 \
-  --recursive
+  --compilers='coffee:coffee-script/register' \
+  --reporter='mocha-lcov-reporter' \
+  --timeout=120000 \
+  --recursive >> ./lcov/mocha.info 2>&1
 
-rm -rf ./src-cov
+# Merging LCOV reports
+$MERGER './lcov/*.info' ./cov.info
+
+# Output & cleanup
+rm -rf ./src-cov ./lcov
