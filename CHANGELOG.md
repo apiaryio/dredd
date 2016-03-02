@@ -7,6 +7,9 @@
 - [#379](https://github.com/apiaryio/dredd/pull/379) Filling gaps in CLI integration tests & fixing coverage so it's able to pick up tests using Dredd binary (@honzajavorek)
 - [#392](https://github.com/apiaryio/dredd/pull/392) Fix coverage collection in bin/dredd (@honzajavorek)
 
+**Bug Fixes**
+- [#386](https://github.com/apiaryio/dredd/pull/386) Wrong callback variable name (@honzajavorek)
+
 **Updated README & developer documentation**
 - [#390](https://github.com/apiaryio/dredd/pull/390) Updated Docs & Changelog (@honzajavorek)
 
