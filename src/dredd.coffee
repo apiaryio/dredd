@@ -115,7 +115,11 @@ class Dredd
       return callback(err, @stats) if err
 
       if @configDataIsEmpty and @configuration.files.length == 0
-        return callback({message: "Blueprint file or files not found on path: '#{@configuration.options.path}'"}, @stats)
+        err = new Error """
+          Blueprint file or files not found on path: \
+          '#{@configuration.options.path}'
+        """
+        return callback(err, @stats)
 
       # remove duplicate filenames
       @configuration.files = removeDuplicates @configuration.files
@@ -147,23 +151,28 @@ class Dredd
       json: false
     , (downloadError, res, body) =>
       if downloadError
-        callback {
-          message: "Error when loading file from URL '#{fileUrl}'. Is the provided URL correct?"
-        }, @stats
-      else if not body or res.statusCode < 200 or res.statusCode >= 300
-        callback {
-          message: """
+        err = new Error """
+          Error when loading file from URL '#{fileUrl}'. \
+          Is the provided URL correct?
+        """
+        return callback err, @stats
+      if not body or res.statusCode < 200 or res.statusCode >= 300
+        err = new Error """
           Unable to load file from URL '#{fileUrl}'. \
           Server did not send any blueprint back and responded with status code #{res.statusCode}.
-          """
-        }, @stats
-      else
-        @configuration.data[fileUrl] = {raw: body, filename: fileUrl}
-        callback(null, @stats)
+        """
+        return callback err, @stats
+      @configuration.data[fileUrl] = {raw: body, filename: fileUrl}
+      callback(null, @stats)
 
   readLocalFile: (filePath, callback) ->
-    fs.readFile filePath, 'utf8', (readingError, data) =>
-      return readCallback(readingError) if readingError
+    fs.readFile filePath, 'utf8', (readError, data) =>
+      if readError
+        err = new Error """
+          Error when reading file '#{filePath}' (#{readError.message}). \
+          Is the provided path correct?
+        """
+        return callback(err)
       @configuration.data[filePath] = {raw: data, filename: filePath}
       callback(null, @stats)
 
