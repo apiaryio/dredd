@@ -1,7 +1,7 @@
 {
   "name": "dredd",
   "version": "1.0.5",
-  "description": "API Blueprint testing tool",
+  "description": "HTTP API Testing Framework",
   "main": "lib/dredd.js",
   "bin": {
     "dredd": "bin/dredd"
@@ -74,12 +74,6 @@
     "integration",
     "acceptance"
   ],
-  "author": "Adam Kliment <adam@apiary.io>",
-  "contributors": [
-    {
-      "name": "Evan Cordell",
-      "email": "cordell.evan@gmail.com"
-    }
-  ],
+  "author": "Apiary Czech Republic, s.r.o. <support@apiary.io>",
   "license": "MIT"
 }
