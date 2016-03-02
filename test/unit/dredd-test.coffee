@@ -373,7 +373,7 @@ describe 'Dredd class', () ->
         it 'should exit with an error', (done) ->
           dredd.run (error) ->
             assert.ok error
-            assert.isObject error
+            assert.instanceOf error, Error
             assert.property error, 'message'
             assert.include error.message, 'Unable to load file from URL'
             done()
@@ -397,7 +397,7 @@ describe 'Dredd class', () ->
         it 'should exit with an error', (done) ->
           dredd.run (error) ->
             assert.ok error
-            assert.isObject error
+            assert.instanceOf error, Error
             assert.property error, 'message'
             assert.include error.message, 'Error when loading file from URL'
             done()
@@ -645,5 +645,3 @@ describe 'Dredd class', () ->
           done()
 
         dredd.emitStart callback
-
-

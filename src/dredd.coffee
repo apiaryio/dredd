@@ -115,7 +115,11 @@ class Dredd
       return callback(err, @stats) if err
 
       if @configDataIsEmpty and @configuration.files.length == 0
-        return callback({message: "Blueprint file or files not found on path: '#{@configuration.options.path}'"}, @stats)
+        err = new Error """
+          Blueprint file or files not found on path: \
+          '#{@configuration.options.path}'
+        """
+        return callback(err, @stats)
 
       # remove duplicate filenames
       @configuration.files = removeDuplicates @configuration.files
