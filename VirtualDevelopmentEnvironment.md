@@ -1,6 +1,6 @@
 # Virtual Development Environment
 
-It's recomended to use [Vagrant][] and [VirtualBox][] in order to achieve
+It's recommended to use [Vagrant][] and [VirtualBox][] in order to achieve
 consistent development environment across all contributors.
 
 ## Installation
@@ -10,7 +10,7 @@ consistent development environment across all contributors.
 3.  Clone GitHub repo:
 
     ```shell
-    $ git clone git@github.com:apiaryio/dredd.git
+    $ git clone https://github.com/apiaryio/dredd
     $ cd dredd
     ```
 
