@@ -61,5 +61,5 @@ The documentation for Dredd is written using [MkDocs](http://www.mkdocs.org/). T
 
 ## Changelog updates
 
-Changes are provided in a human-readable format in [changelog](CHANGELOG.md) file.
+Changes are provided in a human-readable format in [changelog](https://github.com/apiaryio/dredd/blob/master/CHANGELOG.md) file.
 In order to generate pull-request commit messages with authors, please run `npm run changelist`. You can then hand-tweak the Changelog file from the generated content of `CHANGELOG-Generated.md` file.
