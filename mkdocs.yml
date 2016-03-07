@@ -20,3 +20,8 @@ pages:
   - Full Example: example.md
 
 repo_url: 'https://github.com/apiaryio/dredd'
+
+theme: readthedocs
+markdown_extensions:
+  - toc:
+      permalink: true
