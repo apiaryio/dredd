@@ -1,4 +1,51 @@
-## Change Log
+## Changelog
+
+### v1.0.6
+
+**Huge refactoring of hooks handler and related logic**
+- [#332](https://github.com/apiaryio/dredd/pull/332) Big refactoring and optimisation of hook handler spawner and client (@honzajavorek, @netmilk)
+- [#379](https://github.com/apiaryio/dredd/pull/379) Filling gaps in CLI integration tests & fixing coverage so it's able to pick up tests using Dredd binary (@honzajavorek)
+- [#392](https://github.com/apiaryio/dredd/pull/392) Fix coverage collection in bin/dredd (@honzajavorek)
+
+**Bug Fixes**
+- [#386](https://github.com/apiaryio/dredd/pull/386) Wrong callback variable name (@honzajavorek)
+
+**Updated README & developer documentation**
+- [#390](https://github.com/apiaryio/dredd/pull/390) Updated Docs & Changelog (@honzajavorek)
+
+### v1.0.5
+
+**Introduction of Perl hooks**
+- [#368](https://github.com/apiaryio/dredd/pull/368) Adding Perl (@honzajavorek)
+- [#367](https://github.com/apiaryio/dredd/pull/367) Added Perl Dredd Hooks userguide (@ungrim97)
+
+**Deeper integration of hooks handler implementations with Dredd**
+- [#362](https://github.com/apiaryio/dredd/pull/362) Add more hook languages into dredd init (@abtris)
+- [#359](https://github.com/apiaryio/dredd/pull/359) Run dependent integration builds on every release (@honzajavorek)
+
+**Latest Protagonist (bug fixes)**
+- [#347](https://github.com/apiaryio/dredd/pull/347) Upgrade to protagonist 1.2.5 (@honzajavorek)
+
+**Documentation updates**
+- [#352](https://github.com/apiaryio/dredd/pull/352) Fix syntax typo in docs example (@arcz)
+- [#350](https://github.com/apiaryio/dredd/pull/350) Update hooks-ruby.md (@arcz)
+- [#349](https://github.com/apiaryio/dredd/pull/349) fix typo s/Ambigous/Ambiguous/g (@shieldo)
+
+### v1.0.4
+
+**Latest Protagonist & Tests to prevent regressions in processing Attributes sections**
+- [#338](https://github.com/apiaryio/dredd/pull/338) Drafter upgrade and integration tests for body attributes (@honzajavorek)
+
+**Documentation updates**
+- [#340](https://github.com/apiaryio/dredd/pull/340) Add supported php versions to the php hook docs (@ddelnano)
+- [#334](https://github.com/apiaryio/dredd/pull/334) Updated doc on new look language (@netmilk)
+- [#326](https://github.com/apiaryio/dredd/pull/326) Fixing links to Node(.js) hooks (@honzajavorek)
+- [#324](https://github.com/apiaryio/dredd/pull/324) Dredd.yml is no longer unstable (@netmilk)
+- [#316](https://github.com/apiaryio/dredd/pull/316) Link to add new langauge (@netmilk)
+
+### v1.0.3
+
+@honzajavorek accidentally skipped version v1.0.3. It was never released.
 
 ### v1.0.2
 
@@ -8,7 +55,7 @@
 - [#310](https://github.com/apiaryio/dredd/pull/310) Travis build with node 4 and 5 (@ascripcaru)
 - [#288](https://github.com/apiaryio/dredd/pull/288) Add info about supported Node.js versions (@w-vi)
 
-**Documentation for GO hooks**
+**Documentation for Go hooks**
 - [#281](https://github.com/apiaryio/dredd/pull/281) Add Go documentation (@snikch)
 - [#315](https://github.com/apiaryio/dredd/pull/315) Go hooks to readme (@netmilk)
 - [#314](https://github.com/apiaryio/dredd/pull/314) Updated logo image with GO (@honzajavorek)
