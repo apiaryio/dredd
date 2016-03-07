@@ -8,38 +8,24 @@
 
 ![Dredd - HTTP API Testing Framework](img/dredd.png?v=3&raw=true)
 
-**Dredd is a language-agnostic command-line tool for validating
+> **Dredd is a language-agnostic command-line tool for validating
 API documentation written in [API Blueprint][] format against its backend
 implementation.**
 
-```shell
-$ npm install -g dredd
-$ dredd ./api-description.apib http://localhost:8000
-```
-
-### [Documentation][] · [Changelog][] · [Contributing Guidelines][]
+- [Documentation][]
+- [Changelog][]
+- [Contributor's Guidelines][]
 
 Dredd reads your API description and step by step validates whether your API
 implementation replies with responses as they are described in the
-documentation. If implementation and documentation diverge, then Dredd steps
-in to establish law and order - he'll make sure your tests won't pass.
-
-[Gavel][] is used for judging whether particular API response is or isn't valid.
-For details on how decisions are made, head to Gavel's [behavior specification][].
-
-### Continuous Integration Support
-
-- [Travis CI][]
-- [CircleCI][]
-- [Jenkins][]
-- _...and any other *nix based CI!_
+documentation.
 
 ### Hooks: Supported Languages
 
-Dredd supports writing [hooks](http://dredd.readthedocs.org/en/latest/hooks/),
-which enable you to modify requests or responses during before or after they're
-tested. That makes Dredd very flexible in what types of scenarios are supported.
-Hooks can be written in following programming languages:
+Dredd supports writing [hooks](http://dredd.readthedocs.org/en/latest/hooks/)
+writing a glue code for each test setup and teardown.
+
+Following languages are supported:
 
 - [Go](http://dredd.readthedocs.org/en/latest/hooks-go/)
 - [Node.js (JavaScript)](http://dredd.readthedocs.org/en/latest/hooks-nodejs/)
@@ -48,6 +34,13 @@ Hooks can be written in following programming languages:
 - [Python](http://dredd.readthedocs.org/en/latest/hooks-python/)
 - [Ruby](http://dredd.readthedocs.org/en/latest/hooks-ruby/)
 - Didn't find your favorite language? _[Add a new one!](https://dredd.readthedocs.org/en/latest/hooks-new-language/)_
+
+### Continuous Integration Support
+
+- [Travis CI][]
+- [CircleCI][]
+- [Jenkins][]
+- _...and any other *nix based CI!_
 
 ## Installation
 
@@ -60,8 +53,8 @@ $ npm install -g dredd
 ## Quick Start
 
 1.  Create an [API Blueprint][] file called `api-description.apib`.
-    Follow [tutorial at API Blueprint website](API Blueprint tutorial)
-    or just take one of the [ready-made examples](API Blueprint examples).
+    Follow [tutorial at API Blueprint website][API Blueprint tutorial]
+    or just take one of the [ready-made examples][API Blueprint examples].
 2.  Run interactive configuration:
 
     ```shell
@@ -85,7 +78,7 @@ $ npm install -g dredd
 
 [Documentation]: http://dredd.readthedocs.org/en/latest/
 [Changelog]: CHANGELOG.md
-[Contributing Guidelines]: CONTRIBUTING.md
+[Contributor's Guidelines]: CONTRIBUTING.md
 
 [Travis CI]: https://travis-ci.org/
 [CircleCI]: https://circleci.com/
