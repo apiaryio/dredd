@@ -236,3 +236,18 @@ hooks.beforeEach(function(transaction) {
   }
 });
 ```
+
+### Using Babel
+
+With this workaround you can use [Babel](https://babeljs.io/) for support of all the latest JS syntactic coolness in Dredd hooks:
+
+```
+npm install -g babel-cli babel-preset-es2015
+echo '{ "presets": ["es2015"] }' > .babelrc
+babel-node `which dredd` test/fixtures/single-get.apib http://localhost:3000 --hookfiles=./es2015.js
+```
+
+
+
+
+
