@@ -20,10 +20,10 @@ Dredd reads your API description and step by step validates whether your API
 implementation replies with responses as they are described in the
 documentation.
 
-### Hooks: Supported Languages
+### Supported Hook Languages
 
 Dredd supports writing [hooks](http://dredd.readthedocs.org/en/latest/hooks/)
-writing a glue code for each test setup and teardown.
+— a glue code for each test setup and teardown.
 
 Following languages are supported:
 
