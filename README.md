@@ -73,9 +73,6 @@ $ npm install -g dredd
 [API Blueprint tutorial]: https://apiblueprint.org/documentation/tutorial.html
 [API Blueprint examples]: https://github.com/apiaryio/api-blueprint/tree/master/examples
 
-[Gavel]: https://github.com/apiaryio/gavel.js
-[behavior specification]: https://www.relishapp.com/apiary/gavel/docs
-
 [Documentation]: http://dredd.readthedocs.org/en/latest/
 [Changelog]: CHANGELOG.md
 [Contributor's Guidelines]: CONTRIBUTING.md

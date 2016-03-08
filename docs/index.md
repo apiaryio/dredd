@@ -8,23 +8,35 @@
 
 ![Dredd API Blueprint testing tool](https://raw.github.com/apiaryio/dredd/master/img/dredd.png?v=3&raw=true)
 
-Dredd is a language agnostic command-line tool for testing API documentation written in the [API Blueprint][]
-format against its backend implementation. With Dredd you can easily plug your
-API documentation into the Continuous Integration systems like [Travis CI][]
-or [Jenkins][] and have API documentation up-to-date all the time.
-Dredd uses [Gavel][] for judging if a particular API response is valid
-or if it isn't. If you are curious about how decisions are made, please refer
-to Gavel's [behavior specification][].
+> **Dredd is a language-agnostic command-line tool for validating
+API documentation written in [API Blueprint][] format against its backend
+implementation.**
 
-Dredd supports writing [hooks](hooks.md) glue code for testing stateful servers, workflows and loading fixtures in:
+Dredd reads your API description and step by step validates whether your API
+implementation replies with responses as they are described in the
+documentation.
 
-- [Ruby](hooks-ruby.md)
-- [Python](hooks-python.md)
-- [Node.js](hooks-nodejs.md)
-- [PHP](hooks-php.md)
-- [Go](hooks-go.md)
-- [Perl](hooks-perl.md)
-- [*Add your language here*](hooks-new-language.md)
+### Supported Hook Languages
+
+Dredd supports writing [hooks](http://dredd.readthedocs.org/en/latest/hooks/)
+— a glue code for each test setup and teardown.
+
+Following languages are supported:
+
+- [Go](http://dredd.readthedocs.org/en/latest/hooks-go/)
+- [Node.js (JavaScript)](http://dredd.readthedocs.org/en/latest/hooks-nodejs/)
+- [Perl](http://dredd.readthedocs.org/en/latest/hooks-perl/)
+- [PHP](http://dredd.readthedocs.org/en/latest/hooks-php/)
+- [Python](http://dredd.readthedocs.org/en/latest/hooks-python/)
+- [Ruby](http://dredd.readthedocs.org/en/latest/hooks-ruby/)
+- Didn't find your favorite language? _[Add a new one!](https://dredd.readthedocs.org/en/latest/hooks-new-language/)_
+
+### Continuous Integration Support
+
+- [Travis CI][]
+- [CircleCI][]
+- [Jenkins][]
+- _...and any other *nix based CI!_
 
 ## Documentation Reference
 
@@ -42,24 +54,24 @@ Dredd supports writing [hooks](hooks.md) glue code for testing stateful servers,
 
 ## Useful Links
 
-- [GitHub Repository](https://github.com/apiaryio/dredd)
-- [Issues](https://github.com/apiaryio/dredd/issues?q=is%3Aopen)
-- [Virtual Environment](https://github.com/apiaryio/dredd/blob/master/VirtualDevelopmentEnvironment.md)
-- [Express.js example application](http://github.com/apiaryio/dredd-example)
-- [Ruby on Rails example application](https://github.com/theodorton/dredd-test-rails)
+- [GitHub Repository][]
+- [Bug Tracker][]
+- [Changelog][]
+- [Contributor's Guidelines][]
+
+## Example Applications
+
+- [Express.js](http://github.com/apiaryio/dredd-example)
+- [Ruby on Rails](https://gitlab.com/theodorton/dredd-test-rails/)
+
 
 [API Blueprint]: http://apiblueprint.org/
-[test coverage]: https://coveralls.io/r/apiaryio/dredd?branch=master
+
+[GitHub Repository]: https://github.com/apiaryio/dredd
+[Bug Tracker]: https://github.com/apiaryio/dredd/issues?q=is%3Aopen
+[Changelog]: https://github.com/apiaryio/dredd/blob/master/CHANGELOG.md
+[Contributor's Guidelines]: https://github.com/apiaryio/dredd/blob/master/CONTRIBUTING.md
+
 [Travis CI]: https://travis-ci.org/
+[CircleCI]: https://circleci.com/
 [Jenkins]: http://jenkins-ci.org/
-[Gavel]: http://blog.apiary.io/2013/07/24/Bam-this-is-Gavel/
-[behavior specification]: https://www.relishapp.com/apiary/gavel/docs
-
-## Editing documentation
-
-The documentation for Dredd is written using [MkDocs](http://www.mkdocs.org/). To contribute to Dredd's documentation, you will need to follow the [MkDocs installation instructions](http://www.mkdocs.org/#installation). Once installed, you may use `mkdocs serve` from the Dredd directory to run the local server for the documentation.
-
-## Changelog updates
-
-Changes are provided in a human-readable format in [changelog](https://github.com/apiaryio/dredd/blob/master/CHANGELOG.md) file.
-In order to generate pull-request commit messages with authors, please run `npm run changelist`. You can then hand-tweak the Changelog file from the generated content of `CHANGELOG-Generated.md` file.
