@@ -20,10 +20,10 @@ Dredd reads your API description and step by step validates whether your API
 implementation replies with responses as they are described in the
 documentation.
 
-### Hooks: Supported Languages
+### Supported Hook Languages
 
 Dredd supports writing [hooks](http://dredd.readthedocs.org/en/latest/hooks/)
-writing a glue code for each test setup and teardown.
+— a glue code for each test setup and teardown.
 
 Following languages are supported:
 
@@ -72,9 +72,6 @@ $ npm install -g dredd
 [API Blueprint]: http://apiblueprint.org/
 [API Blueprint tutorial]: https://apiblueprint.org/documentation/tutorial.html
 [API Blueprint examples]: https://github.com/apiaryio/api-blueprint/tree/master/examples
-
-[Gavel]: https://github.com/apiaryio/gavel.js
-[behavior specification]: https://www.relishapp.com/apiary/gavel/docs
 
 [Documentation]: http://dredd.readthedocs.org/en/latest/
 [Changelog]: CHANGELOG.md
