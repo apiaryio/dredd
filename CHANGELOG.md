@@ -10,8 +10,12 @@
 **Bug Fixes**
 - [#386](https://github.com/apiaryio/dredd/pull/386) Wrong callback variable name (@honzajavorek)
 
-**Updated README & developer documentation**
+**Updated README & documentation**
 - [#390](https://github.com/apiaryio/dredd/pull/390) Updated Docs & Changelog (@honzajavorek)
+- [#398](https://github.com/apiaryio/dredd/pull/398) Babel support documentation (@netmilk)
+- [#396](https://github.com/apiaryio/dredd/pull/396) Add permalinks to headings (@smizell)
+- [#397](https://github.com/apiaryio/dredd/pull/397) Fix 404 CHANGELOG link (@smizell)
+- [#400](https://github.com/apiaryio/dredd/pull/400) Readme & Doc improvement (@netmilk & @honzajavorek)
 
 ### v1.0.5
 
