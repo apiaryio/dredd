@@ -92,6 +92,8 @@ class HooksWorkerClient
         """
         error = new Error msg
         return callback(error)
+      else
+        callback()
 
     else if @language == 'python'
       @handlerCommand = 'dredd-hooks-python'
@@ -103,9 +105,11 @@ class HooksWorkerClient
         """
         error = new Error msg
         return callback(error)
+      else
+        callback()
 
     else if @language == 'php'
-      handlerCommand = 'dredd-hooks-php'
+      @handlerCommand = 'dredd-hooks-php'
       unless which.which @handlerCommand
         msg = """ \
           PHP hooks handler server command not found: #{@handlerCommand}
@@ -114,9 +118,11 @@ class HooksWorkerClient
         """
         error = new Error msg
         return callback(error)
+      else
+        callback()
 
     else if @language == 'perl'
-      handlerCommand = 'dredd-hooks-perl'
+      @handlerCommand = 'dredd-hooks-perl'
       unless which.which @handlerCommand
         msg = """ \
           Perl hooks handler server command not found: #{@handlerCommand}
@@ -125,6 +131,8 @@ class HooksWorkerClient
         """
         error = new Error msg
         return callback(error)
+      else
+        callback()
 
     else if @language == 'nodejs'
       msg = ''' \
@@ -140,7 +148,6 @@ class HooksWorkerClient
         msg = "Hooks handler server command not found: #{@handlerCommand}"
         error = new Error msg
         return callback(error)
-
       else
         callback()
 
