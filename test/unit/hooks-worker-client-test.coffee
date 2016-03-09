@@ -123,9 +123,7 @@ describe 'Hooks worker client', ->
             language: 'ruby'
             hookfiles: "somefile.rb"
 
-        sinon.stub HooksWorkerClient.prototype, 'setCommandAndCheckForExecutables' , (callback) ->
-          @handlerCommand = 'dredd-hooks-ruby'
-          callback()
+        sinon.stub whichStub, 'which', (command) -> true
 
         sinon.stub HooksWorkerClient.prototype, 'terminateHandler', (callback) ->
           callback()
@@ -135,7 +133,7 @@ describe 'Hooks worker client', ->
 
         runner.hooks['configuration'] = undefined
 
-        HooksWorkerClient.prototype.setCommandAndCheckForExecutables.restore()
+        whichStub.which.restore()
         HooksWorkerClient.prototype.terminateHandler.restore()
 
       it 'should spawn the server process with command "dredd-hooks-ruby"', (done) ->
@@ -189,9 +187,7 @@ describe 'Hooks worker client', ->
             language: 'python'
             hookfiles: "somefile.py"
 
-        sinon.stub HooksWorkerClient.prototype, 'setCommandAndCheckForExecutables' , (callback) ->
-          @handlerCommand = 'dredd-hooks-python'
-          callback()
+        sinon.stub whichStub, 'which', (command) -> true
 
         sinon.stub HooksWorkerClient.prototype, 'terminateHandler', (callback) ->
           callback()
@@ -201,7 +197,7 @@ describe 'Hooks worker client', ->
 
         runner.hooks['configuration'] = undefined
 
-        HooksWorkerClient.prototype.setCommandAndCheckForExecutables.restore()
+        whichStub.which.restore()
         HooksWorkerClient.prototype.terminateHandler.restore()
 
       it 'should spawn the server process with command "dredd-hooks-python"', (done) ->
@@ -254,9 +250,7 @@ describe 'Hooks worker client', ->
             language: 'php'
             hookfiles: "somefile.py"
 
-        sinon.stub HooksWorkerClient.prototype, 'setCommandAndCheckForExecutables' , (callback) ->
-          @handlerCommand = 'dredd-hooks-php'
-          callback()
+        sinon.stub whichStub, 'which', (command) -> true
 
         sinon.stub HooksWorkerClient.prototype, 'terminateHandler', (callback) ->
           callback()
@@ -266,7 +260,7 @@ describe 'Hooks worker client', ->
 
         runner.hooks['configuration'] = undefined
 
-        HooksWorkerClient.prototype.setCommandAndCheckForExecutables.restore()
+        whichStub.which.restore()
         HooksWorkerClient.prototype.terminateHandler.restore()
 
       it 'should spawn the server process with command "dredd-hooks-php"', (done) ->
@@ -319,9 +313,7 @@ describe 'Hooks worker client', ->
             language: 'perl'
             hookfiles: "somefile.py"
 
-        sinon.stub HooksWorkerClient.prototype, 'setCommandAndCheckForExecutables' , (callback) ->
-          @handlerCommand = 'dredd-hooks-perl'
-          callback()
+        sinon.stub whichStub, 'which', (command) -> true
 
         sinon.stub HooksWorkerClient.prototype, 'terminateHandler', (callback) ->
           callback()
@@ -331,7 +323,7 @@ describe 'Hooks worker client', ->
 
         runner.hooks['configuration'] = undefined
 
-        HooksWorkerClient.prototype.setCommandAndCheckForExecutables.restore()
+        whichStub.which.restore()
         HooksWorkerClient.prototype.terminateHandler.restore()
 
       it 'should spawn the server process with command "dredd-hooks-perl"', (done) ->
@@ -427,9 +419,7 @@ describe 'Hooks worker client', ->
         sinon.stub HooksWorkerClient.prototype, 'spawnHandler' , (callback) ->
           callback()
 
-        sinon.stub HooksWorkerClient.prototype, 'setCommandAndCheckForExecutables' , (callback) ->
-          @handlerCommand = 'dredd-hooks-ruby'
-          callback()
+        sinon.stub whichStub, 'which', (command) -> true
 
         sinon.stub HooksWorkerClient.prototype, 'terminateHandler', (callback) ->
           callback()
@@ -446,7 +436,7 @@ describe 'Hooks worker client', ->
       afterEach ->
         runner.hooks['configuration'] = undefined
 
-        HooksWorkerClient.prototype.setCommandAndCheckForExecutables.restore()
+        whichStub.which.restore()
         HooksWorkerClient.prototype.terminateHandler.restore()
         HooksWorkerClient.prototype.spawnHandler.restore()
 
