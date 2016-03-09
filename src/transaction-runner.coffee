@@ -16,7 +16,8 @@ packageConfig = require './../package.json'
 logger = require './logger'
 
 
-# use "lib" folder, because pitboss-ng does not support "coffee-script:register" out of the box now
+# use "lib" folder, because pitboss-ng does not support "coffee-script:register"
+# out of the box now
 sandboxedLogLibraryPath = '../../../lib/hooks-log-sandboxed'
 
 class TransactionRunner
@@ -35,17 +36,17 @@ class TransactionRunner
     async.mapSeries transactions, @configureTransaction.bind(@), (err, results) ->
       transactions = results
 
-    # Remeainings of functional approach, probs to be eradicated
+    # Remainings of functional approach, probs to be eradicated
     addHooks @, transactions, (addHooksError) =>
       return callback addHooksError if addHooksError
       @executeAllTransactions(transactions, @hooks, callback)
 
   executeAllTransactions: (transactions, hooks, callback) ->
     # Warning: Following lines is "differently" performed by 'addHooks'
-    # in TransactionRunner.run call. Because addHooks creates
-    # hooks.transactions as an object `{}` with transaction.name keys
-    # and value is every transaction, we do not fill transactions
-    # from executeAllTransactions here. Transactions is supposed to be an Array here!
+    # in TransactionRunner.run call. Because addHooks creates hooks.transactions
+    # as an object `{}` with transaction.name keys and value is every
+    # transaction, we do not fill transactions from executeAllTransactions here.
+    # Transactions is supposed to be an Array here!
     unless hooks.transactions?
       hooks.transactions = {}
       for transaction in transactions
@@ -112,8 +113,8 @@ class TransactionRunner
         hookFn = hooks[hookFnIndex]
         try
           if legacy
-            # Legacy mode is only for running beforeAll and afterAll hooks with old API
-            # i.e. callback as a first argument
+            # Legacy mode is only for running beforeAll and afterAll hooks with
+            # old API, i.e. callback as a first argument
 
             @runLegacyHook hookFn, data, (err) =>
               if err
@@ -170,7 +171,7 @@ class TransactionRunner
       title: transaction.id
       message: transaction.name
       origin: transaction.origin
-      startedAt: transaction.startedAt # number in miliseconds (UNIX-like timestamp * 1000 precision)
+      startedAt: transaction.startedAt # number in ms (UNIX timestamp * 1000 precision)
       request: transaction.request
     @configuration.emitter.emit 'test error', error, test if error
 
@@ -178,8 +179,7 @@ class TransactionRunner
   sandboxedHookResultsHandler: (err, data, results = {}, callback) ->
     return callback err if err
     # reference to `transaction` gets lost here if whole object is assigned
-    # this is workaround how to copy properties
-    # clone doesn't work either
+    # this is workaround how to copy properties - clone doesn't work either
     for key, value of results.data or {}
       data[key] = value
     @hookStash = results.stash
@@ -248,9 +248,9 @@ class TransactionRunner
         logger.warn " - Manipulation of transactions will have to be performed on first function argument"
 
         # DEPRECATION WARNING
-        # this will not be supported in future
-        # hook function will be called with data synchronously and
-        # callbeck will be called immediatelly and not passed as a second argument
+        # this will not be supported in future hook function will be called with
+        # data synchronously and callback will be called immediatelly and not
+        # passed as a second argument
         hook callback
 
       else if hook.length is 2
@@ -288,9 +288,10 @@ class TransactionRunner
     # parse the server URL just once
     @parsedUrl ?= url.parse configuration['server']
 
-    # joins paths regardless of slashes
-    # there may be a nice way in the future: https://github.com/joyent/node/issues/2216
-    # note that path.join will fail on windows, and url.resolve can have undesirable behavior depending on slashes
+    # Joins paths regardless of slashes. There may be a nice way in the future:
+    # https://github.com/joyent/node/issues/2216 Note that path.join will fail
+    # on windows, and url.resolve can have undesirable behavior depending
+    # on slashes
     if @parsedUrl['path'] is "/"
       fullPath = request['uri']
     else
@@ -325,9 +326,8 @@ class TransactionRunner
       statusCode: response['status']
     expected['bodySchema'] = response['schema'] if response['schema']
 
-    # Backward compatible transaction name hack. Transaction names will be replaced by
-    # Canonical Transaction Paths: https://github.com/apiaryio/dredd/issues/227
-
+    # Backward compatible transaction name hack. Transaction names will be
+    # replaced by Canonical Transaction Paths: https://github.com/apiaryio/dredd/issues/227
     unless @multiBlueprint
       transaction.name = transaction.name.replace("#{transaction.origin.apiName} > ", "")
 
@@ -346,7 +346,8 @@ class TransactionRunner
     return callback(null, configuredTransaction)
 
   emitResult: (transaction, callback) ->
-    if transaction.test # if transaction test was executed and was not skipped or failed
+    # if transaction test was executed and was not skipped or failed
+    if transaction.test
       if transaction.test.valid == true
 
         # If the transaction is set programatically to fail by user in hooks
@@ -394,17 +395,19 @@ class TransactionRunner
     if not caseInsensitiveRequestHeadersMap['content-length'] and transaction.request['body'] != ''
       transaction.request.headers['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
 
-  # This is actually doing more some pre-flight and confitional skipping of the transcation
-  # based on the configuration or hooks. TODO rename
+  # This is actually doing more some pre-flight and conditional skipping of
+  # the transcation based on the configuration or hooks. TODO rename
   executeTransaction: (transaction, hooks, callback) =>
     unless callback
       callback = hooks
       hooks = null
 
-    # Doing here instead of in configureTransaction, because request body can be edited in before hook
+    # Doing here instead of in configureTransaction, because request body can
+    # be edited in the 'before' hook
     @setContentLength(transaction)
 
-    transaction.startedAt = Date.now() # number in miliseconds (UNIX-like timestamp * 1000 precision)
+    # number in miliseconds (UNIX-like timestamp * 1000 precision)
+    transaction.startedAt = Date.now()
 
     test =
       status: ''
@@ -462,14 +465,14 @@ class TransactionRunner
       return @performRequestAndValidate(test, transaction, hooks, callback)
 
   # An actual HTTP request, before validation hooks triggering
-  # and the the response validation is invoked here
+  # and the response validation is invoked here
   performRequestAndValidate: (test, transaction, hooks, callback) ->
     requestOptions = @getRequestOptionsFromTransaction(transaction)
     buffer = ""
 
     handleRequest = (res) =>
       res.on 'data', (chunk) ->
-        buffer = buffer + chunk
+        buffer += chunk
 
       res.on 'error', (error) =>
         if error
@@ -586,5 +589,6 @@ class TransactionRunner
       transaction.request['body'] = transaction.request['body'].replace(/\n/g, '\r\n')
       transaction.request['headers']['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
       requestOptions.headers = transaction.request['headers']
+
 
 module.exports = TransactionRunner
