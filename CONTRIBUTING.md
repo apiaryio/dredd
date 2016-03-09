@@ -45,6 +45,15 @@ every time because some integration tests use code linked from `lib`. This is
 certainly a flaw and it slows down day-to-day development, but unless we find
 out how to get rid of the `lib` dependency, it's necessary.
 
+### Testing
+
+Use `npm run test` or just `npm test` to run all tests. Use `npm run test:bdd`
+to run tests and watch for changes. Dredd uses [Mocha][] as a test framework.
+It's default options are in the `test/mocha.opts` file.
+
+If you experience a flaky test, you can use `npm run test:stress` in combination
+with `describe.only` to try to replicate the flaky behavior.
+
 ### Linting
 
 Dredd uses [coffeelint][] to lint the CoffeeScript codebase. There is a plan
@@ -109,6 +118,7 @@ the author or reviewer provides a good reason why an exception should be made.
 [MkDocs]: http://www.mkdocs.org/
 [ReadTheDocs]: https://readthedocs.org/
 [test coverage]: https://coveralls.io/r/apiaryio/dredd?branch=master
+[Mocha]: http://mochajs.org/
 
 [docs]: docs
 [coffeelint.json]: coffeelint.json
