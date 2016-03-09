@@ -45,6 +45,16 @@ execCommand = (options = {}, cb) ->
       cb null, stdout, stderr, exitStatus
   return
 
+
+# Event loop gets stuck or idle without this, see
+# https://github.com/apiaryio/dredd/issues/282
+wakeUpEventLoop = (callback) ->
+  setTimeout ->
+    undefined
+  , 1000
+  callback()
+
+
 describe "Dredd class Integration", () ->
   dreddCommand = null
   custom = {}
@@ -157,17 +167,11 @@ describe "Dredd class Integration", () ->
 
       server = app.listen PORT, () ->
         server2 = apiary.listen (PORT + 1), ->
-          # Comment out this timeout to enable race condition bug
-          # Event loop get stuck or idle without this
-          # https://github.com/apiaryio/dredd/issues/282
-          setTimeout () ->
-            undefined
-          , 1000
-
-          execCommand cmd, () ->
-            server2.close ->
-              server.close () ->
-                done()
+          wakeUpEventLoop ->
+            execCommand cmd, () ->
+              server2.close ->
+                server.close () ->
+                  done()
 
     it 'should not print warning about missing APIARY_API_KEY and APIARY_API_NAME', () ->
       assert.notInclude stderr, 'Apiary reporter environment variable APIARY_API_KEY or APIARY_API_NAME not defined.'
@@ -256,15 +260,9 @@ describe "Dredd class Integration", () ->
           res.send {}
 
         server2 = apiary.listen (PORT + 1), ->
-          # Comment out this timeout to enable race condition bug
-          # Event loop get stuck or idle without this
-          # https://github.com/apiaryio/dredd/issues/282
-          setTimeout () ->
-            undefined
-          , 1000
-
-          execCommand cmd, () ->
-            server2.close ->
+          wakeUpEventLoop ->
+            execCommand cmd, () ->
+              server2.close ->
 
         server2.on 'close', done
 
@@ -320,23 +318,12 @@ describe "Dredd class Integration", () ->
 
         server = app.listen PORT, () ->
           server2 = apiary.listen (PORT + 1), ->
-        # Race condition workaround
-        # Spawned process doesn't write to stdout before is terminated
-        setTimeout () ->
-          setTimeout () ->
-            undefined
-          , 500
 
+        wakeUpEventLoop ->
           execCommand cmd, () ->
-            # Comment out this timeout to enable race condition bug
-            # Event loop get stuck or idle without this
-            # https://github.com/apiaryio/dredd/issues/282
-            setTimeout () ->
-              undefined
-            , 1000
-
-            server2.close ->
-              server.close ->
+            wakeUpEventLoop ->
+              server2.close ->
+                server.close ->
 
         server.on 'close', done
 
