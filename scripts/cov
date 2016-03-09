@@ -27,7 +27,7 @@ export COLLECT_COVERAGE='true'
 find ./src-cov/test/ -name '*-test.coffee' | xargs "$MOCHA" \
   --compilers='coffee:coffee-script/register' \
   --reporter='mocha-lcov-reporter' \
-  --timeout=120000 \
+  --timeout=12000 \
   --recursive >> ./lcov/mocha.info 2>&1
 
 # Merging LCOV reports
