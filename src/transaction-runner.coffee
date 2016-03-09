@@ -16,7 +16,8 @@ packageConfig = require './../package.json'
 logger = require './logger'
 
 
-# use "lib" folder, because pitboss-ng does not support "coffee-script:register" out of the box now
+# use "lib" folder, because pitboss-ng does not support "coffee-script:register"
+# out of the box now
 sandboxedLogLibraryPath = '../../../lib/hooks-log-sandboxed'
 
 class TransactionRunner
@@ -35,16 +36,17 @@ class TransactionRunner
     async.mapSeries transactions, @configureTransaction.bind(@), (err, results) ->
       transactions = results
 
+    # Remainings of functional approach, probs to be eradicated
     addHooks @, transactions, (addHooksError) =>
       return callback addHooksError if addHooksError
       @executeAllTransactions(transactions, @hooks, callback)
 
   executeAllTransactions: (transactions, hooks, callback) ->
     # Warning: Following lines is "differently" performed by 'addHooks'
-    # in TransactionRunner.run call. Because addHooks creates
-    # hooks.transactions as an object `{}` with transaction.name keys
-    # and value is every transaction, we do not fill transactions
-    # from executeAllTransactions here. Transactions is supposed to be an Array here!
+    # in TransactionRunner.run call. Because addHooks creates hooks.transactions
+    # as an object `{}` with transaction.name keys and value is every
+    # transaction, we do not fill transactions from executeAllTransactions here.
+    # Transactions is supposed to be an Array here!
     unless hooks.transactions?
       hooks.transactions = {}
       for transaction in transactions
@@ -111,8 +113,8 @@ class TransactionRunner
         hookFn = hooks[hookFnIndex]
         try
           if legacy
-            # Legacy mode is only for running beforeAll and afterAll hooks with old API
-            # i.e. callback as a first argument
+            # Legacy mode is only for running beforeAll and afterAll hooks with
+            # old API, i.e. callback as a first argument
 
             @runLegacyHook hookFn, data, (err) =>
               if err
@@ -169,15 +171,15 @@ class TransactionRunner
       title: transaction.id
       message: transaction.name
       origin: transaction.origin
-      startedAt: transaction.startedAt # number in miliseconds (UNIX-like timestamp * 1000 precision)
+      startedAt: transaction.startedAt # number in ms (UNIX timestamp * 1000 precision)
+      request: transaction.request
     @configuration.emitter.emit 'test error', error, test if error
 
 
   sandboxedHookResultsHandler: (err, data, results = {}, callback) ->
     return callback err if err
     # reference to `transaction` gets lost here if whole object is assigned
-    # this is workaround how to copy properties
-    # clone doesn't work either
+    # this is workaround how to copy properties - clone doesn't work either
     for key, value of results.data or {}
       data[key] = value
     @hookStash = results.stash
@@ -246,9 +248,9 @@ class TransactionRunner
         logger.warn " - Manipulation of transactions will have to be performed on first function argument"
 
         # DEPRECATION WARNING
-        # this will not be supported in future
-        # hook function will be called with data synchronously and
-        # callbeck will be called immediatelly and not passed as a second argument
+        # this will not be supported in future hook function will be called with
+        # data synchronously and callback will be called immediatelly and not
+        # passed as a second argument
         hook callback
 
       else if hook.length is 2
@@ -286,9 +288,10 @@ class TransactionRunner
     # parse the server URL just once
     @parsedUrl ?= url.parse configuration['server']
 
-    # joins paths regardless of slashes
-    # there may be a nice way in the future: https://github.com/joyent/node/issues/2216
-    # note that path.join will fail on windows, and url.resolve can have undesirable behavior depending on slashes
+    # Joins paths regardless of slashes. There may be a nice way in the future:
+    # https://github.com/joyent/node/issues/2216 Note that path.join will fail
+    # on windows, and url.resolve can have undesirable behavior depending
+    # on slashes
     if @parsedUrl['path'] is "/"
       fullPath = request['uri']
     else
@@ -303,6 +306,7 @@ class TransactionRunner
         packageConfig['version'] + \
         " (" + system + ")"
 
+    # Parse and add headers from the config to the transaction
     if configuration.options.header.length > 0
       for header in configuration.options.header
         splitIndex = header.indexOf(':')
@@ -322,9 +326,8 @@ class TransactionRunner
       statusCode: response['status']
     expected['bodySchema'] = response['schema'] if response['schema']
 
-    # Backward compatible transaction name hack. Transaction names will be replaced by
-    # Canonical Transaction Paths: https://github.com/apiaryio/dredd/issues/227
-
+    # Backward compatible transaction name hack. Transaction names will be
+    # replaced by Canonical Transaction Paths: https://github.com/apiaryio/dredd/issues/227
     unless @multiBlueprint
       transaction.name = transaction.name.replace("#{transaction.origin.apiName} > ", "")
 
@@ -343,7 +346,8 @@ class TransactionRunner
     return callback(null, configuredTransaction)
 
   emitResult: (transaction, callback) ->
-    if transaction.test # if transaction test was executed and was not skipped or failed
+    # if transaction test was executed and was not skipped or failed
+    if transaction.test
       if transaction.test.valid == true
 
         # If the transaction is set programatically to fail by user in hooks
@@ -373,17 +377,17 @@ class TransactionRunner
           @configuration.emitter.emit 'test pass', transaction.test, () ->
     callback()
 
-  executeTransaction: (transaction, hooks, callback) ->
-    unless callback
-      callback = hooks
-      hooks = null
+  getRequestOptionsFromTransaction: (transaction) ->
+    requestOptions =
+      host: transaction.host
+      port: transaction.port
+      path: transaction.fullPath
+      method: transaction.request['method']
+      headers: transaction.request.headers
+    return requestOptions
 
-    configuration = @configuration
-
-
-    # Add length of body if no Content-Length present
-    # Doing here instead of in configureTransaction, because request body can be edited in before hook
-
+  # Add length of body if no Content-Length present
+  setContentLength: (transaction) ->
     caseInsensitiveRequestHeadersMap = {}
     for key, value of transaction.request.headers
       caseInsensitiveRequestHeadersMap[key.toLowerCase()] = key
@@ -391,14 +395,19 @@ class TransactionRunner
     if not caseInsensitiveRequestHeadersMap['content-length'] and transaction.request['body'] != ''
       transaction.request.headers['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
 
-    requestOptions =
-      host: transaction.host
-      port: transaction.port
-      path: transaction.fullPath
-      method: transaction.request['method']
-      headers: transaction.request.headers
+  # This is actually doing more some pre-flight and conditional skipping of
+  # the transcation based on the configuration or hooks. TODO rename
+  executeTransaction: (transaction, hooks, callback) =>
+    unless callback
+      callback = hooks
+      hooks = null
 
-    transaction.startedAt = Date.now() # number in miliseconds (UNIX-like timestamp * 1000 precision)
+    # Doing here instead of in configureTransaction, because request body can
+    # be edited in the 'before' hook
+    @setContentLength(transaction)
+
+    # number in miliseconds (UNIX-like timestamp * 1000 precision)
+    transaction.startedAt = Date.now()
 
     test =
       status: ''
@@ -407,7 +416,7 @@ class TransactionRunner
       origin: transaction.origin
       startedAt: transaction.startedAt
 
-    configuration.emitter.emit 'test start', test, () ->
+    @configuration.emitter.emit 'test start', test, () ->
 
     transaction['results'] ?= {}
     transaction['results']['general'] ?= {}
@@ -421,7 +430,7 @@ class TransactionRunner
       test['results'] = transaction['results']
       test['status'] = 'skip'
 
-      configuration.emitter.emit 'test skip', test, () ->
+      @configuration.emitter.emit 'test skip', test, () ->
       return callback()
 
     else if transaction.fail
@@ -434,71 +443,85 @@ class TransactionRunner
 
       test['results'] = transaction['results']
 
-      configuration.emitter.emit 'test fail', test, () ->
+      @configuration.emitter.emit 'test fail', test, () ->
       return callback()
-    else if configuration.options['dry-run']
+    else if @configuration.options['dry-run']
       logger.info "Dry run, skipping API Tests..."
       transaction.skip = true
       return callback()
-    else if configuration.options.names
+    else if @configuration.options.names
       logger.info transaction.name
       transaction.skip = true
       return callback()
-    else if configuration.options.method.length > 0 and not (transaction.request.method in configuration.options.method)
-      configuration.emitter.emit 'test skip', test, () ->
+    else if @configuration.options.method.length > 0 and not (transaction.request.method in @configuration.options.method)
+      @configuration.emitter.emit 'test skip', test, () ->
       transaction.skip = true
       return callback()
-    else if configuration.options.only.length > 0 and not (transaction.name in configuration.options.only)
-      configuration.emitter.emit 'test skip', test, () ->
+    else if @configuration.options.only.length > 0 and not (transaction.name in @configuration.options.only)
+      @configuration.emitter.emit 'test skip', test, () ->
       transaction.skip = true
       return callback()
     else
-      buffer = ""
+      return @performRequestAndValidate(test, transaction, hooks, callback)
 
-      handleRequest = (res) =>
-        res.on 'data', (chunk) ->
-          buffer = buffer + chunk
+  # An actual HTTP request, before validation hooks triggering
+  # and the response validation is invoked here
+  performRequestAndValidate: (test, transaction, hooks, callback) ->
+    requestOptions = @getRequestOptionsFromTransaction(transaction)
+    buffer = ""
 
-        res.on 'error', (error) ->
-          if error
-            configuration.emitter.emit 'test error', error, test, () ->
+    handleRequest = (res) =>
+      res.on 'data', (chunk) ->
+        buffer += chunk
 
-          return callback()
+      res.on 'error', (error) =>
+        if error
+          test.title = transaction.id
+          test.expected = transaction.expected
+          test.request = transaction.request
+          @configuration.emitter.emit 'test error', error, test, () ->
 
-        res.once 'end', =>
-
-          # The data models as used here must conform to Gavel.js
-          # as defined in `http-response.coffee`
-          real =
-            statusCode: res.statusCode
-            headers: res.headers
-            body: buffer
-
-          transaction['real'] = real
-
-          @runHooksForData hooks?.beforeEachValidationHooks, transaction, false, () =>
-            return callback(@hookHandlerError) if @hookHandlerError?
-            @runHooksForData hooks?.beforeValidationHooks[transaction.name], transaction, false, () =>
-              return callback(@hookHandlerError) if @hookHandlerError?
-              @validateTransaction test, transaction, callback
-
-
-      transport = if transaction.protocol is 'https:' then https else http
-      if transaction.request['body'] and @isMultipart requestOptions
-        @replaceLineFeedInBody transaction, requestOptions
-
-      try
-        req = transport.request requestOptions, handleRequest
-
-        req.on 'error', (error) ->
-          configuration.emitter.emit 'test error', error, test, () ->
-          return callback()
-
-        req.write transaction.request['body'] if transaction.request['body'] != ''
-        req.end()
-      catch error
-        configuration.emitter.emit 'test error', error, test, () ->
         return callback()
+
+      res.once 'end', =>
+        # The data models as used here must conform to Gavel.js
+        # as defined in `http-response.coffee`
+        real =
+          statusCode: res.statusCode
+          headers: res.headers
+          body: buffer
+
+        transaction['real'] = real
+
+        @runHooksForData hooks?.beforeEachValidationHooks, transaction, false, () =>
+          return callback(@hookHandlerError) if @hookHandlerError?
+          @runHooksForData hooks?.beforeValidationHooks[transaction.name], transaction, false, () =>
+            return callback(@hookHandlerError) if @hookHandlerError?
+            @validateTransaction test, transaction, callback
+
+
+    transport = if transaction.protocol is 'https:' then https else http
+    if transaction.request['body'] and @isMultipart requestOptions
+      @replaceLineFeedInBody transaction, requestOptions
+
+    try
+      req = transport.request requestOptions, handleRequest
+
+      req.on 'error', (error) =>
+        test.title = transaction.id
+        test.expected = transaction.expected
+        test.request = transaction.request
+        @configuration.emitter.emit 'test error', error, test, () ->
+        return callback()
+
+      req.write transaction.request['body'] if transaction.request['body'] != ''
+      req.end()
+    catch error
+      test.title = transaction.id
+      test.expected = transaction.expected
+      test.request = transaction.request
+      @configuration.emitter.emit 'test error', error, test, () ->
+      return callback()
 
   validateTransaction: (test, transaction, callback) ->
     configuration = @configuration
@@ -566,5 +589,6 @@ class TransactionRunner
       transaction.request['body'] = transaction.request['body'].replace(/\n/g, '\r\n')
       transaction.request['headers']['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
       requestOptions.headers = transaction.request['headers']
+
 
 module.exports = TransactionRunner
