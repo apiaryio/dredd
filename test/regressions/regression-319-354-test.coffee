@@ -75,6 +75,10 @@ describe 'Regression: Issues #319 and #354', ->
     name: ''
     colors: ['red', 'brown']
     dimensions: [[20, 30, 40]]
+    producer:
+      address:
+        city: null
+        street: ''
 
   brickTypeSchema =
     $schema: 'http://json-schema.org/draft-04/schema#'
@@ -84,6 +88,14 @@ describe 'Regression: Issues #319 and #354', ->
       name: {type: 'string'}
       colors: {type: 'array'}
       dimensions: {type: 'array'}
+      producer:
+        type: 'object'
+        properties:
+          address:
+            type: 'object'
+            properties:
+              city: {type: ['string', 'null']}
+              street: {type: 'string'}
     required: ['name']
 
   userPayload =
@@ -116,7 +128,7 @@ describe 'Regression: Issues #319 and #354', ->
     type: 'array'
 
   describe 'Tested app is consistent with the API description', ->
-    before (done) ->
+    beforeEach (done) ->
       app = express()
 
       # Attaching endpoint for each testing scenario
@@ -200,7 +212,7 @@ describe 'Regression: Issues #319 and #354', ->
       page: 1
       items: [incorrectUserPayload]
 
-    before (done) ->
+    beforeEach (done) ->
       app = express()
 
       # Attaching endpoint for each testing scenario
