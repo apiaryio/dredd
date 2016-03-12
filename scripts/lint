@@ -1,0 +1,9 @@
+#!/bin/bash
+# Runs all linters.
+
+
+# CoffeeScript linter
+coffeelint ./src
+
+# Ensure the docs about CLI are up-to-date
+coffee ./scripts/lint-cli-docs.coffee
