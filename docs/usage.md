@@ -7,8 +7,6 @@ Dredd may be configured from the command line, from a configuration, or from the
 To see how to use the CLI interface, type `dredd --help` at the command line.
 
 ```
-dredd --help
-
 Usage:
   $ dredd init
 
@@ -23,13 +21,15 @@ Options:
                        blueprint and compile transactions.       [default: null]
   --hookfiles, -f      Specifies a pattern to match files with before/after
                        hooks for running tests                   [default: null]
+  --language, -a       Language of hookfiles. Possible options are: nodejs,
+                       ruby, python, php, perl, go           [default: "nodejs"]
   --sandbox, -b        Load and run non trusted hooks code in sandboxed
                        container                                [default: false]
   --server, -g         Run API backend server command and kill it after Dredd
                        execution. E.g. `rails server`            [default: null]
   --server-wait        Set delay time in seconds between running a server and
                        test run.                                    [default: 3]
-  --init, -i           Run interactive configuration. Creates .dredd.yml
+  --init, -i           Run interactive configuration. Creates dredd.yml
                        configuration file.                      [default: false]
   --custom, -j         Pass custom key-value configuration data delimited by a
                        colon. E.g. -j 'a:b'                        [default: []]

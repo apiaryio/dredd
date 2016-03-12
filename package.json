@@ -8,7 +8,7 @@
   },
   "scripts": {
     "changelist": "github-changes -o apiaryio -r dredd --only-pulls --use-commit-body --file CHANGELOG-Generated.md -a",
-    "lint": "coffeelint ./src",
+    "lint": "./scripts/lint",
     "compile": "coffee -b -c -o lib/ src/",
     "pretest": "npm run compile",
     "test": "./scripts/test",
