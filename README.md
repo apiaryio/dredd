@@ -14,8 +14,8 @@ This library takes API Blueprint AST and returns specific HTTP transactions (Req
 - Warns on undefined URI query and path parameters
 - Validates URI parameter types
 - Selects first request and first response if multiple request or responses are given in the API Blueprint AST
-- Assigns path origin object pointing to the API Blueprint AST
-- Compiles [canonical transaction path](#canonical-transaction-paths) as a unique identifier for each transaction
+- Assigns path origin object pointing to the API Blueprint AST [EXPERIMENTAL]
+- Compiles [canonical transaction path](#canonical-transaction-paths) as a unique identifier for each transaction [EXPERIMENTAL]
 - Assigns origin object pointing to the API Blueprint AST [DEPRECATED]
 - Compiles Transaction name string for each transaction [DEPRECATED]
 
@@ -44,7 +44,7 @@ Following is description is in a [MSON](https://github.com/apiaryio/mson) format
 
 - transaction (object)
     - name: `Hello world! > Retrieve Message` (string) - Transaction identification name used for referencing
-    - path: `::Hello world!:Retreive Message:Example 1` (string) - [Canonical transaction path](#canonical-transaction-paths)
+    - path: `::Hello world!:Retreive Message:Example 1` (string) - [Canonical transaction path](#canonical-transaction-paths) [EXPERIMENTAL]
 
     - request (object) - Request compiled from blueprint
         - body: `Hello world!\n` (string)
@@ -58,7 +58,7 @@ Following is description is in a [MSON](https://github.com/apiaryio/mson) format
         - body (string)
         - schema (string)
 
-    - pathOrigin (object) - Reference to the original blueprint
+    - pathOrigin (object) - Reference to the original blueprint [EXPERIMENTAL]
         - apiName: `My Api` (string)
         - resourceGroupName: `Greetings` (string)
         - resourceName: `Hello, world!` (string)
@@ -74,7 +74,7 @@ Following is description is in a [MSON](https://github.com/apiaryio/mson) format
         - exampleName: `First example` (string)
 
 
-## Canonical transaction paths
+## Canonical transaction paths [EXPERIMENTAL]
 
 Canonical transcation path is added to each compiled HTTP transaction as its identifier.
 
