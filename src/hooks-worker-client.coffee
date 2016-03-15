@@ -13,14 +13,14 @@ class HooksWorkerClient
   constructor: (@runner) ->
     options = @runner.hooks.configuration.options
     @language = options.language
-    @timeout = options['hook-worker-timeout'] || 5000
-    @connectTimeout = options['hook-worker-connect-timeout'] || 1500
-    @connectRetry = options['hook-worker-connect-retry'] || 500
-    @afterConnectWait = options['hook-worker-after-connect-wait'] || 100
-    @termTimeout = options['hook-worker-term-timeout'] || 5000
-    @termRetry = options['hook-worker-term-retry'] || 500
-    @handlerHost = options['hook-worker-handler-host'] || 'localhost'
-    @handlerPort = options['hook-worker-handler-port'] || 61321
+    @timeout = options['hooks-worker-timeout'] || 5000
+    @connectTimeout = options['hooks-worker-connect-timeout'] || 1500
+    @connectRetry = options['hooks-worker-connect-retry'] || 500
+    @afterConnectWait = options['hooks-worker-after-connect-wait'] || 100
+    @termTimeout = options['hooks-worker-term-timeout'] || 5000
+    @termRetry = options['hooks-worker-term-retry'] || 500
+    @handlerHost = options['hooks-worker-handler-host'] || 'localhost'
+    @handlerPort = options['hooks-worker-handler-port'] || 61321
     @handlerMessageDelimiter = '\n'
     @clientConnected = false
     @handlerEnded = false
