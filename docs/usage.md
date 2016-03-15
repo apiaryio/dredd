@@ -7,8 +7,6 @@ Dredd may be configured from the command line, from a configuration, or from the
 To see how to use the CLI interface, type `dredd --help` at the command line.
 
 ```
-dredd --help
-
 Usage:
   $ dredd init
 
@@ -19,67 +17,103 @@ Example:
   $ dredd ./apiary.md http://localhost:3000 --dry-run
 
 Options:
-  --dry-run, -y        Do not run any real HTTP transaction, only parse
-                       blueprint and compile transactions.       [default: null]
-  --hookfiles, -f      Specifies a pattern to match files with before/after
-                       hooks for running tests                   [default: null]
-  --sandbox, -b        Load and run non trusted hooks code in sandboxed
-                       container                                [default: false]
-  --server, -g         Run API backend server command and kill it after Dredd
-                       execution. E.g. `rails server`            [default: null]
-  --server-wait        Set delay time in seconds between running a server and
-                       test run.                                    [default: 3]
-  --init, -i           Run interactive configuration. Creates .dredd.yml
-                       configuration file.                      [default: false]
-  --custom, -j         Pass custom key-value configuration data delimited by a
-                       colon. E.g. -j 'a:b'                        [default: []]
-  --names, -n          Only list names of requests (for use in a hookfile). No
-                       requests are made.                       [default: false]
-  --only, -x           Run only specified transaction name. Can be used
-                       multiple times                              [default: []]
-  --reporter, -r       Output additional report format. This option can be used
-                       multiple times to add multiple reporters. Options:
-                       junit, nyan, dot, markdown, html, apiary.
-                                                                   [default: []]
-  --output, -o         Specifies output file when using additional file-based
-                       reporter. This option can be used multiple times if
-                       multiple file-based reporters are used.
-                                                                   [default: []]
-  --header, -h         Extra header to include in every request. This option
-                       can be used multiple times to add multiple headers.
-                                                                   [default: []]
-  --sorted, -s         Sorts requests in a sensible way so that objects are not
-                       modified before they are created. Order: CONNECT,
-                       OPTIONS, POST, GET, HEAD, PUT, PATCH, DELETE, TRACE.
-                                                                [default: false]
-  --user, -u           Basic Auth credentials in the form username:password.
+  --dry-run, -y                      Do not run any real HTTP transaction, only
+                                     parse blueprint and compile transactions.
                                                                  [default: null]
-  --inline-errors, -e  Determines whether failures and errors are displayed as
-                       they occur (true) or aggregated and displayed at the end
-                       (false).
+  --hookfiles, -f                    Specifies a pattern to match files with
+                                     before/after hooks for running tests
+                                                                 [default: null]
+  --language, -a                     Language of hookfiles. Possible options
+                                     are: nodejs, ruby, python, php, perl, go
+                                                             [default: "nodejs"]
+  --sandbox, -b                      Load and run non trusted hooks code in
+                                     sandboxed container        [default: false]
+  --server, -g                       Run API backend server command and kill it
+                                     after Dredd execution. E.g. `rails server`
+                                                                 [default: null]
+  --server-wait                      Set delay time in seconds between running
+                                     a server and test run.         [default: 3]
+  --init, -i                         Run interactive configuration. Creates
+                                     dredd.yml configuration file.
                                                                 [default: false]
-  --details, -d        Determines whether request/response details are included
-                       in passing tests.
-                                                                [default: false]
-  --method, -m         Restrict tests to a particular HTTP method (GET, PUT,
-                       POST, DELETE, PATCH). This option can be used multiple
-                       times to allow multiple methods.
+  --custom, -j                       Pass custom key-value configuration data
+                                     delimited by a colon. E.g. -j 'a:b'
                                                                    [default: []]
-  --color, -c          Determines whether console output should include colors.
+  --names, -n                        Only list names of requests (for use in a
+                                     hookfile). No requests are made.
+                                                                [default: false]
+  --only, -x                         Run only specified transaction name. Can
+                                     be used multiple times        [default: []]
+  --reporter, -r                     Output additional report format. This
+                                     option can be used multiple times to add
+                                     multiple reporters. Options: junit, nyan,
+                                     dot, markdown, html, apiary.
+                                                                   [default: []]
+  --output, -o                       Specifies output file when using
+                                     additional file-based reporter. This
+                                     option can be used multiple times if
+                                     multiple file-based reporters are used.
+                                                                   [default: []]
+  --header, -h                       Extra header to include in every request.
+                                     This option can be used multiple times to
+                                     add multiple headers.
+                                                                   [default: []]
+  --sorted, -s                       Sorts requests in a sensible way so that
+                                     objects are not modified before they are
+                                     created. Order: CONNECT, OPTIONS, POST,
+                                     GET, HEAD, PUT, PATCH, DELETE, TRACE.
+                                                                [default: false]
+  --user, -u                         Basic Auth credentials in the form
+                                     username:password.
+                                                                 [default: null]
+  --inline-errors, -e                Determines whether failures and errors are
+                                     displayed as they occur (true) or
+                                     aggregated and displayed at the end
+                                     (false).
+                                                                [default: false]
+  --details, -d                      Determines whether request/response
+                                     details are included in passing tests.
+                                                                [default: false]
+  --method, -m                       Restrict tests to a particular HTTP method
+                                     (GET, PUT, POST, DELETE, PATCH). This
+                                     option can be used multiple times to allow
+                                     multiple methods.
+                                                                   [default: []]
+  --color, -c                        Determines whether console output should
+                                     include colors.
                                                                  [default: true]
-  --level, -l          The level of logging to output. Options: silly, debug,
-                       verbose, info, warn, error.
+  --level, -l                        The level of logging to output. Options:
+                                     silly, debug, verbose, info, warn, error.
                                                                [default: "info"]
-  --timestamp, -t      Determines whether console output should include
-                       timestamps.
+  --timestamp, -t                    Determines whether console output should
+                                     include timestamps.
                                                                 [default: false]
-  --silent, -q         Silences commandline output.
+  --silent, -q                       Silences commandline output.
                                                                 [default: false]
-  --path, -p           Additional blueprint paths or URLs. Can be used multiple
-                       times with glob pattern for paths.          [default: []]
-  --help               Show usage information.
+  --path, -p                         Additional blueprint paths or URLs. Can be
+                                     used multiple times with glob pattern for
+                                     paths.                        [default: []]
+  --help                             Show usage information.
 
-  --version            Show version number.
+  --version                          Show version number.
+
+  --hooks-worker-timeout             How long to wait for hooks worker to start.
+                                                                 [default: 5000]
+  --hooks-worker-connect-timeout     How long to wait for hooks worker to
+                                     acknowledge connection.     [default: 1500]
+  --hooks-worker-connect-retry       How long to wait between attempts to
+                                     connect to hooks worker.     [default: 500]
+  --hooks-worker-after-connect-wait  How long to wait between connecting to
+                                     hooks worker and start of testing.
+                                                                  [default: 100]
+  --hooks-worker-term-timeout        How long to wait between trying to
+                                     terminate hooks worker and killing it.
+                                                                 [default: 5000]
+  --hooks-worker-term-retry          How long to wait between attempts to
+                                     terminate hooks worker.      [default: 500]
+  --hooks-worker-handler-host        Host of the hook worker.
+                                                          [default: "localhost"]
+  --hooks-worker-handler-port        Port of the hook worker.   [default: 61321]
 ```
 
 ### Dredd Configuration File

@@ -44,6 +44,15 @@ applyConfiguration = (config) ->
       hookfiles: null
       sandbox: false
       language: 'nodejs'
+      'hooks-worker-timeout': 5000
+      'hooks-worker-connect-timeout': 1500
+      'hooks-worker-connect-retry': 500
+      'hooks-worker-after-connect-wait': 100
+      'hooks-worker-term-timeout': 5000
+      'hooks-worker-term-retry': 500
+      'hooks-worker-handler-host': 'localhost'
+      'hooks-worker-handler-port': 61321
+
 
   # normalize options and config
   for own key, value of config

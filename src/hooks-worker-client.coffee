@@ -9,23 +9,19 @@ logger = require './logger'
 which = require './which'
 
 
-HOOK_TIMEOUT = 5000
-
-CONNECT_TIMEOUT = 1500
-CONNECT_RETRY = 500
-AFTER_CONNECT_WAIT = 100
-
-TERM_TIMEOUT = 5000
-TERM_RETRY = 500
-
-HANDLER_HOST = 'localhost'
-HANDLER_PORT = 61321
-HANDLER_MESSAGE_DELIMITER = "\n"
-
-
 class HooksWorkerClient
   constructor: (@runner) ->
-    @language = @runner.hooks?.configuration?.options?.language
+    options = @runner.hooks.configuration.options
+    @language = options.language
+    @timeout = options['hooks-worker-timeout'] || 5000
+    @connectTimeout = options['hooks-worker-connect-timeout'] || 1500
+    @connectRetry = options['hooks-worker-connect-retry'] || 500
+    @afterConnectWait = options['hooks-worker-after-connect-wait'] || 100
+    @termTimeout = options['hooks-worker-term-timeout'] || 5000
+    @termRetry = options['hooks-worker-term-retry'] || 500
+    @handlerHost = options['hooks-worker-handler-host'] || 'localhost'
+    @handlerPort = options['hooks-worker-handler-port'] || 61321
+    @handlerMessageDelimiter = '\n'
     @clientConnected = false
     @handlerEnded = false
     @handlerKilledIntentionally = false
@@ -67,15 +63,15 @@ class HooksWorkerClient
         clearTimeout timeout
         callback()
       else
-        if (Date.now() - start) < TERM_TIMEOUT
+        if (Date.now() - start) < @termTimeout
           term()
-          timeout = setTimeout waitForHandlerTermOrKill, TERM_RETRY
+          timeout = setTimeout waitForHandlerTermOrKill, @termRetry
         else
           kill()
           clearTimeout(timeout)
           callback()
 
-    timeout = setTimeout waitForHandlerTermOrKill, TERM_RETRY
+    timeout = setTimeout waitForHandlerTermOrKill, @termRetry
 
   disconnectFromHandler: ->
     @handlerClient.destroy()
@@ -190,7 +186,7 @@ class HooksWorkerClient
   connectToHandler: (callback) ->
     start = Date.now()
     waitForConnect = =>
-      if (Date.now() - start) < CONNECT_TIMEOUT
+      if (Date.now() - start) < @connectTimeout
         clearTimeout(timeout)
 
         if @connectError != false
@@ -201,14 +197,14 @@ class HooksWorkerClient
 
         if @clientConnected != true
           connectAndSetupClient()
-          timeout = setTimeout waitForConnect, CONNECT_RETRY
+          timeout = setTimeout waitForConnect, @connectRetry
 
       else
         clearTimeout(timeout)
         if ! @clientConnected
           @handlerClient.destroy() if @handlerClient?
-          msg = "Connect timeout #{CONNECT_TIMEOUT / 1000}s to the handler " +
-          "on #{HANDLER_HOST}:#{HANDLER_PORT} exceeded, try increasing the limit."
+          msg = "Connect timeout #{@connectTimeout / 1000}s to the handler " +
+          "on #{@handlerHost}:#{@handlerPort} exceeded, try increasing the limit."
           error = new Error msg
           callback(error)
 
@@ -216,13 +212,13 @@ class HooksWorkerClient
       if @runner.hookHandlerError?
         return callback(@runner.hookHandlerError)
 
-      @handlerClient = net.connect port: HANDLER_PORT, host: HANDLER_HOST
+      @handlerClient = net.connect port: @handlerPort, host: @handlerHost
 
       @handlerClient.on 'connect', =>
-        logger.info "Connected to the hook handler, waiting #{AFTER_CONNECT_WAIT / 1000}s to start testing."
+        logger.info "Connected to the hook handler, waiting #{@afterConnectWait / 1000}s to start testing."
         @clientConnected = true
         clearTimeout(timeout)
-        setTimeout callback, AFTER_CONNECT_WAIT
+        setTimeout callback, @afterConnectWait
 
       @handlerClient.on 'close', ->
 
@@ -233,8 +229,8 @@ class HooksWorkerClient
 
       @handlerClient.on 'data', (data) =>
         handlerBuffer += data.toString()
-        if data.toString().indexOf(HANDLER_MESSAGE_DELIMITER) > -1
-          splittedData = handlerBuffer.split(HANDLER_MESSAGE_DELIMITER)
+        if data.toString().indexOf(@handlerMessageDelimiter) > -1
+          splittedData = handlerBuffer.split(@handlerMessageDelimiter)
 
           # add last chunk to the buffer
           handlerBuffer = splittedData.pop()
@@ -249,7 +245,7 @@ class HooksWorkerClient
             else
               logger.log 'UUID not present in message: ', JSON.stringify(message, null, 2)
 
-    timeout = setTimeout waitForConnect, CONNECT_RETRY
+    timeout = setTimeout waitForConnect, @connectRetry
 
   registerHooks: (callback) ->
     eachHookNames = [
@@ -271,7 +267,7 @@ class HooksWorkerClient
           data: data
 
         @handlerClient.write JSON.stringify message
-        @handlerClient.write HANDLER_MESSAGE_DELIMITER
+        @handlerClient.write @handlerMessageDelimiter
 
         # register event for the sent transaction
         messageHandler = (receivedMessage) ->
@@ -302,7 +298,8 @@ class HooksWorkerClient
           hookCallback()
 
         # set timeout for the hook
-        timeout = setTimeout handleTimeout, HOOK_TIMEOUT
+        timeout = setTimeout handleTimeout, @timeout
+
 
         @emitter.on uuid, messageHandler
 

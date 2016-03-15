@@ -10,6 +10,7 @@ loggerStub = require '../../src/logger'
 whichStub =  require '../../src/which'
 
 Hooks = require '../../src/hooks'
+commandLineOptions = require '../../src/options'
 
 PORT = 61321
 
@@ -38,9 +39,7 @@ describe 'Hooks worker client', ->
 
     runner = new TransactionRunner {}
     runner.hooks = new Hooks(logs: [], logger: console)
-
-    runner.hooks.configuration =
-      options: {}
+    runner.hooks.configuration = {options: {}}
 
     for level in logLevels
       sinon.stub loggerStub, level, (msg1, msg2) ->
@@ -657,3 +656,45 @@ describe 'Hooks worker client', ->
                 assert.equal sentData['key'], 'newValue'
                 done()
               , 200
+
+  describe "'hooks-worker-*' configuration options", ->
+    scenarios = [
+        property: 'timeout'
+        option: 'hooks-worker-timeout'
+      ,
+        property: 'connectTimeout'
+        option: 'hooks-worker-connect-timeout'
+      ,
+        property: 'connectRetry'
+        option: 'hooks-worker-connect-retry'
+      ,
+        property: 'afterConnectWait'
+        option: 'hooks-worker-after-connect-wait'
+      ,
+        property: 'termTimeout'
+        option: 'hooks-worker-term-timeout'
+      ,
+        property: 'termRetry'
+        option: 'hooks-worker-term-retry'
+      ,
+        property: 'handlerHost'
+        option: 'hooks-worker-handler-host'
+      ,
+        property: 'handlerPort'
+        option: 'hooks-worker-handler-port'
+    ]
+
+    for scenario in scenarios
+      do (scenario) ->
+        describe "Option '#{scenario.option}'", ->
+          defaultValue = commandLineOptions[scenario.option].default
+          changedValue = defaultValue + 42
+
+          it "is set to #{defaultValue} by default", ->
+            hooksWorkerClient = new HooksWorkerClient(runner)
+            assert.equal hooksWorkerClient[scenario.property], defaultValue
+
+          it 'can be set to a different value', ->
+            runner.hooks.configuration.options[scenario.option] = changedValue
+            hooksWorkerClient = new HooksWorkerClient(runner)
+            assert.equal hooksWorkerClient[scenario.property], changedValue

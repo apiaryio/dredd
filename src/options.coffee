@@ -131,4 +131,36 @@ options =
   version:
     description: "Show version number.\n"
 
+  'hooks-worker-timeout':
+    description: "How long to wait for hooks worker to start."
+    default: 5000
+
+  'hooks-worker-connect-timeout':
+    description: 'How long to wait for hooks worker to acknowledge connection.'
+    default: 1500
+
+  'hooks-worker-connect-retry':
+    description: 'How long to wait between attempts to connect to hooks worker.'
+    default: 500
+
+  'hooks-worker-after-connect-wait':
+    description: 'How long to wait between connecting to hooks worker and start of testing.'
+    default: 100
+
+  'hooks-worker-term-timeout':
+    description: 'How long to wait between trying to terminate hooks worker and killing it.'
+    default: 5000
+
+  'hooks-worker-term-retry':
+    description: 'How long to wait between attempts to terminate hooks worker.'
+    default: 500
+
+  'hooks-worker-handler-host':
+    description: 'Host of the hook worker.'
+    default: 'localhost'
+
+  'hooks-worker-handler-port':
+    description: 'Port of the hook worker.'
+    default: 61321
+
 module.exports = options
