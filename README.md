@@ -23,9 +23,7 @@ documentation.
 ### Supported Hook Languages
 
 Dredd supports writing [hooks](http://dredd.readthedocs.org/en/latest/hooks/)
-— a glue code for each test setup and teardown.
-
-Following languages are supported:
+— a glue code for each test setup and teardown. Following languages are supported:
 
 - [Go](http://dredd.readthedocs.org/en/latest/hooks-go/)
 - [Node.js (JavaScript)](http://dredd.readthedocs.org/en/latest/hooks-nodejs/)
@@ -47,8 +45,6 @@ Following languages are supported:
 ```
 $ npm install -g dredd
 ```
-
-> **Note:** Dredd works smoothly with Node.js 5, 4, 0.12, 0.10, and io.js v2.5.
 
 ## Quick Start
 
