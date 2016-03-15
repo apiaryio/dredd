@@ -1,5 +1,11 @@
 ## Changelog
 
+### v1.0.8
+
+**New CLI options available, mainly ability to override hooks worker timeouts**
+- [#382](https://github.com/apiaryio/dredd/pull/382) Pass in options to hook worker (@xvalentino)
+- [#414](https://github.com/apiaryio/dredd/pull/414) Pass in options to hook worker (continued) (@honzajavorek)
+
 ### v1.0.7
 
 **Latest Protagonist**
