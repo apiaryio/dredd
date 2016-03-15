@@ -19,9 +19,7 @@ documentation.
 ### Supported Hook Languages
 
 Dredd supports writing [hooks](http://dredd.readthedocs.org/en/latest/hooks/)
-— a glue code for each test setup and teardown.
-
-Following languages are supported:
+— a glue code for each test setup and teardown. Following languages are supported:
 
 - [Go](http://dredd.readthedocs.org/en/latest/hooks-go/)
 - [Node.js (JavaScript)](http://dredd.readthedocs.org/en/latest/hooks-nodejs/)
