@@ -52,7 +52,6 @@ applyConfiguration = (config) ->
       'hook-worker-term-retry': 500
       'hook-worker-handler-host': 'localhost'
       'hook-worker-handler-port': 61321
-      'hook-worker-handler-message-delimiter': '\n'
 
 
   # normalize options and config

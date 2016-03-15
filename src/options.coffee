@@ -156,7 +156,4 @@ options =
   'hook-worker-handler-port':
     default: 61321
 
-  'hook-worker-handler-message-delimiter':
-    default: '\n'
-
 module.exports = options
