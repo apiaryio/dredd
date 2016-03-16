@@ -1,7 +1,7 @@
 {
   "name": "blueprint-transactions",
   "version": "0.0.2",
-  "description": "Compile HTTP transactions (request-response pairs) from API Blueprint AST",
+  "description": "Compile HTTP Transactions (Request-Response pairs) from API Blueprint AST",
   "main": "lib/blueprint-transactions.js",
   "scripts": {
     "changelist": "github-changes -o apiaryio -r http-compiler --only-pulls --use-commit-body --file CHANGELOG-generated.md",
@@ -37,6 +37,6 @@
     "integration",
     "acceptance"
   ],
-  "author": "Adam Kliment <adam@apiary.io>",
+  "author": "Apiary Czech Republic, s.r.o. <support@apiary.io>",
   "license": "MIT"
 }
