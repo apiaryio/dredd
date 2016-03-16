@@ -1,8 +1,19 @@
+fs = require 'fs'
+path = require 'path'
 {assert} = require 'chai'
-blueprintTransactions = require '../../src/blueprint-transactions'
-ast = require '../fixtures/blueprint-ast'
+protagonist = require 'protagonist'
+blueprintTransactions = require '../../../src/blueprint-transactions'
 
-describe 'blueprintTransactions', () ->
+describe 'blueprintTransactions [BLUEPRINT]', () ->
+  ast = undefined
+  filename = path.join __dirname, '../../fixtures/blueprint.apib'
+
+  before (done) ->
+    code = fs.readFileSync(filename).toString()
+    protagonist.parse code, {type: 'ast'}, (err, result) ->
+      return done(err) if err
+      ast = result['ast']
+      done()
 
   it 'exports an object', () ->
     assert.isObject blueprintTransactions
@@ -38,4 +49,3 @@ describe 'blueprintTransactions', () ->
           for transaction, index in returnedObject.transactions
             console.log transaction.path
             assert.property transaction, 'path', "Missing 'path' property on transaction #{index}"
-

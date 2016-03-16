@@ -1,0 +1,69 @@
+FORMAT: X-1A
+
+# Machines API
+
+# Group Machines
+
+# Machines collection [/machines]
+
+## Create a Machine [POST]
++ Request (application/json)
+
+        {
+          "type": "bulldozer",
+          "name": "willy"
+        }
+
++ Response 202 (application/json)
+
+        {
+          "mesage": "Accepted"
+        }
+
+
+## Retreive all Machines [GET]
+
++ Response 200 (application/json)
+
+        [{
+            "_id": "52341870ed55224b15ff07ef",
+            "type": "bulldozer",
+            "name": "willy"
+        }]
+
+# Machine [/machines/{name}]
++ Parameters
+  + name (required,`willy`)
+
+## Update a Machine [PUT]
+
++ Request (application/json)
+
+        {
+          "name": "waldo"
+        }
+
++ Response 200 (application/json)
+
+        {
+          "type": "bulldozer",
+          "name": "waldo",
+          "_id": "5229c6e8e4b0bd7dbb07e29c"
+        }
+
+## Retrieve a Machine [GET]
++ Parameters
+  + name (required,`waldo`)
+
++ Response 200 (text/plain)
+
+        {
+          "type": "bulldozer",
+          "name": "waldo",
+          "_id": "5229c6e8e4b0bd7dbb07e29c"
+        }
+
+## Delete Message [DELETE]
++ Parameters
+  + name (required,`waldo`)
++ Response 204

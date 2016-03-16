@@ -1,14 +1,9 @@
-Drafter = require 'drafter'
+protagonist = require 'protagonist'
 {assert} = require 'chai'
 
 blueprintTransactions = require '../../src/blueprint-transactions'
 
 describe "compiled transaction paths", () ->
-  drafter = null
-
-  beforeEach () ->
-    drafter = new Drafter
-
   describe "Full notation with multiple request-response pairs", () ->
 
     it 'should have expected path', (done) ->
@@ -30,8 +25,8 @@ describe "compiled transaction paths", () ->
 
       expected = "Some API Name:Some Group Name:Some Resource Name:Some Action Name:Example 2"
 
-      drafter.make code, (drafterError, result) ->
-        return done(drafterError) if drafterError
+      protagonist.parse code, {type: 'ast'}, (err, result) ->
+        return done(err) if err
         paths = []
         transactions = blueprintTransactions.compile(result.ast).transactions
         console.log JSON.stringify transactions, null, 2
@@ -57,8 +52,8 @@ describe "compiled transaction paths", () ->
 
       expected = "Some API Name::Some Resource Name:Some Action Name:Example 1"
 
-      drafter.make code, (drafterError, result) ->
-        return done(drafterError) if drafterError
+      protagonist.parse code, {type: 'ast'}, (err, result) ->
+        return done(err) if err
         paths = []
         transactions = blueprintTransactions.compile(result.ast).transactions
         for transaction in transactions
@@ -79,8 +74,8 @@ describe "compiled transaction paths", () ->
 
       expected = "::Some Resource Name:Some Action Name:Example 1"
 
-      drafter.make code, (drafterError, result) ->
-        return done(drafterError) if drafterError
+      protagonist.parse code, {type: 'ast'}, (err, result) ->
+        return done(err) if err
         paths = []
         transactions = blueprintTransactions.compile(result.ast).transactions
         for transaction in transactions
@@ -103,8 +98,8 @@ describe "compiled transaction paths", () ->
 
       expected = "My API\\: Revamp::Some Resource Name:Some Action Name:Example 1"
 
-      drafter.make code, (drafterError, result) ->
-        return done(drafterError) if drafterError
+      protagonist.parse code, {type: 'ast'}, (err, result) ->
+        return done(err) if err
         paths = []
         transactions = blueprintTransactions.compile(result.ast).transactions
         for transaction in transactions
@@ -124,8 +119,8 @@ describe "compiled transaction paths", () ->
 
       expected = "::/message:GET:Example 1"
 
-      drafter.make code, (drafterError, result) ->
-        return done(drafterError) if drafterError
+      protagonist.parse code, {type: 'ast'}, (err, result) ->
+        return done(err) if err
         paths = []
         transactions = blueprintTransactions.compile(result.ast).transactions
         for transaction in transactions

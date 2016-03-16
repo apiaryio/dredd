@@ -1,0 +1,37 @@
+FORMAT: 1A
+
+# Machines API
+
+# Group Machines
+
+# Machines collection [/machines/{id}]
+  + Parameters
+    - id (number, `1`)
+
+## Get Machines [GET]
+
+- Request (application/json)
+  + Parameters
+    - id (number, `2`)
+
+- Response 200 (application/json; charset=utf-8)
+
+    [
+      {
+        "type": "bulldozer",
+        "name": "willy"
+      }
+    ]
+
+- Request (application/json)
+  + Parameters
+    - id (number, `3`)
+
+- Response 200 (application/json; charset=utf-8)
+
+    [
+      {
+        "type": "bulldozer",
+        "name": "willy"
+      }
+    ]
