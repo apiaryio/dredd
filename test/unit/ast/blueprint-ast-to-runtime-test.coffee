@@ -1,12 +1,12 @@
 {assert} = require 'chai'
-Drafter = require 'drafter'
+protagonist = require 'protagonist'
 fs = require 'fs'
 
-blueprintAstToRuntime = require '../../src/blueprint-ast-to-runtime'
+blueprintAstToRuntime = require '../../../src/blueprint-ast-to-runtime'
 
 
-describe "blueprintAstToRuntime()", () ->
-  blueprintAst = require '../fixtures/blueprint-ast'
+describe "blueprintAstToRuntime() [AST]", () ->
+  blueprintAst = require '../../fixtures/blueprint-ast'
   data = {}
   filename = './path/to/blueprint.apib'
   before () ->
@@ -93,7 +93,7 @@ describe "blueprintAstToRuntime()", () ->
 
   describe 'when some warning in URI expanding appear', () ->
     it 'should have piped all warnings from expandUriTemplate', () ->
-      blueprintAst = require '../fixtures/blueprint-ast'
+      blueprintAst = require '../../fixtures/blueprint-ast'
       blueprintAst['resourceGroups'][0]['resources'][1]['parameters'] = {}
       blueprintAst['resourceGroups'][0]['resources'][1]['actions'][0]['parameters'] = {}
 
@@ -102,7 +102,7 @@ describe "blueprintAstToRuntime()", () ->
 
   describe 'when some error in URI parameters validation appear', () ->
     it 'should have piped all errors from validateParameters', () ->
-      blueprintAst = require '../fixtures/blueprint-ast'
+      blueprintAst = require '../../fixtures/blueprint-ast'
       params = [
         {
           name: 'name'
@@ -121,7 +121,7 @@ describe "blueprintAstToRuntime()", () ->
 
   describe 'when some error in URI expanding appear', () ->
     it 'should have piped all errors from expandUriTemplate', () ->
-      blueprintAst = require '../fixtures/blueprint-ast'
+      blueprintAst = require '../../fixtures/blueprint-ast'
       blueprintAst['resourceGroups'][0]['resources'][1]['uriTemplate'] = '/machines{{/name}'
       data = blueprintAstToRuntime blueprintAst
       assert.notEqual data['errors'].length, 0
@@ -143,7 +143,7 @@ describe "blueprintAstToRuntime()", () ->
     transaction = null
     filename = './path/to/blueprint.apib'
     before () ->
-      simpleUnnamedAst = require '../fixtures/simple-unnamed-ast'
+      simpleUnnamedAst = require '../../fixtures/simple-unnamed-ast'
       data = blueprintAstToRuntime simpleUnnamedAst, filename
       transaction = data['transactions'][0]
 
@@ -166,7 +166,7 @@ describe "blueprintAstToRuntime()", () ->
     transactions = null
 
     before () ->
-      simpleUnnamedAst = require '../fixtures/multiple-examples'
+      simpleUnnamedAst = require '../../fixtures/multiple-examples'
       transactions = blueprintAstToRuntime(simpleUnnamedAst, filename)['transactions']
 
     it 'should set exampleName for first transaction to "Example 1"', () ->
@@ -181,7 +181,7 @@ describe "blueprintAstToRuntime()", () ->
     transactions = null
 
     before () ->
-      simpleUnnamedAst = require '../fixtures/single-get'
+      simpleUnnamedAst = require '../../fixtures/single-get'
       transactions = blueprintAstToRuntime(simpleUnnamedAst, filename)['transactions']
 
     it 'should let example name intact', () ->
@@ -191,11 +191,10 @@ describe "blueprintAstToRuntime()", () ->
     transactions = null
 
     before (done) ->
-      filename = './test/fixtures/arbitrary-action.md'
+      filename = './test/fixtures/arbitrary-action.apib'
       code = fs.readFileSync(filename).toString()
-      drafter = new Drafter
-      drafter.make code, (drafterError, result) ->
-        done(drafterError) if drafterError
+      protagonist.parse code, {type: 'ast'}, (err, result) ->
+        return done(err) if err
         transactions = blueprintAstToRuntime(result['ast'], filename)['transactions']
         done()
 
@@ -211,5 +210,3 @@ describe "blueprintAstToRuntime()", () ->
 
     it 'second (arbitrary) action should have its method', ->
       assert.equal transactions[1].request.method, 'GET'
-
-
