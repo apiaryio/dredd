@@ -69,6 +69,12 @@ options =
       This option can be used multiple times to add multiple headers.\n"""
     default: []
 
+  "private-header":
+    description: """
+      Header not to be shown in output. \
+      This option can be used multiple times to hide multiple headers.\n"""
+    default: []
+
   sorted:
     alias: "s"
     description: """

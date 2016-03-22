@@ -31,6 +31,7 @@ applyConfiguration = (config) ->
       output: null
       debug: false
       header: null
+      'private-header': null
       user: null
       'inline-errors':false
       details: false
@@ -68,6 +69,7 @@ applyConfiguration = (config) ->
   configuration.options.reporter = coerceToArray(configuration.options.reporter)
   configuration.options.output = coerceToArray(configuration.options.output)
   configuration.options.header = coerceToArray(configuration.options.header)
+  configuration.options['private-header'] = coerceToArray(configuration.options['private-header'])
   configuration.options.method = coerceToArray(configuration.options.method)
   configuration.options.only = coerceToArray(configuration.options.only)
   configuration.options.path = coerceToArray(configuration.options.path)

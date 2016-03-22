@@ -12,7 +12,7 @@ logger = require './../logger'
 CONNECTION_ERRORS = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
 
 class ApiaryReporter
-  constructor: (emitter, stats, tests, config, runner) ->
+  constructor: (emitter, stats, tests, config, runner, privateHeader) ->
     @type = "cli"
     @stats = stats
     @tests = tests
@@ -22,6 +22,7 @@ class ApiaryReporter
     @remoteId = null
     @config = config
     @runner = runner
+    @privateHeader = privateHeader
     @reportUrl = null
     @configureEmitter emitter
     @errors = []

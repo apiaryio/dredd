@@ -7,7 +7,7 @@ logger = require './../logger'
 prettifyResponse = require './../prettify-response'
 
 class MarkdownReporter extends EventEmitter
-  constructor: (emitter, stats, tests, path, details) ->
+  constructor: (emitter, stats, tests, path, details, privateHeader) ->
     super()
     @type = "markdown"
     @stats = stats
@@ -16,6 +16,7 @@ class MarkdownReporter extends EventEmitter
     @buf = ""
     @level = 1
     @details = details
+    @privateHeader = privateHeader
     @configureEmitter emitter
 
   sanitizedPath: (path) ->
@@ -49,9 +50,9 @@ class MarkdownReporter extends EventEmitter
 
       if @details
         @level++
-        @buf += title("Request") + "\n```\n" + prettifyResponse(test.request) + "\n```\n\n"
-        @buf += title("Expected") + "\n```\n" + prettifyResponse(test.expected) + "\n```\n\n"
-        @buf += title("Actual") + "\n```\n" + prettifyResponse(test.actual) + "\n```\n\n"
+        @buf += title("Request") + "\n```\n" + prettifyResponse(test.request, privateHeader) + "\n```\n\n"
+        @buf += title("Expected") + "\n```\n" + prettifyResponse(test.expected, privateHeader) + "\n```\n\n"
+        @buf += title("Actual") + "\n```\n" + prettifyResponse(test.actual, privateHeader) + "\n```\n\n"
         @level--
 
       @level--
@@ -65,9 +66,9 @@ class MarkdownReporter extends EventEmitter
 
       @level++
       @buf += title("Message") + "\n```\n" + test.message + "\n```\n\n"
-      @buf += title("Request") + "\n```\n" + prettifyResponse(test.request) + "\n```\n\n"
-      @buf += title("Expected") + "\n```\n" + prettifyResponse(test.expected) + "\n```\n\n"
-      @buf += title("Actual") + "\n```\n" + prettifyResponse(test.actual) + "\n```\n\n"
+      @buf += title("Request") + "\n```\n" + prettifyResponse(test.request, privateHeader) + "\n```\n\n"
+      @buf += title("Expected") + "\n```\n" + prettifyResponse(test.expected, privateHeader) + "\n```\n\n"
+      @buf += title("Actual") + "\n```\n" + prettifyResponse(test.actual, privateHeader) + "\n```\n\n"
       @level--
 
       @level--

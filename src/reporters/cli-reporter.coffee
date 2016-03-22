@@ -2,13 +2,14 @@ logger = require './../logger'
 prettifyResponse = require './../prettify-response'
 
 class CliReporter
-  constructor: (emitter, stats, tests, inlineErrors, details) ->
+  constructor: (emitter, stats, tests, inlineErrors, details, privateHeader) ->
     @type = "cli"
     @stats = stats
     @tests = tests
     @configureEmitter emitter
     @inlineErrors = inlineErrors
     @details = details
+    @privateHeader = privateHeader
     @errors = []
 
   configureEmitter: (emitter) =>
@@ -22,9 +23,9 @@ class CliReporter
         for test in @errors
           logger.fail test.title + " duration: #{test.duration}ms"
           logger.fail test.message
-          logger.request "\n" + prettifyResponse(test.request) + "\n" if test.request
-          logger.expected "\n" + prettifyResponse(test.expected) + "\n" if test.expected
-          logger.actual "\n" + prettifyResponse(test.actual) + "\n\n" if test.actual
+          logger.request "\n" + prettifyResponse(test.request, @privateHeader) + "\n" if test.request
+          logger.expected "\n" + prettifyResponse(test.expected, @privateHeader) + "\n" if test.expected
+          logger.actual "\n" + prettifyResponse(test.actual, @privateHeader) + "\n\n" if test.actual
       if @stats.tests > 0
         logger.complete "#{@stats.passes} passing, " +
           "#{@stats.failures} failing, " +
@@ -38,9 +39,9 @@ class CliReporter
     emitter.on 'test pass', (test) =>
       logger.pass test.title + " duration: #{test.duration}ms"
       if @details
-        logger.request "\n" + prettifyResponse(test.request) + "\n"
-        logger.expected "\n" + prettifyResponse(test.expected) + "\n"
-        logger.actual "\n" + prettifyResponse(test.actual) + "\n\n"
+        logger.request "\n" + prettifyResponse(test.request, @privateHeader) + "\n"
+        logger.expected "\n" + prettifyResponse(test.expected, @privateHeader) + "\n"
+        logger.actual "\n" + prettifyResponse(test.actual, @privateHeader) + "\n\n"
 
     emitter.on 'test skip', (test) ->
       logger.skip test.title
@@ -49,9 +50,9 @@ class CliReporter
       logger.fail test.title + " duration: #{test.duration}ms"
       if @inlineErrors
         logger.fail test.message
-        logger.request "\n" + prettifyResponse(test.request) + "\n" if test.request
-        logger.expected "\n" + prettifyResponse(test.expected) + "\n" if test.expected
-        logger.actual "\n" + prettifyResponse(test.actual) + "\n\n" if test.actual
+        logger.request "\n" + prettifyResponse(test.request, @privateHeader) + "\n" if test.request
+        logger.expected "\n" + prettifyResponse(test.expected, @privateHeader) + "\n" if test.expected
+        logger.actual "\n" + prettifyResponse(test.actual, @privateHeader) + "\n\n" if test.actual
       else
         @errors.push test
 

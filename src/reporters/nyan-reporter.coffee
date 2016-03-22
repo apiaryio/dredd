@@ -4,10 +4,11 @@ logger = require './../logger'
 prettifyResponse = require './../prettify-response'
 
 class NyanCatReporter
-  constructor: (emitter, stats, tests) ->
+  constructor: (emitter, stats, tests, privateHeader) ->
     @type = "nyan"
     @stats = stats
     @tests = tests
+    @privateHeader = privateHeader
     @isatty = tty.isatty(1) and tty.isatty(2)
     if @isatty
       if process.stdout.getWindowSize
@@ -48,9 +49,9 @@ class NyanCatReporter
         for test in @errors
           logger.fail test.title + " duration: #{test.duration}ms"
           logger.fail test.message
-          logger.request "\n" + prettifyResponse(test.request) + "\n"
-          logger.expected "\n" + prettifyResponse(test.expected) + "\n"
-          logger.actual "\n" + prettifyResponse(test.actual) + "\n\n"
+          logger.request "\n" + prettifyResponse(test.request, privateHeader) + "\n"
+          logger.expected "\n" + prettifyResponse(test.expected, privateHeader) + "\n"
+          logger.actual "\n" + prettifyResponse(test.actual, privateHeader) + "\n\n"
 
       logger.complete "#{@stats.passes} passing, #{@stats.failures} failing, #{@stats.errors} errors, #{@stats.skipped} skipped"
       logger.complete "Tests took #{@stats.duration}ms"
