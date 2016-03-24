@@ -1,14 +1,17 @@
-language: node_js
+sudo: "required"
+dist: "trusty"
+language: "node_js"
 node_js:
-  - "iojs-v2.5.0"
   - "0.10"
   - "0.12"
-sudo: false
-notifications:
-  email:
-    recipients:
-      - adam@apiary.io
-    on_success: change
-    on_failure: always
+  - "iojs-v2.5.0"
+  - "4"
+  - "5"
+before_install:
+  - "npm -g install npm@latest"
+before_script:
+  - "npm run lint"
+script:
+  - "npm test"
 after_success:
-  - ./scripts/coveralls
+  - "npm run coveralls"
