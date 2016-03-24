@@ -51,7 +51,7 @@
         "level": "error"
     },
     "no_implicit_parens": {
-        "level": "error"
+        "level": "warn"
     },
     "no_empty_param_list": {
         "level": "error"
