@@ -1,4 +1,3 @@
-require 'coffee-errors'
 {assert} = require 'chai'
 proxyquire = require 'proxyquire'
 sinon = require 'sinon'
@@ -334,5 +333,3 @@ describe 'addHooks(runner, transactions, callback)', () ->
         assert.property runner.hooks.afterHooks, 'Machines collection > Get Machines'
         assert.property runner.hooks.afterHooks, 'Machines collection > Get Machines'
         done()
-
-

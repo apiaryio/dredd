@@ -1,4 +1,3 @@
-require 'coffee-errors'
 clone = require 'clone'
 sinon = require 'sinon'
 {assert} = require 'chai'
@@ -211,4 +210,3 @@ describe 'Hooks', () ->
             for transactionName, funcArray of object[property] then do (transactionName, funcArray) ->
               for index, func of funcArray
                 assert.isString object[property][transactionName][index], "at hooks.dumpHooksFunctionsToStrings()[#{property}][#{transactionName}][#{index}]"
-

@@ -1,4 +1,3 @@
-require 'coffee-errors'
 {EventEmitter} = require 'events'
 {assert} = require 'chai'
 clone = require 'clone'
