@@ -21,30 +21,30 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
 
   # check if all parameters from blueprint have an expression in URI
   for parameter in Object.keys(parameters)
-    if uriParameters.indexOf(parameter) == -1
+    if uriParameters.indexOf(parameter) is -1
       text = "\nURI template: #{uriTemplate}\nDoesn\'t contain expression for parameter" + \
              " '" + parameter + "'"
       result['warnings'].push text
 
-  if parsed['expressions'].length == 0
+  if parsed['expressions'].length is 0
     result['uri'] = uriTemplate
   else
     ambigous = false
 
     for uriParameter in uriParameters
-      if Object.keys(parameters).indexOf(uriParameter) == -1
+      if Object.keys(parameters).indexOf(uriParameter) is -1
         ambigous = true
         text = "\nAmbigous URI parameter in template: #{uriTemplate} " + \
                "\nParameter not defined in blueprint:" + \
                "'" + uriParameter + "'"
         result['warnings'].push text
 
-    if ambigous == false
+    if ambigous is false
       toExpand = {}
       for uriParameter in uriParameters
         param = parameters[uriParameter]
-        if param['required'] == true
-          if param['example'] == undefined or param['example'] == ""
+        if param['required'] is true
+          if param['example'] is undefined or param['example'] is ''
             ambigous = true
             text = "\nAmbigous URI parameter in template: #{uriTemplate} " + \
                    "\nNo example value for required parameter in blueprint:" + \
@@ -53,12 +53,12 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
           else
             toExpand[uriParameter] = param['example']
         else
-          if param['example'] != undefined and param['example'] != ""
+          if param['example'] isnt undefined and param['example'] isnt ''
             toExpand[uriParameter] = param['example']
-          else if param['default'] != undefined and param['default'] != ""
+          else if param['default'] isnt undefined and param['default'] isnt ''
             toExpand[uriParameter] = param['default']
 
-    if ambigous == false
+    if ambigous is false
       result['uri'] = parsed.expand toExpand
 
   return result

@@ -4,8 +4,8 @@ module.exports = (transaction) ->
   name = ''
   name += origin['apiName']
   name += ' > '
-  name += origin['resourceGroupName'] if origin['resourceGroupName'] != ""
-  name += ' > ' if  origin['resourceGroupName'] != ""
+  name += origin['resourceGroupName'] if origin['resourceGroupName'] isnt ''
+  name += ' > ' if  origin['resourceGroupName'] isnt ''
   name += origin['resourceName'] if origin['resourceName']
   name += ' > ' + origin['actionName'] if origin['actionName']
   name += ' > ' + origin['exampleName'] if origin['exampleName']

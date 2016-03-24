@@ -5,7 +5,7 @@ validateParameters = (params) ->
   }
 
   for paramName, param of params
-    if param['required'] == true and (param['example'] == '' or param['example'] == undefined)
+    if param['required'] is true and (param['example'] is '' or param['example'] is undefined)
       text = "Required URI parameter '#{paramName}' has no example value."
       result['errors'].push text
 
@@ -15,7 +15,7 @@ validateParameters = (params) ->
           text = "URI parameter '#{paramName}' is declared as 'number' but it is a string."
           result['errors'].push text
       when 'boolean'
-        if param['example'] != 'true' and param['example'] != 'false'
+        if param['example'] isnt 'true' and param['example'] isnt 'false'
           text = "URI parameter '#{paramName}' is declared as 'boolean' but it is not. "
           result['errors'].push text
 

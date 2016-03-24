@@ -2,7 +2,7 @@
 
 escapeOriginPart = (part) ->
   clonedPart = new String part
-  clonedPart.replace new RegExp(DELIMITER, "g"), "#{ESCAPE_CHAR}#{DELIMITER}"
+  clonedPart.replace new RegExp(DELIMITER, 'g'), "#{ESCAPE_CHAR}#{DELIMITER}"
 
 module.exports = (transaction) ->
   origin = transaction['pathOrigin']
@@ -13,5 +13,3 @@ module.exports = (transaction) ->
     escapeOriginPart(origin['resourceName']) + DELIMITER +
     escapeOriginPart(origin['actionName']) + DELIMITER +
     escapeOriginPart(origin['exampleName'])
-
-

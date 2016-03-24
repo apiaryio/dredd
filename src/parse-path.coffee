@@ -23,15 +23,15 @@ parsePath = (path) ->
 
   length = path.length
   position = 0
-  previousCharacter = ""
-  buffer = ""
+  previousCharacter = ''
+  buffer = ''
 
   # split by unescaped delimiter
   while position < length
     currentCharacter = path[position]
-    if currentCharacter == DELIMITER and previousCharacter != ESCAPE_CHAR
+    if currentCharacter is DELIMITER and previousCharacter isnt ESCAPE_CHAR
       parsed.push buffer
-      buffer = ""
+      buffer = ''
     else
       buffer += currentCharacter
 
@@ -48,9 +48,8 @@ parsePath = (path) ->
   # remove escape character from delimiter character
   parsedWithRemovedEscapeChar = []
   for part in parsed
-    parsedWithRemovedEscapeChar.push part.replace(new RegExp('\\\\:', "g"), ":")
+    parsedWithRemovedEscapeChar.push part.replace(new RegExp('\\\\:', 'g'), ':')
 
   parsedWithRemovedEscapeChar
 
 module.exports = parsePath
-

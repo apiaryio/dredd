@@ -4,16 +4,16 @@ parsedPathToOrigin = require '../../src/parsed-path-to-origin'
 parsePath = require '../../src/parse-path'
 {ESCAPE_CHAR, DELIMITER} = require '../../src/constants'
 
-describe 'parsedPathToOrigin', () ->
-  it 'is a function', () ->
+describe 'parsedPathToOrigin', ->
+  it 'is a function', ->
     assert.isFunction parsedPathToOrigin
 
-  describe 'path compilation', () ->
+  describe 'path compilation', ->
     transaction = null
     result = null
 
-    describe 'Full notation with multiple request-response pairs', () ->
-      it 'result should match the source origin', () ->
+    describe 'Full notation with multiple request-response pairs', ->
+      it 'result should match the source origin', ->
         transaction =
           origin:
             "apiName": "Some API Name"
@@ -26,8 +26,8 @@ describe 'parsedPathToOrigin', () ->
 
         assert.deepEqual transaction.origin, origin
 
-    describe 'Full notation with multiple request-response pairs and a colon in some name', () ->
-      it 'result should match the source origin', () ->
+    describe 'Full notation with multiple request-response pairs and a colon in some name', ->
+      it 'result should match the source origin', ->
         transaction =
           origin:
             "apiName": "Some API Name"
@@ -40,12 +40,12 @@ describe 'parsedPathToOrigin', () ->
 
         assert.deepEqual transaction.origin, origin
 
-    describe 'Full notation without group', () ->
-      it 'result should match the source origin', () ->
+    describe 'Full notation without group', ->
+      it 'result should match the source origin', ->
         transaction =
           origin:
             "apiName": "Some API Name"
-            "resourceGroupName": ""
+            "resourceGroupName": ''
             "resourceName": "Some Resource Name"
             "actionName": "Some Action Name"
             "exampleName": "Example 1"
@@ -54,12 +54,12 @@ describe 'parsedPathToOrigin', () ->
 
         assert.deepEqual transaction.origin, origin
 
-    describe 'Full notation without group and API name', () ->
-      it 'result should match the source origin', () ->
+    describe 'Full notation without group and API name', ->
+      it 'result should match the source origin', ->
         transaction =
           origin:
-            "apiName": ""
-            "resourceGroupName": ""
+            "apiName": ''
+            "resourceGroupName": ''
             "resourceName": "Some Resource Name"
             "actionName": "Some Action Name"
             "exampleName": "Example 1"
@@ -68,12 +68,12 @@ describe 'parsedPathToOrigin', () ->
 
         assert.deepEqual transaction.origin, origin
 
-    describe 'Full notation without group and API name with used delimiter character', () ->
-      it 'result should match the source origin', () ->
+    describe 'Full notation without group and API name with used delimiter character', ->
+      it 'result should match the source origin', ->
         transaction =
           origin:
-            "apiName": ""
-            "resourceGroupName": ""
+            "apiName": ''
+            "resourceGroupName": ''
             "resourceName": "Some Resource Name"
             "actionName": "Some Action Name#{DELIMITER} Colon"
             "exampleName": "Example 1"
@@ -83,12 +83,12 @@ describe 'parsedPathToOrigin', () ->
 
         assert.deepEqual transaction.origin, origin
 
-    describe 'Full notation without group and API name with used escape character without delimiter character', () ->
-      it 'result should match the source origin', () ->
+    describe 'Full notation without group and API name with used escape character without delimiter character', ->
+      it 'result should match the source origin', ->
         transaction =
           origin:
-            "apiName": ""
-            "resourceGroupName": ""
+            "apiName": ''
+            "resourceGroupName": ''
             "resourceName": "Some Resource Name"
             "actionName": "Some Action Name#{ESCAPE_CHAR} Backslash"
             "exampleName": "Example 1"
@@ -97,12 +97,12 @@ describe 'parsedPathToOrigin', () ->
 
         assert.deepEqual transaction.origin, origin
 
-    describe 'Full notation without group and API name with used escape character with delimiter character', () ->
-      it 'result should match the source origin', () ->
+    describe 'Full notation without group and API name with used escape character with delimiter character', ->
+      it 'result should match the source origin', ->
         transaction =
           origin:
-            "apiName": ""
-            "resourceGroupName": ""
+            "apiName": ''
+            "resourceGroupName": ''
             "resourceName": "Some Resource Name"
             "actionName": "Some Action Name#{ESCAPE_CHAR}#{DELIMITER} Backslash with Delimiter"
             "exampleName": "Example 1"
@@ -112,12 +112,12 @@ describe 'parsedPathToOrigin', () ->
 
         assert.deepEqual transaction.origin, origin
 
-    describe 'Simplified notation', () ->
-      it 'result should match the source origin', () ->
+    describe 'Simplified notation', ->
+      it 'result should match the source origin', ->
         transaction =
           origin:
-            "apiName": ""
-            "resourceGroupName": ""
+            "apiName": ''
+            "resourceGroupName": ''
             "resourceName": "/message"
             "actionName": "GET"
             "exampleName": "Example 1"

@@ -2,7 +2,7 @@
 
 inheritParameters = require '../../src/inherit-parameters'
 
-describe 'inheritParameters()', () ->
+describe 'inheritParameters()', ->
   actual = 
     name:
       description: ''
@@ -31,12 +31,12 @@ describe 'inheritParameters()', () ->
   
   data = null
 
-  describe 'its return', () ->
-    before () ->
+  describe 'its return', ->
+    before ->
       data = inheritParameters actual, inheriting
 
-    it 'inheriting parameters should be added', () ->
+    it 'inheriting parameters should be added', ->
       assert.include Object.keys(data), 'limit' 
 
-    it 'actual values should not be overwriten by inheriting', () ->
+    it 'actual values should not be overwriten by inheriting', ->
       assert.equal data['name']['example'], 'waldo'

@@ -24,7 +24,7 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
   # and this logic will be moved to Dredd reporters
   origin['filename'] = filename
 
-  if blueprintAst['name'] != ""
+  if blueprintAst['name'] isnt ''
     origin['apiName'] = blueprintAst['name']
   else
     origin['apiName'] = origin['filename']
@@ -34,7 +34,7 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
 
   for resourceGroup, index in blueprintAst['resourceGroups']
     #should not be possible specify more than one unnamed group, must verify
-    # if resourceGroup['name'] != ""
+    # if resourceGroup['name'] isnt ''
     #   origin['resourceGroupName'] = resourceGroup['name']
     # else
     #   origin['resourceGroupName'] = "Group #{index + 1}"
@@ -45,7 +45,7 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
 
     for resource in resourceGroup['resources']
 
-      if resource['name'] != ""
+      if resource['name'] isnt ''
         pathOrigin['resourceName'] = resource['name']
         origin['resourceName'] = resource['name']
       else
@@ -60,7 +60,7 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
       origin['uriTemplate'] = "#{resource['uriTemplate']}"
 
       for action in resource['actions']
-        if action['name'] != ""
+        if action['name'] isnt ''
           pathOrigin['actionName'] = action['name']
           origin['actionName'] = action['name']
         else
@@ -102,18 +102,18 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
           }
 
 
-        if uriResult['uri'] != null
+        if uriResult['uri'] isnt null
           for example, exampleIndex in action['examples']
 
             # Names can have empty example
-            if action['examples'].length > 1 and example['name'] == ""
-              origin['exampleName'] = "Example " + (exampleIndex + 1)
+            if action['examples'].length > 1 and example['name'] is ''
+              origin['exampleName'] = 'Example ' + (exampleIndex + 1)
             else
               origin['exampleName'] = example['name']
 
             # Paths can't have empty example
-            if example['name'] == ""
-              pathOrigin['exampleName'] = "Example " + (exampleIndex + 1)
+            if example['name'] is ''
+              pathOrigin['exampleName'] = 'Example ' + (exampleIndex + 1)
             else
               pathOrigin['exampleName'] = example['name']
 
