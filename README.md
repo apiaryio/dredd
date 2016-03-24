@@ -46,24 +46,27 @@ Dredd Transactions library is written in [CoffeeScript](http://coffeescript.org/
 
 ## Usage
 
-```javascript
-var apiDescriptionDocument = '# My API\n...';
-
-var dt = require('dredd-transactions');
-var transactions = dt.compile(apiDescriptionDocument);
-```
-
-
-### `compile` (function)
+### `compile`
 
 Compiles *HTTP Transactions* from given API description document.
 
 ```javascript
-transactions = compile(apiDescriptionDocument, filename);
+var dt = require('dredd-transactions');
+
+dt.compile('# My API\n...', function (error, transactions) {
+  // ...
+});
 ```
 
-- `apiDescriptionDocument` (string) - API Description Document provided as string.
-- `transactions` (array[Transaction]) - Compiled [Transaction objects][transaction-object-spec].
+### Arguments
+
+- (string) - API Description Document provided as string.
+- (function) - Callback.
+
+### Callback Arguments
+
+- (enum[null, object]) - JavaScript error object.
+- (array[Transaction]) - Compiled [Transaction objects][transaction-object-spec].
 
 
 ## Data Structures
