@@ -23,7 +23,6 @@
   "devDependencies": {
     "chai": "^3.4.1",
     "coffee-coverage": "^1.0.1",
-    "coffee-errors": "^0.8.6",
     "coffee-script": "^1.10.0",
     "coffeelint": "^1.14.2",
     "coveralls": "^2.11.6",
