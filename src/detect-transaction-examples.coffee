@@ -1,11 +1,11 @@
 
-traverse = require 'traverse'
+traverse = require('traverse')
 
 
 detectTransactionExamples = (transition) ->
   # Index of requests and responses within given *transition*, sorted by
   # their position in the original API Blueprint document.
-  index = createIndex transition
+  index = createIndex(transition)
 
   # Iterating over requests and responses in the index, keeping track of in
   # which block we currently are (block of requests: 'req', block
@@ -47,8 +47,8 @@ detectTransactionExamples = (transition) ->
 createIndex = (transition) ->
   mapping = {}
 
-  traversal = traverse transition
-  traversal.forEach (node) ->
+  traversal = traverse(transition)
+  traversal.forEach((node) ->
     # Process just sourceMap elements.
     return unless node.element is 'sourceMap'
 
@@ -67,10 +67,10 @@ createIndex = (transition) ->
 
     for i in [0..@path.length]
       path = @path[0..i]
-      parentNode = traversal.get path
+      parentNode = traversal.get(path)
       switch parentNode.element
         when 'httpRequest', 'httpResponse'
-          key = path.join '.'
+          key = path.join('.')
           entry.type = parentNode.element
         when 'httpTransaction'
           entry.transaction = parentNode
@@ -85,16 +85,16 @@ createIndex = (transition) ->
     # Take positions of the first character for each continuous code block
     # in the source map.
     #
-    # At the end we'll take the lowest number from the array as a representation
-    # of the beginning of the whole request (or response) within the original
-    # document.
+    # At the end we'll take the lowest number from the array as
+    # a representation of the beginning of the whole request (or response)
+    # within the original document.
     positions = (charBlock[0] for charBlock in node.content)
 
     if mapping[key]
       # If entry for given request (or response) already exists, add
       # also its current position to the array. This allows us to take the
       # lowest number among all source maps for given request (or response).
-      positions.push mapping[key].position
+      positions.push(mapping[key].position)
     else
       # If the entry isn't in the mapping yet, create a new one.
       mapping[key] ?= entry
@@ -103,13 +103,14 @@ createIndex = (transition) ->
     # the request (or response). This way at the end of this traversal
     # the 'position' attribute should contain position of the first
     # character relevant for the whole request (or response).
-    mapping[key].position = Math.min.apply null, positions
+    mapping[key].position = Math.min.apply(null, positions)
 
     return # needed for 'traverse' to work properly in CoffeeScript
+  )
 
   # Turn the mapping into an index, i.e. an array sorted by position.
   index = (entry for own key, entry of mapping)
-  index.sort (entry1, entry2) -> entry1.position - entry2.position
+  index.sort((entry1, entry2) -> entry1.position - entry2.position)
   return index
 
 
