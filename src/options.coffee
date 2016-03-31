@@ -132,27 +132,27 @@ options =
     description: "Show version number.\n"
 
   'hooks-worker-timeout':
-    description: "How long to wait for hooks worker to start."
+    description: "How long to wait for hooks worker to start. [ms]"
     default: 5000
 
   'hooks-worker-connect-timeout':
-    description: 'How long to wait for hooks worker to acknowledge connection.'
+    description: 'Total hook worker connection timeout (includes all retries). [ms]'
     default: 1500
 
   'hooks-worker-connect-retry':
-    description: 'How long to wait between attempts to connect to hooks worker.'
+    description: 'How long to wait between attempts to connect to hooks worker. [ms]'
     default: 500
 
   'hooks-worker-after-connect-wait':
-    description: 'How long to wait between connecting to hooks worker and start of testing.'
+    description: 'How long to wait between connecting to hooks worker and start of testing. [ms]'
     default: 100
 
   'hooks-worker-term-timeout':
-    description: 'How long to wait between trying to terminate hooks worker and killing it.'
+    description: 'How long to wait between trying to terminate hooks worker and killing it. [ms]'
     default: 5000
 
   'hooks-worker-term-retry':
-    description: 'How long to wait between attempts to terminate hooks worker.'
+    description: 'How long to wait between attempts to terminate hooks worker. [ms]'
     default: 500
 
   'hooks-worker-handler-host':

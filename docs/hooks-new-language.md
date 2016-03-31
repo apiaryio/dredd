@@ -73,12 +73,12 @@ If you want to write a hook handler for your language you will have to implement
 
 There are several configuration options, which can help you during development:
 
-- `--hooks-worker-timeout`: `5000` - How long to wait for hooks worker to start.
-- `--hooks-worker-connect-timeout`: `1500` - How long to wait for hooks worker to acknowledge connection.
-- `--hooks-worker-connect-retry`: `500` - How long to wait between attempts to connect to hooks worker.
-- `--hooks-worker-after-connect-wait`: `100` - How long to wait between connecting to hooks worker and start of testing.
-- `--hooks-worker-term-timeout`: `5000` - How long to wait between trying to terminate hooks worker and killing it.
-- `--hooks-worker-term-retry`: `500` - How long to wait between attempts to terminate hooks worker.
+- `--hooks-worker-timeout`: `5000` - How long to wait for hooks worker to start. [ms]
+- `--hooks-worker-connect-timeout`: `1500` - How long to wait for hooks worker to acknowledge connection. [ms]
+- `--hooks-worker-connect-retry`: `500` - How long to wait between attempts to connect to hooks worker. [ms]
+- `--hooks-worker-after-connect-wait`: `100` - How long to wait between connecting to hooks worker and start of testing. [ms]
+- `--hooks-worker-term-timeout`: `5000` - How long to wait between trying to terminate hooks worker and killing it. [ms]
+- `--hooks-worker-term-retry`: `500` - How long to wait between attempts to terminate hooks worker. [ms]
 - `--hooks-worker-handler-host`: `localhost` - Host of the hook worker.
 - `--hooks-worker-handler-port`: `61321` - Port of the hook worker.
 

@@ -1,9 +1,6 @@
 #!/bin/sh
 # Usage:
-# ./scripts/cov [reporter]
-#
-# Example:
-# ./scripts/cov html-cov > cov.html
+# ./scripts/cov
 
 
 COV=./node_modules/coffee-coverage/bin/coffeecoverage
