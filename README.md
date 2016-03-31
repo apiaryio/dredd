@@ -53,7 +53,7 @@ Compiles *HTTP Transactions* from given API description document.
 ```javascript
 var dt = require('dredd-transactions');
 
-dt.compile('# My API\n...', function (error, transactions) {
+dt.compile('# My API\n...', function (error, compilationResult) {
   // ...
 });
 ```
@@ -65,11 +65,20 @@ dt.compile('# My API\n...', function (error, transactions) {
 
 ### Callback Arguments
 
-- (enum[null, object]) - JavaScript error object.
-- (array[Transaction]) - Compiled [Transaction objects][transaction-object-spec].
+- (enum[null, object]) - Standard JavaScript error object.
+- ([Compilation Result][compilation-result-object-spec])
 
 
 ## Data Structures
+
+<a name="compilation-result-object"></a>
+### Compilation Result (object)
+
+Result of compilation. Alongside compiled [Transaction][transaction-object-spec] objects contains also errors and warnings, mainly from API description parser.
+
+- `transactions` (array[[Transaction][transaction-object-spec]]) - Compiled _HTTP Transactions_.
+- `errors` (array[[Annotation][annotation-object-spec]]) - Errors which occurred during parsing of the API description or during compilation of transactions.
+- `warnings` (array[[Annotation][annotation-object-spec]]) - Warnings which occurred during parsing of the API description or during compilation of transactions.
 
 <a name="transaction-object"></a>
 ### Transaction (object)
@@ -110,6 +119,22 @@ Represents a single *HTTP Transaction* (Request-Response pair) and its location 
 > **Note:** These properties are to be superseded by so-called _Transaction Path_. Feel free to read and comment the proposal in [apiaryio/dredd#227](https://github.com/apiaryio/dredd/issues/227).
 
 
+<a name="annotation-object"></a>
+### Annotation (object)
+
+Description of an error or warning which occurred during parsing of the API description or during compilation of transactions.
+
+#### Properties
+
++ origin: `apiDescriptionParser`, `transactionsCompiler` (enum) - Origin of the annotation.
++ code (number) - Parser-specific code of the annotation.
++ message (string) - Textual annotation. This is – in most cases – a human-readable message to be displayed to user.
++ location (array) - Locations of the annotation in the source file. A series of character-blocks, which may be non-continuous. For further details refer to API Elements' [Source Map](source-map) element.
+    + (array, fixed) - Continuous characters block. A pair of character index and character count.
+        + (number) - Zero-based index of a character in the source document.
+        + (number) - Count of characters starting from the character index.
+
+
 [dredd]: https://github.com/apiaryio/dredd
 [mson-spec]: https://github.com/apiaryio/mson
 [api-elements]: http://api-elements.readthedocs.org/
@@ -117,4 +142,7 @@ Represents a single *HTTP Transaction* (Request-Response pair) and its location 
 [blueprint-transactions]: https://github.com/apiaryio/blueprint-transactions/
 
 
+[compilation-result-object-spec]: #compilation-result-object
 [transaction-object-spec]: #transaction-object
+[annotation-object-spec]: #annotation-object
+[source-map]: https://github.com/refractproject/refract-spec/blob/master/namespaces/parse-result-namespace.md#source-map-element
