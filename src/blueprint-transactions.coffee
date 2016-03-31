@@ -8,11 +8,11 @@ module.exports =
   # filename is used only for compiling to human readeable name in reporters
   # and this logic will be moved to Dredd reporters
   compile: (ast, filename) ->
-    addNames =  () =>
+    addNames = =>
       for transaction in @result['transactions']
         transaction['name'] = getTransactionName transaction
 
-    addPaths = () =>
+    addPaths = =>
       for transaction in @result['transactions']
         transaction['path'] = getTransactionPath transaction
 

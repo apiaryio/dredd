@@ -1,4 +1,0 @@
-#!/bin/sh
-# Saves HTML coverage report
-
-./scripts/cov html-cov > cov.html

@@ -2,21 +2,21 @@
 blueprintTransactions = require '../../../src/blueprint-transactions'
 ast = require '../../fixtures/blueprint-ast'
 
-describe 'blueprintTransactions [AST]', () ->
+describe 'blueprintTransactions [AST]', ->
 
-  it 'exports an object', () ->
+  it 'exports an object', ->
     assert.isObject blueprintTransactions
 
-  describe 'compile(ast, filename, options)', () ->
-    it 'is defined function', () ->
+  describe 'compile(ast, filename, options)', ->
+    it 'is defined function', ->
       assert.isFunction blueprintTransactions.compile
 
-    it 'returns an object', () ->
+    it 'returns an object', ->
       assert.isObject blueprintTransactions.compile(ast)
 
-    describe 'returned object', () ->
+    describe 'returned object', ->
       returnedObject = null
-      beforeEach () ->
+      beforeEach ->
         returnedObject = blueprintTransactions.compile(ast, './apiary.apibs')
 
       keys = [
@@ -26,15 +26,15 @@ describe 'blueprintTransactions [AST]', () ->
       ]
 
       for key in keys then do (key) ->
-        it "it has key #{key}", () ->
+        it "it has key #{key}", ->
           assert.property returnedObject, key
 
-      describe 'every item in `transactions` array', () ->
-        it 'should have the "name" property set', () ->
+      describe 'every item in `transactions` array', ->
+        it 'should have the "name" property set', ->
           for transaction, index in returnedObject.transactions
             assert.property transaction, 'name', "Missing 'name' property on transaction #{index}"
 
-        it 'shoud have the "path" property set', () ->
+        it 'shoud have the "path" property set', ->
           for transaction, index in returnedObject.transactions
             console.log transaction.path
             assert.property transaction, 'path', "Missing 'path' property on transaction #{index}"

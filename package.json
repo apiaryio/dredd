@@ -4,10 +4,13 @@
   "description": "Compiles HTTP Transactions (Request-Response pairs) from API description document",
   "main": "lib/blueprint-transactions.js",
   "scripts": {
-    "changelist": "github-changes -o apiaryio -r http-compiler --only-pulls --use-commit-body --file CHANGELOG-generated.md",
-    "pretest": "coffeelint ./src",
-    "test": "scripts/test",
-    "prepublish": "scripts/prepublish"
+    "changelist": "github-changes -o apiaryio -r dredd-transactions --only-pulls --use-commit-body --file CHANGELOG-Generated.md -a",
+    "lint": "coffeelint ./src",
+    "compile": "coffee -b -c -o lib/ src/",
+    "test": "./scripts/test",
+    "test:bdd": "./scripts/test -w",
+    "prepublish": "npm run compile",
+    "coveralls": "./scripts/cov mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js"
   },
   "repository": {
     "type": "git",
@@ -20,7 +23,6 @@
   "devDependencies": {
     "chai": "^3.4.1",
     "coffee-coverage": "^1.0.1",
-    "coffee-errors": "^0.8.6",
     "coffee-script": "^1.10.0",
     "coffeelint": "^1.14.2",
     "coveralls": "^2.11.6",
