@@ -6,9 +6,7 @@ detectTransactionExamples = require('../../src/detect-transaction-examples')
 
 
 # Encapsulates a single test scenario.
-scenario = (description, {actionContent, examples, exampleNumbersPerTransaction, skip}) ->
-  return if skip
-
+scenario = (description, {actionContent, examples, exampleNumbersPerTransaction}) ->
   describe("#{description}", ->
     apiBlueprint = """
       FORMAT: 1A
@@ -256,7 +254,6 @@ describe('detectTransactionExamples()', ->
 
   describe('various ways of specifying requests', ->
     scenario('bare',
-      skip: true # https://github.com/apiaryio/drafter/issues/259
       actionContent: '''
         + Request
         + Response 200
@@ -310,7 +307,6 @@ describe('detectTransactionExamples()', ->
     )
 
     scenario('with bare Headers section',
-      skip: true # https://github.com/apiaryio/drafter/issues/259
       actionContent: '''
         + Request
             + Headers
@@ -353,7 +349,6 @@ describe('detectTransactionExamples()', ->
     )
 
     scenario('with bare Attributes section',
-      skip: true # https://github.com/apiaryio/drafter/issues/259
       actionContent: '''
         + Request
             + Attributes
@@ -396,7 +391,6 @@ describe('detectTransactionExamples()', ->
     )
 
     scenario('with bare Body section',
-      skip: true # https://github.com/apiaryio/drafter/issues/259
       actionContent: '''
         + Request
             + Body
@@ -439,7 +433,6 @@ describe('detectTransactionExamples()', ->
     )
 
     scenario('with bare Schema section',
-      skip: true # https://github.com/apiaryio/drafter/issues/259
       actionContent: '''
         + Request
             + Schema
@@ -462,7 +455,6 @@ describe('detectTransactionExamples()', ->
 
   describe('various ways of specifying responses', ->
     scenario('bare',
-      skip: true # https://github.com/apiaryio/drafter/issues/259
       actionContent: '''
         + Request (application/json)
         + Response
@@ -531,7 +523,6 @@ describe('detectTransactionExamples()', ->
     )
 
     scenario('with bare Headers section',
-      skip: true # https://github.com/apiaryio/drafter/issues/259
       actionContent: '''
         + Request (application/json)
         + Response
@@ -574,7 +565,6 @@ describe('detectTransactionExamples()', ->
     )
 
     scenario('with bare Attributes section',
-      skip: true # https://github.com/apiaryio/drafter/issues/259
       actionContent: '''
         + Request (application/json)
         + Response
@@ -617,7 +607,6 @@ describe('detectTransactionExamples()', ->
     )
 
     scenario('with bare Body section',
-      skip: true # https://github.com/apiaryio/drafter/issues/259
       actionContent: '''
         + Request (application/json)
         + Response
@@ -660,7 +649,6 @@ describe('detectTransactionExamples()', ->
     )
 
     scenario('with bare Schema section',
-      skip: true # https://github.com/apiaryio/drafter/issues/259
       actionContent: '''
         + Request (application/json)
         + Response
