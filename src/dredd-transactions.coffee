@@ -1,6 +1,7 @@
 
 {parse} = require('./parse')
-blueprintAstToRuntime = require('./blueprint-ast-to-runtime')
+compileFromApiBlueprintAst = require('./compile-from-api-blueprint-ast')
+compileFromApiElements = require('./compile-from-api-elements')
 getTransactionName = require('./get-transaction-name')
 getTransactionPath = require('./get-transaction-path')
 
@@ -12,11 +13,14 @@ compile = (input, filename, callback) ->
   if typeof input is 'string'
     # input is API description document
     parse(input, (err, apiElements) ->
-      callback(err or new Error('Not implemented yet!'))
+      try
+        callback(null, compileFromApiElements(apiElements, filename))
+      catch err
+        callback(err)
     )
   else
     # input is API Blueprint AST (kept just for backwards compatibility!)
-    result = blueprintAstToRuntime(input, filename)
+    result = compileFromApiBlueprintAst(input, filename)
     for transaction in result.transactions
       transaction['name'] = getTransactionName(transaction)
       transaction['path'] = getTransactionPath(transaction)

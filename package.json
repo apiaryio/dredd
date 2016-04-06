@@ -2,7 +2,7 @@
   "name": "dredd-transactions",
   "version": "0.0.1",
   "description": "Compiles HTTP Transactions (Request-Response pairs) from API description document",
-  "main": "lib/blueprint-transactions.js",
+  "main": "lib/dredd-transactions.js",
   "scripts": {
     "changelist": "github-changes -o apiaryio -r dredd-transactions --only-pulls --use-commit-body --file CHANGELOG-Generated.md -a",
     "lint": "coffeelint ./src",

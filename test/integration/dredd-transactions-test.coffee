@@ -1,7 +1,7 @@
 protagonist = require 'protagonist'
 {assert} = require 'chai'
 
-blueprintTransactions = require '../../src/blueprint-transactions'
+dreddTransactions = require '../../src/dredd-transactions'
 
 describe "compiled transaction paths", ->
   describe "Full notation with multiple request-response pairs", ->
@@ -28,7 +28,7 @@ describe "compiled transaction paths", ->
       protagonist.parse code, {type: 'ast'}, (err, result) ->
         return done(err) if err
         paths = []
-        blueprintTransactions.compile(result.ast, null, (err, {transactions}) ->
+        dreddTransactions.compile(result.ast, null, (err, {transactions}) ->
           return done(err) if err
 
           # console.log JSON.stringify transactions, null, 2
@@ -58,7 +58,7 @@ describe "compiled transaction paths", ->
       protagonist.parse code, {type: 'ast'}, (err, result) ->
         return done(err) if err
         paths = []
-        blueprintTransactions.compile(result.ast, null, (err, {transactions}) ->
+        dreddTransactions.compile(result.ast, null, (err, {transactions}) ->
           return done(err) if err
           for transaction in transactions
             paths.push transaction.path
@@ -82,7 +82,7 @@ describe "compiled transaction paths", ->
       protagonist.parse code, {type: 'ast'}, (err, result) ->
         return done(err) if err
         paths = []
-        blueprintTransactions.compile(result.ast, null, (err, {transactions}) ->
+        dreddTransactions.compile(result.ast, null, (err, {transactions}) ->
           return done(err) if err
           for transaction in transactions
             paths.push transaction.path
@@ -108,7 +108,7 @@ describe "compiled transaction paths", ->
       protagonist.parse code, {type: 'ast'}, (err, result) ->
         return done(err) if err
         paths = []
-        blueprintTransactions.compile(result.ast, null, (err, {transactions}) ->
+        dreddTransactions.compile(result.ast, null, (err, {transactions}) ->
           return done(err) if err
           for transaction in transactions
             paths.push transaction.path
@@ -131,7 +131,7 @@ describe "compiled transaction paths", ->
       protagonist.parse code, {type: 'ast'}, (err, result) ->
         return done(err) if err
         paths = []
-        blueprintTransactions.compile(result.ast, null, (err, {transactions}) ->
+        dreddTransactions.compile(result.ast, null, (err, {transactions}) ->
           return done(err) if err
           for transaction in transactions
             paths.push transaction.path

@@ -2,15 +2,15 @@
 protagonist = require 'protagonist'
 fs = require 'fs'
 
-blueprintAstToRuntime = require '../../../src/blueprint-ast-to-runtime'
+compileFromApiBlueprintAst = require '../../src/compile-from-api-blueprint-ast'
 
 
-describe "blueprintAstToRuntime() [AST]", ->
-  blueprintAst = require '../../fixtures/blueprint-ast'
+describe "compileFromApiBlueprintAst()", ->
+  blueprintAst = require '../fixtures/blueprint-ast'
   data = {}
   filename = './path/to/blueprint.apib'
   before ->
-    data = blueprintAstToRuntime blueprintAst, filename
+    data = compileFromApiBlueprintAst blueprintAst, filename
 
   describe 'its return', ->
     it 'should return an object', ->
@@ -93,16 +93,16 @@ describe "blueprintAstToRuntime() [AST]", ->
 
   describe 'when some warning in URI expanding appear', ->
     it 'should have piped all warnings from expandUriTemplate', ->
-      blueprintAst = require '../../fixtures/blueprint-ast'
+      blueprintAst = require '../fixtures/blueprint-ast'
       blueprintAst['resourceGroups'][0]['resources'][1]['parameters'] = {}
       blueprintAst['resourceGroups'][0]['resources'][1]['actions'][0]['parameters'] = {}
 
-      data = blueprintAstToRuntime blueprintAst
+      data = compileFromApiBlueprintAst blueprintAst
       assert.notEqual data['warnings'].length, 0
 
   describe 'when some error in URI parameters validation appear', ->
     it 'should have piped all errors from validateParameters', ->
-      blueprintAst = require '../../fixtures/blueprint-ast'
+      blueprintAst = require '../fixtures/blueprint-ast'
       params = [
         {
           name: 'name'
@@ -116,14 +116,14 @@ describe "blueprintAstToRuntime() [AST]", ->
       ]
 
       blueprintAst['resourceGroups'][0]['resources'][1]['parameters'] = params
-      data = blueprintAstToRuntime blueprintAst
+      data = compileFromApiBlueprintAst blueprintAst
       assert.notEqual data['errors'].length, 0
 
   describe 'when some error in URI expanding appear', ->
     it 'should have piped all errors from expandUriTemplate', ->
-      blueprintAst = require '../../fixtures/blueprint-ast'
+      blueprintAst = require '../fixtures/blueprint-ast'
       blueprintAst['resourceGroups'][0]['resources'][1]['uriTemplate'] = '/machines{{/name}'
-      data = blueprintAstToRuntime blueprintAst
+      data = compileFromApiBlueprintAst blueprintAst
       assert.notEqual data['errors'].length, 0
 
   describe 'when some warning in example selecting appear', ->
@@ -134,7 +134,7 @@ describe "blueprintAstToRuntime() [AST]", ->
         body: ''
 
       blueprintAst['resourceGroups'][0]['resources'][0]['actions'][0]['examples'][0]['responses'].push response
-      data = blueprintAstToRuntime blueprintAst
+      data = compileFromApiBlueprintAst blueprintAst
 
     it 'should have piped all warnings from exampleToHttpPayloadPair', ->
       assert.notEqual data['warnings'].length, 0
@@ -143,8 +143,8 @@ describe "blueprintAstToRuntime() [AST]", ->
     transaction = null
     filename = './path/to/blueprint.apib'
     before ->
-      simpleUnnamedAst = require '../../fixtures/simple-unnamed-ast'
-      data = blueprintAstToRuntime simpleUnnamedAst, filename
+      simpleUnnamedAst = require '../fixtures/simple-unnamed-ast'
+      data = compileFromApiBlueprintAst simpleUnnamedAst, filename
       transaction = data['transactions'][0]
 
     it 'should use filename as api name', ->
@@ -166,8 +166,8 @@ describe "blueprintAstToRuntime() [AST]", ->
     transactions = null
 
     before ->
-      simpleUnnamedAst = require '../../fixtures/multiple-examples'
-      transactions = blueprintAstToRuntime(simpleUnnamedAst, filename)['transactions']
+      simpleUnnamedAst = require '../fixtures/multiple-examples'
+      transactions = compileFromApiBlueprintAst(simpleUnnamedAst, filename)['transactions']
 
     it 'should set exampleName for first transaction to "Example 1"', ->
       assert.equal transactions[0]['origin']['exampleName'], "Example 1"
@@ -181,8 +181,8 @@ describe "blueprintAstToRuntime() [AST]", ->
     transactions = null
 
     before ->
-      simpleUnnamedAst = require '../../fixtures/single-get'
-      transactions = blueprintAstToRuntime(simpleUnnamedAst, filename)['transactions']
+      simpleUnnamedAst = require '../fixtures/single-get'
+      transactions = compileFromApiBlueprintAst(simpleUnnamedAst, filename)['transactions']
 
     it 'should let example name intact', ->
       assert.equal transactions[0]['origin']['exampleName'], ''
@@ -195,7 +195,7 @@ describe "blueprintAstToRuntime() [AST]", ->
       code = fs.readFileSync(filename).toString()
       protagonist.parse code, {type: 'ast'}, (err, result) ->
         return done(err) if err
-        transactions = blueprintAstToRuntime(result['ast'], filename)['transactions']
+        transactions = compileFromApiBlueprintAst(result['ast'], filename)['transactions']
         done()
 
 

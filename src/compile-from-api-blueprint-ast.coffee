@@ -5,7 +5,8 @@ exampleToHttpPayloadPair = require './example-to-http-payload-pair'
 convertAstMetadata = require './convert-ast-metadata'
 validateParameters = require './validate-parameters'
 
-blueprintAstToRuntime = (blueprintAst, filename) ->
+
+compileFromApiBlueprintAst = (blueprintAst, filename) ->
   runtime =
     transactions: []
     errors: []
@@ -146,4 +147,4 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
 
   return runtime
 
-module.exports = blueprintAstToRuntime
+module.exports = compileFromApiBlueprintAst
