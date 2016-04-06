@@ -18,17 +18,24 @@ describe 'blueprintTransactions [BLUEPRINT]', ->
   it 'exports an object', ->
     assert.isObject blueprintTransactions
 
-  describe 'compile(ast, filename, options)', ->
+  describe 'compile(ast, filename, callback)', ->
     it 'is defined function', ->
       assert.isFunction blueprintTransactions.compile
 
-    it 'returns an object', ->
-      assert.isObject blueprintTransactions.compile(ast)
+    it 'returns an object', (done) ->
+      blueprintTransactions.compile(ast, null, (err, result) ->
+        assert.isNotOk err
+        assert.isObject result
+        done()
+      )
 
     describe 'returned object', ->
       returnedObject = null
-      beforeEach ->
-        returnedObject = blueprintTransactions.compile(ast, './apiary.apibs')
+      beforeEach (done) ->
+        blueprintTransactions.compile(ast, './apiary.apibs', (err, result) ->
+          returnedObject = result
+          done()
+        )
 
       keys = [
         'transactions'
@@ -47,5 +54,5 @@ describe 'blueprintTransactions [BLUEPRINT]', ->
 
         it 'shoud have the "path" property set', ->
           for transaction, index in returnedObject.transactions
-            console.log transaction.path
+            # console.log transaction.path
             assert.property transaction, 'path', "Missing 'path' property on transaction #{index}"
