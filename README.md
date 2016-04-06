@@ -53,14 +53,15 @@ Compiles *HTTP Transactions* from given API description document.
 ```javascript
 var dt = require('dredd-transactions');
 
-dt.compile('# My API\n...', function (error, compilationResult) {
+dt.compile('# My API\n...', 'apiary.apib', function (error, compilationResult) {
   // ...
 });
 ```
 
 ### Arguments
 
-- (string) - API Description Document provided as string.
+- (string) - API description document provided as string.
+- (string) - Original file name of the API description document. **Soon to be removed! See [#6][filename-deprecation].**
 - (function) - Callback.
 
 ### Callback Arguments
@@ -142,6 +143,7 @@ Description of an error or warning which occurred during parsing of the API desc
 [blueprint-transactions]: https://github.com/apiaryio/blueprint-transactions/
 
 
+[filename-deprecation]: https://github.com/apiaryio/dredd-transactions/issues/6
 [compilation-result-object-spec]: #compilation-result-object
 [transaction-object-spec]: #transaction-object
 [annotation-object-spec]: #annotation-object
