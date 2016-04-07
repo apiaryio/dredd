@@ -18,9 +18,10 @@
   },
   "dependencies": {
     "clone": "^1.0.2",
+    "protagonist": "1.3.0-pre.1",
+    "sift": "^3.2.1",
     "traverse": "^0.6.6",
-    "uri-template": "^1.0.0",
-    "protagonist": "1.3.0-pre.1"
+    "uri-template": "^1.0.0"
   },
   "devDependencies": {
     "chai": "^3.4.1",
