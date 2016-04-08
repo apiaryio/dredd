@@ -1,17 +1,27 @@
-{assert} = require 'chai'
-clone = require 'clone'
-protagonist = require 'protagonist'
-fs = require 'fs'
 
-{compileFromApiBlueprintAst} = require '../../src/compile-from-api-blueprint-ast'
+{assert} = require('chai')
+protagonist = require('protagonist')
+fs = require('fs')
+path = require('path')
 
 
-describe "compileFromApiBlueprintAst()", ->
-  blueprintAst = require '../fixtures/blueprint-ast'
+{compileFromApiElements} = require('../../src/compile-from-api-elements')
+
+
+describe "compileFromApiElements()", ->
+  filename = path.join(__dirname, '../fixtures/blueprint.apib')
+  code = fs.readFileSync(filename).toString()
+  parseResult = undefined
+
   data = {}
-  filename = './path/to/blueprint.apib'
-  before ->
-    data = compileFromApiBlueprintAst blueprintAst, filename
+
+  before((done) ->
+    protagonist.parse(code, {type: 'refract', generateSourceMap: true}, (err, result) ->
+      return done(err) if err
+      data = compileFromApiElements(result, filename)
+      done()
+    )
+  )
 
   describe 'its return', ->
     it 'should return an object', ->
@@ -69,7 +79,7 @@ describe "compileFromApiBlueprintAst()", ->
             assert.equal transaction['origin']['apiName'], 'Machines API', 'Transaction index ' + index
 
       describe 'value under request key', ->
-        ['uri','method','headers','body'].forEach (key) ->
+        ['uri', 'method', 'headers', 'body'].forEach (key) ->
           it 'has key: ' + key , ->
             transactions.forEach (transaction, index) ->
               assert.isDefined transaction['request'][key], 'Transaction index ' + index
@@ -83,66 +93,65 @@ describe "compileFromApiBlueprintAst()", ->
           transactions.forEach (transaction, index) ->
             assert.isObject transaction['response'], 'Transaction index ' + index
 
-        ['status','headers','body'].forEach (key) ->
+        ['status', 'headers', 'body'].forEach (key) ->
           it 'has key: ' + key , ->
             transactions.forEach (transaction, index) ->
               assert.isDefined transaction['response'][key], 'Transaction index ' + index
 
   describe 'when some warning in URI expanding appear', ->
-    it 'should have piped all warnings from expandUriTemplate', ->
-      blueprintAst = clone require '../fixtures/blueprint-ast'
-      blueprintAst['resourceGroups'][0]['resources'][1]['parameters'] = {}
-      blueprintAst['resourceGroups'][0]['resources'][1]['actions'][0]['parameters'] = {}
+    before((done) ->
+      codeWithoutParamSections = code.replace(/\+ Parameters\n(\s+\+ .+)+/, '')
+      protagonist.parse(codeWithoutParamSections, {type: 'refract', generateSourceMap: true}, (err, result) ->
+        return done(err) if err
+        parseResult = result
+        done()
+      )
+    )
 
-      data = compileFromApiBlueprintAst blueprintAst
+    it 'should have piped all warnings from expandUriTemplate', ->
+      data = compileFromApiElements parseResult
       assert.notEqual data['warnings'].length, 0
 
   describe 'when some error in URI parameters validation appear', ->
-    it 'should have piped all errors from validateParameters', ->
-      blueprintAst = clone require '../fixtures/blueprint-ast'
-      params = [
-        {
-          name: 'name'
-          description: 'Machine name'
-          type: 'number'
-          required: true
-          example: 'waldo'
-          default: ''
-          values: []
-        }
-      ]
+    before((done) ->
+      codeWithChangedParamSections = code.replace(/  \+ name[^\n]+/gi, '  + name (required)')
+      protagonist.parse(codeWithChangedParamSections, {type: 'refract', generateSourceMap: true}, (err, result) ->
+        return done(err) if err
+        parseResult = result
+        done()
+      )
+    )
 
-      blueprintAst['resourceGroups'][0]['resources'][1]['parameters'] = params
-      data = compileFromApiBlueprintAst blueprintAst
+    it 'should have piped all errors from validateParameters', ->
+      data = compileFromApiElements parseResult
       assert.notEqual data['errors'].length, 0
 
   describe 'when some error in URI expanding appear', ->
+    before((done) ->
+      codeWithInvalidUriTemplate = code.replace(' [/machines', ' [/machines{')
+      protagonist.parse(codeWithInvalidUriTemplate, {type: 'refract', generateSourceMap: true}, (err, result) ->
+        return done(err) if err
+        parseResult = result
+        done()
+      )
+    )
+
     it 'should have piped all errors from expandUriTemplate', ->
-      blueprintAst = clone require '../fixtures/blueprint-ast'
-      blueprintAst['resourceGroups'][0]['resources'][1]['uriTemplate'] = '/machines{{/name}'
-      data = compileFromApiBlueprintAst blueprintAst
+      data = compileFromApiElements parseResult
       assert.notEqual data['errors'].length, 0
-
-  describe 'when some warning in example selecting appear', ->
-    before ->
-      response =
-        name: 418
-        headers: {}
-        body: ''
-
-      blueprintAst['resourceGroups'][0]['resources'][0]['actions'][0]['examples'][0]['responses'].push response
-      data = compileFromApiBlueprintAst blueprintAst
-
-    it 'should have piped all warnings from exampleToHttpPayloadPair', ->
-      assert.notEqual data['warnings'].length, 0
 
   describe 'when no api name, group name, resource name and action name in ast', ->
     transaction = null
-    filename = './path/to/blueprint.apib'
-    before ->
-      simpleUnnamedAst = require '../fixtures/simple-unnamed-ast'
-      data = compileFromApiBlueprintAst simpleUnnamedAst, filename
-      transaction = data['transactions'][0]
+
+    before((done) ->
+      code = fs.readFileSync(path.join(__dirname, '../fixtures/simple-unnamed.apib')).toString()
+      protagonist.parse(code, {type: 'refract', generateSourceMap: true}, (err, result) ->
+        return done(err) if err
+        data = compileFromApiElements result, filename
+        transaction = data['transactions'][0]
+        done()
+      )
+    )
 
     it 'should use filename as api name', ->
       assert.equal transaction['origin']['apiName'], filename
@@ -162,9 +171,14 @@ describe "compileFromApiBlueprintAst()", ->
     filename = './path/to/blueprint.apib'
     transactions = null
 
-    before ->
-      simpleUnnamedAst = require '../fixtures/multiple-examples'
-      transactions = compileFromApiBlueprintAst(simpleUnnamedAst, filename)['transactions']
+    before((done) ->
+      code = fs.readFileSync(path.join(__dirname, '../fixtures/multiple-examples.apib')).toString()
+      protagonist.parse(code, {type: 'refract', generateSourceMap: true}, (err, result) ->
+        return done(err) if err
+        transactions = compileFromApiElements(result, filename)['transactions']
+        done()
+      )
+    )
 
     it 'should set exampleName for first transaction to "Example 1"', ->
       assert.equal transactions[0]['origin']['exampleName'], "Example 1"
@@ -177,9 +191,14 @@ describe "compileFromApiBlueprintAst()", ->
     filename = './path/to/blueprint.apib'
     transactions = null
 
-    before ->
-      simpleUnnamedAst = require '../fixtures/single-get'
-      transactions = compileFromApiBlueprintAst(simpleUnnamedAst, filename)['transactions']
+    before((done) ->
+      code = fs.readFileSync(path.join(__dirname, '../fixtures/single-get.apib')).toString()
+      protagonist.parse(code, {type: 'refract', generateSourceMap: true}, (err, result) ->
+        return done(err) if err
+        transactions = compileFromApiElements(result, filename)['transactions']
+        done()
+      )
+    )
 
     it 'should let example name intact', ->
       assert.equal transactions[0]['origin']['exampleName'], ''
@@ -187,14 +206,14 @@ describe "compileFromApiBlueprintAst()", ->
   describe 'when arbitrary action is present', ->
     transactions = null
 
-    before (done) ->
-      filename = './test/fixtures/arbitrary-action.apib'
-      code = fs.readFileSync(filename).toString()
-      protagonist.parse code, {type: 'ast'}, (err, result) ->
+    before((done) ->
+      code = fs.readFileSync(path.join(__dirname, '../fixtures/arbitrary-action.apib')).toString()
+      protagonist.parse(code, {type: 'refract', generateSourceMap: true}, (err, result) ->
         return done(err) if err
-        transactions = compileFromApiBlueprintAst(result['ast'], filename)['transactions']
+        transactions = compileFromApiElements(result, filename)['transactions']
         done()
-
+      )
+    )
 
     it 'first (normal) action should have resource uri', ->
       assert.equal transactions[0].request.uri, '/resource/1'

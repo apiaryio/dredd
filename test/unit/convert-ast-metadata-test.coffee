@@ -24,13 +24,13 @@ describe 'convertAstMetadata()', ->
       values: ''
     }
   ]
-  
+
   data = null
 
   describe 'its return', ->
     before ->
       data = convertAstMetadata metadata
-    
+
     it 'should return an object', ->
       assert.isObject data
 

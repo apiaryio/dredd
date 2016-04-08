@@ -11,7 +11,8 @@ detectTransactionExamples = (transition) ->
   # which block we currently are (block of requests: 'req', block
   # of responses: 'res'). In case there's change 'res' -> 'req', we raise
   # the example number. The example number is then attached to every
-  # transaction as a Refract attribute.
+  # transaction as a Refract attribute 'example'. The total number of examples
+  # gets attached to the transition as a Refract attribute 'examples'.
   example = 1
   state = 'req'
 
@@ -24,6 +25,11 @@ detectTransactionExamples = (transition) ->
 
     transaction.attributes ?= {}
     transaction.attributes.example = example
+
+  transition.attributes ?= {}
+  transition.attributes.examples = example # TODO test this!!!!!!
+
+  return undefined # 'in situ' function
 
 
 # Provides index of requests and responses within given *transition*, sorted by

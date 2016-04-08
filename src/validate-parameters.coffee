@@ -28,4 +28,3 @@ validateParameters = (params) ->
   return result
 
 module.exports = validateParameters
-

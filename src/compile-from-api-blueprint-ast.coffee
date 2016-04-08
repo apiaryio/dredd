@@ -53,13 +53,6 @@ compileFromApiBlueprintAst = (blueprintAst, filename) ->
         pathOrigin['resourceName'] = resource['uriTemplate']
         origin['resourceName'] = resource['uriTemplate']
 
-
-      # TO BE DEPRECATED
-      # Remove this! It has nothing to do in origin!!!!
-      # Get rid with polluting of origin with not related data!
-      # Put this through deprecation process, some users are already programming against it.
-      origin['uriTemplate'] = "#{resource['uriTemplate']}"
-
       for action in resource['actions']
         if action['name'] isnt ''
           pathOrigin['actionName'] = action['name']
@@ -147,4 +140,4 @@ compileFromApiBlueprintAst = (blueprintAst, filename) ->
 
   return runtime
 
-module.exports = compileFromApiBlueprintAst
+module.exports = {compileFromApiBlueprintAst}

@@ -1,7 +1,7 @@
 
 {parse} = require('./parse')
-compileFromApiBlueprintAst = require('./compile-from-api-blueprint-ast')
-compileFromApiElements = require('./compile-from-api-elements')
+{compileFromApiBlueprintAst} = require('./compile-from-api-blueprint-ast')
+{compileFromApiElements} = require('./compile-from-api-elements')
 getTransactionName = require('./get-transaction-name')
 getTransactionPath = require('./get-transaction-path')
 
@@ -14,9 +14,14 @@ compile = (input, filename, callback) ->
     # input is API description document
     parse(input, (err, apiElements) ->
       try
-        callback(null, compileFromApiElements(apiElements, filename))
+        result = compileFromApiElements(apiElements, filename)
       catch err
-        callback(err)
+        return callback(err)
+
+      for transaction in result.transactions
+        transaction['name'] = getTransactionName(transaction)
+        transaction['path'] = getTransactionPath(transaction)
+      callback(null, result)
     )
   else
     # input is API Blueprint AST (kept just for backwards compatibility!)

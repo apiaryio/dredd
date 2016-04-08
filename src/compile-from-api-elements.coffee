@@ -1,150 +1,174 @@
-clone = require 'clone'
-inheritParameters = require './inherit-parameters'
-expandUriTemplateWithParameters = require './expand-uri-template-with-parameters'
-exampleToHttpPayloadPair = require './example-to-http-payload-pair'
-convertAstMetadata = require './convert-ast-metadata'
-validateParameters = require './validate-parameters'
+
+{child, children, parent, content} = require('./refract')
+validateParameters = require('./validate-parameters')
+detectTransactionExamples = require('./detect-transaction-examples')
+expandUriTemplateWithParameters = require('./expand-uri-template-with-parameters')
 
 
-compileFromApiElements = (blueprintAst, filename) ->
-  runtime =
-    transactions: []
-    errors: []
-    warnings: []
+compileFromApiElements = (parseResult, filename) ->
+  transactions = []
+  annotations = {errors: [], warnings: []}
 
-  # path origin is predictible, consistent transaction paths (ids)
-  pathOrigin = {}
+  origin = 'apiDescriptionParser'
+  for annotation in children(parseResult, {element: 'annotation'})
+    if annotation.meta.classes[0] is 'warning'
+      group = annotations.warnings
+    else
+      group = annotations.errors
+    group.push({
+      origin
+      code: content(annotation.attributes?.code)
+      message: content(annotation)
+      location: content(annotation.attributes?.sourceMap)
+    })
 
-  # TO BE DEPRECATED
-  # origin is old logic used for generating transaction names (> delimited)
-  # this is supposed to be eradicated and this logic will be moved to the
-  origin = {}
+  children(parseResult, {element: 'transition'}).map(detectTransactionExamples)
 
-  # TO BE DEPRECATED: filename
-  # filename is used only for compiling to human readeable name in reporters
-  # and this logic will be moved to Dredd reporters
-  origin['filename'] = filename
+  for httpTransaction in children(parseResult, {element: 'httpTransaction'})
+    resource = parent(httpTransaction, parseResult, {element: 'resource'})
+    httpRequest = child(httpTransaction, {element: 'httpRequest'})
+    httpResponse = child(httpTransaction, {element: 'httpResponse'})
 
-  if blueprintAst['name'] isnt ''
-    origin['apiName'] = blueprintAst['name']
+    transactions.push(
+      origin: compileOrigin(filename, parseResult, httpTransaction)
+      pathOrigin: compilePathOrigin(filename, parseResult, httpTransaction)
+      request: compileRequest(parseResult, httpRequest, annotations)
+      response: compileResponse(httpResponse)
+    )
+
+  {transactions, errors: annotations.errors, warnings: annotations.warnings}
+
+
+compileRequest = (parseResult, httpRequest, annotations) ->
+  messageBody = child(httpRequest, {element: 'asset', 'meta.classes': 'messageBody'})
+
+  {
+    method: content(httpRequest.attributes.method)
+    uri: compileUri(parseResult, httpRequest, annotations)
+    headers: compileHeaders(child(httpRequest, {element: 'httpHeaders'}))
+    body: content(messageBody) or ''
+  }
+
+
+compileResponse = (httpResponse) ->
+  messageBody = child(httpResponse, {element: 'asset', 'meta.classes': 'messageBody'})
+  messageBodySchema = child(httpResponse, {element: 'asset', 'meta.classes': 'messageBodySchema'})
+
+  response =
+    status: content(httpResponse.attributes.statusCode)
+    headers: compileHeaders(child(httpResponse, {element: 'httpHeaders'}))
+    body: content(messageBody) or ''
+
+  schema = content(messageBodySchema)
+  response.schema = schema if schema
+
+  response
+
+
+compileUri = (parseResult, httpRequest, annotations) ->
+  resource = parent(httpRequest, parseResult, {element: 'resource'})
+  transition = parent(httpRequest, parseResult, {element: 'transition'})
+
+  cascade = [
+    resource.attributes
+    transition.attributes
+    httpRequest.attributes
+  ]
+
+  parameters = {}
+  href = undefined
+
+  for attributes in cascade
+    href = content(attributes.href) if attributes?.href
+    for own name, parameter of compileParameters(attributes?.hrefVariables)
+      parameters[name] = parameter
+
+
+  result = validateParameters(parameters)
+
+  origin = 'transactionsCompiler'
+  for error in result.errors
+    annotations.errors.push({origin, message: error})
+  for warning in result.warnings
+    annotations.warnings.push({origin, message: warning})
+
+  result = expandUriTemplateWithParameters(href, parameters)
+
+  origin = 'transactionsCompiler'
+  for error in result.errors
+    annotations.errors.push({origin, message: error})
+  for warning in result.warnings
+    annotations.warnings.push({origin, message: warning})
+
+  result.uri
+
+
+compileParameters = (hrefVariables) ->
+  parameters = {}
+  for member in children(hrefVariables, {element: 'member'})
+    {key, value} = content(member)
+
+    name = content(key)
+    types = (content(member.attributes?.typeAttributes) or [])
+
+    if value?.element is 'enum'
+      example = content(content(value)[0])
+    else
+      example = content(value)
+
+    parameters[name] =
+      required: 'required' in types
+      default: content(value.attributes?.default)
+      example: example
+      values: if value?.element is 'enum' then ({value: content(v)} for v in content(value)) else []
+  parameters
+
+
+compileHeaders = (httpHeaders) ->
+  headers = {}
+  for member in children(httpHeaders, {element: 'member'})
+    name = content(content(member).key)
+    value = content(content(member).value)
+    headers[name] = {value}
+  headers
+
+
+compileOrigin = (filename, parseResult, httpTransaction) ->
+  api = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'api'})
+  resourceGroup = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'resourceGroup'})
+  resource = parent(httpTransaction, parseResult, {element: 'resource'})
+  transition = parent(httpTransaction, parseResult, {element: 'transition'})
+  httpRequest = child(httpTransaction, {element: 'httpRequest'})
+
+  if content(transition.attributes.examples) > 1
+    exampleName = "Example #{httpTransaction.attributes.example}"
   else
-    origin['apiName'] = origin['filename']
+    exampleName = ''
 
-  pathOrigin['apiName'] = blueprintAst['name']
-
-
-  for resourceGroup, index in blueprintAst['resourceGroups']
-    #should not be possible specify more than one unnamed group, must verify
-    # if resourceGroup['name'] isnt ''
-    #   origin['resourceGroupName'] = resourceGroup['name']
-    # else
-    #   origin['resourceGroupName'] = "Group #{index + 1}"
-
-    pathOrigin['resourceGroupName'] = resourceGroup['name']
-
-    origin['resourceGroupName'] = resourceGroup['name']
-
-    for resource in resourceGroup['resources']
-
-      if resource['name'] isnt ''
-        pathOrigin['resourceName'] = resource['name']
-        origin['resourceName'] = resource['name']
-      else
-        pathOrigin['resourceName'] = resource['uriTemplate']
-        origin['resourceName'] = resource['uriTemplate']
+  {
+    filename
+    apiName: content(api.meta?.title) or filename
+    resourceGroupName: content(resourceGroup?.meta?.title)
+    exampleName
+    resourceName: content(resource.meta?.title) or content(resource.attributes?.href)
+    actionName: content(transition.meta?.title) or content(httpRequest.attributes.method)
+  }
 
 
-      # TO BE DEPRECATED
-      # Remove this! It has nothing to do in origin!!!!
-      # Get rid with polluting of origin with not related data!
-      # Put this through deprecation process, some users are already programming against it.
-      origin['uriTemplate'] = "#{resource['uriTemplate']}"
+compilePathOrigin = (filename, parseResult, httpTransaction) ->
+  api = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'api'})
+  resourceGroup = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'resourceGroup'})
+  resource = parent(httpTransaction, parseResult, {element: 'resource'})
+  transition = parent(httpTransaction, parseResult, {element: 'transition'})
+  httpRequest = child(httpTransaction, {element: 'httpRequest'})
 
-      for action in resource['actions']
-        if action['name'] isnt ''
-          pathOrigin['actionName'] = action['name']
-          origin['actionName'] = action['name']
-        else
-          pathOrigin['actionName'] = action['method']
-          origin['actionName'] = action['method']
-
-        actionParameters = convertAstMetadata action['parameters']
-        resourceParameters = convertAstMetadata resource['parameters']
-
-        parameters = inheritParameters actionParameters, resourceParameters
-
-        # validate URI parameters
-        paramsResult = validateParameters parameters
-
-        for message in paramsResult['errors']
-          runtime['errors'].push {
-            origin: clone origin
-            message: message
-          }
-
-        # expand URI parameters
-        if action.attributes?.uriTemplate
-          uri = action.attributes.uriTemplate
-        else
-          uri = resource['uriTemplate']
-
-        uriResult = expandUriTemplateWithParameters uri, parameters
-
-        for message in uriResult['warnings']
-          runtime['warnings'].push {
-            origin: clone origin
-            message: message
-          }
-
-        for message in uriResult['errors']
-          runtime['errors'].push {
-            origin: clone origin
-            message: message
-          }
+  {
+    apiName: content(api.meta?.title)
+    resourceGroupName: content(resourceGroup?.meta?.title)
+    exampleName: "Example #{httpTransaction.attributes.example}"
+    resourceName: content(resource.meta?.title) or content(resource.attributes?.href)
+    actionName: content(transition.meta?.title) or content(httpRequest.attributes.method)
+  }
 
 
-        if uriResult['uri'] isnt null
-          for example, exampleIndex in action['examples']
-
-            # Names can have empty example
-            if action['examples'].length > 1 and example['name'] is ''
-              origin['exampleName'] = 'Example ' + (exampleIndex + 1)
-            else
-              origin['exampleName'] = example['name']
-
-            # Paths can't have empty example
-            if example['name'] is ''
-              pathOrigin['exampleName'] = 'Example ' + (exampleIndex + 1)
-            else
-              pathOrigin['exampleName'] = example['name']
-
-
-
-            result = exampleToHttpPayloadPair example
-
-            for message in result['warnings']
-              runtime['warnings'].push {
-                origin: clone origin
-                message: message
-              }
-
-            # Errors in pair selecting should not happen
-            # for message in result['errors']
-            #   runtime['errors'].push {
-            #     origin: JSON.parse(JSON.stringify(origin))
-            #     message: message
-            #   }
-
-            transaction = result['pair']
-
-            transaction['origin'] = clone origin
-            transaction['pathOrigin'] = clone pathOrigin
-
-            transaction['request']['uri'] = uriResult['uri']
-            transaction['request']['method'] = action['method']
-
-            runtime['transactions'].push transaction
-
-  return runtime
-
-module.exports = compileFromApiElements
+module.exports = {compileFromApiElements}

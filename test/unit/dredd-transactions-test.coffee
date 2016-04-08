@@ -96,3 +96,27 @@ describe 'dreddTransactions [BLUEPRINT]', ->
           for transaction, index in returnedObject.transactions
             # console.log transaction.path
             assert.property transaction, 'path', "Missing 'path' property on transaction #{index}"
+
+
+describe 'dreddTransactions [AST vs. BLUEPRINT]', ->
+  filename = path.join __dirname, '../fixtures/blueprint.apib'
+  apiDescriptionDocument = fs.readFileSync(filename).toString()
+
+  describe 'compile can be called with both blueprint and ast', ->
+    returnedObjectBlueprint = null
+    returnedObjectAst = null
+
+    before (done) ->
+      dreddTransactions.compile(apiDescriptionDocument, null, (err, result) ->
+        returnedObjectBlueprint = result
+        done()
+      )
+
+    before (done) ->
+      dreddTransactions.compile(ast, null, (err, result) ->
+        returnedObjectAst = result
+        done()
+      )
+
+    it 'and the results are the same', ->
+      assert.deepEqual(returnedObjectAst, returnedObjectBlueprint)

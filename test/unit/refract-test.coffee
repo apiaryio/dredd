@@ -62,6 +62,33 @@ describe('Refract Utility Functions', ->
       )
     )
 
+    describe('empty string', ->
+      node = ''
+      content = refract.content(node)
+
+      it('is correctly resolved', ->
+        assert.equal(content, '')
+      )
+    )
+
+    describe('refracted empty string', ->
+      node =
+        element: 'string',
+        content:
+          element: 'string',
+          attributes:
+            sourceMap: [
+              element: 'sourceMap',
+              content: [[220, 33]]
+            ]
+          content: ''
+      content = refract.content(node)
+
+      it('is correctly resolved', ->
+        assert.equal(content, '')
+      )
+    )
+
     describe('undefined', ->
       node = undefined
       content = refract.content(node)

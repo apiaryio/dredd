@@ -9,7 +9,7 @@ match = (node, query) ->
 
 
 content = (node) ->
-  return content(node.content) if node and node.content
+  return content(node.content) if node and node.content?
   node
 
 
