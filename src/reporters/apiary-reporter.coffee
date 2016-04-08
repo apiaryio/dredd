@@ -77,7 +77,7 @@ class ApiaryReporter
       # Cycle through all keys from
       # - config.custom.apiaryReporterEnv
       # - process.env keys
-      ciVars = /^(TRAVIS|CIRCLE|CI|DRONE)/
+      ciVars = /^(TRAVIS|CIRCLE|CI|DRONE|BUILD_ID)/
       envVarNames = @_getKeys()
       ciEnvVars = {}
       for envVarName in envVarNames when envVarName.match(ciVars)?
