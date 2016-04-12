@@ -1,6 +1,6 @@
 {assert} = require 'chai'
 
-convertAstMetadata = require '../../src/convert-ast-metadata'
+convertAstMetadata = require '../../../src/from-api-blueprint-ast/convert-ast-metadata'
 
 describe 'convertAstMetadata()', ->
   metadata = [

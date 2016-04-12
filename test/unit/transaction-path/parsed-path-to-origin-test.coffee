@@ -1,8 +1,8 @@
 {assert} = require 'chai'
 
-parsedPathToOrigin = require '../../src/parsed-path-to-origin'
-parsePath = require '../../src/parse-path'
-{ESCAPE_CHAR, DELIMITER} = require '../../src/constants'
+parsedPathToOrigin = require '../../../src/transaction-path/parsed-path-to-origin'
+parsePath = require '../../../src/transaction-path/parse-path'
+{ESCAPE_CHAR, DELIMITER} = require '../../../src/transaction-path/constants'
 
 describe 'parsedPathToOrigin', ->
   it 'is a function', ->
@@ -125,6 +125,3 @@ describe 'parsedPathToOrigin', ->
         origin = parsedPathToOrigin parsePath "::/message:GET:Example 1"
 
         assert.deepEqual transaction.origin, origin
-
-
-

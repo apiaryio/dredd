@@ -3,11 +3,11 @@ clone = require 'clone'
 protagonist = require 'protagonist'
 fs = require 'fs'
 
-{compileFromApiBlueprintAst} = require '../../src/compile-from-api-blueprint-ast'
+{compileFromApiBlueprintAst} = require '../../../src/from-api-blueprint-ast/compile'
 
 
 describe "compileFromApiBlueprintAst()", ->
-  blueprintAst = require '../fixtures/blueprint-ast'
+  blueprintAst = require '../../fixtures/blueprint-ast'
   data = {}
   filename = './path/to/blueprint.apib'
   before ->
@@ -90,7 +90,7 @@ describe "compileFromApiBlueprintAst()", ->
 
   describe 'when some warning in URI expanding appear', ->
     it 'should have piped all warnings from expandUriTemplate', ->
-      blueprintAst = clone require '../fixtures/blueprint-ast'
+      blueprintAst = clone require '../../fixtures/blueprint-ast'
       blueprintAst['resourceGroups'][0]['resources'][1]['parameters'] = {}
       blueprintAst['resourceGroups'][0]['resources'][1]['actions'][0]['parameters'] = {}
 
@@ -99,7 +99,7 @@ describe "compileFromApiBlueprintAst()", ->
 
   describe 'when some error in URI parameters validation appear', ->
     it 'should have piped all errors from validateParameters', ->
-      blueprintAst = clone require '../fixtures/blueprint-ast'
+      blueprintAst = clone require '../../fixtures/blueprint-ast'
       params = [
         {
           name: 'name'
@@ -118,7 +118,7 @@ describe "compileFromApiBlueprintAst()", ->
 
   describe 'when some error in URI expanding appear', ->
     it 'should have piped all errors from expandUriTemplate', ->
-      blueprintAst = clone require '../fixtures/blueprint-ast'
+      blueprintAst = clone require '../../fixtures/blueprint-ast'
       blueprintAst['resourceGroups'][0]['resources'][1]['uriTemplate'] = '/machines{{/name}'
       data = compileFromApiBlueprintAst blueprintAst
       assert.notEqual data['errors'].length, 0
@@ -140,7 +140,7 @@ describe "compileFromApiBlueprintAst()", ->
     transaction = null
     filename = './path/to/blueprint.apib'
     before ->
-      simpleUnnamedAst = require '../fixtures/simple-unnamed-ast'
+      simpleUnnamedAst = require '../../fixtures/simple-unnamed-ast'
       data = compileFromApiBlueprintAst simpleUnnamedAst, filename
       transaction = data['transactions'][0]
 
@@ -163,7 +163,7 @@ describe "compileFromApiBlueprintAst()", ->
     transactions = null
 
     before ->
-      simpleUnnamedAst = require '../fixtures/multiple-examples'
+      simpleUnnamedAst = require '../../fixtures/multiple-examples'
       transactions = compileFromApiBlueprintAst(simpleUnnamedAst, filename)['transactions']
 
     it 'should set exampleName for first transaction to "Example 1"', ->
@@ -178,7 +178,7 @@ describe "compileFromApiBlueprintAst()", ->
     transactions = null
 
     before ->
-      simpleUnnamedAst = require '../fixtures/single-get'
+      simpleUnnamedAst = require '../../fixtures/single-get'
       transactions = compileFromApiBlueprintAst(simpleUnnamedAst, filename)['transactions']
 
     it 'should let example name intact', ->

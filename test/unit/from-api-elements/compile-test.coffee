@@ -5,11 +5,11 @@ fs = require('fs')
 path = require('path')
 
 
-{compileFromApiElements} = require('../../src/compile-from-api-elements')
+{compileFromApiElements} = require('../../../src/from-api-elements/compile')
 
 
 describe "compileFromApiElements()", ->
-  filename = path.join(__dirname, '../fixtures/blueprint.apib')
+  filename = path.join(__dirname, '../../fixtures/blueprint.apib')
   code = fs.readFileSync(filename).toString()
   parseResult = undefined
 
@@ -144,7 +144,7 @@ describe "compileFromApiElements()", ->
     transaction = null
 
     before((done) ->
-      code = fs.readFileSync(path.join(__dirname, '../fixtures/simple-unnamed.apib')).toString()
+      code = fs.readFileSync(path.join(__dirname, '../../fixtures/simple-unnamed.apib')).toString()
       protagonist.parse(code, {type: 'refract', generateSourceMap: true}, (err, result) ->
         return done(err) if err
         data = compileFromApiElements result, filename
@@ -172,7 +172,7 @@ describe "compileFromApiElements()", ->
     transactions = null
 
     before((done) ->
-      code = fs.readFileSync(path.join(__dirname, '../fixtures/multiple-examples.apib')).toString()
+      code = fs.readFileSync(path.join(__dirname, '../../fixtures/multiple-examples.apib')).toString()
       protagonist.parse(code, {type: 'refract', generateSourceMap: true}, (err, result) ->
         return done(err) if err
         transactions = compileFromApiElements(result, filename)['transactions']
@@ -192,7 +192,7 @@ describe "compileFromApiElements()", ->
     transactions = null
 
     before((done) ->
-      code = fs.readFileSync(path.join(__dirname, '../fixtures/single-get.apib')).toString()
+      code = fs.readFileSync(path.join(__dirname, '../../fixtures/single-get.apib')).toString()
       protagonist.parse(code, {type: 'refract', generateSourceMap: true}, (err, result) ->
         return done(err) if err
         transactions = compileFromApiElements(result, filename)['transactions']
@@ -207,7 +207,7 @@ describe "compileFromApiElements()", ->
     transactions = null
 
     before((done) ->
-      code = fs.readFileSync(path.join(__dirname, '../fixtures/arbitrary-action.apib')).toString()
+      code = fs.readFileSync(path.join(__dirname, '../../fixtures/arbitrary-action.apib')).toString()
       protagonist.parse(code, {type: 'refract', generateSourceMap: true}, (err, result) ->
         return done(err) if err
         transactions = compileFromApiElements(result, filename)['transactions']

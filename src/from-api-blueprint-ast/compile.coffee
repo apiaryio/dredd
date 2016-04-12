@@ -1,9 +1,9 @@
 clone = require 'clone'
 inheritParameters = require './inherit-parameters'
-expandUriTemplateWithParameters = require './expand-uri-template-with-parameters'
+expandUriTemplateWithParameters = require '../expand-uri-template-with-parameters'
 exampleToHttpPayloadPair = require './example-to-http-payload-pair'
 convertAstMetadata = require './convert-ast-metadata'
-validateParameters = require './validate-parameters'
+validateParameters = require '../validate-parameters'
 
 
 compileFromApiBlueprintAst = (blueprintAst, filename) ->
