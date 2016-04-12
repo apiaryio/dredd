@@ -7,6 +7,12 @@ detectTransactionExamples = (transition) ->
   # their position in the original API Blueprint document.
   index = createIndex(transition)
 
+  # No transaction examples, handling as a special case.
+  if not index.length
+    transition.attributes ?= {}
+    transition.attributes.examples = 0
+    return
+
   # Iterating over requests and responses in the index, keeping track of in
   # which block we currently are (block of requests: 'req', block
   # of responses: 'res'). In case there's change 'res' -> 'req', we raise
@@ -27,9 +33,9 @@ detectTransactionExamples = (transition) ->
     transaction.attributes.example = example
 
   transition.attributes ?= {}
-  transition.attributes.examples = example # TODO test this!!!!!!
+  transition.attributes.examples = example
 
-  return undefined # 'in situ' function
+  return # 'in situ' function
 
 
 # Provides index of requests and responses within given *transition*, sorted by

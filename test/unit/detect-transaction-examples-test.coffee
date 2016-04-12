@@ -8,6 +8,7 @@ detectTransactionExamples = require('../../src/detect-transaction-examples')
 # Encapsulates a single test scenario.
 scenario = (description, {actionContent, examples, exampleNumbersPerTransaction}) ->
   describe("#{description}", ->
+    returnValue = undefined
     apiBlueprint = """
       FORMAT: 1A
       # Gargamel API
@@ -38,7 +39,16 @@ scenario = (description, {actionContent, examples, exampleNumbersPerTransaction}
     )
 
     beforeEach( ->
-      detectTransactionExamples(transition)
+      returnValue = detectTransactionExamples(transition)
+    )
+
+    it('worked \'in situ\' and returned no value', ->
+      assert.isUndefined(returnValue)
+    )
+
+    it('transition got expected total number of examples', ->
+      expected = Math.max.apply(null, [0].concat(exampleNumbersPerTransaction))
+      assert.equal(transition.attributes.examples, expected)
     )
 
     it('transactions got expected example numbers', ->
