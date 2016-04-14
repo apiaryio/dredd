@@ -45,12 +45,12 @@ options =
 
   only:
     alias: "x"
-    description: "Run only specified transaction name. Can be used multiple times."
+    description: "Run only specified transaction name. Can be used multiple times"
     default: []
 
   ignore:
     alias: "z"
-    description: "Skip the specified transaction name. Can be used multiple times."
+    description: "Skip the specified transaction name. Can be used multiple times"
     default: []
 
   reporter:
