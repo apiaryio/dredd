@@ -3,226 +3,593 @@
 protagonist = require('protagonist')
 fs = require('fs')
 path = require('path')
-
+tv4 = require('tv4')
+proxyquire = require('proxyquire').noPreserveCache()
 
 {compileFromApiElements} = require('../../../src/from-api-elements/compile')
 
 
-describe "compileFromApiElements()", ->
-  filename = path.join(__dirname, '../../fixtures/blueprint.apib')
-  code = fs.readFileSync(filename).toString()
-  parseResult = undefined
+compile = (apiDescriptionDocument, filename, done) ->
+  [done, filename] = [filename, undefined] if typeof filename is 'function'
 
-  data = {}
+  options = {type: 'refract', generateSourceMap: true}
+  protagonist.parse(apiDescriptionDocument, options, (err, parseResult) ->
+    return done(err) unless parseResult
+    done(null, compileFromApiElements(parseResult, filename))
+  )
 
-  before((done) ->
-    protagonist.parse(code, {type: 'refract', generateSourceMap: true}, (err, result) ->
-      return done(err) if err
-      data = compileFromApiElements(result, filename)
-      done()
+
+describe('compileFromApiElements()', ->
+  describe('API description causing an error in the parser', ->
+    err = undefined
+    errors = undefined
+
+    beforeEach((done) ->
+      compile('''
+        FORMAT: 1A
+        # Beehive API
+        \t\t
+      ''', (args...) ->
+        [err, compilationResult] = args
+        errors = compilationResult.errors
+        done()
+      )
+    )
+
+    it('is compiled with an error', ->
+      assert.equal(errors.length, 1)
+    )
+    context('the error', ->
+      it('comes from parser', ->
+        assert.equal(errors[0].origin, 'apiDescriptionParser')
+      )
+      it('has code', ->
+        assert.ok(errors[0].code)
+      )
+      it('has message', ->
+        assert.include(errors[0].message.toLowerCase(), 'tab')
+      )
+      it('has expected location', ->
+        assert.deepEqual(errors[0].location, [[25, 1]])
+      )
     )
   )
 
-  describe 'its return', ->
-    it 'should return an object', ->
-      assert.isObject data
+  describe('API description causing an error in URI expansion', ->
+    err = undefined
+    errors = undefined
 
-    ['transactions', 'errors', 'warnings'].forEach (key) ->
-      it 'should have key \'' + key + "'", ->
-        assert.include Object.keys(data), key
-
-    describe 'transactions', ->
-      it 'should not be empty', ->
-        assert.notEqual data['transactions'].length, 0
-
-    describe 'each entry under errors', ->
-      errors = []
-      before ->
-        errors = data['errors']
-
-      it 'should have origin keys', ->
-        errors.forEach (error, index) ->
-          assert.isDefined error['origin'], 'Warning index ' + index
-
-    describe 'each entry under warnings', ->
-      warnings = []
-      before ->
-        warnings = data['warnings']
-
-      it 'should have origin keys', ->
-        warnings.forEach (warning, index) ->
-          assert.isDefined warning['origin'], 'Warning index ' + index
-
-    describe 'each entry under transactions', ->
-      transactions = []
-      before ->
-        transactions = data['transactions']
-
-      ['origin', 'request', 'response'].forEach (key) ->
-        it 'should have "' + key + '" key', ->
-          transactions.forEach (transaction, index) ->
-            assert.isDefined transaction[key], 'Transaction index ' + index
-
-      describe 'value under origin key', ->
-        it 'is an object', ->
-          transactions.forEach (transaction, index) ->
-            assert.isObject transaction['origin'], 'Transaction index ' + index
-
-        it 'have filename property with file name from second param', ->
-          transactions.forEach (transaction, index) ->
-            assert.property transaction['origin'], 'filename', 'Transaction index ' + index
-            assert.equal transaction['origin']['filename'], filename, 'Transaction index ' + index
-
-        it 'have apiName property', ->
-          transactions.forEach (transaction, index) ->
-            assert.property transaction['origin'], 'apiName', 'Transaction index ' + index
-            assert.equal transaction['origin']['apiName'], 'Machines API', 'Transaction index ' + index
-
-      describe 'value under request key', ->
-        ['uri', 'method', 'headers', 'body'].forEach (key) ->
-          it 'has key: ' + key , ->
-            transactions.forEach (transaction, index) ->
-              assert.isDefined transaction['request'][key], 'Transaction index ' + index
-
-          it 'value under key \'' + key + '\' is not null', ->
-            transactions.forEach (transaction, index) ->
-              assert.isNotNull transaction['request'][key], 'Transaction index ' + index
-
-      describe 'value under response key', ->
-        it 'is an object', ->
-          transactions.forEach (transaction, index) ->
-            assert.isObject transaction['response'], 'Transaction index ' + index
-
-        ['status', 'headers', 'body'].forEach (key) ->
-          it 'has key: ' + key , ->
-            transactions.forEach (transaction, index) ->
-              assert.isDefined transaction['response'][key], 'Transaction index ' + index
-
-  describe 'when some warning in URI expanding appear', ->
-    before((done) ->
-      codeWithoutParamSections = code.replace(/\+ Parameters\n(\s+\+ .+)+/, '')
-      protagonist.parse(codeWithoutParamSections, {type: 'refract', generateSourceMap: true}, (err, result) ->
-        return done(err) if err
-        parseResult = result
+    beforeEach((done) ->
+      compile('''
+        FORMAT: 1A
+        # Beehive API
+        ## Honey [/honey{]
+        ### Remove [DELETE]
+        + Response
+      ''', (args...) ->
+        [err, compilationResult] = args
+        errors = compilationResult.errors
         done()
       )
     )
 
-    it 'should have piped all warnings from expandUriTemplate', ->
-      data = compileFromApiElements parseResult
-      assert.notEqual data['warnings'].length, 0
+    it('is compiled with an error', ->
+      assert.equal(errors.length, 1)
+    )
+    context('the error', ->
+      it('comes from compiler', ->
+        assert.equal(errors[0].origin, 'transactionsCompiler')
+      )
+      it('has no code', ->
+        assert.isUndefined(errors[0].code)
+      )
+      it('has message', ->
+        assert.include(errors[0].message.toLowerCase(), 'uri template')
+      )
+      it('has no location', ->
+        assert.isUndefined(errors[0].location)
+      )
+    )
+  )
 
-  describe 'when some error in URI parameters validation appear', ->
-    before((done) ->
-      codeWithChangedParamSections = code.replace(/  \+ name[^\n]+/gi, '  + name (required)')
-      protagonist.parse(codeWithChangedParamSections, {type: 'refract', generateSourceMap: true}, (err, result) ->
-        return done(err) if err
-        parseResult = result
+  describe('API description causing an error in URI validation', ->
+    err = undefined
+    errors = undefined
+
+    beforeEach((done) ->
+      compile('''
+        FORMAT: 1A
+        # Beehive API
+        ## Honey [/honey{?param}]
+        ### Remove [DELETE]
+        + Parameters
+            + nonexisting (string, required)
+        + Response
+      ''', (args...) ->
+        [err, compilationResult] = args
+        errors = compilationResult.errors
         done()
       )
     )
 
-    it 'should have piped all errors from validateParameters', ->
-      data = compileFromApiElements parseResult
-      assert.notEqual data['errors'].length, 0
+    it('is compiled with an error', ->
+      assert.equal(errors.length, 1)
+    )
+    context('the error', ->
+      it('comes from compiler', ->
+        assert.equal(errors[0].origin, 'transactionsCompiler')
+      )
+      it('has no code', ->
+        assert.isUndefined(errors[0].code)
+      )
+      it('has message', ->
+        assert.include(errors[0].message.toLowerCase(), 'no example value')
+      )
+      it('has no location', ->
+        assert.isUndefined(errors[0].location)
+      )
+    )
+  )
 
-  describe 'when some error in URI expanding appear', ->
-    before((done) ->
-      codeWithInvalidUriTemplate = code.replace(' [/machines', ' [/machines{')
-      protagonist.parse(codeWithInvalidUriTemplate, {type: 'refract', generateSourceMap: true}, (err, result) ->
-        return done(err) if err
-        parseResult = result
+  describe('API description causing a warning in the parser', ->
+    err = undefined
+    warnings = undefined
+
+    beforeEach((done) ->
+      compile('''
+        FORMAT: 1A
+        # Beehive API
+        ## Honey [/honey]
+        ### Remove [DELETE]
+        + Response
+      ''', (args...) ->
+        [err, compilationResult] = args
+        warnings = compilationResult.warnings
         done()
       )
     )
 
-    it 'should have piped all errors from expandUriTemplate', ->
-      data = compileFromApiElements parseResult
-      assert.notEqual data['errors'].length, 0
+    it('is compiled with a warning', ->
+      assert.equal(warnings.length, 1)
+    )
+    context('the warning', ->
+      it('comes from parser', ->
+        assert.equal(warnings[0].origin, 'apiDescriptionParser')
+      )
+      it('has code', ->
+        assert.ok(warnings[0].code)
+      )
+      it('has message', ->
+        assert.include(warnings[0].message.toLowerCase(), 'status code')
+      )
+      it('has expected location', ->
+        assert.deepEqual(warnings[0].location, [[63, 10]])
+      )
+    )
+  )
 
-  describe 'when no api name, group name, resource name and action name in ast', ->
-    transaction = null
+  describe('API description causing a warning in URI expansion', ->
+    err = undefined
+    warnings = undefined
 
-    before((done) ->
-      code = fs.readFileSync(path.join(__dirname, '../../fixtures/simple-unnamed.apib')).toString()
-      protagonist.parse(code, {type: 'refract', generateSourceMap: true}, (err, result) ->
-        return done(err) if err
-        data = compileFromApiElements result, filename
-        transaction = data['transactions'][0]
+    beforeEach((done) ->
+      compile('''
+        FORMAT: 1A
+        # Beehive API
+        ## Honey [/honey{?beekeeper}]
+        ### Remove [DELETE]
+        + Response 203
+      ''', (args...) ->
+        [err, compilationResult] = args
+        warnings = compilationResult.warnings
         done()
       )
     )
 
-    it 'should use filename as api name', ->
-      assert.equal transaction['origin']['apiName'], filename
+    it('is compiled with a warning', ->
+      assert.equal(warnings.length, 1)
+    )
+    context('the warning', ->
+      it('comes from parser', ->
+        assert.equal(warnings[0].origin, 'transactionsCompiler')
+      )
+      it('has no code', ->
+        assert.isUndefined(warnings[0].code)
+      )
+      it('has message', ->
+        assert.include(warnings[0].message.toLowerCase(), 'ambiguous')
+      )
+      it('has no location', ->
+        assert.isUndefined(warnings[0].location)
+      )
+    )
+  )
 
-    # should not be possible specify more than one unnamed group, must verify
-    #it 'should use Group + group index as group name', ->
-    #  assert.equal transaction['origin']['resourceGroupName'], 'Group 1'
+  describe('API description causing a warning in URI validation', ->
+    err = undefined
+    warnings = undefined
 
-    it 'should use URI for resource name', ->
-      assert.equal transaction['origin']['resourceName'], '/message'
+    apiDescriptionDocument = '''
+      FORMAT: 1A
+      # Beehive API
+      ## Honey [/honey{?beekeeper}]
+      + Parameters
+          + beekeeper: Honza (string)
+      ### Remove [DELETE]
+      + Request (application/json)
+      + Response 200
+    '''
+    message = '... dummy warning message ...'
 
-    it 'should use method for action name', ->
-      assert.equal transaction['origin']['actionName'], 'GET'
+    # Since validateParameters doesn't actually return any warnings, we need to
+    # pretend it's possible for this test.
+    beforeEach((done) ->
+      stubbedCompileFromApiElements = proxyquire('../../../src/from-api-elements/compile',
+        '../validate-parameters': (args...) ->
+          {errors: [], warnings: [message]}
+      )
 
-  describe 'when some action have multiple examples', ->
-
-    filename = './path/to/blueprint.apib'
-    transactions = null
-
-    before((done) ->
-      code = fs.readFileSync(path.join(__dirname, '../../fixtures/multiple-examples.apib')).toString()
-      protagonist.parse(code, {type: 'refract', generateSourceMap: true}, (err, result) ->
-        return done(err) if err
-        transactions = compileFromApiElements(result, filename)['transactions']
+      options = {type: 'refract', generateSourceMap: true}
+      protagonist.parse(apiDescriptionDocument, options, (err, parseResult) ->
+        return done(err) unless parseResult
+        warnings = stubbedCompileFromApiElements(parseResult, null).warnings
         done()
       )
     )
 
-    it 'should set exampleName for first transaction to "Example 1"', ->
-      assert.equal transactions[0]['origin']['exampleName'], "Example 1"
+    it('is compiled with a warning', ->
+      assert.equal(warnings.length, 1)
+    )
+    context('the warning', ->
+      it('comes from compiler', ->
+        assert.equal(warnings[0].origin, 'transactionsCompiler')
+      )
+      it('has no code', ->
+        assert.isUndefined(warnings[0].code)
+      )
+      it('has message', ->
+        assert.include(warnings[0].message, message)
+      )
+      it('has no location', ->
+        assert.isUndefined(warnings[0].location)
+      )
+    )
+  )
 
-    it 'should set exampleName for second transaction to "Example 2"', ->
-      assert.equal transactions[1]['origin']['exampleName'], "Example 2"
+  describe('API description with multiple transaction examples', ->
+    err = undefined
+    transactions = undefined
+    exampleNumbersPerTransaction = [1, 1, 2]
 
-  describe 'when some action doesn\'t have multiple examples', ->
-
-    filename = './path/to/blueprint.apib'
-    transactions = null
-
-    before((done) ->
-      code = fs.readFileSync(path.join(__dirname, '../../fixtures/single-get.apib')).toString()
-      protagonist.parse(code, {type: 'refract', generateSourceMap: true}, (err, result) ->
-        return done(err) if err
-        transactions = compileFromApiElements(result, filename)['transactions']
+    beforeEach((done) ->
+      compile('''
+        FORMAT: 1A
+        # Beehive API
+        ## Honey [/honey]
+        ### Remove [DELETE]
+        + Request (application/json)
+        + Response 200
+        + Response 500
+        + Request (text/plain)
+        + Response 415
+      ''', (args...) ->
+        [err, compilationResult] = args
+        transactions = compilationResult.transactions
         done()
       )
     )
 
-    it 'should let example name intact', ->
-      assert.equal transactions[0]['origin']['exampleName'], ''
+    it('is compiled into expected number of transactions', ->
+      assert.equal(transactions.length, exampleNumbersPerTransaction.length)
+    )
+    for exampleNumber, i in exampleNumbersPerTransaction
+      do (exampleNumber, i) ->
+        context("transaction ##{i + 1}", ->
+          it("is identified as part of Example #{exampleNumber}", ->
+            assert.equal(
+              transactions[i].origin.exampleName,
+              "Example #{exampleNumber}"
+            )
+          )
+        )
+  )
 
-  describe 'when arbitrary action is present', ->
-    transactions = null
+  describe('API description without multiple transaction examples', ->
+    err = undefined
+    compilationResult = undefined
+    transaction = undefined
 
-    before((done) ->
-      code = fs.readFileSync(path.join(__dirname, '../../fixtures/arbitrary-action.apib')).toString()
-      protagonist.parse(code, {type: 'refract', generateSourceMap: true}, (err, result) ->
-        return done(err) if err
-        transactions = compileFromApiElements(result, filename)['transactions']
+    beforeEach((done) ->
+      compile('''
+        FORMAT: 1A
+        # Beehive API
+        ## Honey [/honey]
+        ### Remove [DELETE]
+        + Request (application/json)
+        + Response 200
+      ''', (args...) ->
+        [err, compilationResult] = args
+        transaction = compilationResult.transactions[0]
         done()
       )
     )
 
-    it 'first (normal) action should have resource uri', ->
-      assert.equal transactions[0].request.uri, '/resource/1'
+    it('is compiled into one transaction', ->
+      assert.equal(compilationResult.transactions.length, 1)
+    )
+    context('the transaction', ->
+      it("is identified as part of no example in \'origin\'", ->
+        assert.equal(transaction.origin.exampleName, '')
+      )
+      it("is identified as part of Example 1 in \'pathOrigin\'", ->
+        assert.equal(transaction.pathOrigin.exampleName, 'Example 1')
+      )
+    )
+  )
 
-    it 'first (normal) action should have its method', ->
-      assert.equal transactions[0].request.method, 'POST'
+  describe('API description with arbitrary action', ->
+    filename = path.join(__dirname, '../../fixtures/arbitrary-action.apib')
+    apiDescriptionDocument = fs.readFileSync(filename).toString()
 
-    it 'second (arbitrary) action should have uri from the action', ->
-      assert.equal transactions[1].request.uri, '/resource-cool-url/othervalue'
+    err = undefined
+    transaction0 = undefined
+    transaction1 = undefined
 
-    it 'second (arbitrary) action should have its method', ->
-      assert.equal transactions[1].request.method, 'GET'
+    beforeEach((done) ->
+      compile(apiDescriptionDocument, filename, (args...) ->
+        [err, compilationResult] = args
+        [transaction0, transaction1] = compilationResult.transactions
+        done()
+      )
+    )
+
+    context('action within a resource', ->
+      it('has URI inherited from the resource', ->
+        assert.equal(transaction0.request.uri, '/resource/1')
+      )
+      it('has its method', ->
+        assert.equal(transaction0.request.method, 'POST')
+      )
+    )
+
+    context('arbitrary action', ->
+      it('has its own URI', ->
+        assert.equal(transaction1.request.uri, '/resource-cool-url/othervalue')
+      )
+      it('has its method', ->
+        assert.equal(transaction1.request.method, 'GET')
+      )
+    )
+  )
+
+  describe('API description without sections', ->
+    filename = path.join(__dirname, '../../fixtures/simple-unnamed.apib')
+    apiDescriptionDocument = fs.readFileSync(filename).toString()
+
+    err = undefined
+    transaction = undefined
+
+    beforeEach((done) ->
+      compile(apiDescriptionDocument, filename, (args...) ->
+        [err, compilationResult] = args
+        transaction = compilationResult.transactions[0]
+        done()
+      )
+    )
+
+    context('\'origin\'', ->
+      it('uses filename as API name', ->
+        assert.equal(transaction.origin.apiName, filename)
+      )
+      it('uses empty string as resource group name', ->
+        assert.equal(transaction.origin.resourceGroupName, '')
+      )
+      it('uses URI as resource name', ->
+        assert.equal(transaction.origin.resourceName, '/message')
+      )
+      it('uses method as action name', ->
+        assert.equal(transaction.origin.actionName, 'GET')
+      )
+    )
+
+    context('\'pathOrigin\'', ->
+      it('uses empty string as API name', ->
+        assert.equal(transaction.pathOrigin.apiName, '')
+      )
+      it('uses empty string as resource group name', ->
+        assert.equal(transaction.pathOrigin.resourceGroupName, '')
+      )
+      it('uses URI as resource name', ->
+        assert.equal(transaction.pathOrigin.resourceName, '/message')
+      )
+      it('uses method as action name', ->
+        assert.equal(transaction.pathOrigin.actionName, 'GET')
+      )
+    )
+  )
+
+  describe('API description with enum parameter', ->
+    err = undefined
+    transaction = undefined
+
+    beforeEach((done) ->
+      compile('''
+        FORMAT: 1A
+        # Beehive API
+        ## Honey [/honey{?beekeeper}]
+        + Parameters
+            + beekeeper (enum[string])
+                + Members
+                    + Adam
+                    + Honza
+        ### Remove [DELETE]
+        + Request (application/json)
+        + Response 200
+      ''', (args...) ->
+        [err, compilationResult] = args
+        transaction = compilationResult.transactions[0]
+        done()
+      )
+    )
+
+    it('expands the request URI with the first enum value', ->
+      assert.equal(transaction.request.uri, '/honey?beekeeper=Adam')
+    )
+  )
+
+  describe('API description with response schema', ->
+    err = undefined
+    transaction = undefined
+
+    beforeEach((done) ->
+      compile('''
+        FORMAT: 1A
+        # Beehive API
+        ## Honey [/honey]
+        ### Remove [DELETE]
+        + Request (application/json)
+        + Response 200
+            + Body
+
+                    []
+
+            + Schema
+
+                    {"type": "array"}
+      ''', (args...) ->
+        [err, compilationResult] = args
+        transaction = compilationResult.transactions[0]
+        done()
+      )
+    )
+
+    it('provides the body in response data', ->
+      assert.deepEqual(
+        JSON.parse(transaction.response.body),
+        []
+      )
+    )
+    it('provides the schema in response data', ->
+      assert.deepEqual(
+        JSON.parse(transaction.response.schema),
+        {type: 'array'}
+      )
+    )
+  )
+
+  describe('API description with inheritance of URI parameters', ->
+    err = undefined
+    transaction = undefined
+
+    beforeEach((done) ->
+      compile('''
+        FORMAT: 1A
+        # Beehive API
+        ## Honey [/honey{?beekeeper,amount}]
+        + Parameters
+            + beekeeper: Adam (string)
+        ### Remove [DELETE]
+        + Parameters
+            + amount: 42 (number)
+        + Request (application/json)
+            + Parameters
+                + beekeeper: Honza (string)
+        + Response 200
+      ''', (args...) ->
+        [err, compilationResult] = args
+        transaction = compilationResult.transactions[0]
+        done()
+      )
+    )
+
+    it('expands the request URI using correct inheritance cascade', ->
+      assert.equal(transaction.request.uri, '/honey?beekeeper=Honza&amount=42')
+    )
+  )
+
+  describe('Valid API description', ->
+    filename = path.join(__dirname, '../../fixtures/blueprint.apib')
+    apiDescriptionDocument = fs.readFileSync(filename).toString()
+
+    requestSchema =
+      type: 'object'
+      properties:
+        uri: {type: 'string', pattern: '^/'}
+        method: {type: 'string'}
+        headers:
+          type: 'object'
+          patternProperties:
+            '': # property of any name
+              type: 'object'
+              properties:
+                value: {type: 'string'}
+        body: {type: 'string'}
+
+    responseSchema =
+      type: 'object'
+      properties:
+        status: {type: 'string'}
+        headers:
+          type: 'object'
+          patternProperties:
+            '': # property of any name
+              type: 'object'
+              properties:
+                value: {type: 'string'}
+        body: {type: 'string'}
+
+    originSchema =
+      type: 'object'
+      properties:
+        filename: {type: 'string', enum: [filename]}
+        apiName: {type: 'string'}
+        resourceGroupName: {type: 'string'}
+        resourceName: {type: 'string'}
+        actionName: {type: 'string'}
+        exampleName: {type: 'string'}
+
+    pathOriginSchema =
+      type: 'object'
+      properties:
+        apiName: {type: 'string'}
+        resourceGroupName: {type: 'string'}
+        resourceName: {type: 'string'}
+        actionName: {type: 'string'}
+        exampleName: {type: 'string'}
+
+    transactionSchema =
+      type: 'object'
+      properties:
+        request: requestSchema
+        response: responseSchema
+        origin: originSchema
+        pathOrigin: pathOriginSchema
+
+    schema =
+      type: 'object'
+      properties:
+        transactions: {type: 'array', items: transactionSchema}
+        errors: {type: 'array', maxItems: 0} # 0 = no errors occured
+        warnings: {type: 'array', maxItems: 0} # 0 = no warnings occured
+
+    err = undefined
+    compilationResult = undefined
+    validationResult = undefined
+
+    beforeEach((done) ->
+      compile(apiDescriptionDocument, filename, (args...) ->
+        [err, compilationResult] = args
+        validationResult = tv4.validateMultiple(compilationResult, schema)
+        done()
+      )
+    )
+
+    it('is compiled into a compilation result of expected structure', ->
+      errors = (
+        {message, dataPath} for {message, dataPath} in validationResult.errors
+      )
+      assert.deepEqual(errors, [])
+      assert.isTrue(validationResult.valid)
+    )
+  )
+)

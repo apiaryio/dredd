@@ -7,9 +7,6 @@ getTransactionPath = require('./transaction-path/get-transaction-path')
 
 
 compile = (input, filename, callback) ->
-  # Beware! The 'filename' argument is going to be removed soon:
-  # https://github.com/apiaryio/dredd-transactions/issues/6
-
   if typeof input is 'string'
     # input is API description document
     parse(input, (err, apiElements) ->
@@ -25,7 +22,11 @@ compile = (input, filename, callback) ->
     )
   else
     # input is API Blueprint AST (kept just for backwards compatibility!)
-    result = compileFromApiBlueprintAst(input, filename)
+    try
+      result = compileFromApiBlueprintAst(input, filename)
+    catch err
+      return callback(err)
+
     for transaction in result.transactions
       transaction['name'] = getTransactionName(transaction)
       transaction['path'] = getTransactionPath(transaction)

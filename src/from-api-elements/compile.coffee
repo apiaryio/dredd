@@ -19,7 +19,7 @@ compileFromApiElements = (parseResult, filename) ->
       origin
       code: content(annotation.attributes?.code)
       message: content(annotation)
-      location: content(annotation.attributes?.sourceMap)
+      location: content(child(annotation.attributes?.sourceMap, {element: 'sourceMap'}))
     })
 
   children(parseResult, {element: 'transition'}).map(detectTransactionExamples)
@@ -83,9 +83,7 @@ compileUri = (parseResult, httpRequest, annotations) ->
     for own name, parameter of compileParameters(attributes?.hrefVariables)
       parameters[name] = parameter
 
-
   result = validateParameters(parameters)
-
   origin = 'transactionsCompiler'
   for error in result.errors
     annotations.errors.push({origin, message: error})
@@ -93,7 +91,6 @@ compileUri = (parseResult, httpRequest, annotations) ->
     annotations.warnings.push({origin, message: warning})
 
   result = expandUriTemplateWithParameters(href, parameters)
-
   origin = 'transactionsCompiler'
   for error in result.errors
     annotations.errors.push({origin, message: error})
@@ -105,7 +102,8 @@ compileUri = (parseResult, httpRequest, annotations) ->
 
 compileParameters = (hrefVariables) ->
   parameters = {}
-  for member in children(hrefVariables, {element: 'member'})
+
+  for member in content(hrefVariables) or []
     {key, value} = content(member)
 
     name = content(key)
@@ -149,9 +147,9 @@ compileOrigin = (filename, parseResult, httpTransaction) ->
     filename
     apiName: content(api.meta?.title) or filename
     resourceGroupName: content(resourceGroup?.meta?.title)
-    exampleName
     resourceName: content(resource.meta?.title) or content(resource.attributes?.href)
     actionName: content(transition.meta?.title) or content(httpRequest.attributes.method)
+    exampleName
   }
 
 
@@ -165,9 +163,9 @@ compilePathOrigin = (filename, parseResult, httpTransaction) ->
   {
     apiName: content(api.meta?.title)
     resourceGroupName: content(resourceGroup?.meta?.title)
-    exampleName: "Example #{httpTransaction.attributes.example}"
     resourceName: content(resource.meta?.title) or content(resource.attributes?.href)
     actionName: content(transition.meta?.title) or content(httpRequest.attributes.method)
+    exampleName: "Example #{httpTransaction.attributes.example}"
   }
 
 

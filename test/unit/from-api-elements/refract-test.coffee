@@ -5,7 +5,6 @@ refract = require('../../../src/from-api-elements/refract')
 
 
 describe('Refract Utility Functions', ->
-
   describe('match()', ->
     node =
       element: 'string',

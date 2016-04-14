@@ -1,7 +1,9 @@
+proxyquire = require('proxyquire').noPreserveCache()
 fs = require 'fs'
 path = require 'path'
 {assert} = require 'chai'
 protagonist = require 'protagonist'
+sinon = require 'sinon'
 dreddTransactions = require '../../src/dredd-transactions'
 ast = require '../fixtures/blueprint-ast'
 
@@ -50,6 +52,28 @@ describe 'dreddTransactions [AST]', ->
             # console.log transaction.path
             assert.property transaction, 'path', "Missing 'path' property on transaction #{index}"
 
+  describe 'when compilation throws an exception', ->
+    error = new Error '... dummy message ...'
+
+    filename = '... dummy filename ...'
+    apiBlueprintAst = {}
+    callbackArguments = undefined
+
+    before (done) ->
+      dreddTransactions = proxyquire '../../src/dredd-transactions',
+        './from-api-blueprint-ast/compile': (args...) ->
+          throw error
+
+      dreddTransactions.compile apiBlueprintAst, filename, (args...) ->
+        callbackArguments = args
+        done()
+
+    after ->
+      dreddTransactions = require '../../src/dredd-transactions'
+
+    it 'passes the error to callback', ->
+      assert.deepEqual(callbackArguments, [error])
+
 
 describe 'dreddTransactions [BLUEPRINT]', ->
   filename = path.join __dirname, '../fixtures/blueprint.apib'
@@ -96,6 +120,31 @@ describe 'dreddTransactions [BLUEPRINT]', ->
           for transaction, index in returnedObject.transactions
             # console.log transaction.path
             assert.property transaction, 'path', "Missing 'path' property on transaction #{index}"
+
+  describe 'when compilation throws an exception', ->
+    error = new Error '... dummy message ...'
+
+    filename = '... dummy filename ...'
+    apiDescriptionDocument = '''
+      # Dummy API
+      ... dummy API Description ...
+    '''
+    callbackArguments = undefined
+
+    before (done) ->
+      dreddTransactions = proxyquire '../../src/dredd-transactions',
+        './from-api-elements/compile': (args...) ->
+          throw error
+
+      dreddTransactions.compile apiDescriptionDocument, filename, (args...) ->
+        callbackArguments = args
+        done()
+
+    after ->
+      dreddTransactions = require '../../src/dredd-transactions'
+
+    it 'passes the error to callback', ->
+      assert.deepEqual(callbackArguments, [error])
 
 
 describe 'dreddTransactions [AST vs. BLUEPRINT]', ->
