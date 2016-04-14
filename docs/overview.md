@@ -87,7 +87,7 @@ In this case, you will have to write a `before` hook for adding a database fixtu
 First, retrieve the transaction names.
 
 ```
-dredd blueprint.md localhost:3000 --names
+dredd blueprint.md http://localhost:3000 --names
 info: Categories > Create a category
 info: Category > Delete a category
 info: Category Items > Create an item
@@ -164,7 +164,7 @@ FORMAT: 1A
 Retrieve transactions names with:
 
 ```
-$ dredd blueprint.md localhost:3000 --names
+$ dredd blueprint.md http://localhost:3000 --names
 info: /login > POST
 info: /cars > GET
 info: /cars/{id} > PATCH
@@ -329,7 +329,7 @@ If you need to use different URI address for each example, you can [modify trans
 Dredd will compile following transaction names:
 
 ```
-$ dredd blueprint.md localhost --names
+$ dredd blueprint.md http://localhost --names
 info: Beginning Dredd testing...
 info: Resource > Update resource > Example 1
 info: Resource > Update resource > Example 2
