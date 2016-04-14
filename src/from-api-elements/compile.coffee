@@ -169,4 +169,4 @@ compilePathOrigin = (filename, parseResult, httpTransaction) ->
   }
 
 
-module.exports = {compileFromApiElements}
+module.exports = compileFromApiElements

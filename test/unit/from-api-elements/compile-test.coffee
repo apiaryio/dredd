@@ -6,7 +6,7 @@ path = require('path')
 tv4 = require('tv4')
 proxyquire = require('proxyquire').noPreserveCache()
 
-{compileFromApiElements} = require('../../../src/from-api-elements/compile')
+compileFromApiElements = require('../../../src/from-api-elements/compile')
 
 
 compile = (apiDescriptionDocument, filename, done) ->

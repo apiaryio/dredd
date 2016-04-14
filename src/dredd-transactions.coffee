@@ -1,7 +1,7 @@
 
-{parse} = require('./parse')
-{compileFromApiBlueprintAst} = require('./from-api-blueprint-ast/compile')
-{compileFromApiElements} = require('./from-api-elements/compile')
+parse = require('./parse')
+compileFromApiBlueprintAst = require('./from-api-blueprint-ast/compile')
+compileFromApiElements = require('./from-api-elements/compile')
 getTransactionName = require('./transaction-name/get-transaction-name')
 getTransactionPath = require('./transaction-path/get-transaction-path')
 

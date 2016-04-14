@@ -140,4 +140,4 @@ compileFromApiBlueprintAst = (blueprintAst, filename) ->
 
   return runtime
 
-module.exports = {compileFromApiBlueprintAst}
+module.exports = compileFromApiBlueprintAst

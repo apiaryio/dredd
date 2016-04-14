@@ -3,7 +3,7 @@ clone = require 'clone'
 protagonist = require 'protagonist'
 fs = require 'fs'
 
-{compileFromApiBlueprintAst} = require '../../../src/from-api-blueprint-ast/compile'
+compileFromApiBlueprintAst = require '../../../src/from-api-blueprint-ast/compile'
 
 
 describe "compileFromApiBlueprintAst()", ->
