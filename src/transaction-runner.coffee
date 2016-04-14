@@ -461,6 +461,10 @@ class TransactionRunner
       @configuration.emitter.emit 'test skip', test, () ->
       transaction.skip = true
       return callback()
+    else if @configuration.options.ignore.length > 0 and (transaction.name in @configuration.options.ignore)
+      @configuration.emitter.emit 'test skip', test, () ->
+      transaction.skip = true
+      return callback()
     else
       return @performRequestAndValidate(test, transaction, hooks, callback)
 
