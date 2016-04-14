@@ -1,5 +1,21 @@
 ## Changelog
 
+### v1.0.9
+
+**node-uuid upgraded ([security reasons](https://nodesecurity.io/advisories/uuid_insecure-entropy-source-mathrandom))**
+- [#441](https://github.com/apiaryio/dredd/pull/441) node-uuid is insecure - upgrade & version bump (@honzajavorek)
+
+**Jenkins correctly identified as CI by Apiary reporter**
+- [#437](https://github.com/apiaryio/dredd/pull/437)  Add `BUILD_ID` to apiary reporter CI var check (@colinrymer)
+
+**Improvements in documentation**
+- [#420](https://github.com/apiaryio/dredd/pull/420) Cosmetic changes in README (@honzajavorek)
+- [#419](https://github.com/apiaryio/dredd/pull/419) Unnecessary new line (@honzajavorek)
+- [#427](https://github.com/apiaryio/dredd/pull/427) Little Polishing (@honzajavorek)
+
+**Codebase Cleanup**
+- [#417](https://github.com/apiaryio/dredd/pull/417) Removed redundant files (@honzajavorek)
+
 ### v1.0.8
 
 **New CLI options available, mainly ability to override hooks worker timeouts**
