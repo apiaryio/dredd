@@ -48,7 +48,7 @@ options =
     description: "Run only specified transaction name. Can be used multiple times"
     default: []
 
-  ignore:
+  skip:
     alias: "z"
     description: "Skip the specified transaction name. Can be used multiple times"
     default: []
