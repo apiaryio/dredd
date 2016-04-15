@@ -67,7 +67,7 @@ parseOutput = (output) ->
   return results
 
 
-describe 'Regression: Issue #319', ->
+describe 'Regression: Issues #319 and #354', ->
   results = undefined
 
   brickTypePayload =
@@ -75,6 +75,10 @@ describe 'Regression: Issue #319', ->
     name: ''
     colors: ['red', 'brown']
     dimensions: [[20, 30, 40]]
+    producer:
+      address:
+        city: null
+        street: ''
 
   brickTypeSchema =
     $schema: 'http://json-schema.org/draft-04/schema#'
@@ -84,6 +88,14 @@ describe 'Regression: Issue #319', ->
       name: {type: 'string'}
       colors: {type: 'array'}
       dimensions: {type: 'array'}
+      producer:
+        type: 'object'
+        properties:
+          address:
+            type: 'object'
+            properties:
+              city: {type: ['string', 'null']}
+              street: {type: 'string'}
     required: ['name']
 
   userPayload =
@@ -116,7 +128,7 @@ describe 'Regression: Issue #319', ->
     type: 'array'
 
   describe 'Tested app is consistent with the API description', ->
-    before (done) ->
+    beforeEach (done) ->
       app = express()
 
       # Attaching endpoint for each testing scenario
@@ -135,7 +147,7 @@ describe 'Regression: Issue #319', ->
 
       # Spinning up the Express server, running Dredd, and saving results
       server = app.listen PORT, ->
-        runDredd './test/fixtures/regression-319.apib', (err, result) ->
+        runDredd './test/fixtures/regression-319-354.apib', (err, result) ->
           results = parseOutput result.stdout
           server.close done
 
@@ -200,7 +212,7 @@ describe 'Regression: Issue #319', ->
       page: 1
       items: [incorrectUserPayload]
 
-    before (done) ->
+    beforeEach (done) ->
       app = express()
 
       # Attaching endpoint for each testing scenario
@@ -219,7 +231,7 @@ describe 'Regression: Issue #319', ->
 
       # Spinning up the Express server, running Dredd, and saving results
       server = app.listen PORT, ->
-        runDredd './test/fixtures/regression-319.apib', (err, result) ->
+        runDredd './test/fixtures/regression-319-354.apib', (err, result) ->
           results = parseOutput result.stdout
           server.close done
 
