@@ -1,7 +1,7 @@
 protagonist = require 'protagonist'
 {assert} = require 'chai'
 
-blueprintTransactions = require '../../src/blueprint-transactions'
+dreddTransactions = require '../../src/dredd-transactions'
 
 describe "compiled transaction paths", ->
   describe "Full notation with multiple request-response pairs", ->
@@ -28,12 +28,15 @@ describe "compiled transaction paths", ->
       protagonist.parse code, {type: 'ast'}, (err, result) ->
         return done(err) if err
         paths = []
-        transactions = blueprintTransactions.compile(result.ast).transactions
-        console.log JSON.stringify transactions, null, 2
-        for transaction in transactions
-          paths.push transaction.path
-        assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
-        done()
+        dreddTransactions.compile(result.ast, null, (err, {transactions}) ->
+          return done(err) if err
+
+          # console.log JSON.stringify transactions, null, 2
+          for transaction in transactions
+            paths.push transaction.path
+          assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
+          done()
+        )
 
 
 
@@ -55,11 +58,13 @@ describe "compiled transaction paths", ->
       protagonist.parse code, {type: 'ast'}, (err, result) ->
         return done(err) if err
         paths = []
-        transactions = blueprintTransactions.compile(result.ast).transactions
-        for transaction in transactions
-          paths.push transaction.path
-        assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
-        done()
+        dreddTransactions.compile(result.ast, null, (err, {transactions}) ->
+          return done(err) if err
+          for transaction in transactions
+            paths.push transaction.path
+          assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
+          done()
+        )
 
   describe "Full notation without group and API name", ->
     it 'should have expected path', (done) ->
@@ -77,11 +82,13 @@ describe "compiled transaction paths", ->
       protagonist.parse code, {type: 'ast'}, (err, result) ->
         return done(err) if err
         paths = []
-        transactions = blueprintTransactions.compile(result.ast).transactions
-        for transaction in transactions
-          paths.push transaction.path
-        assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
-        done()
+        dreddTransactions.compile(result.ast, null, (err, {transactions}) ->
+          return done(err) if err
+          for transaction in transactions
+            paths.push transaction.path
+          assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
+          done()
+        )
 
   describe "Full notation without group and API name with a colon", ->
     it 'should have expected path', (done) ->
@@ -101,11 +108,13 @@ describe "compiled transaction paths", ->
       protagonist.parse code, {type: 'ast'}, (err, result) ->
         return done(err) if err
         paths = []
-        transactions = blueprintTransactions.compile(result.ast).transactions
-        for transaction in transactions
-          paths.push transaction.path
-        assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
-        done()
+        dreddTransactions.compile(result.ast, null, (err, {transactions}) ->
+          return done(err) if err
+          for transaction in transactions
+            paths.push transaction.path
+          assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
+          done()
+        )
 
 
   describe "simplified notation", ->
@@ -122,8 +131,10 @@ describe "compiled transaction paths", ->
       protagonist.parse code, {type: 'ast'}, (err, result) ->
         return done(err) if err
         paths = []
-        transactions = blueprintTransactions.compile(result.ast).transactions
-        for transaction in transactions
-          paths.push transaction.path
-        assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
-        done()
+        dreddTransactions.compile(result.ast, null, (err, {transactions}) ->
+          return done(err) if err
+          for transaction in transactions
+            paths.push transaction.path
+          assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
+          done()
+        )

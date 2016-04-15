@@ -1,6 +1,6 @@
 {assert} = require 'chai'
-parsePath = require '../../src/parse-path'
-{ESCAPE_CHAR, DELIMITER} = require '../../src/constants'
+parsePath = require '../../../src/transaction-path/parse-path'
+{ESCAPE_CHAR, DELIMITER} = require '../../../src/transaction-path/constants'
 
 describe 'parsePath', ->
 

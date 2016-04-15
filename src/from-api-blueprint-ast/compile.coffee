@@ -1,11 +1,12 @@
 clone = require 'clone'
 inheritParameters = require './inherit-parameters'
-expandUriTemplateWithParameters = require './expand-uri-template-with-parameters'
+expandUriTemplateWithParameters = require '../expand-uri-template-with-parameters'
 exampleToHttpPayloadPair = require './example-to-http-payload-pair'
 convertAstMetadata = require './convert-ast-metadata'
-validateParameters = require './validate-parameters'
+validateParameters = require '../validate-parameters'
 
-blueprintAstToRuntime = (blueprintAst, filename) ->
+
+compileFromApiBlueprintAst = (blueprintAst, filename) ->
   runtime =
     transactions: []
     errors: []
@@ -51,13 +52,6 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
       else
         pathOrigin['resourceName'] = resource['uriTemplate']
         origin['resourceName'] = resource['uriTemplate']
-
-
-      # TO BE DEPRECATED
-      # Remove this! It has nothing to do in origin!!!!
-      # Get rid with polluting of origin with not related data!
-      # Put this through deprecation process, some users are already programming against it.
-      origin['uriTemplate'] = "#{resource['uriTemplate']}"
 
       for action in resource['actions']
         if action['name'] isnt ''
@@ -146,4 +140,4 @@ blueprintAstToRuntime = (blueprintAst, filename) ->
 
   return runtime
 
-module.exports = blueprintAstToRuntime
+module.exports = compileFromApiBlueprintAst

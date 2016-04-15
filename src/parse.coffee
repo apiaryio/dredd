@@ -16,4 +16,4 @@ parse = (apiDescriptionDocument, callback) ->
   )
 
 
-module.exports = {parse}
+module.exports = parse

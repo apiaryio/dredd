@@ -1,6 +1,6 @@
 {assert} = require 'chai'
 
-convertAstMetadata = require '../../src/convert-ast-metadata'
+convertAstMetadata = require '../../../src/from-api-blueprint-ast/convert-ast-metadata'
 
 describe 'convertAstMetadata()', ->
   metadata = [
@@ -24,13 +24,13 @@ describe 'convertAstMetadata()', ->
       values: ''
     }
   ]
-  
+
   data = null
 
   describe 'its return', ->
     before ->
       data = convertAstMetadata metadata
-    
+
     it 'should return an object', ->
       assert.isObject data
 

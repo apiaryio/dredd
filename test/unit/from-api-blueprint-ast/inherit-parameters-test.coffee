@@ -1,9 +1,9 @@
 {assert} = require 'chai'
 
-inheritParameters = require '../../src/inherit-parameters'
+inheritParameters = require '../../../src/from-api-blueprint-ast/inherit-parameters'
 
 describe 'inheritParameters()', ->
-  actual = 
+  actual =
     name:
       description: ''
       type: ''
@@ -11,8 +11,8 @@ describe 'inheritParameters()', ->
       default: ''
       example: 'waldo'
       values: ''
-  
-  inheriting = 
+
+  inheriting =
     name:
       description: ''
       type: ''
@@ -28,7 +28,7 @@ describe 'inheritParameters()', ->
       example: 1
       values: ''
 
-  
+
   data = null
 
   describe 'its return', ->
@@ -36,7 +36,7 @@ describe 'inheritParameters()', ->
       data = inheritParameters actual, inheriting
 
     it 'inheriting parameters should be added', ->
-      assert.include Object.keys(data), 'limit' 
+      assert.include Object.keys(data), 'limit'
 
     it 'actual values should not be overwriten by inheriting', ->
       assert.equal data['name']['example'], 'waldo'

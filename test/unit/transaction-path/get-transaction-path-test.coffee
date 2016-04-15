@@ -1,7 +1,7 @@
 {assert} = require 'chai'
 
-getTransactionPath = require '../../src/get-transaction-path'
-{ESCAPE_CHAR, DELIMITER} = require '../../src/constants'
+getTransactionPath = require '../../../src/transaction-path/get-transaction-path'
+{ESCAPE_CHAR, DELIMITER} = require '../../../src/transaction-path/constants'
 
 describe 'getTransactionPath', ->
   it 'is a function', ->
@@ -132,7 +132,3 @@ describe 'getTransactionPath', ->
 
       it 'should return an appropriate path', ->
         assert.equal result, "::/message:GET:Example 1"
-
-
-
-

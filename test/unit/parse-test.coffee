@@ -1,11 +1,11 @@
 
 fs = require('fs')
 path = require('path')
-
 sinon = require('sinon')
 protagonist = require('protagonist')
 {assert} = require('chai')
-{parse} = require('../../src/parse')
+
+parse = require('../../src/parse')
 
 
 describe('Parsing API description document', ->

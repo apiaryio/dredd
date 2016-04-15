@@ -2,12 +2,13 @@
 {assert} = require('chai')
 protagonist = require('protagonist')
 
-detectTransactionExamples = require('../../src/detect-transaction-examples')
+detectTransactionExamples = require('../../../src/from-api-elements/detect-transaction-examples')
 
 
 # Encapsulates a single test scenario.
 scenario = (description, {actionContent, examples, exampleNumbersPerTransaction}) ->
   describe("#{description}", ->
+    returnValue = undefined
     apiBlueprint = """
       FORMAT: 1A
       # Gargamel API
@@ -27,7 +28,6 @@ scenario = (description, {actionContent, examples, exampleNumbersPerTransaction}
         done()
       )
     )
-
     beforeEach((done) ->
       options = {type: 'refract', generateSourceMap: true}
       protagonist.parse(apiBlueprint, options, (err, parseResult) ->
@@ -36,11 +36,17 @@ scenario = (description, {actionContent, examples, exampleNumbersPerTransaction}
         done()
       )
     )
-
     beforeEach( ->
-      detectTransactionExamples(transition)
+      returnValue = detectTransactionExamples(transition)
     )
 
+    it('worked \'in situ\' and returned no value', ->
+      assert.isUndefined(returnValue)
+    )
+    it('transition got expected total number of examples', ->
+      expected = Math.max.apply(null, [0].concat(exampleNumbersPerTransaction))
+      assert.equal(transition.attributes.examples, expected)
+    )
     it('transactions got expected example numbers', ->
       expected = []
       for example, exampleIndex in action.examples
