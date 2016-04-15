@@ -1,26 +1,45 @@
+
+blueprintUtils = require './blueprint-utils'
 logger = require './logger'
 
-handleRuntimeProblems = (runtime) ->
-  if runtime['warnings'].length > 0
-    for warning in runtime['warnings']
-      message = warning['message']
-      origin = warning['origin']
 
-      logger.warn "Runtime compilation warning: " + warning['message'] + "\n on " + \
-        origin['resourceGroupName'] + \
-        ' > ' + origin['resourceName'] + \
-        ' > ' + origin['actionName']
+handleRuntimeProblems = (blueprintData) ->
+  error = false
 
-  if runtime['errors'].length > 0
-    for error in runtime['errors']
-      message = error['message']
-      origin = error['origin']
+  for own filename, data of blueprintData
+    filename = data.filename
+    apiDescriptionDocument = data.raw
 
-      logger.error "Runtime compilation error: " + error['message'] + "\n on " + \
-        origin['resourceGroupName'] + \
-        ' > ' + origin['resourceName'] + \
-        ' > ' + origin['actionName']
+    for annotation in data.annotations
+      if annotation.type is 'warning'
+        log = logger.warn
+      else
+        error = true
+        log = logger.error
 
-    return new Error("Error parsing ast to blueprint.")
+      if annotation.component is 'apiDescriptionParser'
+        ranges = blueprintUtils.warningLocationToRanges(annotation.location, apiDescriptionDocument)
+
+        message = """ \
+          Parser #{annotation.type} in file '#{filename}': \
+          (#{annotation.code}) #{annotation.message}" \
+        """
+        message += " on #{blueprintUtils.rangesToLinesText(ranges)}" if ranges?.length
+        log(message)
+      else
+        transactionName = [
+          annotation.origin.resourceGroupName
+          annotation.origin.resourceName
+          annotation.origin.actionName
+        ].join(' > ')
+
+        log(""" \
+          Compilation #{annotation.type} in file '#{filename}': \
+          #{annotation.message} on #{transactionName} \
+        """)
+
+
+  return new Error('Error when processing API description.') if error
+
 
 module.exports = handleRuntimeProblems

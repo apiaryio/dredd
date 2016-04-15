@@ -9,12 +9,12 @@ ProtagonistStub = require 'protagonist'
 requestStub = require 'request'
 loggerStub = require '../../src/logger'
 
-blueprintTransactionsStub = require 'blueprint-transactions'
+dreddTransactionsStub = require 'dredd-transactions'
 
 Dredd = proxyquire '../../src/dredd', {
   'protagonist': ProtagonistStub
   'request': requestStub
-  'blueprint-transactions': blueprintTransactionsStub
+  'dredd-transactions': dreddTransactionsStub
   'fs': fsStub
   './logger': loggerStub
 }
@@ -111,12 +111,12 @@ describe 'Dredd class', () ->
         done()
 
     it 'should convert ast to runtime', (done) ->
-      sinon.spy blueprintTransactionsStub, 'compile'
+      sinon.spy dreddTransactionsStub, 'compile'
       dredd = new Dredd(configuration)
       sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
       dredd.run (error) ->
-        assert.ok blueprintTransactionsStub.compile.called
+        assert.ok dreddTransactionsStub.compile.called
         dredd.runner.executeTransaction.restore()
         done()
 
@@ -164,7 +164,7 @@ describe 'Dredd class', () ->
         dredd.run (error) ->
           return done error if error
           assert.isObject dredd.configuration.data['./test/fixtures/multifile/greeting.apib']
-          assert.property dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'parsed'
+          assert.property dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'annotations'
           assert.property dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'filename'
           assert.property dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'raw'
           done()
@@ -244,8 +244,8 @@ describe 'Dredd class', () ->
       it 'should parse passed data contents', (done) ->
         dredd.run (error) ->
           return done error if error
-          assert.deepProperty dredd, 'configuration.data.testingDirectObjectFilename.parsed'
-          assert.deepProperty dredd, 'configuration.data.testingDirectBlueprintString.parsed'
+          assert.deepProperty dredd, 'configuration.data.testingDirectObjectFilename.annotations'
+          assert.deepProperty dredd, 'configuration.data.testingDirectBlueprintString.annotations'
           done()
 
       describe 'and I also set configuration.options.path to an existing file', ->
@@ -269,13 +269,13 @@ describe 'Dredd class', () ->
             assert.property    localdredd.configuration.data, './test/fixtures/apiary.apib'
             assert.propertyVal localdredd.configuration.data['./test/fixtures/apiary.apib'], 'filename', './test/fixtures/apiary.apib'
             assert.property    localdredd.configuration.data['./test/fixtures/apiary.apib'], 'raw'
-            assert.property    localdredd.configuration.data['./test/fixtures/apiary.apib'], 'parsed'
+            assert.property    localdredd.configuration.data['./test/fixtures/apiary.apib'], 'annotations'
             assert.deepPropertyVal localdredd, 'configuration.data.testingDirectObjectFilename.filename', 'testingDirectObjectFilename'
             assert.deepProperty    localdredd, 'configuration.data.testingDirectObjectFilename.raw'
-            assert.deepProperty    localdredd, 'configuration.data.testingDirectObjectFilename.parsed'
+            assert.deepProperty    localdredd, 'configuration.data.testingDirectObjectFilename.annotations'
             assert.deepPropertyVal localdredd, 'configuration.data.testingDirectBlueprintString.filename', 'testingDirectBlueprintString'
             assert.deepProperty    localdredd, 'configuration.data.testingDirectBlueprintString.raw'
-            assert.deepProperty    localdredd, 'configuration.data.testingDirectBlueprintString.parsed'
+            assert.deepProperty    localdredd, 'configuration.data.testingDirectBlueprintString.annotations'
             done()
 
 
@@ -337,27 +337,27 @@ describe 'Dredd class', () ->
             assert.isObject dredd.configuration.data['./test/fixtures/multifile/name.apib']
             assert.property dredd.configuration.data['./test/fixtures/multifile/name.apib'], 'filename'
             assert.property dredd.configuration.data['./test/fixtures/multifile/name.apib'], 'raw'
-            assert.property dredd.configuration.data['./test/fixtures/multifile/name.apib'], 'parsed'
+            assert.property dredd.configuration.data['./test/fixtures/multifile/name.apib'], 'annotations'
 
             assert.isObject dredd.configuration.data['./test/fixtures/multifile/message.apib']
             assert.property dredd.configuration.data['./test/fixtures/multifile/message.apib'], 'filename'
             assert.property dredd.configuration.data['./test/fixtures/multifile/message.apib'], 'raw'
-            assert.property dredd.configuration.data['./test/fixtures/multifile/message.apib'], 'parsed'
+            assert.property dredd.configuration.data['./test/fixtures/multifile/message.apib'], 'annotations'
 
             assert.isObject dredd.configuration.data['./test/fixtures/multifile/greeting.apib']
             assert.property dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'filename'
             assert.property dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'raw'
-            assert.property dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'parsed'
+            assert.property dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'annotations'
 
             assert.isObject dredd.configuration.data['http://some.path.to/file.apib']
             assert.property dredd.configuration.data['http://some.path.to/file.apib'], 'filename'
             assert.property dredd.configuration.data['http://some.path.to/file.apib'], 'raw'
-            assert.property dredd.configuration.data['http://some.path.to/file.apib'], 'parsed'
+            assert.property dredd.configuration.data['http://some.path.to/file.apib'], 'annotations'
 
             assert.isObject dredd.configuration.data['https://another.path.to/apiary.apib']
             assert.property dredd.configuration.data['https://another.path.to/apiary.apib'], 'filename'
             assert.property dredd.configuration.data['https://another.path.to/apiary.apib'], 'raw'
-            assert.property dredd.configuration.data['https://another.path.to/apiary.apib'], 'parsed'
+            assert.property dredd.configuration.data['https://another.path.to/apiary.apib'], 'annotations'
             done()
 
       describe 'when an URL for one blueprint returns 404 not-found', ->

@@ -234,14 +234,11 @@ describe 'ApiaryReporter', () ->
           assert.lengthOf parsedBody.blueprints, 1
           for blueprint in parsedBody.blueprints
             assert.property blueprint, 'raw'
-            assert.propertyVal blueprint, 'raw', "# GET /message\n+ Response 200 (text/plain)\n\n      Hello World!\n"
+            assert.propertyVal blueprint, 'raw', 'FORMAT: 1A\n\n# Machines API\n\n# Group Machines\n\n# Machines collection [/machines/{id}]\n  + Parameters\n    - id (number, `1`)\n\n## Get Machines [GET]\n\n- Request (application/json)\n  + Parameters\n    - id (number, `2`)\n\n- Response 200 (application/json; charset=utf-8)\n\n    [\n      {\n        "type": "bulldozer",\n        "name": "willy"\n      }\n    ]\n\n- Request (application/json)\n  + Parameters\n    - id (number, `3`)\n\n- Response 200 (application/json; charset=utf-8)\n\n    [\n      {\n        "type": "bulldozer",\n        "name": "willy"\n      }\n    ]\n'
             assert.property blueprint, 'filename'
-            assert.propertyVal blueprint, 'filename', './path/to/blueprint.file'
-            assert.property blueprint, 'parsed'
-            assert.deepProperty blueprint, 'parsed._version'
-            assert.deepProperty blueprint, 'parsed.warnings'
-            assert.notProperty blueprint.parsed, 'ast'
-            assert.isArray blueprint.parsed.warnings
+            assert.propertyVal blueprint, 'filename', './test/fixtures/multiple-examples.apib'
+            assert.property blueprint, 'annotations'
+            assert.isArray blueprint.annotations
           done()
 
       it 'should have various needed keys in test-run payload sent to apiary', (done) ->
