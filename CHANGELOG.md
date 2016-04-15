@@ -5,6 +5,9 @@
 **Latest Protagonist**
 - [#444](https://github.com/apiaryio/dredd/pull/444) Protagonist 1.3.0 (@honzajavorek)
 
+**Improvements in documentation**
+- [#442](https://github.com/apiaryio/dredd/pull/442) Update all local occurences of `localhost` in docs (@Teapane)
+
 ### v1.0.9
 
 **node-uuid upgraded ([security reasons](https://nodesecurity.io/advisories/uuid_insecure-entropy-source-mathrandom))**
