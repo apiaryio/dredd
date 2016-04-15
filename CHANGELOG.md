@@ -1,5 +1,10 @@
 ## Changelog
 
+### v1.0.10
+
+**Latest Protagonist**
+- [#444](https://github.com/apiaryio/dredd/pull/444) Protagonist 1.3.0 (@honzajavorek)
+
 ### v1.0.9
 
 **node-uuid upgraded ([security reasons](https://nodesecurity.io/advisories/uuid_insecure-entropy-source-mathrandom))**
