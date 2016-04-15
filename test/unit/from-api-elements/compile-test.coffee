@@ -41,7 +41,7 @@ describe('compileFromApiElements()', ->
     )
     context('the error', ->
       it('comes from parser', ->
-        assert.equal(errors[0].origin, 'apiDescriptionParser')
+        assert.equal(errors[0].type, 'apiDescriptionParser')
       )
       it('has code', ->
         assert.ok(errors[0].code)
@@ -51,6 +51,9 @@ describe('compileFromApiElements()', ->
       )
       it('has expected location', ->
         assert.deepEqual(errors[0].location, [[25, 1]])
+      )
+      it('has no origin', ->
+        assert.isUndefined(errors[0].origin)
       )
     )
   )
@@ -78,7 +81,7 @@ describe('compileFromApiElements()', ->
     )
     context('the error', ->
       it('comes from compiler', ->
-        assert.equal(errors[0].origin, 'transactionsCompiler')
+        assert.equal(errors[0].type, 'uriTemplateExpansion')
       )
       it('has no code', ->
         assert.isUndefined(errors[0].code)
@@ -88,6 +91,16 @@ describe('compileFromApiElements()', ->
       )
       it('has no location', ->
         assert.isUndefined(errors[0].location)
+      )
+      it('has origin', ->
+        assert.deepEqual(errors[0].origin,
+          filename: null
+          apiName: 'Beehive API'
+          resourceGroupName: ''
+          resourceName: 'Honey'
+          actionName: 'Remove'
+          exampleName: ''
+        )
       )
     )
   )
@@ -117,7 +130,7 @@ describe('compileFromApiElements()', ->
     )
     context('the error', ->
       it('comes from compiler', ->
-        assert.equal(errors[0].origin, 'transactionsCompiler')
+        assert.equal(errors[0].type, 'parametersValidation')
       )
       it('has no code', ->
         assert.isUndefined(errors[0].code)
@@ -127,6 +140,16 @@ describe('compileFromApiElements()', ->
       )
       it('has no location', ->
         assert.isUndefined(errors[0].location)
+      )
+      it('has origin', ->
+        assert.deepEqual(errors[0].origin,
+          filename: null
+          apiName: 'Beehive API'
+          resourceGroupName: ''
+          resourceName: 'Honey'
+          actionName: 'Remove'
+          exampleName: ''
+        )
       )
     )
   )
@@ -154,7 +177,7 @@ describe('compileFromApiElements()', ->
     )
     context('the warning', ->
       it('comes from parser', ->
-        assert.equal(warnings[0].origin, 'apiDescriptionParser')
+        assert.equal(warnings[0].type, 'apiDescriptionParser')
       )
       it('has code', ->
         assert.ok(warnings[0].code)
@@ -164,6 +187,9 @@ describe('compileFromApiElements()', ->
       )
       it('has expected location', ->
         assert.deepEqual(warnings[0].location, [[63, 10]])
+      )
+      it('has no origin', ->
+        assert.isUndefined(warnings[0].origin)
       )
     )
   )
@@ -191,7 +217,7 @@ describe('compileFromApiElements()', ->
     )
     context('the warning', ->
       it('comes from parser', ->
-        assert.equal(warnings[0].origin, 'transactionsCompiler')
+        assert.equal(warnings[0].type, 'uriTemplateExpansion')
       )
       it('has no code', ->
         assert.isUndefined(warnings[0].code)
@@ -201,6 +227,16 @@ describe('compileFromApiElements()', ->
       )
       it('has no location', ->
         assert.isUndefined(warnings[0].location)
+      )
+      it('has origin', ->
+        assert.deepEqual(warnings[0].origin,
+          filename: null
+          apiName: 'Beehive API'
+          resourceGroupName: ''
+          resourceName: 'Honey'
+          actionName: 'Remove'
+          exampleName: ''
+        )
       )
     )
   )
@@ -242,7 +278,7 @@ describe('compileFromApiElements()', ->
     )
     context('the warning', ->
       it('comes from compiler', ->
-        assert.equal(warnings[0].origin, 'transactionsCompiler')
+        assert.equal(warnings[0].type, 'parametersValidation')
       )
       it('has no code', ->
         assert.isUndefined(warnings[0].code)
@@ -252,6 +288,16 @@ describe('compileFromApiElements()', ->
       )
       it('has no location', ->
         assert.isUndefined(warnings[0].location)
+      )
+      it('has origin', ->
+        assert.deepEqual(warnings[0].origin,
+          filename: null
+          apiName: 'Beehive API'
+          resourceGroupName: ''
+          resourceName: 'Honey'
+          actionName: 'Remove'
+          exampleName: ''
+        )
       )
     )
   )

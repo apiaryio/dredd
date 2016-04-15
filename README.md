@@ -94,12 +94,12 @@ Represents a single *HTTP Transaction* (Request-Response pair) and its location 
 
 ### Properties
 
-- request (object) - HTTP Request as described in API description document
+- request (object) - HTTP Request as described in API description document.
     - method
-    - uri: `/message` (string) - Informative URI of the Request
+    - uri: `/message` (string) - Informative URI of the Request.
     - headers (object)
     - body: `Hello world!\n` (string)
-- response (object) - Expected HTTP Response as described in API description document
+- response (object) - Expected HTTP Response as described in API description document.
     - status: `200` (string)
     - headers (object)
     - body (string)
@@ -108,8 +108,8 @@ Represents a single *HTTP Transaction* (Request-Response pair) and its location 
 
 ### Deprecated Properties
 
-- name: `Hello world! > Retrieve Message` (string) - Transaction Name, non-deterministic breadcrumb location of the HTTP Transaction within the API description document
-- origin (object) - Object of references to nodes of [API Elements][api-elements] derived from the original API description document
+- name: `Hello world! > Retrieve Message` (string) - Transaction Name, non-deterministic breadcrumb location of the HTTP Transaction within the API description document.
+- origin (object) - Object of references to nodes of [API Elements][api-elements] derived from the original API description document.
     - filename: `./blueprint.md` (string)
     - apiName: `My Api` (string)
     - resourceGroupName: `Greetings` (string)
@@ -127,13 +127,28 @@ Description of an error or warning which occurred during parsing of the API desc
 
 #### Properties
 
-+ origin: `apiDescriptionParser`, `transactionsCompiler` (enum) - Origin of the annotation.
-+ code (number) - Parser-specific code of the annotation.
-+ message (string) - Textual annotation. This is – in most cases – a human-readable message to be displayed to user.
-+ location (array) - Locations of the annotation in the source file. A series of character-blocks, which may be non-continuous. For further details refer to API Elements' [Source Map](source-map) element.
-    + (array, fixed) - Continuous characters block. A pair of character index and character count.
-        + (number) - Zero-based index of a character in the source document.
-        + (number) - Count of characters starting from the character index.
+- type (enum[string]) - Type of the annotation. Assigned according to in which part of compilation the error or warning occurred.
+    - `apiDescriptionParser`
+    - `parametersValidation`
+    - `uriTemplateExpansion`
+- code (number) - Parser-specific code of the annotation.
+- message (string) - Textual annotation. This is – in most cases – a human-readable message to be displayed to user.
+- location (array) - Locations of the annotation in the source file. A series of character-blocks, which may be non-continuous. For further details refer to API Elements' [Source Map](source-map) element.
+    - (array, fixed) - Continuous characters block. A pair of character index and character count.
+        - (number) - Zero-based index of a character in the source document.
+        - (number) - Count of characters starting from the character index.
+
+### Deprecated Properties
+
+- origin (object) - Object of references to nodes of [API Elements][api-elements] derived from the original API description document.
+    - filename: `./blueprint.md` (string)
+    - apiName: `My Api` (string)
+    - resourceGroupName: `Greetings` (string)
+    - resourceName: `Hello, world!` (string)
+    - actionName: `Retrieve Message` (string)
+    - exampleName: `First example` (string)
+
+> **Note:** These properties are to be superseded by so-called _Transaction Path_. Feel free to read and comment the proposal in [apiaryio/dredd#227](https://github.com/apiaryio/dredd/issues/227).
 
 
 [dredd]: https://github.com/apiaryio/dredd

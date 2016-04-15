@@ -1,4 +1,6 @@
 
+clone = require('clone')
+
 {child, children, parent, content} = require('./refract')
 validateParameters = require('../validate-parameters')
 detectTransactionExamples = require('./detect-transaction-examples')
@@ -7,16 +9,17 @@ expandUriTemplateWithParameters = require('../expand-uri-template-with-parameter
 
 compileFromApiElements = (parseResult, filename) ->
   transactions = []
-  annotations = {errors: [], warnings: []}
+  errors = []
+  warnings = []
 
-  origin = 'apiDescriptionParser'
+  type = 'apiDescriptionParser'
   for annotation in children(parseResult, {element: 'annotation'})
     if annotation.meta.classes[0] is 'warning'
-      group = annotations.warnings
+      group = warnings
     else
-      group = annotations.errors
+      group = errors
     group.push({
-      origin
+      type
       code: content(annotation.attributes?.code)
       message: content(annotation)
       location: content(child(annotation.attributes?.sourceMap, {element: 'sourceMap'}))
@@ -29,24 +32,39 @@ compileFromApiElements = (parseResult, filename) ->
     httpRequest = child(httpTransaction, {element: 'httpRequest'})
     httpResponse = child(httpTransaction, {element: 'httpResponse'})
 
-    transactions.push(
-      origin: compileOrigin(filename, parseResult, httpTransaction)
+    origin = compileOrigin(filename, parseResult, httpTransaction)
+    {request, annotations} = compileRequest(parseResult, httpRequest)
+
+    for error in annotations.errors
+      error.origin = clone(origin)
+      errors.push(error)
+    for warning in annotations.warnings
+      warning.origin = clone(origin)
+      warnings.push(warning)
+
+    transactions.push({
+      origin
       pathOrigin: compilePathOrigin(filename, parseResult, httpTransaction)
-      request: compileRequest(parseResult, httpRequest, annotations)
+      request
       response: compileResponse(httpResponse)
-    )
+    })
 
-  {transactions, errors: annotations.errors, warnings: annotations.warnings}
+  {transactions, errors, warnings}
 
 
-compileRequest = (parseResult, httpRequest, annotations) ->
+compileRequest = (parseResult, httpRequest) ->
   messageBody = child(httpRequest, {element: 'asset', 'meta.classes': 'messageBody'})
 
+  {uri, annotations} = compileUri(parseResult, httpRequest)
+
   {
-    method: content(httpRequest.attributes.method)
-    uri: compileUri(parseResult, httpRequest, annotations)
-    headers: compileHeaders(child(httpRequest, {element: 'httpHeaders'}))
-    body: content(messageBody) or ''
+    request: {
+      method: content(httpRequest.attributes.method)
+      uri
+      headers: compileHeaders(child(httpRequest, {element: 'httpHeaders'}))
+      body: content(messageBody) or ''
+    }
+    annotations
   }
 
 
@@ -65,7 +83,7 @@ compileResponse = (httpResponse) ->
   response
 
 
-compileUri = (parseResult, httpRequest, annotations) ->
+compileUri = (parseResult, httpRequest) ->
   resource = parent(httpRequest, parseResult, {element: 'resource'})
   transition = parent(httpRequest, parseResult, {element: 'transition'})
 
@@ -76,6 +94,7 @@ compileUri = (parseResult, httpRequest, annotations) ->
   ]
 
   parameters = {}
+  annotations = {errors: [], warnings: []}
   href = undefined
 
   for attributes in cascade
@@ -84,20 +103,20 @@ compileUri = (parseResult, httpRequest, annotations) ->
       parameters[name] = parameter
 
   result = validateParameters(parameters)
-  origin = 'transactionsCompiler'
+  type = 'parametersValidation'
   for error in result.errors
-    annotations.errors.push({origin, message: error})
+    annotations.errors.push({type, message: error})
   for warning in result.warnings
-    annotations.warnings.push({origin, message: warning})
+    annotations.warnings.push({type, message: warning})
 
   result = expandUriTemplateWithParameters(href, parameters)
-  origin = 'transactionsCompiler'
+  type = 'uriTemplateExpansion'
   for error in result.errors
-    annotations.errors.push({origin, message: error})
+    annotations.errors.push({type, message: error})
   for warning in result.warnings
-    annotations.warnings.push({origin, message: warning})
+    annotations.warnings.push({type, message: warning})
 
-  result.uri
+  {uri: result.uri, annotations}
 
 
 compileParameters = (hrefVariables) ->
@@ -144,8 +163,8 @@ compileOrigin = (filename, parseResult, httpTransaction) ->
     exampleName = ''
 
   {
-    filename
-    apiName: content(api.meta?.title) or filename
+    filename: filename or null
+    apiName: content(api.meta?.title) or filename or null
     resourceGroupName: content(resourceGroup?.meta?.title)
     resourceName: content(resource.meta?.title) or content(resource.attributes?.href)
     actionName: content(transition.meta?.title) or content(httpRequest.attributes.method)
