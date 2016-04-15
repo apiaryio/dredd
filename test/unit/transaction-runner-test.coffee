@@ -35,6 +35,7 @@ describe 'TransactionRunner', ()->
       'dry-run': false
       method: []
       only: []
+      skip: []
       header: []
       reporter:  []
   transaction = {}
@@ -73,6 +74,7 @@ describe 'TransactionRunner', ()->
             'dry-run': false
             method: []
             only: []
+            skip: []
             header: []
             reporter: []
 
@@ -91,6 +93,7 @@ describe 'TransactionRunner', ()->
             'dry-run': false
             method: []
             only: []
+            skip: []
             header: []
             reporter: []
         runner = new Runner(configuration)
@@ -1100,6 +1103,7 @@ describe 'TransactionRunner', ()->
         header: []
         reporter:  []
         only: []
+        skip: []
         # do not actually search & load hookfiles from disk
         # hookfiles: './**/*_hooks.*'
 
