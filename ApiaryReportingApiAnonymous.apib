@@ -1,26 +1,23 @@
 FORMAT: X-1A
 HOST: http://api.apiary.io/
 
-# Apiary Dredd tests reporting API
+# Apiary Dredd tests reporting API - Anonymous
 
 ## Group Test Runs
 
 ### Test Run collection [/apis/{suite}/tests/runs]
 
 - Parameters
-  - suite (string, `jakubtest`) ... API suite domain identificator
+  - suite (string, `public`) ... API suite domain identificator
 
 - Attributes
-  - _id: `507f1f77bcf86cd799439011` (string, optional) ... Unique object id. DO NOT USE IT WHEN CREATING! Used in post body only for purpose of testing this blueprint.
+  - _id: `507f1f77bcf86cd799439012` (string) ... Unique object id. DO NOT USE IT WHEN CREATING! Used in post body only for purpose of testing this blueprint.
   - endpoint: `http://localhost:3000` (string, required) ... protocol with hostname and optional PORT in URL format, root for all transactions in this Test Run
-  - reportUrl: `https://absolutely.fancy.url/wich-can-change/some/id` (string, required) ... Report UI URL
+  - reportUrl: `https://absolutely.fency.url/wich-can-change/some/id` (string, required) ... Report UI URL
   - blueprints (array, required) ... Array of blueprints used for the test run
       - filename (string, required) ... file name
       - raw (string, required) ... raw bleuprint content in Markdown
-      - parsed (object, required)  ... parsed blueprint from raw data
-        - ast (object, required) ... parsed blueprint ast
-        - sourcemap (object, optional) ... sourcemap from protagonist
-        - warnings (array, required) ... bleuprint parser warnings
+      - annotations (array, required) ... Array of annotations (errors and warnings) which occurred during parsing or testing
   - public: true (boolean) ... True if test run results are public
   - logs (array[object]) ... an Array of logs from hooks
   - agent (string) ... Who performed the test
@@ -28,13 +25,14 @@ HOST: http://api.apiary.io/
   - hostname (string) ... Hostname of computer where test run was preformed. FQDN is not necessary.
   - agentEnvironment (object, optional) ... Run agent environment data from CI, development, staging, production etc...
   - startedAt (number) ... Unix timestamp when test run started in UTC
+  - createdAt (string) ... Date in ISO format
   - endedAt (number) ... Unix timestamp when test run ended in UTC
   - status (string) ... Test run result
     - Values
       - `success`
       - `fail`
       - `running`
-  - result (object) Result report
+  - result (object) Result reportt
     - tests
     - failures
     - passes
@@ -44,31 +42,17 @@ HOST: http://api.apiary.io/
 
 - Request (application/json)
 
-    - Headers
-
-        ```
-        Authentication: Token aff888af9993db9ef70edf3c878ab521
-        ```
-
     - Body
 
         ```
         {
-          "_id": "507f1f77bcf86cd799439011",
+          "_id": "507f1f77bcf86cd799439012",
           "endpoint": "http://localhost:3000",
           "blueprints": [
             {
               "raw": "",
               "filename": "",
-              "parsed": {
-                "ast": {
-                  "someAst": "keys"
-                },
-                "warnings": [],
-                "sourcemap": {
-                  "someSourceMap": "keys"
-                }
-              }
+              "annotations": []
             }
           ],
           "agent": "travisci",
@@ -95,18 +79,14 @@ HOST: http://api.apiary.io/
 
         ```
         {
-          "_id": "507f1f77bcf86cd799439011",
+          "_id": "507f1f77bcf86cd799439012",
           "endpoint": "http://localhost:3000",
-          "reportUrl": "https://absolutely.fancy.url/wich-can-change/some/id",
+          "reportUrl": "https://absolutely.fency.url/wich-can-change/some/id",
           "blueprints": [
             {
               "raw": "",
               "filename": "",
-              "parsed": {
-                "ast": {},
-                "warnings": [],
-                "sourcemap": {}
-              }
+              "annotations": []
             }
           ],
           "public": "true",
@@ -121,82 +101,26 @@ HOST: http://api.apiary.io/
         }
         ```
 
-#### Retrieve multiple test runs [GET]
-
-- Request
-
-    - Headers
-
-        ```
-        Authentication: Token aff888af9993db9ef70edf3c878ab521
-        ```
-
-- Response 200
-
-    - Headers
-
-        ```
-        Content-Type: application/json; charset=utf-8
-        ```
-
-    - Body
-
-        ```
-        [
-          {
-            "_id": "507f1f77bcf86cd799439011",
-            "endpoint": "http://localhost:3000",
-            "reportUrl": "https://absolutely.fancy.url/wich-can-change/some/id",
-            "blueprints": [
-              {
-                "raw": "",
-                "filename": "",
-                "parsed": {
-                  "ast": {},
-                  "warnings": [],
-                  "sourcemap": {}
-                }
-              }
-            ],
-            "logs": [{
-              "timestamp": 1381924294,
-              "content": "Log message from hooks"
-            }],
-            "public": "true",
-            "agent": "Dredd/0.1.7 (Linux 3.2.0-23-generic; x64)",
-            "agentRunUuid": "03b3de07-d354-4ba6-aa2e-28789b03c619",
-            "hostname": "machine.fqdn.tld",
-            "agentEnvironment": {
-              "CI": "true"
-            },
-            "startedAt": 1381924285,
-            "status": "started"
-          }
-        ]
-        ```
-
 
 ### Test run [/apis/{suite}/tests/run/{id}]
 
 - Parameters
-  - suite (string, `jakubtest`) ... API suite domain identificator
-  - id (number, `507f1f77bcf86cd799439011`) ... Unique id of the run in Apiary
+  - suite (string, `public`) ... API suite domain identificator
+  - id (number, `507f1f77bcf86cd799439012`) ... Unique id of the run in Apiary
 
 
 #### Update Attributes [PATCH]
 
 - Request (application/json)
 
-  - Headers
-
-      ```
-      Authentication: Token aff888af9993db9ef70edf3c878ab521
-      ```
-
   - Body
 
       ```
       {
+        "logs": [{
+          "timestamp": 1381924294,
+          "content": "Log message from hooks"
+        }],
         "endedAt": "1381924299",
         "status": "passed",
         "result": {
@@ -218,18 +142,14 @@ HOST: http://api.apiary.io/
 
         ```
         {
-          "_id": "507f1f77bcf86cd799439011",
+          "_id": "507f1f77bcf86cd799439012",
           "endpoint": "http://localhost:3000",
-          "reportUrl": "https://absolutely.fancy.url/wich-can-change/some/id",
+          "reportUrl": "https://absolutely.fency.url/wich-can-change/some/id",
           "blueprints": [
             {
               "raw": "",
               "filename": "",
-              "parsed": {
-                "ast": {},
-                "warnings": [],
-                "sourcemap": {}
-              }
+              "annotations": []
             }
           ],
           "logs": [{
@@ -270,43 +190,32 @@ HOST: http://api.apiary.io/
   - duration (number) ... Test duration in seconds
   - result (string) ... Result of step execution
     - Values
-      - `pass`
-      - `fail`
-      - `error`
-      - `skip`
-
+      - `passed`
+      - `failed`
   - resultData (object) ... Data from step execution
     - request  ... [Real HTTP Request](https://www.relishapp.com/apiary/gavel/v/0-1/docs/data-model#http-request)
     - realResponse ... [Real HTTP response](https://www.relishapp.com/apiary/gavel/v/0-1/docs/data-model#http-response)
     - expected Response ... [Expected HTTP Response](https://www.relishapp.com/apiary/gavel/v/0-1/docs/data-model#expected-http-response)
     - result ... [Validation result output](https://www.relishapp.com/apiary/gavel/v/0-1/docs/data-validators-and-output-format#validators-output-format)
-    - errors (array) ... Errors when executing the step
-    - warnings (array) ... Warnings when executing the step
   - stepType (string, `exampleNameTransactionName`) ... Type of the step, should be HTTP or Cucumber for instance
 
 ### Test steps collection [/apis/{suite}/tests/steps{?testRunId,include}]
 
 - Parameters
-  - suite (string, `jakubtest`) ... API suite domain identificator
-  - testRunId (number, `507f1f77bcf86cd799439011`) ...  Retreive steps by run
+  - suite (string, `public`) ... API suite domain identificator
+  - testRunId (number, `507f1f77bcf86cd799439012`) ...  Retreive steps by run
   - include (string, optional, `resultData`) ... Include result data in the response body
 
 #### Create [POST]
 
 - Request (application/json)
 
-  - Headers
-
-      ```
-      Authentication: Token aff888af9993db9ef70edf3c878ab521
-      ```
-
   - Body
 
       ```
       {
-        "_id": "507c7f79bcf86cd7994f6c0e",
-        "testRunId": "507f1f77bcf86cd799439011",
+        "_id": "507c7f79bcf86cd7994f6c0b",
+        "testRunId": "507f1f77bcf86cd799439012",
         "origin": {
           "filename": "./apiary.apib",
           "uriTemplate": "/",
@@ -368,8 +277,8 @@ HOST: http://api.apiary.io/
 
       ```
       {
-        "_id": "507c7f79bcf86cd7994f6c0e",
-        "testRunId": "507f1f77bcf86cd799439011",
+        "_id": "507c7f79bcf86cd7994f6c0b",
+        "testRunId": "507f1f77bcf86cd799439012",
         "origin": {
           "filename": "./apiary.apib",
           "uriTemplate": "/",
@@ -390,12 +299,6 @@ HOST: http://api.apiary.io/
 
 - Request (application/json)
 
-  - Headers
-
-      ```
-      Authentication: Token aff888af9993db9ef70edf3c878ab521
-      ```
-
 - Response 200
 
   -  Headers
@@ -409,8 +312,8 @@ HOST: http://api.apiary.io/
       ```
       [
         {
-          "_id": "507c7f79bcf86cd7994f6c0e",
-          "testRunId": "507f1f77bcf86cd799439011",
+          "_id": "507c7f79bcf86cd7994f6c0b",
+          "testRunId": "507f1f77bcf86cd799439012",
           "origin": {
             "filename": "./apiary.apib",
             "uriTemplate": "/",
@@ -432,17 +335,12 @@ HOST: http://api.apiary.io/
 ####  Retreive [GET]
 
 - Parameters
-  - suite (string, `jakubtest`) ... API suite domain identificator
-  - id (number, `507c7f79bcf86cd7994f6c0e`) ... Unique identifier of test step in Apiary
+  - suite (string, `public`) ... API suite domain identificator
+  - id (number, `507c7f79bcf86cd7994f6c0b`) ... Unique identifier of test step in Apiary
   - include (string, optional, `resultData`) ... Include result data in the response body
 
 - Request (application/json)
 
-  - Headers
-
-      ```
-      Authentication: Token aff888af9993db9ef70edf3c878ab521
-      ```
 
 - Response 200
 
@@ -456,8 +354,8 @@ HOST: http://api.apiary.io/
 
       ```
       {
-        "_id": "507c7f79bcf86cd7994f6c0e",
-        "testRunId": "507f1f77bcf86cd799439011",
+        "_id": "507c7f79bcf86cd7994f6c0b",
+        "testRunId": "507f1f77bcf86cd799439012",
         "origin": {
           "filename": "./apiary.apib",
           "uriTemplate": "/",
