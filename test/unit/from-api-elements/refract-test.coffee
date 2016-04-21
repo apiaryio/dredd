@@ -96,6 +96,20 @@ describe('Refract Utility Functions', ->
         assert.isUndefined(content)
       )
     )
+
+    describe('refracted element without \'content\'', ->
+      # dealing with https://github.com/apiaryio/drafter/issues/305
+
+      node =
+        element: 'string',
+        content:
+          element: 'string',
+      content = refract.content(node)
+
+      it('is correctly resolved', ->
+        assert.isUndefined(content)
+      )
+    )
   )
 
 

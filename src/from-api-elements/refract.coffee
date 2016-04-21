@@ -9,8 +9,7 @@ match = (node, query) ->
 
 
 content = (node) ->
-  return content(node.content) if node and node.content?
-  node
+  if node?.element then content(node.content) else node
 
 
 children = (node, query, options = {}) ->
