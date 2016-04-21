@@ -35,6 +35,7 @@ describe 'TransactionRunner', ()->
       'dry-run': false
       method: []
       only: []
+      skip: []
       header: []
       reporter:  []
   transaction = {}
@@ -73,6 +74,7 @@ describe 'TransactionRunner', ()->
             'dry-run': false
             method: []
             only: []
+            skip: []
             header: []
             reporter: []
 
@@ -91,6 +93,7 @@ describe 'TransactionRunner', ()->
             'dry-run': false
             method: []
             only: []
+            skip: []
             header: []
             reporter: []
         runner = new Runner(configuration)
@@ -326,6 +329,36 @@ describe 'TransactionRunner', ()->
         runner.executeTransaction transaction, () ->
           assert.ok configuration.emitter.emit.calledWith 'test skip'
           done()
+
+  describe 'when skipping certain names by the configuration', () ->
+
+      beforeEach () ->
+        server = nock('http://localhost:3000').
+          post('/machines', {"type":"bulldozer","name":"willy"}).
+          reply transaction['expected']['status'],
+            transaction['expected']['body'],
+            {'Content-Type': 'application/json'}
+
+        configuration.options['skip'] = ['Group Machine > Machine > Delete Message > Bogus example name']
+        sinon.stub configuration.emitter, 'emit'
+        runner = new Runner(configuration)
+
+      afterEach () ->
+        configuration.emitter.emit.restore()
+        configuration.options['skip'] = []
+        nock.cleanAll()
+
+      it 'should not skip transactions with different names', (done) ->
+        runner.executeTransaction transaction, () ->
+          assert.notOk configuration.emitter.emit.calledWith 'test skip'
+          done()
+
+      it 'should skip transactions with matching names', (done) ->
+        transaction['name'] = 'Group Machine > Machine > Delete Message > Bogus different example name'
+        runner.executeTransaction transaction, () ->
+          assert.ok configuration.emitter.emit.calledWith 'test skip'
+          done()
+
 
     describe 'when a test has been manually set to skip in a hook', () ->
       clonedTransaction = null
@@ -1100,6 +1133,7 @@ describe 'TransactionRunner', ()->
         header: []
         reporter:  []
         only: []
+        skip: []
         # do not actually search & load hookfiles from disk
         # hookfiles: './**/*_hooks.*'
 

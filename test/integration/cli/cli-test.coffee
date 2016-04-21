@@ -588,6 +588,47 @@ describe 'CLI', () ->
       it 'exit status should be 0', () ->
         assert.equal exitStatus, 0
 
+    describe "when filtering transaction to particular name with -z or --skip", () ->
+
+      machineHit = false
+      messageHit = false
+      before (done) ->
+        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --path=./test/fixtures/multifile/*.apib --skip=\"Message API > /message > GET\" --no-color"
+
+        app = express()
+
+        app.get '/machines', (req, res) ->
+          machineHit = true
+          res.setHeader 'Content-Type', 'application/json; charset=utf-8'
+          machine =
+            type: 'bulldozer'
+            name: 'willy'
+          response = [machine]
+          res.status(200).send response
+
+        app.get '/message', (req, res) ->
+          messageHit = true
+          res.setHeader 'Content-Type', 'text/plain; charset=utf-8'
+          res.status(200).send "Hello World!\n"
+
+        server = app.listen PORT, () ->
+          execCommand cmd, () ->
+            server.close()
+
+        server.on 'close', done
+
+      it 'should not send the request', () ->
+        assert.isFalse messageHit
+
+      it 'should notify skipping to the stdout', () ->
+        assert.include stdout, 'skip: GET /message'
+
+      it 'should hit the only transaction', () ->
+        assert.isTrue machineHit
+
+      it 'exit status should be 0', () ->
+        assert.equal exitStatus, 0
+
     describe 'when suppressing color with --no-color', () ->
       before (done) ->
         cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color"

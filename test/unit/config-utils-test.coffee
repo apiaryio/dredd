@@ -33,6 +33,7 @@ argvData =
   names: false
   n: false
   only: []
+  skip: []
   x: []
   reporter: []
   r: []
@@ -152,6 +153,7 @@ describe 'configUtils', () ->
     custom: []
     names: false
     only: []
+    skip: []
     reporter: []
     output: []
     header: []

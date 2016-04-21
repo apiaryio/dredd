@@ -48,6 +48,11 @@ options =
     description: "Run only specified transaction name. Can be used multiple times"
     default: []
 
+  skip:
+    alias: "z"
+    description: "Skip the specified transaction name. Can be used multiple times"
+    default: []
+
   reporter:
     alias: "r"
     description: """Output additional report format. This option can be used \

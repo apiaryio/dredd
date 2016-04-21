@@ -36,6 +36,7 @@ applyConfiguration = (config) ->
       details: false
       method: []
       only: []
+      skip: []
       color: true
       level: 'info'
       timestamp: false
@@ -70,6 +71,7 @@ applyConfiguration = (config) ->
   configuration.options.header = coerceToArray(configuration.options.header)
   configuration.options.method = coerceToArray(configuration.options.method)
   configuration.options.only = coerceToArray(configuration.options.only)
+  configuration.options.skip = coerceToArray(configuration.options.skip)
   configuration.options.path = coerceToArray(configuration.options.path)
 
   # support for legacy JS API options

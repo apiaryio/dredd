@@ -370,6 +370,7 @@ describe "DreddCommand class", () ->
           custom: []
           names: false
           only: []
+          skip: []
           reporter: []
           output: []
           header: []

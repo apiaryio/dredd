@@ -44,6 +44,8 @@ Options:
                                                                 [default: false]
   --only, -x                         Run only specified transaction name. Can
                                      be used multiple times        [default: []]
+  --ignore, -z                       Exclude specified transaction name.  Can
+                                     be used multiple times        [default: []]
   --reporter, -r                     Output additional report format. This
                                      option can be used multiple times to add
                                      multiple reporters. Options: junit, nyan,
