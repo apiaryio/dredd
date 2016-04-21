@@ -12,14 +12,11 @@ compileFromApiElements = (parseResult, filename) ->
   errors = []
   warnings = []
 
-  type = 'apiDescriptionParser'
+  component = 'apiDescriptionParser'
   for annotation in children(parseResult, {element: 'annotation'})
-    if annotation.meta.classes[0] is 'warning'
-      group = warnings
-    else
-      group = errors
+    group = if annotation.meta.classes[0] is 'warning' then warnings else errors
     group.push({
-      type
+      component
       code: content(annotation.attributes?.code)
       message: content(annotation)
       location: content(child(annotation.attributes?.sourceMap, {element: 'sourceMap'}))
@@ -103,18 +100,18 @@ compileUri = (parseResult, httpRequest) ->
       parameters[name] = parameter
 
   result = validateParameters(parameters)
-  type = 'parametersValidation'
+  component = 'parametersValidation'
   for error in result.errors
-    annotations.errors.push({type, message: error})
+    annotations.errors.push({component, message: error})
   for warning in result.warnings
-    annotations.warnings.push({type, message: warning})
+    annotations.warnings.push({component, message: warning})
 
   result = expandUriTemplateWithParameters(href, parameters)
-  type = 'uriTemplateExpansion'
+  component = 'uriTemplateExpansion'
   for error in result.errors
-    annotations.errors.push({type, message: error})
+    annotations.errors.push({component, message: error})
   for warning in result.warnings
-    annotations.warnings.push({type, message: warning})
+    annotations.warnings.push({component, message: warning})
 
   {uri: result.uri, annotations}
 
