@@ -41,7 +41,7 @@ describe('compileFromApiElements()', ->
     )
     context('the error', ->
       it('comes from parser', ->
-        assert.equal(errors[0].type, 'apiDescriptionParser')
+        assert.equal(errors[0].component, 'apiDescriptionParser')
       )
       it('has code', ->
         assert.ok(errors[0].code)
@@ -81,7 +81,7 @@ describe('compileFromApiElements()', ->
     )
     context('the error', ->
       it('comes from compiler', ->
-        assert.equal(errors[0].type, 'uriTemplateExpansion')
+        assert.equal(errors[0].component, 'uriTemplateExpansion')
       )
       it('has no code', ->
         assert.isUndefined(errors[0].code)
@@ -130,7 +130,7 @@ describe('compileFromApiElements()', ->
     )
     context('the error', ->
       it('comes from compiler', ->
-        assert.equal(errors[0].type, 'parametersValidation')
+        assert.equal(errors[0].component, 'parametersValidation')
       )
       it('has no code', ->
         assert.isUndefined(errors[0].code)
@@ -177,7 +177,7 @@ describe('compileFromApiElements()', ->
     )
     context('the warning', ->
       it('comes from parser', ->
-        assert.equal(warnings[0].type, 'apiDescriptionParser')
+        assert.equal(warnings[0].component, 'apiDescriptionParser')
       )
       it('has code', ->
         assert.ok(warnings[0].code)
@@ -217,7 +217,7 @@ describe('compileFromApiElements()', ->
     )
     context('the warning', ->
       it('comes from parser', ->
-        assert.equal(warnings[0].type, 'uriTemplateExpansion')
+        assert.equal(warnings[0].component, 'uriTemplateExpansion')
       )
       it('has no code', ->
         assert.isUndefined(warnings[0].code)
@@ -278,7 +278,7 @@ describe('compileFromApiElements()', ->
     )
     context('the warning', ->
       it('comes from compiler', ->
-        assert.equal(warnings[0].type, 'parametersValidation')
+        assert.equal(warnings[0].component, 'parametersValidation')
       )
       it('has no code', ->
         assert.isUndefined(warnings[0].code)

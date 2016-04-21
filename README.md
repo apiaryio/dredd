@@ -127,7 +127,7 @@ Description of an error or warning which occurred during parsing of the API desc
 
 #### Properties
 
-- type (enum[string]) - Type of the annotation. Assigned according to in which part of compilation the error or warning occurred.
+- component (enum[string]) - In which component of the compilation process the annotation occurred.
     - `apiDescriptionParser`
     - `parametersValidation`
     - `uriTemplateExpansion`
