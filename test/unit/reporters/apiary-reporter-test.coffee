@@ -22,12 +22,14 @@ describe 'ApiaryReporter', () ->
     sinon.stub loggerStub, 'complete'
     sinon.stub loggerStub, 'error'
     sinon.stub loggerStub, 'warn'
+    sinon.stub loggerStub, 'log'
 
   afterEach () ->
     sinon.stub loggerStub.info.restore()
     sinon.stub loggerStub.complete.restore()
     sinon.stub loggerStub.error.restore()
     sinon.stub loggerStub.warn.restore()
+    sinon.stub loggerStub.log.restore()
 
   before () ->
     nock.disableNetConnect()
@@ -169,6 +171,28 @@ describe 'ApiaryReporter', () ->
             assert.isTrue apiaryReporter.serverError
             done()
 
+    describe 'when not in verbose mode', () ->
+      config = {custom: {apiaryReporterEnv: env}}
+
+      it 'should not call logger.log', (done) ->
+        emitter = new EventEmitter
+        apiaryReporter = new ApiaryReporter(emitter, {}, {}, config)
+        apiaryReporter._performRequestAsync('/', 'POST', '', (error) ->
+          assert.isFalse(loggerStub.log.called)
+          done()
+        )
+
+    describe 'when in verbose mode', () ->
+      config = {custom: {apiaryReporterEnv: clone(env)}}
+      config.custom.apiaryReporterEnv.DREDD_REST_DEBUG = 'true'
+
+      it 'should call logger.log', (done) ->
+        emitter = new EventEmitter
+        apiaryReporter = new ApiaryReporter(emitter, {}, {}, config)
+        apiaryReporter._performRequestAsync('/', 'POST', '', (error) ->
+          assert.isTrue(loggerStub.log.called)
+          done()
+        )
 
     describe 'when starting', () ->
       call = null

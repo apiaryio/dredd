@@ -154,6 +154,18 @@ describe 'Hooks worker client', ->
             assert.equal childProcessStub.spawn.getCall(0).args[1][0], 'somefile.rb'
             done()
 
+    describe 'when --language nodejs option is given', ->
+      beforeEach ->
+        runner.hooks['configuration'] =
+          options:
+            language: 'nodejs'
+
+      it 'should write a hint that native hooks should be used', (done) ->
+        loadWorkerClient (err) ->
+          assert.isDefined err
+          assert.include err.message, 'native node hooks instead'
+          done()
+
     describe 'when --language ruby option is given and the worker is not installed', ->
       beforeEach ->
         sinon.stub whichStub, 'which', (command) -> false

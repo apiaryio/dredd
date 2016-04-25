@@ -86,8 +86,7 @@ class HooksWorkerClient
           Install ruby hooks handler by running:
           $ gem install dredd_hooks
         """
-        error = new Error msg
-        return callback(error)
+        return callback(new Error(msg))
       else
         callback()
 
@@ -99,8 +98,7 @@ class HooksWorkerClient
           Install python hooks handler by running:
           $ pip install dredd_hooks
         """
-        error = new Error msg
-        return callback(error)
+        return callback(new Error(msg))
       else
         callback()
 
@@ -112,8 +110,7 @@ class HooksWorkerClient
           Install php hooks handler by running:
           $ composer require ddelnano/dredd-hooks-php --dev
         """
-        error = new Error msg
-        return callback(error)
+        return callback(new Error(msg))
       else
         callback()
 
@@ -125,8 +122,7 @@ class HooksWorkerClient
           Install perl hooks handler by running:
           $ cpanm Dredd::Hooks
         """
-        error = new Error msg
-        return callback(error)
+        return callback(new Error(msg))
       else
         callback()
 
@@ -135,15 +131,13 @@ class HooksWorkerClient
         Hooks handler should not be used for nodejs. \
         Use Dredds' native node hooks instead.
       '''
-      error = new Error msg
-      return callback(error)
+      return callback(new Error(msg))
 
     else
       @handlerCommand = @language
       unless which.which @handlerCommand
         msg = "Hooks handler server command not found: #{@handlerCommand}"
-        error = new Error msg
-        return callback(error)
+        return callback(new Error(msg))
       else
         callback()
 
@@ -205,7 +199,7 @@ class HooksWorkerClient
           @handlerClient.destroy() if @handlerClient?
           msg = "Connect timeout #{@connectTimeout / 1000}s to the handler " +
           "on #{@handlerHost}:#{@handlerPort} exceeded, try increasing the limit."
-          error = new Error msg
+          error = new Error(msg)
           callback(error)
 
     connectAndSetupClient = =>
