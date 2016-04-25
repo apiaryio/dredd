@@ -19,7 +19,7 @@ blueprintUtils.warningLocationToRanges = (warningLocation = [], text = '') ->
 
   rowsIndexes = []
 
-  position = blueprintUtils.characterIndexToPosition(warningLocation[0].index, text)
+  position = blueprintUtils.characterIndexToPosition(warningLocation[0][0], text)
 
   # add this warning position row into ranges array
   rowsIndexes.push position.row
@@ -29,7 +29,7 @@ blueprintUtils.warningLocationToRanges = (warningLocation = [], text = '') ->
   if warningLocation.length > 0
     # more lines
     for loc, locKey in warningLocation when locKey > 0
-      position = blueprintUtils.characterIndexToPosition(loc.index, text)
+      position = blueprintUtils.characterIndexToPosition(loc[0], text)
       rowsIndexes.push position.row
 
   rowsIndexes.sort(blueprintUtils.sortNumbersAscending)

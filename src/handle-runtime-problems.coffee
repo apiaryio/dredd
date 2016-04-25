@@ -22,9 +22,9 @@ handleRuntimeProblems = (blueprintData) ->
 
         message = """ \
           Parser #{annotation.type} in file '#{filename}': \
-          (#{annotation.code}) #{annotation.message}" \
+          (#{annotation.type} code #{annotation.code}) #{annotation.message} \
         """
-        message += " on #{blueprintUtils.rangesToLinesText(ranges)}" if ranges?.length
+        message += "on #{blueprintUtils.rangesToLinesText(ranges)}" if ranges?.length
         log(message)
       else
         transactionName = [

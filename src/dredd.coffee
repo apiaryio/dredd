@@ -11,7 +11,6 @@ applyConfiguration = require './apply-configuration'
 handleRuntimeProblems = require './handle-runtime-problems'
 dreddTransactions = require 'dredd-transactions'
 configureReporters = require './configure-reporters'
-blueprintUtils = require './blueprint-utils'
 
 CONNECTION_ERRORS = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
 
