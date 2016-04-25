@@ -122,19 +122,12 @@ class Dredd
     # 6 parallel connections is a standard limit when connecting to one hostname,
     # use the same limit of parallel connections for reading/downloading files
     async.eachLimit @configuration.files, 6, (fileUrlOrPath, loadCallback) =>
-      try
-        fileUrl = url.parse fileUrlOrPath
-      catch
-        fileUrl = null
-
-      if fileUrl and fileUrl.protocol in ['http:', 'https:'] and fileUrl.host
-        @downloadFile fileUrlOrPath, loadCallback
+      {protocol, host} = url.parse(fileUrlOrPath)
+      if host and protocol in ['http:', 'https:']
+        @downloadFile(fileUrlOrPath, loadCallback)
       else
-        @readLocalFile fileUrlOrPath, loadCallback
-
-    , (err) ->
-      return callback(err, @stats) if err
-      callback()
+        @readLocalFile(fileUrlOrPath, loadCallback)
+    , callback
 
   downloadFile: (fileUrl, callback) ->
     request.get
