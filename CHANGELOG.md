@@ -1,5 +1,10 @@
 ## Changelog
 
+### v1.1.0-pre.0
+
+**Dredd internally migrates from API Blueprint AST to API Elements**
+- [#445](https://github.com/apiaryio/dredd/pull/445) Support for API Elements (@honzajavorek)
+
 ### v1.0.10
 
 **Latest Protagonist**
