@@ -142,12 +142,10 @@ class HooksWorkerClient
         callback()
 
   spawnHandler: (callback) ->
-
     pathGlobs = [].concat @runner.hooks?.configuration?.options?.hookfiles
 
-    @handler = child_process.spawn @handlerCommand, pathGlobs
-
     logger.info "Spawning `#{@language}` hooks handler"
+    @handler = child_process.spawn @handlerCommand, pathGlobs
 
     @handler.stdout.on 'data', (data) ->
       logger.info "Hook handler stdout:", data.toString()
@@ -160,20 +158,18 @@ class HooksWorkerClient
         if status isnt 0
           msg = "Hook handler '#{@handlerCommand}' exited with status: #{status}"
           logger.error msg
-          error = new Error msg
-          @runner.hookHandlerError = error
+          @runner.hookHandlerError = new Error msg
       else
         # No exit status code means the hook handler was killed
         unless @handlerKilledIntentionally
           msg = "Hook handler '#{@handlerCommand}' was killed"
           logger.error msg
-          error = new Error msg
-          @runner.hookHandlerError = error
-
+          @runner.hookHandlerError = new Error msg
       @handlerEnded = true
 
     @handler.on 'error', (error) =>
-      @runner.hookHandlerError = @handlerEnded = error
+      @runner.hookHandlerError = error
+      @handlerEnded = true
 
     callback()
 

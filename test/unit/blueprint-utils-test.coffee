@@ -44,20 +44,20 @@ describe 'blueprintUtils', ->
 
     it 'works for some blueprint warnings too', (done) ->
       blueprint = """
-      # Indented API
+        # Indented API
 
-      ## GET /url
-      + Response 200 (text/plain)
+        ## GET /url
+        + Response 200 (text/plain)
 
-        wrongly indented
-        resp.body
+          wrongly indented
+          resp.body
 
-      + Response 404 (text/plain)
+        + Response 404 (text/plain)
 
-              ok indentation
+                ok indentation
       """
       protagonist.parse blueprint, options, (err, parseResult) ->
-        return done err if err
+        return done new Error(err.message) if err
 
         annotations = (node for node in parseResult.content when node.element is 'annotation')
         assert.isAbove annotations.length, 0
