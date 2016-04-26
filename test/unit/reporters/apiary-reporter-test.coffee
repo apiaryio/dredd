@@ -22,12 +22,14 @@ describe 'ApiaryReporter', () ->
     sinon.stub loggerStub, 'complete'
     sinon.stub loggerStub, 'error'
     sinon.stub loggerStub, 'warn'
+    sinon.stub loggerStub, 'log'
 
   afterEach () ->
     sinon.stub loggerStub.info.restore()
     sinon.stub loggerStub.complete.restore()
     sinon.stub loggerStub.error.restore()
     sinon.stub loggerStub.warn.restore()
+    sinon.stub loggerStub.log.restore()
 
   before () ->
     nock.disableNetConnect()
@@ -169,6 +171,28 @@ describe 'ApiaryReporter', () ->
             assert.isTrue apiaryReporter.serverError
             done()
 
+    describe 'when not in verbose mode', () ->
+      config = {custom: {apiaryReporterEnv: env}}
+
+      it 'should not call logger.log', (done) ->
+        emitter = new EventEmitter
+        apiaryReporter = new ApiaryReporter(emitter, {}, {}, config)
+        apiaryReporter._performRequestAsync('/', 'POST', '', (error) ->
+          assert.isFalse(loggerStub.log.called)
+          done()
+        )
+
+    describe 'when in verbose mode', () ->
+      config = {custom: {apiaryReporterEnv: clone(env)}}
+      config.custom.apiaryReporterEnv.DREDD_REST_DEBUG = 'true'
+
+      it 'should call logger.log', (done) ->
+        emitter = new EventEmitter
+        apiaryReporter = new ApiaryReporter(emitter, {}, {}, config)
+        apiaryReporter._performRequestAsync('/', 'POST', '', (error) ->
+          assert.isTrue(loggerStub.log.called)
+          done()
+        )
 
     describe 'when starting', () ->
       call = null
@@ -234,14 +258,11 @@ describe 'ApiaryReporter', () ->
           assert.lengthOf parsedBody.blueprints, 1
           for blueprint in parsedBody.blueprints
             assert.property blueprint, 'raw'
-            assert.propertyVal blueprint, 'raw', "# GET /message\n+ Response 200 (text/plain)\n\n      Hello World!\n"
+            assert.propertyVal blueprint, 'raw', 'FORMAT: 1A\n\n# Machines API\n\n# Group Machines\n\n# Machines collection [/machines/{id}]\n  + Parameters\n    - id (number, `1`)\n\n## Get Machines [GET]\n\n- Request (application/json)\n  + Parameters\n    - id (number, `2`)\n\n- Response 200 (application/json; charset=utf-8)\n\n    [\n      {\n        "type": "bulldozer",\n        "name": "willy"\n      }\n    ]\n\n- Request (application/json)\n  + Parameters\n    - id (number, `3`)\n\n- Response 200 (application/json; charset=utf-8)\n\n    [\n      {\n        "type": "bulldozer",\n        "name": "willy"\n      }\n    ]\n'
             assert.property blueprint, 'filename'
-            assert.propertyVal blueprint, 'filename', './path/to/blueprint.file'
-            assert.property blueprint, 'parsed'
-            assert.deepProperty blueprint, 'parsed._version'
-            assert.deepProperty blueprint, 'parsed.warnings'
-            assert.notProperty blueprint.parsed, 'ast'
-            assert.isArray blueprint.parsed.warnings
+            assert.propertyVal blueprint, 'filename', './test/fixtures/multiple-examples.apib'
+            assert.property blueprint, 'annotations'
+            assert.isArray blueprint.annotations
           done()
 
       it 'should have various needed keys in test-run payload sent to apiary', (done) ->

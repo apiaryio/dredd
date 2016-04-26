@@ -3,10 +3,10 @@
 protagonist = require 'protagonist'
 blueprintUtils = require '../../src/blueprint-utils'
 
-describe 'blueprintUtils', () ->
+describe 'blueprintUtils', ->
 
   placeholderText = ''
-  options = {type: 'ast'}
+  options = {type: 'refract'}
 
   describe 'characterIndexToPosition()', ->
     str = null
@@ -23,15 +23,15 @@ describe 'blueprintUtils', () ->
     it 'keeps ranges that follow each other line-numbers, but also resolves single-lines', ->
       str = "one\ntwo\nthree\nfour\nfive\nsix\nseven\neight\nnine\nten"
       location = [
-        {index: str.indexOf('two'), length: 2}
-        {index: str.indexOf('three'), length: 2}
-        {index: str.indexOf('four'), length: 2}
+        [str.indexOf('two'), 2]
+        [str.indexOf('three'), 2]
+        [str.indexOf('four'), 2]
         # keep some lines of
-        {index: str.indexOf('six'), length: 2}
-        {index: str.indexOf('seven'), length: 2}
-        {index: str.indexOf('eight'), length: 2}
+        [str.indexOf('six'), 2]
+        [str.indexOf('seven'), 2]
+        [str.indexOf('eight'), 2]
         # also add just one single line warning location
-        {index: str.indexOf('ten'), length: 3}
+        [str.indexOf('ten'), 3]
       ]
       ranges = blueprintUtils.warningLocationToRanges location, str
       assert.isArray ranges
@@ -44,27 +44,31 @@ describe 'blueprintUtils', () ->
 
     it 'works for some blueprint warnings too', (done) ->
       blueprint = """
-      # Indented API
+        # Indented API
 
-      ## GET /url
-      + Response 200 (text/plain)
+        ## GET /url
+        + Response 200 (text/plain)
 
-        wrongly indented
-        resp.body
+          wrongly indented
+          resp.body
 
-      + Response 404 (text/plain)
+        + Response 404 (text/plain)
 
-              ok indentation
+                ok indentation
       """
-      protagonist.parse blueprint, options, (err, results) ->
-        return done err if err
-        assert.isObject results
-        assert.property results, 'warnings'
-        assert.isArray results.warnings
-        assert.lengthOf results.warnings, 1
-        assert.deepProperty results, 'warnings.0.location.0.index'
-        assert.deepProperty results, 'warnings.0.location.0.length'
-        ranges = blueprintUtils.warningLocationToRanges results.warnings[0].location, blueprint
+      protagonist.parse blueprint, options, (err, parseResult) ->
+        return done new Error(err.message) if err
+
+        annotations = (node for node in parseResult.content when node.element is 'annotation')
+        assert.isAbove annotations.length, 0
+        annotation = annotations[0]
+
+        location = []
+        for sourceMap in annotation.attributes.sourceMap
+          location = location.concat(sourceMap.content)
+        assert.isAbove location.length, 0
+
+        ranges = blueprintUtils.warningLocationToRanges location, blueprint
         assert.isArray ranges
         assert.lengthOf ranges, 1
         assert.deepEqual ranges, [{start: 6, end: 7}]
@@ -89,9 +93,9 @@ describe 'blueprintUtils', () ->
         assert.strictEqual line, 'lines 2-4, line 8, lines 10-15'
 
     describe 'for a real blueprint', ->
-      warnings = []
+      warnings = 0
       blueprint = null
-      ranges = []
+      allRanges = []
       before (done) ->
         blueprint = """
         # Indentation warnings API
@@ -122,13 +126,21 @@ describe 'blueprintUtils', () ->
 
                 yup!
         """
-        protagonist.parse blueprint, options, (err, results) ->
-          warnings = results.warnings or []
-          ranges = (blueprintUtils.warningLocationToRanges(warn.location, blueprint) for warn in warnings)
-          done err
+        protagonist.parse blueprint, options, (err, parseResult) ->
+          return done err if err
+
+          annotations = (node for node in parseResult.content when node.element is 'annotation')
+          warnings = annotations.length
+
+          for annotation in annotations
+            location = []
+            for sourceMap in annotation.attributes.sourceMap
+              location = location.concat(sourceMap.content)
+            allRanges.push(blueprintUtils.warningLocationToRanges(location, blueprint))
+          done()
 
       it 'shows ~ 4 warnings', ->
-        assert.lengthOf warnings, 4
+        assert.equal warnings, 4
 
       it 'prints lines for those warnings', ->
         expectedLines = [
@@ -138,7 +150,6 @@ describe 'blueprintUtils', () ->
           'lines 21-23'
         ]
         for expectedLine, lineIndex in expectedLines
-          generatedLine = blueprintUtils.rangesToLinesText ranges[lineIndex]
+          generatedLine = blueprintUtils.rangesToLinesText allRanges[lineIndex]
           assert.isString expectedLine
           assert.strictEqual generatedLine, expectedLine
-

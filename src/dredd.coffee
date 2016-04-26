@@ -1,6 +1,5 @@
 glob = require 'glob'
 fs = require 'fs'
-protagonist = require 'protagonist'
 async = require 'async'
 request = require 'request'
 url = require 'url'
@@ -10,9 +9,8 @@ options = require './options'
 Runner = require './transaction-runner'
 applyConfiguration = require './apply-configuration'
 handleRuntimeProblems = require './handle-runtime-problems'
-blueprintTransactions = require 'blueprint-transactions'
+dreddTransactions = require 'dredd-transactions'
 configureReporters = require './configure-reporters'
-blueprintUtils = require './blueprint-utils'
 
 CONNECTION_ERRORS = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
 
@@ -43,7 +41,7 @@ class Dredd
     @configuration = applyConfiguration(config, @stats)
     @configuration.options ?= {}
 
-    @compiledTransactions = {}
+    @transactions = []
 
     @runner = new Runner @configuration
     configureReporters @configuration, @stats, @tests, @runner
@@ -83,19 +81,16 @@ class Dredd
       @loadFiles (loadErr) =>
         return callback(loadErr, @stats) if loadErr
 
-        @parseBlueprints (parseErr) =>
-          return callback(parseErr, @stats) if parseErr
+        @compileTransactions (compileErr) =>
+          return callback(compileErr, @stats) if compileErr
 
-          @compileTransactions (compileErr) =>
-            return callback(compileErr, @stats) if compileErr
+          @emitStart (emitStartErr) =>
+            return callback(emitStartErr, @stats) if emitStartErr
 
-            @emitStart (emitStartErr) =>
-              return callback(emitStartErr, @stats) if emitStartErr
+            @startRunner (runnerErr) =>
+              return callback(runnerErr, @stats) if runnerErr
 
-              @startRunner (runnerErr) =>
-                return callback(runnerErr, @stats) if runnerErr
-
-                @transactionsComplete(callback)
+              @transactionsComplete(callback)
 
   # expand all globs
   expandGlobs: (callback) ->
@@ -127,19 +122,12 @@ class Dredd
     # 6 parallel connections is a standard limit when connecting to one hostname,
     # use the same limit of parallel connections for reading/downloading files
     async.eachLimit @configuration.files, 6, (fileUrlOrPath, loadCallback) =>
-      try
-        fileUrl = url.parse fileUrlOrPath
-      catch
-        fileUrl = null
-
-      if fileUrl and fileUrl.protocol in ['http:', 'https:'] and fileUrl.host
-        @downloadFile fileUrlOrPath, loadCallback
+      {protocol, host} = url.parse(fileUrlOrPath)
+      if host and protocol in ['http:', 'https:']
+        @downloadFile(fileUrlOrPath, loadCallback)
       else
-        @readLocalFile fileUrlOrPath, loadCallback
-
-    , (err) ->
-      return callback(err, @stats) if err
-      callback()
+        @readLocalFile(fileUrlOrPath, loadCallback)
+    , callback
 
   downloadFile: (fileUrl, callback) ->
     request.get
@@ -173,47 +161,33 @@ class Dredd
       @configuration.data[filePath] = {raw: data, filename: filePath}
       callback(null, @stats)
 
-  # parse all file blueprints
-  parseBlueprints: (callback) ->
-    async.each Object.keys(@configuration.data), (file, parseCallback) =>
-      options = {type: 'ast'}
-      protagonist.parse @configuration.data[file]['raw'], options, (protagonistError, result) =>
-        return parseCallback protagonistError if protagonistError
-        @configuration.data[file]['parsed'] = result
-        parseCallback()
-    , (err) =>
-      return callback(err, @stats) if err
-      # log all parser warnings for each ast
-      for file, data of @configuration.data
-        result = data['parsed']
-        if result['warnings'].length > 0
-          for warning in result['warnings']
-            message = "Parser warning in file '#{file}':"  + ' (' + warning.code + ') ' + warning.message
-            ranges = blueprintUtils.warningLocationToRanges warning['location'], data['raw']
-            if ranges?.length
-              pos = blueprintUtils.rangesToLinesText ranges
-              message = message + ' on ' + pos
-            logger.warn message
-
-      callback(null, @stats)
-
   # compile transcations from asts
   compileTransactions: (callback) ->
-    @compiledTransactions['warnings'] = []
-    @compiledTransactions['errors'] = []
-    @compiledTransactions['transactions'] = []
+    @transactions = []
 
-    # extract http transactions for each ast
-    for file, data of @configuration.data
-      transactions = blueprintTransactions.compile data['parsed']['ast'], file
+    # compile HTTP transactions for each API description
+    async.each(Object.keys(@configuration.data), (filename, next) =>
+      fileData = @configuration.data[filename]
+      fileData.annotations ?= []
 
-      @compiledTransactions['warnings'] = @compiledTransactions['warnings'].concat(transactions['warnings'])
-      @compiledTransactions['errors'] = @compiledTransactions['errors'].concat(transactions['errors'])
-      @compiledTransactions['transactions'] = @compiledTransactions['transactions'].concat(transactions['transactions'])
+      dreddTransactions.compile(fileData.raw, filename, (compilationError, compilationResult) =>
+        return next(compilationError) if compilationError
 
-    runtimeError = handleRuntimeProblems @compiledTransactions
-    return callback(runtimeError, @stats) if runtimeError
-    callback(null, @stats)
+        for error in compilationResult.errors
+          error.type = 'error'
+          fileData.annotations.push(error)
+
+        for warning in compilationResult.warnings
+          warning.type = 'warning'
+          fileData.annotations.push(warning)
+
+        @transactions = @transactions.concat(compilationResult.transactions)
+        next()
+      )
+    , (runtimeError) =>
+      runtimeError ?= handleRuntimeProblems(@configuration.data)
+      callback(runtimeError, @stats)
+    )
 
   # start the runner
   emitStart: (callback) ->
@@ -239,7 +213,7 @@ class Dredd
   startRunner: (callback) ->
     # run all transactions
     @runner.config(@configuration)
-    @runner.run @compiledTransactions['transactions'], callback
+    @runner.run @transactions, callback
 
   transactionsComplete: (callback) ->
     reporterCount = @configuration.emitter.listeners('end').length

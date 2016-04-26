@@ -66,48 +66,69 @@ describe 'Hooks worker client', ->
 
     it 'should pipe spawned process stdout to the Dredd process stdout', (done) ->
       runner.hooks.configuration.options.language = './test/fixtures/scripts/stdout.sh'
-      loadWorkerClient (err) ->
-        assert.isUndefined err
+      loadWorkerClient (workerError) ->
+        return done workerError if workerError
 
-        # Race condition workaround
-        # Spawned process doesn't write to stdout before is terminated
-        hooksWorkerClient.stop ->
-          assert.include logs, "Hook handler stdout: standard output text\n"
-          done()
-
+        # The handler sometimes doesn't write to stdout or stderr until it
+        # finishes, so we need to manually stop it. However, it could happen
+        # we'll stop it before it actually manages to do what we test here, so
+        # we add some timeout here.
+        setTimeout ->
+          hooksWorkerClient.stop (stopError) ->
+            return done stopError if stopError
+            assert.include logs, "Hook handler stdout: standard output text\n"
+            done()
+        , 100
 
     it 'should pipe spawned process stderr to the Dredd process stderr', (done) ->
       runner.hooks.configuration.options.language = './test/fixtures/scripts/stderr.sh'
-      loadWorkerClient (err) ->
-        assert.isUndefined err
+      loadWorkerClient (workerError) ->
+        return done workerError if workerError
 
-        # Race condition workaround
-        # Spawned process doesn't write to stderr before is terminated
-        hooksWorkerClient.stop ->
-          assert.include logs, "Hook handler stderr: error output text\n"
-          done()
+        # The handler sometimes doesn't write to stdout or stderr until it
+        # finishes, so we need to manually stop it. However, it could happen
+        # we'll stop it before it actually manages to do what we test here, so
+        # we add some timeout here.
+        setTimeout ->
+          hooksWorkerClient.stop (stopError) ->
+            return done stopError if stopError
+            assert.include logs, "Hook handler stderr: error output text\n"
+            done()
+        , 100
 
     it 'should not set the error on worker if process gets intentionally killed by Dredd ' +
     'because it can be killed after all hooks execution if SIGTERM isn\'t handled', (done) ->
       runner.hooks.configuration.options.language = './test/fixtures/scripts/endless-nosigterm.sh'
       loadWorkerClient (workerError) ->
-        done workerError if workerError
+        return done workerError if workerError
 
-        hooksWorkerClient.stop (error) ->
-          done workerError if workerError
-          assert.isNull runner.hookHandlerError
-          done()
+        # The handler sometimes doesn't write to stdout or stderr until it
+        # finishes, so we need to manually stop it. However, it could happen
+        # we'll stop it before it actually manages to do what we test here, so
+        # we add some timeout here.
+        setTimeout ->
+          hooksWorkerClient.stop (stopError) ->
+            return done stopError if stopError
+            assert.isNull runner.hookHandlerError
+            done()
+        , 100
 
     it 'should include the status in the error if spawned process ends with non-zero exit status', (done) ->
       runner.hooks.configuration.options.language = './test/fixtures/scripts/exit_3.sh'
       loadWorkerClient (workerError) ->
-        done workerError if workerError
+        return done workerError if workerError
 
-        hooksWorkerClient.stop (error) ->
-          done error if error
-          assert.isDefined runner.hookHandlerError
-          assert.include runner.hookHandlerError.message, '3'
-          done()
+        # The handler sometimes doesn't write to stdout or stderr until it
+        # finishes, so we need to manually stop it. However, it could happen
+        # we'll stop it before it actually manages to do what we test here, so
+        # we add some timeout here.
+        setTimeout ->
+          hooksWorkerClient.stop (stopError) ->
+            return done stopError if stopError
+            assert.isDefined runner.hookHandlerError
+            assert.include runner.hookHandlerError.message, '3'
+            done()
+        , 100
 
     describe 'when --language ruby option is given and the worker is installed', ->
       beforeEach ->
@@ -153,6 +174,18 @@ describe 'Hooks worker client', ->
             assert.isUndefined err
             assert.equal childProcessStub.spawn.getCall(0).args[1][0], 'somefile.rb'
             done()
+
+    describe 'when --language nodejs option is given', ->
+      beforeEach ->
+        runner.hooks['configuration'] =
+          options:
+            language: 'nodejs'
+
+      it 'should write a hint that native hooks should be used', (done) ->
+        loadWorkerClient (err) ->
+          assert.isDefined err
+          assert.include err.message, 'native node hooks instead'
+          done()
 
     describe 'when --language ruby option is given and the worker is not installed', ->
       beforeEach ->

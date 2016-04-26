@@ -84,9 +84,7 @@ class ApiaryReporter
         ciEnvVars[envVarName] = @_get envVarName, envVarName
 
       # transform blueprints data to array
-      blueprints = []
-      for blueprintPath, blueprintData of blueprintsData
-        blueprints.push @_limitBlueprintDataToSend blueprintData
+      blueprints = (data for own filename, data of blueprintsData)
 
       data =
         blueprints: blueprints
@@ -162,20 +160,6 @@ class ApiaryReporter
         reportUrl = @reportUrl || "https://app.apiary.io/#{@configuration.apiSuite}/tests/run/#{@remoteId}"
         logger.complete "See results in Apiary at: #{reportUrl}"
         callback()
-
-  _limitBlueprintDataToSend: (blueprintData = {}) ->
-    # {raw, filename, parsed} = blueprintData
-    returnedData = {}
-
-    returnedData.raw = blueprintData.raw
-    returnedData.filename = blueprintData.filename
-
-    returnedData.parsed =
-      # omit parsed.ast, it might change in future (depends heavily on protagonist/drafter versions)
-      _version: blueprintData.parsed._version
-      warnings: clone blueprintData.parsed.warnings
-      error: blueprintData.parsed.error
-    return returnedData
 
   _transformTestToReporter: (test) ->
     data =
