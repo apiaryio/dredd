@@ -9,9 +9,9 @@
   "scripts": {
     "changelist": "github-changes -o apiaryio -r dredd --only-pulls --use-commit-body --file CHANGELOG-Generated.md -a",
     "lint": "coffeelint ./src",
-    "docs:build": "coffee ./scripts/generate-cli-docs.coffee && mkdocs build",
+    "docs:build": "mkdocs build",
     "docs:serve": "mkdocs serve",
-    "compile": "coffee -b -c -o lib/ src/ && npm run docs:build",
+    "compile": "coffee -b -c -o lib/ src/ && coffee ./scripts/generate-cli-docs.coffee",
     "pretest": "npm run compile",
     "test": "./scripts/test",
     "test:bdd": "./scripts/test -w",
