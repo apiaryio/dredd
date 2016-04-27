@@ -104,6 +104,18 @@ coverage:
 If a Pull Request introduces drop in coverage, it won't be accepted unless
 the author or reviewer provides a good reason why an exception should be made.
 
+### Hacking Apiary Reporter
+
+If you want to build something on top of the Apiary Reporter, note that it uses a public API described in following documents:
+
+- [Apiary Tests API for anonymous test reports][]
+- [Apiary Tests API for authenticated test reports][]
+
+There are also some environment variables you could find useful:
+
+- `APIARY_API_URL='https://api.apiary.io'` - Allows to override host of the Apiary Tests API.
+- `DREDD_REST_DEBUG=true` - Turns on some additional logging. Useful for debugging.
+
 
 [Apiary]: https://apiary.io/
 [API Blueprint]: http://apiblueprint.org/
@@ -127,3 +139,6 @@ the author or reviewer provides a good reason why an exception should be made.
 
 [upstream repository]: https://github.com/apiaryio/dredd
 [issues]: https://github.com/apiaryio/dredd/issues
+
+[Apiary Tests API for anonymous test reports]: https://github.com/apiaryio/dredd/blob/master/ApiaryReportingApiAnonymous.apib
+[Apiary Tests API for authenticated test reports]: https://github.com/apiaryio/dredd/blob/master/ApiaryReportingApi.apib
