@@ -9,7 +9,9 @@
   "scripts": {
     "changelist": "github-changes -o apiaryio -r dredd --only-pulls --use-commit-body --file CHANGELOG-Generated.md -a",
     "lint": "coffeelint ./src",
-    "compile": "coffee -b -c -o lib/ src/",
+    "docs:build": "coffee ./scripts/generate-cli-docs.coffee && mkdocs build",
+    "docs:serve": "mkdocs serve",
+    "compile": "coffee -b -c -o lib/ src/ && npm run docs:build",
     "pretest": "npm run compile",
     "test": "./scripts/test",
     "test:bdd": "./scripts/test -w",
@@ -55,6 +57,7 @@
     "coffee-coverage": "^0.7.0",
     "coffeelint": "^1.9.2",
     "coveralls": "~2.11.2",
+    "ect": "^0.5.9",
     "express": "^4.12.1",
     "github-changes": "^1.0.0",
     "jscoverage": "~0.6.0",

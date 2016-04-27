@@ -83,7 +83,10 @@ The main documentation is written in [Markdown][] using [MkDocs][]. Dredd uses
 - https://dredd.readthedocs.org/ - preferred long URL
 - http://dredd.rtfd.org/ - preferred short URL
 
-Source of the documentation can be found in the [docs][] directory. To contribute to Dredd's documentation, you will need to follow the [MkDocs installation instructions](http://www.mkdocs.org/#installation). Once installed, you may use `mkdocs serve` from the Dredd directory to run the local server for the documentation.
+Source of the documentation can be found in the [docs][] directory. To contribute to Dredd's documentation, you will need to follow the [MkDocs installation instructions](http://www.mkdocs.org/#installation). Once installed, you may use following commands:
+
+- `npm run docs:build` - Builds the documentation.
+- `npm run docs:serve` - Runs live preview of the documentation.
 
 ### Coverage
 

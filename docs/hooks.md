@@ -1,7 +1,7 @@
 # Hook Scripts
 
 Similar to any other testing framework, Dredd supports executing code around each test step.
-Hooks are code blocks executed in defined stage of [execution lifecycle](usage.md#dredd-execution-lifecycle).
+Hooks are code blocks executed in defined stage of [execution lifecycle](execution-lifecycle.md).
 In the hooks code you have an access to compiled HTTP [transaction object](#transaction-object-structure) which you can modify.
 
 Hooks are usually used for:
@@ -89,7 +89,7 @@ Dredd supports following types of hooks:
 - `afterEach` called after each HTTP transaction
 - `afterAll` called after whole test run
 
-Refer to [Dredd execution lifecycle](usage.md#dredd-execution-lifecycle) when is each hook executed.
+Refer to [Dredd execution lifecycle](execution-lifecycle.md) when is each hook executed.
 
 ### Transaction Object Structure
 
