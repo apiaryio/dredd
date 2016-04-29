@@ -25,7 +25,7 @@ Dredd automatically generates expectations on HTTP responses based on examples i
 
 ## Using Apiary Reporter and Apiary Tests
 
-Command-line output of complex HTTP responses and expectations can be hard to read. To tackle the problem, you can use Dredd to send test reports to [Apiary](https://apiary.io/). Apiary provides comfortable interface for browsing complex test reports:
+Command-line output of complex HTTP responses and expectations can be hard to read. To tackle the problem, you can use Dredd to send test reports to [Apiary](https://apiary.io/). Apiary provides a comfortable interface for browsing complex test reports:
 
 ```
 $ dredd apiary.apib http://localhost --reporter=apiary
@@ -42,7 +42,7 @@ complete: See results in Apiary at: https://app.apiary.io/public/tests/run/74d20
 
 ### Saving Test Reports under Your Account in Apiary
 
-As you can see on the screenshot, the test reports are anonymous by default and will expire after some time. However, if you provide Apiary credentials, your test reports will appear on _Tests_ page of your API Project. This is great especially for introspection of test reports from Continuous Integration.
+As you can see on the screenshot, the test reports are anonymous by default and will expire after some time. However, if you provide Apiary credentials, your test reports will appear on the _Tests_ page of your API Project. This is great especially for introspection of test reports from Continuous Integration.
 
 To get and setup credentials, just follow the tutorial in Apiary:
 
@@ -54,12 +54,12 @@ As you can see, the parameters go like this:
 $ dredd -c apiaryApiKey:<Apiary API Key> -c apiaryApiName:<API Project Subdomain>
 ```
 
-Except of using parameters and `dredd.yml`, you can also use environment variables:
+In addition to using parameters and `dredd.yml`, you can also use environment variables:
 
 - `APIARY_API_KEY=<Apiary API Key>` - Alternative way to pass credentials to Apiary Reporter.
 - `APIARY_API_NAME=<API Project Subdomain>` - Alternative way to pass credentials to Apiary Reporter.
 
-When sending test reports to Apiary, Dredd inspects the environment where it was executed and sends some information about it alongside test results. Those are used mainly for detection whether the environment is Continuous Integration and also, they help you to identify individual test reports on the _Tests_ page. You can use following variables to tell Dredd what to send:
+When sending test reports to Apiary, Dredd inspects the environment where it was executed and sends some information about it alongside test results. Those are used mainly for detection whether the environment is Continuous Integration and also, they help you to identify individual test reports on the _Tests_ page. You can use the following variables to tell Dredd what to send:
 
 - agent (string) - `DREDD_AGENT` or current user in the OS
 - hostname (string) - `DREDD_HOSTNAME` or hostname of the OS
