@@ -1,25 +1,30 @@
 site_name: Dredd
-pages:
-- Dredd:
-  - Home: index.md
-  - Quickstart: quickstart.md
-  - Overview: overview.md
-
-- Using Dredd:
-  - Usage: usage.md
-  - Hooks: hooks.md
-  - Ruby Hooks: hooks-ruby.md
-  - Python Hooks: hooks-python.md
-  - Node.js Hooks: hooks-nodejs.md
-  - PHP Hooks: hooks-php.md
-  - Go Hooks: hooks-go.md
-  - Perl Hooks: hooks-perl.md
-  - JavaScript Sandbox Hooks: hooks-js-sandbox.md
-  - Hooks in other languages: hooks-new-language.md
-- Example:
-  - Full Example: example.md
-
 repo_url: 'https://github.com/apiaryio/dredd'
+site_description: 'HTTP API Testing Framework'
+site_author: 'Apiary'
+
+pages:
+  - Dredd:
+    - About Dredd: index.md
+    - Quickstart: quickstart.md
+    - Execution Lifecycle: execution-lifecycle.md
+    - Overview: overview.md
+  - Usage:
+    - Command-line Interface: usage-cli.md
+    - From JavaScript: usage-js.md
+  - Hooks:
+    - About Hooks: hooks.md
+    - Supported Languages:
+      - Go: hooks-go.md
+      - JavaScript (Sandboxed): hooks-js-sandbox.md
+      - Node.js: hooks-nodejs.md
+      - Perl: hooks-perl.md
+      - PHP: hooks-php.md
+      - Python: hooks-python.md
+      - Ruby: hooks-ruby.md
+    - Other Languages: hooks-new-language.md
+  - Example:
+    - Full Example: example.md
 
 theme: readthedocs
 markdown_extensions:

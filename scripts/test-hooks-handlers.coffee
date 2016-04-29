@@ -51,7 +51,6 @@
 #   * If the main Travis CI build where the script is being ran gets canceled,
 #     the script won't cleanup the dependent branches on GitHub.
 
-
 fs = require 'fs'
 execSync = require 'sync-exec'
 {exec} = require 'child_process'

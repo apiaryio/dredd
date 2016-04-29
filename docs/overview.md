@@ -23,16 +23,47 @@ Dredd automatically generates expectations on HTTP responses based on examples i
 - Plain text must match perfectly
 - If JSON Schema v4 or JSON Schema v3 is given in the blueprint, JSON response must be valid against this schema and JSON example is ignored.
 
-## Using Apiary Test Inspector
+## Using Apiary Reporter and Apiary Tests
 
-Command-line output of complex HTTP responses and expectation can be hard to read. Dredd can send test reports to Apiary and Apiary provides an interface for browsing them. To enable it, use argument `--reporter apiary`.
+Command-line output of complex HTTP responses and expectations can be hard to read. To tackle the problem, you can use Dredd to send test reports to [Apiary](https://apiary.io/). Apiary provides a comfortable interface for browsing complex test reports:
 
-### Saving under your account in Apiary
+```
+$ dredd apiary.apib http://localhost --reporter=apiary
+info: Using apiary reporter.
+warn: Apiary reporter environment variable APIARY_API_KEY or APIARY_API_NAME not defined.
+info: Beginning Dredd testing...
+pass: DELETE /honey duration: 884ms
+complete: 1 passing, 0 failing, 0 errors, 0 skipped, 1 total
+complete: Tests took 1631ms
+complete: See results in Apiary at: https://app.apiary.io/public/tests/run/74d20a82-55c5-49bb-aac9-a3a5a7450f06
+```
 
-Reports are anonymous by default, but you can let Apiary save them under your API in Apiary by specifying Apiary Key and API Name with arguments
-`-c apiaryApiKey:yourApiKey -c apiaryApiName:yourapiname` This is great for introspecting reports from Continuous Integration.
+![Apiary Tests](https://raw.github.com/apiaryio/dredd/master/img/apiary-tests.png?raw=true)
 
-**TODO**: Screenshot image
+### Saving Test Reports under Your Account in Apiary
+
+As you can see on the screenshot, the test reports are anonymous by default and will expire after some time. However, if you provide Apiary credentials, your test reports will appear on the _Tests_ page of your API Project. This is great especially for introspection of test reports from Continuous Integration.
+
+To get and setup credentials, just follow the tutorial in Apiary:
+
+![Apiary Tests Tutorial](https://raw.github.com/apiaryio/dredd/master/img/apiary-tests-tutorial.png?raw=true)
+
+As you can see, the parameters go like this:
+
+```
+$ dredd -c apiaryApiKey:<Apiary API Key> -c apiaryApiName:<API Project Subdomain>
+```
+
+In addition to using parameters and `dredd.yml`, you can also use environment variables:
+
+- `APIARY_API_KEY=<Apiary API Key>` - Alternative way to pass credentials to Apiary Reporter.
+- `APIARY_API_NAME=<API Project Subdomain>` - Alternative way to pass credentials to Apiary Reporter.
+
+When sending test reports to Apiary, Dredd inspects the environment where it was executed and sends some information about it alongside test results. Those are used mainly for detection whether the environment is Continuous Integration and also, they help you to identify individual test reports on the _Tests_ page. You can use the following variables to tell Dredd what to send:
+
+- agent (string) - `DREDD_AGENT` or current user in the OS
+- hostname (string) - `DREDD_HOSTNAME` or hostname of the OS
+- CI (boolean) - looks for `TRAVIS`, `CIRCLE`, `CI`, `DRONE`, `BUILD_ID`, ...
 
 ## Testing API Documentation
 
@@ -227,7 +258,7 @@ test:
     - dredd bluprint.md http://localhost:3000
 ```
 
-Example `travis.yml` configuration file for Travis CI:
+Example `travis.yml` configuration file for [Travis CI][]:
 
 ```
 before_install:
@@ -336,12 +367,6 @@ info: Resource > Update resource > Example 2
 ```
 
 [API Blueprint]: http://apiblueprint.org/
-[test coverage]: https://coveralls.io/r/apiaryio/dredd?branch=master
 [Travis CI]: https://travis-ci.org/
-[Jenkins]: http://jenkins-ci.org/
-[Gavel]: http://blog.apiary.io/2013/07/24/Bam-this-is-Gavel/
-[behavior specification]: https://www.relishapp.com/apiary/gavel/docs
-[vde]: https://github.com/apiaryio/dredd/blob/master/VirtualDevelopmentEnvironment.md
-[issues]: https://github.com/apiaryio/dredd/issues?state=open
-[Express.js]: http://expressjs.com/starter/hello-world.html
-[CoffeeScript]: http://coffeescript.org
+[Gavel.js]: https://github.com/apiaryio/gavel.js
+[Gavel]: https://www.relishapp.com/apiary/gavel/docs

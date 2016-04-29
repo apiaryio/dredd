@@ -16,7 +16,7 @@ Dredd reads your API description and step by step validates whether your API
 implementation replies with responses as they are described in the
 documentation.
 
-### Supported Hook Languages
+### Supported Hooks Languages
 
 Dredd supports writing [hooks](http://dredd.readthedocs.org/en/latest/hooks/)
 — a glue code for each test setup and teardown. Following languages are supported:
@@ -38,17 +38,27 @@ Dredd supports writing [hooks](http://dredd.readthedocs.org/en/latest/hooks/)
 
 ## Documentation Reference
 
-1. [Overview](overview.md)
-2. [Quickstart](quickstart.md)
-3. [Usage](usage.md)
-4. [Hooks](hooks.md)
-5. [Ruby Hooks](hooks-ruby.md)
-6. [Python Hooks](hooks-python.md)
-7. [Node.js Hooks](hooks-nodejs.md)
-8. [PHP Hooks](hooks-php.md)
-9. [Sandboxed JavaScript Hooks](hooks-js-sandbox.md)
-10. [Hooks in new language](hooks-new-language.md)
-11. [Example application](example.md)
+- Dredd
+    - [About Dredd](index.md)
+    - [Quickstart](quickstart.md)
+    - [Execution Lifecycle](execution-lifecycle.md)
+    - [Overview](overview.md)
+- Usage
+    - [Command-line Interface](usage-cli.md)
+    - [From JavaScript](usage-js.md)
+- Hooks
+    - [About Hooks](hooks.md)
+    - Supported Languages
+        - [Go](hooks-go.md)
+        - [JavaScript (Sandboxed)](hooks-js-sandbox.md)
+        - [Node.js](hooks-nodejs.md)
+        - [Perl](hooks-perl.md)
+        - [PHP](hooks-php.md)
+        - [Python](hooks-python.md)
+        - [Ruby](hooks-ruby.md)
+    - [Other Languages](hooks-new-language.md)
+- Example
+    - [Full Example](example.md)
 
 ## Useful Links
 

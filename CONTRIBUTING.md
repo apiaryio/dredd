@@ -83,7 +83,10 @@ The main documentation is written in [Markdown][] using [MkDocs][]. Dredd uses
 - https://dredd.readthedocs.org/ - preferred long URL
 - http://dredd.rtfd.org/ - preferred short URL
 
-Source of the documentation can be found in the [docs][] directory. To contribute to Dredd's documentation, you will need to follow the [MkDocs installation instructions](http://www.mkdocs.org/#installation). Once installed, you may use `mkdocs serve` from the Dredd directory to run the local server for the documentation.
+Source of the documentation can be found in the [docs][] directory. To contribute to Dredd's documentation, you will need to follow the [MkDocs installation instructions](http://www.mkdocs.org/#installation). Once installed, you may use following commands:
+
+- `npm run docs:build` - Builds the documentation.
+- `npm run docs:serve` - Runs live preview of the documentation.
 
 ### Coverage
 
@@ -103,6 +106,18 @@ coverage:
 
 If a Pull Request introduces drop in coverage, it won't be accepted unless
 the author or reviewer provides a good reason why an exception should be made.
+
+### Hacking Apiary Reporter
+
+If you want to build something on top of the Apiary Reporter, note that it uses a public API described in following documents:
+
+- [Apiary Tests API for anonymous test reports][]
+- [Apiary Tests API for authenticated test reports][]
+
+There are also some environment variables you could find useful:
+
+- `APIARY_API_URL='https://api.apiary.io'` - Allows to override host of the Apiary Tests API.
+- `DREDD_REST_DEBUG=true` - Turns on some additional logging. Useful for debugging.
 
 
 [Apiary]: https://apiary.io/
@@ -127,3 +142,6 @@ the author or reviewer provides a good reason why an exception should be made.
 
 [upstream repository]: https://github.com/apiaryio/dredd
 [issues]: https://github.com/apiaryio/dredd/issues
+
+[Apiary Tests API for anonymous test reports]: https://github.com/apiaryio/dredd/blob/master/ApiaryReportingApiAnonymous.apib
+[Apiary Tests API for authenticated test reports]: https://github.com/apiaryio/dredd/blob/master/ApiaryReportingApi.apib
