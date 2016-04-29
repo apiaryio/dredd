@@ -25,6 +25,7 @@ OUTPUT_DOCUMENT = 'usage-cli.md'
 data = {options: []}
 for own name, attributes of options
   option = clone(attributes)
+  option.description = option.description.trim()
   option.name = name
   data.options.push(option)
 data.options.sort()

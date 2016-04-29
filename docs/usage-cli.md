@@ -75,8 +75,7 @@ endpoint: "http://localhost:3000"
 Remember you can always list all available arguments by `dredd --help`.
 
 ### --details, -d
-Determines whether request/response details are included in passing tests.
-  
+Determines whether request/response details are included in passing tests.  
 
 ### --dry-run, -y
 Do not run any real HTTP transaction, only parse blueprint and compile transactions.  
@@ -110,69 +109,56 @@ Run only specified transaction name. Can be used multiple times
 **Default value:** `[]`
 
 ### --reporter, -r
-Output additional report format. This option can be used multiple times to add multiple reporters. Options: junit, nyan, dot, markdown, html, apiary.
-  
+Output additional report format. This option can be used multiple times to add multiple reporters. Options: junit, nyan, dot, markdown, html, apiary.  
 **Default value:** `[]`
 
 ### --output, -o
-Specifies output file when using additional file-based reporter. This option can be used multiple times if multiple file-based reporters are used.
-  
+Specifies output file when using additional file-based reporter. This option can be used multiple times if multiple file-based reporters are used.  
 **Default value:** `[]`
 
 ### --header, -h
-Extra header to include in every request. This option can be used multiple times to add multiple headers.
-  
+Extra header to include in every request. This option can be used multiple times to add multiple headers.  
 **Default value:** `[]`
 
 ### --sorted, -s
-Sorts requests in a sensible way so that objects are not modified before they are created. Order: CONNECT, OPTIONS, POST, GET, HEAD, PUT, PATCH, DELETE, TRACE.
-  
+Sorts requests in a sensible way so that objects are not modified before they are created. Order: CONNECT, OPTIONS, POST, GET, HEAD, PUT, PATCH, DELETE, TRACE.  
 
 ### --user, -u
-Basic Auth credentials in the form username:password.
-  
+Basic Auth credentials in the form username:password.  
 
 ### --inline-errors, -e
-Determines whether failures and errors are displayed as they occur (true) or aggregated and displayed at the end (false).
-  
+Determines whether failures and errors are displayed as they occur (true) or aggregated and displayed at the end (false).  
 
 ### --hookfiles, -f
 Specifies a pattern to match files with before/after hooks for running tests  
 
 ### --method, -m
-Restrict tests to a particular HTTP method (GET, PUT, POST, DELETE, PATCH). This option can be used multiple times to allow multiple methods.
-  
+Restrict tests to a particular HTTP method (GET, PUT, POST, DELETE, PATCH). This option can be used multiple times to allow multiple methods.  
 **Default value:** `[]`
 
 ### --color, -c
-Determines whether console output should include colors.
-  
+Determines whether console output should include colors.  
 **Default value:** `true`
 
 ### --level, -l
-The level of logging to output. Options: silly, debug, verbose, info, warn, error.
-  
+The level of logging to output. Options: silly, debug, verbose, info, warn, error.  
 **Default value:** `"info"`
 
 ### --timestamp, -t
-Determines whether console output should include timestamps.
-  
+Determines whether console output should include timestamps.  
 
 ### --silent, -q
-Silences commandline output.
-  
+Silences commandline output.  
 
 ### --path, -p
 Additional blueprint paths or URLs. Can be used multiple times with glob pattern for paths.  
 **Default value:** `[]`
 
 ### --help
-Show usage information.
-  
+Show usage information.  
 
 ### --version
-Show version number.
-  
+Show version number.  
 
 ### --hooks-worker-timeout
 How long to wait for hooks worker to start. [ms]  
