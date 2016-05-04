@@ -227,7 +227,8 @@ after('/cars > GET', function (transaction) {
 
 //replace car ID in request for Car resource modification
 before('/cars/{id} > PATCH', function (transaction) {
-  transaction.request.url = transaction.request.url.replace('42', stash['carId'])
+  transaction.fullPath = transaction.fullPath.replace('42', stash['carId'])
+  transaction.request.uri = transaction.fullPath
 })
 ```
 
