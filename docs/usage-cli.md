@@ -74,11 +74,12 @@ endpoint: "http://localhost:3000"
 
 Remember you can always list all available arguments by `dredd --help`.
 
-### --details, -d
-Determines whether request/response details are included in passing tests.  
-
 ### --dry-run, -y
 Do not run any real HTTP transaction, only parse blueprint and compile transactions.  
+
+### --hooks-worker-handler-port
+Port of the hook worker.  
+**Default value:** `61321`
 
 ### --language, -a
 Language of hookfiles. Possible options are: nodejs, ruby, python, php, perl, go  
@@ -188,7 +189,6 @@ How long to wait between attempts to terminate hooks worker. [ms]
 Host of the hook worker.  
 **Default value:** `"localhost"`
 
-### --hooks-worker-handler-port
-Port of the hook worker.  
-**Default value:** `61321`
+### --details, -d
+Determines whether request/response details are included in passing tests.  
 

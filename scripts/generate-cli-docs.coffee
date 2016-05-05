@@ -28,7 +28,7 @@ for own name, attributes of options
   option.description = option.description.trim()
   option.name = name
   data.options.push(option)
-data.options.sort()
+data.options.sort((option) -> option.name)
 
 
 renderer = ect({root: DOCS_DIR})
