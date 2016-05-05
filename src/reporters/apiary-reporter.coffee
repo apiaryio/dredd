@@ -128,15 +128,15 @@ class ApiaryReporter
       return callback() if @serverError == true
       data = @_transformTestToReporter test
 
-      data['resultData']['result'] ?= {}
-      data['resultData']['result']['general'] ?= []
+      data.resultData.result ?= {}
+      data.resultData.result.general ?= []
 
       if CONNECTION_ERRORS.indexOf(error.code) > -1
-        data['resultData']['result']['general'].push {
+        data.resultData.result.general.push {
           severity: 'error', message: "Error connecting to server under test!"
         }
       else
-        data['resultData']['result']['general'].push {
+        data.resultData.result.general.push {
           severity: 'error', message: "Unhandled error occured when executing the transaction."
         }
 
