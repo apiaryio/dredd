@@ -1,5 +1,14 @@
 ## Changelog
 
+### v1.1.0-pre.1
+
+**Support for Node 6**
+- [#465](https://github.com/apiaryio/dredd/pull/465) Support for Node 6 (@honzajavorek)
+
+**Improvements in documentation**
+- [#464](https://github.com/apiaryio/dredd/pull/464) Docs Improvements (@honzajavorek)
+- [#470](https://github.com/apiaryio/dredd/pull/470) Docs update of hook example code for replacing URL params (@lazlojuly)
+
 ### v1.1.0-pre.0
 
 **Dredd internally migrates from API Blueprint AST to API Elements**
