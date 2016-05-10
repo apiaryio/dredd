@@ -1,6 +1,30 @@
-src/
-.travis.yml
-HISTORY-Dredd.md
-.git*
+# Source code (distributed code lives in /lib)
+/src
+
+# Common for .gitignore and .npmignore
+CHANGELOG-Generated.md
+src-cov/
+lcov/
+site/
+cov.*
 .vagrant
+*.log
+
+# List specific to .npmignore
+.travis.yml
 .npmignore
+docs/
+img/
+test/
+scripts/
+mkdocs.yml
+provisioning.sh
+coffeelint.json
+Vagrantfile
+*.apib
+*.md
+
+# Regardless the rules above, never ignore following
+!LICENSE
+!README.md
+!CHANGELOG.md

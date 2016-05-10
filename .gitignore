@@ -1,12 +1,14 @@
-node_modules
-CHANGELOG-Generated.md
+# Distributed code (source code lives in /src)
 /lib
-/src-cov
-/lcov
-cov.info
-cov.html
+
+# Common for .gitignore and .npmignore
+CHANGELOG-Generated.md
+src-cov/
+lcov/
+site/
+cov.*
 .vagrant
-*.DS_Store
-/.idea
-/npm-debug.log
-/site
+*.log
+
+# List specific to .gitignore
+node_modules
