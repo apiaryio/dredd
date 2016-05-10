@@ -1,5 +1,10 @@
 ## Changelog
 
+### v1.0.11
+
+**Support for Node 6**
+- [#465](https://github.com/apiaryio/dredd/pull/465) Support for Node 6 (@honzajavorek)
+
 ### v1.0.10
 
 **Latest Protagonist**
