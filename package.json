@@ -1,6 +1,6 @@
 {
   "name": "dredd",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "HTTP API Testing Framework",
   "main": "lib/dredd.js",
   "bin": {
