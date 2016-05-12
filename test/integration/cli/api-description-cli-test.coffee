@@ -102,6 +102,40 @@ describe 'CLI - API Description Document', ->
       it 'should print error message to stderr', ->
         assert.include dreddCommand.stderr, 'Error when reading file'
 
+    describe 'When API description is loaded with errors', ->
+      dreddCommand = undefined
+      args = [
+        './test/fixtures/error-blueprint.apib'
+        "http://localhost:#{PORT}"
+      ]
+
+      beforeEach (done) ->
+        execDredd args, (err, commandInfo) ->
+          dreddCommand = commandInfo
+          done(err)
+
+      it 'should exit with status 1', ->
+        assert.equal dreddCommand.exitStatus, 1
+      it 'should print error message to stderr', ->
+        assert.include dreddCommand.stderr, 'Error when processing API description'
+
+    describe 'When API description is loaded with warnings', ->
+      dreddCommand = undefined
+      args = [
+        './test/fixtures/warning-ambiguous.apib'
+        "http://localhost:#{PORT}"
+      ]
+
+      beforeEach (done) ->
+        execDredd args, (err, commandInfo) ->
+          dreddCommand = commandInfo
+          done(err)
+
+      it 'should exit with status 0', ->
+        assert.equal dreddCommand.exitStatus, 0
+      it 'should print warning to stdout', ->
+        assert.include dreddCommand.stdout, 'warn: Compilation warning'
+
 
   describe 'When loaded from URL', ->
 
