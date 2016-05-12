@@ -34,9 +34,8 @@ handleRuntimeProblems = (blueprintData) ->
 
         log("""\
           Compilation #{annotation.type} in file '#{filename}': \
-          #{annotation.message} on #{transactionName} \
+          #{annotation.message} (#{transactionName}) \
         """)
-
 
   return new Error('Error when processing API description.') if error
 
