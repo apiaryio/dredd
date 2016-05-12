@@ -439,7 +439,7 @@ describe 'Dredd class', ->
         url: 'http://localhost:3000/'
         options:
           silent: true
-          path: ['./test/fixtures/warning-ambigous.apib']
+          path: ['./test/fixtures/warning-ambiguous.apib']
       dredd = new Dredd(configuration)
 
     beforeEach ->
@@ -516,7 +516,7 @@ describe 'Dredd class', ->
         server: 'http://localhost:3000/'
         options:
           silent: true
-          path: ['./test/fixtures/warning-ambigous.apib']
+          path: ['./test/fixtures/warning-ambiguous.apib']
       sinon.spy loggerStub, 'warn'
       dredd = new Dredd(configuration)
       sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
@@ -547,7 +547,7 @@ describe 'Dredd class', ->
         server: 'http://localhost:3000/'
         options:
           silent: true
-          path: ['./test/fixtures/warning-ambigous.apib']
+          path: ['./test/fixtures/warning-ambiguous.apib']
       dredd = new Dredd(configuration)
       sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
