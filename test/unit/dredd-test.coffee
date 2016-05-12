@@ -19,21 +19,21 @@ Dredd = proxyquire '../../src/dredd', {
   './logger': loggerStub
 }
 
-describe 'Dredd class', () ->
+describe 'Dredd class', ->
 
   configuration = {}
   dredd = {}
 
-  beforeEach () ->
+  beforeEach ->
     sinon.spy ProtagonistStub, 'parse'
     sinon.spy fsStub, 'readFile'
 
-  afterEach () ->
+  afterEach ->
     ProtagonistStub.parse.restore()
     fsStub.readFile.restore()
 
-  describe 'with legacy configuration', () ->
-    before () ->
+  describe 'with legacy configuration', ->
+    before ->
       configuration =
         server: 'http://localhost:3000/'
         blueprintPath: './test/fixtures/apiary.apib'
@@ -46,7 +46,7 @@ describe 'Dredd class', () ->
 
     it 'should not explode and run executeTransaction', (done) ->
 
-      fn = () ->
+      fn = ->
         dredd = new Dredd(configuration)
         sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
           callback()
@@ -57,8 +57,8 @@ describe 'Dredd class', () ->
 
       assert.doesNotThrow fn
 
-  describe 'with valid configuration', () ->
-    before () ->
+  describe 'with valid configuration', ->
+    before ->
       configuration =
         server: 'http://localhost:3000/'
         options:
@@ -69,7 +69,7 @@ describe 'Dredd class', () ->
           sorted: true
           path: ['./test/fixtures/apiary.apib']
 
-    it 'should copy configuration on creation', () ->
+    it 'should copy configuration on creation', ->
       dredd = new Dredd(configuration)
       assert.ok(dredd.configuration.options.silent)
       assert.notOk(dredd.configuration.options['dry-run'])
@@ -120,8 +120,8 @@ describe 'Dredd class', () ->
         dredd.runner.executeTransaction.restore()
         done()
 
-    describe 'when paths specified with glob paterns', () ->
-      before () ->
+    describe 'when paths specified with glob paterns', ->
+      before ->
         configuration =
           server: 'http://localhost:3000/'
           options:
@@ -129,11 +129,11 @@ describe 'Dredd class', () ->
             path: ['./test/fixtures/multifile/*.apib', './test/fixtures/multifile/*.apib' ,'./test/fixtures/multifile/*.balony']
         dredd = new Dredd(configuration)
 
-      beforeEach () ->
+      beforeEach ->
         sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
           callback()
 
-      afterEach () ->
+      afterEach ->
         dredd.runner.executeTransaction.restore()
 
       it 'should expand all glob patterns and resolved paths should be unique', (done) ->
@@ -170,8 +170,8 @@ describe 'Dredd class', () ->
           done()
 
 
-    describe 'when glob pattern does not match any files', () ->
-      before () ->
+    describe 'when glob pattern does not match any files', ->
+      before ->
         configuration =
           server: 'http://localhost:3000/'
           options:
@@ -179,11 +179,11 @@ describe 'Dredd class', () ->
             path: ['./test/fixtures/multifile/*.balony']
         dredd = new Dredd(configuration)
 
-      beforeEach () ->
+      beforeEach ->
         sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
           callback()
 
-      afterEach () ->
+      afterEach ->
         dredd.runner.executeTransaction.restore()
 
       it 'should return error', (done) ->
@@ -192,7 +192,7 @@ describe 'Dredd class', () ->
           done()
 
 
-    describe 'when configuration contains data object with "filename" as key, and an API Blueprint string as value', () ->
+    describe 'when configuration contains data object with "filename" as key, and an API Blueprint string as value', ->
       beforeEach ->
         configuration =
           server: 'http://localhost:3000/'
@@ -221,7 +221,7 @@ describe 'Dredd class', () ->
         sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
           callback()
 
-      afterEach () ->
+      afterEach ->
         dredd.runner.executeTransaction.restore()
 
       it 'should not expand any glob patterns', (done) ->
@@ -279,7 +279,7 @@ describe 'Dredd class', () ->
             done()
 
 
-    describe 'when paths are specified as a mix of URLs and a glob path', () ->
+    describe 'when paths are specified as a mix of URLs and a glob path', ->
       blueprintCode = null
       before (done) ->
         configuration =
@@ -292,11 +292,11 @@ describe 'Dredd class', () ->
           blueprintCode = content.toString()
           done err
 
-      beforeEach () ->
+      beforeEach ->
         sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
           callback()
 
-      afterEach () ->
+      afterEach ->
         dredd.runner.executeTransaction.restore()
 
       describe 'when all URLs can be downloaded', ->
@@ -379,7 +379,7 @@ describe 'Dredd class', () ->
             done()
 
         it 'should not execute any transaction', (done) ->
-          dredd.run () ->
+          dredd.run ->
             assert.notOk dredd.runner.executeTransaction.called
             done()
 
@@ -403,7 +403,7 @@ describe 'Dredd class', () ->
             done()
 
         it 'should not execute any transaction', (done) ->
-          dredd.run () ->
+          dredd.run ->
             assert.notOk dredd.runner.executeTransaction.called
             done()
 
@@ -416,11 +416,11 @@ describe 'Dredd class', () ->
           path: ['./test/fixtures/error-blueprint.apib']
       dredd = new Dredd(configuration)
 
-    beforeEach () ->
+    beforeEach ->
       sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
 
-    afterEach () ->
+    afterEach ->
       dredd.runner.executeTransaction.restore()
 
     it 'should exit with an error', (done) ->
@@ -429,7 +429,7 @@ describe 'Dredd class', () ->
         done()
 
     it 'should NOT execute any transaction', (done) ->
-      dredd.run () ->
+      dredd.run ->
         assert.notOk dredd.runner.executeTransaction.called
         done()
 
@@ -442,22 +442,22 @@ describe 'Dredd class', () ->
           path: ['./test/fixtures/warning-ambigous.apib']
       dredd = new Dredd(configuration)
 
-    beforeEach () ->
+    beforeEach ->
       sinon.stub dredd.runner, 'run', (transaction, callback) ->
         callback()
       sinon.spy loggerStub, 'warn'
 
-    afterEach () ->
+    afterEach ->
       dredd.runner.run.restore()
       loggerStub.warn.restore()
 
     it 'should execute the runtime', (done) ->
-      dredd.run () ->
+      dredd.run ->
         assert.ok dredd.runner.run.called
         done()
 
     it 'should write warnings to warn logger', (done) ->
-      dredd.run () ->
+      dredd.run ->
         assert.ok loggerStub.warn.called
         done()
 
@@ -472,7 +472,7 @@ describe 'Dredd class', () ->
       sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
 
-    afterEach () ->
+    afterEach ->
       dredd.runner.executeTransaction.reset()
 
     it 'should pass the error to the callback function', (done) ->
@@ -485,8 +485,8 @@ describe 'Dredd class', () ->
         assert.notOk dredd.runner.executeTransaction.called
         done()
 
-  describe 'when runtime contains any error', () ->
-    beforeEach () ->
+  describe 'when runtime contains any error', ->
+    beforeEach ->
       configuration =
         server: 'http://localhost:3000/'
         options:
@@ -497,7 +497,7 @@ describe 'Dredd class', () ->
       sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
 
-    afterEach () ->
+    afterEach ->
       dredd.runner.executeTransaction.reset()
 
     it 'should NOT execute any transaction', (done) ->
@@ -522,7 +522,7 @@ describe 'Dredd class', () ->
       sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
 
-    afterEach () ->
+    afterEach ->
       dredd.runner.executeTransaction.reset()
       loggerStub.warn.restore()
 
@@ -541,8 +541,8 @@ describe 'Dredd class', () ->
         assert.notOk error
         done()
 
-  describe 'when runtime is without errors and warnings', () ->
-    beforeEach () ->
+  describe 'when runtime is without errors and warnings', ->
+    beforeEach ->
       configuration =
         server: 'http://localhost:3000/'
         options:
@@ -552,7 +552,7 @@ describe 'Dredd class', () ->
       sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
 
-    afterEach () ->
+    afterEach ->
       dredd.runner.executeTransaction.reset()
 
     it 'should execute the runtime', (done) ->
@@ -560,9 +560,9 @@ describe 'Dredd class', () ->
         assert.ok dredd.runner.executeTransaction.called
         done()
 
-  describe "#emitStart", () ->
+  describe "#emitStart", ->
 
-    describe 'no error in reporter occurs', () ->
+    describe 'no error in reporter occurs', ->
       PORT = 9876
       dredd = null
       apiaryServer = null
@@ -600,7 +600,7 @@ describe 'Dredd class', () ->
           done()
 
       afterEach (done) ->
-        apiaryServer.close () ->
+        apiaryServer.close ->
           done()
 
 
@@ -612,12 +612,12 @@ describe 'Dredd class', () ->
 
         dredd.emitStart callback
 
-    describe 'an error in the apiary reporter occurs', () ->
+    describe 'an error in the apiary reporter occurs', ->
       PORT = 9876
       dredd = null
       apiaryServer = null
 
-      beforeEach () ->
+      beforeEach ->
         configuration =
           server: 'http://localhost:3000/'
           options:
