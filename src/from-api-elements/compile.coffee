@@ -126,7 +126,10 @@ compileParameters = (hrefVariables) ->
     types = (content(member.attributes?.typeAttributes) or [])
 
     if value?.element is 'enum'
-      example = content(content(value)[0])
+      if value.attributes?.default?.length
+        example = content(value.attributes.default[0])
+      else
+        example = content(content(value)[0])
     else
       example = content(value)
 
