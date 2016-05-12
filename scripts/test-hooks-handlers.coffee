@@ -59,7 +59,7 @@ yaml = require 'js-yaml'
 
 
 unless process.env.CI
-  console.error ''' \
+  console.error '''\
     This script is meant to be ran on Travis CI. It is not optimized (yet) for
     local usage. It could mess up your Git repository.
   '''

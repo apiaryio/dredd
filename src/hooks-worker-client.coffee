@@ -81,7 +81,7 @@ class HooksWorkerClient
     if @language == 'ruby'
       @handlerCommand = 'dredd-hooks-ruby'
       unless which.which @handlerCommand
-        msg = """ \
+        msg = """\
           Ruby hooks handler server command not found: #{@handlerCommand}
           Install ruby hooks handler by running:
           $ gem install dredd_hooks
@@ -93,7 +93,7 @@ class HooksWorkerClient
     else if @language == 'python'
       @handlerCommand = 'dredd-hooks-python'
       unless which.which @handlerCommand
-        msg = """ \
+        msg = """\
           Python hooks handler server command not found: #{@handlerCommand}
           Install python hooks handler by running:
           $ pip install dredd_hooks
@@ -105,7 +105,7 @@ class HooksWorkerClient
     else if @language == 'php'
       @handlerCommand = 'dredd-hooks-php'
       unless which.which @handlerCommand
-        msg = """ \
+        msg = """\
           PHP hooks handler server command not found: #{@handlerCommand}
           Install php hooks handler by running:
           $ composer require ddelnano/dredd-hooks-php --dev
@@ -117,7 +117,7 @@ class HooksWorkerClient
     else if @language == 'perl'
       @handlerCommand = 'dredd-hooks-perl'
       unless which.which @handlerCommand
-        msg = """ \
+        msg = """\
           Perl hooks handler server command not found: #{@handlerCommand}
           Install perl hooks handler by running:
           $ cpanm Dredd::Hooks
@@ -127,7 +127,7 @@ class HooksWorkerClient
         callback()
 
     else if @language == 'nodejs'
-      msg = ''' \
+      msg = '''\
         Hooks handler should not be used for nodejs. \
         Use Dredds' native node hooks instead.
       '''
