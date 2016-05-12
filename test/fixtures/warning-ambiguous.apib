@@ -2,8 +2,8 @@ FORMAT: 1A
 
 # Machines API
 # Group Machines
-# Machine [/machines/{?name}]
-## Update a Machine [GET]
+# Machine [/machines/{name}]
+## Retrieve Single Machine [GET]
 
 + Response 200 (application/json)
 
@@ -11,3 +11,13 @@ FORMAT: 1A
             "type": "bulldozer",
             "name": "willy"
         }
+
+# Machines [/machines/{?sort}]
+## Retrieve All Machines [GET]
+
++ Response 200 (application/json)
+
+        [{
+            "type": "bulldozer",
+            "name": "willy"
+        }]
