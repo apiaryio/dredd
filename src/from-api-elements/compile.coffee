@@ -32,19 +32,20 @@ compileFromApiElements = (parseResult, filename) ->
     origin = compileOrigin(filename, parseResult, httpTransaction)
     {request, annotations} = compileRequest(parseResult, httpRequest)
 
+    if request
+      transactions.push({
+        origin
+        pathOrigin: compilePathOrigin(filename, parseResult, httpTransaction)
+        request
+        response: compileResponse(httpResponse)
+      })
+
     for error in annotations.errors
       error.origin = clone(origin)
       errors.push(error)
     for warning in annotations.warnings
       warning.origin = clone(origin)
       warnings.push(warning)
-
-    transactions.push({
-      origin
-      pathOrigin: compilePathOrigin(filename, parseResult, httpTransaction)
-      request
-      response: compileResponse(httpResponse)
-    })
 
   {transactions, errors, warnings}
 
@@ -53,16 +54,17 @@ compileRequest = (parseResult, httpRequest) ->
   messageBody = child(httpRequest, {element: 'asset', 'meta.classes': 'messageBody'})
 
   {uri, annotations} = compileUri(parseResult, httpRequest)
-
-  {
-    request: {
+  if uri
+    request = {
       method: content(httpRequest.attributes.method)
       uri
       headers: compileHeaders(child(httpRequest, {element: 'httpHeaders'}))
       body: content(messageBody) or ''
     }
-    annotations
-  }
+  else
+    request = null
+
+  {request, annotations}
 
 
 compileResponse = (httpResponse) ->

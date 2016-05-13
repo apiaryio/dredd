@@ -23,6 +23,7 @@ describe('compileFromApiElements()', ->
   describe('API description causing an error in the parser', ->
     err = undefined
     errors = undefined
+    transactions = undefined
 
     beforeEach((done) ->
       compile('''
@@ -30,12 +31,14 @@ describe('compileFromApiElements()', ->
         # Beehive API
         \t\t
       ''', (args...) ->
-        [err, compilationResult] = args
-        errors = compilationResult.errors
+        [err, {errors, transactions}] = args
         done()
       )
     )
 
+    it('is compiled into zero transactions', ->
+      assert.equal(transactions.length, 0)
+    )
     it('is compiled with an error', ->
       assert.equal(errors.length, 1)
     )
@@ -44,7 +47,7 @@ describe('compileFromApiElements()', ->
         assert.equal(errors[0].component, 'apiDescriptionParser')
       )
       it('has code', ->
-        assert.ok(errors[0].code)
+        assert.isNumber(errors[0].code)
       )
       it('has message', ->
         assert.include(errors[0].message.toLowerCase(), 'tab')
@@ -61,6 +64,7 @@ describe('compileFromApiElements()', ->
   describe('API description causing an error in URI expansion', ->
     err = undefined
     errors = undefined
+    transactions = undefined
 
     beforeEach((done) ->
       compile('''
@@ -70,12 +74,14 @@ describe('compileFromApiElements()', ->
         ### Remove [DELETE]
         + Response
       ''', (args...) ->
-        [err, compilationResult] = args
-        errors = compilationResult.errors
+        [err, {errors, transactions}] = args
         done()
       )
     )
 
+    it('is compiled into zero transactions', ->
+      assert.equal(transactions.length, 0)
+    )
     it('is compiled with an error', ->
       assert.equal(errors.length, 1)
     )
@@ -108,6 +114,7 @@ describe('compileFromApiElements()', ->
   describe('API description causing an error in URI validation', ->
     err = undefined
     errors = undefined
+    transactions = undefined
 
     beforeEach((done) ->
       compile('''
@@ -119,12 +126,14 @@ describe('compileFromApiElements()', ->
             + nonexisting (string, required)
         + Response
       ''', (args...) ->
-        [err, compilationResult] = args
-        errors = compilationResult.errors
+        [err, {errors, transactions}] = args
         done()
       )
     )
 
+    it('is compiled into zero transactions', ->
+      assert.equal(transactions.length, 0)
+    )
     it('is compiled with an error', ->
       assert.equal(errors.length, 1)
     )
@@ -157,6 +166,7 @@ describe('compileFromApiElements()', ->
   describe('API description causing a warning in the parser', ->
     err = undefined
     warnings = undefined
+    transactions = undefined
 
     beforeEach((done) ->
       compile('''
@@ -166,12 +176,14 @@ describe('compileFromApiElements()', ->
         ### Remove [DELETE]
         + Response
       ''', (args...) ->
-        [err, compilationResult] = args
-        warnings = compilationResult.warnings
+        [err, {warnings, transactions}] = args
         done()
       )
     )
 
+    it('is compiled into expected number of transactions', ->
+      assert.equal(transactions.length, 1)
+    )
     it('is compiled with a warning', ->
       assert.equal(warnings.length, 1)
     )
@@ -180,7 +192,7 @@ describe('compileFromApiElements()', ->
         assert.equal(warnings[0].component, 'apiDescriptionParser')
       )
       it('has code', ->
-        assert.ok(warnings[0].code)
+        assert.isNumber(warnings[0].code)
       )
       it('has message', ->
         assert.include(warnings[0].message.toLowerCase(), 'status code')
@@ -194,9 +206,130 @@ describe('compileFromApiElements()', ->
     )
   )
 
-  describe('API description causing a warning in URI expansion', ->
+  describe('API description causing a \'not specified in URI Template\' warning', ->
+    # The warning was previously handled by compiler, but now parser already
+    # provides the same kind of warning.
+
     err = undefined
     warnings = undefined
+    transactions = undefined
+
+    beforeEach((done) ->
+      compile('''
+        FORMAT: 1A
+        # Beehive API
+        ## Honey [/honey]
+        ### Remove [DELETE]
+        + Parameters
+            + beekeeper: Honza (string)
+        + Response 203
+      ''', (args...) ->
+        [err, {warnings, transactions}] = args
+        done()
+      )
+    )
+
+    it('is compiled into expected number of transactions', ->
+      assert.equal(transactions.length, 1)
+    )
+    it('is compiled with a single warning', ->
+      assert.equal(warnings.length, 1)
+    )
+    context('the warning', ->
+      it('comes from parser', ->
+        assert.equal(warnings[0].component, 'apiDescriptionParser')
+      )
+      it('has code', ->
+        assert.isNumber(warnings[0].code)
+      )
+      it('has message', ->
+        assert.include(warnings[0].message.toLowerCase(), 'not specified in')
+        assert.include(warnings[0].message.toLowerCase(), 'uri template')
+      )
+      it('has expected location', ->
+        assert.deepEqual(warnings[0].location, [[43, 20]])
+      )
+      it('has no origin', ->
+        assert.isUndefined(warnings[0].origin)
+      )
+    )
+  )
+
+  describe('API description causing a warning in URI expansion', ->
+    # This is a test for an arbitrary warning coming from URI expansion, which
+    # doesn't have any other special side effect. Since there are no such
+    # warnings as of now (but were in the past and could be in the future),
+    # we need to pretend it's possible in this test.
+
+    err = undefined
+    warnings = undefined
+    transactions = undefined
+
+    apiDescriptionDocument = '''
+      FORMAT: 1A
+      # Beehive API
+      ## Honey [/honey{?beekeeper}]
+      + Parameters
+          + beekeeper: Honza (string)
+      ### Remove [DELETE]
+      + Request (application/json)
+      + Response 200
+    '''
+    message = '... dummy warning message ...'
+
+    beforeEach((done) ->
+      stubbedCompileFromApiElements = proxyquire('../../../src/from-api-elements/compile',
+        '../expand-uri-template-with-parameters': (args...) ->
+          {uri: '/honey?beekeeper=Honza', errors: [], warnings: [message]}
+      )
+
+      options = {type: 'refract', generateSourceMap: true}
+      protagonist.parse(apiDescriptionDocument, options, (err, parseResult) ->
+        return done(err) unless parseResult
+        {warnings, transactions} = stubbedCompileFromApiElements(parseResult, null)
+        done()
+      )
+    )
+
+    it('is compiled into expected number of transactions', ->
+      assert.equal(transactions.length, 1)
+    )
+    it('is compiled with a warning', ->
+      assert.equal(warnings.length, 1)
+    )
+    context('the warning', ->
+      it('comes from compiler', ->
+        assert.equal(warnings[0].component, 'uriTemplateExpansion')
+      )
+      it('has no code', ->
+        assert.isUndefined(warnings[0].code)
+      )
+      it('has message', ->
+        assert.include(warnings[0].message, message)
+      )
+      it('has no location', ->
+        assert.isUndefined(warnings[0].location)
+      )
+      it('has origin', ->
+        assert.deepEqual(warnings[0].origin,
+          filename: null
+          apiName: 'Beehive API'
+          resourceGroupName: ''
+          resourceName: 'Honey'
+          actionName: 'Remove'
+          exampleName: ''
+        )
+      )
+    )
+  )
+
+  describe('API description causing an \'ambiguous parameters\' warning in URI expansion', ->
+    # Special side effect of the warning is that affected transactions
+    # should be skipped (shouldn't appear in output of the compilation).
+
+    err = undefined
+    warnings = undefined
+    transactions = undefined
 
     beforeEach((done) ->
       compile('''
@@ -206,17 +339,19 @@ describe('compileFromApiElements()', ->
         ### Remove [DELETE]
         + Response 203
       ''', (args...) ->
-        [err, compilationResult] = args
-        warnings = compilationResult.warnings
+        [err, {warnings, transactions}] = args
         done()
       )
     )
 
+    it('is compiled into zero transactions', ->
+      assert.equal(transactions.length, 0)
+    )
     it('is compiled with a warning', ->
       assert.equal(warnings.length, 1)
     )
     context('the warning', ->
-      it('comes from parser', ->
+      it('comes from compiler', ->
         assert.equal(warnings[0].component, 'uriTemplateExpansion')
       )
       it('has no code', ->
@@ -242,8 +377,13 @@ describe('compileFromApiElements()', ->
   )
 
   describe('API description causing a warning in URI validation', ->
+    # Since 'validateParameters' doesn't actually return any warnings
+    # (but could in the future), we need to pretend it's possible for this
+    # test.
+
     err = undefined
     warnings = undefined
+    transactions = undefined
 
     apiDescriptionDocument = '''
       FORMAT: 1A
@@ -257,8 +397,6 @@ describe('compileFromApiElements()', ->
     '''
     message = '... dummy warning message ...'
 
-    # Since validateParameters doesn't actually return any warnings, we need to
-    # pretend it's possible for this test.
     beforeEach((done) ->
       stubbedCompileFromApiElements = proxyquire('../../../src/from-api-elements/compile',
         '../validate-parameters': (args...) ->
@@ -268,11 +406,14 @@ describe('compileFromApiElements()', ->
       options = {type: 'refract', generateSourceMap: true}
       protagonist.parse(apiDescriptionDocument, options, (err, parseResult) ->
         return done(err) unless parseResult
-        warnings = stubbedCompileFromApiElements(parseResult, null).warnings
+        {warnings, transactions} = stubbedCompileFromApiElements(parseResult, null)
         done()
       )
     )
 
+    it('is compiled into expected number of transactions', ->
+      assert.equal(transactions.length, 1)
+    )
     it('is compiled with a warning', ->
       assert.equal(warnings.length, 1)
     )
