@@ -19,13 +19,6 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
     for param in expression['params']
       uriParameters.push param['name']
 
-  # check if all parameters from blueprint have an expression in URI
-  for parameter in Object.keys(parameters)
-    if uriParameters.indexOf(parameter) is -1
-      text = "\nURI template: #{uriTemplate}\nDoesn\'t contain expression for parameter" + \
-             " '" + parameter + "'"
-      result['warnings'].push text
-
   if parsed['expressions'].length is 0
     result['uri'] = uriTemplate
   else
