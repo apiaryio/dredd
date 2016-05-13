@@ -553,6 +553,41 @@ describe('compileFromApiElements()', ->
     )
   )
 
+  describe('API description with different sample and default value of URI parameter', ->
+    err = undefined
+    transaction = undefined
+
+    beforeEach((done) ->
+      compile('''
+        FORMAT: 1A
+        # Beehive API
+        ## Honey [/honey{?beekeeper}]
+        ### GET
+
+        + Parameters
+            + beekeeper: `Adam` (string, optional) - Beekeeper.
+
+                Description...
+
+                + Default: `Honza`
+
+                + Members
+                    + `Adam` - Adam K.
+                    + `Honza` - Honza J.
+
+        + Response 200
+      ''', (args...) ->
+        [err, compilationResult] = args
+        transaction = compilationResult.transactions[0]
+        done()
+      )
+    )
+
+    it('expands the request URI using correct value', ->
+      assert.equal(transaction.request.uri, '/honey?beekeeper=Honza')
+    )
+  )
+
   describe('Valid API description', ->
     filename = path.join(__dirname, '../../fixtures/blueprint.apib')
     apiDescriptionDocument = fs.readFileSync(filename).toString()
