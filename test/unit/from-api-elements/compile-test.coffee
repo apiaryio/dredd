@@ -14,7 +14,7 @@ compile = (apiDescriptionDocument, filename, done) ->
 
   options = {type: 'refract', generateSourceMap: true}
   protagonist.parse(apiDescriptionDocument, options, (err, parseResult) ->
-    return done(err) unless parseResult
+    return done(err or new Error('Unexpected error')) unless parseResult
     done(null, compileFromApiElements(parseResult, filename))
   )
 
@@ -324,7 +324,7 @@ describe('compileFromApiElements()', ->
 
       options = {type: 'refract', generateSourceMap: true}
       protagonist.parse(apiDescriptionDocument, options, (err, parseResult) ->
-        return done(err) unless parseResult
+        return done(err) if err
         {warnings, transactions} = stubbedCompileFromApiElements(parseResult, null)
         done()
       )
@@ -444,7 +444,7 @@ describe('compileFromApiElements()', ->
 
       options = {type: 'refract', generateSourceMap: true}
       protagonist.parse(apiDescriptionDocument, options, (err, parseResult) ->
-        return done(err) unless parseResult
+        return done(err) if err
         {warnings, transactions} = stubbedCompileFromApiElements(parseResult, null)
         done()
       )
