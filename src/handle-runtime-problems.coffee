@@ -7,7 +7,6 @@ handleRuntimeProblems = (blueprintData) ->
   error = false
 
   for own filename, data of blueprintData
-    filename = data.filename
     apiDescriptionDocument = data.raw
 
     for annotation in data.annotations
