@@ -32,7 +32,7 @@ describe('compileFromApiElements()', ->
         \t\t
       ''', (args...) ->
         [err, {errors, transactions}] = args
-        done()
+        done() # not passing 'err' - we couldn't test 'errors'
       )
     )
 
@@ -75,7 +75,7 @@ describe('compileFromApiElements()', ->
         + Response
       ''', (args...) ->
         [err, {errors, transactions}] = args
-        done()
+        done() # not passing 'err' - we couldn't test 'errors'
       )
     )
 
@@ -127,7 +127,7 @@ describe('compileFromApiElements()', ->
         + Response
       ''', (args...) ->
         [err, {errors, transactions}] = args
-        done()
+        done() # not passing 'err' - we couldn't test 'errors'
       )
     )
 
@@ -177,7 +177,7 @@ describe('compileFromApiElements()', ->
         + Response
       ''', (args...) ->
         [err, {warnings, transactions}] = args
-        done()
+        done(err)
       )
     )
 
@@ -206,6 +206,45 @@ describe('compileFromApiElements()', ->
     )
   )
 
+  describe('API description causing a \'missing title\' warning', ->
+    err = undefined
+    warnings = undefined
+    transactions = undefined
+
+    beforeEach((done) ->
+      compile('''
+        So Long, and Thanks for All the Fish!
+      ''', (args...) ->
+        [err, {warnings, transactions}] = args
+        done(err)
+      )
+    )
+
+    it('is compiled into zero transactions', ->
+      assert.equal(transactions.length, 0)
+    )
+    it('is compiled with a warning', ->
+      assert.equal(warnings.length, 1)
+    )
+    context('the warning', ->
+      it('comes from parser', ->
+        assert.equal(warnings[0].component, 'apiDescriptionParser')
+      )
+      it('has code', ->
+        assert.isNumber(warnings[0].code)
+      )
+      it('has message', ->
+        assert.include(warnings[0].message.toLowerCase(), 'expected api name')
+      )
+      it('has expected location', ->
+        assert.deepEqual(warnings[0].location, [[0, 37]])
+      )
+      it('has no origin', ->
+        assert.isUndefined(warnings[0].origin)
+      )
+    )
+  )
+
   describe('API description causing a \'not specified in URI Template\' warning', ->
     # The warning was previously handled by compiler, but now parser already
     # provides the same kind of warning.
@@ -225,7 +264,7 @@ describe('compileFromApiElements()', ->
         + Response 203
       ''', (args...) ->
         [err, {warnings, transactions}] = args
-        done()
+        done(err)
       )
     )
 
@@ -340,7 +379,7 @@ describe('compileFromApiElements()', ->
         + Response 203
       ''', (args...) ->
         [err, {warnings, transactions}] = args
-        done()
+        done(err)
       )
     )
 

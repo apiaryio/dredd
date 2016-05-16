@@ -28,7 +28,7 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
       if Object.keys(parameters).indexOf(uriParameter) is -1
         ambiguous = true
         text = "\nAmbiguous URI parameter in template: #{uriTemplate} " + \
-               "\nParameter not defined in API description: " + \
+               "\nParameter not defined in API description document: " + \
                "'" + uriParameter + "'"
         result['warnings'].push text
 
@@ -40,7 +40,7 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
           if param['example'] is undefined or param['example'] is ''
             ambiguous = true
             text = "\nAmbiguous URI parameter in template: #{uriTemplate} " + \
-                   "\nNo example value for required parameter in API description: " + \
+                   "\nNo example value for required parameter in API description document: " + \
                    "'" + uriParameter + "'"
             result['warnings'].push text
           else
