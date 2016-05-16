@@ -81,20 +81,10 @@ describe 'expandUriTemplateWithParameters', ->
         it 'should return no error', ->
           assert.equal data['errors'].length, 0
 
-        it 'should return some warning', ->
-          assert.notEqual data['warnings'].length, 0
-
-        describe 'returned warning', ->
-          warning = ''
-          before ->
-            warning = data['warnings'][data['warnings'].length - 1]
-
-          it 'should contain paramter name', ->
-            assert.include warning, Object.keys(parameters)[0]
-
-          it 'sohuld contain proper text', ->
-            text = 'Doesn\'t contain expression for parameter'
-            assert.include warning, text
+        it 'should return no warning', ->
+          # The warning was removed as parser started to provide its own
+          # warning for the very same thing.
+          assert.equal data['warnings'].length, 0
 
         it 'should return URI as it is', ->
           assert.equal data['uri'], uriTemplate
@@ -148,8 +138,10 @@ describe 'expandUriTemplateWithParameters', ->
         it 'should return no error', ->
           assert.equal data['errors'].length, 0
 
-        it 'should return some warning', ->
-          assert.equal data['warnings'].length, 1
+        it 'should return no warning', ->
+          # The warning was removed as parser started to provide its own
+          # warning for the very same thing.
+          assert.equal data['warnings'].length, 0
 
         it 'should return expandend URI', ->
           assert.equal data['uri'], '/machines/waldo'
@@ -333,4 +325,3 @@ describe 'expandUriTemplateWithParameters', ->
 
           it 'should return some URI', ->
             assert.isNotNull data['uri']
-
