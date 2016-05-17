@@ -29,6 +29,9 @@ describe 'CLI - API Description Document', ->
     app.get '/machines/caterpillar', (req, res) ->
       res.send {type: 'bulldozer', name: 'caterpillar'}
 
+    app.post '/machine-types', (req, res) ->
+      res.send [{name: 'bulldozer'}]
+
   beforeEach (done) ->
     startServer configureServer, PORT, (err, serverInfo) ->
       server = serverInfo

@@ -547,7 +547,7 @@ describe 'Dredd class', ->
         server: 'http://localhost:3000/'
         options:
           silent: true
-          path: ['./test/fixtures/warning-ambiguous.apib']
+          path: ['./test/fixtures/apiary.apib']
       dredd = new Dredd(configuration)
       sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
