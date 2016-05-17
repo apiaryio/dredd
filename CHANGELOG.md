@@ -1,5 +1,11 @@
 ## Changelog
 
+### v1.1.0-pre.2
+
+**Fixes of regression bugs**
+- [#484](https://github.com/apiaryio/dredd/pull/484) Ambiguous parameters raise exception (fix) (@honzajavorek)
+- [#485](https://github.com/apiaryio/dredd/pull/485) Preventing NaN in printed annotations (@honzajavorek)
+
 ### v1.1.0-pre.1
 
 **Support for Node 6**
