@@ -61,6 +61,7 @@ describe('handleRuntimeProblems()', ->
 
     beforeEach((done) ->
       prepareData(apiDescriptionDocument, filename, (err, data) ->
+        return done(err) if err
         error = handleRuntimeProblems(data)
         done()
       )
@@ -108,6 +109,7 @@ describe('handleRuntimeProblems()', ->
 
     beforeEach((done) ->
       prepareData(apiDescriptionDocument, filename, (err, data) ->
+        return done(err) if err
         error = handleRuntimeProblems(data)
         done()
       )
@@ -151,6 +153,7 @@ describe('handleRuntimeProblems()', ->
 
     beforeEach((done) ->
       prepareData(apiDescriptionDocument, filename, (err, data) ->
+        return done(err) if err
         error = handleRuntimeProblems(data)
         done()
       )
