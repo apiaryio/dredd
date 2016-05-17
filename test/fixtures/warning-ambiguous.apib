@@ -1,0 +1,38 @@
+FORMAT: 1A
+
+# Machines API
+# Group Machines
+# Machine [/machines/{name}]
+## Retrieve Single Machine [GET]
+
++ Response 200 (application/json; charset=utf-8)
+
+        {
+            "type": "bulldozer",
+            "name": "willy"
+        }
+
+# Machines [/machines/{?sort}]
+## Retrieve All Machines [GET]
+
++ Response 200 (application/json; charset=utf-8)
+
+        [{
+            "type": "bulldozer",
+            "name": "willy"
+        }]
+
+# Machine Types [/machine-types/]
+## Create a New Machine Type [POST]
+
++ Request (application/json; charset=utf-8)
+
+        {
+            "name": "bulldozer"
+        }
+
++ Response 200 (application/json; charset=utf-8)
+
+        [{
+            "name": "bulldozer"
+        }]

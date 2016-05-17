@@ -19,7 +19,7 @@ handleRuntimeProblems = (blueprintData) ->
       if annotation.component is 'apiDescriptionParser'
         ranges = blueprintUtils.warningLocationToRanges(annotation.location, apiDescriptionDocument)
 
-        message = """ \
+        message = """\
           Parser #{annotation.type} in file '#{filename}': \
           (#{annotation.type} code #{annotation.code}) #{annotation.message} \
         """
@@ -32,11 +32,10 @@ handleRuntimeProblems = (blueprintData) ->
           annotation.origin.actionName
         ].join(' > ')
 
-        log(""" \
+        log("""\
           Compilation #{annotation.type} in file '#{filename}': \
-          #{annotation.message} on #{transactionName} \
+          #{annotation.message} (#{transactionName}) \
         """)
-
 
   return new Error('Error when processing API description.') if error
 

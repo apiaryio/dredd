@@ -31,7 +31,7 @@
     "chai": "^3.4.1",
     "clone": "^1.0.0",
     "coffee-script": "^1.9.1",
-    "dredd-transactions": "0.0.4",
+    "dredd-transactions": "^0.0.5",
     "file": "~0.2.2",
     "gavel": "0.5.2",
     "glob": "^6.0.1",
