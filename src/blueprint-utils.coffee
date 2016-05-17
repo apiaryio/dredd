@@ -1,25 +1,25 @@
-newlineRegExp = /\n/g
 
-blueprintUtils = {}
-
-blueprintUtils.characterIndexToPosition = (charIndex = 0, text = '') ->
-  pieceOfCode = text.substring 0, charIndex
-  return {
-    row: pieceOfCode.match(newlineRegExp)?.length + 1
-  }
+NEWLINE_RE = /\n/g
 
 
-blueprintUtils.sortNumbersAscending = (a, b) ->
+characterIndexToPosition = (charIndex = 0, code = '') ->
+  codeFragment = code.substring(0, charIndex)
+  row = (codeFragment.match(NEWLINE_RE)?.length or 0) + 1
+  {row}
+
+
+sortNumbersAscending = (a, b) ->
   return a - b
 
-blueprintUtils.warningLocationToRanges = (warningLocation = [], text = '') ->
+
+warningLocationToRanges = (warningLocation = [], text = '') ->
   unless warningLocation.length
     # no start-end ranges, nothing to return
     return []
 
   rowsIndexes = []
 
-  position = blueprintUtils.characterIndexToPosition(warningLocation[0][0], text)
+  position = characterIndexToPosition(warningLocation[0][0], text)
 
   # add this warning position row into ranges array
   rowsIndexes.push position.row
@@ -29,10 +29,10 @@ blueprintUtils.warningLocationToRanges = (warningLocation = [], text = '') ->
   if warningLocation.length > 0
     # more lines
     for loc, locKey in warningLocation when locKey > 0
-      position = blueprintUtils.characterIndexToPosition(loc[0], text)
+      position = characterIndexToPosition(loc[0], text)
       rowsIndexes.push position.row
 
-  rowsIndexes.sort(blueprintUtils.sortNumbersAscending)
+  rowsIndexes.sort(sortNumbersAscending)
   ranges = []
   range = {start: rowsIndexes[0], end: rowsIndexes[0]}
   for rowIndex in rowsIndexes
@@ -46,7 +46,7 @@ blueprintUtils.warningLocationToRanges = (warningLocation = [], text = '') ->
   return ranges
 
 
-blueprintUtils.rangesToLinesText = (ranges) ->
+rangesToLinesText = (ranges) ->
   pos = ''
   for range, rangeIndex in ranges or []
     if rangeIndex > 0
@@ -58,4 +58,9 @@ blueprintUtils.rangesToLinesText = (ranges) ->
   return pos
 
 
-module.exports = blueprintUtils
+module.exports = {
+  characterIndexToPosition
+  sortNumbersAscending
+  warningLocationToRanges
+  rangesToLinesText
+}

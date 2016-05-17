@@ -9,12 +9,17 @@ describe 'blueprintUtils', ->
   options = {type: 'refract'}
 
   describe 'characterIndexToPosition()', ->
-    str = null
+    describe 'under standard circumstances', ->
+      it 'returns an object with non-zero-based row', ->
+        str = "first\nsecond\nthird lines\ncontent continues"
+        position = blueprintUtils.characterIndexToPosition str.indexOf('lines', str), str
+        assert.deepEqual position, {row: 3}
 
-    it 'returns an object with non-zero-based row', ->
-      str = "first\nsecond\nthird lines\ncontent continues"
-      position = blueprintUtils.characterIndexToPosition str.indexOf('lines', str), str
-      assert.deepEqual position, {row: 3}
+    describe 'when given one-line input and zero index', ->
+      it 'returns an object with row 1', ->
+        str = "hello\n"
+        position = blueprintUtils.characterIndexToPosition str.indexOf('hello', str), str
+        assert.deepEqual position, {row: 1}
 
   describe 'warningLocationToRanges()', ->
     str = null

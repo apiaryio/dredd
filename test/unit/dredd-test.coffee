@@ -407,10 +407,8 @@ describe 'Dredd class', () ->
             assert.notOk dredd.runner.executeTransaction.called
             done()
 
-
-  describe 'when Blueprint parsing error', () ->
-
-    before () ->
+  describe 'when Blueprint parsing error', ->
+    before ->
       configuration =
         url: 'http://localhost:3000/'
         options:
@@ -435,9 +433,8 @@ describe 'Dredd class', () ->
         assert.notOk dredd.runner.executeTransaction.called
         done()
 
-  describe 'when Blueprint parsing warning', () ->
-
-    before () ->
+  describe 'when Blueprint parsing warning', ->
+    before ->
       configuration =
         url: 'http://localhost:3000/'
         options:
@@ -464,10 +461,8 @@ describe 'Dredd class', () ->
         assert.ok loggerStub.warn.called
         done()
 
-
-  describe 'when non existing Blueprint path', () ->
-
-    beforeEach () ->
+  describe 'when non existing Blueprint path', ->
+    beforeEach ->
       configuration =
         url: 'http://localhost:3000/'
         options:
@@ -515,9 +510,8 @@ describe 'Dredd class', () ->
         assert.ok error
         done()
 
-  describe 'when runtime contains any warning', () ->
-
-    beforeEach () ->
+  describe 'when runtime contains any warning', ->
+    beforeEach ->
       configuration =
         server: 'http://localhost:3000/'
         options:
