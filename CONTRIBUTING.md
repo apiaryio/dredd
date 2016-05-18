@@ -80,7 +80,7 @@ immediately during coding.
 The main documentation is written in [Markdown][] using [MkDocs][]. Dredd uses
 [ReadTheDocs][] to build and publish the documentation:
 
-- https://dredd.readthedocs.org/ - preferred long URL
+- https://dredd.readthedocs.io/ - preferred long URL
 - http://dredd.rtfd.org/ - preferred short URL
 
 Source of the documentation can be found in the [docs][] directory. To contribute to Dredd's documentation, you will need to follow the [MkDocs installation instructions](http://www.mkdocs.org/#installation). Once installed, you may use following commands:
