@@ -30,3 +30,11 @@ theme: readthedocs
 markdown_extensions:
   - toc:
       permalink: true
+
+# These extra_templates exists only to redirect from old URLs to new URLs.
+# This is more properly done using an HTTP redirect, but unfortunately
+# readthedocs.org's page redirection is broken (see
+# https://github.com/rtfd/readthedocs.org/issues/1826). Once that bug is fixed,
+# these files can be removed.
+extra_templates:
+  - usage.html
