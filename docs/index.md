@@ -18,15 +18,15 @@ documentation.
 
 ### Supported Hooks Languages
 
-Dredd supports writing [hooks](http://dredd.readthedocs.io/en/latest/hooks/)
+Dredd supports writing [hooks](https://dredd.readthedocs.io/en/latest/hooks/)
 — a glue code for each test setup and teardown. Following languages are supported:
 
-- [Go](http://dredd.readthedocs.io/en/latest/hooks-go/)
-- [Node.js (JavaScript)](http://dredd.readthedocs.io/en/latest/hooks-nodejs/)
-- [Perl](http://dredd.readthedocs.io/en/latest/hooks-perl/)
-- [PHP](http://dredd.readthedocs.io/en/latest/hooks-php/)
-- [Python](http://dredd.readthedocs.io/en/latest/hooks-python/)
-- [Ruby](http://dredd.readthedocs.io/en/latest/hooks-ruby/)
+- [Go](https://dredd.readthedocs.io/en/latest/hooks-go/)
+- [Node.js (JavaScript)](https://dredd.readthedocs.io/en/latest/hooks-nodejs/)
+- [Perl](https://dredd.readthedocs.io/en/latest/hooks-perl/)
+- [PHP](https://dredd.readthedocs.io/en/latest/hooks-php/)
+- [Python](https://dredd.readthedocs.io/en/latest/hooks-python/)
+- [Ruby](https://dredd.readthedocs.io/en/latest/hooks-ruby/)
 - Didn't find your favorite language? _[Add a new one!](https://dredd.readthedocs.io/en/latest/hooks-new-language/)_
 
 ### Continuous Integration Support
