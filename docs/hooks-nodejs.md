@@ -8,14 +8,14 @@ $ dredd apiary.apib http://localhost:30000 --hookfiles=./hooks*.js
 
 ## API Reference
 
-- For `before`, `after`, `beforeValidation`, `beforeEach`, `afterEach` and `beforeEachValidation` a [Transaction Object](https://dredd.readthedocs.org/en/latest/hooks/#transaction-object-structure) is passed as the first argument to the hook function.
+- For `before`, `after`, `beforeValidation`, `beforeEach`, `afterEach` and `beforeEachValidation` a [Transaction Object](https://dredd.readthedocs.io/en/latest/hooks/#transaction-object-structure) is passed as the first argument to the hook function.
 - An array of Transaction Objects is passed to `beforeAll` and `afterAll`.
 - The second argument is an optional callback function for async execution.
 - Any modifications on the `transaction` object are propagated to the actual HTTP transactions.
 - You can use `hooks.log` function inside the hook function to print
   yours debug messages and other information.
 
-- [`configuration`](https://dredd.readthedocs.org/en/latest/usage/#configuration-object-for-dredd-class) object is populated on the `hooks` object
+- [`configuration`](https://dredd.readthedocs.io/en/latest/usage/#configuration-object-for-dredd-class) object is populated on the `hooks` object
 
 ### Sync API
 
