@@ -38,3 +38,4 @@ markdown_extensions:
 # these files can be removed.
 extra_templates:
   - usage.html
+  - usage/index.html
