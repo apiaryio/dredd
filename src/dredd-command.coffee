@@ -43,10 +43,10 @@ class DreddCommand
         $ dredd init
 
       Or:
-        $ dredd <path or URL to blueprint> <api_endpoint> [OPTIONS]
+        $ dredd <path or URL to API description document> <api_endpoint> [OPTIONS]
 
       Example:
-        $ dredd ./apiary.md http://localhost:3000 --dry-run
+        $ dredd ./api-description.apib http://localhost:3000 --dry-run
       """
     )
     .options(Dredd.options)
@@ -124,14 +124,14 @@ class DreddCommand
   checkRequiredArgs: () ->
     argError = false
 
-    # if blueprint is missing
+    # if 'blueprint' is missing
     if not @argv._[0]?
-      console.error("\nError: Must specify path to blueprint file.")
+      console.error("\nError: Must specify path to API description document.")
       argError = true
 
-    # if endpoint is missing
+    # if 'endpoint' is missing
     if not @argv._[1]?
-      console.error("\nError: Must specify api endpoint.")
+      console.error("\nError: Must specify URL of the tested API instance.")
       argError = true
 
     # show help if argument is missing
@@ -271,9 +271,9 @@ class DreddCommand
 
 
   lastArgvIsApiEndpoint: ->
-    # when blueprint path is a glob, some shells are automatically expanding globs and concating
+    # when API description path is a glob, some shells are automatically expanding globs and concating
     # result as arguments so I'm taking last argument as API endpoint server URL and removing it
-    #  forom optimist's args
+    # from optimist's args
     @server = @argv._[@argv._.length - 1]
     @argv._.splice(@argv._.length - 1, 1)
     return @

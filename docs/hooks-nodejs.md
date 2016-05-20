@@ -178,7 +178,7 @@ var hooks = require('hooks');
 var before = hooks.before;
 
 before("Machines > Machines collection > Get Machines", function (transaction) {
-  // parse request body from blueprint
+  // parse request body from API description
   var requestBody = JSON.parse(transaction.request.body);
 
   // modify request body here
@@ -246,8 +246,3 @@ npm install -g babel-cli babel-preset-es2015
 echo '{ "presets": ["es2015"] }' > .babelrc
 babel-node `which dredd` test/fixtures/single-get.apib http://localhost:3000 --hookfiles=./es2015.js
 ```
-
-
-
-
-

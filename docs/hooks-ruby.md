@@ -133,7 +133,7 @@ require 'json'
 include DreddHooks::Methods
 
 before "Machines > Machines collection > Get Machines" do |transaction|
-  # parse request body from blueprint
+  # parse request body from API description
   request_body = JSON.parse transaction['request']['body']
 
   # modify request body here

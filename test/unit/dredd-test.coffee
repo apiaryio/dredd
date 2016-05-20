@@ -5,14 +5,12 @@ bodyParser = require 'body-parser'
 express = require 'express'
 
 fsStub = require 'fs'
-ProtagonistStub = require 'protagonist'
 requestStub = require 'request'
 loggerStub = require '../../src/logger'
 
 dreddTransactionsStub = require 'dredd-transactions'
 
 Dredd = proxyquire '../../src/dredd', {
-  'protagonist': ProtagonistStub
   'request': requestStub
   'dredd-transactions': dreddTransactionsStub
   'fs': fsStub
@@ -25,11 +23,9 @@ describe 'Dredd class', ->
   dredd = {}
 
   beforeEach ->
-    sinon.spy ProtagonistStub, 'parse'
     sinon.spy fsStub, 'readFile'
 
   afterEach ->
-    ProtagonistStub.parse.restore()
     fsStub.readFile.restore()
 
   describe 'with legacy configuration', ->
@@ -80,15 +76,6 @@ describe 'Dredd class', ->
         callback()
       dredd.run (error) ->
         assert.ok fsStub.readFile.calledWith configuration.options.path[0]
-        dredd.runner.executeTransaction.restore()
-        done()
-
-    it 'should parse blueprint to ast', (done) ->
-      dredd = new Dredd(configuration)
-      sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
-        callback()
-      dredd.run (error) ->
-        assert.ok ProtagonistStub.parse.called
         dredd.runner.executeTransaction.restore()
         done()
 
@@ -192,7 +179,7 @@ describe 'Dredd class', ->
           done()
 
 
-    describe 'when configuration contains data object with "filename" as key, and an API Blueprint string as value', ->
+    describe 'when configuration contains data object with "filename" as key, and an API description document contents as value', ->
       beforeEach ->
         configuration =
           server: 'http://localhost:3000/'
@@ -360,7 +347,7 @@ describe 'Dredd class', ->
             assert.property dredd.configuration.data['https://another.path.to/apiary.apib'], 'annotations'
             done()
 
-      describe 'when an URL for one blueprint returns 404 not-found', ->
+      describe 'when an URL for one API description document returns 404 not-found', ->
         before ->
           sinon.stub requestStub, 'get', (receivedArgs = {}, cb) ->
             if receivedArgs?.url is 'https://another.path.to/apiary.apib'
@@ -383,7 +370,7 @@ describe 'Dredd class', ->
             assert.notOk dredd.runner.executeTransaction.called
             done()
 
-      describe 'when an URL for one blueprint is unreachable (erroneous)', ->
+      describe 'when an URL for one API description document is unreachable (erroneous)', ->
         before ->
           sinon.stub requestStub, 'get', (receivedArgs = {}, cb) ->
             if receivedArgs?.url is 'http://some.path.to/file.apib'
@@ -407,7 +394,7 @@ describe 'Dredd class', ->
             assert.notOk dredd.runner.executeTransaction.called
             done()
 
-  describe 'when Blueprint parsing error', ->
+  describe 'when API description document parsing error', ->
     before ->
       configuration =
         url: 'http://localhost:3000/'
@@ -433,7 +420,7 @@ describe 'Dredd class', ->
         assert.notOk dredd.runner.executeTransaction.called
         done()
 
-  describe 'when Blueprint parsing warning', ->
+  describe 'when API description document parsing warning', ->
     before ->
       configuration =
         url: 'http://localhost:3000/'
@@ -461,7 +448,7 @@ describe 'Dredd class', ->
         assert.ok loggerStub.warn.called
         done()
 
-  describe 'when non existing Blueprint path', ->
+  describe 'when non existing API description document path', ->
     beforeEach ->
       configuration =
         url: 'http://localhost:3000/'

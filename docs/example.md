@@ -2,9 +2,9 @@
 
 This is an example how to create a simple [Express.js][] API backend application tested with Dredd
 
-## Create API Blueprint File
+## Create API Description File
 
-Create a new documentation file in [API Blueprint][] format in `blueprint.md`
+Create a new API description file, for example in the [API Blueprint][] format. Save it as `api-description.apib`
 
 ```markdown
 # GET /
@@ -48,7 +48,7 @@ $ node app.js &
 Finally, run Dredd for validation:
 
 ```sh
-$ dredd blueprint.md http://localhost:3000
+$ dredd api-description.apib http://localhost:3000
 ```
 
 ## Advanced Examples

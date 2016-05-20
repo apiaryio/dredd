@@ -16,7 +16,7 @@ $ dredd ./apiary.md 'http://localhost:3000'
 
 ### API Description Document (string)
 
-URL or path to the API Description Document (e.g. API Blueprint).  
+URL or path to the API description document (e.g. API Blueprint).  
 **Sample values:** `./apiary.apib`, `http://example.com/apiary.apib`
 
 ### API Location (string)
@@ -86,7 +86,7 @@ Pass custom key-value configuration data delimited by a colon. E.g. -j 'a:b'
 Determines whether request/response details are included in passing tests.  
 
 ### --dry-run, -y
-Do not run any real HTTP transaction, only parse blueprint and compile transactions.  
+Do not run any real HTTP transaction, only parse API description document and compile transactions.  
 
 ### --header, -h
 Extra header to include in every request. This option can be used multiple times to add multiple headers.  
@@ -160,7 +160,7 @@ Specifies output file when using additional file-based reporter. This option can
 **Default value:** `[]`
 
 ### --path, -p
-Additional blueprint paths or URLs. Can be used multiple times with glob pattern for paths.  
+Additional API description paths or URLs. Can be used multiple times with glob pattern for paths.  
 **Default value:** `[]`
 
 ### --reporter, -r

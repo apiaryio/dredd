@@ -135,7 +135,7 @@ import dredd_hooks as hooks
 
 @hooks.before("Machines > Machines collection > Get Machines")
 def add_value_to_body(transaction):
-  # parse request body from blueprint
+  # parse request body from API description
   request_body = json.loads(transaction['request']['body'])
 
   # modify request body here

@@ -9,7 +9,7 @@ interactiveConfig.prompt = (config = {}, callback) ->
   questions.push {
     type: "input",
     name: "blueprint",
-    message: "Location of the API blueprint"
+    message: "Location of the API description document"
     default: config['blueprint'] || "apiary.apib"
    }
 

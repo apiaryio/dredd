@@ -143,7 +143,7 @@ use Dredd::Hooks::Methods;
 before("Machines > Machines collection > Get Machines" => sub {
     my ($transaction) = @_;
 
-    # parse request body from blueprint
+    # parse request body from API description
     my $request_body = JSON->decode_json($transaction->{request}{body});
 
     # modify request body here

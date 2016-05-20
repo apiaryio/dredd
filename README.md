@@ -9,7 +9,7 @@
 ![Dredd - HTTP API Testing Framework](img/dredd.png?v=3&raw=true)
 
 > **Dredd is a language-agnostic command-line tool for validating
-API documentation written in [API Blueprint][] format against its backend
+API description written in [API Blueprint][] format against its backend
 implementation.**
 
 - [Documentation][]

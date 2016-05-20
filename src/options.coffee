@@ -1,7 +1,7 @@
 options =
   "dry-run":
     alias: 'y'
-    description: 'Do not run any real HTTP transaction, only parse blueprint and compile transactions.'
+    description: 'Do not run any real HTTP transaction, only parse API description document and compile transactions.'
     default: null
 
   hookfiles:
@@ -122,7 +122,7 @@ options =
 
   path:
     alias: "p"
-    description: "Additional blueprint paths or URLs. Can be used multiple times with glob pattern for paths."
+    description: "Additional API description paths or URLs. Can be used multiple times with glob pattern for paths."
     default: []
 
   help:
