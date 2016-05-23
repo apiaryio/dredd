@@ -6,7 +6,7 @@ path = require('path')
 tv4 = require('tv4')
 proxyquire = require('proxyquire').noPreserveCache()
 
-compileFromApiElements = require('../../../src/from-api-elements/compile')
+compileFromApiElements = require('../../src/compile')
 
 
 compile = (apiDescriptionDocument, filename, done) ->
@@ -19,7 +19,7 @@ compile = (apiDescriptionDocument, filename, done) ->
   )
 
 
-describe('compileFromApiElements()', ->
+describe('compile()', ->
   describe('API description causing an error in the parser', ->
     err = undefined
     errors = undefined
@@ -317,8 +317,8 @@ describe('compileFromApiElements()', ->
     message = '... dummy warning message ...'
 
     beforeEach((done) ->
-      stubbedCompileFromApiElements = proxyquire('../../../src/from-api-elements/compile',
-        '../expand-uri-template-with-parameters': (args...) ->
+      stubbedCompileFromApiElements = proxyquire('../../src/compile',
+        './expand-uri-template-with-parameters': (args...) ->
           {uri: '/honey?beekeeper=Honza', errors: [], warnings: [message]}
       )
 
@@ -437,8 +437,8 @@ describe('compileFromApiElements()', ->
     message = '... dummy warning message ...'
 
     beforeEach((done) ->
-      stubbedCompileFromApiElements = proxyquire('../../../src/from-api-elements/compile',
-        '../validate-parameters': (args...) ->
+      stubbedCompileFromApiElements = proxyquire('../../src/compile',
+        './validate-parameters': (args...) ->
           {errors: [], warnings: [message]}
       )
 
@@ -554,7 +554,7 @@ describe('compileFromApiElements()', ->
   )
 
   describe('API description with arbitrary action', ->
-    filename = path.join(__dirname, '../../fixtures/arbitrary-action.apib')
+    filename = path.join(__dirname, '../fixtures/arbitrary-action.apib')
     apiDescriptionDocument = fs.readFileSync(filename).toString()
 
     err = undefined
@@ -589,7 +589,7 @@ describe('compileFromApiElements()', ->
   )
 
   describe('API description without sections', ->
-    filename = path.join(__dirname, '../../fixtures/simple-unnamed.apib')
+    filename = path.join(__dirname, '../fixtures/simple-unnamed.apib')
     apiDescriptionDocument = fs.readFileSync(filename).toString()
 
     err = undefined
@@ -769,7 +769,7 @@ describe('compileFromApiElements()', ->
   )
 
   describe('Valid API description', ->
-    filename = path.join(__dirname, '../../fixtures/blueprint.apib')
+    filename = path.join(__dirname, '../fixtures/blueprint.apib')
     apiDescriptionDocument = fs.readFileSync(filename).toString()
 
     requestSchema =

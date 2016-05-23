@@ -9,10 +9,7 @@ Dredd Transactions library compiles *HTTP Transactions* (simple Request-Response
 
 > **Note:** To better understand *emphasized* terms in this documentation, please refer to the [Glossary of Terms][api-blueprint-glossary]. All data structures are described using the [MSON][mson-spec] format.
 
-
-## Work in Progress Notice
-
-This project supersedes [Blueprint Transactions][blueprint-transactions] library. However, it is not ready yet nor used in [Dredd][dredd] and nobody is advised to consider this project as something to use in production environment as of now.
+This project supersedes [Blueprint Transactions][blueprint-transactions] library.
 
 
 ## Features
@@ -110,7 +107,7 @@ Represents a single *HTTP Transaction* (Request-Response pair) and its location 
 
 - name: `Hello world! > Retrieve Message` (string) - Transaction Name, non-deterministic breadcrumb location of the HTTP Transaction within the API description document.
 - origin (object) - Object of references to nodes of [API Elements][api-elements] derived from the original API description document.
-    - filename: `./blueprint.md` (string)
+    - filename: `./api-description.apib` (string)
     - apiName: `My Api` (string)
     - resourceGroupName: `Greetings` (string)
     - resourceName: `Hello, world!` (string)
@@ -141,7 +138,7 @@ Description of an error or warning which occurred during parsing of the API desc
 ### Deprecated Properties
 
 - origin (object) - Object of references to nodes of [API Elements][api-elements] derived from the original API description document.
-    - filename: `./blueprint.md` (string)
+    - filename: `./api-description.apib` (string)
     - apiName: `My Api` (string)
     - resourceGroupName: `Greetings` (string)
     - resourceName: `Hello, world!` (string)

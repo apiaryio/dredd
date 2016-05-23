@@ -2,7 +2,7 @@
 {assert} = require('chai')
 protagonist = require('protagonist')
 
-detectTransactionExamples = require('../../../src/from-api-elements/detect-transaction-examples')
+detectTransactionExamples = require('../../src/detect-transaction-examples')
 
 
 # Encapsulates a single test scenario.

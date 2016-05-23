@@ -1,29 +1,14 @@
 
 parse = require('./parse')
-compileFromApiBlueprintAst = require('./from-api-blueprint-ast/compile')
-compileFromApiElements = require('./from-api-elements/compile')
+compileFromApiElements = require('./compile')
 getTransactionName = require('./transaction-name/get-transaction-name')
 getTransactionPath = require('./transaction-path/get-transaction-path')
 
 
 compile = (input, filename, callback) ->
-  if typeof input is 'string'
-    # input is API description document
-    parse(input, (err, apiElements) ->
-      try
-        result = compileFromApiElements(apiElements, filename)
-      catch err
-        return callback(err)
-
-      for transaction in result.transactions
-        transaction['name'] = getTransactionName(transaction)
-        transaction['path'] = getTransactionPath(transaction)
-      callback(null, result)
-    )
-  else
-    # input is API Blueprint AST (kept just for backwards compatibility!)
+  parse(input, (err, apiElements) ->
     try
-      result = compileFromApiBlueprintAst(input, filename)
+      result = compileFromApiElements(apiElements, filename)
     catch err
       return callback(err)
 
@@ -31,6 +16,7 @@ compile = (input, filename, callback) ->
       transaction['name'] = getTransactionName(transaction)
       transaction['path'] = getTransactionPath(transaction)
     callback(null, result)
+  )
 
 
 module.exports = {compile}
