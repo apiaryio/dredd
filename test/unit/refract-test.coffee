@@ -1,7 +1,7 @@
 
 {assert} = require('chai')
 
-refract = require('../../../src/from-api-elements/refract')
+refract = require('../../src/refract')
 
 
 describe('Refract Utility Functions', ->

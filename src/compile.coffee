@@ -2,12 +2,12 @@
 clone = require('clone')
 
 {child, children, parent, content} = require('./refract')
-validateParameters = require('../validate-parameters')
+validateParameters = require('./validate-parameters')
 detectTransactionExamples = require('./detect-transaction-examples')
-expandUriTemplateWithParameters = require('../expand-uri-template-with-parameters')
+expandUriTemplateWithParameters = require('./expand-uri-template-with-parameters')
 
 
-compileFromApiElements = (parseResult, filename) ->
+compile = (parseResult, filename) ->
   transactions = []
   errors = []
   warnings = []
@@ -190,4 +190,4 @@ compilePathOrigin = (filename, parseResult, httpTransaction) ->
   }
 
 
-module.exports = compileFromApiElements
+module.exports = compile
