@@ -16,7 +16,7 @@ $ dredd ./apiary.md 'http://localhost:3000'
 
 ### API Description Document (string)
 
-URL or path to the API Description Document (e.g. API Blueprint).  
+URL or path to the API description document (e.g. API Blueprint).  
 **Sample values:** `./apiary.apib`, `http://example.com/apiary.apib`
 
 ### API Location (string)

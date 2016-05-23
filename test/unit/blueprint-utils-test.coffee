@@ -47,7 +47,7 @@ describe 'blueprintUtils', ->
         {start: 10, end: 10}
       ]
 
-    it 'works for some blueprint warnings too', (done) ->
+    it 'works for some API description warnings too', (done) ->
       blueprint = """
         # Indented API
 
@@ -97,7 +97,7 @@ describe 'blueprintUtils', ->
         ]
         assert.strictEqual line, 'lines 2-4, line 8, lines 10-15'
 
-    describe 'for a real blueprint', ->
+    describe 'for a real API description document', ->
       warnings = 0
       blueprint = null
       allRanges = []

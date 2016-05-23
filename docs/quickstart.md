@@ -1,7 +1,7 @@
 ## Quickstart
 
 - If you don't have [Node.js](https://nodejs.org/) installed, you may want to use [NVM](https://github.com/creationix/nvm)
-- Create an [API blueprint](https://apiblueprint.org/) in `apiary.apib`
+- Create an API description document. In this tutorial, we'll use [API Blueprint](https://apiblueprint.org/) format and the `api-description.apib` filename.
 
 ```
 # GET /message
@@ -20,7 +20,7 @@ $ npm install -g dredd
 
 ```
 $ dredd init
-? Location of the API blueprint: apiary.apib
+? Location of the API description document: api-description.apib
 ? Command to start API backend server e.g. (bundle exec rails server)
 ? URL of tested API endpoint: http://localhost:3000
 ? Programming language of hooks:

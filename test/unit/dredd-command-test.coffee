@@ -119,10 +119,10 @@ describe "DreddCommand class", () ->
       assert.isTrue dc.finished
 
     it 'ends with an error message about missing blueprint-file', ->
-      assert.include stderr, 'Must specify path to blueprint file.'
+      assert.include stderr, 'Must specify path to API description document.'
 
     it 'ends with an error message about missing api endpoint.', ->
-      assert.include stderr, 'Must specify api endpoint.'
+      assert.include stderr, 'Must specify URL of the tested API instance.'
 
     it 'calls exit callback', ->
       assert.isNotNull hasCalledExit

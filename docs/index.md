@@ -6,10 +6,10 @@
 [![Coverage Status](https://coveralls.io/repos/apiaryio/dredd/badge.svg?branch=master)](https://coveralls.io/r/apiaryio/dredd?branch=master)
 [![Join the chat at https://gitter.im/apiaryio/dredd](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/apiaryio/dredd?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-![Dredd API Blueprint testing tool](https://raw.github.com/apiaryio/dredd/master/img/dredd.png?v=3&raw=true)
+![Dredd - HTTP API Testing Framework](https://raw.github.com/apiaryio/dredd/master/img/dredd.png?v=3&raw=true)
 
 > **Dredd is a language-agnostic command-line tool for validating
-API documentation written in [API Blueprint][] format against its backend
+API description written in [API Blueprint][] format against its backend
 implementation.**
 
 Dredd reads your API description and step by step validates whether your API

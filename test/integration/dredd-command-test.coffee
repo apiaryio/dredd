@@ -67,7 +67,7 @@ describe "DreddCommand class Integration", () ->
     return
 
 
-  describe "to test various Errors - When blueprint file should be loaded from 'http(s)://...' url", ->
+  describe "to test various Errors - When API description document should be loaded from 'http(s)://...' url", ->
     server = null
 
     errorCmd = argv: [
@@ -140,4 +140,3 @@ describe "DreddCommand class Integration", () ->
 
       it 'should exit with status 0', ->
         assert.equal exitStatus, 0
-

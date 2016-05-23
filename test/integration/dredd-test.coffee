@@ -65,8 +65,8 @@ describe "Dredd class Integration", () ->
     return
 
 
-  describe "when creating Dredd instance with existing blueprint and responding server", () ->
-    describe "when the server is responding as specified in the blueprint", () ->
+  describe "when creating Dredd instance with existing API description document and responding server", () ->
+    describe "when the server is responding as specified in the API description", () ->
 
       before (done) ->
         cmd =
@@ -330,7 +330,7 @@ describe "Dredd class Integration", () ->
         assert.deepProperty receivedRequest, 'resultData.result.statusCode.validator'
 
 
-  describe "when blueprint file should be loaded from 'http(s)://...' url", ->
+  describe "when API description document should be loaded from 'http(s)://...' url", ->
     server = null
     loadedFromServer = null
     connectedToServer = null

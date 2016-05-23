@@ -10,7 +10,7 @@ Hooks are usually used for:
 - cleanup after test step or steps
 - handling authentication and sessions
 - passing data between transactions (saving state from responses to _stash_)
-- modifying request generated from blueprint
+- modifying request generated from API description
 - changing generated expectations
 - setting custom expectations
 - debugging via logging stuff
@@ -43,11 +43,11 @@ $ dredd single_get.md http://machines.apiary.io --hookfiles=*_hooks.*
 
 ## Getting Transaction Names
 
-For addressing specific test steps is used the __transaction names__ of the compiled HTTP transactions (_actions_) from the API Blueprint.
+For addressing specific test steps is used the __transaction names__ of the compiled HTTP transactions (_actions_) from the API description.
 
 In order to retrieve transaction names please run Dredd with the `--names` argument last and it will print all available names of transactions.
 
-For example, given an API Blueprint file `blueprint.md` as following:
+For example, given an API Blueprint file `api-description.apib` as following:
 
 ```markdown
 FORMAT: 1A
@@ -103,13 +103,13 @@ Following is description is in a [MSON](https://github.com/apiaryio/mson) format
     - protocol: `"https:"` (string)
     - fullPath: `"/message"` (string) expanded URI-Template with parameters (if any) used for the real HTTP(s) request
 
-    - request (object) Request compiled from blueprint
+    - request (object) Request compiled from API description
         - body `"Hello world!\n"` (string)
         - headers (object)
         - uri `"/message"` (string) informative uri about the request
         - method
 
-    - expected (object) Expected response from blueprint
+    - expected (object) Expected response from API description
         - statusCode `"200"` (string)
         - headers (object)
         - body (string)
@@ -120,8 +120,8 @@ Following is description is in a [MSON](https://github.com/apiaryio/mson) format
         - headers (object)
         - body (string)
 
-    - origin (object)  Reference to the original blueprint
-        - filename `"./blueprint.md"` (string)
+    - origin (object)  Reference to the original API description
+        - filename `"./api-description.apib"` (string)
         - apiName `"My Api"` (string)
         - resourceGroupName `"Greetings"` (string)
         - resourceName `"Hello, world!"` (string)

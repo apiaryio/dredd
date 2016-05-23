@@ -1,10 +1,10 @@
 # Dredd Overview
 
-Dredd works by taking your API Blueprint documentation, creating expectations based on the requests and responses in the blueprint, making requests to your API, and seeing if the responses match. Dredd automatically builds these expectations from the blueprint every time the tests are run.
+Dredd works by taking your API description document, creating expectations based on the requests and responses in the description, making requests to your API, and seeing if the responses match. Dredd automatically builds these expectations from the API description every time the tests are run.
 
 ## Automatic Expectations
 
-Dredd automatically generates expectations on HTTP responses based on examples in the blueprint with use of [Gavel.js](https://github.com/apiaryio/gavel.js) library. Please refer to [Gavel](https://www.relishapp.com/apiary/gavel/docs) rules if you want know more.
+Dredd automatically generates expectations on HTTP responses based on examples in the API description with use of [Gavel.js](https://github.com/apiaryio/gavel.js) library. Please refer to [Gavel](https://www.relishapp.com/apiary/gavel/docs) rules if you want know more.
 
 **Remember:**  You can easily write additional [custom expectations](hooks.md#using-chai-assertions) in hooks.
 
@@ -21,7 +21,7 @@ Dredd automatically generates expectations on HTTP responses based on examples i
 - All JSON values can differ
 - Arrays can have additional items, type or structure is not validated.
 - Plain text must match perfectly
-- If JSON Schema v4 or JSON Schema v3 is given in the blueprint, JSON response must be valid against this schema and JSON example is ignored.
+- If JSON Schema v4 or JSON Schema v3 is provided in the API description, JSON response must be valid against this schema and JSON example is ignored.
 
 ## Using Apiary Reporter and Apiary Tests
 
@@ -65,19 +65,19 @@ When sending test reports to Apiary, Dredd inspects the environment where it was
 - hostname (string) - `DREDD_HOSTNAME` or hostname of the OS
 - CI (boolean) - looks for `TRAVIS`, `CIRCLE`, `CI`, `DRONE`, `BUILD_ID`, ...
 
-## Testing API Documentation
+## Testing API description
 
 ### Documentation Testability
 
-API Blueprint allows usage of URI templates. If you want to have API documentation to be complete and testable, do not forget to describe all URI-used parameters and provide examples to make Dredd able to expand URI templates with given example values.
+API Blueprint allows usage of URI templates. If you want to have API description to be complete and testable, do not forget to describe all URI-used parameters and provide examples to make Dredd able to expand URI templates with given example values.
 
 ### Isolation
 
 API Blueprint structure conforms to the REST paradigm, so in the API Blueprint are documented Resources and their Actions.
 
-It's very likely that your blueprint will not be testable as-is, because actions in the reference will not be sorted in proper order for API's application logic workflow.
+It's very likely that your API Blueprint document will not be testable as-is, because actions in the reference will not be sorted in proper order for API's application logic workflow.
 
-Proper testing of API documentation with Dredd is all about isolating each resource action with hook scripts executing code before and after each HTTP transaction to do proper fixtures setup and teardown.
+Proper testing of API description with Dredd is all about isolating each resource action with hook scripts executing code before and after each HTTP transaction to do proper fixtures setup and teardown.
 
 It's an analogy to **unit testing** of your code. In unit testing, each unit should be testable without any dependency on other units or previous tests.
 
@@ -85,7 +85,7 @@ It's an analogy to **unit testing** of your code. In unit testing, each unit sho
 
 ### Example
 
-It's usual that you discuss an action in the API documentation for some entity deletion before an action for re-using this deleted entity. For example in the API blueprint:
+It's usual that you discuss an action in the API description for some entity deletion before an action for re-using this deleted entity. For example in the API Blueprint format:
 
 ```markdown
 FORMAT: 1A
@@ -118,7 +118,7 @@ In this case, you will have to write a `before` hook for adding a database fixtu
 First, retrieve the transaction names.
 
 ```
-dredd blueprint.md http://localhost:3000 --names
+dredd api-description.apib http://localhost:3000 --names
 info: Categories > Create a category
 info: Category > Delete a category
 info: Category Items > Create an item
@@ -148,13 +148,13 @@ before('Category Items > Create an item', function() {
 
 ## Testing API Workflows
 
-If you want to test some sequence of HTTP steps (workflow or scenario) in you API apart of your API reference or a non RESTful API HTTP workflow, you can run Dredd with multiple blueprints by adding  `--path` argument
+If you want to test some sequence of HTTP steps (workflow or scenario) in your API apart of your API reference or a non RESTful API HTTP workflow, you can run Dredd with multiple API description documents by adding  `--path` argument
 
 Unlike API reference testing, scenarios or workflows steps are in **shared context**, so you may want to [pass data between transactions](hooks.md#sharing-data-between-steps-in-request-stash).
 
 ### Example
 
-Having following workflow blueprint:
+Having following workflow in API description:
 
 ```markdown
 FORMAT: 1A
@@ -195,7 +195,7 @@ FORMAT: 1A
 Retrieve transactions names with:
 
 ```
-$ dredd blueprint.md http://localhost:3000 --names
+$ dredd api-description.apib http://localhost:3000 --names
 info: /login > POST
 info: /cars > GET
 info: /cars/{id} > PATCH
@@ -276,7 +276,7 @@ Using HTTP basic authentication with a CLI argument
 --user user:password
 ```
 
-If you don't want to add some header directly to the blueprint, you can add header to all requests from command line:
+If you don't want to add some header directly to the API description, you can add header to all requests from command line:
 
 ```
 --headers "Authorization: Basic YmVuOnBhc3M="
@@ -361,7 +361,7 @@ If you need to use different URI address for each example, you can [modify trans
 Dredd will compile following transaction names:
 
 ```
-$ dredd blueprint.md http://localhost --names
+$ dredd api-description.apib http://localhost --names
 info: Beginning Dredd testing...
 info: Resource > Update resource > Example 1
 info: Resource > Update resource > Example 2

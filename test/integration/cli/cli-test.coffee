@@ -42,8 +42,8 @@ execCommand = (cmd, options = {}, callback) ->
 
 describe 'CLI', () ->
 
-  describe "Arguments with existing blueprint and responding server", () ->
-    describe "when executing the command and the server is responding as specified in the blueprint", () ->
+  describe "Arguments with existing API description document and responding server", () ->
+    describe "when executing the command and the server is responding as specified in the API description", () ->
 
       before (done) ->
         cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT}"
@@ -67,7 +67,7 @@ describe 'CLI', () ->
       it 'exit status should be 0', () ->
         assert.equal exitStatus, 0
 
-    describe "when executing the command and the server is responding as specified in the blueprint, endpoint with path", () ->
+    describe "when executing the command and the server is responding as specified in the API description, endpoint with path", () ->
       before (done) ->
         cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT}/v2/"
 
@@ -782,7 +782,7 @@ describe 'CLI', () ->
       events = getResults(output.stdout)
       assert.ok events is 'beforeAll,before,after,afterAll'
 
-  describe "tests a blueprint containing an endpoint with schema", () ->
+  describe "tests an API description containing an endpoint with schema", () ->
     describe "and server is responding in accordance with the schema", () ->
 
       before (done) ->
@@ -833,14 +833,14 @@ describe 'CLI', () ->
       it 'exit status should be 1 (failure)', () ->
         assert.equal exitStatus, 1
 
-  describe "when blueprint path is a glob", () ->
+  describe "when API description document path is a glob", () ->
     describe "and called with --names options", () ->
       before (done) ->
         cmd = "#{DREDD_BIN} ./test/fixtures/multifile/*.apib http://localhost --names"
         execCommand cmd, () ->
           done()
 
-      it 'it should include all paths from all blueprints matching the glob', () ->
+      it 'it should include all paths from all API description documents matching the glob', () ->
         assert.include stdout, '> /greeting > GET'
         assert.include stdout, '> /message > GET'
         assert.include stdout, '> /name > GET'
@@ -897,7 +897,7 @@ describe 'CLI', () ->
         execCommand cmd, () ->
           done()
 
-      it 'it should include all paths from all blueprints matching all paths and globs', () ->
+      it 'it should include all paths from all API description documents matching all paths and globs', () ->
         assert.include stdout, 'Greeting API > /greeting > GET'
         assert.include stdout, 'Message API > /message > GET'
         assert.include stdout, 'Name API > /name > GET'

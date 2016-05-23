@@ -1,4 +1,4 @@
-# Often, API documentation is arranged with a sequence of methods that lends
+# Often, API description is arranged with a sequence of methods that lends
 # itself to understanding by the human reading the documentation.
 #
 # However, the sequence of methods may not be appropriate for the machine

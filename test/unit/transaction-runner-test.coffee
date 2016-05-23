@@ -125,14 +125,14 @@ describe 'TransactionRunner', ()->
 
       runner = new Runner(configuration)
 
-    describe 'when processing multiple blueprints', () ->
+    describe 'when processing multiple API description documents', () ->
       it 'should include api name in the transaction name', (done) ->
         runner.multiBlueprint = true
         runner.configureTransaction transaction, (err, configuredTransaction) ->
           assert.include configuredTransaction.name, 'Machines API'
           done()
 
-    describe 'when processing only single blueprint', () ->
+    describe 'when processing only single API description document', () ->
       it 'should not include api name in the transaction name', (done) ->
         runner.multiBlueprint = false
         runner.configureTransaction transaction, (err, configuredTransaction) ->

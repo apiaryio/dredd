@@ -108,7 +108,7 @@ class Dredd
 
       if @configDataIsEmpty and @configuration.files.length == 0
         err = new Error """
-          Blueprint file or files not found on path: \
+          API description document (or documents) not found on path: \
           '#{@configuration.options.path}'
         """
         return callback(err, @stats)
