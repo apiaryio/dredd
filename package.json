@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "clone": "^1.0.2",
-    "fury": "^2.0.0",
+    "fury": "^2.1.0",
     "fury-adapter-apib-parser": "^0.2.0",
     "sift": "^3.2.1",
     "traverse": "^0.6.6",

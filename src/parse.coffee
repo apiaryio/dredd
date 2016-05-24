@@ -11,16 +11,9 @@ parse = (source, callback) ->
       # Turning Fury error object into standard JavaScript error
       err = new Error(err.message)
 
-    if result
-      # Due to bug https://github.com/apiaryio/fury.js/pull/60 Fury sometimes
-      # returns plain Refract instead of Minim-wrapped Refract.
-      result = result.toRefract() if result.toRefract
-    else
-      # If no parse result is present, indicate that with 'null',
-      # not with 'undefined'.
-      result = null
-
-    callback(err, result)
+    # If no parse result is present, indicate that with 'null',
+    # not with 'undefined'.
+    callback(err, (if result then result.toRefract() else null))
   )
 
 
