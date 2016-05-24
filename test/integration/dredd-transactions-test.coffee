@@ -1,7 +1,8 @@
-protagonist = require 'protagonist'
+
 {assert} = require 'chai'
 
 dreddTransactions = require '../../src/dredd-transactions'
+
 
 describe "compiled transaction paths", ->
   describe "Full notation with multiple request-response pairs", ->

@@ -2,7 +2,7 @@
 fs = require('fs')
 path = require('path')
 sinon = require('sinon')
-protagonist = require('protagonist')
+fury = require('fury')
 {assert} = require('chai')
 
 parse = require('../../src/parse')
@@ -104,7 +104,7 @@ describe('Parsing API description document', ->
     parseResult = undefined
 
     beforeEach((done) ->
-      sinon.stub(protagonist, 'parse', (args...) ->
+      sinon.stub(fury, 'parse', (args...) ->
         args.pop()() # calling the callback with neither error or parse result
       )
       parse('... dummy API description document ...', (args...) ->
@@ -113,7 +113,7 @@ describe('Parsing API description document', ->
       )
     )
     afterEach( ->
-      protagonist.parse.restore()
+      fury.parse.restore()
     )
 
     it('produces error', ->

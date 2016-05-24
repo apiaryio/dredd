@@ -1,18 +1,20 @@
 
-protagonist = require('protagonist')
+fury = require('fury')
+fury.use(require('fury-adapter-apib-parser'))
+fury.use(require('fury-adapter-swagger'))
 
 
-parse = (apiDescriptionDocument, callback) ->
-  options = {generateSourceMap: true}
-  protagonist.parse(apiDescriptionDocument, options, (err, result) ->
+parse = (source, callback) ->
+  fury.parse({source, generateSourceMap: true}, (err, result) ->
     if not (err or result)
       err = new Error('Unexpected parser error occurred.')
     else if err
-      # Turning Protagonist error object into standard JavaScript error
+      # Turning Fury error object into standard JavaScript error
       err = new Error(err.message)
 
-    # If no parse result is present, indicate that with 'null', not 'undefined'
-    callback(err, result or null)
+    # If no parse result is present, indicate that with 'null',
+    # not with 'undefined'.
+    callback(err, (if result then result.toRefract() else null))
   )
 
 

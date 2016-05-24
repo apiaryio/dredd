@@ -17,7 +17,11 @@ children = (node, query, options = {}) ->
   sifter = sift(query or {})
 
   traverse(node).forEach((childNode) ->
-    if childNode isnt node and childNode.element and sifter(childNode)
+    if (
+      childNode?.element and # we want only element nodes (node can be 'undefined' if it represents empty 'content')
+      childNode isnt node and # we don't count given node as it's own child
+      sifter(childNode) # filtering by given conditions
+    )
       results.push(childNode)
       @stop() if options.first
     return # needed for 'traverse' to work properly in CoffeeScript
