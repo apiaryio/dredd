@@ -1,6 +1,7 @@
 
 fury = require('fury')
 fury.use(require('fury-adapter-apib-parser'))
+fury.use(require('fury-adapter-swagger'))
 
 
 parse = (source, callback) ->
