@@ -30,7 +30,7 @@
     "async": "^0.9.x",
     "chai": "^3.4.1",
     "clone": "^1.0.0",
-    "dredd-transactions": "^0.0.5",
+    "dredd-transactions": "^1.1.0",
     "file": "~0.2.2",
     "gavel": "0.5.2",
     "glob": "^6.0.1",
