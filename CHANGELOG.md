@@ -1,5 +1,10 @@
 ## Changelog
 
+### v1.1.0-pre.3
+
+**Dredd internally migrates from Protagonist to Fury.js**
+- [#495](https://github.com/apiaryio/dredd/pull/495) v1.1.0-pre.3 (@honzajavorek)
+
 ### v1.1.0-pre.2
 
 **Fixes of regression bugs**
