@@ -2,7 +2,6 @@ proxyquire = require('proxyquire').noPreserveCache()
 fs = require 'fs'
 path = require 'path'
 {assert} = require 'chai'
-protagonist = require 'protagonist'
 sinon = require 'sinon'
 dreddTransactions = require '../../src/dredd-transactions'
 ast = require '../fixtures/blueprint-ast'

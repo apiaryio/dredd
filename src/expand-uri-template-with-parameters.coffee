@@ -5,6 +5,7 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
     errors: []
     warnings: []
     uri: null
+
   try
     parsed = ut.parse uriTemplate
   catch e

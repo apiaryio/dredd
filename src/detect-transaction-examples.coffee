@@ -62,7 +62,7 @@ createIndex = (transition) ->
   traversal = traverse(transition)
   traversal.forEach((node) ->
     # Process just sourceMap elements.
-    return unless node.element is 'sourceMap'
+    return unless node?.element is 'sourceMap'
 
     # Ignore sourceMap elements for request's HTTP method. Method is
     # often on a different place in the document than the actual

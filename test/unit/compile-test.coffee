@@ -1,21 +1,25 @@
 
 {assert} = require('chai')
-protagonist = require('protagonist')
 fs = require('fs')
 path = require('path')
 tv4 = require('tv4')
 proxyquire = require('proxyquire').noPreserveCache()
 
+parse = require('../../src/parse')
 compileFromApiElements = require('../../src/compile')
 
 
 compile = (apiDescriptionDocument, filename, done) ->
   [done, filename] = [filename, undefined] if typeof filename is 'function'
 
-  options = {type: 'refract', generateSourceMap: true}
-  protagonist.parse(apiDescriptionDocument, options, (err, parseResult) ->
-    return done(err or new Error('Unexpected error')) unless parseResult
-    done(null, compileFromApiElements(parseResult, filename))
+  parse(apiDescriptionDocument, (err, parseResult) ->
+    # intentionally ignoring any parse errors - below we're testing whether
+    # the compilation can deal with them
+    try
+      result = compileFromApiElements(parseResult, filename)
+      done(null, result)
+    catch err
+      done(err)
   )
 
 
@@ -32,14 +36,14 @@ describe('compile()', ->
         \t\t
       ''', (args...) ->
         [err, {errors, transactions}] = args
-        done() # not passing 'err' - we couldn't test 'errors'
+        done(err)
       )
     )
 
     it('is compiled into zero transactions', ->
       assert.equal(transactions.length, 0)
     )
-    it('is compiled with an error', ->
+    it('is compiled with one error', ->
       assert.equal(errors.length, 1)
     )
     context('the error', ->
@@ -62,6 +66,12 @@ describe('compile()', ->
   )
 
   describe('API description causing an error in URI expansion', ->
+    # Parser now provides warning in similar situations, however, we do not
+    # rely on it in any way in behaviour tested here. This error is thrown
+    # in case Dredd Transactions are not able to parse the URI template.
+    # Mind that situations when parser gives the warning and when this error
+    # is thrown can differ and also the severity is different.
+
     err = undefined
     errors = undefined
     transactions = undefined
@@ -72,17 +82,17 @@ describe('compile()', ->
         # Beehive API
         ## Honey [/honey{]
         ### Remove [DELETE]
-        + Response
+        + Response 203
       ''', (args...) ->
         [err, {errors, transactions}] = args
-        done() # not passing 'err' - we couldn't test 'errors'
+        done(err)
       )
     )
 
     it('is compiled into zero transactions', ->
       assert.equal(transactions.length, 0)
     )
-    it('is compiled with an error', ->
+    it('is compiled with one error', ->
       assert.equal(errors.length, 1)
     )
     context('the error', ->
@@ -93,7 +103,7 @@ describe('compile()', ->
         assert.isUndefined(errors[0].code)
       )
       it('has message', ->
-        assert.include(errors[0].message.toLowerCase(), 'uri template')
+        assert.include(errors[0].message.toLowerCase(), 'failed to parse uri template')
       )
       it('has no location', ->
         assert.isUndefined(errors[0].location)
@@ -124,17 +134,17 @@ describe('compile()', ->
         ### Remove [DELETE]
         + Parameters
             + nonexisting (string, required)
-        + Response
+        + Response 203
       ''', (args...) ->
         [err, {errors, transactions}] = args
-        done() # not passing 'err' - we couldn't test 'errors'
+        done(err)
       )
     )
 
     it('is compiled into zero transactions', ->
       assert.equal(transactions.length, 0)
     )
-    it('is compiled with an error', ->
+    it('is compiled with one error', ->
       assert.equal(errors.length, 1)
     )
     context('the error', ->
@@ -184,7 +194,7 @@ describe('compile()', ->
     it('is compiled into expected number of transactions', ->
       assert.equal(transactions.length, 1)
     )
-    it('is compiled with a warning', ->
+    it('is compiled with one warning', ->
       assert.equal(warnings.length, 1)
     )
     context('the warning', ->
@@ -213,6 +223,8 @@ describe('compile()', ->
 
     beforeEach((done) ->
       compile('''
+        FORMAT: 1A
+
         So Long, and Thanks for All the Fish!
       ''', (args...) ->
         [err, {warnings, transactions}] = args
@@ -223,7 +235,7 @@ describe('compile()', ->
     it('is compiled into zero transactions', ->
       assert.equal(transactions.length, 0)
     )
-    it('is compiled with a warning', ->
+    it('is compiled with one warning', ->
       assert.equal(warnings.length, 1)
     )
     context('the warning', ->
@@ -237,7 +249,7 @@ describe('compile()', ->
         assert.include(warnings[0].message.toLowerCase(), 'expected api name')
       )
       it('has expected location', ->
-        assert.deepEqual(warnings[0].location, [[0, 37]])
+        assert.deepEqual(warnings[0].location, [[0, 12]])
       )
       it('has no origin', ->
         assert.isUndefined(warnings[0].origin)
@@ -321,9 +333,7 @@ describe('compile()', ->
         './expand-uri-template-with-parameters': (args...) ->
           {uri: '/honey?beekeeper=Honza', errors: [], warnings: [message]}
       )
-
-      options = {type: 'refract', generateSourceMap: true}
-      protagonist.parse(apiDescriptionDocument, options, (err, parseResult) ->
+      parse(apiDescriptionDocument, (err, parseResult) ->
         return done(err) if err
         {warnings, transactions} = stubbedCompileFromApiElements(parseResult, null)
         done()
@@ -333,7 +343,7 @@ describe('compile()', ->
     it('is compiled into expected number of transactions', ->
       assert.equal(transactions.length, 1)
     )
-    it('is compiled with a warning', ->
+    it('is compiled with one warning', ->
       assert.equal(warnings.length, 1)
     )
     context('the warning', ->
@@ -386,7 +396,7 @@ describe('compile()', ->
     it('is compiled into zero transactions', ->
       assert.equal(transactions.length, 0)
     )
-    it('is compiled with a warning', ->
+    it('is compiled with one warning', ->
       assert.equal(warnings.length, 1)
     )
     context('the warning', ->
@@ -441,9 +451,7 @@ describe('compile()', ->
         './validate-parameters': (args...) ->
           {errors: [], warnings: [message]}
       )
-
-      options = {type: 'refract', generateSourceMap: true}
-      protagonist.parse(apiDescriptionDocument, options, (err, parseResult) ->
+      parse(apiDescriptionDocument, (err, parseResult) ->
         return done(err) if err
         {warnings, transactions} = stubbedCompileFromApiElements(parseResult, null)
         done()
@@ -453,7 +461,7 @@ describe('compile()', ->
     it('is compiled into expected number of transactions', ->
       assert.equal(transactions.length, 1)
     )
-    it('is compiled with a warning', ->
+    it('is compiled with one warning', ->
       assert.equal(warnings.length, 1)
     )
     context('the warning', ->
@@ -785,6 +793,8 @@ describe('compile()', ->
               properties:
                 value: {type: 'string'}
         body: {type: 'string'}
+      required: ['uri', 'method', 'headers']
+      additionalProperties: false
 
     responseSchema =
       type: 'object'
@@ -798,6 +808,8 @@ describe('compile()', ->
               properties:
                 value: {type: 'string'}
         body: {type: 'string'}
+      required: ['status', 'headers', 'body']
+      additionalProperties: false
 
     originSchema =
       type: 'object'
@@ -808,6 +820,8 @@ describe('compile()', ->
         resourceName: {type: 'string'}
         actionName: {type: 'string'}
         exampleName: {type: 'string'}
+      required: ['filename', 'apiName', 'resourceGroupName', 'resourceName', 'actionName', 'exampleName']
+      additionalProperties: false
 
     pathOriginSchema =
       type: 'object'
@@ -817,6 +831,8 @@ describe('compile()', ->
         resourceName: {type: 'string'}
         actionName: {type: 'string'}
         exampleName: {type: 'string'}
+      required: ['apiName', 'resourceGroupName', 'resourceName', 'actionName', 'exampleName']
+      additionalProperties: false
 
     transactionSchema =
       type: 'object'
@@ -825,6 +841,8 @@ describe('compile()', ->
         response: responseSchema
         origin: originSchema
         pathOrigin: pathOriginSchema
+      required: ['request', 'response', 'origin', 'pathOrigin']
+      additionalProperties: false
 
     schema =
       type: 'object'
@@ -832,6 +850,8 @@ describe('compile()', ->
         transactions: {type: 'array', items: transactionSchema}
         errors: {type: 'array', maxItems: 0} # 0 = no errors occured
         warnings: {type: 'array', maxItems: 0} # 0 = no warnings occured
+      required: ['transactions', 'errors', 'warnings']
+      additionalProperties: false
 
     err = undefined
     compilationResult = undefined
