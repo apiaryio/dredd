@@ -147,6 +147,7 @@ describe('handleRuntimeProblems()', ->
     error = undefined
 
     apiDescriptionDocument = '''
+      FORMAT: 1A
       So Long, and Thanks for All the Fish!
     '''
     filename = 'dummy-filename.apib'
