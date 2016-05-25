@@ -1,131 +1,138 @@
 
-{assert} = require 'chai'
+{assert} = require('chai')
 
-dreddTransactions = require '../../src/dredd-transactions'
+dreddTransactions = require('../../src/dredd-transactions')
 
 
-describe "compiled transaction paths", ->
-  describe "Full notation with multiple request-response pairs", ->
+describe('Dredd Transactions', ->
+  describe('When given no input', ->
+    compilationResult = undefined
 
-    it 'should have expected path', (done) ->
-      code = '''
-      # Some API Name
-
-      ## Group Some Group Name
-
-      ### Some Resource Name [/resource]
-
-      #### Some Action Name [GET]
-
-      + Request (application/json)
-      + Response 200 (application/json)
-
-      + Request (application/xml)
-      + Response 200 (application/xml)
-      '''
-
-      expected = "Some API Name:Some Group Name:Some Resource Name:Some Action Name:Example 2"
-
-      paths = []
-      dreddTransactions.compile(code, null, (err, {transactions}) ->
-        return done(err) if err
-
-        # console.log JSON.stringify transactions, null, 2
-        for transaction in transactions
-          paths.push transaction.path
-        assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
-        done()
+    beforeEach((done) ->
+      dreddTransactions.compile('', null, (args...) ->
+        [err, compilationResult] = args
+        done(err)
       )
+    )
 
+    it('produces one error', ->
+      assert.equal(compilationResult.errors.length, 1)
+    )
+    it('produces no warnings', ->
+      assert.equal(compilationResult.warnings.length, 0)
+    )
+    it('produces no transactions', ->
+      assert.equal(compilationResult.transactions.length, 0)
+    )
+  )
 
+  describe('When given unknown API description format', ->
+    compilationResult = undefined
 
-  describe "Full notation without group", ->
-    it 'should have expected path', (done) ->
-      code = '''
-      # Some API Name
+    apiDescription = '''
+      ... unknown API description format ...
+    '''
 
-      ### Some Resource Name [/resource]
-
-      #### Some Action Name [GET]
-
-      + Request (application/json)
-      + Response 200 (application/json)
-      '''
-
-      expected = "Some API Name::Some Resource Name:Some Action Name:Example 1"
-
-      paths = []
-      dreddTransactions.compile(code, null, (err, {transactions}) ->
-        return done(err) if err
-        for transaction in transactions
-          paths.push transaction.path
-        assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
-        done()
+    beforeEach((done) ->
+      dreddTransactions.compile(apiDescription, null, (args...) ->
+        [err, compilationResult] = args
+        done(err)
       )
+    )
 
-  describe "Full notation without group and API name", ->
-    it 'should have expected path', (done) ->
-      code = '''
-      ### Some Resource Name [/resource]
+    it('produces one error', ->
+      assert.equal(compilationResult.errors.length, 1)
+    )
+    it('produces no warnings', ->
+      assert.equal(compilationResult.warnings.length, 0)
+    )
+    it('produces no transactions', ->
+      assert.equal(compilationResult.transactions.length, 0)
+    )
+  )
 
-      #### Some Action Name [GET]
+  describe('When given erroneous API Blueprint', ->
+    compilationResult = undefined
 
-      + Request (application/json)
-      + Response 200 (application/json)
-      '''
+    apiDescription = '''
+      FORMAT: 1A
+      # Beehive API
+      \t\t
+    '''
 
-      expected = "::Some Resource Name:Some Action Name:Example 1"
-
-      paths = []
-      dreddTransactions.compile(code, null, (err, {transactions}) ->
-        return done(err) if err
-        for transaction in transactions
-          paths.push transaction.path
-        assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
-        done()
+    beforeEach((done) ->
+      dreddTransactions.compile(apiDescription, null, (args...) ->
+        [err, compilationResult] = args
+        done(err)
       )
+    )
 
-  describe "Full notation without group and API name with a colon", ->
-    it 'should have expected path', (done) ->
-      code = '''
-      # My API: Revamp
+    it('produces one error', ->
+      assert.equal(compilationResult.errors.length, 1)
+    )
+    it('produces no warnings', ->
+      assert.equal(compilationResult.warnings.length, 0)
+    )
+    it('produces no transactions', ->
+      assert.equal(compilationResult.transactions.length, 0)
+    )
+  )
 
-      ### Some Resource Name [/resource]
+  describe('When given API Blueprint with warning', ->
+    compilationResult = undefined
 
-      #### Some Action Name [GET]
+    apiDescription = '''
+      FORMAT: 1A
+      # Beehive API
+      ## Honey [/honey]
+      ### Remove [DELETE]
+      + Response
+    '''
 
-      + Request (application/json)
-      + Response 200 (application/json)
-      '''
-
-      expected = "My API\\: Revamp::Some Resource Name:Some Action Name:Example 1"
-
-      paths = []
-      dreddTransactions.compile(code, null, (err, {transactions}) ->
-        return done(err) if err
-        for transaction in transactions
-          paths.push transaction.path
-        assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
-        done()
+    beforeEach((done) ->
+      dreddTransactions.compile(apiDescription, null, (args...) ->
+        [err, compilationResult] = args
+        done(err)
       )
+    )
 
+    it('produces no errors', ->
+      assert.equal(compilationResult.errors.length, 0)
+    )
+    it('produces one warning', ->
+      assert.equal(compilationResult.warnings.length, 1)
+    )
+    it('produces expected number of transactions', ->
+      assert.equal(compilationResult.transactions.length, 1)
+    )
+  )
 
-  describe "simplified notation", ->
-    it 'should have expected path', (done) ->
-      code = '''
-      # GET /message
-      + Response 200 (text/plain)
+  describe('When given valid API Blueprint', ->
+    compilationResult = undefined
 
-            Hello World
-      '''
+    apiDescription = '''
+      FORMAT: 1A
+      # Beehive API
+      ## Honey [/honey]
+      ### Remove [DELETE]
+      + Response 203
+    '''
 
-      expected = "::/message:GET:Example 1"
-
-      paths = []
-      dreddTransactions.compile(code, null, (err, {transactions}) ->
-        return done(err) if err
-        for transaction in transactions
-          paths.push transaction.path
-        assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
-        done()
+    beforeEach((done) ->
+      dreddTransactions.compile(apiDescription, null, (args...) ->
+        [err, compilationResult] = args
+        done(err)
       )
+    )
+
+    it('produces no errors', ->
+      assert.equal(compilationResult.errors.length, 0)
+    )
+    it('produces no warnings', ->
+      assert.equal(compilationResult.warnings.length, 0)
+    )
+    it('produces expected number of transactions', ->
+      assert.equal(compilationResult.transactions.length, 1)
+    )
+  )
+)
