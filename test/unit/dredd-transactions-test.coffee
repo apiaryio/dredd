@@ -58,7 +58,7 @@ describe 'dreddTransactions', ->
 
     filename = '... dummy filename ...'
     apiDescriptionDocument = '''
-      # Dummy API
+      FORMAT: 1A
       ... dummy API Description ...
     '''
     callbackArguments = undefined
