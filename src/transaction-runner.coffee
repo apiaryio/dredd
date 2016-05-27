@@ -514,7 +514,7 @@ class TransactionRunner
         @configuration.emitter.emit 'test error', error, test, () ->
         return callback()
 
-      req.write transaction.request['body'] if transaction.request['body'] != ''
+      req.write(transaction.request.body) if transaction.request.body
       req.end()
     catch error
       test.title = transaction.id
