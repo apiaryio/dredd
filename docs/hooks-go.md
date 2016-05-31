@@ -10,21 +10,49 @@ Go hooks are using [Dredd's hooks handler socket interface](hooks-new-language.m
 
 ```
 $ go get github.com/snikch/goodman
+$ cd $GOPATH/src/github.com/snikch/goodman
+$ go build -o $GOPATH/bin/goodman github.com/snikch/goodman/bin
 ```
 
 ## Usage
 
-Using Dredd with Go is slightly different to other languages, as a binary needs to be compiled for execution. Instead of providing a variety of hookfiles to run, your own binary is built using the Go hooks library `goodman` to run your specific hooks. The path to this binary is passed to dredd via the `--language` flag. You may also need to supply a `--hookfiles` flag to get the tests to run, but the value of this is of no matter (the dredd runner requires it).
+Using Dredd with Go is slightly different to other languages, as a binary needs to be compiled for execution. The --hookfiles flags will be compiled hook binaries.  See below for an example hooks.go file to get an idea of what this would look like.
 
 ```
-$ dredd apiary.apib http://localhost:3000 --language ./my-dredd-hook-server --hookfiles *.go
+$ dredd apiary.apib http://localhost:3000 --server ./go-lang-web-server-to-test --language go --hookfiles ./hook-file-binary
 ```
 
 ## API Reference
 
-You’ll need to know about three things to get your own hook handler up and running.
+In order to get a general idea of how the Go Hooks work, the main executable from the package $GOPATH/bin/goodman is an HTTP Server that Dredd communicates with and an RPC client.  Each hookfile then acts as a corresponding RPC server.  So when Dredd notifies the Hooks server what transaction event is occuring the hooks server will execute all registered hooks on each of the hookfiles RPC servers.
 
-1. A `Runner` is a type that you can define event callbacks on, such as `beforeEach`, `afterAll` etc.
+You’ll need to know a few things about the `Server` type in the hooks package.
+
+1. The `hooks.Server` type is how you can define event callbacks such as `beforeEach`, `afterAll`, etc.
+
+2. To get a `hooks.Server` struct you must do the following
+
+```go
+package main
+
+import (
+    "github.com/snikch/goodman/hooks"
+    trans "github.com/snikch/goodman/transaction"
+)
+
+func main() {
+    h := hooks.NewHooks()
+    server := hooks.NewServer(h)
+
+    // Define all your event callbacks here
+
+    // server.Serve() will block and allow the goodman server to run your defined
+    // event callbacks
+    server.Serve()
+    // You must close the listener at end of main()
+    defer server.Listener.Close()
+}
+```
 
 2. Callbacks receive a `Transaction` instance, or an array of them
 
@@ -55,43 +83,40 @@ package main
 
 import (
     "fmt"
-    "log"
 
-    "github.com/snikch/goodman"
+    "github.com/snikch/goodman/hooks"
+    trans "github.com/snikch/goodman/transaction"
 )
 
 func main() {
-    server := goodman.NewServer(NewRunner())
-    log.Fatal(server.Run())
-}
-
-func NewRunner() *goodman.Runner {
-    runner := goodman.NewRunner()
-    runner.BeforeAll(func(t []*goodman.Transaction) {
-        fmt.Println("before all")
+    h := hooks.NewHooks()
+    server := hooks.NewServer(h)
+    h.BeforeAll(func(t []*trans.Transaction) {
+        fmt.Println("before all modification")
     })
-    runner.BeforeEach(func(t *goodman.Transaction) {
-        fmt.Println("before each")
+    h.BeforeEach(func(t *trans.Transaction) {
+        fmt.Println("before each modification")
     })
-    runner.Before("/message > GET", func(t *goodman.Transaction) {
-        fmt.Println("before /message > GET")
+    h.Before("/message > GET", func(t *trans.Transaction) {
+        fmt.Println("before modification")
     })
-    runner.BeforeEachValidation(func(t *goodman.Transaction) {
-        fmt.Println("before each validation")
+    h.BeforeEachValidation(func(t *trans.Transaction) {
+        fmt.Println("before each validation modification")
     })
-    runner.BeforeValidation("/message > GET", func(t *goodman.Transaction) {
-        fmt.Println("before validation of /message > GET")
+    h.BeforeValidation("/message > GET", func(t *trans.Transaction) {
+        fmt.Println("before validation modification")
     })
-    runner.After("/message > GET", func(t *goodman.Transaction) {
-        fmt.Println("after")
+    h.After("/message > GET", func(t *trans.Transaction) {
+        fmt.Println("after modification")
     })
-    runner.AfterEach(func(t *goodman.Transaction) {
-        fmt.Println("after each")
+    h.AfterEach(func(t *trans.Transaction) {
+        fmt.Println("after each modification")
     })
-    runner.AfterAll(func(t []*goodman.Transaction) {
-        fmt.Println("after all")
+    h.AfterAll(func(t []*trans.Transaction) {
+        fmt.Println("after all modification")
     })
-    return runner
+    server.Serve()
+    defer server.Listener.Close()
 }
 ```
 
@@ -106,18 +131,19 @@ package main
 
 import (
     "fmt"
-    "log"
 
-    "github.com/snikch/goodman"
+    "github.com/snikch/goodman/hooks"
+    trans "github.com/snikch/goodman/transaction"
 )
 
 func main() {
-    runner := goodman.NewRunner()
-    runner.Before("Machines > Machines collection > Get Machines", func(t *goodman.Transaction) {
-      t.Skip = true
+    h := hooks.NewHooks()
+    server := hooks.NewServer(h)
+    h.Before("Machines > Machines collection > Get Machines", func(t *trans.Transaction) {
+        t.Skip = true
     })
-    server := goodman.NewServer(runner)
-    log.Fatal(server.Run())
+    server.Serve()
+    defer server.Listener.Close()
 }
 ```
 
@@ -130,21 +156,22 @@ package main
 
 import (
     "fmt"
-    "log"
 
-    "github.com/snikch/goodman"
+    "github.com/snikch/goodman/hooks"
+    trans "github.com/snikch/goodman/transaction"
 )
 
 func main() {
-    runner := goodman.NewRunner()
-    runner.Before("Machines > Machines collection > Get Machines", func(t *goodman.Transaction) {
-      t.Fail = true
+    h := hooks.NewHooks()
+    server := hooks.NewServer(h)
+    h.Before("Machines > Machines collection > Get Machines", func(t *trans.Transaction) {
+        t.Fail = true
     })
-    runner.Before("Machines > Machines collection > Post Machines", func(t *goodman.Transaction) {
-      t.Fail = "POST is broken"
+    h.Before("Machines > Machines collection > Post  Machines", func(t *trans.Transaction) {
+        t.Fail = "Post is broken"
     })
-    server := goodman.NewServer(runner)
-    log.Fatal(server.Run())
+    server.Serve()
+    defer server.Listener.Close()
 }
 ```
 
@@ -155,51 +182,24 @@ package main
 
 import (
     "fmt"
-    "log"
 
-    "github.com/snikch/goodman"
+    "github.com/snikch/goodman/hooks"
+    trans "github.com/snikch/goodman/transaction"
 )
 
 func main() {
-    runner := goodman.NewRunner()
-    runner.Before("Machines > Machines collection > Get Machines", func(t *goodman.Transaction) {
-      body := map[string]interface{}{}
-      json.Unmarshal([]byte(t.Request.Body), &body)
+    h := hooks.NewHooks()
+    server := hooks.NewServer(h)
+    h.Before("Machines > Machines collection > Get Machines", func(t *trans.Transaction) {
+        body := map[string]interface{}{}
+        json.Unmarshal([]byte(t.Request.Body), &body)
 
-      body["someKey"] = "new value"
+        body["someKey"] = "new value"
 
-      newBody, _ := json.Marshal(body)
-      t.Request.body = string(newBody)
+        newBody, _ := json.Marshal(body)
+        t.Request.body = string(newBody)
     })
-    server := goodman.NewServer(runner)
-    log.Fatal(server.Run())
-}
-```
-
-### Adding or Changing URI Query Parameters for All Requests
-
-```go
-package main
-
-import (
-    "fmt"
-    "log"
-
-    "github.com/snikch/goodman"
-)
-
-func main() {
-    runner := goodman.NewRunner()
-    runner.BeforeEach(func(t *goodman.Transaction) {
-      paramToAdd = "some=param";
-
-      if strings.Contains(t.FullPath, "?") {
-          t.FullPath += "&" + paramToAdd
-      } else {
-          t.FullPath += "?" + paramToAdd
-      }
-    })
-    server := goodman.NewServer(runner)
-    log.Fatal(server.Run())
+    server.Serve()
+    defer server.Listener.Close()
 }
 ```
