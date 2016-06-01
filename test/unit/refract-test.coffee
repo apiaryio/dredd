@@ -1,5 +1,5 @@
 
-{assert} = require('chai')
+{assert} = require('../utils')
 
 refract = require('../../src/refract')
 

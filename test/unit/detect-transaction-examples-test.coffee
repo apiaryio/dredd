@@ -1,5 +1,5 @@
 
-{assert} = require('chai')
+{assert} = require('../utils')
 protagonist = require('protagonist')
 
 detectTransactionExamples = require('../../src/detect-transaction-examples')

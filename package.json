@@ -20,13 +20,14 @@
     "clone": "^1.0.2",
     "fury": "^2.1.0",
     "fury-adapter-apib-parser": "^0.2.0",
-    "fury-adapter-swagger": "^0.8.0-pre.7",
+    "fury-adapter-swagger": "^0.8.0-pre.12",
     "sift": "^3.2.1",
     "traverse": "^0.6.6",
     "uri-template": "^1.0.0"
   },
   "devDependencies": {
-    "chai": "^3.4.1",
+    "chai": "^2",
+    "chai-json-schema": "^1.2.0",
     "coffee-coverage": "^1.0.1",
     "coffee-script": "^1.10.0",
     "coffeelint": "^1.14.2",
@@ -37,6 +38,7 @@
     "protagonist": "",
     "proxyquire": "^1.7.4",
     "sinon": "^1.17.3",
+    "swagger-zoo": "^2.1.0",
     "tv4": "^1.2.7"
   },
   "keywords": [
