@@ -45,6 +45,10 @@ every time because some integration tests use code linked from `lib`. This is
 certainly a flaw and it slows down day-to-day development, but unless we find
 out how to get rid of the `lib` dependency, it's necessary.
 
+Also mind that CoffeeScript is production dependency (not dev dependency),
+because it's needed not only for compiling Dredd package before uploading
+to npm, but also for running user-provided hooks written in CoffeeScript.
+
 ### Testing
 
 Use `npm run test` or just `npm test` to run all tests. Use `npm run test:bdd`

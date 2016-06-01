@@ -1,5 +1,10 @@
 ## Changelog
 
+### v1.1.0-pre.4
+
+**Fixes of regression bugs**
+- [#500](https://github.com/apiaryio/dredd/pull/500) Make coffee-script not a dev dependency (@MitMaro)
+
 ### v1.1.0-pre.3
 
 **Dredd internally migrates from Protagonist to Fury.js**
