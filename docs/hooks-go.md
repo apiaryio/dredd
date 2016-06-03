@@ -16,7 +16,7 @@ $ go build -o $GOPATH/bin/goodman github.com/snikch/goodman/cmd/goodman
 
 ## Usage
 
-Using Dredd with Go is slightly different to other languages, as a binary needs to be compiled for execution. The --hookfiles flags will be compiled hook binaries.  See below for an example hooks.go file to get an idea of what this would look like.
+Using Dredd with Go is slightly different to other languages, as a binary needs to be compiled for execution. The --hookfiles flags should point to compiled hook binaries.  See below for an example hooks.go file to get an idea of what the source file behind the go binary would look like.
 
 ```
 $ dredd apiary.apib http://localhost:3000 --server ./go-lang-web-server-to-test --language go --hookfiles ./hook-file-binary
