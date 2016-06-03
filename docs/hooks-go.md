@@ -168,7 +168,7 @@ func main() {
         t.Fail = true
     })
     h.Before("Machines > Machines collection > Post  Machines", func(t *trans.Transaction) {
-        t.Fail = "Post is broken"
+        t.Fail = "POST is broken"
     })
     server.Serve()
     defer server.Listener.Close()
