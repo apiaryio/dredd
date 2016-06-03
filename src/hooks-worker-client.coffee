@@ -299,7 +299,9 @@ class HooksWorkerClient
       # https://github.com/apiaryio/dredd-hooks-template/blob/master/features/execution_order.feature
       if process.env['TEST_DREDD_HOOKS_HANDLER_ORDER'] == "true"
         console.error 'FOR TESTING ONLY'
-        for mod, index in transactions[0]['hooks_modifications']
+        unless mods = transactions[0]?.hooks_modifications?
+          throw new Error "Hooks must modify transaction.hooks_modifications"
+        for mod, index in mods
           console.error "#{index} #{mod}"
         console.error 'FOR TESTING ONLY'
 
