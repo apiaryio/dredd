@@ -314,6 +314,71 @@ describe 'Hooks worker client', ->
             assert.equal childProcessStub.spawn.getCall(0).args[1][0], 'somefile.py'
             done()
 
+    describe 'when --language go option is given and the worker is not installed', ->
+      beforeEach ->
+          sinon.stub whichStub, 'which', (command) -> false
+
+          runner.hooks['configuration'] =
+            options:
+              language: 'go'
+              hookfiles: 'gobinary'
+      afterEach ->
+          whichStub.which.restore()
+
+      it 'should write a hint how to install', (done) ->
+        loadWorkerClient (err) ->
+          assert.isDefined err
+          assert.include err.message, "go get github.com/snikch/goodman"
+          assert.include err.message, "cd $GOPATH/src/github.com/snikch/goodman"
+          assert.include err.message, "go build -o $GOPATH/bin/goodman github.com/snikch/goodman/cmd/goodman"
+          done()
+
+    describe 'when --language go option is given and the worker is installed', ->
+      beforeEach ->
+        sinon.stub childProcessStub, 'spawn', ->
+          emitter = new EventEmitter
+          emitter.stdout = new EventEmitter
+          emitter.stderr = new EventEmitter
+          emitter
+
+        runner.hooks['configuration'] =
+          options:
+            language: 'go'
+            hookfiles: "gobinary"
+
+        sinon.stub whichStub, 'which', (command) -> true
+
+        sinon.stub HooksWorkerClient.prototype, 'terminateHandler', (callback) ->
+          callback()
+
+      afterEach ->
+        childProcessStub.spawn.restore()
+
+        runner.hooks['configuration'] = undefined
+
+        whichStub.which.restore()
+        HooksWorkerClient.prototype.terminateHandler.restore()
+
+      it 'should spawn the server process with command "$GOPATH/bin/goodman"', (done) ->
+        process.env.GOPATH = 'gopath'
+        loadWorkerClient (err) ->
+          assert.isUndefined err
+
+          hooksWorkerClient.stop (err) ->
+            assert.isUndefined err
+            assert.isTrue childProcessStub.spawn.called
+            assert.equal childProcessStub.spawn.getCall(0).args[0], 'gopath/bin/goodman'
+            done()
+
+      it 'should pass --hookfiles option as an array of arguments', (done) ->
+        loadWorkerClient (err) ->
+          assert.isUndefined err
+
+          hooksWorkerClient.stop (err) ->
+            assert.isUndefined err
+            assert.equal childProcessStub.spawn.getCall(0).args[1][0], 'gobinary'
+            done()
+
     describe 'when --language php option is given and the worker is not installed', ->
       beforeEach ->
         sinon.stub whichStub, 'which', (command) -> false

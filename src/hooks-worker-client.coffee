@@ -133,6 +133,21 @@ class HooksWorkerClient
       '''
       return callback(new Error(msg))
 
+    else if @language == 'go'
+      gopath = process.env.GOPATH
+      @handlerCommand = "#{gopath}/bin/goodman"
+      unless which.which @handlerCommand
+        msg = '''\
+          Go hooks handler server command not found in $GOPATH/bin
+          Install go hooks handler by running:
+          $ go get github.com/snikch/goodman
+          $ cd $GOPATH/src/github.com/snikch/goodman
+          $ go build -o $GOPATH/bin/goodman github.com/snikch/goodman/cmd/goodman
+        '''
+
+        return callback(new Error(msg))
+      else
+        callback()
     else
       @handlerCommand = @language
       unless which.which @handlerCommand
