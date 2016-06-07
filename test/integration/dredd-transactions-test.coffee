@@ -26,7 +26,10 @@ describe('Dredd Transactions', ->
         assert.jsonSchema(compilationResult, schema)
       )
       it('produces warning about falling back to API Blueprint', ->
-        assert.include(compilationResult.warnings[0].message, 'to API Blueprint')
+        assert.include(
+          JSON.stringify(compilationResult.warnings),
+          'to API Blueprint'
+        )
       )
     )
   )
@@ -35,7 +38,7 @@ describe('Dredd Transactions', ->
     compilationResult = undefined
     schema = createCompilationResultSchema(
       errors: 0
-      warnings: 1
+      warnings: true
       transactions: 0
     )
     source = '''
@@ -53,7 +56,10 @@ describe('Dredd Transactions', ->
       assert.jsonSchema(compilationResult, schema)
     )
     it('produces warning about falling back to API Blueprint', ->
-      assert.include(compilationResult.warnings[0].message, 'to API Blueprint')
+      assert.include(
+        JSON.stringify(compilationResult.warnings),
+        'to API Blueprint'
+      )
     )
   )
 
@@ -77,7 +83,10 @@ describe('Dredd Transactions', ->
       assert.jsonSchema(compilationResult, schema)
     )
     it('produces warning about falling back to API Blueprint', ->
-      assert.include(compilationResult.warnings[0].message, 'to API Blueprint')
+      assert.include(
+        JSON.stringify(compilationResult.warnings),
+        'to API Blueprint'
+      )
     )
   )
 
