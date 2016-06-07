@@ -120,4 +120,60 @@ describe('Parsing API description document', ->
       assert.isNull(parseResult)
     )
   )
+
+  describe('Completely unknown document format is treated as API Blueprint', ->
+    error = undefined
+    parseResult = undefined
+
+    beforeEach((done) ->
+      parse('... dummy API description document ...', (args...) ->
+        [error, parseResult] = args
+        done()
+      )
+    )
+
+    it('produces no error', ->
+      assert.isNull(error)
+    )
+    it('produces parse result', ->
+      assert.isObject(parseResult)
+    )
+    it('the parse result contains annotation element', ->
+      assert.include(JSON.stringify(parseResult), '"annotation"')
+    )
+    it('the annotation is a warning', ->
+      assert.include(JSON.stringify(parseResult), '"warning"')
+    )
+    it('the warning is about falling back to API Blueprint', ->
+      assert.include(JSON.stringify(parseResult), 'to API Blueprint')
+    )
+  )
+
+  describe('Unrecognizable API Blueprint is treated as API Blueprint', ->
+    error = undefined
+    parseResult = undefined
+
+    beforeEach((done) ->
+      parse(fixtures.unrecognizable.apiBlueprint, (args...) ->
+        [error, parseResult] = args
+        done()
+      )
+    )
+
+    it('produces no error', ->
+      assert.isNull(error)
+    )
+    it('produces parse result', ->
+      assert.isObject(parseResult)
+    )
+    it('the parse result contains annotation element', ->
+      assert.include(JSON.stringify(parseResult), '"annotation"')
+    )
+    it('the annotation is a warning', ->
+      assert.include(JSON.stringify(parseResult), '"warning"')
+    )
+    it('the warning is about falling back to API Blueprint', ->
+      assert.include(JSON.stringify(parseResult), 'to API Blueprint')
+    )
+  )
 )

@@ -110,6 +110,9 @@ fixtures =
   )
 
   # Specific to API Blueprint
+  unrecognizable: fixture(
+    apiBlueprint: fromFile('./api-blueprint/unrecognizable.apib')
+  )
   missingTitleAnnotation: fixture(
     apiBlueprint: fromFile('./api-blueprint/missing-title-annotation.apib')
   )
