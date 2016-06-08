@@ -9,8 +9,8 @@ describe('Dredd Transactions', ->
   describe('When given no input', ->
     compilationResult = undefined
     schema = createCompilationResultSchema(
-      errors: 1
-      warnings: 0
+      errors: 0
+      warnings: 1
       transactions: 0
     )
 
@@ -22,8 +22,14 @@ describe('Dredd Transactions', ->
         )
       )
 
-      it('produces one error, no warnings, no transactions', ->
+      it('produces no errors, one warning, no transactions', ->
         assert.jsonSchema(compilationResult, schema)
+      )
+      it('produces warning about falling back to API Blueprint', ->
+        assert.include(
+          JSON.stringify(compilationResult.warnings),
+          'to API Blueprint'
+        )
       )
     )
   )
@@ -31,8 +37,8 @@ describe('Dredd Transactions', ->
   describe('When given unknown API description format', ->
     compilationResult = undefined
     schema = createCompilationResultSchema(
-      errors: 1
-      warnings: 0
+      errors: 0
+      warnings: true
       transactions: 0
     )
     source = '''
@@ -46,12 +52,45 @@ describe('Dredd Transactions', ->
       )
     )
 
-    it('produces one error, no warnings, no transactions', ->
+    it('produces no errors, one warning, no transactions', ->
       assert.jsonSchema(compilationResult, schema)
+    )
+    it('produces warning about falling back to API Blueprint', ->
+      assert.include(
+        JSON.stringify(compilationResult.warnings),
+        'to API Blueprint'
+      )
     )
   )
 
-  describe('When given erroneous API description', ->
+  describe('When given unrecognizable API Blueprint format', ->
+    compilationResult = undefined
+    schema = createCompilationResultSchema(
+      errors: 0
+      warnings: true
+      transactions: true
+    )
+    source = fixtures.unrecognizable.apiBlueprint
+
+    beforeEach((done) ->
+      dreddTransactions.compile(source, null, (args...) ->
+        [err, compilationResult] = args
+        done(err)
+      )
+    )
+
+    it('produces no errors, some warnings, some transactions', ->
+      assert.jsonSchema(compilationResult, schema)
+    )
+    it('produces warning about falling back to API Blueprint', ->
+      assert.include(
+        JSON.stringify(compilationResult.warnings),
+        'to API Blueprint'
+      )
+    )
+  )
+
+  describe('When given API description with errors', ->
     compilationResult = undefined
     schema = createCompilationResultSchema(
       errors: true
@@ -73,12 +112,12 @@ describe('Dredd Transactions', ->
     )
   )
 
-  describe('When given API description with warning', ->
+  describe('When given API description with warnings', ->
     compilationResult = undefined
     schema = createCompilationResultSchema(
       errors: 0
       warnings: true
-      transactions: 1
+      transactions: true
     )
 
     fixtures.parserWarning.forEachDescribe(({source}) ->
@@ -89,7 +128,7 @@ describe('Dredd Transactions', ->
         )
       )
 
-      it('produces no errors, some warnings, one transaction', ->
+      it('produces no errors, some warnings, some transactions', ->
         assert.jsonSchema(compilationResult, schema)
       )
     )
