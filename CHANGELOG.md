@@ -1,5 +1,17 @@
 ## Changelog
 
+### v1.1.0-pre.5
+
+**Updated Dredd Transactions (better experimental support for Swagger)**
+- [#516](https://github.com/apiaryio/dredd/pull/516) v1.1.0-pre.5 (@honzajavorek)
+
+**Improvements related to Go hooks**
+- [#505](https://github.com/apiaryio/dredd/pull/505) Update docs and hooks worker client for go hooks (@ddelnano)
+- [#511](https://github.com/apiaryio/dredd/pull/511) Add helpful error message if dredd hooks fail to modify transaction (@ddelnano)
+
+**Removed support for io.js**
+- [#514](https://github.com/apiaryio/dredd/pull/514) Remove iojs-2 (@pksunkara)
+
 ### v1.1.0-pre.4
 
 **Fixes of regression bugs**
