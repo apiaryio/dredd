@@ -1,4 +1,7 @@
 
+sinon = require('sinon')
+proxyquire = require('proxyquire').noPreserveCache()
+
 fixtures = require('../fixtures')
 {assert} = require('../utils')
 createCompilationResultSchema = require('../schemas/compilation-result')
@@ -152,6 +155,38 @@ describe('Dredd Transactions', ->
 
       it('produces no errors, no warnings, some transactions', ->
         assert.jsonSchema(compilationResult, schema)
+      )
+    )
+  )
+
+  describe('When parser unexpectedly provides just error and no API Elements', ->
+    compilationResult = undefined
+    schema = createCompilationResultSchema(
+      errors: 1
+      warnings: 0
+      transactions: 0
+    )
+    source = '... dummy API description document ...'
+    message = '... dummy error message ...'
+
+    beforeEach((done) ->
+      dt = proxyquire('../../src/dredd-transactions',
+        './parse': (input, callback) ->
+          callback(new Error(message))
+      )
+      dt.compile(source, null, (args...) ->
+        [err, compilationResult] = args
+        done(err)
+      )
+    )
+
+    it('produces one error, no warnings, no transactions', ->
+      assert.jsonSchema(compilationResult, schema)
+    )
+    it('turns the parser error into a valid annotation', ->
+      assert.include(
+        JSON.stringify(compilationResult.errors),
+        message
       )
     )
   )
