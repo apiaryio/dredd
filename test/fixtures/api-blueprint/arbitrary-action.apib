@@ -1,0 +1,23 @@
+FORMAT: 1A
+
+# My API
+
+## Resource [/resource/{id}]
+
++ Parameters
+    + id: 1 (number)
+
+### Normal Action [GET]
+
++ Response 200 (text/plain)
+
+        Woof
+
+## Arbitrary Action [POST /arbitrary/{param}]
+
++ Parameters
+    + param: sample (string) - Parameter not present under resource section.
+
++ Response 200 (text/plain)
+
+        Moo

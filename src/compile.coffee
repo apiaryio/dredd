@@ -128,17 +128,21 @@ compileParameters = (hrefVariables) ->
     types = (content(member.attributes?.typeAttributes) or [])
 
     if value?.element is 'enum'
-      if value.attributes?.default?.length
-        example = content(value.attributes.default[0])
+      if value.attributes?.samples?.length and value.attributes?.samples[0].length
+        exampleValue = content(value.attributes.samples[0][0])
       else
-        example = content(content(value)[0])
+        exampleValue = content(content(value)[0])
+      if value.attributes?.default?.length
+        defaultValue = content(value.attributes.default[0])
     else
-      example = content(value)
+      exampleValue = content(value)
+      if value.attributes?.default
+        defaultValue = content(value.attributes?.default)
 
     parameters[name] =
       required: 'required' in types
-      default: content(value.attributes?.default)
-      example: example
+      default: defaultValue
+      example: exampleValue
       values: if value?.element is 'enum' then ({value: content(v)} for v in content(value)) else []
   parameters
 
@@ -165,11 +169,11 @@ compileOrigin = (filename, parseResult, httpTransaction) ->
     exampleName = ''
 
   {
-    filename: filename or null
-    apiName: content(api.meta?.title) or filename or null
-    resourceGroupName: content(resourceGroup?.meta?.title)
-    resourceName: content(resource.meta?.title) or content(resource.attributes?.href)
-    actionName: content(transition.meta?.title) or content(httpRequest.attributes.method)
+    filename: filename or ''
+    apiName: content(api.meta?.title) or filename or ''
+    resourceGroupName: content(resourceGroup?.meta?.title) or ''
+    resourceName: content(resource.meta?.title) or content(resource.attributes?.href) or ''
+    actionName: content(transition.meta?.title) or content(httpRequest.attributes.method) or ''
     exampleName
   }
 
@@ -182,10 +186,10 @@ compilePathOrigin = (filename, parseResult, httpTransaction) ->
   httpRequest = child(httpTransaction, {element: 'httpRequest'})
 
   {
-    apiName: content(api.meta?.title)
-    resourceGroupName: content(resourceGroup?.meta?.title)
-    resourceName: content(resource.meta?.title) or content(resource.attributes?.href)
-    actionName: content(transition.meta?.title) or content(httpRequest.attributes.method)
+    apiName: content(api.meta?.title) or ''
+    resourceGroupName: content(resourceGroup?.meta?.title) or ''
+    resourceName: content(resource.meta?.title) or content(resource.attributes?.href) or ''
+    actionName: content(transition.meta?.title) or content(httpRequest.attributes.method) or ''
     exampleName: "Example #{httpTransaction.attributes.example}"
   }
 

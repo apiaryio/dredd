@@ -1,101 +1,95 @@
 
-fs = require('fs')
-path = require('path')
 sinon = require('sinon')
 fury = require('fury')
-{assert} = require('chai')
+{assert} = require('../utils')
 
+fixtures = require('../fixtures')
 parse = require('../../src/parse')
 
 
 describe('Parsing API description document', ->
-  fixturesDir = path.join(__dirname, '..', 'fixtures')
+  describe('Valid document gets correctly parsed', ->
+    fixtures.ordinary.forEachDescribe(({source}) ->
+      error = undefined
+      parseResult = undefined
 
-  describe('Valid API Blueprint document gets correctly parsed', ->
-    fixture = path.join(fixturesDir, 'parse.apib')
-    apiDescriptionDocument = fs.readFileSync(fixture, 'utf-8')
-
-    error = undefined
-    parseResult = undefined
-
-    beforeEach((done) ->
-      parse(apiDescriptionDocument, (args...) ->
-        [error, parseResult] = args
-        done()
+      beforeEach((done) ->
+        parse(source, (args...) ->
+          [error, parseResult] = args
+          done()
+        )
       )
-    )
 
-    it('produces no error', ->
-      assert.isNull(error)
-    )
-    it('produces parse result', ->
-      assert.isObject(parseResult)
-    )
-    it('the parse result is in the API Elements format', ->
-      assert.equal(parseResult.element, 'parseResult')
-      assert.isArray(parseResult.content)
-    )
-    it('the parse result contains no annotation elements', ->
-      assert.notInclude(JSON.stringify(parseResult), '"annotation"')
-    )
-    it('the parse result contains source map elements', ->
-      assert.include(JSON.stringify(parseResult), '"sourceMap"')
+      it('produces no error', ->
+        assert.isNull(error)
+      )
+      it('produces parse result', ->
+        assert.isObject(parseResult)
+      )
+      it('the parse result is in the API Elements format', ->
+        assert.equal(parseResult.element, 'parseResult')
+        assert.isArray(parseResult.content)
+      )
+      it('the parse result contains no annotation elements', ->
+        assert.notInclude(JSON.stringify(parseResult), '"annotation"')
+      )
+      it('the parse result contains source map elements', ->
+        assert.include(JSON.stringify(parseResult), '"sourceMap"')
+      )
     )
   )
 
-  describe('Invalid API Blueprint document causes error', ->
-    fixture = path.join(fixturesDir, 'parse-error.apib')
-    apiDescriptionDocument = fs.readFileSync(fixture, 'utf-8')
+  describe('Invalid document causes error', ->
+    fixtures.parserError.forEachDescribe(({source}) ->
+      error = undefined
+      parseResult = undefined
 
-    error = undefined
-    parseResult = undefined
-
-    beforeEach((done) ->
-      parse(apiDescriptionDocument, (args...) ->
-        [error, parseResult] = args
-        done()
+      beforeEach((done) ->
+        parse(source, (args...) ->
+          [error, parseResult] = args
+          done()
+        )
       )
-    )
 
-    it('produces error', ->
-      assert.instanceOf(error, Error)
-    )
-    it('produces parse result', ->
-      assert.isObject(parseResult)
-    )
-    it('the parse result contains annotation element', ->
-      assert.include(JSON.stringify(parseResult), '"annotation"')
-    )
-    it('the annotation is an error', ->
-      assert.include(JSON.stringify(parseResult), '"error"')
+      it('produces error', ->
+        assert.instanceOf(error, Error)
+      )
+      it('produces parse result', ->
+        assert.isObject(parseResult)
+      )
+      it('the parse result contains annotation element', ->
+        assert.include(JSON.stringify(parseResult), '"annotation"')
+      )
+      it('the annotation is an error', ->
+        assert.include(JSON.stringify(parseResult), '"error"')
+      )
     )
   )
 
-  describe('Defective API Blueprint document causes warning', ->
-    fixture = path.join(fixturesDir, 'parse-warning.apib')
-    apiDescriptionDocument = fs.readFileSync(fixture, 'utf-8')
+  describe('Defective document causes warning', ->
+    fixtures.parserWarning.forEachDescribe(({source}) ->
+      error = undefined
+      parseResult = undefined
 
-    error = undefined
-    parseResult = undefined
-
-    beforeEach((done) ->
-      parse(apiDescriptionDocument, (args...) ->
-        [error, parseResult] = args
-        done()
+      beforeEach((done) ->
+        parse(source, (args...) ->
+          [error, parseResult] = args
+          done()
+        )
       )
-    )
 
-    it('produces no error', ->
-      assert.isNull(error)
-    )
-    it('produces parse result', ->
-      assert.isObject(parseResult)
-    )
-    it('the parse result contains annotation element', ->
-      assert.include(JSON.stringify(parseResult), '"annotation"')
-    )
-    it('the annotation is a warning', ->
-      assert.include(JSON.stringify(parseResult), '"warning"')
+      it('produces no error', ->
+        assert.isNull(error)
+      )
+      it('produces parse result', ->
+        assert.isObject(parseResult)
+      )
+      it('the parse result contains annotation element', ->
+        assert.include(JSON.stringify(parseResult), '"annotation"')
+      )
+      it('the annotation is a warning', ->
+        assert.include(JSON.stringify(parseResult), '"warning"')
+      )
     )
   )
 

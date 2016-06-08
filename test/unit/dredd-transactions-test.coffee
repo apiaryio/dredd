@@ -4,11 +4,10 @@ path = require 'path'
 {assert} = require 'chai'
 sinon = require 'sinon'
 dreddTransactions = require '../../src/dredd-transactions'
-ast = require '../fixtures/blueprint-ast'
 
 
 describe 'dreddTransactions', ->
-  filename = path.join __dirname, '../fixtures/blueprint.apib'
+  filename = path.join __dirname, '../fixtures/api-blueprint/ordinary.apib'
   apiDescriptionDocument = fs.readFileSync(filename).toString()
 
   it 'exports an object', ->
@@ -20,7 +19,7 @@ describe 'dreddTransactions', ->
 
     it 'returns an object', (done) ->
       dreddTransactions.compile(apiDescriptionDocument, null, (err, result) ->
-        assert.isNotOk err
+        assert.notOk err
         assert.isObject result
         done()
       )
@@ -28,7 +27,7 @@ describe 'dreddTransactions', ->
     describe 'returned object', ->
       returnedObject = null
       beforeEach (done) ->
-        dreddTransactions.compile(apiDescriptionDocument, './apiary.apibs', (err, result) ->
+        dreddTransactions.compile(apiDescriptionDocument, './apiDescription.apibs', (err, result) ->
           returnedObject = result
           done()
         )

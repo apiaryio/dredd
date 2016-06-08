@@ -1,12 +1,10 @@
-module.exports = (transaction) ->
-  origin = transaction['origin']
 
-  name = ''
-  name += origin['apiName']
-  name += ' > '
-  name += origin['resourceGroupName'] if origin['resourceGroupName'] isnt ''
-  name += ' > ' if  origin['resourceGroupName'] isnt ''
-  name += origin['resourceName'] if origin['resourceName']
-  name += ' > ' + origin['actionName'] if origin['actionName']
-  name += ' > ' + origin['exampleName'] if origin['exampleName']
-  name
+module.exports = (transaction) ->
+  origin = transaction.origin
+  segments = []
+  segments.push(origin.apiName) if origin.apiName
+  segments.push(origin.resourceGroupName) if origin.resourceGroupName
+  segments.push(origin.resourceName) if origin.resourceName
+  segments.push(origin.actionName) if origin.actionName
+  segments.push(origin.exampleName) if origin.exampleName
+  segments.join(' > ')
