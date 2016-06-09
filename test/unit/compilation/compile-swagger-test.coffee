@@ -8,7 +8,6 @@ describe('compile() · Swagger', ->
   locationSchema = createLocationSchema()
 
   describe('causing a \'not specified in URI Template\' error', ->
-    err = undefined
     errors = undefined
     transactions = undefined
 
@@ -41,6 +40,54 @@ describe('compile() · Swagger', ->
       )
       it('has no origin', ->
         assert.isUndefined(errors[0].origin)
+      )
+    )
+  )
+
+  describe('with \'produces\'', ->
+    request = undefined
+    response = undefined
+
+    beforeEach((done) ->
+      compileFixture(fixtures.produces.swagger, (args...) ->
+        [err, {transactions}] = args
+        {request, response} = transactions[0]
+        done(err)
+      )
+    )
+
+    context('compiles a transaction', ->
+      it('with expected request headers', ->
+        assert.deepEqual(request.headers, {
+          'Accept': {value: 'application/json'}
+        })
+      )
+      it('with expected response headers', ->
+        assert.deepEqual(response.headers, {})
+      )
+    )
+  )
+
+  describe('with \'consumes\'', ->
+    request = undefined
+    response = undefined
+
+    beforeEach((done) ->
+      compileFixture(fixtures.consumes.swagger, (args...) ->
+        [err, {transactions}] = args
+        {request, response} = transactions[0]
+        done(err)
+      )
+    )
+
+    context('compiles a transaction', ->
+      it('with expected request headers', ->
+        assert.deepEqual(request.headers, {
+          'Content-Type': {value: 'application/json'}
+        })
+      )
+      it('with expected response headers', ->
+        assert.deepEqual(response.headers, {})
       )
     )
   )

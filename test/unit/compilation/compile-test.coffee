@@ -10,9 +10,32 @@ describe('compile() · all API description formats', ->
   locationSchema = createLocationSchema()
   originSchema = createOriginSchema()
 
+  describe('ordinary, valid API description', ->
+    compilationResult = undefined
+    filename = 'apiDescription.ext'
+
+    compilationResultSchema = createCompilationResultSchema({
+      filename
+      transactions: true
+      paths: false
+    })
+
+    fixtures.ordinary.forEachDescribe(({source}) ->
+      beforeEach((done) ->
+        compileFixture(source, {filename}, (args...) ->
+          [err, compilationResult] = args
+          done(err)
+        )
+      )
+
+      it('is compiled into a compilation result of expected structure', ->
+        assert.jsonSchema(compilationResult, compilationResultSchema)
+      )
+    )
+  )
+
   describe('causing an error in the parser', ->
     fixtures.parserError.forEachDescribe(({source}) ->
-      err = undefined
       errors = undefined
       transactions = undefined
 
@@ -56,7 +79,6 @@ describe('compile() · all API description formats', ->
     # Mind that situations when parser gives the warning and when this error
     # is thrown can differ and also the severity is different.
 
-    err = undefined
     errors = undefined
     transactions = undefined
 
@@ -95,7 +117,6 @@ describe('compile() · all API description formats', ->
   )
 
   describe('causing an error in URI validation', ->
-    err = undefined
     errors = undefined
     transactions = undefined
 
@@ -135,7 +156,6 @@ describe('compile() · all API description formats', ->
 
   describe('causing a warning in the parser', ->
     fixtures.parserWarning.forEachDescribe(({source}) ->
-      err = undefined
       warnings = undefined
       transactions = undefined
 
@@ -178,7 +198,6 @@ describe('compile() · all API description formats', ->
     # warnings as of now (but were in the past and could be in the future),
     # we need to pretend it's possible in this test.
 
-    err = undefined
     warnings = undefined
     transactions = undefined
     message = '... dummy warning message ...'
@@ -226,7 +245,6 @@ describe('compile() · all API description formats', ->
     # Special side effect of the warning is that affected transactions
     # should be skipped (shouldn't appear in output of the compilation).
 
-    err = undefined
     warnings = undefined
     transactions = undefined
 
@@ -269,7 +287,6 @@ describe('compile() · all API description formats', ->
     # (but could in the future), we need to pretend it's possible for this
     # test.
 
-    err = undefined
     warnings = undefined
     transactions = undefined
     message = '... dummy warning message ...'
@@ -314,7 +331,6 @@ describe('compile() · all API description formats', ->
   )
 
   describe('with enum parameter', ->
-    err = undefined
     transaction = undefined
 
     fixtures.enumParameter.forEachDescribe(({source}) ->
@@ -322,7 +338,7 @@ describe('compile() · all API description formats', ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           transaction = compilationResult.transactions[0]
-          done()
+          done(err)
         )
       )
 
@@ -333,7 +349,6 @@ describe('compile() · all API description formats', ->
   )
 
   describe('with response schema', ->
-    err = undefined
     transaction = undefined
 
     fixtures.responseSchema.forEachDescribe(({source}) ->
@@ -341,7 +356,7 @@ describe('compile() · all API description formats', ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           transaction = compilationResult.transactions[0]
-          done()
+          done(err)
         )
       )
 
@@ -357,7 +372,6 @@ describe('compile() · all API description formats', ->
   )
 
   describe('with inheritance of URI parameters', ->
-    err = undefined
     transaction = undefined
 
     fixtures.parametersInheritance.forEachDescribe(({source}) ->
@@ -365,7 +379,7 @@ describe('compile() · all API description formats', ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           transaction = compilationResult.transactions[0]
-          done()
+          done(err)
         )
       )
 
@@ -376,7 +390,6 @@ describe('compile() · all API description formats', ->
   )
 
   describe('with different default value and first enum value of URI parameter', ->
-    err = undefined
     transaction = undefined
 
     fixtures.preferDefault.forEachDescribe(({source}) ->
@@ -384,7 +397,7 @@ describe('compile() · all API description formats', ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           transaction = compilationResult.transactions[0]
-          done()
+          done(err)
         )
       )
 
@@ -394,27 +407,31 @@ describe('compile() · all API description formats', ->
     )
   )
 
-  describe('valid API description', ->
-    err = undefined
-    compilationResult = undefined
-    filename = 'apiDescription.ext'
+  describe('with HTTP headers', ->
+    transaction = undefined
 
-    compilationResultSchema = createCompilationResultSchema({
-      filename
-      transactions: true
-      paths: false
-    })
-
-    fixtures.ordinary.forEachDescribe(({source}) ->
+    fixtures.httpHeaders.forEachDescribe(({source}) ->
       beforeEach((done) ->
-        compileFixture(source, {filename}, (args...) ->
+        compileFixture(source, (args...) ->
           [err, compilationResult] = args
-          done()
+          transaction = compilationResult.transactions[0]
+          done(err)
         )
       )
 
-      it('is compiled into a compilation result of expected structure', ->
-        assert.jsonSchema(compilationResult, compilationResultSchema)
+      context('compiles a transaction', ->
+        it('with expected request headers', ->
+          assert.deepEqual(transaction.request.headers, {
+            'Content-Type': {value: 'application/json'}
+            'Accept': {value: 'application/json'}
+          })
+        )
+        it('with expected response headers', ->
+          assert.deepEqual(transaction.response.headers, {
+            'Content-Type': {value: 'application/json'}
+            'X-Test': {value: 'Adam'}
+          })
+        )
       )
     )
   )

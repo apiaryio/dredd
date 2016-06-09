@@ -10,7 +10,6 @@ describe('compile() · API Blueprint', ->
   originSchema = createOriginSchema()
 
   describe('causing a \'missing title\' warning', ->
-    err = undefined
     warnings = undefined
     transactions = undefined
 
@@ -50,7 +49,6 @@ describe('compile() · API Blueprint', ->
     # The warning was previously handled by compiler, but now parser should
     # already provide the same kind of warning.
 
-    err = undefined
     warnings = undefined
     transactions = undefined
 
@@ -88,7 +86,6 @@ describe('compile() · API Blueprint', ->
   )
 
   describe('with multiple transaction examples', ->
-    err = undefined
     transactions = undefined
     exampleNumbersPerTransaction = [1, 1, 2]
 
@@ -96,7 +93,7 @@ describe('compile() · API Blueprint', ->
       compileFixture(fixtures.multipleTransactionExamples.apiBlueprint, (args...) ->
         [err, compilationResult] = args
         transactions = compilationResult.transactions
-        done()
+        done(err)
       )
     )
 
@@ -116,7 +113,6 @@ describe('compile() · API Blueprint', ->
   )
 
   describe('without multiple transaction examples', ->
-    err = undefined
     compilationResult = undefined
     transaction = undefined
 
@@ -124,7 +120,7 @@ describe('compile() · API Blueprint', ->
       compileFixture(fixtures.oneTransactionExample.apiBlueprint, (args...) ->
         [err, compilationResult] = args
         transaction = compilationResult.transactions[0]
-        done()
+        done(err)
       )
     )
 
@@ -142,7 +138,6 @@ describe('compile() · API Blueprint', ->
   )
 
   describe('with arbitrary action', ->
-    err = undefined
     transaction0 = undefined
     transaction1 = undefined
     filename = 'apiDescription.apib'
@@ -151,7 +146,7 @@ describe('compile() · API Blueprint', ->
       compileFixture(fixtures.arbitraryAction.apiBlueprint, {filename}, (args...) ->
         [err, compilationResult] = args
         [transaction0, transaction1] = compilationResult.transactions
-        done()
+        done(err)
       )
     )
 
@@ -175,7 +170,6 @@ describe('compile() · API Blueprint', ->
   )
 
   describe('without sections', ->
-    err = undefined
     transaction = undefined
     filename = 'apiDescription.apib'
 
@@ -183,7 +177,7 @@ describe('compile() · API Blueprint', ->
       compileFixture(fixtures.withoutSections.apiBlueprint, {filename}, (args...) ->
         [err, compilationResult] = args
         transaction = compilationResult.transactions[0]
-        done()
+        done(err)
       )
     )
 
@@ -219,14 +213,13 @@ describe('compile() · API Blueprint', ->
   )
 
   describe('with different sample and default value of URI parameter', ->
-    err = undefined
     transaction = undefined
 
     beforeEach((done) ->
       compileFixture(fixtures.preferSample.apiBlueprint, (args...) ->
         [err, compilationResult] = args
         transaction = compilationResult.transactions[0]
-        done()
+        done(err)
       )
     )
 
