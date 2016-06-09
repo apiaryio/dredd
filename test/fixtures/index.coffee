@@ -58,7 +58,7 @@ fixture = (apiDescriptions) ->
 #     source = fixtures.parserError.apiBlueprint
 #
 fixtures =
-  # Supported by all API description formats
+  # Supported by both API description formats
   empty: fixture(
     apiBlueprint: ''
     swagger: ''
@@ -95,7 +95,6 @@ fixtures =
     apiBlueprint: fromFile('./api-blueprint/enum-parameter.apib')
     swagger: fromFile('./swagger/enum-parameter.yml')
   )
-
   responseSchema: fixture(
     apiBlueprint: fromFile('./api-blueprint/response-schema.apib')
     swagger: fromSwaggerZoo('schema-reference')
@@ -107,6 +106,10 @@ fixtures =
   preferDefault: fixture(
     apiBlueprint: fromFile('./api-blueprint/prefer-default.apib')
     swagger: fromFile('./swagger/prefer-default.yml')
+  )
+  httpHeaders: fixture(
+    apiBlueprint: fromFile('./api-blueprint/http-headers.apib')
+    swagger: fromFile('./swagger/http-headers.yml')
   )
 
   # Specific to API Blueprint
@@ -130,6 +133,14 @@ fixtures =
   )
   preferSample: fixture(
     apiBlueprint: fromFile('./api-blueprint/prefer-sample.apib')
+  )
+
+  # Specific to Swagger
+  produces: fixture(
+    swagger: fromSwaggerZoo('produces-header')
+  )
+  consumes: fixture(
+    swagger: fromFile('./swagger/consumes.yml')
   )
 
 
