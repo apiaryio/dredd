@@ -2,6 +2,13 @@
 
 Dredd works by taking your API description document, creating expectations based on the requests and responses in the description, making requests to your API, and seeing if the responses match. Dredd automatically builds these expectations from the API description every time the tests are run.
 
+## Versioning
+
+Dredd follows [Semantic Versioning][]. To ensure certain stability of your Dredd installation (e.g. in CI), pin the version accordingly. You can also use release tags:
+
+- `npm install dredd` - Installs the latest published version including experimental pre-release versions.
+- `npm install dredd@stable` - Skips experimental pre-release versions. Recommended for CI installations.
+
 ## Automatic Expectations
 
 Dredd automatically generates expectations on HTTP responses based on examples in the API description with use of [Gavel.js](https://github.com/apiaryio/gavel.js) library. Please refer to [Gavel](https://www.relishapp.com/apiary/gavel/docs) rules if you want know more.
@@ -367,6 +374,7 @@ info: Resource > Update resource > Example 1
 info: Resource > Update resource > Example 2
 ```
 
+[Semantic Versioning]: http://semver.org/
 [API Blueprint]: http://apiblueprint.org/
 [Travis CI]: https://travis-ci.org/
 [Gavel.js]: https://github.com/apiaryio/gavel.js
