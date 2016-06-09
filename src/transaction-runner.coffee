@@ -81,7 +81,6 @@ class TransactionRunner
             # - runs beforeValidation hooks
             # - runs Gavel validation
             @executeTransaction transaction, hooks, () =>
-
               return iterationCallback(@hookHandlerError) if @hookHandlerError?
 
               # run afterEach hooks

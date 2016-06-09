@@ -7,6 +7,8 @@
     "dredd": "bin/dredd"
   },
   "scripts": {
+    "postinstall": "coffee ./scripts/print-installation-guidelines.coffee",
+    "postupdate": "coffee ./scripts/print-installation-guidelines.coffee",
     "changelist": "github-changes -o apiaryio -r dredd --only-pulls --use-commit-body --file CHANGELOG-Generated.md -a",
     "lint": "coffeelint ./src",
     "docs:build": "mkdocs build",
@@ -31,6 +33,7 @@
     "chai": "^3.4.1",
     "clone": "^1.0.0",
     "coffee-script": "^1.10.0",
+    "colors": "^1.1.2",
     "dredd-transactions": "^1.2.0",
     "file": "~0.2.2",
     "gavel": "0.5.2",
