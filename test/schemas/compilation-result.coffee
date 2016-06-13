@@ -21,6 +21,10 @@ module.exports = (options = {}) ->
   warnings = options.warnings or 0
   transactions = options.transactions or 0
 
+  # Either false (= no media type property should be present) or it
+  # will default to true (= structure must contain media type property)
+  mediaType = if options.mediaType is false then false else true
+
   # Either false (= no transaction names and paths should be present) or it
   # will default to true (= structure must contain transaction names and paths)
   paths = if options.paths is false then false else true
@@ -75,16 +79,19 @@ module.exports = (options = {}) ->
     transactionSchema.properties.path = {type: 'string'}
     transactionSchema.required.push('path')
 
-  transactionsSchema = addMinMax({type: 'array', items: transactionSchema}, transactions)
-  errorsSchema = addMinMax({type: 'array'}, errors)
-  warningsSchema = addMinMax({type: 'array'}, warnings)
+  properties =
+    transactions: addMinMax({type: 'array', items: transactionSchema}, transactions)
+    errors: addMinMax({type: 'array'}, errors)
+    warnings: addMinMax({type: 'array'}, warnings)
+  required = ['transactions', 'errors', 'warnings']
+
+  if mediaType
+    properties.mediaType = {anyOf: [{type: 'string'}, {type: 'null'}]}
+    required.push('mediaType')
 
   {
     type: 'object'
-    properties:
-      transactions: transactionsSchema
-      errors: errorsSchema
-      warnings: warningsSchema
-    required: ['transactions', 'errors', 'warnings']
+    properties
+    required
     additionalProperties: false
   }
