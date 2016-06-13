@@ -43,20 +43,6 @@ describe 'CLI - API Description Document', ->
 
   describe 'When loaded from file', ->
 
-    describe 'When successfully loaded', ->
-      dreddCommand = undefined
-      args = ['./test/fixtures/single-get.apib', "http://localhost:#{PORT}"]
-
-      beforeEach (done) ->
-        execDredd args, (err, commandInfo) ->
-          dreddCommand = commandInfo
-          done(err)
-
-      it 'should request /machines', ->
-        assert.deepEqual server.requestCounts, {'/machines': 1}
-      it 'should exit with status 0', ->
-        assert.equal dreddCommand.exitStatus, 0
-
     describe 'When loaded by glob pattern', ->
       dreddCommand = undefined
       args = ['./test/fixtures/single-g*t.apib', "http://localhost:#{PORT}"]
@@ -104,40 +90,6 @@ describe 'CLI - API Description Document', ->
         assert.equal dreddCommand.exitStatus, 1
       it 'should print error message to stderr', ->
         assert.include dreddCommand.stderr, 'Error when reading file'
-
-    describe 'When API description is loaded with errors', ->
-      dreddCommand = undefined
-      args = [
-        './test/fixtures/error-blueprint.apib'
-        "http://localhost:#{PORT}"
-      ]
-
-      beforeEach (done) ->
-        execDredd args, (err, commandInfo) ->
-          dreddCommand = commandInfo
-          done(err)
-
-      it 'should exit with status 1', ->
-        assert.equal dreddCommand.exitStatus, 1
-      it 'should print error message to stderr', ->
-        assert.include dreddCommand.stderr, 'Error when processing API description'
-
-    describe 'When API description is loaded with warnings', ->
-      dreddCommand = undefined
-      args = [
-        './test/fixtures/warning-ambiguous.apib'
-        "http://localhost:#{PORT}"
-      ]
-
-      beforeEach (done) ->
-        execDredd args, (err, commandInfo) ->
-          dreddCommand = commandInfo
-          done(err)
-
-      it 'should exit with status 0', ->
-        assert.equal dreddCommand.exitStatus, 0
-      it 'should print warning to stdout', ->
-        assert.include dreddCommand.stdout, 'warn: Compilation warning'
 
 
   describe 'When loaded from URL', ->

@@ -1,0 +1,12 @@
+swagger: '2.0'
+info:
+  title: Machines API
+paths:
+  '/machines':
+    x-summary: Machines Collection
+    get:
+      summary: Get Machines
+      responses:
+        200:
+          schema:
+            type: array
