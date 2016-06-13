@@ -27,7 +27,7 @@ compile = (input, filename, callback) ->
     # in any case.
     try
       {mediaType, apiElements} = parseResult
-      result = compileFromApiElements(apiElements, filename)
+      result = compileFromApiElements(mediaType, apiElements, filename)
     catch err
       return callback(err)
 

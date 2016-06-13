@@ -7,7 +7,7 @@ detectTransactionExamples = require('./detect-transaction-examples')
 expandUriTemplateWithParameters = require('./expand-uri-template-with-parameters')
 
 
-compile = (parseResult, filename) ->
+compile = (mediaType, parseResult, filename) ->
   transactions = []
   errors = []
   warnings = []
@@ -22,7 +22,8 @@ compile = (parseResult, filename) ->
       location: content(child(annotation.attributes?.sourceMap, {element: 'sourceMap'}))
     })
 
-  children(parseResult, {element: 'transition'}).map(detectTransactionExamples)
+  if mediaType is 'text/vnd.apiblueprint'
+    children(parseResult, {element: 'transition'}).map(detectTransactionExamples)
 
   for httpTransaction in children(parseResult, {element: 'httpTransaction'})
     resource = parent(httpTransaction, parseResult, {element: 'resource'})

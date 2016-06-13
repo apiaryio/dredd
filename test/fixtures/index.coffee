@@ -142,6 +142,9 @@ fixtures =
   consumes: fixture(
     swagger: fromFile('./swagger/consumes.yml')
   )
+  multipleResponses: fixture(
+    swagger: fromFile('./swagger/multiple-responses.yml')
+  )
 
 
 module.exports = fixtures
