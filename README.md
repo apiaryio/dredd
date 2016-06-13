@@ -74,6 +74,7 @@ dt.compile('# My API\n...', 'apiary.apib', function (error, compilationResult) {
 
 Result of compilation. Alongside compiled [Transaction][transaction-object-spec] objects contains also errors and warnings, mainly from API description parser.
 
+- `mediaType`: `text/vnd.apiblueprint` (string, default, nullable) - Media type of the input format, defaults to API Blueprint format. Can be empty in case of some fatal errors.
 - `transactions` (array[[Transaction][transaction-object-spec]]) - Compiled _HTTP Transactions_.
 - `errors` (array[[Annotation][annotation-object-spec]]) - Errors which occurred during parsing of the API description or during compilation of transactions.
 - `warnings` (array[[Annotation][annotation-object-spec]]) - Warnings which occurred during parsing of the API description or during compilation of transactions.

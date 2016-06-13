@@ -18,6 +18,7 @@ describe('compile() · all API description formats', ->
       filename
       transactions: true
       paths: false
+      mediaType: false
     })
 
     fixtures.ordinary.forEachDescribe(({source}) ->
