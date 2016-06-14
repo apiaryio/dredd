@@ -1,8 +1,17 @@
 ## Changelog
 
+### v1.1.0-pre.6
+
+**Changes in how Dredd uses npm release tags**
+- [#520](https://github.com/apiaryio/dredd/pull/520) Introducing the stable tag (@honzajavorek)
+
+**Experimental support for Swagger**
+- [#521](https://github.com/apiaryio/dredd/pull/521) Added integration tests for swagger (@pksunkara)
+- [#523](https://github.com/apiaryio/dredd/pull/523) Skipping non 2xx responses by default for Swagger (@honzajavorek)
+
 ### v1.1.0-pre.5
 
-**Updated Dredd Transactions (better experimental support for Swagger)**
+**Experimental support for Swagger**
 - [#516](https://github.com/apiaryio/dredd/pull/516) v1.1.0-pre.5 (@honzajavorek)
 
 **Improvements related to Go hooks**
