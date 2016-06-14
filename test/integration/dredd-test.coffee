@@ -46,7 +46,7 @@ execCommand = (options = {}, cb) ->
   return
 
 
-describe "Dredd class Integration", () ->
+describe 'Dredd class Integration', ->
   dreddCommand = null
   custom = {}
 
@@ -550,3 +550,62 @@ describe "Dredd class Integration", () ->
 
       it 'should execute hook with fuxed name', () ->
         assert.include stderr, 'Fixed transaction name'
+
+  describe('when Swagger document has multiple responses', ->
+    reTransaction = /(\w+): (\w+) \/honey/g
+    matches = undefined
+
+    beforeEach((done) ->
+      execCommand(
+        options:
+          path: './test/fixtures/multiple-responses.yaml'
+      , (err) ->
+        matches = []
+        matches.push(groups) while groups = reTransaction.exec(stdout)
+        done(err)
+      )
+    )
+
+    it('recognizes all 3 transactions', ->
+      assert.equal(matches.length, 3)
+    )
+    it('the transaction #1 is skipped', ->
+      assert.equal(matches[0][1], 'skip')
+    )
+    it('the transaction #2 is skipped', ->
+      assert.equal(matches[1][1], 'skip')
+    )
+    it('the transaction #3 is not skipped (status 200)', ->
+      assert.notEqual(matches[2][1], 'skip')
+    )
+  )
+
+  describe('when Swagger document has multiple responses and hooks unskip some of them', ->
+    reTransaction = /(\w+): (\w+) \/honey/g
+    matches = undefined
+
+    beforeEach((done) ->
+      execCommand(
+        options:
+          path: './test/fixtures/multiple-responses.yaml'
+          hookfiles: './test/fixtures/swagger-multiple-responses.js'
+      , (err) ->
+        matches = []
+        matches.push(groups) while groups = reTransaction.exec(stdout)
+        done(err)
+      )
+    )
+
+    it('recognizes all 3 transactions', ->
+      assert.equal(matches.length, 3)
+    )
+    it('the transaction #1 is skipped', ->
+      assert.equal(matches[0][1], 'skip')
+    )
+    it('the transaction #2 is not skipped (unskipped in hooks)', ->
+      assert.notEqual(matches[1][1], 'skip')
+    )
+    it('the transaction #3 is not skipped (status 200)', ->
+      assert.notEqual(matches[2][1], 'skip')
+    )
+  )

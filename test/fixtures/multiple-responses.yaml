@@ -1,0 +1,40 @@
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: Beehive API
+consumes:
+  - application/json
+produces:
+  - application/xml
+  - application/json
+paths:
+  /honey:
+    get:
+      responses:
+        400:
+          description: user error
+        500:
+          description: server error
+        200:
+          description: pet response
+          headers:
+            X-Test:
+              type: string
+              enum:
+                - Adam
+                - Pavan
+          schema:
+            $ref: '#/definitions/Bee'
+definitions:
+  Bee:
+    required:
+      - id
+      - name
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+      tag:
+        type: string
