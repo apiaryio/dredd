@@ -16,8 +16,8 @@ $ dredd ./apiary.md 'http://localhost:3000'
 
 ### API Description Document (string)
 
-URL or path to the API description document (e.g. API Blueprint).  
-**Sample values:** `./apiary.apib`, `http://example.com/apiary.apib`
+URL or path to the API description document (API Blueprint, Swagger).
+**Sample values:** `./api-blueprint.apib`, `./swagger.yml`, `./swagger.json`, `http://example.com/api-blueprint.apib`
 
 ### API Location (string)
 
@@ -66,9 +66,11 @@ level: info
 timestamp: false
 silent: false
 path: []
-blueprint: apiary.apib
+blueprint: api-description.apib
 endpoint: "http://localhost:3000"
 ```
+
+> **Note:** Do not get confused by Dredd using a keyword `blueprint` also for paths to Swagger documents. This is for historical reasons and will be changed in the future.
 
 ## CLI Options Reference
 

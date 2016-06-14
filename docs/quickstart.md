@@ -1,6 +1,6 @@
 ## Quickstart
 
-- If you don't have [Node.js](https://nodejs.org/) installed, you may want to use [NVM](https://github.com/creationix/nvm)
+- If you don't have [Node.js](https://nodejs.org/) installed, you may want to use [NVM](https://github.com/creationix/nvm).
 - Create an API description document. In this tutorial, we'll use [API Blueprint](https://apiblueprint.org/) format and the `api-description.apib` filename.
 
 ```
@@ -9,11 +9,11 @@
 
       Hello World!
 ```
-- Install Dredd if you haven't already
+
+- Install Dredd.
 
 ```
 $ npm install -g dredd
-
 ```
 
 - Run interactive configuration:
@@ -24,16 +24,15 @@ $ dredd init
 ? Command to start API backend server e.g. (bundle exec rails server)
 ? URL of tested API endpoint: http://localhost:3000
 ? Programming language of hooks:
-❯ ruby
+❯ nodejs
   python
-  nodejs
+  ruby
+  ...
 ? Dredd is best served with Continuous Integration. Create CircleCI config for Dredd? Yes
-
 ```
 
-- Install [Ruby](hooks-ruby.md) or [Python](hooks-python.md) handler if needed
-
-- Run dredd
+- Install hook handler for your favorite language. See [hooks documentation](hooks.md) for list of supported languages.
+- Run the `dredd` command!
 
 ```
 $ dredd

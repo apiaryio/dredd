@@ -143,11 +143,13 @@ interactiveConfig.updateCircle = () ->
 
   config['dependencies'] ?= {}
   config['dependencies']['pre'] ?= []
-  config['dependencies']['pre'].push("npm install -g dredd")if config['dependencies']['pre'].indexOf("npm install -g dredd") == -1
+  if config['dependencies']['pre'].indexOf("npm install -g dredd@stable") == -1
+    config['dependencies']['pre'].push("npm install -g dredd@stable")
 
   config['test'] ?= {}
   config['test']['pre'] ?= []
-  config['test']['pre'].push("dredd") if config['test']['pre'].indexOf("dredd") == -1
+  if config['test']['pre'].indexOf("dredd") == -1
+    config['test']['pre'].push("dredd")
 
   yamlData = yaml.safeDump config
   fs.writeFileSync file, yamlData
@@ -162,10 +164,12 @@ interactiveConfig.updateTravis = () ->
     config = {}
 
   config['before_install'] ?= []
-  config['before_install'].push("npm install -g dredd") if config['before_install'].indexOf("npm install -g dredd") == -1
+  if config['before_install'].indexOf("npm install -g dredd@stable") == -1
+    config['before_install'].push("npm install -g dredd@stable")
 
   config['before_script'] ?= []
-  config['before_script'].push("dredd") if config['before_script'].indexOf("dredd") == -1
+  if config['before_script'].indexOf("dredd") == -1
+    config['before_script'].push("dredd")
 
   yamlData = yaml.safeDump config
   fs.writeFileSync file, yamlData

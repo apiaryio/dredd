@@ -7,8 +7,7 @@ pages:
   - Dredd:
     - About Dredd: index.md
     - Quickstart: quickstart.md
-    - Execution Lifecycle: execution-lifecycle.md
-    - Overview: overview.md
+    - How It Works: how-it-works.md
   - Usage:
     - Command-line Interface: usage-cli.md
     - From JavaScript: usage-js.md
@@ -23,7 +22,8 @@ pages:
       - Python: hooks-python.md
       - Ruby: hooks-ruby.md
     - Other Languages: hooks-new-language.md
-  - Example:
+  - Guides:
+    - How-To Guides: how-to-guides.md
     - Full Example: example.md
 
 theme: readthedocs
@@ -39,3 +39,7 @@ markdown_extensions:
 extra_templates:
   - usage.html
   - usage/index.html
+  - overview.html
+  - overview/index.html
+  - execution-lifecycle.html
+  - execution-lifecycle/index.html
