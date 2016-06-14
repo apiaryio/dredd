@@ -25,7 +25,7 @@ Runner = proxyquire  '../../src/transaction-runner', {
 CliReporter = require '../../src/reporters/cli-reporter'
 Hooks = require '../../src/hooks'
 
-describe 'TransactionRunner', ()->
+describe 'TransactionRunner', ->
 
   server = {}
   configuration =
@@ -98,9 +98,8 @@ describe 'TransactionRunner', ()->
 
         assert.ok runner.multiBlueprint
 
-  describe 'configureTransaction(transaction, callback)', () ->
-
-    beforeEach () ->
+  describe 'configureTransaction(transaction, callback)', ->
+    beforeEach ->
       transaction =
         name: "Machines API > Group Machine > Machine > Delete Message > Bogus example name"
         request:
@@ -124,6 +123,83 @@ describe 'TransactionRunner', ()->
           exampleName: "Bogus example name"
 
       runner = new Runner(configuration)
+
+    describe('when processing Swagger document and given transaction has non-2xx status code', ->
+      filename = 'api-description.yml'
+      configuredTransaction = undefined
+
+      ['100', '400', 199, 300].forEach((status) ->
+        context('status code: ' + JSON.stringify(status), ->
+          beforeEach((done) ->
+            transaction.response.status = status
+            transaction.origin.filename = filename
+
+            runner.configuration.data ?= {}
+            runner.configuration.data[filename] ?= {}
+            runner.configuration.data[filename].mediaType = 'application/swagger+json'
+
+            runner.configureTransaction(transaction, (args...) ->
+              [err, configuredTransaction] = args
+              done(err)
+            )
+          )
+
+          it('skips the transaction by default', ->
+            assert.isTrue(configuredTransaction.skip)
+          )
+        )
+      )
+    )
+
+    describe('when processing Swagger document and given transaction has 2xx status code', ->
+      filename = 'api-description.yml'
+      configuredTransaction = undefined
+
+      ['200', 299].forEach((status) ->
+        context('status code: ' + JSON.stringify(status), ->
+          beforeEach((done) ->
+            transaction.response.status = status
+            transaction.origin.filename = filename
+
+            runner.configuration.data ?= {}
+            runner.configuration.data[filename] ?= {}
+            runner.configuration.data[filename].mediaType = 'application/swagger+json'
+
+            runner.configureTransaction(transaction, (args...) ->
+              [err, configuredTransaction] = args
+              done(err)
+            )
+          )
+
+          it('does not skip the transaction by default', ->
+            assert.isFalse(configuredTransaction.skip)
+          )
+        )
+      )
+    )
+
+    describe('when processing other than Swagger document and given transaction has non-2xx status code', ->
+      filename = 'api-description.yml'
+      configuredTransaction = undefined
+
+      beforeEach((done) ->
+        transaction.response.status = 400
+        transaction.origin.filename = filename
+
+        runner.configuration.data ?= {}
+        runner.configuration.data[filename] ?= {}
+        runner.configuration.data[filename].mediaType = 'text/plain'
+
+        runner.configureTransaction(transaction, (args...) ->
+          [err, configuredTransaction] = args
+          done(err)
+        )
+      )
+
+      it('does not skip the transaction by default', ->
+        assert.isFalse(configuredTransaction.skip)
+      )
+    )
 
     describe 'when processing multiple API description documents', () ->
       it 'should include api name in the transaction name', (done) ->

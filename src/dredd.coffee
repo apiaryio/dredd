@@ -181,6 +181,7 @@ class Dredd
           warning.type = 'warning'
           fileData.annotations.push(warning)
 
+        fileData.mediaType = compilationResult.mediaType
         @transactions = @transactions.concat(compilationResult.transactions)
         next()
       )

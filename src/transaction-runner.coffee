@@ -280,9 +280,9 @@ class TransactionRunner
 
   configureTransaction: (transaction, callback) =>
     configuration = @configuration
-    origin = transaction['origin']
-    request = transaction['request']
-    response = transaction['response']
+
+    {origin, request, response} = transaction
+    mediaType = configuration.data[origin.filename]?.mediaType or 'text/vnd.apiblueprint'
 
     # parse the server URL just once
     @parsedUrl ?= url.parse configuration['server']
@@ -312,10 +312,7 @@ class TransactionRunner
         headerKey = header.substring(0, splitIndex)
         headerValue = header.substring(splitIndex + 1)
         flatHeaders[headerKey] = headerValue
-
     request['headers'] = flatHeaders
-
-    id = request['method'] + ' ' + request['uri']
 
     # The data models as used here must conform to Gavel.js
     # as defined in `http-response.coffee`
@@ -330,9 +327,17 @@ class TransactionRunner
     unless @multiBlueprint
       transaction.name = transaction.name.replace("#{transaction.origin.apiName} > ", "")
 
+    # Transaction skipping (can be modified in hooks). If the input format
+    # is Swagger, non-2xx transactions should be skipped by default.
+    skip = false
+    if mediaType.indexOf('swagger') isnt -1
+      status = parseInt(response.status, 10)
+      if status < 200 or status >= 300
+        skip = true
+
     configuredTransaction =
       name: transaction.name
-      id: id
+      id: request['method'] + ' ' + request['uri']
       host: @parsedUrl['hostname']
       port: @parsedUrl['port']
       request: request
@@ -340,7 +345,7 @@ class TransactionRunner
       origin: origin
       fullPath: fullPath
       protocol: @parsedUrl.protocol
-      skip: false
+      skip: skip
 
     return callback(null, configuredTransaction)
 
