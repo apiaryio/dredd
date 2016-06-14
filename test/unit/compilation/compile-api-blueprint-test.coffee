@@ -1,4 +1,7 @@
 
+proxyquire = require('proxyquire').noPreserveCache()
+sinon = require('sinon')
+
 fixtures = require('../../fixtures')
 createLocationSchema = require('../../schemas/location')
 createOriginSchema = require('../../schemas/origin')
@@ -86,17 +89,23 @@ describe('compile() · API Blueprint', ->
   )
 
   describe('with multiple transaction examples', ->
+    detectTransactionExamples = sinon.spy(require('../../../src/detect-transaction-examples'))
     transactions = undefined
     exampleNumbersPerTransaction = [1, 1, 2]
 
     beforeEach((done) ->
-      compileFixture(fixtures.multipleTransactionExamples.apiBlueprint, (args...) ->
+      stubs = {'./detect-transaction-examples': detectTransactionExamples}
+
+      compileFixture(fixtures.multipleTransactionExamples.apiBlueprint, {stubs}, (args...) ->
         [err, compilationResult] = args
         transactions = compilationResult.transactions
         done(err)
       )
     )
 
+    it('detection of transaction examples was called', ->
+      assert.isTrue(detectTransactionExamples.called)
+    )
     it('is compiled into expected number of transactions', ->
       assert.equal(transactions.length, exampleNumbersPerTransaction.length)
     )
@@ -113,17 +122,23 @@ describe('compile() · API Blueprint', ->
   )
 
   describe('without multiple transaction examples', ->
+    detectTransactionExamples = sinon.spy(require('../../../src/detect-transaction-examples'))
     compilationResult = undefined
     transaction = undefined
 
     beforeEach((done) ->
-      compileFixture(fixtures.oneTransactionExample.apiBlueprint, (args...) ->
+      stubs = {'./detect-transaction-examples': detectTransactionExamples}
+
+      compileFixture(fixtures.oneTransactionExample.apiBlueprint, {stubs}, (args...) ->
         [err, compilationResult] = args
         transaction = compilationResult.transactions[0]
         done(err)
       )
     )
 
+    it('detection of transaction examples was called', ->
+      assert.isTrue(detectTransactionExamples.called)
+    )
     it('is compiled into one transaction', ->
       assert.equal(compilationResult.transactions.length, 1)
     )

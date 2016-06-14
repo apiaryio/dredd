@@ -1,4 +1,6 @@
 
+sinon = require('sinon')
+
 fixtures = require('../../fixtures')
 {assert, compileFixture} = require('../../utils')
 createLocationSchema = require('../../schemas/location')
@@ -89,6 +91,29 @@ describe('compile() · Swagger', ->
       it('with expected response headers', ->
         assert.deepEqual(response.headers, {})
       )
+    )
+  )
+
+  describe('with multiple responses', ->
+    # Multiple responses is the closest we can get with Swagger to something
+    # like transaction examples ¯\_(ツ)_/¯
+
+    detectTransactionExamples = sinon.spy(require('../../../src/detect-transaction-examples'))
+    compilationResult = undefined
+    transaction = undefined
+
+    beforeEach((done) ->
+      stubs = {'./detect-transaction-examples': detectTransactionExamples}
+
+      compileFixture(fixtures.multipleResponses.swagger, {stubs}, (args...) ->
+        [err, compilationResult] = args
+        transaction = compilationResult.transactions[0]
+        done(err)
+      )
+    )
+
+    it('detection of transaction examples was not called', ->
+      assert.isFalse(detectTransactionExamples.called)
     )
   )
 )

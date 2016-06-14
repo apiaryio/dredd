@@ -22,7 +22,8 @@ compileFixture = (source, options, done) ->
     # appear in the `parseResult` too in form of annotations and we're testing
     # whether the compilation is able to deal with them.
     try
-      result = compile(parseResult, options.filename)
+      {mediaType, apiElements} = parseResult
+      result = compile(mediaType, apiElements, options.filename)
       done(null, result)
     catch err
       done(err)
