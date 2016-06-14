@@ -1,5 +1,10 @@
 ## Changelog
 
+### v1.1.0-pre.7
+
+**Hotfix of broken Dredd installation**
+- [#526](https://github.com/apiaryio/dredd/pull/526) v1.1.0-pre.7 (@honzajavorek)
+
 ### v1.1.0-pre.6
 
 **Changes in how Dredd uses npm release tags**
