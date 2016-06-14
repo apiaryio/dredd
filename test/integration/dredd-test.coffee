@@ -550,3 +550,61 @@ describe "Dredd class Integration", () ->
 
       it 'should execute hook with fuxed name', () ->
         assert.include stderr, 'Fixed transaction name'
+
+  describe('Transaction Examples', ->
+    getRelevantLines = (lines) ->
+      lines
+        .split(/[\n\r]+/)
+        .filter((line) -> line.match(/^info:/) and line.match(/ \> /))
+
+    describe('when there are no transaction examples in given API Blueprint document', ->
+      before((done) ->
+        execCommand(
+          options:
+            path: './test/fixtures/single-get.apib'
+            names: true
+        , done)
+      )
+
+      it('Dredd identifies some transactions', ->
+        assert.isAbove(getRelevantLines(stdout).length, 0)
+      )
+      it('no transaction names contain string \'Example #\'', ->
+        assert.notMatch(line, /Example \d+$/) for line in getRelevantLines(stdout)
+      )
+    )
+
+    describe('when there are multiple transaction examples in given API Blueprint document', ->
+      before((done) ->
+        execCommand(
+          options:
+            path: './test/fixtures/multiple-examples.apib'
+            names: true
+        , done)
+      )
+
+      it('Dredd identifies some transactions', ->
+        assert.isAbove(getRelevantLines(stdout).length, 0)
+      )
+      it('all transaction names contain string \'Example #\'', ->
+        assert.match(line, /Example \d+$/) for line in getRelevantLines(stdout)
+      )
+    )
+
+    describe('when there are multiple responses in given Swagger document', ->
+      before((done) ->
+        execCommand(
+          options:
+            path: './test/fixtures/multiple-responses.yml'
+            names: true
+        , done)
+      )
+
+      it('Dredd identifies some transactions', ->
+        assert.isAbove(getRelevantLines(stdout).length, 0)
+      )
+      it('no transaction names contain string \'Example #\'', ->
+        assert.notMatch(line, /Example \d+$/) for line in getRelevantLines(stdout)
+      )
+    )
+  )
