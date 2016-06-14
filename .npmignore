@@ -16,7 +16,6 @@ cov.*
 docs/
 img/
 test/
-scripts/
 mkdocs.yml
 provisioning.sh
 coffeelint.json
