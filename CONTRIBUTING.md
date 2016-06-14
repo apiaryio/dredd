@@ -49,6 +49,20 @@ Also mind that CoffeeScript is production dependency (not dev dependency),
 because it's needed not only for compiling Dredd package before uploading
 to npm, but also for running user-provided hooks written in CoffeeScript.
 
+### Versioning
+
+Dredd follows [Semantic Versioning][]. To ensure certain stability of Dredd installations (e.g. in CI builds), users can pin their version. They can also use release tags:
+
+- `npm install dredd` - Installs the latest published version including experimental pre-release versions.
+- `npm install dredd@stable` - Skips experimental pre-release versions. Recommended for CI installations.
+
+When releasing, make sure you respect the tagging:
+
+- To release pre-release, e.g. `42.1.0-pre.7`, use just `npm publish`.
+- To release any other version, e.g. `42.1.0`, use `npm publish && npm dist-tag add dredd@42.1.0 stable`.
+
+Hopefully this will be automated one day.
+
 ### Testing
 
 Use `npm run test` or just `npm test` to run all tests. Use `npm run test:bdd`
@@ -127,6 +141,7 @@ There are also some environment variables you could find useful:
 [Apiary]: https://apiary.io/
 [API Blueprint]: http://apiblueprint.org/
 
+[Semantic Versioning]: http://semver.org/
 [coffee-coverage]: https://github.com/benbria/coffee-coverage
 [coffeelint]: http://www.coffeelint.org/
 [CoffeeScript]: http://coffeescript.org
