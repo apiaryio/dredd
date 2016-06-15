@@ -121,6 +121,7 @@ In [Swagger][] documents, HTTP headers are inferred from [`"in": "header"` param
 
 - [`consumes`][] is propagated as request's `Content-Type` header.
 - [`produces`][] is propagated as request's `Accept` header.
+- If request body parameters are specified as `"in": "form"`, request's `Content-Type` header is set to `application/x-www-form-urlencoded`.
 
 ### Request Body
 
