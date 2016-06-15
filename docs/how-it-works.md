@@ -125,9 +125,9 @@ In [Swagger][] documents, HTTP headers are inferred from [`"in": "header"` param
 
 - [`consumes`][consumes] is propagated as request's `Content-Type` header.
 - [`produces`][produces] is propagated as request's `Accept` header.
-- If request body parameters are specified as `"in": "form"`, request's `Content-Type` header is set to `application/x-www-form-urlencoded`.
+- If request body parameters are specified as `"in": "formData"`, request's `Content-Type` header is set to `application/x-www-form-urlencoded`.
 
-> **Note:** Processing `"in": "header"` parameters and inferring `application/x-www-form-urlencoded` from `"in": "form"` parameters is not implemented yet ([apiaryio/fury-adapter-swagger#68](https://github.com/apiaryio/fury-adapter-swagger/issues/68), [apiaryio/fury-adapter-swagger#67](https://github.com/apiaryio/fury-adapter-swagger/issues/67)).
+> **Note:** Processing `"in": "header"` parameters and inferring `application/x-www-form-urlencoded` from `"in": "formData"` parameters is not implemented yet ([apiaryio/fury-adapter-swagger#68](https://github.com/apiaryio/fury-adapter-swagger/issues/68), [apiaryio/fury-adapter-swagger#67](https://github.com/apiaryio/fury-adapter-swagger/issues/67)).
 
 ### Request Body
 
@@ -142,7 +142,7 @@ This order [exactly follows the API Blueprint specification][body-schema-attribu
 
 #### Swagger
 
-The effective request body is inferred from [`"in": "body"` and `"in": "form"` parameters][parameters].
+The effective request body is inferred from [`"in": "body"` and `"in": "formData"` parameters][parameters].
 
 If body parameter has [`schema.example`][schema-example], it is used as a raw JSON sample for the request body. If it's not present, Dredd's [Swagger Adapter][] generates sample values from the JSON Schema provided in the [`schema`][schema] property. Following rules apply when the adapter fills values of the properties, ordered by precedence:
 
