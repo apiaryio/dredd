@@ -127,7 +127,7 @@ In [Swagger][] documents, HTTP headers are inferred from [`"in": "header"` param
 - [`produces`][] is propagated as request's `Accept` header.
 - If request body parameters are specified as `"in": "form"`, request's `Content-Type` header is set to `application/x-www-form-urlencoded`.
 
-> **Note:** Processing `"in": "form"` parameters and inferring `application/x-www-form-urlencoded` is not implemented yet - [apiaryio/fury-adapter-swagger#66](https://github.com/apiaryio/fury-adapter-swagger/issues/66).
+> **Note:** Processing `"in": "header"` parameters and inferring `application/x-www-form-urlencoded` from `"in": "form"` parameters is not implemented yet ([apiaryio/fury-adapter-swagger#68](https://github.com/apiaryio/fury-adapter-swagger/issues/68), [apiaryio/fury-adapter-swagger#67](https://github.com/apiaryio/fury-adapter-swagger/issues/67)).
 
 ### Request Body
 
