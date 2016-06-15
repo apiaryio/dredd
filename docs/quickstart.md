@@ -1,7 +1,7 @@
 ## Quickstart
 
 - If you don't have [Node.js](https://nodejs.org/) installed, you may want to use [NVM](https://github.com/creationix/nvm).
-- Create an API description document. In this tutorial, we'll use [API Blueprint](https://apiblueprint.org/) format and the `api-description.apib` filename.
+- Create API Description Document. In this tutorial, we'll use [API Blueprint](https://apiblueprint.org/) format and the `api-description.apib` filename.
 
 ```
 # GET /message

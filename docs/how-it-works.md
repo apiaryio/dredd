@@ -61,7 +61,7 @@ Dredd automatically generates expectations on HTTP responses based on examples i
 ### Response Headers Expectations
 
 - All headers specified in the API description must be present in the response.
-- Names of headers are validated in case-insensitive way.
+- Names of headers are validated in the case-insensitive way.
 - Only values of headers significant for content negotiation are validated.
 - All other headers values can differ.
 
@@ -72,7 +72,9 @@ When using [Swagger][], headers are taken from [`response.headers`][]. HTTP head
 
 ### Response Body Expectations
 
-By default Dredd validates HTTP response body against [JSON Schema][] inferred from the API description under test. The effective JSON Schema is taken from following places (the order goes from the highest priority to the lowest):
+If the HTTP response body is JSON, Dredd validates only its structure. Bodies in any other format are validated as plain text.
+
+To validate the structure Dredd uses [JSON Schema][] inferred from the API description under test. The effective JSON Schema is taken from following places (the order goes from the highest priority to the lowest):
 
 #### API Blueprint
 
