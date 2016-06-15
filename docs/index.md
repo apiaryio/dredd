@@ -15,7 +15,7 @@ Dredd reads your API description and step by step validates whether your API
 implementation replies with responses as they are described in the
 documentation.
 
-## Supported API Description Formats
+### Supported API Description Formats
 
 - [API Blueprint][]
 - [Swagger][] **(experimental)**
