@@ -2,7 +2,7 @@
 
 This is an example how to create a simple [Express.js][] API backend application tested with Dredd
 
-## Create API Description File
+## Create API Description Document
 
 Create a new API description file, for example in the [API Blueprint][] format. Save it as `api-description.apib`
 

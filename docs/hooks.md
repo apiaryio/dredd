@@ -19,13 +19,13 @@ Hooks are usually used for:
 
 You can interact with your server implementation in following languages:
 
-- [Ruby](hooks-ruby.md)
-- [Python](hooks-python.md)
-- [Node.js](hooks-nodejs.md)
-- [PHP](hooks-php.md)
 - [Go](hooks-go.md)
+- [JavaScript (Sandboxed)](hooks-js-sandbox.md)
+- [Node.js](hooks-nodejs.md)
 - [Perl](hooks-perl.md)
-- [Sandboxed JavaScript](hooks-js-sandbox.md)
+- [PHP](hooks-php.md)
+- [Python](hooks-python.md)
+- [Ruby](hooks-ruby.md)
 
 Dredd doesn't speak your language? [**It's very easy to write support for your language.**](hooks-new-language.md) Your contribution is more than welcome!
 
@@ -73,7 +73,8 @@ $ dredd single_get.md http://machines.apiary.io --names
 info: Machines > Machines collection > Get Machines
 ```
 
-The `Machines > Machines collection > Get Machines` is the name of a transaction which you can use in your hooks.
+The `Machines > Machines collection > Get Machines` is the name of a transaction which you can use in your hooks. The same approach works also for Swagger documents.
+
 See [Hooks JavaScript API Reference](#hooks-javascript-api-reference) for broader information of how is it used.
 
 ## Types of Hooks

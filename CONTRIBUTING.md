@@ -23,7 +23,7 @@ Recommended workflow:
 4. Make sure [test coverage][] didn't drop.
 5. Send a Pull Request.
 
-## Handbook for Contributers and Maintainers
+## Handbook for Contributors and Maintainers
 
 ### Maintainers
 

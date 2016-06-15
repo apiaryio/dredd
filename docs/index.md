@@ -9,12 +9,16 @@
 ![Dredd - HTTP API Testing Framework](https://raw.github.com/apiaryio/dredd/master/img/dredd.png?v=3&raw=true)
 
 > **Dredd is a language-agnostic command-line tool for validating
-API description written in [API Blueprint][] format against its backend
-implementation.**
+API description document against backend implementation of the API.**
 
 Dredd reads your API description and step by step validates whether your API
 implementation replies with responses as they are described in the
 documentation.
+
+## Supported API Description Formats
+
+- [API Blueprint][]
+- [Swagger][] **(experimental)**
 
 ### Supported Hooks Languages
 
@@ -74,6 +78,7 @@ Dredd supports writing [hooks](https://dredd.readthedocs.io/en/latest/hooks/)
 
 
 [API Blueprint]: http://apiblueprint.org/
+[Swagger]: http://swagger.io/
 
 [GitHub Repository]: https://github.com/apiaryio/dredd
 [Bug Tracker]: https://github.com/apiaryio/dredd/issues?q=is%3Aopen
