@@ -70,6 +70,8 @@ When using [Swagger][], headers are taken from [`response.headers`][]. HTTP head
 - [`produces`][] is propagated as response's `Content-Type` header.
 - Response's `Content-Type` header overrides any `produces`.
 
+> **Note:** There is a bug affecting the last item - [apiaryio/fury-adapter-swagger#65](https://github.com/apiaryio/fury-adapter-swagger/issues/65).
+
 ### Response Body Expectations
 
 If the HTTP response body is JSON, Dredd validates only its structure. Bodies in any other format are validated as plain text.
@@ -125,6 +127,8 @@ In [Swagger][] documents, HTTP headers are inferred from [`"in": "header"` param
 - [`produces`][] is propagated as request's `Accept` header.
 - If request body parameters are specified as `"in": "form"`, request's `Content-Type` header is set to `application/x-www-form-urlencoded`.
 
+> **Note:** Processing `"in": "form"` parameters and inferring `application/x-www-form-urlencoded` is not implemented yet - [apiaryio/fury-adapter-swagger#66](https://github.com/apiaryio/fury-adapter-swagger/issues/66).
+
 ### Request Body
 
 #### API Blueprint
@@ -138,7 +142,9 @@ This order [exactly follows the API Blueprint specification][body-schema-attribu
 
 #### Swagger
 
-The effective request body is inferred from [`"in": "body"` and `"in": "form"` parameters][parameters]. Since Swagger doesn't provide any way to specify raw JSON sample for the request body, Dredd's [Swagger Adapter][] generates some sample values from the JSON Schema provided in the [`schema`][] property. Following rules apply when the adapter fills values of the properties, ordered by precedence:
+The effective request body is inferred from [`"in": "body"` and `"in": "form"` parameters][parameters].
+
+If body parameter has [`schema.example`][], it is used as a raw JSON sample for the request body. If it's not present, Dredd's [Swagger Adapter][] generates sample values from the JSON Schema provided in the [`schema`][] property. Following rules apply when the adapter fills values of the properties, ordered by precedence:
 
 1. Value of `default`.
 2. First value from `enum`.
@@ -206,3 +212,4 @@ Other media types are skipped.
 [`paths.parameters`]: http://swagger.io/specification/#pathItemParameters
 [`swagger.parameters`]: http://swagger.io/specification/#swaggerParameters
 [default responses]: http://swagger.io/specification/#responsesDefault
+[`schema.example`]: http://swagger.io/specification/#schemaExample
