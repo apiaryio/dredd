@@ -65,9 +65,9 @@ Dredd automatically generates expectations on HTTP responses based on examples i
 - Only values of headers significant for content negotiation are validated.
 - All other headers values can differ.
 
-When using [Swagger][], headers are taken from [`response.headers`][]. HTTP headers significant for content negotiation are inferred according to following rules:
+When using [Swagger][], headers are taken from [`response.headers`][response-headers]. HTTP headers significant for content negotiation are inferred according to following rules:
 
-- [`produces`][] is propagated as response's `Content-Type` header.
+- [`produces`][produces] is propagated as response's `Content-Type` header.
 - Response's `Content-Type` header overrides any `produces`.
 
 > **Note:** There is a bug affecting the last item - [apiaryio/fury-adapter-swagger#65](https://github.com/apiaryio/fury-adapter-swagger/issues/65).
@@ -80,16 +80,16 @@ To validate the structure Dredd uses [JSON Schema][] inferred from the API descr
 
 #### API Blueprint
 
-1. [`+ Schema`][] section - provided custom JSON Schema (draft v4 or v3) will be used.
-2. [`+ Attributes`][] section with data structure description in [MSON][] - API Blueprint parser automatically generates JSON Schema from MSON.
-3. [`+ Body`][] section with sample JSON payload - [Gavel.js][], which is responsible for validation in Dredd, automatically infers some basic expectations described below.
+1. [`+ Schema`][schema-section] section - provided custom JSON Schema (draft v4 or v3) will be used.
+2. [`+ Attributes`][attributes-section] section with data structure description in [MSON][] - API Blueprint parser automatically generates JSON Schema from MSON.
+3. [`+ Body`][body-section] section with sample JSON payload - [Gavel.js][], which is responsible for validation in Dredd, automatically infers some basic expectations described below.
 
 This order [exactly follows the API Blueprint specification][body-schema-attributes].
 
 #### Swagger
 
-1. [`response.schema`][] - provided JSON Schema will be used.
-2. [`response.examples`][] with sample JSON payload - [Gavel.js][], which is responsible for validation in Dredd, automatically infers some basic expectations described below.
+1. [`response.schema`][response-schema] - provided JSON Schema will be used.
+2. [`response.examples`][response-examples] with sample JSON payload - [Gavel.js][], which is responsible for validation in Dredd, automatically infers some basic expectations described below.
 
 #### Gavel's Expectations
 
@@ -123,8 +123,8 @@ If Dredd isn't able to infer any value for a required parameter, it will termina
 
 In [Swagger][] documents, HTTP headers are inferred from [`"in": "header"` parameters][parameters]. HTTP headers significant for content negotiation are inferred according to following rules:
 
-- [`consumes`][] is propagated as request's `Content-Type` header.
-- [`produces`][] is propagated as request's `Accept` header.
+- [`consumes`][consumes] is propagated as request's `Content-Type` header.
+- [`produces`][produces] is propagated as request's `Accept` header.
 - If request body parameters are specified as `"in": "form"`, request's `Content-Type` header is set to `application/x-www-form-urlencoded`.
 
 > **Note:** Processing `"in": "header"` parameters and inferring `application/x-www-form-urlencoded` from `"in": "form"` parameters is not implemented yet ([apiaryio/fury-adapter-swagger#68](https://github.com/apiaryio/fury-adapter-swagger/issues/68), [apiaryio/fury-adapter-swagger#67](https://github.com/apiaryio/fury-adapter-swagger/issues/67)).
@@ -135,8 +135,8 @@ In [Swagger][] documents, HTTP headers are inferred from [`"in": "header"` param
 
 The effective request body is taken from following places (the order goes from the highest priority to the lowest):
 
-1. [`+ Body`][] section with sample JSON payload.
-2. [`+ Attributes`][] section with data structure description in [MSON][] - API Blueprint parser automatically generates sample JSON payload from MSON.
+1. [`+ Body`][body-section] section with sample JSON payload.
+2. [`+ Attributes`][attributes-section] section with data structure description in [MSON][] - API Blueprint parser automatically generates sample JSON payload from MSON.
 
 This order [exactly follows the API Blueprint specification][body-schema-attributes].
 
@@ -144,7 +144,7 @@ This order [exactly follows the API Blueprint specification][body-schema-attribu
 
 The effective request body is inferred from [`"in": "body"` and `"in": "form"` parameters][parameters].
 
-If body parameter has [`schema.example`][], it is used as a raw JSON sample for the request body. If it's not present, Dredd's [Swagger Adapter][] generates sample values from the JSON Schema provided in the [`schema`][] property. Following rules apply when the adapter fills values of the properties, ordered by precedence:
+If body parameter has [`schema.example`][schema-example], it is used as a raw JSON sample for the request body. If it's not present, Dredd's [Swagger Adapter][] generates sample values from the JSON Schema provided in the [`schema`][schema] property. Following rules apply when the adapter fills values of the properties, ordered by precedence:
 
 1. Value of `default`.
 2. First value from `enum`.
@@ -157,8 +157,8 @@ If body parameter has [`schema.example`][], it is used as a raw JSON sample for 
 #### API Blueprint
 
 While [API Blueprint][] allows specifying multiple requests and responses in any
-combination (see specification for the [action section][]), Dredd currently
-supports just separated HTTP transaction pairs like this:
+combination (see specification for the [action section][action-section]), Dredd
+currently supports just separated HTTP transaction pairs like this:
 
 ```
 + Request
@@ -178,8 +178,8 @@ The [Swagger][] format allows to specify multiple responses for a single operati
 By default Dredd tests only responses with `2xx` status codes. Responses with other
 codes are marked as _skipped_ and can be activated in [hooks](hooks.md) - see [Testing non-2xx Responses with Swagger](how-to-guides.md#testing-non-2xx-responses-with-swagger).
 
-[Default responses][default responses] are ignored by Dredd. Also, as of now,
-only `application/json` media type is supported in [`produces`][] and [`consumes`][].
+[Default responses][default-responses] are ignored by Dredd. Also, as of now,
+only `application/json` media type is supported in [`produces`][produces] and [`consumes`][consumes].
 Other media types are skipped.
 
 
@@ -193,23 +193,23 @@ Other media types are skipped.
 [Swagger Adapter]: https://github.com/apiaryio/fury-adapter-swagger/
 [RFC6570]: https://tools.ietf.org/html/rfc6570
 
-[`+ Schema`]: https://apiblueprint.org/documentation/specification.html#def-schema-section
-[`+ Parameters`]: https://apiblueprint.org/documentation/specification.html#def-uriparameters-section
-[`+ Attributes`]: https://apiblueprint.org/documentation/specification.html#def-attributes-section
-[`+ Body`]: https://apiblueprint.org/documentation/specification.html#def-body-section
-[`+ Request`]: https://apiblueprint.org/documentation/specification.html#def-action-section
-[action section]: https://apiblueprint.org/documentation/specification.html#def-action-section
+[schema-section]: https://apiblueprint.org/documentation/specification.html#def-schema-section
+[parameters-section]: https://apiblueprint.org/documentation/specification.html#def-uriparameters-section
+[attributes-section]: https://apiblueprint.org/documentation/specification.html#def-attributes-section
+[body-section]: https://apiblueprint.org/documentation/specification.html#def-body-section
+[request-section]: https://apiblueprint.org/documentation/specification.html#def-action-section
+[action-section]: https://apiblueprint.org/documentation/specification.html#def-action-section
 [body-schema-attributes]: https://apiblueprint.org/documentation/specification.html#relation-of-body-schema-and-attributes-sections
 
-[`produces`]: http://swagger.io/specification/#swaggerProduces
-[`consumes`]: http://swagger.io/specification/#swaggerConsumes
-[`response.headers`]: http://swagger.io/specification/#responseHeaders
-[`schema`]: http://swagger.io/specification/#parameterSchema
-[`response.schema`]: http://swagger.io/specification/#responseSchema
-[`response.examples`]: http://swagger.io/specification/#responseExamples
+[produces]: http://swagger.io/specification/#swaggerProduces
+[consumes]: http://swagger.io/specification/#swaggerConsumes
+[response-headers]: http://swagger.io/specification/#responseHeaders
+[schema]: http://swagger.io/specification/#parameterSchema
+[response-schema]: http://swagger.io/specification/#responseSchema
+[response-examples]: http://swagger.io/specification/#responseExamples
 [parameters]: http://swagger.io/specification/#parameterObject
-[`operation.parameters`]: http://swagger.io/specification/#operationParameters
-[`paths.parameters`]: http://swagger.io/specification/#pathItemParameters
-[`swagger.parameters`]: http://swagger.io/specification/#swaggerParameters
-[default responses]: http://swagger.io/specification/#responsesDefault
-[`schema.example`]: http://swagger.io/specification/#schemaExample
+[operation-parameters]: http://swagger.io/specification/#operationParameters
+[paths-parameters]: http://swagger.io/specification/#pathItemParameters
+[swagger-parameters]: http://swagger.io/specification/#swaggerParameters
+[default-responses]: http://swagger.io/specification/#responsesDefault
+[schema-example]: http://swagger.io/specification/#schemaExample
