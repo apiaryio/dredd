@@ -1,5 +1,15 @@
 ## Changelog
 
+### v1.1.0
+
+**Experimental support for Swagger**
+- [#537](https://github.com/apiaryio/dredd/pull/537) v1.1.0 (@honzajavorek)
+- [#529](https://github.com/apiaryio/dredd/pull/529) Introducing Swagger in Dredd (@honzajavorek)
+- [#533](https://github.com/apiaryio/dredd/pull/533) Fixing links (@honzajavorek)
+- [#532](https://github.com/apiaryio/dredd/pull/532) Wrong heading level (@honzajavorek)
+- [#530](https://github.com/apiaryio/dredd/pull/530) Fixed typo (@pksunkara, @netmilk)
+- [#535](https://github.com/apiaryio/dredd/pull/535) "form" should be "formData" (@honzajavorek)
+
 ### v1.1.0-pre.7
 
 **Hotfix of broken Dredd installation**
