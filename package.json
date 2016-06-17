@@ -1,6 +1,6 @@
 {
   "name": "dredd-transactions",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Compiles HTTP Transactions (Request-Response pairs) from API description document",
   "main": "lib/dredd-transactions.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "deckardcain": "^0.3.2",
     "fury": "^2.1.0",
     "fury-adapter-apib-parser": "^0.2.0",
-    "fury-adapter-swagger": "^0.8.0-pre.12",
+    "fury-adapter-swagger": "^0.8.0-pre.16",
     "sift": "^3.2.1",
     "traverse": "^0.6.6",
     "uri-template": "^1.0.0"
