@@ -65,7 +65,9 @@ describe('compile() · Swagger', ->
         })
       )
       it('with expected response headers', ->
-        assert.deepEqual(response.headers, {})
+        assert.deepEqual(response.headers, {
+          'Content-Type': {value: 'application/json'}
+        })
       )
     )
   )
