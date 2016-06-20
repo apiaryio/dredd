@@ -2,7 +2,7 @@ html = require 'html'
 
 logger = require './logger'
 
-prettifyResponse = (response) ->
+prettifyResponse = (response, privateHeader) ->
   stringify = (obj) ->
     try
       if typeof obj is 'string'
@@ -33,7 +33,10 @@ prettifyResponse = (response) ->
     else if key is 'headers'
       header = '\n'
       for own hkey, hval of value
-        header += "    #{hkey}: #{hval}\n"
+        if hkey in privateHeader
+          header += "    #{hkey}: ****\n"
+        else
+          header += "    #{hkey}: #{hval}\n"
       value = header
 
     stringRepresentation += "#{key}: #{value}\n"

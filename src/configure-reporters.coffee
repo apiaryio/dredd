@@ -20,31 +20,32 @@ configureReporters = (config, stats, tests, runner) ->
   baseReporter = new BaseReporter(config.emitter, stats, tests)
   reporters = config.options.reporter
   outputs = config.options.output
+  privateHeader = config.options['private-header']
 
   addCli = (reporters) ->
     if reporters.length > 0
       usedCliReporters = intersection reporters, cliReporters
       if usedCliReporters.length is 0
-        cliReporter = new CliReporter(config.emitter, stats, tests, config.options['inline-errors'], config.options.details)
+        cliReporter = new CliReporter(config.emitter, stats, tests, config.options['inline-errors'], config.options.details, privateHeader)
       else
         addReporter(usedCliReporters[0], config.emitter, stats, tests)
     else
-      cliReporter = new CliReporter(config.emitter, stats, tests, config.options['inline-errors'], config.options.details)
+      cliReporter = new CliReporter(config.emitter, stats, tests, config.options['inline-errors'], config.options.details, privateHeader)
 
   addReporter = (reporter, emitter, stats, tests, path) ->
     switch reporter
       when 'junit'
-        xUnitReporter = new XUnitReporter(emitter, stats, tests, path, config.options.details)
+        xUnitReporter = new XUnitReporter(emitter, stats, tests, path, config.options.details, privateHeader)
       when 'dot'
-        dotReporter = new DotReporter(emitter, stats, tests)
+        dotReporter = new DotReporter(emitter, stats, tests, privateHeader)
       when 'nyan'
-        nyanCatReporter = new NyanCatReporter(emitter, stats, tests)
+        nyanCatReporter = new NyanCatReporter(emitter, stats, tests, privateHeader)
       when 'html'
-        htmlReporter = new HtmlReporter(emitter, stats, tests, path, config.options.details)
+        htmlReporter = new HtmlReporter(emitter, stats, tests, path, config.options.details, privateHeader)
       when 'markdown'
-        mdReporter = new MarkdownReporter(emitter, stats, tests, path, config.options.details)
+        mdReporter = new MarkdownReporter(emitter, stats, tests, path, config.options.details, privateHeader)
       when 'apiary'
-        apiaryReporter = new ApiaryReporter(emitter, stats, tests, config, runner)
+        apiaryReporter = new ApiaryReporter(emitter, stats, tests, config, runner, privateHeader)
       # else
       #   Cannot happen, due to 'intersection' usage
       #   logger.warn "Invalid reporter #{reporter} selected, ignoring."

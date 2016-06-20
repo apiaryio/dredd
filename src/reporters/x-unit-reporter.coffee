@@ -8,13 +8,14 @@ logger = require './../logger'
 prettifyResponse = require './../prettify-response'
 
 class XUnitReporter extends EventEmitter
-  constructor: (emitter, stats, tests, path, details) ->
+  constructor: (emitter, stats, tests, path, details, privateHeader) ->
     super()
     @type = "xUnit"
     @stats = stats
     @tests = tests
     @path = @sanitizedPath(path)
     @details = details
+    @privateHeader = privateHeader
     @configureEmitter emitter
 
   sanitizedPath: (path) ->
@@ -47,11 +48,11 @@ class XUnitReporter extends EventEmitter
       if @details
         deets = """
         \nRequest:
-        #{prettifyResponse(test.request)}
+        #{prettifyResponse(test.request, privateHeader)}
         Expected:
-        #{prettifyResponse(test.expected)}
+        #{prettifyResponse(test.expected, privateHeader)}
         Actual:
-        #{prettifyResponse(test.actual)}
+        #{prettifyResponse(test.actual, privateHeader)}
         """
         appendLine @path, toTag('testcase', attrs, false, toTag('system-out', null, false, cdata(deets)))
       else
@@ -71,11 +72,11 @@ class XUnitReporter extends EventEmitter
       Message:
       #{test.message}
       Request:
-      #{prettifyResponse(test.request)}
+      #{prettifyResponse(test.request, privateHeader)}
       Expected:
-      #{prettifyResponse(test.expected)}
+      #{prettifyResponse(test.expected, privateHeader)}
       Actual:
-      #{prettifyResponse(test.actual)}
+      #{prettifyResponse(test.actual, privateHeader)}
       """
       appendLine @path, toTag('testcase', attrs, false, toTag('failure', null, false, cdata(diff)))
 
