@@ -82,6 +82,12 @@ describe "DreddCommand class Integration", () ->
       "http://localhost:#{PORT}/file.apib"
       "http://localhost:#{PORT}"
     ]
+    goodCmdWithEnvVars =
+      argv: [
+        "http://localhost:#{PORT}/file.apib"
+        "http://localhost:#{PORT}"
+      ]
+      server: 'MY_ENV_VAR=HelloWorld echo $MY_ENV_VAR'
 
     before (done) ->
       app = express()
@@ -136,6 +142,14 @@ describe "DreddCommand class Integration", () ->
     describe 'and I try to load a file that actually is there', ->
       before (done) ->
         execCommand goodCmd, ->
+          done()
+
+      it 'should exit with status 0', ->
+        assert.equal exitStatus, 0
+
+    describe 'and I try to execute a server command with environment variables', ->
+      before (done) ->
+        execCommand goodCmdWithEnvVars, ->
           done()
 
       it 'should exit with status 0', ->
