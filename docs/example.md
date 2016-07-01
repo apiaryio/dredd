@@ -4,14 +4,48 @@ This is an example how to create a simple [Express.js][] API backend application
 
 ## Create API Description Document
 
-Create a new API description file, for example in the [API Blueprint][] format. Save it as `api-description.apib`
+Create a new API description file. In case of the [API Blueprint][] format, it could look like this:
 
 ```markdown
+FORMAT: 1A
+
 # GET /
 + Response 200 (application/json; charset=utf-8)
 
-      {"message": "Hello World!"}
+        {"message": "Hello World!"}
 ```
+
+Save it as `api-description.apib`. In case of the [Swagger][] format, let's use following:
+
+```yaml
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: Example API
+  license:
+    name: MIT
+host: www.example.com
+basePath: /
+schemes:
+  - http
+paths:
+  /:
+    get:
+      produces:
+        - application/json; charset=utf-8
+      responses:
+        200:
+          description: ''
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+            required:
+              - message
+```
+
+Let's save it as `api-description.yml`.
 
 ## Install Express.js
 
@@ -51,6 +85,12 @@ Finally, run Dredd for validation:
 $ dredd api-description.apib http://localhost:3000
 ```
 
+When using Swagger, change the command respectively:
+
+```sh
+$ dredd api-description.yml http://localhost:3000
+```
+
 ## Advanced Examples
 
 For more complex examples applications, please refer to:
@@ -61,4 +101,5 @@ For more complex examples applications, please refer to:
 
 
 [API Blueprint]: http://apiblueprint.org/
+[Swagger]: http://swagger.io/
 [Express.js]: http://expressjs.com/starter/hello-world.html
