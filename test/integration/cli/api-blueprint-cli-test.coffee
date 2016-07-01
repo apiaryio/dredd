@@ -75,6 +75,7 @@ describe 'CLI - API Blueprint Document', ->
       args = [
         './test/fixtures/warning-blueprint.apib'
         "http://localhost:#{PORT}"
+        '--no-color'
       ]
 
       beforeEach (done) ->

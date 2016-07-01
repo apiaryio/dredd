@@ -93,10 +93,6 @@ applyConfiguration = (config) ->
   logger.transports.console.silent = configuration.options.silent
   logger.transports.console.level = configuration.options.level
   logger.transports.console.timestamp = configuration.options.timestamp
-  logger.sys.transports.systemConsole.colorize = configuration.options.color
-  logger.sys.transports.systemConsole.silent = configuration.options.silent
-  logger.sys.transports.systemConsole.level = configuration.options.level
-  logger.sys.transports.systemConsole.timestamp = configuration.options.timestamp
 
   return configuration
 
