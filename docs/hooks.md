@@ -38,7 +38,7 @@ You can use this flag multiple times or use a [glob](http://npmjs.com/package/gl
 Example:
 
 ```sh
-$ dredd single_get.md http://machines.apiary.io --hookfiles=*_hooks.*
+$ dredd single-get.apib http://machines.apiary.io --hookfiles=*_hooks.*
 ```
 
 ## Getting Transaction Names
@@ -69,7 +69,7 @@ FORMAT: 1A
 Run this command to retrieve all transaction names:
 
 ```sh
-$ dredd single_get.md http://machines.apiary.io --names
+$ dredd single-get.apib http://machines.apiary.io --names
 info: Machines > Machines collection > Get Machines
 ```
 
