@@ -82,6 +82,9 @@ JOBS = [
   ,
     name: 'perl-hooks-handler'
     repo: 'https://github.com/ungrim97/Dredd-Hooks.git'
+  ,
+    name: 'go-hooks-handler'
+    repo: 'https://github.com/snikch/goodman.git'
 ]
 
 TRIGGER_KEYWORD = 'tests hook handlers' # inspired by https://help.github.com/articles/closing-issues-via-commit-messages/
