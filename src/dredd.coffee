@@ -98,8 +98,9 @@ class Dredd
       if /^http(s)?:\/\//.test globToExpand
         @configuration.files = @configuration.files.concat globToExpand
         return globCallback()
+
       glob globToExpand, (err, match) =>
-        globCallback err if err
+        return globCallback(err) if err
         @configuration.files = @configuration.files.concat match
         globCallback()
 

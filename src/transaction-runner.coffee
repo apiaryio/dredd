@@ -33,13 +33,13 @@ class TransactionRunner
   run: (transactions, callback) ->
     transactions = if @configuration.options['sorted'] then sortTransactions(transactions) else transactions
 
-    async.mapSeries transactions, @configureTransaction.bind(@), (err, results) ->
+    async.mapSeries transactions, @configureTransaction.bind(@), (err, results) =>
       transactions = results
 
-    # Remainings of functional approach, probs to be eradicated
-    addHooks @, transactions, (addHooksError) =>
-      return callback addHooksError if addHooksError
-      @executeAllTransactions(transactions, @hooks, callback)
+      # Remainings of functional approach, probs to be eradicated
+      addHooks @, transactions, (addHooksError) =>
+        return callback addHooksError if addHooksError
+        @executeAllTransactions(transactions, @hooks, callback)
 
   executeAllTransactions: (transactions, hooks, callback) ->
     # Warning: Following lines is "differently" performed by 'addHooks'
@@ -47,17 +47,17 @@ class TransactionRunner
     # as an object `{}` with transaction.name keys and value is every
     # transaction, we do not fill transactions from executeAllTransactions here.
     # Transactions is supposed to be an Array here!
-    unless hooks.transactions?
+    unless hooks.transactions
       hooks.transactions = {}
       for transaction in transactions
         hooks.transactions[transaction.name] = transaction
     # /end warning
 
-    return callback(@hookHandlerError) if @hookHandlerError?
+    return callback(@hookHandlerError) if @hookHandlerError
 
     # run beforeAll hooks
-    @runHooksForData hooks.beforeAllHooks, transactions, true, () =>
-      return callback(@hookHandlerError) if @hookHandlerError?
+    @runHooksForData hooks.beforeAllHooks, transactions, true, =>
+      return callback(@hookHandlerError) if @hookHandlerError
 
       # Iterate over transactions' transaction
       # Because async changes the way referencing of properties work,
@@ -66,12 +66,12 @@ class TransactionRunner
         transaction = transactions[transactionIndex]
 
         # run beforeEach hooks
-        @runHooksForData hooks.beforeEachHooks, transaction, false, () =>
-          return iterationCallback(@hookHandlerError) if @hookHandlerError?
+        @runHooksForData hooks.beforeEachHooks, transaction, false, =>
+          return iterationCallback(@hookHandlerError) if @hookHandlerError
 
           # run before hooks
-          @runHooksForData hooks.beforeHooks[transaction.name], transaction, false, () =>
-            return iterationCallback(@hookHandlerError) if @hookHandlerError?
+          @runHooksForData hooks.beforeHooks[transaction.name], transaction, false, =>
+            return iterationCallback(@hookHandlerError) if @hookHandlerError
 
             # This method:
             # - skips and fails based on hooks or options
@@ -80,16 +80,16 @@ class TransactionRunner
             # - runs beforeEachValidation hooks
             # - runs beforeValidation hooks
             # - runs Gavel validation
-            @executeTransaction transaction, hooks, () =>
-              return iterationCallback(@hookHandlerError) if @hookHandlerError?
+            @executeTransaction transaction, hooks, =>
+              return iterationCallback(@hookHandlerError) if @hookHandlerError
 
               # run afterEach hooks
-              @runHooksForData hooks.afterEachHooks, transaction, false, () =>
-                return iterationCallback(@hookHandlerError) if @hookHandlerError?
+              @runHooksForData hooks.afterEachHooks, transaction, false, =>
+                return iterationCallback(@hookHandlerError) if @hookHandlerError
 
                 # run after hooks
-                @runHooksForData hooks.afterHooks[transaction.name], transaction, false, () =>
-                  return iterationCallback(@hookHandlerError) if @hookHandlerError?
+                @runHooksForData hooks.afterHooks[transaction.name], transaction, false, =>
+                  return iterationCallback(@hookHandlerError) if @hookHandlerError
 
                   # decide and emit result
                   @emitResult transaction, iterationCallback
@@ -98,9 +98,8 @@ class TransactionRunner
         return callback(iterationError) if iterationError
 
         #runAfterHooks
-        @runHooksForData hooks.afterAllHooks, transactions, true, () =>
-          return callback(@hookHandlerError) if @hookHandlerError?
-
+        @runHooksForData hooks.afterAllHooks, transactions, true, =>
+          return callback(@hookHandlerError) if @hookHandlerError
           callback()
 
   # Tha `data` argument can be transactions or transaction object
@@ -108,7 +107,7 @@ class TransactionRunner
     if hooks? and Array.isArray hooks
       logger.debug 'Running hooks...'
 
-      runHookWithData = (hookFnIndex, callback) =>
+      runHookWithData = (hookFnIndex, runHookCallback) =>
         hookFn = hooks[hookFnIndex]
         try
           if legacy
@@ -119,15 +118,20 @@ class TransactionRunner
               if err
                 error = new Error(err)
                 @emitError(data, error)
-              callback()
+              runHookCallback()
           else
             @runHook hookFn, data, (err) =>
               if err
                 error = new Error(err)
                 @emitError(data, error)
-              callback()
+              runHookCallback()
 
         catch error
+          # Beware! This is very problematic part of code. This try/catch block
+          # catches also errors thrown in 'runHookCallback', i.e. in all
+          # subsequent flow! Then also 'callback' is called twice and
+          # all the flow can be executed twice. We need to reimplement this.
+
           if error instanceof chai.AssertionError
             message = "Failed assertion in hooks: " + error.message
 
@@ -154,7 +158,7 @@ class TransactionRunner
           else
             @emitError(data, error)
 
-          callback()
+          runHookCallback()
 
       async.timesSeries hooks.length, runHookWithData, ->
         callback()
@@ -498,9 +502,9 @@ class TransactionRunner
         transaction['real'] = real
 
         @runHooksForData hooks?.beforeEachValidationHooks, transaction, false, () =>
-          return callback(@hookHandlerError) if @hookHandlerError?
+          return callback(@hookHandlerError) if @hookHandlerError
           @runHooksForData hooks?.beforeValidationHooks[transaction.name], transaction, false, () =>
-            return callback(@hookHandlerError) if @hookHandlerError?
+            return callback(@hookHandlerError) if @hookHandlerError
             @validateTransaction test, transaction, callback
 
 

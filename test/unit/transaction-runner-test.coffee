@@ -414,7 +414,7 @@ describe 'TransactionRunner', ->
         runner = new Runner(configuration)
 
         addHooks runner, [clonedTransaction], (err) ->
-          done err if err
+          return done(err) if err
 
           runner.hooks.beforeHooks =
             'Group Machine > Machine > Delete Message > Bogus example name' : [
@@ -426,39 +426,41 @@ describe 'TransactionRunner', ->
       afterEach () ->
         configuration.emitter.emit.restore()
 
+      # If you happen to wonder why some of the callbacks in following tests
+      # get executed twice, see try/catch in runHooksForData() in transaction-runner.coffee
+
       it 'should skip the test', (done) ->
-        runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+        runner.executeAllTransactions [clonedTransaction], runner.hooks, (err) ->
           assert.ok configuration.emitter.emit.calledWith 'test skip'
-          done()
+          done(err)
 
       it 'should add skip message as a warning under `general` to the results on transaction', (done) ->
-        runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+        runner.executeAllTransactions [clonedTransaction], runner.hooks, (err) ->
           messages = clonedTransaction['results']['general']['results'].map (value, index) -> value['message']
-          assert.include messages.join(), 'skipped'
-          done()
+          assert.include messages.join().toLowerCase(), 'skipped'
+          done(err)
 
       it 'should add fail message as a warning under `general` to the results on test passed to the emitter', (done) ->
-          runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, (err) ->
             messages = []
             callCount = configuration.emitter.emit.callCount
             for callNo in [0.. callCount - 1]
               messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
                 (value, index) -> value['message']
               )
-            assert.include messages.join(), 'skipped'
-            done()
+            assert.include messages.join().toLowerCase(), 'skipped'
+            done(err)
 
       it 'should set status `skip` on test passed to the emitter', (done) ->
-          runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, (err) ->
             tests = []
             callCount = Object.keys(configuration.emitter.emit.args).map (value, index) ->
               args = configuration.emitter.emit.args[value]
               tests.push args[1] if args[0] == 'test skip'
 
             assert.equal tests.length, 1
-
             assert.equal tests[0]['status'], 'skip'
-            done()
+            done(err)
 
 
     describe 'when server uses https', () ->
@@ -1422,13 +1424,13 @@ describe 'TransactionRunner', ->
             assert.ok afterAllStub2.called
             done()
 
-    describe '‘*All’ hooks with sandboxed API (functions as strings)', () ->
-      describe 'with a ‘beforeAll’ hook', () ->
+    describe '‘*All’ hooks with sandboxed API (functions as strings)', ->
+      describe 'with a ‘beforeAll’ hook', ->
 
-        beforeEach () ->
-          sinon.stub configuration.emitter, 'emit'
+        beforeEach ->
+          sinon.stub configuration.emitter, 'emit', ->
 
-        afterEach () ->
+        afterEach ->
           configuration.emitter.emit.restore()
 
         it 'should run the code and emit an error', (done) ->
@@ -1439,10 +1441,10 @@ describe 'TransactionRunner', ->
           """
           runner.hooks.beforeAll functionString
 
-          runner.executeAllTransactions [], runner.hooks, () ->
+          runner.executeAllTransactions [], runner.hooks, (err) ->
             call = configuration.emitter.emit.getCall(0)
             assert.ok configuration.emitter.emit.calledWith "test error"
-            done()
+            done(err)
 
         it 'should not have access to require', (done) ->
           functionString = """
@@ -1452,85 +1454,93 @@ describe 'TransactionRunner', ->
           """
           runner.hooks.beforeAll functionString
 
-          runner.executeAllTransactions [], runner.hooks, () ->
+          runner.executeAllTransactions [], runner.hooks, (err) ->
             call = configuration.emitter.emit.getCall(0)
             assert.ok configuration.emitter.emit.calledWith "test error"
             assert.include call.args[1].message, 'require'
-            done()
+            done(err)
 
         it 'should not have aceess to current context', (done) ->
           contextVar = "this"
           functionString = """
-          function(transaction){
+          function(transactions){
             contextVar = "that";
           }
           """
           runner.hooks.beforeAll functionString
 
-          runner.executeAllTransactions [], runner.hooks, () ->
+          runner.executeAllTransactions [], runner.hooks, (err) ->
             assert.equal contextVar, 'this'
-            done()
+            done(err)
 
         it 'should have access to the hook stash', (done) ->
           functionString = """
-          function(transaction){
-            stash['prop'] = 'that';
+          function(transactions){
+            stash.prop = 'that';
           }
           """
           runner.hooks.beforeAll functionString
 
-          runner.executeAllTransactions [], runner.hooks, () ->
+          runner.executeAllTransactions [], runner.hooks, (err) ->
             assert.notOk configuration.emitter.emit.calledWith "test error"
-            done()
+            done(err)
 
         it 'should be able to modify hook stash', (done) ->
           functionString = """
-          function(transaction){
-            stash['prop'] = 'that';
+          function(transactions){
+            stash.prop = 'that';
           }
           """
           runner.hooks.beforeAll functionString
 
-          runner.executeAllTransactions [], runner.hooks, () ->
+          runner.executeAllTransactions [], runner.hooks, (err) ->
             assert.notOk configuration.emitter.emit.calledWith "test error"
             assert.property runner.hookStash, 'prop'
-            done()
+            done(err)
 
         it 'should be able to modify transactions', (done) ->
           functionString = """
           function(transactions){
-            transactions['prop'] = 'that';
+            transactions[0].name = 'Changed!';
           }
           """
           runner.hooks.beforeAll functionString
 
-          transactions = {'some': 'mess'}
+          transactions = [
+            name: 'Test!',
+            request: {headers: {}, body: ''},
+            skip: true,
+          ]
 
-          runner.executeAllTransactions transactions, runner.hooks, () ->
+          runner.executeAllTransactions transactions, runner.hooks, (err) ->
             call = configuration.emitter.emit.getCall(0)
             assert.notOk configuration.emitter.emit.calledWith "test error"
-            assert.property transactions, 'prop'
-            done()
+            assert.equal transactions[0].name, 'Changed!'
+            done(err)
 
         it 'should be able to call "log" from inside the function', (done) ->
           functionString = """
           function(transactions){
-            log(transactions[Object.keys(transactions)[0]]);
-            transactions['prop'] = 'that';
+            log(transactions[0].name);
+            transactions[0].name = 'Changed!';
           }
           """
           runner.hooks.beforeAll functionString
 
-          transactions = {'some': 'mess'}
+          transactions = [
+            name: 'Test!',
+            request: {headers: {}, body: ''},
+            skip: true,
+          ]
 
-          runner.executeAllTransactions transactions, runner.hooks, () ->
+          runner.executeAllTransactions transactions, runner.hooks, (err) ->
             call = configuration.emitter.emit.getCall(0)
             assert.notOk configuration.emitter.emit.calledWith "test error"
-            assert.property transactions, 'prop'
+            assert.equal transactions[0].name, 'Changed!'
             assert.isArray runner.logs
             assert.lengthOf runner.logs, 1
-            assert.propertyVal runner.logs[0], 'content', 'mess'
-            done()
+            assert.propertyVal runner.logs[0], 'content', 'Test!'
+            done(err)
 
     describe '*Each hooks with standard async API (first argument transactions, second callback)', () ->
 
