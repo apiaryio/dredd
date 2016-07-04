@@ -181,10 +181,11 @@ class DreddCommand
       console.log version
       return @_processExit(0)
 
-  loadDreddFile: () ->
-    if fs.existsSync './dredd.yml'
-      logger.info 'Configuration dredd.yml found, ignoring other arguments.'
-      @argv = configUtils.load()
+  loadDreddFile: ->
+    configPath = @argv.config
+    if configPath and fs.existsSync configPath
+      logger.info("Configuration '#{configPath}' found, ignoring other arguments.")
+      @argv = configUtils.load(configPath)
 
     # overwrite saved config with cli arguments
     for key, value of @cliArgv

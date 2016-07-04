@@ -80,6 +80,10 @@ Remember you can always list all available arguments by `dredd --help`.
 Determines whether console output should include colors.  
 **Default value:** `true`
 
+### --config
+Path to dredd.yml config file.  
+**Default value:** `"./dredd.yml"`
+
 ### --custom, -j
 Pass custom key-value configuration data delimited by a colon. E.g. -j 'a:b'  
 **Default value:** `[]`
