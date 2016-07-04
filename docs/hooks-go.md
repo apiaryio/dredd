@@ -72,7 +72,7 @@ The `Runner` type has the following callback methods.
 3. `BeforeAll`, `AfterAll`
   - accepts a function as a first argument passing a Slice of [Transaction objects](hooks.md#transaction-object-structure) as a first argument
 
-Refer to [Dredd execution lifecycle](execution-lifecycle.md) to find when each hook callback is executed.
+Refer to [Dredd execution lifecycle](how-it-works.md#execution-life-cycle) to find when each hook callback is executed.
 
 ### Using the Go API
 

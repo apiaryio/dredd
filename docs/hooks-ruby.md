@@ -33,7 +33,7 @@ Including module `Dredd::Hooks:Methods` expands current scope with methods
   - accepts a block as a first argument passing an Array of [Transaction objects](hooks.md#transaction-object-structure) as a first argument
 
 
-Refer to [Dredd execution lifecycle](execution-lifecycle.md) to find when is each hook function executed.
+Refer to [Dredd execution lifecycle](how-it-works.md#execution-life-cycle) to find when is each hook function executed.
 
 ### Using Ruby API
 

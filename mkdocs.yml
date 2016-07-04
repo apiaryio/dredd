@@ -19,7 +19,7 @@ pages:
     - Perl: hooks-perl.md
     - PHP: hooks-php.md
     - Python: hooks-python.md
-    - Ruby: hooks-ruby.md`
+    - Ruby: hooks-ruby.md
     - Other Languages: hooks-new-language.md
 
 theme: readthedocs
