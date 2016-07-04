@@ -32,7 +32,7 @@ Module `Dredd::Hooks::Methods` imports following decorators:
 3. `beforeAll`, `afterAll`
   - wraps a function and passes an Array of [Transaction objects](hooks.md#transaction-object-structure) as a first argument to it
 
-Refer to [Dredd execution life-cycle](execution-lifecycle.md) to find when is each hook function executed.
+Refer to [Dredd execution life-cycle](how-it-works.md#execution-life-cycle) to find when is each hook function executed.
 
 ### Using Perl API
 

@@ -19,7 +19,7 @@ If you want to write a hook handler for your language you will have to implement
 - CLI Command runnning TCP socket server
   - [Must return message `Starting` to stdout](https://github.com/apiaryio/dredd-hooks-template/blob/master/features/tcp_server.feature#L5)
 
-- Hooks API in your language for registering code being executed during the [Dredd lifecycle](execution-lifecycle.md):
+- Hooks API in your language for registering code being executed during the [Dredd lifecycle](how-it-works.md#execution-life-cycle):
   - before all transactions
   - before each transaction
   - before transaction
