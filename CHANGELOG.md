@@ -1,5 +1,17 @@
 ## Changelog
 
+### v1.2.0
+
+**New CLI option: --config**
+- [#548](https://github.com/apiaryio/dredd/pull/548) --config option (@honzajavorek)
+
+**Updated dependencies**
+- [#546](https://github.com/apiaryio/dredd/pull/546) Updated Dependencies (@honzajavorek)
+
+**Better docs**
+- [#545](https://github.com/apiaryio/dredd/pull/545) Updates in Docs (@honzajavorek)
+- [#550](https://github.com/apiaryio/dredd/pull/550) Removed extra heading from docs (@honzajavorek)
+
 ### v1.1.0
 
 **Experimental support for Swagger**
