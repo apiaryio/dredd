@@ -48,7 +48,7 @@ paths:
         - application/json; charset=utf-8
       responses:
         200:
-          description: ''
+          description: ""
           schema:
             type: object
             properties:
