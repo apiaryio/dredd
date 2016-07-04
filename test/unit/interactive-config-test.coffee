@@ -21,7 +21,7 @@ describe 'interactiveConfig', () ->
     describe 'when I call it ', () ->
 
       it 'should run inquirer', (done) ->
-        sinon.stub inquirerStub, 'prompt', (quesetions, cb) -> cb()
+        sinon.stub inquirerStub, 'prompt', (questions) -> {then: (cb) -> cb()}
 
         interactiveConfig.prompt {}, () ->
           assert.isTrue inquirerStub.prompt.called
@@ -124,12 +124,3 @@ describe 'interactiveConfig', () ->
     it 'should save the file', () ->
       interactiveConfig.updateTravis()
       assert.isTrue fsStub.writeFileSync.called
-
-
-
-
-
-
-
-
-

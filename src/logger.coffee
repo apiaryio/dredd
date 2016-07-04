@@ -1,32 +1,33 @@
-winston = require 'winston'
 
-config =
+winston = require('winston')
+
+
+module.exports = new (winston.Logger)({
+  transports: [
+    new (winston.transports.Console)({colorize: true})
+  ]
   levels:
-    silly: 0
-    debug: 1
-    verbose: 2
-    info: 3
-    test: 4
-    pass: 5
-    fail: 6
+    silly: 14
+    debug: 13
+    verbose: 12
+    info: 11
+    test: 10
+    pass: 9
+    fail: 8
     complete: 7
-    actual: 8
-    expected: 9
-    hook: 10
-    request: 11
-    skip: 12
-    warn: 13
-    error: 14
-  syslevels:
-    silly: 0
-    debug: 1
-    verbose: 2
-    info: 3
-    warn: 4
-    error: 5
+    actual: 6
+    expected: 5
+    hook: 4
+    request: 3
+    skip: 2
+    warn: 1
+    error: 0
   colors:
-    test: 'yellow'
+    silly: 'magenta'
+    debug: 'blue'
+    verbose: 'cyan'
     info: 'blue'
+    test: 'yellow'
     pass: 'green'
     fail: 'red'
     complete: 'green'
@@ -35,36 +36,6 @@ config =
     hook: 'green'
     request: 'green'
     skip: 'yellow'
+    warn: 'yellow'
     error: 'red'
-    warning: 'yellow'
-    silly: 'magenta'
-    verbose: 'cyan'
-    debug: 'blue'
-
-consoleTransport = new (winston.transports.Console)({
-  colorize: true
 })
-
-sysConsoleTransport = new (winston.transports.Console)({
-  name: 'systemConsole'
-  colorize: true
-})
-
-logger = new (winston.Logger) ({
-  transports: [
-    consoleTransport
-  ]
-  levels: config.levels
-  colors: config.colors
-})
-
-syslogger = new (winston.Logger) ({
-  transports: [
-    sysConsoleTransport
-  ]
-  levels: winston.config.npm.levels
-  colors: config.colors
-})
-
-module.exports = logger
-module.exports.sys = syslogger

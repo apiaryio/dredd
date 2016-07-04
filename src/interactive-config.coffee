@@ -56,11 +56,7 @@ interactiveConfig.prompt = (config = {}, callback) ->
     message: "Please enter Apiary API key or leave empty for anonymous reporter"
     default: config['custom']?['apiaryApiKey']
     when: (answers) ->
-      # it's not GA on the Apiary side yet
-      if process.env['APIARY_BETA']?
-        (answers['apiary'] == true && ! config['custom']?['apiaryApiKey']?)
-      else
-        false
+      (answers['apiary'] == true && ! config['custom']?['apiaryApiKey']?)
   }
 
   questions.push {
@@ -69,14 +65,8 @@ interactiveConfig.prompt = (config = {}, callback) ->
     message: "Please enter Apiary API name"
     default: config['custom']?['apiaryApiName']
     when: (answers) ->
-      # it's not GA on the Apiary side yet
-      if process.env['APIARY_BETA']?
-        (
-          (answers['apiary'] == true && ! config['custom']?['apiaryApiName']?) &&
-          (answers['apiary'] == true && answers['apiaryApiKey'] != '')
-        )
-      else
-        false
+      (answers['apiary'] == true && ! config['custom']?['apiaryApiName']?) &&
+      (answers['apiary'] == true && answers['apiaryApiKey'] != '')
   }
 
   questions.push {
@@ -103,7 +93,7 @@ interactiveConfig.prompt = (config = {}, callback) ->
     when: (answers) -> (! fs.existsSync('circle.yml') && ! fs.existsSync('.travis.yml'))
   }
 
-  inquirer.prompt questions, callback
+  inquirer.prompt(questions).then(callback)
 
 interactiveConfig.processAnswers = (config, answers, callback) ->
   config ?= {}

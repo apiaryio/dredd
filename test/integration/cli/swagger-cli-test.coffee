@@ -75,6 +75,7 @@ describe 'CLI - Swagger Document', ->
       args = [
         './test/fixtures/warning-swagger.yaml'
         "http://localhost:#{PORT}"
+        '--no-color'
       ]
 
       beforeEach (done) ->
