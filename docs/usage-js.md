@@ -1,4 +1,4 @@
-## Using Dredd from JavaScript
+## Using Dredd as a JavaScript Library
 
 Dredd can be used directly from your JavaScript code. First, import
 and configure Dredd:

@@ -8,9 +8,13 @@ Requests in the API description usually aren't sorted in order to comply with lo
 
 You should understand that testing with Dredd is an analogy to **unit tests** of your application code. In unit tests, each unit should be testable without any dependency on other units or previous tests.
 
-### API Blueprint Example
+### Example
 
-Common case is to solve a situation where we want to test deleting of a resource. Obviously, to test deleting of a resource, we first need to create one. However, the order of HTTP transactions can be pretty much random in the API description:
+Common case is to solve a situation where we want to test deleting of a resource. Obviously, to test deleting of a resource, we first need to create one. However, the order of HTTP transactions can be pretty much random in the API description.
+
+To solve the situation, it's recommended to isolate the deletion test by [hooks](hooks.md). Providing `before` hook, we can ensure the database fixture will be present every time Dredd will try to send the request to delete a category item.
+
+#### API Blueprint
 
 ```markdown
 FORMAT: 1A
@@ -36,8 +40,6 @@ FORMAT: 1A
 ## Create an Item [POST]
 + Response 201
 ```
-
-To solve this situation, it's recommended to isolate the deletion test by [hooks](hooks.md). Providing `before` hook, we can ensure the database fixture will be present every time Dredd will try to send the request to delete a category item.
 
 To have an idea where we can hook our arbitrary code, we should first ask Dredd to list all available transaction names:
 
@@ -71,6 +73,87 @@ before('Category Items > Create an Item', function() {
 });
 ```
 
+#### Swagger
+
+```yaml
+swagger: "2.0"
+info:
+  version: "0.0.0"
+  title: Categories API
+  license:
+    name: MIT
+host: www.example.com
+basePath: /
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /categories:
+    post:
+      responses:
+        200:
+          description: ""
+  /category/{id}:
+    delete:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          enum:
+            - "42"
+      responses:
+        200:
+          description: ""
+  /category/{id}/items:
+    post:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          enum:
+            - "42"
+      responses:
+        200:
+          description: ""
+```
+
+To have an idea where we can hook our arbitrary code, we should first ask Dredd to list all available transaction names:
+
+```
+$ dredd api-description.yml http://localhost:3000 --names
+info: /categories > POST
+info: /category/{id} > DELETE
+info: /category/{id}/items > POST
+```
+
+Now we can create a `hooks.js` file. The file will contain setup and teardown of the database fixture:
+
+```javascript
+hooks = require('hooks');
+db = require('./src/db');
+
+beforeAll(function() {
+  db.cleanUp();
+});
+
+afterEach(function(transaction) {
+  db.cleanUp();
+});
+
+before('/category/{id}', function() {
+  db.createCategory({id: 42});
+});
+
+before('/category/{id}/items', function() {
+  db.createCategory({id: 42});
+});
+```
+
 ## Testing API Workflows
 
 Often you want to test a sequence of steps, a scenario, rather than just one request-response pair in isolation. Since the API description formats are quite limited in their support of documenting scenarios, Dredd probably isn't the best tool to provide you with this kind of testing. There are some tricks though, which can help you to work around some of the limitations.
@@ -82,9 +165,11 @@ To test various scenarios, you will want to write each of them into a separate A
 
 For workflows to work properly, you'll also need to keep **shared context** between individual HTTP transactions. You can use [hooks](hooks.md) in order to achieve that. See tips on how to [pass data between transactions](hooks.md#sharing-data-between-steps-in-request-stash).
 
-### API Blueprint Example
+### Example
 
 Imagine we have a simple workflow described:
+
+#### API Blueprint
 
 ```markdown
 FORMAT: 1A
@@ -112,7 +197,7 @@ FORMAT: 1A
 
 ## PATCH /cars/{id}
 + Parameters
-    + id: 1 (string, required)
+    + id: 42 (string, required)
 
 + Request (application/json)
 
@@ -120,16 +205,98 @@ FORMAT: 1A
 
 + Response 200 (application/json)
 
-        [
-            {"id": 42, "color": "yellow"}
-        ]
+        {"id": 42, "color": "yellow"}
 
 ```
+
+#### Swagger
+
+```yaml
+swagger: "2.0"
+info:
+  version: "0.0.0"
+  title: Categories API
+  license:
+    name: MIT
+host: www.example.com
+basePath: /
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /login:
+    post:
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+      responses:
+        200:
+          description: ""
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+  /cars:
+    get:
+      responses:
+        200:
+          description: ""
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                color:
+                  type: string
+  /cars/{id}:
+    patch:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          enum:
+            - "42"
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              color:
+                type: string
+      responses:
+        200:
+          description: ""
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+              color:
+                type: string
+```
+
+#### Writing Hooks
 
 To have an idea where we can hook our arbitrary code, we should first ask Dredd to list all available transaction names:
 
 ```
-$ dredd api-description.apib http://localhost:3000 --names
+$ dredd api-description.apib http://localhost:3000 --names  # for Swagger, use api-description.yml
 info: /login > POST
 info: /cars > GET
 info: /cars/{id} > PATCH

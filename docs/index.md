@@ -42,27 +42,23 @@ Dredd supports writing [hooks](https://dredd.readthedocs.io/en/latest/hooks/)
 
 ## Documentation Reference
 
-- Dredd
-    - [About Dredd](index.md)
-    - [Quickstart](quickstart.md)
-    - [Execution Lifecycle](execution-lifecycle.md)
-    - [Overview](overview.md)
+- [About Dredd](index.md)
+- [Quickstart](quickstart.md)
+- [How It Works](how-it-works.md)
+- [How-To Guides](how-to-guides.md)
 - Usage
     - [Command-line Interface](usage-cli.md)
-    - [From JavaScript](usage-js.md)
+    - [As a JavaScript Library](usage-js.md)
 - Hooks
     - [About Hooks](hooks.md)
-    - Supported Languages
-        - [Go](hooks-go.md)
-        - [JavaScript (Sandboxed)](hooks-js-sandbox.md)
-        - [Node.js](hooks-nodejs.md)
-        - [Perl](hooks-perl.md)
-        - [PHP](hooks-php.md)
-        - [Python](hooks-python.md)
-        - [Ruby](hooks-ruby.md)
+    - [Go](hooks-go.md)
+    - [JavaScript (Sandboxed)](hooks-js-sandbox.md)
+    - [Node.js](hooks-nodejs.md)
+    - [Perl](hooks-perl.md)
+    - [PHP](hooks-php.md)
+    - [Python](hooks-python.md)
+    - [Ruby](hooks-ruby.md)
     - [Other Languages](hooks-new-language.md)
-- Example
-    - [Full Example](example.md)
 
 ## Useful Links
 
