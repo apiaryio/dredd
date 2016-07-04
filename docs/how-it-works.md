@@ -52,8 +52,6 @@ Following execution life cycle documentation should help you to understand how D
     - Run `afterAll` hooks
 6. Report test run `end` with result statistics
 
-## Limitations of API Description Formats
-
 ## Automatic Expectations
 
 Dredd automatically generates expectations on HTTP responses based on examples in the API description with use of [Gavel.js][] library. Please refer to [Gavel][] rules if you want know more.
