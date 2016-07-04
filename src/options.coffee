@@ -163,4 +163,8 @@ options =
     description: 'Port of the hook worker.'
     default: 61321
 
+  config:
+    description: 'Path to dredd.yml config file.'
+    default: './dredd.yml'
+
 module.exports = options

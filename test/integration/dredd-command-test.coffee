@@ -9,6 +9,7 @@ proxyquire = require('proxyquire').noCallThru()
 
 packageJson = require '../../package.json'
 loggerStub = require '../../src/logger'
+configUtils = require '../../src/config-utils'
 
 PORT = 9876
 
@@ -30,7 +31,9 @@ dreddStub = proxyquire '../../src/dredd', {
 }
 DreddCommand = proxyquire '../../src/dredd-command', {
   './dredd': dreddStub
+  './config-utils': configUtils
   'console': loggerStub
+  'fs': fs
 }
 
 execCommand = (custom = {}, cb) ->
@@ -66,6 +69,94 @@ describe "DreddCommand class Integration", () ->
       loggerStub[method].restore()
     return
 
+  describe('When using configuration file', ->
+    describe('When specifying custom configuration file by --config', ->
+      configPath = '../../custom-dredd-config-path.yaml'
+      cmd = {argv: ['--config', configPath]}
+      options = {_: ['api-description.apib', 'http://localhost']}
+
+      fsExistsSync = undefined
+      configUtilsLoad = undefined
+
+      before((done) ->
+        fsExistsSync = sinon.stub(fs, 'existsSync', -> true)
+        configUtilsLoad = sinon.stub(configUtils, 'load', -> options)
+        execCommand(cmd, done)
+      )
+      after( ->
+        fsExistsSync.restore()
+        configUtilsLoad.restore()
+      )
+
+      it('should call fs.existsSync with given path', ->
+        assert.isTrue(fsExistsSync.calledWith(configPath))
+      )
+      it('should call configUtils.load with given path', ->
+        assert.isTrue(configUtilsLoad.calledWith(configPath))
+      )
+      it('should print message about using given configuration file', ->
+        assert.include(stdout, "info: Configuration '#{configPath}' found")
+      )
+    )
+
+    describe('When dredd.yml exists', ->
+      configPath = './dredd.yml'
+      cmd = {argv: []}
+      options = {_: ['api-description.apib', 'http://localhost']}
+
+      fsExistsSync = undefined
+      configUtilsLoad = undefined
+
+      before((done) ->
+        fsExistsSync = sinon.stub(fs, 'existsSync', -> true)
+        configUtilsLoad = sinon.stub(configUtils, 'load', -> options)
+        execCommand(cmd, done)
+      )
+      after( ->
+        fsExistsSync.restore()
+        configUtilsLoad.restore()
+      )
+
+      it('should call fs.existsSync with dredd.yml', ->
+        assert.isTrue(fsExistsSync.calledWith(configPath))
+      )
+      it('should call configUtils.load with dredd.yml', ->
+        assert.isTrue(configUtilsLoad.calledWith(configPath))
+      )
+      it('should print message about using dredd.yml', ->
+        assert.include(stdout, "info: Configuration '#{configPath}' found")
+      )
+    )
+
+    describe('When dredd.yml does not exist', ->
+      configPath = './dredd.yml'
+      cmd = {argv: []}
+      options = {_: ['api-description.apib', 'http://localhost']}
+
+      fsExistsSync = undefined
+      configUtilsLoad = undefined
+
+      before((done) ->
+        fsExistsSync = sinon.stub(fs, 'existsSync', -> false)
+        configUtilsLoad = sinon.spy(configUtils, 'load')
+        execCommand(cmd, done)
+      )
+      after( ->
+        fsExistsSync.restore()
+        configUtilsLoad.restore()
+      )
+
+      it('should call fs.existsSync with dredd.yml', ->
+        assert.isTrue(fsExistsSync.calledWith(configPath))
+      )
+      it('should never call configUtils.load', ->
+        assert.isFalse(configUtilsLoad.called)
+      )
+      it('should not print message about using configuration file', ->
+        assert.notInclude(stdout, 'info: Configuration')
+      )
+    )
+  )
 
   describe "to test various Errors - When API description document should be loaded from 'http(s)://...' url", ->
     server = null

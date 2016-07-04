@@ -225,10 +225,3 @@ describe 'configUtils', () ->
       assert.property output, 'customOpt2'
       assert.equal output['customOpt'], 'itsValue:can:contain:delimiters'
       assert.equal output['customOpt2'], 'itsValue'
-
-
-
-
-
-
-
