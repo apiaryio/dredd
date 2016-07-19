@@ -11,9 +11,10 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
   try
     parsed = ut.parse uriTemplate
   catch e
-    text = "\n Failed to parse URI template: #{uriTemplate}"
-    text += "\n Error: #{e}"
-    result.errors.push text
+    result.errors.push("""\
+      Failed to parse URI template: #{uriTemplate}
+      Error: #{e}\
+    """)
     return result
 
   # get parameters from expression object
@@ -30,10 +31,10 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
     for uriParameter in uriParameters
       if Object.keys(parameters).indexOf(uriParameter) is -1
         ambiguous = true
-        text = "\nAmbiguous URI parameter in template: #{uriTemplate} " + \
-               "\nParameter not defined in API description document: " + \
-               "'" + uriParameter + "'"
-        result.warnings.push text
+        result.warnings.push("""\
+          Ambiguous URI parameter in template: #{uriTemplate}
+          Parameter not defined in API description document: #{uriParameter}\
+        """)
 
     unless ambiguous
       toExpand = {}
