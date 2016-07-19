@@ -33,6 +33,7 @@
     "coffee-script": "^1.10.0",
     "coffeelint": "^1.14.2",
     "coveralls": "^2.11.6",
+    "cz-conventional-changelog": "^1.1.6",
     "jscoverage": "^0.6.0",
     "mocha": "^2.3.4",
     "mocha-lcov-reporter": "^1.0.0",
@@ -51,5 +52,10 @@
     "acceptance"
   ],
   "author": "Apiary Czech Republic, s.r.o. <support@apiary.io>",
-  "license": "MIT"
+  "license": "MIT",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }
