@@ -203,7 +203,35 @@ describe 'expandUriTemplateWithParameters', ->
           it 'should return URI', ->
             assert.isNotNull data['uri']
 
-        describe 'when example and default value is given', ->
+        describe 'when default value is given', ->
+          before ->
+            uriTemplate = '/machines/{name}'
+            parameters =
+              name:
+                description: 'Machine name'
+                type: 'string'
+                required: true
+                example: ''
+                default: 'example-one'
+
+            data = expandUriTemplateWithParameters uriTemplate, parameters
+
+          it 'should return no error', ->
+            assert.equal data['errors'].length, 0
+
+          it 'should return one warning', ->
+            assert.equal data['warnings'].length, 1
+
+          it 'should return warning about pointlessness of default value of a required parameter', ->
+            assert.include data.warnings[0], 'Default value for a required parameter'
+
+          it 'should use default value to URI parameter expansion', ->
+            assert.include data['uri'], parameters['name']['default']
+
+          it 'should return URI', ->
+            assert.isNotNull data['uri']
+
+        describe 'when example and default values are given', ->
           before ->
             uriTemplate = '/machines/{name}'
             parameters =
@@ -219,8 +247,11 @@ describe 'expandUriTemplateWithParameters', ->
           it 'should return no error', ->
             assert.equal data['errors'].length, 0
 
-          it 'should return no warning', ->
-            assert.equal data['warnings'].length, 0
+          it 'should return one warning', ->
+            assert.equal data['warnings'].length, 1
+
+          it 'should return warning about pointlessness of default value of a required parameter', ->
+            assert.include data.warnings[0], 'Default value for a required parameter'
 
           it 'should use example value to URI parameter expansion', ->
             assert.include data['uri'], parameters['name']['example']
@@ -278,7 +309,7 @@ describe 'expandUriTemplateWithParameters', ->
           it 'should return URI', ->
             assert.isNotNull data['uri']
 
-        describe 'when example and default value is given', ->
+        describe 'when example and default values are given', ->
           before ->
             uriTemplate = '/machines/{name}'
             parameters =
@@ -303,7 +334,7 @@ describe 'expandUriTemplateWithParameters', ->
           it 'should return some URI', ->
             assert.isNotNull data['uri']
 
-        describe 'when example and default value is not given', ->
+        describe 'when example and default values are not given', ->
           before ->
             uriTemplate = '/machines/{name}'
             parameters =

@@ -35,27 +35,33 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
                "'" + uriParameter + "'"
         result.warnings.push text
 
-    if ambiguous is false
+    unless ambiguous
       toExpand = {}
       for uriParameter in uriParameters
         param = parameters[uriParameter]
-        if param.required is true
-          if not param.example
-            ambiguous = true
-            text = "\nAmbiguous URI parameter in template: #{uriTemplate} " + \
-                   "\nNo example value for required parameter in API description document: " + \
-                   "'" + uriParameter + "'"
-            result.warnings.push text
-          else
-            toExpand[uriParameter] = param.example
-        else
-          if param.example
-            toExpand[uriParameter] = param.example
-          else if param.default
-            toExpand[uriParameter] = param.default
 
-    if ambiguous is false
-      result.uri = parsed.expand toExpand
+        if param.example
+          toExpand[uriParameter] = param.example
+        else if param.default
+          toExpand[uriParameter] = param.default
+        else
+          if param.required
+            ambiguous = true
+            result.warnings.push("""\
+              Ambiguous URI parameter in template: #{uriTemplate}
+              No example value for required parameter in API description \
+              document: #{uriParameter}\
+            """)
+
+        if param.required and param.default
+          result.warnings.push("""\
+            Required URI parameter has a default value: #{uriParameter}
+            Default value for a required parameter doesn't make sense from \
+            API description perspective. Use example value instead.\
+          """)
+
+    unless ambiguous
+      result.uri = parsed.expand(toExpand)
 
   return result
 
