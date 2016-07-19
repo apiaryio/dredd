@@ -229,29 +229,29 @@ describe 'expandUriTemplateWithParameters', ->
             assert.isNotNull data['uri']
 
       describe 'when expression parameter is optional', ->
-          before ->
-            uriTemplate = '/machines/{name}'
-            parameters =
-              name:
-                description: 'Machine name'
-                type: 'string'
-                required: false
-                example: 'example-one'
-                default: ''
+        before ->
+          uriTemplate = '/machines/{name}'
+          parameters =
+            name:
+              description: 'Machine name'
+              type: 'string'
+              required: false
+              example: 'example-one'
+              default: ''
 
-            data = expandUriTemplateWithParameters uriTemplate, parameters
+          data = expandUriTemplateWithParameters uriTemplate, parameters
 
-          it 'should return no error', ->
-            assert.equal data['errors'].length, 0
+        it 'should return no error', ->
+          assert.equal data['errors'].length, 0
 
-          it 'should return no warning', ->
-            assert.equal data['warnings'].length, 0
+        it 'should return no warning', ->
+          assert.equal data['warnings'].length, 0
 
-          it 'should use example value to URI parameter expansion', ->
-            assert.include data['uri'], parameters['name']['example']
+        it 'should use example value to URI parameter expansion', ->
+          assert.include data['uri'], parameters['name']['example']
 
-          it 'should return URI', ->
-            assert.isNotNull data['uri']
+        it 'should return URI', ->
+          assert.isNotNull data['uri']
 
         describe 'when default value is given and example is empty', ->
           before ->
@@ -302,7 +302,6 @@ describe 'expandUriTemplateWithParameters', ->
 
           it 'should return some URI', ->
             assert.isNotNull data['uri']
-
 
         describe 'when example and default value is not given', ->
           before ->
