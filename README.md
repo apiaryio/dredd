@@ -1,9 +1,11 @@
 # Dredd Transactions
 
-[![Build Status](https://travis-ci.org/apiaryio/dredd-transactions.png?branch=master)](https://travis-ci.org/apiaryio/dredd-transactions)
-[![Dependencies Status](https://david-dm.org/apiaryio/dredd-transactions.png)](https://david-dm.org/apiaryio/dredd-transactions)
-[![devDependencies Status](https://david-dm.org/apiaryio/dredd-transactions/dev-status.png)](https://david-dm.org/apiaryio/dredd-transactions#info=devDependencies)
+[![npm version](https://badge.fury.io/js/dredd-transactions.svg)](https://badge.fury.io/js/dredd-transactions)
+[![Build Status](https://travis-ci.org/apiaryio/dredd-transactions.svg?branch=master)](https://travis-ci.org/apiaryio/dredd-transactions)
+[![Dependencies Status](https://david-dm.org/apiaryio/dredd-transactions.svg)](https://david-dm.org/apiaryio/dredd-transactions)
+[![devDependencies Status](https://david-dm.org/apiaryio/dredd-transactions/dev-status.svg)](https://david-dm.org/apiaryio/dredd-transactions#info=devDependencies)
 [![Coverage Status](https://coveralls.io/repos/github/apiaryio/dredd-transactions/badge.svg?branch=master)](https://coveralls.io/github/apiaryio/dredd-transactions?branch=master)
+
 
 Dredd Transactions library compiles *HTTP Transactions* (simple Request-Response pairs) from API description document.
 
