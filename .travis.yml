@@ -25,7 +25,7 @@ env:
 deploy:
   provider: "script"
   skip_cleanup: true
-  script: "npm run semantic-release"
+  script: "npm run semantic-release || true"
   on:
     branch: "master"
     node: "6"
