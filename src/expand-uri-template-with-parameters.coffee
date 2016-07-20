@@ -56,7 +56,7 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
 
         if param.required and param.default
           result.warnings.push("""\
-            Required URI parameter has a default value: #{uriParameter}
+            Required URI parameter '#{uriParameter}' has a default value.
             Default value for a required parameter doesn't make sense from \
             API description perspective. Use example value instead.\
           """)
