@@ -7,6 +7,9 @@ node_js:
   - "4"
   - "5"
   - "6"
+cache:
+  directories:
+    - "node_modules"
 before_install:
   - "npm -g install npm@latest"
 before_script:
@@ -15,3 +18,13 @@ script:
   - "npm test"
 after_success:
   - "npm run coveralls"
+env:
+  global:
+    # GH_TOKEN and NPM_TOKEN encrypted by 'travis encrypt' utility
+    - secure: "LWRVV2vXBEMPdLGmcOe25t2iE/k7CuONnNsmyCUCSusybVwh/wDwKNOYT+TqEegD34u5dkhfPuMy+sEn1IKUgTBIxjI6cXSbyLEmVBJuoEKySZaPUaXFeqylLgy8Q/vjPv0m9WQGPx94KIT0uPPB0KS1+ApRssksBeSp1TgQ7zXxssR9+5Ym0wdQSmHjajqjIEGJ3+L7IUANZinOfzh76V5d3MtDxHjKA570nGat0bXJ54Sy9G/a23c4HB+qNgneQPAkwbrK19LsMNeOUVLzCTt4RHuqOtg/EBgcR88HGfzzWYiuqXNqO+tqacV00cZZ6qIsvTw8zidE1YSpPvoIMfiEf1887+RQjPGSEnFssv8a0G9JjAN478OmpBWFTMsiaOyd8cckgb2ZApMXxZQch5l35Qr23zIa1JKgEWeoz25G5dGGJPfVyjWfyZhLDRtNPuq1TSBoQT9nGH35NEOYCSCWcwgFWn9aYeSNdxSMrb62GpLspPJIO8QXD3mTtn69TBa5Mn3o3MvP+NJ9l1uyv14WtF+Um4IMH8BDwdWLxjG1dwrK5kOskfo0ioSfK1u2lE3YaW9ARDTbOf2FAluqCCdld9XZStH7pIW8SBJtIwQYA0P+CyVYnvBQqxw3rbW2Sn1VwYw7hzoAHpzlI68tKEhjgIybsCZNFbaU3NNcjr4="
+deploy:
+  provider: "script"
+  script: "npm run semantic-release"
+  on:
+    branch: "master"
+    node: "6"
