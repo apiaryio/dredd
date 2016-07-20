@@ -23,7 +23,6 @@ paths:
           required: true
           type: integer
           format: int64
-          default: certainly-not-a-number
       responses:
         200:
           description: pet response
