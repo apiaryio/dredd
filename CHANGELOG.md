@@ -64,6 +64,11 @@
 - [#484](https://github.com/apiaryio/dredd/pull/484) Ambiguous parameters raise exception (fix) (@honzajavorek)
 - [#485](https://github.com/apiaryio/dredd/pull/485) Preventing NaN in printed annotations (@honzajavorek)
 
+### v1.0.11
+
+**Support for Node 6 (backported as [v1.0.x branch](https://github.com/apiaryio/dredd/tree/v1.0.x))**
+- [#465](https://github.com/apiaryio/dredd/pull/465) Support for Node 6 (@honzajavorek)
+
 ### v1.1.0-pre.1
 
 **Support for Node 6**
