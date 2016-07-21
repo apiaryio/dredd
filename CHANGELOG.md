@@ -1,5 +1,10 @@
 ## Changelog
 
+### v1.3.0
+
+**New way of handling default URI parameter values**
+- [#570](https://github.com/apiaryio/dredd/pull/570) Use default value even though the parameter is required (@honzajavorek)
+
 ### v1.2.0
 
 **New CLI option: --config**
