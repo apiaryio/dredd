@@ -1,6 +1,6 @@
 
 {assert} = require('../utils')
-protagonist = require('protagonist')
+drafter = require('drafter')
 
 detectTransactionExamples = require('../../src/detect-transaction-examples')
 
@@ -22,7 +22,7 @@ scenario = (description, {actionContent, examples, exampleNumbersPerTransaction}
 
     beforeEach((done) ->
       options = {type: 'ast', generateSourceMap: true}
-      protagonist.parse(apiBlueprint, options, (err, parseResult) ->
+      drafter.parse(apiBlueprint, options, (err, parseResult) ->
         return done(err) if err
         action = parseResult.ast.resourceGroups[0].resources[0].actions[0]
         done()
@@ -30,7 +30,7 @@ scenario = (description, {actionContent, examples, exampleNumbersPerTransaction}
     )
     beforeEach((done) ->
       options = {type: 'refract', generateSourceMap: true}
-      protagonist.parse(apiBlueprint, options, (err, parseResult) ->
+      drafter.parse(apiBlueprint, options, (err, parseResult) ->
         return done(err) if err
         transition = parseResult.content[0].content[0].content[0].content[0]
         done()
