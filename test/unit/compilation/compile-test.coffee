@@ -143,7 +143,7 @@ describe('compile() · all API description formats', ->
           assert.isUndefined(errors[0].code)
         )
         it('has message', ->
-          assert.include(errors[0].message.toLowerCase(), 'no example value')
+          assert.include(errors[0].message.toLowerCase(), 'no example')
         )
         it('has no location', ->
           assert.isUndefined(errors[0].location)
