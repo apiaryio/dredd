@@ -59,6 +59,7 @@
     "coffee-coverage": "^1.0.1",
     "coffeelint": "^1.15.7",
     "coveralls": "^2.11.9",
+    "cz-conventional-changelog": "^1.1.6",
     "ect": "^0.5.9",
     "express": "^4.14.0",
     "github-changes": "^1.0.2",
@@ -80,5 +81,10 @@
     "acceptance"
   ],
   "author": "Apiary Czech Republic, s.r.o. <support@apiary.io>",
-  "license": "MIT"
+  "license": "MIT",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }
