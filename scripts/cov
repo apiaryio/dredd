@@ -19,10 +19,14 @@ cp -r ./test ./src-cov/test
 cp -r ./bin ./src-cov/bin
 chmod +x ./src-cov/bin/*
 
+# Add dots as poor man's "progress bar" to prevent timeouts on Travis CI
+# due to no output for a long time
+echo 'beforeEach( -> process.stderr.write("."))' | tee -a ./src-cov/test/**/*-test.coffee
+
 # Testing
 export COLLECT_COVERAGE='true'
 find ./src-cov/test/ -name '*-test.coffee' | xargs "$MOCHA" \
-  --reporter='mocha-lcov-reporter' >> ./lcov/mocha.info 2>&1
+  --reporter='mocha-lcov-reporter' >> ./lcov/mocha.info
 
 # Merging LCOV reports
 $MERGER './lcov/*.info' ./cov.info

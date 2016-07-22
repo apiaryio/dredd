@@ -1,6 +1,6 @@
 {assert} = require 'chai'
 
-protagonist = require 'protagonist'
+drafter = require 'drafter'
 blueprintUtils = require '../../src/blueprint-utils'
 
 describe 'blueprintUtils', ->
@@ -61,7 +61,7 @@ describe 'blueprintUtils', ->
 
                 ok indentation
       """
-      protagonist.parse blueprint, options, (err, parseResult) ->
+      drafter.parse blueprint, options, (err, parseResult) ->
         return done new Error(err.message) if err
 
         annotations = (node for node in parseResult.content when node.element is 'annotation')
@@ -131,7 +131,7 @@ describe 'blueprintUtils', ->
 
                 yup!
         """
-        protagonist.parse blueprint, options, (err, parseResult) ->
+        drafter.parse blueprint, options, (err, parseResult) ->
           return done err if err
 
           annotations = (node for node in parseResult.content when node.element is 'annotation')

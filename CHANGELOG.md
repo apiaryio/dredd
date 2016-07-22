@@ -1,5 +1,10 @@
 ## Changelog
 
+### v1.4.0
+
+**Dredd is now installable also without C++ compiler + several bug fixes**
+- [#573](https://github.com/apiaryio/dredd/pull/573) Dredd is now installable also without C++ compiler (@honzajavorek)
+
 ### v1.3.0
 
 **New way of handling default URI parameter values**

@@ -4,6 +4,9 @@ language: "node_js"
 env:
   global:
     - secure: "STxhfQh/AHeyRJgErinjZrjnJDChHKLctjqAUDwiIWcZZonopfB8DNp6DgcCHj6FPCTfcHeWdjQjvOiC6ZZugMcMUwzhi+PdDR4kDVP3GoeaMcKC2ckkdjapcA+mnmJDLF35FjhK6PvR1zpRbwlwiYpIayKHEjdgEzna3RmfRH8="
+  matrix:
+    - "DRAFTER=JS"
+    - "DRAFTER=CPP"
 node_js:
   - "0.10"
   - "0.12"
@@ -15,7 +18,8 @@ before_install:
 before_script:
   - "npm run lint"
 script:
+  - "if [[ $DRAFTER = JS ]]; then find ./node_modules -name protagonist -type d -exec rm -rf {} +; fi"
   - "npm test"
-  - "npm run test:hooks-handlers"
+  - "if [[ $DRAFTER = JS && $TRAVIS_PULL_REQUEST = false ]]; then npm run test:hooks-handlers; fi"
 after_success:
   - "npm run coveralls"
