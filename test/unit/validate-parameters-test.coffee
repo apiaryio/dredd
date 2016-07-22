@@ -159,18 +159,92 @@ describe 'validateParameters', ->
       result = validateParameters params
       assert.equal result['errors'].length, 0
 
-  describe 'when parameter is reqired example value is empty', ->
-    it 'should set descirptive error', ->
-      params =
-        name:
-          description: 'Machine name'
-          type: 'string'
-          required: true
-          example: ''
-          default: ''
-          values: []
+  describe 'when parameter is required', () ->
+    describe 'and example and default value are empty', () ->
+      it 'should set descirptive error', () ->
+        params =
+          name:
+            description: 'Machine name'
+            type: 'string'
+            required: true
+            example: ''
+            default: ''
+            values: []
 
-      result = validateParameters params
-      message = result['errors'][0]
-      assert.include message, 'name'
-      assert.include message, 'Required'
+        result = validateParameters params
+        message = result['errors'][0]
+        assert.include message, 'name'
+        assert.include message, 'Required'
+
+    describe 'and default value is not empty and example value is empty', () ->
+      it 'should not set the error', () ->
+        params =
+          name:
+            description: 'Machine name'
+            type: 'string'
+            required: true
+            example: ''
+            default: 'bagaboo'
+            values: []
+
+        result = validateParameters params
+        assert.equal result['errors'].length, 0
+
+    describe 'and example value is not empty and default value is empty', () ->
+      it 'should not set the error', () ->
+        params =
+          name:
+            description: 'Machine name'
+            type: 'string'
+            required: true
+            example: 'booboo'
+            default: ''
+            values: []
+
+        result = validateParameters params
+        assert.equal result['errors'].length, 0
+
+  describe 'when parameter is not required', () ->
+    describe 'and example and default value are empty', () ->
+      it 'should not set descirptive error', ->
+        params =
+          name:
+            description: 'Machine name'
+            type: 'string'
+            required: false
+            example: ''
+            default: ''
+            values: []
+
+        result = validateParameters params
+        assert.equal result['errors'].length, 0
+
+
+    describe 'and default value is not empty and example value is empty', () ->
+      it 'should not set the error', () ->
+        params =
+          name:
+            description: 'Machine name'
+            type: 'string'
+            required: true
+            example: ''
+            default: 'bagaboo'
+            values: []
+
+        result = validateParameters params
+        assert.equal result['errors'].length, 0
+
+    describe 'and example value is not empty and default value is empty', () ->
+      it 'should not set the error', () ->
+        params =
+          name:
+            description: 'Machine name'
+            type: 'string'
+            required: true
+            example: 'booboo'
+            default: ''
+            values: []
+
+        result = validateParameters params
+        assert.equal result['errors'].length, 0
+

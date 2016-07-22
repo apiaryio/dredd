@@ -3,8 +3,8 @@ validateParameters = (params) ->
   result = {warnings: [], errors: []}
 
   for paramName, param of params
-    if param.required is true and not param.example
-      text = "Required URI parameter '#{paramName}' has no example value."
+    if param.required and not param.example and not param.default
+      text = "Required URI parameter '#{paramName}' has no example or default value."
       result.errors.push(text)
 
     switch param.type
