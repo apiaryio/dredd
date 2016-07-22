@@ -3,12 +3,9 @@ validateParameters = (params) ->
   result = {warnings: [], errors: []}
 
   for paramName, param of params
-    if param.required is true and
-      (param.example is '' or param.example is undefined or param.example is null) and
-      (param.default is '' or param.default is undefined or param.default is null)
-
-        text = "Required URI parameter '#{paramName}' has no example or default value."
-        result.errors.push(text)
+    if param.required and not param.example and not param.default
+      text = "Required URI parameter '#{paramName}' has no example or default value."
+      result.errors.push(text)
 
     switch param.type
       when 'number'
