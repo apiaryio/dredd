@@ -408,6 +408,57 @@ describe('compile() · all API description formats', ->
     )
   )
 
+  describe.only('with default value for a required URI parameter', ->
+    errors = undefined
+    warnings = undefined
+    warning = undefined
+    transactions = undefined
+
+    fixtures.defaultRequired.forEachDescribe(({source}) ->
+      beforeEach((done) ->
+        compileFixture(source, (args...) ->
+          [err, compilationResult] = args
+          {errors, warnings, transactions} = compilationResult
+          [warning] = warnings[-1..] # the last warning
+          done(err)
+        )
+      )
+
+      it('expands the request URI using the default value', ->
+        assert.equal(transactions[0].request.uri, '/honey?beekeeper=Honza')
+      )
+      it('is compiled with no errors', ->
+        assert.equal(errors.length, 0)
+      )
+      it('is compiled with warnings', ->
+        assert.ok(warnings.length)
+      )
+      it('there are no other warnings than from parser or URI expansion', ->
+        assert.equal(warnings.filter((w) ->
+          w.component isnt 'uriTemplateExpansion' and
+          w.component isnt 'apiDescriptionParser'
+        ).length, 0)
+      )
+      context('the last warning', ->
+        it('comes from URI expansion', ->
+          assert.equal(warning.component, 'uriTemplateExpansion')
+        )
+        it('has no code', ->
+          assert.isUndefined(warning.code)
+        )
+        it('has message', ->
+          assert.include(warning.message.toLowerCase(), 'default value for a required parameter')
+        )
+        it('has no location', ->
+          assert.isUndefined(warning.location)
+        )
+        it('has origin', ->
+          assert.jsonSchema(warning.origin, originSchema)
+        )
+      )
+    )
+  )
+
   describe('with HTTP headers', ->
     transaction = undefined
 
