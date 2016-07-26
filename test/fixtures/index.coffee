@@ -111,6 +111,10 @@ fixtures =
     apiBlueprint: fromFile('./api-blueprint/http-headers.apib')
     swagger: fromFile('./swagger/http-headers.yml')
   )
+  defaultRequired: fixture(
+    apiBlueprint: fromFile('./api-blueprint/default-required.apib')
+    swagger: fromFile('./swagger/default-required.yml')
+  )
 
   # Specific to API Blueprint
   unrecognizable: fixture(
