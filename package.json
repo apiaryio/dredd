@@ -47,7 +47,7 @@
     "optimist": "^0.6.1",
     "pitboss-ng": "^0.3.2",
     "proxyquire": "^1.7.10",
-    "request": "^2.72.0",
+    "request": "^2.74.0",
     "spawn-args": "^0.2.0",
     "spawn-sync": "^1.0.15",
     "uri-template": "^1.0.1",
