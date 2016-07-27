@@ -3,7 +3,7 @@ dist: "trusty"
 language: "node_js"
 env:
   global:
-    - secure: "STxhfQh/AHeyRJgErinjZrjnJDChHKLctjqAUDwiIWcZZonopfB8DNp6DgcCHj6FPCTfcHeWdjQjvOiC6ZZugMcMUwzhi+PdDR4kDVP3GoeaMcKC2ckkdjapcA+mnmJDLF35FjhK6PvR1zpRbwlwiYpIayKHEjdgEzna3RmfRH8="
+    - secure: "io+3qwINOL+43e0qNPOr0oOEoMYUXDJroSGMwVXC4jgPW3YUe10lPRMCr39iEHg9iIOUj30xtqN8nqDdrljVIT1nM4pcrnrCcMegKXZ5dzQYFW0CW3DN06lLHt7K1Kdcah+3fXCSWPwIahns0R/SC/QRedZcOgDhD3KG7gBeoag="
   matrix:
     - "DRAFTER=JS"
     - "DRAFTER=CPP"
@@ -20,6 +20,6 @@ before_script:
 script:
   - "if [[ $DRAFTER = JS ]]; then find ./node_modules -name protagonist -type d -exec rm -rf {} +; fi"
   - "npm test"
-  - "if [[ $DRAFTER = JS && $TRAVIS_PULL_REQUEST = false ]]; then npm run test:hooks-handlers; fi"
+  - "if [[ $DRAFTER = JS ]]; then npm run test:hooks-handlers; fi"
 after_success:
   - "npm run coveralls"
