@@ -1,9 +1,9 @@
 
-fixtures = require('../../fixtures')
-createCompilationResultSchema = require('../../schemas/compilation-result')
-createLocationSchema = require('../../schemas/location')
-createOriginSchema = require('../../schemas/origin')
-{assert, compileFixture} = require('../../utils')
+fixtures = require('../fixtures')
+createCompilationResultSchema = require('../schemas/compilation-result')
+createLocationSchema = require('../schemas/location')
+createOriginSchema = require('../schemas/origin')
+{assert, compileFixture} = require('../utils')
 
 
 describe('compile() · all API description formats', ->
@@ -408,7 +408,7 @@ describe('compile() · all API description formats', ->
     )
   )
 
-  describe.only('with default value for a required URI parameter', ->
+  describe('with default value for a required URI parameter', ->
     errors = undefined
     warnings = undefined
     warning = undefined

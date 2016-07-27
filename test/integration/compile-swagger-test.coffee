@@ -1,9 +1,9 @@
 
 sinon = require('sinon')
 
-fixtures = require('../../fixtures')
-{assert, compileFixture} = require('../../utils')
-createLocationSchema = require('../../schemas/location')
+fixtures = require('../fixtures')
+{assert, compileFixture} = require('../utils')
+createLocationSchema = require('../schemas/location')
 
 
 describe('compile() · Swagger', ->
@@ -100,7 +100,7 @@ describe('compile() · Swagger', ->
     # Multiple responses is the closest we can get with Swagger to something
     # like transaction examples ¯\_(ツ)_/¯
 
-    detectTransactionExamples = sinon.spy(require('../../../src/detect-transaction-examples'))
+    detectTransactionExamples = sinon.spy(require('../../src/detect-transaction-examples'))
     compilationResult = undefined
     transaction = undefined
 

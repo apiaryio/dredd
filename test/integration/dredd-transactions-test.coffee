@@ -9,6 +9,34 @@ dreddTransactions = require('../../src/dredd-transactions')
 
 
 describe('Dredd Transactions', ->
+  describe('When compilation throws an exception', ->
+    err = undefined
+    error = new Error('... dummy message ...')
+    compilationResult = undefined
+    schema = createCompilationResultSchema(
+      errors: 1
+      warnings: 0
+      transactions: 0
+    )
+
+    beforeEach((done) ->
+      dt = proxyquire('../../src/dredd-transactions',
+        './compile': (args...) -> throw error
+      )
+      dt.compile('... dummy API description document ...', null, (args...) ->
+        [err, compilationResult] = args
+        done()
+      )
+    )
+
+    it('passes the error to callback', ->
+      assert.equal(err, error)
+    )
+    it('passes no compilation result to callback', ->
+      assert.isUndefined(compilationResult)
+    )
+  )
+
   describe('When given no input', ->
     compilationResult = undefined
     schema = createCompilationResultSchema(
