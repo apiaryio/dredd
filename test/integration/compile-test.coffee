@@ -349,6 +349,24 @@ describe('compile() · all API description formats', ->
     )
   )
 
+  describe('with parameter having an example value', ->
+    transaction = undefined
+
+    fixtures.exampleParameter.forEachDescribe(({source}) ->
+      beforeEach((done) ->
+        compileFixture(source, (args...) ->
+          [err, compilationResult] = args
+          transaction = compilationResult.transactions[0]
+          done(err)
+        )
+      )
+
+      it('expands the request URI with the example value', ->
+        assert.equal(transaction.request.uri, '/honey?beekeeper=Honza')
+      )
+    )
+  )
+
   describe('with response schema', ->
     transaction = undefined
 
