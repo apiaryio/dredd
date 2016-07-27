@@ -25,7 +25,7 @@
 #   2. The build is defined by contents of `.travis.yml`. It runs regular tests
 #      and then runs this script, `npm run test:hook-handlers`.
 #   3. This script...
-#       1. makes sure it is ran for just one build run within the build matrix.
+#       1. makes sure it is ran for just one build job within the build matrix.
 #       2. checks whether hook handler integration tests were triggered or not.
 #          **If the tested commit has tag or its commit message contains words
 #          "tests hook handlers", it continues.** Otherwise it skips the tests
@@ -51,19 +51,19 @@
 #   * If the main Travis CI build where the script is being ran gets canceled,
 #     the script won't cleanup the dependent branches on GitHub.
 
-fs = require 'fs'
-execSync = require 'sync-exec'
-{exec} = require 'child_process'
-async = require 'async'
-yaml = require 'js-yaml'
+fs = require('fs')
+execSync = require('sync-exec')
+{exec} = require('child_process')
+async = require('async')
+yaml = require('js-yaml')
 
 
 unless process.env.CI
-  console.error '''\
+  console.error('''\
     This script is meant to be ran on Travis CI. It is not optimized (yet) for
     local usage. It could mess up your Git repository.
-  '''
-  process.exit 1
+  ''')
+  process.exit(1)
 
 
 ################################################################################
@@ -111,30 +111,30 @@ getTrimmedStdout = (execSyncResult) ->
 # Moves contents of the root directory to given directory. Ignores given
 # excluded paths.
 moveAllFilesTo = (directory, excludedPaths = []) ->
-  excludedPaths.push directory
+  excludedPaths.push(directory)
 
   # Make sure directory exists and is empty.
-  execSync 'rm -rf ' + directory
-  execSync 'mkdir ' + directory
+  execSync('rm -rf ' + directory)
+  execSync('mkdir ' + directory)
 
-  excludes = buildFindExcludes excludedPaths
-  execSync "find . #{excludes} -exec mv -t '#{directory}' '{}' + #{DROP_OUTPUT}"
+  excludes = buildFindExcludes(excludedPaths)
+  execSync("find . #{excludes} -exec mv -t '#{directory}' '{}' + #{DROP_OUTPUT}")
 
 
 # Takes ['./a', './b'] and produces "-not -path './a' -and -not -path './b'"
 buildFindExcludes = (excludedPaths) ->
-  expressions = excludedPaths.map (path) -> "-not -path '#{path}'"
-  return expressions.join ' -and '
+  expressions = excludedPaths.map((path) -> "-not -path '#{path}'")
+  return expressions.join(' -and ')
 
 
 # Replaces given pattern with replacement in given file. Returns boolean whether
 # any changes were made.
 replaceInFile = (file, pattern, replacement) ->
-  contents = fs.readFileSync file, 'utf-8'
-  unless contents.match pattern
+  contents = fs.readFileSync(file, 'utf-8')
+  unless contents.match(pattern)
     return false
-  contents = contents.replace pattern, replacement
-  fs.writeFileSync file, contents, 'utf-8'
+  contents = contents.replace(pattern, replacement)
+  fs.writeFileSync(file, contents, 'utf-8')
   return true
 
 
@@ -149,86 +149,87 @@ pollForBuildResult = (branch, callback) ->
     --no-interactive
   """
 
-  process.stdout.write '.' # poor man's progress bar
-  exec command, (err, stdout) ->
-    return callback err if err
+  process.stdout.write('.') # poor man's progress bar
+  exec(command, (err, stdout) ->
+    return callback(err) if err
 
-    status = parseBuildStatus stdout
+    status = parseBuildStatus(stdout)
     if status not in ['created', 'started']
-      return callback null, status
+      return callback(null, status)
 
-    setTimeout ->
-      pollForBuildResult branch, callback
-    , 120000
+    setTimeout( ->
+      pollForBuildResult(branch, callback)
+    , 120000)
+  )
 
 
 # Takes output of 'travis history' command (see
 # https://github.com/travis-ci/travis.rb#history) and parses out build status.
 parseBuildStatus = (stdout) ->
-  stdout = stdout.toString() if Buffer.isBuffer stdout
-  match = stdout.match /^#\d+ (\w+):/
+  stdout = stdout.toString() if Buffer.isBuffer(stdout)
+  match = stdout.match(/^#\d+ (\w+):/)
   match[1]
 
 
 # Exits the script in case Travis CI CLI isn't installed.
 requireTravisCli = ->
-  unless getTrimmedStdout execSync 'which travis'
-    console.error 'The travis command could not be found. Run \'gem install travis\'.'
-    process.exit 1
+  unless getTrimmedStdout(execSync('which travis'))
+    console.error('The travis command could not be found. Run \'gem install travis\'.')
+    process.exit(1)
 
 
 # If Git author is empty, sets the commiter of the last commit as an author.
 ensureGitAuthor = ->
-  name = getTrimmedStdout execSync 'git show --format="%cN" -s'
-  console.log "Setting Git user name to '#{name}'."
-  execSync "git config user.name '#{name}'"
+  name = getTrimmedStdout(execSync('git show --format="%cN" -s'))
+  console.log("Setting Git user name to '#{name}'.")
+  execSync("git config user.name '#{name}'")
 
-  email = getTrimmedStdout execSync 'git show --format="%cE" -s'
-  console.log "Setting Git e-mail to '#{email}'."
-  execSync "git config user.email '#{email}'"
+  email = getTrimmedStdout(execSync('git show --format="%cE" -s'))
+  console.log("Setting Git e-mail to '#{email}'.")
+  execSync("git config user.email '#{email}'")
 
 
 # Adds remote origin URL with GitHub token so the script is able to could push
 # to the Dredd repository. GitHub token is encrypted in Dredd's .travis.yml.
 ensureGitOrigin = ->
   if process.env.GITHUB_TOKEN
-    console.log 'Applying GitHub token.'
+    console.log('Applying GitHub token.')
     repo = "https://#{process.env.GITHUB_TOKEN}@github.com/apiaryio/dredd.git"
-    execSync "git remote set-url origin #{repo} #{DROP_OUTPUT}"
+    execSync("git remote set-url origin #{repo} #{DROP_OUTPUT}")
 
 
 # Ensures that Git repository is set to given branch and it's clean.
 cleanGit = (branch) ->
-  execSync 'git checkout ' + branch
-  execSync 'git reset HEAD --hard'
+  execSync('git checkout ' + branch)
+  execSync('git reset HEAD --hard')
 
 
 # Deletes given branches both locally and remotely on GitHub.
 deleteGitBranches = (branches) ->
   for branch in branches
-    console.log "Deleting #{branch} from GitHub..."
-    execSync 'git branch -D ' + branch
-    execSync "git push origin -f --delete #{branch} #{DROP_OUTPUT}"
+    console.log("Deleting #{branch} from GitHub...")
+    execSync('git branch -D ' + branch)
+    execSync("git push origin -f --delete #{branch} #{DROP_OUTPUT}")
 
 
 # Lists Node versions defined in the .travis.yml config file.
 listTestedNodeVersions = ->
-  contents = fs.readFileSync '.travis.yml'
-  config = yaml.safeLoad contents
+  contents = fs.readFileSync('.travis.yml')
+  config = yaml.safeLoad(contents)
   return config.node_js
 
 
 # Retrieves full commit message.
 getGitCommitMessage = (commitHash) ->
-  getTrimmedStdout execSync 'git log --format=%B -n 1 ' + commitHash
+  getTrimmedStdout(execSync('git log --format=%B -n 1 ' + commitHash))
 
 
 # Returns tag name if given commit is tagged. TRAVIS_TAG environment variable
 # is present only in special builds Travis CI starts separately for new tags.
 getGitCommitTag = (commitHash) ->
   return process.env.TRAVIS_TAG if process.env.TRAVIS_TAG
-  latestTag = getTrimmedStdout execSync 'git describe --abbrev=0 --tags'
-  taggedCommit = getTrimmedStdout execSync 'git rev-list -n 1 ' + latestTag
+  latestTag = getTrimmedStdout(execSync('git describe --abbrev=0 --tags'))
+  taggedCommit = getTrimmedStdout(execSync('git rev-list -n 1 ' + latestTag))
   return latestTag if commitHash is taggedCommit
 
 
@@ -251,20 +252,20 @@ abortIfNotTriggered = ->
     # it's message contains trigger keyword. If this is not the case, abort
     # the script.
     commitHash = process.env.TRAVIS_COMMIT
-    tag = getGitCommitTag commitHash
-    message = getGitCommitMessage commitHash
+    tag = getGitCommitTag(commitHash)
+    message = getGitCommitMessage(commitHash)
 
     if tag
-      console.log "Tested commit (#{commitHash}) is tagged as '#{tag}'."
+      console.log("Tested commit (#{commitHash}) is tagged as '#{tag}'.")
     else if message.toLowerCase().indexOf(TRIGGER_KEYWORD) isnt -1
-      console.log "Message of tested commit (#{commitHash}) contains '#{TRIGGER_KEYWORD}'."
+      console.log("Message of tested commit (#{commitHash}) contains '#{TRIGGER_KEYWORD}'.")
     else
       reason = "Tested commit (#{commitHash}) isn't tagged and its message doesn't contain keyword '#{TRIGGER_KEYWORD}'."
 
   # There is a reason to abort the script, so let's do it.
   if reason
-    console.error 'Skipping integration tests of hook handlers. ' + reason
-    process.exit 0
+    console.error('Skipping integration tests of hook handlers. ' + reason)
+    process.exit(0)
 
 
 # Waits for results from dependent builds. Its callback gets results in form
@@ -273,15 +274,16 @@ abortIfNotTriggered = ->
 waitForResults = (integrationBranches, callback) ->
   # Waiting 2 minutes at the beginning so Travis CI has time to pick up
   # dependent builds from GitHub.
-  setTimeout ->
+  setTimeout( ->
     polling = {}
-    integrationBranches.forEach (branch) ->
-      polling[branch] = (next) -> pollForBuildResult branch, next
-
-    async.parallel polling, (err, results) ->
-      console.log '\n' # 'pollForBuildResult' prints dots without newline
-      callback err, results
-  , 120000
+    integrationBranches.forEach((branch) ->
+      polling[branch] = (next) -> pollForBuildResult(branch, next)
+    )
+    async.parallel(polling, (err, results) ->
+      console.log('\n') # 'pollForBuildResult' prints dots without newline
+      callback(err, results)
+    )
+  , 120000)
 
 
 ################################################################################
@@ -301,53 +303,55 @@ testedBranch = process.env.TRAVIS_BRANCH
 buildId = process.env.TRAVIS_BUILD_ID
 
 
-JOBS.forEach ({name, repo}) ->
+JOBS.forEach(({name, repo}) ->
   integrationBranch = "dependent-build/#{buildId}/#{name}"
-  integrationBranches.push integrationBranch
-  console.log "Preparing branch #{integrationBranch}..."
+  integrationBranches.push(integrationBranch)
+  console.log("Preparing branch #{integrationBranch}...")
 
   # Prepare a special integration branch
-  cleanGit testedBranch
-  execSync 'git checkout -B ' + integrationBranch
+  cleanGit(testedBranch)
+  execSync('git checkout -B ' + integrationBranch)
 
   # Move contents of the root directory to the directory for linked Dredd and
   # commit this change.
-  moveAllFilesTo LINKED_DREDD_DIR, ['./.git', './.git/*']
-  execSync 'git add -A && git commit -m "Moving Dredd to directory."'
+  moveAllFilesTo(LINKED_DREDD_DIR, ['./.git', './.git/*'])
+  execSync('git add -A && git commit -m "Moving Dredd to directory."')
 
   # Add Git remote with the repository being integrated. Merge its master
   # branch with what's in current branch. After this, we have contents of the
   # remote repo plus one extra directory, which contains current Dredd.
-  execSync "git remote add #{name} #{repo} --fetch"
-  execSync "git merge #{name}/master --no-edit"
+  execSync("git remote add #{name} #{repo} --fetch")
+  execSync("git merge #{name}/master --no-edit")
 
   # Replace installation of Dredd in .travis.yml with a command which links
   # Dredd from the directory we created. Commit the change.
-  unless replaceInFile '.travis.yml', RE_DREDD_INSTALL_CMD, DREDD_LINK_CMD
-    console.error 'Could not find Dredd installation command in .travis.yml.', contents
-    process.exit 1
-  execSync 'git commit -am "Using linked Dredd."'
+  unless replaceInFile('.travis.yml', RE_DREDD_INSTALL_CMD, DREDD_LINK_CMD)
+    console.error('Could not find Dredd installation command in .travis.yml.', contents)
+    process.exit(1)
+  execSync('git commit -am "Using linked Dredd."')
 
   # Push the integration branch to GitHub and clean the repository.
-  console.log "Pushing #{integrationBranch} to GitHub..."
-  execSync "git push origin #{integrationBranch} -f #{DROP_OUTPUT}"
-  cleanGit testedBranch
+  console.log("Pushing #{integrationBranch} to GitHub...")
+  execSync("git push origin #{integrationBranch} -f #{DROP_OUTPUT}")
+  cleanGit(testedBranch)
+)
 
 
 # Poll for results and evaluate them.
-console.log "Waiting for dependent builds..."
-waitForResults integrationBranches, (err, results) ->
-  console.log 'All dependent builds finished!'
+console.log("Waiting for dependent builds...")
+waitForResults(integrationBranches, (err, results) ->
+  console.log('All dependent builds finished!')
 
   if err
-    console.error err.message, err
-    deleteGitBranches integrationBranches
-    process.exit 1
+    console.error(err.message, err)
+    deleteGitBranches(integrationBranches)
+    process.exit(1)
 
   failed = false
   for own integrationBranch, result of results
-    console.log "* #{integrationBranch}: #{result}"
+    console.log("* #{integrationBranch}: #{result}")
     failed = true if result isnt 'passed'
 
-  deleteGitBranches integrationBranches
-  process.exit if failed then 1 else 0
+  deleteGitBranches(integrationBranches)
+  process.exit(if failed then 1 else 0)
+)
