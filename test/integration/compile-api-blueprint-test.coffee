@@ -2,10 +2,10 @@
 proxyquire = require('proxyquire').noPreserveCache()
 sinon = require('sinon')
 
-fixtures = require('../../fixtures')
-createLocationSchema = require('../../schemas/location')
-createOriginSchema = require('../../schemas/origin')
-{assert, compileFixture} = require('../../utils')
+fixtures = require('../fixtures')
+createLocationSchema = require('../schemas/location')
+createOriginSchema = require('../schemas/origin')
+{assert, compileFixture} = require('../utils')
 
 
 describe('compile() · API Blueprint', ->
@@ -89,7 +89,7 @@ describe('compile() · API Blueprint', ->
   )
 
   describe('with multiple transaction examples', ->
-    detectTransactionExamples = sinon.spy(require('../../../src/detect-transaction-examples'))
+    detectTransactionExamples = sinon.spy(require('../../src/detect-transaction-examples'))
     transactions = undefined
     exampleNumbersPerTransaction = [1, 1, 2]
 
@@ -122,7 +122,7 @@ describe('compile() · API Blueprint', ->
   )
 
   describe('without multiple transaction examples', ->
-    detectTransactionExamples = sinon.spy(require('../../../src/detect-transaction-examples'))
+    detectTransactionExamples = sinon.spy(require('../../src/detect-transaction-examples'))
     compilationResult = undefined
     transaction = undefined
 
