@@ -50,7 +50,7 @@ In each hook file you can use following functions:
 
 `log(string)`
 
-- A [Transaction Object](#transaction-object-structure) is passed as a first argument to the hook function for `before`, `after`, `beforeEach`, `afterEach`, `beforeValidation` and `beforeEachValidation`.
+- A [Transaction Object](hooks.md#transaction-object-structure) is passed as a first argument to the hook function for `before`, `after`, `beforeEach`, `afterEach`, `beforeValidation` and `beforeEachValidation`.
 - An array of Transaction Objects is passed to `beforeAll` and `afterAll`.
 - Sandboxed hooks don't have an asynchronous API. Loading and running of each hook happens in it's own isolated, sandboxed context.
 - Hook maximum execution time is 500ms.
