@@ -145,6 +145,7 @@ compileParameters = (hrefVariables) ->
       default: defaultValue
       example: exampleValue
       values: if value?.element is 'enum' then ({value: content(v)} for v in content(value)) else []
+
   parameters
 
 

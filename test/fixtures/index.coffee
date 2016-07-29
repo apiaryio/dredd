@@ -115,6 +115,10 @@ fixtures =
     apiBlueprint: fromFile('./api-blueprint/default-required.apib')
     swagger: fromFile('./swagger/default-required.yml')
   )
+  exampleParameter: fixture(
+    apiBlueprint: fromFile('./api-blueprint/example-parameter.apib')
+    swagger: fromFile('./swagger/example-parameter.yml')
+  )
 
   # Specific to API Blueprint
   unrecognizable: fixture(

@@ -21,7 +21,7 @@
     "deckardcain": "^0.3.2",
     "fury": "^2.1.0",
     "fury-adapter-apib-parser": "^0.3.0",
-    "fury-adapter-swagger": "^0.8.1",
+    "fury-adapter-swagger": "^0.9.1",
     "sift": "^3.2.1",
     "traverse": "^0.6.6",
     "uri-template": "^1.0.0"
