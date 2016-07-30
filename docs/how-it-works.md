@@ -109,7 +109,7 @@ It's very likely that your API description document will not be testable __as is
 
 Both [API Blueprint][] and [Swagger][] allow usage of URI templates (API Blueprint fully implements [RFC6570][], Swagger templates are much simpler). In order to have an API description which is testable, you need to describe all required parameters used in URI (path or query) and provide sample values to make Dredd able to expand URI templates with given sample values. Following rules apply when Dredd interpolates variables in a templated URI, ordered by precedence:
 
-1. Sample value (not available in Swagger).
+1. Sample value (available in Swagger as [`x-example` vendor extension property](how-to-guides.md#example-values-for-request-parameters)).
 2. Value of `default`.
 3. First value from `enum`.
 

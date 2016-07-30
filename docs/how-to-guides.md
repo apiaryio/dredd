@@ -530,9 +530,33 @@ When sending test reports to Apiary, Dredd inspects the environment where it was
 - hostname (string) - `DREDD_HOSTNAME` or hostname of the OS
 - CI (boolean) - looks for `TRAVIS`, `CIRCLE`, `CI`, `DRONE`, `BUILD_ID`, ...
 
+## Example Values for Request Parameters
+
+While example values are natural part of the API Blueprint format, the Swagger
+specification allows them only for `body` request parameters (`schema.example`).
+
+However, Dredd needs to know what values to use when testing described API, so
+it supports `x-example` [vendor extension property][] to overcome the Swagger limitation:
+
+```yaml
+...
+paths:
+  /cars:
+    get:
+      parameters:
+        - name: limit
+          in: query
+          type: number
+          x-example: 42
+```
+
+The `x-example` property is respected for all kinds of request parameters except
+of `body` parameters, where native `schema.example` should be used.
+
 
 [Apiary]: https://apiary.io/
 [API Blueprint]: http://apiblueprint.org/
 [Swagger]: http://swagger.io/
 [Travis CI]: https://travis-ci.org/
 [CircleCI]: https://circleci.com/
+[vendor extension property]: http://swagger.io/specification/#vendorExtensions

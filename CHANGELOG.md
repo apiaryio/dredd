@@ -1,5 +1,10 @@
 ## Changelog
 
+### v1.5.0
+
+**Support for `x-example` Swagger vendor extension property**
+- [#581](https://github.com/apiaryio/dredd/pull/581) Support for x-example (v1.5.0) (@honzajavorek)
+
 ### v1.4.0
 
 **Dredd is now installable also without C++ compiler + several bug fixes**
