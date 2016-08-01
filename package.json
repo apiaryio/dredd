@@ -65,7 +65,7 @@
     "github-changes": "^1.0.2",
     "jscoverage": "^0.6.0",
     "lcov-result-merger": "^1.2.0",
-    "mocha": "^2.5.3",
+    "mocha": "^3.0.0",
     "mocha-lcov-reporter": "^1.2.0",
     "nock": "^8.0.0",
     "drafter": "^1.0.0",
