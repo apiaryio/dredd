@@ -137,7 +137,7 @@ after("Machines > Machines collection > Create Machine", function (transaction) 
 
 before("Machines > Machine > Delete a machine", function (transaction) {
   //reusing data from previous response here
-  var machineId = JSON.parse(requestStash['Machines > Machines collection > Create Machine'])['id'];
+  var machineId = JSON.parse(responseStash['Machines > Machines collection > Create Machine'])['id'];
 
   //replacing id in URL with stashed id from previous response
   var url = transaction.fullPath;
