@@ -23,7 +23,7 @@ documentation.
 ### Supported API Description Formats
 
 - [API Blueprint][]
-- [Swagger][] **(experimental)**
+- [Swagger][]
 
 ### Supported Hooks Languages
 
