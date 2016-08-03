@@ -72,6 +72,17 @@ It's default options are in the `test/mocha.opts` file.
 If you experience a flaky test, you can use `npm run test:stress` in combination
 with `describe.only` to try to replicate the flaky behavior.
 
+### Integration Tests of Hooks Handlers
+
+Every Pull Request spawns dependent integration builds of hook handlers. Thanks
+to this author of the PR can be sure they did not break hook handler
+implementations by the changes.
+
+The script `scripts/test-hooks-handlers.coffee` is automatically ran by
+Travis CI in one of the jobs in the build matrix every time the tested commit
+is part of a PR. Head to the [script code][scripts/test-hooks-handlers.coffee]
+to understand how it works. It's thoroughly documented.
+
 ### Linting
 
 Dredd uses [coffeelint][] to lint the CoffeeScript codebase. There is a plan
