@@ -9,7 +9,6 @@
   "scripts": {
     "postinstall": "coffee ./scripts/print-installation-guidelines.coffee",
     "postupdate": "coffee ./scripts/print-installation-guidelines.coffee",
-    "changelist": "github-changes -o apiaryio -r dredd --only-pulls --use-commit-body --file CHANGELOG-Generated.md -a",
     "lint": "coffeelint ./src",
     "docs:build": "mkdocs build",
     "docs:serve": "mkdocs serve",
@@ -62,7 +61,6 @@
     "cz-conventional-changelog": "^1.1.6",
     "ect": "^0.5.9",
     "express": "^4.14.0",
-    "github-changes": "^1.0.2",
     "jscoverage": "^0.6.0",
     "lcov-result-merger": "^1.2.0",
     "mocha": "^3.0.0",
