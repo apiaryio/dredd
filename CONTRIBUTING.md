@@ -97,12 +97,7 @@ immediately during coding.
 
 ### Changelog
 
-[Changelog][] is maintained manually. To update it,
-
-1.  use the `npm run changelist` to generate `CHANGELOG-Generated.md` file from
-    Pull Requests merged into `master`.
-2.  Take a look on what has been generated and craft yourself a nice manual
-    update to `CHANGELOG.md`. Make it easily readable and stress achieved goals.
+Changelog is maintained manually in form of [GitHub Releases][].
 
 ### Documentation
 
@@ -167,7 +162,7 @@ There are also some environment variables you could find useful:
 
 [docs]: docs
 [coffeelint.json]: coffeelint.json
-[Changelog]: CHANGELOG.md
+[GitHub Releases]: https://github.com/apiaryio/dredd/releases
 [vde]: VirtualDevelopmentEnvironment.md
 
 [upstream repository]: https://github.com/apiaryio/dredd
