@@ -1,6 +1,0 @@
-#!/bin/sh
-# Runs tests. All arguments given to this script will be passed to mocha.
-
-
-MOCHA=./node_modules/.bin/mocha
-find ./test/ -name '*-test.coffee' | xargs "$MOCHA" "$@"

@@ -2,7 +2,6 @@
 /src
 
 # Common for .gitignore and .npmignore
-CHANGELOG-Generated.md
 src-cov/
 lcov/
 site/
@@ -26,4 +25,3 @@ Vagrantfile
 # Regardless the rules above, never ignore following
 !LICENSE
 !README.md
-!CHANGELOG.md

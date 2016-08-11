@@ -33,7 +33,7 @@
 #     build will fail. Instead, we should integrate with commit
 #     corresponding to the latest release of the hook handler implementation.
 #   * If repository of the hook handler project has something in the `master`
-#     branch which would print the GITHUB_TOKEN environment variable during
+#     branch which would print the GH_TOKEN environment variable during
 #     the Travis CI build, the token gets disclosed in the corresponding
 #     dependent build output. Preventing this is impossible if we want
 #     to work with GitHub in the dependent build, so as of now we rely
@@ -157,9 +157,9 @@ ensureGitAuthor = (testedCommit) ->
 # Adds remote origin URL with GitHub token so the script could push to the Dredd
 # repository. GitHub token is encrypted in Dredd's .travis.yml.
 ensureGitOrigin = ->
-  if process.env.GITHUB_TOKEN
+  if process.env.GH_TOKEN
     console.log('Applying GitHub token')
-    repo = "https://#{process.env.GITHUB_TOKEN}@github.com/apiaryio/dredd.git"
+    repo = "https://#{process.env.GH_TOKEN}@github.com/apiaryio/dredd.git"
     execSync("git remote set-url origin #{repo} #{DROP_OUTPUT}")
 
 
@@ -205,7 +205,7 @@ adjustTravisBuildConfig = (pullRequestId, testedCommit, jobName, matrixName) ->
     # We will want to report under the Pull Request, so we will need GitHub
     # token present in the configuration.
     execSync("""\
-      travis encrypt GITHUB_TOKEN=#{process.env.GITHUB_TOKEN} \
+      travis encrypt GH_TOKEN=#{process.env.GH_TOKEN} \
         --add --append --no-interactive --repo=apiaryio/dredd #{DROP_OUTPUT}
     """)
 
@@ -250,7 +250,7 @@ adjustTravisBuildConfig = (pullRequestId, testedCommit, jobName, matrixName) ->
 
     config.after_success.push('if [[ $TRAVIS_BRANCH = master ]]; then echo "Deleting aborted (master)" && exit 1; fi')
     config.after_success.push('git branch -D $TRAVIS_BRANCH')
-    config.after_success.push("git remote set-url origin \"https://$GITHUB_TOKEN@github.com/apiaryio/dredd.git\" #{DROP_OUTPUT}")
+    config.after_success.push("git remote set-url origin \"https://$GH_TOKEN@github.com/apiaryio/dredd.git\" #{DROP_OUTPUT}")
     config.after_success.push("git push origin -f --delete $TRAVIS_BRANCH #{DROP_OUTPUT}")
 
   # Save all changes
@@ -263,7 +263,7 @@ adjustTravisBuildConfig = (pullRequestId, testedCommit, jobName, matrixName) ->
 createStatusCommand = (testedCommit, data) ->
   command = 'curl -X POST'
   command += ' -H "Content-Type: application/json"'
-  command += ' -H "Authorization: token $GITHUB_TOKEN"'
+  command += ' -H "Authorization: token $GH_TOKEN"'
 
   escapedJson = JSON.stringify(data).replace(/"/g, '\\"')
   command += " -d \"#{escapedJson}\""
