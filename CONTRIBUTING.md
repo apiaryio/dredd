@@ -6,22 +6,54 @@ If you are in hurry, just please scan the **Quick Start** section.
 
 ### Ideas, bugs...
 
-- File an [issue][issues].
-- [API Blueprint][] prepares direct support for testing and scenarios. Interested?
-  Check out [apiaryio/api-blueprint#21](https://github.com/apiaryio/api-blueprint/issues/21)!
+-   File an [issue][issues].
+-   If you're reporting a bug and you want to be an awesome person, please
+    send a Pull Request with a failing test.
+-   [API Blueprint][] prepares direct support for testing and scenarios. Interested?
+    Check out [apiaryio/api-blueprint#21](https://github.com/apiaryio/api-blueprint/issues/21)!
 
 ### Coding
 
-- Dredd is written in [CoffeeScript][].
-- There's [ready-made virtual machine][vde] to get you started very quickly.
+-   Dredd is written in [CoffeeScript][].
+-   Dredd uses [Semantic Release][] and [Conventional Changelog][].
+-   There's [ready-made virtual machine][vde] to get you started very quickly.
 
-Recommended workflow:
+#### Recommended workflow
 
 1. Fork Dredd, create a feature branch.
-2. Write tests, use `npm run tests:bdd`.
+2. Write tests.
 3. Write code.
-4. Make sure [test coverage][] didn't drop.
+4. Make sure [test coverage][] didn't drop and all CI builds are passing.
 5. Send a Pull Request.
+
+#### Semantic Release and Conventional Changelog
+
+To make [Semantic Release][] and [Conventional Changelog][] work, all commit messages
+in the project should follow the Conventional Changelog format. If you're new to the
+concept, just make sure your commit messages look like this:
+
+```
+<type>: <subject>
+```
+
+Where `<type>` is:
+
+- `feat` - New functionality added
+- `fix` - Broken functionality fixed
+- `perf` - Performance improved
+- `docs` - Documentation added/removed/improved/...
+- `chore` - Package setup, CI setup, ...
+- `refactor` - Changes in code, but no changes in behavior
+- `test` - Tests added/removed/improved/...
+
+See existing commits as a reference. The [Commitizen CLI][] can also help you.
+
+Semantic Release will make sure correct version numbers get bumped according
+to the **meaning** of your changes once your PR gets merged to `master`.
+Semantic Release then also automatically releases new Dredd to npm.
+
+In the rare cases when your changes break backwards compatibility, the message
+must include words `BREAKING CHANGE`. That will result in bumping the major version.
 
 ## Handbook for Contributors and Maintainers
 
@@ -164,6 +196,9 @@ There are also some environment variables you could find useful:
 [ReadTheDocs]: https://readthedocs.org/
 [test coverage]: https://coveralls.io/r/apiaryio/dredd?branch=master
 [Mocha]: http://mochajs.org/
+[Semantic Release]: https://github.com/semantic-release/semantic-release
+[Conventional Changelog]: https://github.com/conventional-changelog/conventional-changelog-angular/blob/master/convention.md
+[Commitizen CLI][https://github.com/commitizen/cz-cli]
 
 [docs]: docs
 [coffeelint.json]: coffeelint.json
