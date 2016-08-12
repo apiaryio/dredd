@@ -78,7 +78,7 @@ Dredd supports writing [hooks](https://dredd.readthedocs.io/en/latest/hooks/)
 
 [GitHub Repository]: https://github.com/apiaryio/dredd
 [Bug Tracker]: https://github.com/apiaryio/dredd/issues?q=is%3Aopen
-[Changelog]: https://github.com/apiaryio/dredd/blob/master/CHANGELOG.md
+[Changelog]: https://github.com/apiaryio/dredd/releases
 [Contributor's Guidelines]: https://github.com/apiaryio/dredd/blob/master/CONTRIBUTING.md
 
 [Travis CI]: https://travis-ci.org/
