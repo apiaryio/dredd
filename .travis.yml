@@ -1,25 +1,33 @@
 sudo: "required"
 dist: "trusty"
 language: "node_js"
-env:
-  global:
-    - secure: "io+3qwINOL+43e0qNPOr0oOEoMYUXDJroSGMwVXC4jgPW3YUe10lPRMCr39iEHg9iIOUj30xtqN8nqDdrljVIT1nM4pcrnrCcMegKXZ5dzQYFW0CW3DN06lLHt7K1Kdcah+3fXCSWPwIahns0R/SC/QRedZcOgDhD3KG7gBeoag="
-  matrix:
-    - "DRAFTER=JS"
-    - "DRAFTER=CPP"
 node_js:
   - "0.10"
   - "0.12"
   - "4"
   - "6"
+env:
+  global:
+    # GH_TOKEN and NPM_TOKEN encrypted by 'travis encrypt' utility
+    - secure: "gO5DrzOfF+l3hjvs0kLYUrGEnYVwrDy7NTGNrtPmLrrfdS6qmUNbTVggjra2aDM82lZYo0slZaOtjedSd8GMNE41egHAq0aGMJfhNrXjr+ROOIkc1BRUn3vTp5lk/n4eU7bLozoiriBphmKHHwZqekSn2orvIpAtoWL/JPVzheY="
+  matrix:
+    - "DRAFTER=JS"
+    - "DRAFTER=CPP"
+cache:
+  directories:
+    - "node_modules"
 before_install:
   - "npm -g install npm@latest"
   - "gem install travis"
+  - "curl -Lo travis_after_all.py https://raw.githubusercontent.com/dmakhno/travis_after_all/master/travis_after_all.py"
 before_script:
   - "npm run lint"
 script:
   - "if [[ $DRAFTER = JS ]]; then find ./node_modules -name protagonist -type d -exec rm -rf {} +; fi"
   - "npm test"
   - "if [[ $DRAFTER = JS ]]; then npm run test:hooks-handlers; fi"
-after_success:
+after_success:  # travis_after_all.py is needed due to travis-ci/travis-ci#1548 & travis-ci/travis-ci#929
   - "npm run coveralls"
+  - "python travis_after_all.py"
+  - "export $(cat .to_export_back)"
+  - "npm run semantic-release || true"

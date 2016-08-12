@@ -3,7 +3,7 @@
 # ./scripts/cov
 
 
-COV=./node_modules/coffee-coverage/bin/coffeecoverage
+COV=./node_modules/.bin/coffeeCoverage
 MOCHA=./node_modules/.bin/mocha
 MERGER=./node_modules/.bin/lcov-result-merger
 
@@ -13,7 +13,7 @@ rm -rf ./src-cov ./lcov ./cov.info
 mkdir ./src-cov ./lcov
 
 # Creating directory with instrumented JS code
-$COV --exclude node_modules,.git,test --path=relative . ./src-cov 1>&2
+$COV --exclude=node_modules,.git,test --path=relative . ./src-cov 1>&2
 cp ./package.json ./src-cov
 cp -r ./test ./src-cov/test
 cp -r ./bin ./src-cov/bin
@@ -25,8 +25,7 @@ echo 'beforeEach( -> process.stderr.write("."))' | tee -a ./src-cov/test/**/*-te
 
 # Testing
 export COLLECT_COVERAGE='true'
-find ./src-cov/test/ -name '*-test.coffee' | xargs "$MOCHA" \
-  --reporter='mocha-lcov-reporter' >> ./lcov/mocha.info
+$MOCHA "./src-cov/test/**/*-test.coffee" --reporter='mocha-lcov-reporter' >> ./lcov/mocha.info
 
 # Merging LCOV reports
 $MERGER './lcov/*.info' ./cov.info

@@ -2,7 +2,6 @@
 /lib
 
 # Common for .gitignore and .npmignore
-CHANGELOG-Generated.md
 src-cov/
 lcov/
 site/

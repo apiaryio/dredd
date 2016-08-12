@@ -1,26 +1,25 @@
 {
   "name": "dredd",
-  "version": "1.5.0",
+  "version": "0.0.0-semantically-released",
   "description": "HTTP API Testing Framework",
   "main": "lib/dredd.js",
   "bin": {
     "dredd": "bin/dredd"
   },
   "scripts": {
-    "postinstall": "coffee ./scripts/print-installation-guidelines.coffee",
-    "postupdate": "coffee ./scripts/print-installation-guidelines.coffee",
-    "lint": "coffeelint ./src",
+    "postinstall": "coffee scripts/print-installation-guidelines.coffee",
+    "postupdate": "coffee scripts/print-installation-guidelines.coffee",
+    "lint": "coffeelint src",
     "docs:build": "mkdocs build",
     "docs:serve": "mkdocs serve",
-    "compile": "coffee -b -c -o lib/ src/ && coffee ./scripts/generate-cli-docs.coffee",
-    "pretest": "npm run compile",
-    "test": "./scripts/test",
-    "test:bdd": "./scripts/test -w",
-    "test:stress": "./scripts/test-stress",
-    "test:hooks-handlers": "coffee ./scripts/test-hooks-handlers.coffee",
-    "prepublish": "npm run compile",
-    "coverage": "./scripts/cov",
-    "coveralls": "npm run coverage && cat ./cov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "build": "coffee -b -c -o lib/ src/ && coffee scripts/generate-cli-docs.coffee",
+    "pretest": "npm run build",
+    "test": "mocha \"test/**/*-test.coffee\"",
+    "test:hooks-handlers": "coffee scripts/test-hooks-handlers.coffee",
+    "prepublish": "npm run build",
+    "coverage": "scripts/cov",
+    "coveralls": "npm run coverage && cat cov.info | coveralls",
+    "semantic-release": "scripts/semantic-release"
   },
   "repository": {
     "type": "git",
@@ -59,6 +58,7 @@
     "coffeelint": "^1.15.7",
     "coveralls": "^2.11.9",
     "cz-conventional-changelog": "^1.1.6",
+    "drafter": "^1.0.0",
     "ect": "^0.5.9",
     "express": "^4.14.0",
     "jscoverage": "^0.6.0",
@@ -66,7 +66,7 @@
     "mocha": "^3.0.0",
     "mocha-lcov-reporter": "^1.2.0",
     "nock": "^8.0.0",
-    "drafter": "^1.0.0",
+    "semantic-release": "^4.3.5",
     "sinon": "^1.17.4",
     "sync-exec": "^0.6.2"
   },
