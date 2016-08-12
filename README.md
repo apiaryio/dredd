@@ -1,5 +1,6 @@
 # Dredd — HTTP API Testing Framework
 
+[![npm version](https://badge.fury.io/js/dredd.svg)](https://badge.fury.io/js/dredd)
 [![Build Status](https://travis-ci.org/apiaryio/dredd.svg?branch=master)](https://travis-ci.org/apiaryio/dredd)
 [![Dependency Status](https://david-dm.org/apiaryio/dredd.svg)](https://david-dm.org/apiaryio/dredd)
 [![devDependency Status](https://david-dm.org/apiaryio/dredd/dev-status.svg)](https://david-dm.org/apiaryio/dredd#info=devDependencies)
