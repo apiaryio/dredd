@@ -178,7 +178,6 @@ class TransactionRunner
       request: transaction.request
     @configuration.emitter.emit 'test error', error, test if error
 
-
   sandboxedHookResultsHandler: (err, data, results = {}, callback) ->
     return callback err if err
     # reference to `transaction` gets lost here if whole object is assigned
@@ -192,7 +191,6 @@ class TransactionRunner
       @logs.push log
     callback()
     return
-
 
   sandboxedWrappedCode: (hookCode) ->
     return """
@@ -209,7 +207,6 @@ class TransactionRunner
       output["logs"] = _logs;
       output;
     """
-
 
   runSandboxedHookFromString: (hookString, data, callback) ->
     wrappedCode = @sandboxedWrappedCode hookString
@@ -228,7 +225,6 @@ class TransactionRunner
     , (err, result = {}) =>
       sandbox.kill()
       @sandboxedHookResultsHandler err, data, result, callback
-
 
   # Will be used runHook instead in next major release, see deprecation warning
   runLegacyHook: (hook, data, callback) ->
@@ -265,7 +261,6 @@ class TransactionRunner
     if typeof(hook) == 'string'
       @runSandboxedHookFromString hook, data, callback
 
-
   runHook: (hook, data, callback) ->
     # not sandboxed mode - hook is a function
     if typeof(hook) == 'function'
@@ -289,29 +284,8 @@ class TransactionRunner
     mediaType = configuration.data[origin.filename]?.mediaType or 'text/vnd.apiblueprint'
 
     # Parse the server URL (just once, caching it in @parsedUrl)
-    unless @parsedUrl
-      serverUrl = configuration.server
-      unless serverUrl.match(/^https?:\/\//i)
-        # Protocol is missing. Remove any : or / at the beginning of the URL
-        # and prepend the URL with 'http://' (assumed default).
-        serverUrl = 'http://' + serverUrl.replace(/^[:\/]*/, '')
-      @parsedUrl = url.parse(serverUrl)
-
-    # Joins paths regardless of slashes. There may be a nice way in the future:
-    # https://github.com/joyent/node/issues/2216 Note that path.join will fail
-    # on windows, and url.resolve can have undesirable behavior depending
-    # on slashes
-    if @parsedUrl.path is '/'
-      fullPath = request.uri
-    else if not request.uri
-      fullPath = @parsedUrl.path
-    else
-      # Removes all slashes from the beginning and from the end of each segment.
-      # Then joins them together with a single slash. Then prepends the whole
-      # string with a single slash.
-      fullPath = '/' + [@parsedUrl.path, request.uri].map((pathSegment) ->
-        pathSegment.replace(/^\/|\/$/g, '')
-      ).join('/')
+    @parsedUrl ?= @parseServerUrl(configuration.server)
+    fullPath = @getFullPath(@parsedUrl.path, request.uri)
 
     flatHeaders = flattenHeaders(request['headers'])
 
@@ -365,6 +339,32 @@ class TransactionRunner
       skip: skip
 
     return callback(null, configuredTransaction)
+
+  parseServerUrl: (serverUrl) ->
+    unless serverUrl.match(/^https?:\/\//i)
+      # Protocol is missing. Remove any : or / at the beginning of the URL
+      # and prepend the URL with 'http://' (assumed as default fallback).
+      serverUrl = 'http://' + serverUrl.replace(/^[:\/]*/, '')
+    url.parse(serverUrl)
+
+  getFullPath: (serverPath, requestPath) ->
+    return requestPath if serverPath is '/'
+    return serverPath unless requestPath
+
+    # Join two paths
+    #
+    # How:
+    # Removes all slashes from the beginning and from the end of each segment.
+    # Then joins them together with a single slash. Then prepends the whole
+    # string with a single slash.
+    #
+    # Why:
+    # Note that 'path.join' won't work on Windows and 'url.resolve' can have
+    # undesirable behavior depending on slashes.
+    # See also https://github.com/joyent/node/issues/2216
+    segments = [serverPath, requestPath]
+    segments = (segment.replace(/^\/|\/$/g, '') for segment in segments)
+    return '/' + segments.join('/')
 
   emitResult: (transaction, callback) ->
     # if transaction test was executed and was not skipped or failed
