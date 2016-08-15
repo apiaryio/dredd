@@ -66,7 +66,6 @@ describe 'CLI - Server Process', ->
     afterEach ->
       killAll()
 
-
     describe 'When works as expected', ->
       dreddCommand = undefined
       args = [

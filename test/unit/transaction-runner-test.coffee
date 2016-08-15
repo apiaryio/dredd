@@ -1,3 +1,5 @@
+# coffeelint: disable=max_line_length
+
 {EventEmitter} = require 'events'
 {assert} = require 'chai'
 clone = require 'clone'
@@ -40,31 +42,31 @@ describe 'TransactionRunner', ->
   transaction = {}
   runner = {}
 
-  before () ->
+  before ->
     loggerStub.transports.console.silent = true
     nock.disableNetConnect()
 
-  after () ->
+  after ->
     loggerStub.transports.console.silent = false
     nock.enableNetConnect()
 
-  describe 'constructor', () ->
+  describe 'constructor', ->
 
-    beforeEach () ->
+    beforeEach ->
       runner = new Runner(configuration)
 
-    it 'should copy configuration', () ->
+    it 'should copy configuration', ->
       assert.ok runner.configuration.server
 
-    it 'should have an empty hookStash object', () ->
+    it 'should have an empty hookStash object', ->
       assert.deepEqual runner.hookStash, {}
 
-    it 'should have an empty array of logs object', () ->
+    it 'should have an empty array of logs object', ->
       assert.deepEqual runner.logs, []
 
-  describe 'config(config)', () ->
-    describe 'when single file in data is present', () ->
-      it 'should set multiBlueprint to false', () ->
+  describe 'config(config)', ->
+    describe 'when single file in data is present', ->
+      it 'should set multiBlueprint to false', ->
         configuration =
           server: 'http://localhost:3000'
           emitter: new EventEmitter()
@@ -81,8 +83,8 @@ describe 'TransactionRunner', ->
 
         assert.notOk runner.multiBlueprint
 
-    describe 'when multiple files in data are present', () ->
-      it 'should set multiBlueprint to true', () ->
+    describe 'when multiple files in data are present', ->
+      it 'should set multiBlueprint to true', ->
         configuration =
           server: 'http://localhost:3000'
           emitter: new EventEmitter()
@@ -123,6 +125,92 @@ describe 'TransactionRunner', ->
           exampleName: "Bogus example name"
 
       runner = new Runner(configuration)
+
+    describe('when server address', ->
+      filename = 'api-description.apib'
+      configuredTransaction = undefined
+
+      [
+        description: 'is hostname'
+        input: {serverUrl: 'https://localhost:8000', requestPath: '/hello'}
+        expected: {host: 'localhost', port: '8000', protocol: 'https:', fullPath: '/hello'}
+      ,
+        description: 'is IPv4'
+        input: {serverUrl: 'https://127.0.0.1:8000', requestPath: '/hello'}
+        expected: {host: '127.0.0.1', port: '8000', protocol: 'https:', fullPath: '/hello'}
+      ,
+        description: 'has path'
+        input: {serverUrl: 'http://localhost:8000/v1', requestPath: '/hello'}
+        expected: {host: 'localhost', port: '8000', protocol: 'http:', fullPath: '/v1/hello'}
+      ,
+        description: 'has path with trailing slash'
+        input: {serverUrl: 'http://127.0.0.1:8000/v1/', requestPath: '/hello'}
+        expected: {host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/hello'}
+      ,
+        description: 'has path and request path is /'
+        input: {serverUrl: 'http://localhost:8000/v1', requestPath: '/'}
+        expected: {host: 'localhost', port: '8000', protocol: 'http:', fullPath: '/v1/'}
+      ,
+        description: 'has path with trailing slash and request path is /'
+        input: {serverUrl: 'http://127.0.0.1:8000/v1/', requestPath: '/'}
+        expected: {host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/'}
+      ,
+        description: 'has path and request has no path'
+        input: {serverUrl: 'http://localhost:8000/v1', requestPath: ''}
+        expected: {host: 'localhost', port: '8000', protocol: 'http:', fullPath: '/v1'}
+      ,
+        description: 'has path with trailing slash and request has no path'
+        input: {serverUrl: 'http://127.0.0.1:8000/v1/', requestPath: ''}
+        expected: {host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/'}
+      ,
+        description: 'is hostname with no protocol'
+        input: {serverUrl: 'localhost', requestPath: '/hello'}
+        expected: {host: 'localhost', port: null, protocol: 'http:', fullPath: '/hello'}
+      ,
+        description: 'is IPv4 with no protocol'
+        input: {serverUrl: '127.0.0.1:4000', requestPath: '/hello'}
+        expected: {host: '127.0.0.1', port: '4000', protocol: 'http:', fullPath: '/hello'}
+      ,
+        description: 'is hostname with // instead of protocol'
+        input: {serverUrl: '//localhost', requestPath: '/hello'}
+        expected: {host: 'localhost', port: null, protocol: 'http:', fullPath: '/hello'}
+      ,
+        description: 'is hostname with trailing slash'
+        input: {serverUrl: 'http://localhost/', requestPath: '/hello'}
+        expected: {host: 'localhost', port: null, protocol: 'http:', fullPath: '/hello'}
+      ,
+        description: 'is hostname with no protocol and with trailing slash'
+        input: {serverUrl: 'localhost/', requestPath: '/hello'}
+        expected: {host: 'localhost', port: null, protocol: 'http:', fullPath: '/hello'}
+
+      ].forEach(({description, input, expected}) ->
+        context("#{description}: '#{input.serverUrl}' + '#{input.requestPath}'", ->
+          beforeEach((done) ->
+            transaction.request.uri = input.requestPath
+            transaction.origin.filename = filename
+
+            runner.configuration.server = input.serverUrl
+            runner.configuration.data ?= {}
+            runner.configuration.data[filename] ?= {}
+            runner.configuration.data[filename].mediaType = 'text/vnd.apiblueprint'
+
+            runner.configureTransaction(transaction, (args...) ->
+              [err, configuredTransaction] = args
+              done(err)
+            )
+          )
+
+          it("the transaction gets configured with fullPath '#{expected.fullPath}' and has expected host, port, and protocol", ->
+            assert.deepEqual(
+              host: configuredTransaction.host
+              port: configuredTransaction.port
+              protocol: configuredTransaction.protocol
+              fullPath: configuredTransaction.fullPath
+            , expected)
+          )
+        )
+      )
+    )
 
     describe('when processing Swagger document and given transaction has non-2xx status code', ->
       filename = 'api-description.yml'
@@ -201,39 +289,39 @@ describe 'TransactionRunner', ->
       )
     )
 
-    describe 'when processing multiple API description documents', () ->
+    describe 'when processing multiple API description documents', ->
       it 'should include api name in the transaction name', (done) ->
         runner.multiBlueprint = true
         runner.configureTransaction transaction, (err, configuredTransaction) ->
           assert.include configuredTransaction.name, 'Machines API'
           done()
 
-    describe 'when processing only single API description document', () ->
+    describe 'when processing only single API description document', ->
       it 'should not include api name in the transaction name', (done) ->
         runner.multiBlueprint = false
         runner.configureTransaction transaction, (err, configuredTransaction) ->
           assert.notInclude configuredTransaction.name, 'Machines API'
           done()
 
-    describe 'when request does not have User-Agent', () ->
+    describe 'when request does not have User-Agent', ->
 
       it 'should add the Dredd User-Agent', (done) ->
         runner.configureTransaction transaction, (err, configuredTransaction) ->
           assert.ok configuredTransaction.request.headers['User-Agent']
           done()
 
-    describe 'when an additional header has a colon', ()->
-      beforeEach () ->
+    describe 'when an additional header has a colon', ->
+      beforeEach ->
         conf = clone configuration
         conf.options.header = ["MyCustomDate:Wed, 10 Sep 2014 12:34:26 GMT"]
         runner = new Runner(conf)
 
-      it 'should include the entire value in the header', (done)->
+      it 'should include the entire value in the header', (done) ->
         runner.configureTransaction transaction, (err, configuredTransaction) ->
           assert.equal configuredTransaction.request.headers['MyCustomDate'], 'Wed, 10 Sep 2014 12:34:26 GMT'
           done()
 
-    describe 'when configuring a transaction', () ->
+    describe 'when configuring a transaction', ->
 
       it 'should callback with a properly configured transaction', (done) ->
         runner.configureTransaction transaction, (err, configuredTransaction) ->
@@ -249,7 +337,7 @@ describe 'TransactionRunner', ->
       beforeEach ->
         configurationWithPath = clone configuration
         configurationWithPath.server = 'https://hostname.tld:9876/my/path/to/api/'
-        runner = new Runner configurationWithPath
+        runner = new Runner(configurationWithPath)
 
       it 'should join the endpoint path with transaction uriTemplate together', (done) ->
         runner.configureTransaction transaction, (err, configuredTransaction) ->
@@ -260,9 +348,9 @@ describe 'TransactionRunner', ->
           assert.strictEqual configuredTransaction.fullPath, '/my/path/to/api' + '/machines'
           done()
 
-  describe 'executeTransaction(transaction, callback)', () ->
+  describe 'executeTransaction(transaction, callback)', ->
 
-    beforeEach () ->
+    beforeEach ->
       transaction =
         name: 'Group Machine > Machine > Delete Message > Bogus example name'
         id: 'POST /machines'
@@ -288,97 +376,97 @@ describe 'TransactionRunner', ->
         fullPath: '/machines'
         protocol: 'http:'
 
-    describe 'when no Content-Length is present', () ->
+    describe 'when no Content-Length is present', ->
 
-      beforeEach () ->
+      beforeEach ->
         delete transaction.request.headers["Content-Length"]
         server = nock('http://localhost:3000').
-          post('/machines', {"type":"bulldozer","name":"willy"}).
+          post('/machines', {"type":"bulldozer", "name":"willy"}).
           reply transaction['expected']['status'],
             transaction['expected']['body'],
             {'Content-Type': 'application/json'}
 
-      afterEach () ->
+      afterEach ->
         nock.cleanAll()
 
       it 'should add a Content-Length header', (done) ->
-        runner.executeTransaction transaction, () ->
+        runner.executeTransaction transaction, ->
           assert.ok transaction.request.headers['Content-Length']
           done()
 
-    describe 'when Content-Length header is present', () ->
+    describe 'when Content-Length header is present', ->
 
-      beforeEach () ->
+      beforeEach ->
         transaction.request.headers["Content-Length"] = 44
         server = nock('http://localhost:3000').
-          post('/machines', {"type":"bulldozer","name":"willy"}).
+          post('/machines', {"type":"bulldozer", "name":"willy"}).
           reply transaction['expected']['status'],
             transaction['expected']['body'],
             {'Content-Type': 'application/json'}
 
-      afterEach () ->
+      afterEach ->
         nock.cleanAll()
 
       it 'should not add a Content-Length header', (done) ->
-        runner.executeTransaction transaction, () ->
+        runner.executeTransaction transaction, ->
           assert.equal transaction.request.headers['Content-Length'], 44
           done()
 
 
-    describe 'when printing the names', () ->
+    describe 'when printing the names', ->
 
-      beforeEach () ->
+      beforeEach ->
         sinon.spy loggerStub, 'info'
         configuration.options['names'] = true
         runner = new Runner(configuration)
 
-      afterEach () ->
+      afterEach ->
         loggerStub.info.restore()
         configuration.options['names'] = false
 
       it 'should print the names and return', (done) ->
-        runner.executeTransaction transaction, () ->
+        runner.executeTransaction transaction, ->
           assert.ok loggerStub.info.called
           done()
 
-    describe 'when a dry run', () ->
+    describe 'when a dry run', ->
 
-      beforeEach () ->
+      beforeEach ->
         configuration.options['dry-run'] = true
         runner = new Runner(configuration)
         sinon.stub httpStub, 'request'
 
 
-      afterEach () ->
+      afterEach ->
         configuration.options['dry-run'] = false
         httpStub.request.restore()
 
       it 'should skip the tests', (done) ->
-        runner.executeTransaction transaction, () ->
+        runner.executeTransaction transaction, ->
           assert.ok httpStub.request.notCalled
           done()
 
-    describe 'when only certain methods are allowed by the configuration', () ->
+    describe 'when only certain methods are allowed by the configuration', ->
 
-      beforeEach () ->
+      beforeEach ->
         configuration.options['method'] = ['GET']
         sinon.stub configuration.emitter, 'emit'
         runner = new Runner(configuration)
 
-      afterEach () ->
+      afterEach ->
         configuration.emitter.emit.restore()
         configuration.options['method'] = []
 
       it 'should only perform those requests', (done) ->
-        runner.executeTransaction transaction, () ->
+        runner.executeTransaction transaction, ->
           assert.ok configuration.emitter.emit.calledWith 'test skip'
           done()
 
-    describe 'when only certain names are allowed by the configuration', () ->
+    describe 'when only certain names are allowed by the configuration', ->
 
-      beforeEach () ->
+      beforeEach ->
         server = nock('http://localhost:3000').
-          post('/machines', {"type":"bulldozer","name":"willy"}).
+          post('/machines', {"type":"bulldozer", "name":"willy"}).
           reply transaction['expected']['status'],
             transaction['expected']['body'],
             {'Content-Type': 'application/json'}
@@ -387,23 +475,23 @@ describe 'TransactionRunner', ->
         sinon.stub configuration.emitter, 'emit'
         runner = new Runner(configuration)
 
-      afterEach () ->
+      afterEach ->
         configuration.emitter.emit.restore()
         configuration.options['only'] = []
         nock.cleanAll()
 
       it 'should not skip transactions with matching names', (done) ->
-        runner.executeTransaction transaction, () ->
+        runner.executeTransaction transaction, ->
           assert.notOk configuration.emitter.emit.calledWith 'test skip'
           done()
 
       it 'should skip transactions with different names', (done) ->
         transaction['name'] = 'Group Machine > Machine > Delete Message > Bogus different example name'
-        runner.executeTransaction transaction, () ->
+        runner.executeTransaction transaction, ->
           assert.ok configuration.emitter.emit.calledWith 'test skip'
           done()
 
-    describe 'when a test has been manually set to skip in a hook', () ->
+    describe 'when a test has been manually set to skip in a hook', ->
       clonedTransaction = null
 
       beforeEach (done) ->
@@ -423,7 +511,7 @@ describe 'TransactionRunner', ->
             ]
           done()
 
-      afterEach () ->
+      afterEach ->
         configuration.emitter.emit.restore()
 
       # If you happen to wonder why some of the callbacks in following tests
@@ -441,33 +529,33 @@ describe 'TransactionRunner', ->
           done(err)
 
       it 'should add fail message as a warning under `general` to the results on test passed to the emitter', (done) ->
-          runner.executeAllTransactions [clonedTransaction], runner.hooks, (err) ->
-            messages = []
-            callCount = configuration.emitter.emit.callCount
-            for callNo in [0.. callCount - 1]
-              messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
-                (value, index) -> value['message']
-              )
-            assert.include messages.join().toLowerCase(), 'skipped'
-            done(err)
+        runner.executeAllTransactions [clonedTransaction], runner.hooks, (err) ->
+          messages = []
+          callCount = configuration.emitter.emit.callCount
+          for callNo in [0.. callCount - 1]
+            messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
+              (value, index) -> value['message']
+            )
+          assert.include messages.join().toLowerCase(), 'skipped'
+          done(err)
 
       it 'should set status `skip` on test passed to the emitter', (done) ->
-          runner.executeAllTransactions [clonedTransaction], runner.hooks, (err) ->
-            tests = []
-            callCount = Object.keys(configuration.emitter.emit.args).map (value, index) ->
-              args = configuration.emitter.emit.args[value]
-              tests.push args[1] if args[0] == 'test skip'
+        runner.executeAllTransactions [clonedTransaction], runner.hooks, (err) ->
+          tests = []
+          callCount = Object.keys(configuration.emitter.emit.args).map (value, index) ->
+            args = configuration.emitter.emit.args[value]
+            tests.push args[1] if args[0] == 'test skip'
 
-            assert.equal tests.length, 1
-            assert.equal tests[0]['status'], 'skip'
-            done(err)
+          assert.equal tests.length, 1
+          assert.equal tests[0]['status'], 'skip'
+          done(err)
 
 
-    describe 'when server uses https', () ->
+    describe 'when server uses https', ->
 
-      beforeEach () ->
+      beforeEach ->
         server = nock('https://localhost:3000').
-          post('/machines', {"type":"bulldozer","name":"willy"}).
+          post('/machines', {"type":"bulldozer", "name":"willy"}).
           reply transaction['expected']['status'],
             transaction['expected']['body'],
             {'Content-Type': 'application/json'}
@@ -475,19 +563,19 @@ describe 'TransactionRunner', ->
         transaction.protocol = 'https:'
         runner = new Runner(configuration)
 
-      afterEach () ->
+      afterEach ->
         nock.cleanAll()
 
       it 'should make the request with https', (done) ->
-        runner.executeTransaction transaction, () ->
+        runner.executeTransaction transaction, ->
           assert.ok server.isDone()
           done()
 
-    describe 'when server uses http', () ->
+    describe 'when server uses http', ->
 
-      beforeEach () ->
+      beforeEach ->
         server = nock('http://localhost:3000').
-          post('/machines', {"type":"bulldozer","name":"willy"}).
+          post('/machines', {"type":"bulldozer", "name":"willy"}).
           reply transaction['expected']['status'],
             transaction['expected']['body'],
             {'Content-Type': 'application/json'}
@@ -495,28 +583,28 @@ describe 'TransactionRunner', ->
         transaction.protocol = 'http:'
         runner = new Runner(configuration)
 
-      afterEach () ->
+      afterEach ->
         nock.cleanAll()
 
       it 'should make the request with http', (done) ->
-        runner.executeTransaction transaction, () ->
+        runner.executeTransaction transaction, ->
           assert.ok server.isDone()
           done()
 
-    describe 'when backend responds as it should', () ->
-      beforeEach () ->
+    describe 'when backend responds as it should', ->
+      beforeEach ->
         server = nock('http://localhost:3000').
-          post('/machines', {"type":"bulldozer","name":"willy"}).
+          post('/machines', {"type":"bulldozer", "name":"willy"}).
           reply transaction['expected']['status'],
             transaction['expected']['body'],
             {'Content-Type': 'application/json'}
         runner = new Runner(configuration)
 
-      afterEach () ->
+      afterEach ->
         nock.cleanAll()
 
       it 'should perform the request', (done) ->
-        runner.executeTransaction transaction, () ->
+        runner.executeTransaction transaction, ->
           assert.ok server.isDone()
           done()
 
@@ -525,34 +613,34 @@ describe 'TransactionRunner', ->
           assert.notOk error
           done()
 
-    describe 'when backend responds with invalid response', () ->
-      beforeEach () ->
+    describe 'when backend responds with invalid response', ->
+      beforeEach ->
         server = nock('http://localhost:3000').
-          post('/machines', {"type":"bulldozer","name":"willy"}).
+          post('/machines', {"type":"bulldozer", "name":"willy"}).
           reply 400,
             'Foo bar',
             {'Content-Type': 'text/plain'}
         runner = new Runner(configuration)
 
-      afterEach () ->
+      afterEach ->
         nock.cleanAll()
 
       it 'should perform the request', (done) ->
-        runner.executeTransaction transaction, () ->
+        runner.executeTransaction transaction, ->
           assert.ok server.isDone()
           done()
 
 
-    describe 'when server is not running', () ->
-      beforeEach () ->
+    describe 'when server is not running', ->
+      beforeEach ->
         sinon.spy configuration.emitter, 'emit'
         runner = new Runner(configuration)
 
-      afterEach () ->
+      afterEach ->
         configuration.emitter.emit.restore()
 
       it 'should report a error', (done) ->
-        runner.executeTransaction transaction, () ->
+        runner.executeTransaction transaction, ->
           assert.ok configuration.emitter.emit.called
           events = Object.keys(configuration.emitter.emit.args).map (value, index) ->
             configuration.emitter.emit.args[value][0]
@@ -568,7 +656,7 @@ describe 'TransactionRunner', ->
     returnedError = null
     spies = {}
 
-    beforeEach () ->
+    beforeEach ->
       returnedError = null
       transactions = []
 
@@ -634,18 +722,18 @@ describe 'TransactionRunner', ->
       runner.hooks = hooks
 
       serverNock1 = nock('http://localhost:3000').
-        post('/machines1', {"type":"bulldozer","name":"willy"}).
+        post('/machines1', {"type":"bulldozer", "name":"willy"}).
         reply transaction['expected']['statusCode'],
           transaction['expected']['body'],
           {'Content-Type': 'application/json'}
 
       serverNock2 = nock('http://localhost:3000').
-        post('/machines2', {"type":"bulldozer","name":"willy"}).
+        post('/machines2', {"type":"bulldozer", "name":"willy"}).
         reply transaction['expected']['statusCode'],
           transaction['expected']['body'],
           {'Content-Type': 'application/json'}
 
-    afterEach () ->
+    afterEach ->
       nock.cleanAll()
 
       for name, spy of spies then do (name, spy) ->
@@ -659,8 +747,8 @@ describe 'TransactionRunner', ->
       returnedError = null
       spies = {}
 
-    describe 'when the hooks handler is used', () ->
-      describe "and it doesn't crash", () ->
+    describe 'when the hooks handler is used', ->
+      describe "and it doesn't crash", ->
 
         it 'should perform all transactions', (done) ->
           runner.executeAllTransactions transactions, hooks, (error) ->
@@ -689,29 +777,29 @@ describe 'TransactionRunner', ->
               assert.isTrue spies[spyName].calledTwice, spyName
             done()
 
-      describe 'and it crashes (hook handler error was set)', () ->
-        describe 'before any hook is executed', () ->
+      describe 'and it crashes (hook handler error was set)', ->
+        describe 'before any hook is executed', ->
           beforeEach (done) ->
-            runner.hookHandlerError = new Error 'handler died in before everything'
+            runner.hookHandlerError = new Error('handler died in before everything')
             runner.executeAllTransactions transactions, hooks, (error) ->
               #setting expectation for this error below in each describe block
               returnedError = error
               done()
 
-          it 'should not perform any transaction', () ->
+          it 'should not perform any transaction', ->
             assert.isFalse serverNock1.isDone(), 'first resource'
             assert.isFalse serverNock2.isDone(), 'second resource'
 
-          it 'should not perform any hooks', () ->
+          it 'should not perform any hooks', ->
             for own spyName, spy of spies
               assert.isFalse spies[spyName].called, spyName
 
-          it 'should return the error', () ->
+          it 'should return the error', ->
             assert.include returnedError.message, 'everything'
 
-        describe 'after ‘beforeAll’ hook is executed', () ->
+        describe 'after ‘beforeAll’ hook is executed', ->
           beforeEach (done) ->
-            hookHandlerError = new Error 'handler died in beforeAll'
+            hookHandlerError = new Error('handler died in beforeAll')
 
             hooks.beforeAll (data, callback) ->
               runner.hookHandlerError = hookHandlerError
@@ -722,24 +810,24 @@ describe 'TransactionRunner', ->
               returnedError = error
               done()
 
-          it 'should perform the ‘beforeAll’ hook', () ->
+          it 'should perform the ‘beforeAll’ hook', ->
             assert.isTrue spies.beforeAllSpy.called
 
-          it 'should not perform any other hook', () ->
+          it 'should not perform any other hook', ->
             for own spyName, spy of spies
               break if spyName == 'beforeAllSpy'
               assert.isFalse spies[spyName].called, spyName
 
-          it 'should not perform any transaction', () ->
+          it 'should not perform any transaction', ->
             assert.isFalse serverNock1.isDone(), 'first resource'
             assert.isFalse serverNock2.isDone(), 'second resource'
 
-          it 'should return the error', () ->
+          it 'should return the error', ->
             assert.include returnedError.message, 'beforeAll'
 
-        describe 'after ‘beforeEach’ hook is executed', () ->
+        describe 'after ‘beforeEach’ hook is executed', ->
           beforeEach (done) ->
-            hookHandlerError = new Error 'handler died in beforeEach'
+            hookHandlerError = new Error('handler died in beforeEach')
 
             hooks.beforeEach (data, callback) ->
               runner.hookHandlerError = hookHandlerError
@@ -750,28 +838,28 @@ describe 'TransactionRunner', ->
               returnedError = error
               done()
 
-          it 'should perform the ‘beforeAll’ hook', () ->
+          it 'should perform the ‘beforeAll’ hook', ->
             assert.isTrue spies.beforeAllSpy.called
 
-          it 'should perform the ‘beforeEach’ hook', () ->
+          it 'should perform the ‘beforeEach’ hook', ->
             assert.isTrue spies.beforeEachSpy.calledOnce
 
-          it 'should not perform any other hook', () ->
+          it 'should not perform any other hook', ->
             for own spyName, spy of spies
               break if spyName == 'beforeAllSpy'
               break if spyName == 'beforeEachSpy'
               assert.isFalse spies[spyName].called, spyName
 
-          it 'should not perform any transaction', () ->
+          it 'should not perform any transaction', ->
             assert.isFalse serverNock1.isDone(), 'first resource'
             assert.isFalse serverNock2.isDone(), 'second resource'
 
-          it 'should return the error', () ->
+          it 'should return the error', ->
             assert.include returnedError.message, 'beforeEach'
 
-        describe 'after ‘before’ hook is executed', () ->
+        describe 'after ‘before’ hook is executed', ->
           beforeEach (done) ->
-            hookHandlerError = new Error 'handler died in before 1'
+            hookHandlerError = new Error('handler died in before 1')
 
             hooks.before '1', (data, callback) ->
               runner.hookHandlerError = hookHandlerError
@@ -782,32 +870,32 @@ describe 'TransactionRunner', ->
               returnedError = error
               done()
 
-          it 'should perform the ‘beforeAll’ hook', () ->
+          it 'should perform the ‘beforeAll’ hook', ->
             assert.isTrue spies.beforeAllSpy.called
 
-          it 'should perform the ‘beforeEach’ hook', () ->
+          it 'should perform the ‘beforeEach’ hook', ->
             assert.isTrue spies.beforeEachSpy.calledOnce
 
-          it 'should perform the ‘before’ hook', () ->
+          it 'should perform the ‘before’ hook', ->
             assert.isTrue spies.beforeSpy.calledOnce
 
-          it 'should not perform any other hook', () ->
+          it 'should not perform any other hook', ->
             for own spyName, spy of spies
               break if spyName == 'beforeAllSpy'
               break if spyName == 'beforeEachSpy'
               break if spyName == 'beforeSpy'
               assert.isFalse spies[spyName].called, spyName
 
-          it 'should not perform any transaction', () ->
+          it 'should not perform any transaction', ->
             assert.isFalse serverNock1.isDone(), 'first resource'
             assert.isFalse serverNock2.isDone(), 'second resource'
 
-          it 'should return the error', () ->
+          it 'should return the error', ->
             assert.include returnedError.message, 'before 1'
 
-        describe 'after ‘beforeEachValidation’ hook is executed', () ->
+        describe 'after ‘beforeEachValidation’ hook is executed', ->
           beforeEach (done) ->
-            hookHandlerError = new Error 'handler died in before each validation'
+            hookHandlerError = new Error('handler died in before each validation')
 
             hooks.beforeEachValidation (data, callback) ->
               runner.hookHandlerError = hookHandlerError
@@ -818,19 +906,19 @@ describe 'TransactionRunner', ->
               returnedError = error
               done()
 
-          it 'should perform the ‘beforeAll’ hook', () ->
+          it 'should perform the ‘beforeAll’ hook', ->
             assert.equal spies.beforeAllSpy.callCount, 1
 
-          it 'should perform the ‘beforeEach’ hook', () ->
+          it 'should perform the ‘beforeEach’ hook', ->
             assert.equal spies.beforeEachSpy.callCount, 1
 
-          it 'should perform the ‘before’ hook', () ->
+          it 'should perform the ‘before’ hook', ->
             assert.equal spies.beforeSpy.callCount, 1
 
-          it 'should perform the ‘beforeEachValidation’ hook', () ->
+          it 'should perform the ‘beforeEachValidation’ hook', ->
             assert.equal spies.beforeEachValidationSpy.callCount, 1
 
-          it 'should not perform any other hook', () ->
+          it 'should not perform any other hook', ->
             for own spyName, spy of spies
               break if spyName == 'beforeAllSpy'
               break if spyName == 'beforeEachSpy'
@@ -839,16 +927,16 @@ describe 'TransactionRunner', ->
 
               assert.isFalse spies[spyName].called, spyName
 
-          it 'should perform only the first transaction', () ->
+          it 'should perform only the first transaction', ->
             assert.isTrue serverNock1.isDone(), 'first resource'
             assert.isFalse serverNock2.isDone(), 'second resource'
 
-          it 'should return the error', () ->
+          it 'should return the error', ->
             assert.include returnedError.message, 'before each validation'
 
-        describe 'after ‘beforeValidation’ hook is executed', () ->
+        describe 'after ‘beforeValidation’ hook is executed', ->
           beforeEach (done) ->
-            hookHandlerError = new Error 'handler died in before validation 1'
+            hookHandlerError = new Error('handler died in before validation 1')
 
             hooks.beforeValidation '1', (data, callback) ->
               runner.hookHandlerError = hookHandlerError
@@ -859,22 +947,22 @@ describe 'TransactionRunner', ->
               returnedError = error
               done()
 
-          it 'should perform the ‘beforeAll’ hook', () ->
+          it 'should perform the ‘beforeAll’ hook', ->
             assert.isTrue spies.beforeAllSpy.called
 
-          it 'should perform the ‘beforeEach’ hook', () ->
+          it 'should perform the ‘beforeEach’ hook', ->
             assert.isTrue spies.beforeEachSpy.calledOnce
 
-          it 'should perform the ‘before’ hook', () ->
+          it 'should perform the ‘before’ hook', ->
             assert.isTrue spies.beforeSpy.calledOnce
 
-          it 'should perform the ‘beforeEachValidation’ hook', () ->
+          it 'should perform the ‘beforeEachValidation’ hook', ->
             assert.isTrue spies.beforeEachValidationSpy.calledOnce
 
-          it 'should perform the ‘beforeValidation’ hook', () ->
+          it 'should perform the ‘beforeValidation’ hook', ->
             assert.isTrue spies.beforeValidationSpy.calledOnce
 
-          it 'should not perform any other hook', () ->
+          it 'should not perform any other hook', ->
             for own spyName, spy of spies
               break if spyName == 'beforeAllSpy'
               break if spyName == 'beforeEachSpy'
@@ -884,16 +972,16 @@ describe 'TransactionRunner', ->
 
               assert.isFalse spies[spyName].called, spyName
 
-          it 'should perform only first transaction', () ->
+          it 'should perform only first transaction', ->
             assert.isTrue serverNock1.isDone(), 'first resource'
             assert.isFalse serverNock2.isDone(), 'second resource'
 
-          it 'should return the error', () ->
+          it 'should return the error', ->
             assert.include returnedError.message, 'before validation 1'
 
-        describe 'after ‘after’ hook is executed', () ->
+        describe 'after ‘after’ hook is executed', ->
           beforeEach (done) ->
-            hookHandlerError = new Error 'handler died in after 1'
+            hookHandlerError = new Error('handler died in after 1')
 
             hooks.after '1', (data, callback) ->
               runner.hookHandlerError = hookHandlerError
@@ -904,28 +992,28 @@ describe 'TransactionRunner', ->
               returnedError = error
               done()
 
-          it 'should perform the ‘beforeAll’ hook', () ->
+          it 'should perform the ‘beforeAll’ hook', ->
             assert.isTrue spies.beforeAllSpy.called
 
-          it 'should perform the ‘beforeEach’ hook', () ->
+          it 'should perform the ‘beforeEach’ hook', ->
             assert.isTrue spies.beforeEachSpy.calledOnce
 
-          it 'should perform the ‘before’ hook', () ->
+          it 'should perform the ‘before’ hook', ->
             assert.isTrue spies.beforeSpy.calledOnce
 
-          it 'should perform the ‘beforeEachValidation’ hook', () ->
+          it 'should perform the ‘beforeEachValidation’ hook', ->
             assert.isTrue spies.beforeEachValidationSpy.calledOnce
 
-          it 'should perform the ‘beforeValidation’ hook', () ->
+          it 'should perform the ‘beforeValidation’ hook', ->
             assert.isTrue spies.beforeValidationSpy.calledOnce
 
-          it 'should perform the ‘afterEach’ hook', () ->
+          it 'should perform the ‘afterEach’ hook', ->
             assert.isTrue spies.afterEachSpy.calledOnce
 
-          it 'should perform the ‘after’ hook', () ->
+          it 'should perform the ‘after’ hook', ->
             assert.isTrue spies.afterSpy.calledOnce
 
-          it 'should not perform any other hook', () ->
+          it 'should not perform any other hook', ->
             for own spyName, spy of spies
               break if spyName == 'beforeAllSpy'
               break if spyName == 'beforeEachSpy'
@@ -935,16 +1023,16 @@ describe 'TransactionRunner', ->
               break if spyName == 'after'
               assert.isFalse spies[spyName].called, spyName
 
-          it 'should not perform any other transaction', () ->
+          it 'should not perform any other transaction', ->
             assert.isTrue serverNock1.isDone(), 'first resource'
             assert.isFalse serverNock2.isDone(), 'second resource'
 
-          it 'should return the error', () ->
+          it 'should return the error', ->
             assert.include returnedError.message, 'after 1'
 
-        describe 'after ‘afterEach’ hook is executed', () ->
+        describe 'after ‘afterEach’ hook is executed', ->
           beforeEach (done) ->
-            hookHandlerError = new Error 'handler died in after each'
+            hookHandlerError = new Error('handler died in after each')
 
             hooks.afterEach (data, callback) ->
               runner.hookHandlerError = hookHandlerError
@@ -955,25 +1043,25 @@ describe 'TransactionRunner', ->
               returnedError = error
               done()
 
-          it 'should perform the ‘beforeAll’ hook', () ->
+          it 'should perform the ‘beforeAll’ hook', ->
             assert.isTrue spies.beforeAllSpy.called
 
-          it 'should perform the ‘beforeEach’ hook', () ->
+          it 'should perform the ‘beforeEach’ hook', ->
             assert.isTrue spies.beforeEachSpy.calledOnce
 
-          it 'should perform the ‘before’ hook', () ->
+          it 'should perform the ‘before’ hook', ->
             assert.isTrue spies.beforeSpy.calledOnce
 
-          it 'should perform the ‘beforeEachValidation’ hook', () ->
+          it 'should perform the ‘beforeEachValidation’ hook', ->
             assert.isTrue spies.beforeEachValidationSpy.calledOnce
 
-          it 'should perform the ‘beforeValidation’ hook', () ->
+          it 'should perform the ‘beforeValidation’ hook', ->
             assert.isTrue spies.beforeValidationSpy.calledOnce
 
-          it 'should perform the ‘afterEach’ hook', () ->
+          it 'should perform the ‘afterEach’ hook', ->
             assert.isTrue spies.afterEachSpy.calledOnce
 
-          it 'should not perform any other hook', () ->
+          it 'should not perform any other hook', ->
             for own spyName, spy of spies
               break if spyName == 'beforeAllSpy'
               break if spyName == 'beforeEachSpy'
@@ -984,62 +1072,62 @@ describe 'TransactionRunner', ->
               break if spyName == 'afterEach'
               assert.isFalse spies[spyName].called, spyName
 
-          it 'should not perform any other transaction', () ->
+          it 'should not perform any other transaction', ->
             assert.isTrue serverNock1.isDone(), 'first resource'
             assert.isFalse serverNock2.isDone(), 'second resource'
 
-          it 'should return the error', () ->
+          it 'should return the error', ->
             assert.include returnedError.message, 'after each'
 
-        describe 'after ‘afterAll’ hook is executed', () ->
+        describe 'after ‘afterAll’ hook is executed', ->
           beforeEach (done) ->
-            hookHandlerError = new Error 'handler died in after all'
+            hookHandlerError = new Error('handler died in after all')
 
             hooks.afterAll (data, callback) ->
-             runner.hookHandlerError = hookHandlerError
-             callback()
+              runner.hookHandlerError = hookHandlerError
+              callback()
 
             runner.executeAllTransactions transactions, hooks, (error) ->
               #setting expectation for this error below in each describe block
               returnedError = error
               done()
 
-          it 'should perform the ‘beforeAll’ hook', () ->
+          it 'should perform the ‘beforeAll’ hook', ->
             assert.isTrue spies.beforeAllSpy.called
 
-          it 'should perform the ‘beforeEach’ hook', () ->
+          it 'should perform the ‘beforeEach’ hook', ->
             assert.isTrue spies.beforeEachSpy.calledTwice
 
-          it 'should perform the ‘before’ hook', () ->
+          it 'should perform the ‘before’ hook', ->
             assert.isTrue spies.beforeSpy.calledTwice
 
-          it 'should perform the ‘beforeEachValidation’ hook', () ->
+          it 'should perform the ‘beforeEachValidation’ hook', ->
             assert.isTrue spies.beforeEachValidationSpy.calledTwice
 
-          it 'should perform the ‘beforeValidation’ hook', () ->
+          it 'should perform the ‘beforeValidation’ hook', ->
             assert.isTrue spies.beforeValidationSpy.calledTwice
 
-          it 'should perform the ‘afterEach’ hook', () ->
+          it 'should perform the ‘afterEach’ hook', ->
             assert.isTrue spies.afterEachSpy.calledTwice
 
-          it 'should perform the ‘after’ hook', () ->
+          it 'should perform the ‘after’ hook', ->
             assert.isTrue spies.afterSpy.calledTwice
 
-          it 'should perform the ‘afterAll’ hook', () ->
+          it 'should perform the ‘afterAll’ hook', ->
             assert.isTrue spies.afterAllSpy.calledOnce
 
-          it 'should perform both transactions', () ->
+          it 'should perform both transactions', ->
             assert.isTrue serverNock1.isDone(), 'first resource'
             assert.isTrue serverNock2.isDone(), 'second resource'
 
-          it 'should return the error', () ->
+          it 'should return the error', ->
             assert.include returnedError.message, 'after all'
 
-  describe 'executeTransaction(transaction, callback) multipart', () ->
+  describe 'executeTransaction(transaction, callback) multipart', ->
     multiPartTransaction = null
     notMultiPartTransaction = null
     runner = null
-    beforeEach () ->
+    beforeEach ->
       runner = new Runner(configuration)
       multiPartTransaction =
           name: 'Group Machine > Machine > Post Message> Bogus example name'
@@ -1093,29 +1181,29 @@ describe 'TransactionRunner', ->
           fullPath: '/machines/message'
           protocol: 'http:'
 
-    describe 'when multipart header in request', () ->
+    describe 'when multipart header in request', ->
 
       parsedBody = '\r\n--BOUNDARY \r\ncontent-disposition: form-data; name="mess12"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY\r\n\r\nContent-Disposition: form-data; name="mess2"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY--'
-      beforeEach () ->
+      beforeEach ->
         server = nock('http://localhost:3000').
         post('/machines/message').
         reply 204
         configuration.server = 'http://localhost:3000'
 
-      afterEach () ->
+      afterEach ->
         nock.cleanAll()
 
       it 'should replace line feed in body', (done) ->
-        runner.executeTransaction multiPartTransaction, () ->
+        runner.executeTransaction multiPartTransaction, ->
           assert.ok server.isDone()
           assert.equal multiPartTransaction['request']['body'], parsedBody, 'Body'
           assert.include multiPartTransaction['request']['body'], "\r\n"
           done()
 
-    describe 'when multipart header in request is with lowercase key', () ->
+    describe 'when multipart header in request is with lowercase key', ->
 
       parsedBody = '\r\n--BOUNDARY \r\ncontent-disposition: form-data; name="mess12"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY\r\n\r\nContent-Disposition: form-data; name="mess2"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY--'
-      beforeEach () ->
+      beforeEach ->
         server = nock('http://localhost:3000').
         post('/machines/message').
         reply 204
@@ -1124,50 +1212,50 @@ describe 'TransactionRunner', ->
         delete multiPartTransaction['request']['headers']['Content-Type']
         multiPartTransaction['request']['headers']['content-type'] = 'multipart/form-data; boundary=BOUNDARY'
 
-      afterEach () ->
+      afterEach ->
         nock.cleanAll()
 
       it 'should replace line feed in body', (done) ->
-        runner.executeTransaction multiPartTransaction, () ->
+        runner.executeTransaction multiPartTransaction, ->
           assert.ok server.isDone()
           assert.equal multiPartTransaction['request']['body'], parsedBody, 'Body'
           assert.include multiPartTransaction['request']['body'], "\r\n"
           done()
 
-    describe 'when multipart header in request, but body already has some CR (added in hooks e.g.s)', () ->
-      beforeEach () ->
+    describe 'when multipart header in request, but body already has some CR (added in hooks e.g.s)', ->
+      beforeEach ->
         server = nock('http://localhost:3000').
         post('/machines/message').
         reply 204
         configuration.server = 'http://localhost:3000'
         multiPartTransaction['request']['body'] = '\r\n--BOUNDARY \r\ncontent-disposition: form-data; name="mess12"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY\r\n\r\nContent-Disposition: form-data; name="mess2"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY--'
 
-      afterEach () ->
+      afterEach ->
         nock.cleanAll()
 
       it 'should not add CR again', (done) ->
-        runner.executeTransaction multiPartTransaction, () ->
+        runner.executeTransaction multiPartTransaction, ->
           assert.ok server.isDone()
           assert.notInclude multiPartTransaction['request']['body'], "\r\r"
           done()
 
-    describe 'when multipart header is not in request', () ->
-      beforeEach () ->
+    describe 'when multipart header is not in request', ->
+      beforeEach ->
         server = nock('http://localhost:3000').
         post('/machines/message').
         reply 204
         configuration.server = 'http://localhost:3000'
 
-      afterEach () ->
+      afterEach ->
         nock.cleanAll()
 
       it 'should not include any line-feed in body', (done) ->
-        runner.executeTransaction notMultiPartTransaction, () ->
+        runner.executeTransaction notMultiPartTransaction, ->
           assert.ok server.isDone()
           assert.notInclude multiPartTransaction['request']['body'], "\r\n"
           done()
 
-  describe '#executeAllTransactions', () ->
+  describe '#executeAllTransactions', ->
 
     configuration =
       server: 'http://localhost:3000'
@@ -1211,7 +1299,7 @@ describe 'TransactionRunner', ->
       }
 
       server = nock('http://localhost:3000').
-        post('/machines', {"type":"bulldozer","name":"willy"}).
+        post('/machines', {"type":"bulldozer", "name":"willy"}).
         reply transaction['expected']['statusCode'],
           transaction['expected']['body'],
           {'Content-Type': 'application/json'}
@@ -1221,11 +1309,11 @@ describe 'TransactionRunner', ->
       runner = new Runner(configuration)
       addHooks runner, transactions, done
 
-    afterEach () ->
+    afterEach ->
       nock.cleanAll()
 
-    describe 'with hooks', () ->
-      beforeEach () ->
+    describe 'with hooks', ->
+      beforeEach ->
         sinon.spy loggerStub, 'info'
         runner.hooks.beforeHooks =
           'Group Machine > Machine > Delete Message > Bogus example name': [
@@ -1244,18 +1332,18 @@ describe 'TransactionRunner', ->
               done()
           ]
 
-      afterEach () ->
+      afterEach ->
         loggerStub.info.restore()
 
       it 'should run the hooks', (done) ->
-        runner.executeAllTransactions [transaction], runner.hooks, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, ->
           assert.ok loggerStub.info.calledWith "before"
           assert.ok loggerStub.info.calledWith "beforeValidation"
           assert.ok loggerStub.info.calledWith "after"
           done()
 
-    describe 'with hooks, but without hooks.transactions set', () ->
-      beforeEach () ->
+    describe 'with hooks, but without hooks.transactions set', ->
+      beforeEach ->
         sinon.spy loggerStub, 'info'
         runner.hooks.transactions = null
         runner.hooks.beforeHooks =
@@ -1275,19 +1363,19 @@ describe 'TransactionRunner', ->
               done()
           ]
 
-      afterEach () ->
+      afterEach ->
         loggerStub.info.restore()
 
       it 'should run the hooks', (done) ->
         runner.hooks.transactions = null
-        runner.executeAllTransactions [transaction], runner.hooks, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, ->
           assert.ok loggerStub.info.calledWith "before"
           assert.ok loggerStub.info.calledWith "beforeValidation"
           assert.ok loggerStub.info.calledWith "after"
           done()
 
-    describe 'with multiple hooks for the same transaction', () ->
-      beforeEach () ->
+    describe 'with multiple hooks for the same transaction', ->
+      beforeEach ->
         sinon.spy loggerStub, 'info'
         runner.hooks.beforeHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
@@ -1298,17 +1386,17 @@ describe 'TransactionRunner', ->
               cb()
           ]
 
-      afterEach () ->
+      afterEach ->
         loggerStub.info.restore()
 
       it 'should run all hooks', (done) ->
-        runner.executeAllTransactions [transaction], runner.hooks, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, ->
           assert.ok loggerStub.info.calledWith "first"
           assert.ok loggerStub.info.calledWith "second"
           done()
 
-    describe '‘*All’ hooks with legacy async interface (fist argument is a callback)', () ->
-      describe 'with a ‘beforeAll’ hook', () ->
+    describe '‘*All’ hooks with legacy async interface (fist argument is a callback)', ->
+      describe 'with a ‘beforeAll’ hook', ->
         legacyApiFunction = (callback) ->
           callback()
         anotherLegacyApiFunction = (cb) ->
@@ -1317,17 +1405,17 @@ describe 'TransactionRunner', ->
         beforeAllStub = sinon.spy(legacyApiFunction)
         beforeAllStubAnother = sinon.spy anotherLegacyApiFunction
 
-        beforeEach () ->
+        beforeEach ->
           runner.hooks.beforeAll beforeAllStub
           runner.hooks.beforeAll beforeAllStubAnother
 
         it 'should run the hooks', (done) ->
-          runner.executeAllTransactions [], runner.hooks, () ->
+          runner.executeAllTransactions [], runner.hooks, ->
             assert.ok beforeAllStub.called
             assert.ok beforeAllStubAnother.called
             done()
 
-      describe 'with an ‘afterAll’ hook', () ->
+      describe 'with an ‘afterAll’ hook', ->
         legacyApiFunction = (callback) ->
           callback()
         anotherLegacyApiFunction = (cb) ->
@@ -1336,17 +1424,17 @@ describe 'TransactionRunner', ->
         afterAllStub = sinon.spy legacyApiFunction
         afterAllStubAnother = sinon.spy anotherLegacyApiFunction
 
-        beforeEach () ->
+        beforeEach ->
           runner.hooks.afterAll afterAllStub
           runner.hooks.afterAll afterAllStubAnother
 
         it 'should run the hooks', (done) ->
-          runner.executeAllTransactions [], runner.hooks, () ->
+          runner.executeAllTransactions [], runner.hooks, ->
             assert.ok afterAllStub.called
             assert.ok afterAllStubAnother.called
             done()
 
-      describe 'with multiple hooks for the same events', () ->
+      describe 'with multiple hooks for the same events', ->
         legacyApiFunction = (callback) ->
           callback()
 
@@ -1355,14 +1443,14 @@ describe 'TransactionRunner', ->
         afterAllStub1 = sinon.spy(legacyApiFunction)
         afterAllStub2 = sinon.spy(legacyApiFunction)
 
-        beforeEach () ->
+        beforeEach ->
           runner.hooks.beforeAll beforeAllStub1
           runner.hooks.afterAll afterAllStub1
           runner.hooks.afterAll afterAllStub2
           runner.hooks.beforeAll beforeAllStub2
 
         it 'should run all the events in order', (done) ->
-          runner.executeAllTransactions [], runner.hooks, () ->
+          runner.executeAllTransactions [], runner.hooks, ->
             assert.ok beforeAllStub1.calledBefore(beforeAllStub2)
             assert.ok beforeAllStub2.called
             assert.ok beforeAllStub2.calledBefore(afterAllStub1)
@@ -1370,37 +1458,37 @@ describe 'TransactionRunner', ->
             assert.ok afterAllStub2.called
             done()
 
-    describe '‘*All’ hooks with standard async API (first argument transactions, second callback)', () ->
+    describe '‘*All’ hooks with standard async API (first argument transactions, second callback)', ->
 
-      describe 'with a ‘beforeAll’ hook', () ->
+      describe 'with a ‘beforeAll’ hook', ->
         hook = (transactions, callback) ->
           callback()
 
         beforeAllStub = sinon.spy(hook)
 
-        beforeEach () ->
+        beforeEach ->
           runner.hooks.beforeAll beforeAllStub
 
         it 'should run the hooks', (done) ->
-          runner.executeAllTransactions [], runner.hooks, () ->
+          runner.executeAllTransactions [], runner.hooks, ->
             assert.ok beforeAllStub.called
             done()
 
-      describe 'with an ‘afterAll’ hook', () ->
+      describe 'with an ‘afterAll’ hook', ->
         hook = (transactions, callback) ->
           callback()
 
         afterAllStub = sinon.spy hook
 
-        beforeEach () ->
+        beforeEach ->
           runner.hooks.afterAll afterAllStub
 
         it 'should run the hooks', (done) ->
-          runner.executeAllTransactions [], runner.hooks, () ->
+          runner.executeAllTransactions [], runner.hooks, ->
             assert.ok afterAllStub.called
             done()
 
-      describe 'with multiple hooks for the same events', () ->
+      describe 'with multiple hooks for the same events', ->
         hook = (transactions, callback) ->
           callback()
 
@@ -1409,14 +1497,14 @@ describe 'TransactionRunner', ->
         afterAllStub1 = sinon.spy(hook)
         afterAllStub2 = sinon.spy(hook)
 
-        beforeEach () ->
+        beforeEach ->
           runner.hooks.beforeAll beforeAllStub1
           runner.hooks.afterAll afterAllStub1
           runner.hooks.afterAll afterAllStub2
           runner.hooks.beforeAll beforeAllStub2
 
         it 'should run all the events in order', (done) ->
-          runner.executeAllTransactions [], runner.hooks, () ->
+          runner.executeAllTransactions [], runner.hooks, ->
             assert.ok beforeAllStub1.calledBefore(beforeAllStub2)
             assert.ok beforeAllStub2.called
             assert.ok beforeAllStub2.calledBefore(afterAllStub1)
@@ -1428,7 +1516,9 @@ describe 'TransactionRunner', ->
       describe 'with a ‘beforeAll’ hook', ->
 
         beforeEach ->
+          # coffeelint: disable=no_empty_functions
           sinon.stub configuration.emitter, 'emit', ->
+          # coffeelint: enable=no_empty_functions
 
         afterEach ->
           configuration.emitter.emit.restore()
@@ -1542,11 +1632,11 @@ describe 'TransactionRunner', ->
             assert.propertyVal runner.logs[0], 'content', 'Test!'
             done(err)
 
-    describe '*Each hooks with standard async API (first argument transactions, second callback)', () ->
+    describe '*Each hooks with standard async API (first argument transactions, second callback)', ->
 
       transactionsForExecution = []
 
-      before () ->
+      before ->
         transaction =
           name: 'Group Machine > Machine > Delete Message > Bogus example name'
           id: 'POST /machines'
@@ -1571,106 +1661,106 @@ describe 'TransactionRunner', ->
             exampleName: 'Bogus example name'
           fullPath: '/machines'
 
-        for i in [1,2]
+        for i in [1, 2]
           clonedTransaction = clone transaction
           clonedTransaction['name'] = clonedTransaction['name'] + " #{i}"
           transactionsForExecution.push clonedTransaction
 
-      describe 'with a ‘beforeEach’ hook', () ->
+      describe 'with a ‘beforeEach’ hook', ->
         hook = (transactions, callback) ->
           callback()
 
         beforeEachStub = sinon.spy(hook)
 
-        beforeEach () ->
+        beforeEach ->
           runner.hooks.beforeEach beforeEachStub
           server = nock('http://localhost:3000').
-            post('/machines', {"type":"bulldozer","name":"willy"}).
+            post('/machines', {"type":"bulldozer", "name":"willy"}).
             reply transactionsForExecution[0]['expected']['statusCode'],
               transactionsForExecution[0]['expected']['body'],
               {'Content-Type': 'application/json'}
 
-        afterEach () ->
+        afterEach ->
           beforeEachStub.reset()
           nock.cleanAll()
 
         it 'should run the hooks', (done) ->
-          runner.executeAllTransactions transactionsForExecution, runner.hooks, () ->
+          runner.executeAllTransactions transactionsForExecution, runner.hooks, ->
             assert.ok beforeEachStub.called
             done()
 
         it 'should run the hook for each transaction', (done) ->
-          runner.executeAllTransactions transactionsForExecution, runner.hooks, () ->
+          runner.executeAllTransactions transactionsForExecution, runner.hooks, ->
             assert.equal beforeEachStub.callCount, transactionsForExecution.length
             done()
 
-      describe 'with a ‘beforeEachValidation’ hook', () ->
+      describe 'with a ‘beforeEachValidation’ hook', ->
         hook = (transaction, callback) ->
-          transaction.real.statusCode = '403';
+          transaction.real.statusCode = '403'
           callback()
 
         beforeEachValidationStub = sinon.spy(hook)
 
-        beforeEach () ->
+        beforeEach ->
           runner.hooks.beforeEachValidation beforeEachValidationStub
           server = nock('http://localhost:3000').
-            post('/machines', {"type":"bulldozer","name":"willy"}).
+            post('/machines', {"type":"bulldozer", "name":"willy"}).
             reply transactionsForExecution[0]['expected']['statusCode'],
               transactionsForExecution[0]['expected']['body'],
               {'Content-Type': 'application/json'}
 
-        afterEach () ->
+        afterEach ->
           beforeEachValidationStub.reset()
           nock.cleanAll()
 
         it 'should run the hooks', (done) ->
-          transaction = clone(transactionsForExecution[0]);
-          runner.executeAllTransactions [transaction], runner.hooks, () ->
+          transaction = clone(transactionsForExecution[0])
+          runner.executeAllTransactions [transaction], runner.hooks, ->
             assert.ok beforeEachValidationStub.called
             assert.equal transaction.test.status, 'fail'
             done()
 
         it 'should run before gavel', (done) ->
-          transaction = clone(transactionsForExecution[0]);
-          transaction.expected.statusCode = '403';
-          runner.executeAllTransactions [transaction], runner.hooks, () ->
+          transaction = clone(transactionsForExecution[0])
+          transaction.expected.statusCode = '403'
+          runner.executeAllTransactions [transaction], runner.hooks, ->
             assert.equal transaction.test.status, 'pass'
             done()
 
         it 'should run the hook for each transaction', (done) ->
-          runner.executeAllTransactions transactionsForExecution, runner.hooks, () ->
+          runner.executeAllTransactions transactionsForExecution, runner.hooks, ->
             assert.equal beforeEachValidationStub.callCount, transactionsForExecution.length
             done()
 
-      describe 'with a ‘afterEach’ hook', () ->
+      describe 'with a ‘afterEach’ hook', ->
         hook = (transactions, callback) ->
           callback()
 
         afterEachStub = sinon.spy(hook)
 
-        beforeEach () ->
+        beforeEach ->
           runner.hooks.afterEach afterEachStub
           server = nock('http://localhost:3000').
-            post('/machines', {"type":"bulldozer","name":"willy"}).
+            post('/machines', {"type":"bulldozer", "name":"willy"}).
             reply transactionsForExecution[0]['expected']['statusCode'],
               transactionsForExecution[0]['expected']['body'],
               {'Content-Type': 'application/json'}
 
-        afterEach () ->
+        afterEach ->
           afterEachStub.reset()
           nock.cleanAll()
 
         it 'should run the hooks', (done) ->
-          runner.executeAllTransactions transactionsForExecution, runner.hooks, () ->
+          runner.executeAllTransactions transactionsForExecution, runner.hooks, ->
             assert.ok afterEachStub.called
             done()
 
         it 'should run the hook for each transaction', (done) ->
-          runner.executeAllTransactions transactionsForExecution, runner.hooks, () ->
+          runner.executeAllTransactions transactionsForExecution, runner.hooks, ->
             assert.equal afterEachStub.callCount, transactionsForExecution.length
             done()
 
-      describe 'with multiple hooks for the same events', () ->
+      describe 'with multiple hooks for the same events', ->
         legacyApiFunction = (transactions, callback) ->
           callback()
 
@@ -1679,22 +1769,22 @@ describe 'TransactionRunner', ->
         afterAllStub1 = sinon.spy(legacyApiFunction)
         afterAllStub2 = sinon.spy(legacyApiFunction)
 
-        beforeEach () ->
+        beforeEach ->
           runner.hooks.beforeAll beforeAllStub1
           runner.hooks.afterAll afterAllStub1
           runner.hooks.afterAll afterAllStub2
           runner.hooks.beforeAll beforeAllStub2
 
         it 'should run all the events in order', (done) ->
-          runner.executeAllTransactions [], runner.hooks, () ->
+          runner.executeAllTransactions [], runner.hooks, ->
             assert.ok beforeAllStub1.calledBefore(beforeAllStub2)
             assert.ok beforeAllStub2.called
             assert.ok afterAllStub1.calledBefore(afterAllStub2)
             assert.ok afterAllStub2.called
             done()
 
-    describe 'with ‘before’ hook that throws an error', () ->
-      beforeEach () ->
+    describe 'with ‘before’ hook that throws an error', ->
+      beforeEach ->
         runner.hooks.beforeHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
             (transaction) ->
@@ -1702,16 +1792,16 @@ describe 'TransactionRunner', ->
           ]
         sinon.stub configuration.emitter, 'emit'
 
-      afterEach () ->
+      afterEach ->
         configuration.emitter.emit.restore()
 
       it 'should report an error with the test', (done) ->
-        runner.executeAllTransactions [transaction], runner.hooks, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, ->
           assert.ok configuration.emitter.emit.calledWith "test error"
           done()
 
-    describe 'with ‘after’ hook that throws an error', () ->
-      beforeEach () ->
+    describe 'with ‘after’ hook that throws an error', ->
+      beforeEach ->
         runner.hooks.afterHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
             (transaction) ->
@@ -1719,16 +1809,16 @@ describe 'TransactionRunner', ->
           ]
         sinon.stub configuration.emitter, 'emit'
 
-      afterEach () ->
+      afterEach ->
         configuration.emitter.emit.restore()
 
       it 'should report an error with the test', (done) ->
-        runner.executeAllTransactions [transaction], runner.hooks, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, ->
           assert.ok configuration.emitter.emit.calledWith "test error"
           done()
 
-    describe 'with ‘before’ hook that throws a chai expectation error', () ->
-      beforeEach () ->
+    describe 'with ‘before’ hook that throws a chai expectation error', ->
+      beforeEach ->
         runner.hooks.beforeHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
             (transaction) ->
@@ -1736,38 +1826,38 @@ describe 'TransactionRunner', ->
           ]
         sinon.stub configuration.emitter, 'emit'
 
-      afterEach () ->
+      afterEach ->
         configuration.emitter.emit.restore()
 
       it 'should not report an error', (done) ->
-        runner.executeAllTransactions [transaction], runner.hooks, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, ->
           assert.notOk configuration.emitter.emit.calledWith "test error"
           done()
 
       it 'should report a fail', (done) ->
-        runner.executeAllTransactions [transaction], runner.hooks, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, ->
           assert.ok configuration.emitter.emit.calledWith "test fail"
           done()
 
       it 'should add fail message as a error under `general` to the results on transaction', (done) ->
-        runner.executeAllTransactions [transaction], runner.hooks, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, ->
           messages = transaction['results']['general']['results'].map (value, index) -> value['message']
           assert.include messages.join(), 'expected false to be truthy'
           done()
 
       it 'should add fail message as a error under `general` to the results on test passed to the emitter', (done) ->
-          runner.executeAllTransactions [transaction], runner.hooks, () ->
-            messages = []
-            callCount = configuration.emitter.emit.callCount
-            for callNo in [0.. callCount - 1]
-              messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
-                (value, index) -> value['message']
-              )
-            assert.include messages.join(), 'expected false to be truthy'
-            done()
+        runner.executeAllTransactions [transaction], runner.hooks, ->
+          messages = []
+          callCount = configuration.emitter.emit.callCount
+          for callNo in [0.. callCount - 1]
+            messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
+              (value, index) -> value['message']
+            )
+          assert.include messages.join(), 'expected false to be truthy'
+          done()
 
-    describe 'with ‘after’ hook that throws a chai expectation error', () ->
-      beforeEach () ->
+    describe 'with ‘after’ hook that throws a chai expectation error', ->
+      beforeEach ->
         runner.hooks.afterHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
             (transaction) ->
@@ -1775,45 +1865,45 @@ describe 'TransactionRunner', ->
           ]
         sinon.stub configuration.emitter, 'emit'
 
-      afterEach () ->
+      afterEach ->
         configuration.emitter.emit.restore()
 
       it 'should not report an error', (done) ->
-        runner.executeAllTransactions [transaction], runner.hooks, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, ->
           assert.notOk configuration.emitter.emit.calledWith "test error"
           done()
 
       it 'should report a fail', (done) ->
-        runner.executeAllTransactions [transaction], runner.hooks, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, ->
           assert.ok configuration.emitter.emit.calledWith "test fail"
           done()
 
       it 'should set test as failed', (done) ->
-        runner.executeAllTransactions [transaction], runner.hooks, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, ->
           assert.equal transaction.test.status, 'fail'
           done()
 
       it 'should add fail message as a error under `general` to the results on transaction', (done) ->
-        runner.executeAllTransactions [transaction], runner.hooks, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, ->
           messages = transaction['results']['general']['results'].map (value, index) -> value['message']
           assert.include messages.join(), 'expected false to be truthy'
           done()
 
       it 'should add fail message as a error under `general` to the results on test passed to the emitter', (done) ->
-          runner.executeAllTransactions [transaction], runner.hooks, () ->
-            messages = []
-            callCount = configuration.emitter.emit.callCount
-            for callNo in [0.. callCount - 1]
-              messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
-                (value, index) -> value['message']
-              )
-            assert.include messages.join(), 'expected false to be truthy'
-            done()
+        runner.executeAllTransactions [transaction], runner.hooks, ->
+          messages = []
+          callCount = configuration.emitter.emit.callCount
+          for callNo in [0.. callCount - 1]
+            messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
+              (value, index) -> value['message']
+            )
+          assert.include messages.join(), 'expected false to be truthy'
+          done()
 
-    describe 'with hook failing the transaction', () ->
-      describe 'in ‘before’ hook', () ->
+    describe 'with hook failing the transaction', ->
+      describe 'in ‘before’ hook', ->
         clonedTransaction = null
-        beforeEach () ->
+        beforeEach ->
           clonedTransaction = clone(transaction)
           runner.hooks.beforeHooks =
             'Group Machine > Machine > Delete Message > Bogus example name' : [
@@ -1822,21 +1912,21 @@ describe 'TransactionRunner', ->
             ]
           sinon.stub configuration.emitter, 'emit'
 
-        afterEach () ->
+        afterEach ->
           configuration.emitter.emit.restore()
 
         it 'should fail the test', (done) ->
-          runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
             assert.ok configuration.emitter.emit.calledWith "test fail"
             done()
 
         it 'should not run the transaction', (done) ->
-          runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
             assert.notOk server.isDone()
             done()
 
         it 'should pass the failing message to the emitter', (done) ->
-          runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
             messages = []
             callCount = configuration.emitter.emit.callCount
             for callNo in [0.. callCount - 1]
@@ -1845,7 +1935,7 @@ describe 'TransactionRunner', ->
             done()
 
         it 'should mention before hook in the error message', (done) ->
-          runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
             messages = []
             callCount = configuration.emitter.emit.callCount
             for callNo in [0.. callCount - 1]
@@ -1854,25 +1944,25 @@ describe 'TransactionRunner', ->
             done()
 
         it 'should add fail message as a error under `general` to the results on the transaction', (done) ->
-          runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
             messages = clonedTransaction['results']['general']['results'].map (value, index) -> value['message']
             assert.include messages.join(), 'Message before'
             done()
 
         it 'should add fail message as a error under `general` to the results on test passed to the emitter', (done) ->
-            runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
-              messages = []
-              callCount = configuration.emitter.emit.callCount
-              for callNo in [0.. callCount - 1]
-                messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
-                  (value, index) -> value['message']
-                )
-              assert.include messages.join(), 'Message before'
-              done()
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
+            messages = []
+            callCount = configuration.emitter.emit.callCount
+            for callNo in [0.. callCount - 1]
+              messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
+                (value, index) -> value['message']
+              )
+            assert.include messages.join(), 'Message before'
+            done()
 
-        describe 'when message is set to fail also in ‘after’ hook', () ->
+        describe 'when message is set to fail also in ‘after’ hook', ->
           clonedTransaction = null
-          beforeEach () ->
+          beforeEach ->
             clonedTransaction = clone(transaction)
             runner.hooks.afterHooks =
               'Group Machine > Machine > Delete Message > Bogus example name' : [
@@ -1881,7 +1971,7 @@ describe 'TransactionRunner', ->
               ]
 
           it 'should not pass the failing message to the emitter', (done) ->
-            runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+            runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
               messages = []
               callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
@@ -1890,7 +1980,7 @@ describe 'TransactionRunner', ->
               done()
 
           it 'should not mention after hook in the error message', (done) ->
-            runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+            runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
               messages = []
               callCount = configuration.emitter.emit.callCount
               for callNo in [0.. callCount - 1]
@@ -1899,25 +1989,25 @@ describe 'TransactionRunner', ->
               done()
 
           it 'should not add fail message as a error under `general` to the results on the transaction', (done) ->
-            runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+            runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
               messages = clonedTransaction['results']['general']['results'].map (value, index) -> value['message']
               assert.notInclude messages.join(), 'Message after fail'
               done()
 
           it 'should not add fail message as a error under `general` to the results on test passed to the emitter', (done) ->
-              runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
-                messages = []
-                callCount = configuration.emitter.emit.callCount
-                for callNo in [0.. callCount - 1]
-                  messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
-                    (value, index) -> value['message']
-                  )
-                assert.notInclude messages.join(), 'Message after fail'
-                done()
+            runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
+              messages = []
+              callCount = configuration.emitter.emit.callCount
+              for callNo in [0.. callCount - 1]
+                messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
+                  (value, index) -> value['message']
+                )
+              assert.notInclude messages.join(), 'Message after fail'
+              done()
 
-      describe 'in ‘after’ hook when transaction fails ', () ->
+      describe 'in ‘after’ hook when transaction fails ', ->
         modifiedTransaction = {}
-        beforeEach () ->
+        beforeEach ->
           modifiedTransaction = clone(transaction)
           modifiedTransaction['expected']['statusCode'] = "303"
 
@@ -1928,17 +2018,17 @@ describe 'TransactionRunner', ->
             ]
           sinon.stub configuration.emitter, 'emit'
 
-        afterEach () ->
+        afterEach ->
           configuration.emitter.emit.reset()
           configuration.emitter.emit.restore()
 
         it 'should make the request', (done) ->
-          runner.executeAllTransactions [modifiedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [modifiedTransaction], runner.hooks, ->
             assert.ok server.isDone()
             done()
 
         it 'should not fail again', (done) ->
-          runner.executeAllTransactions [modifiedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [modifiedTransaction], runner.hooks, ->
             failCount = 0
             messages = []
             callCount = configuration.emitter.emit.callCount
@@ -1949,7 +2039,7 @@ describe 'TransactionRunner', ->
             done()
 
         it 'should not pass the hook message to the emitter', (done) ->
-          runner.executeAllTransactions [modifiedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [modifiedTransaction], runner.hooks, ->
             messages = []
             callCount = configuration.emitter.emit.callCount
             for callNo in [0.. callCount - 1]
@@ -1958,7 +2048,7 @@ describe 'TransactionRunner', ->
             done()
 
         it 'should not mention after hook in the error message', (done) ->
-          runner.executeAllTransactions [modifiedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [modifiedTransaction], runner.hooks, ->
             messages = []
             callCount = configuration.emitter.emit.callCount
             for callNo in [0.. callCount - 1]
@@ -1967,25 +2057,25 @@ describe 'TransactionRunner', ->
             done()
 
         it 'should not add fail message as a error under `general` to the results on the transaction', (done) ->
-          runner.executeAllTransactions [modifiedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [modifiedTransaction], runner.hooks, ->
             messages = modifiedTransaction['results']['general']['results'].map (value, index) -> value['message']
             assert.notInclude messages.join(), 'Message after fail'
             done()
 
         it 'should not add fail message as a error under `general` to the results on test passed to the emitter', (done) ->
-            runner.executeAllTransactions [modifiedTransaction], runner.hooks, () ->
-              messages = []
-              callCount = configuration.emitter.emit.callCount
-              for callNo in [0.. callCount - 1]
-                messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
-                  (value, index) -> value['message']
-                )
-              assert.notInclude messages.join(), 'Message after fail'
-              done()
+          runner.executeAllTransactions [modifiedTransaction], runner.hooks, ->
+            messages = []
+            callCount = configuration.emitter.emit.callCount
+            for callNo in [0.. callCount - 1]
+              messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
+                (value, index) -> value['message']
+              )
+            assert.notInclude messages.join(), 'Message after fail'
+            done()
 
-      describe 'in ‘after’ hook when transaction passes ', () ->
+      describe 'in ‘after’ hook when transaction passes ', ->
         clonedTransaction = null
-        beforeEach () ->
+        beforeEach ->
           clonedTransaction = clone transaction
           runner.hooks.afterHooks =
             'Group Machine > Machine > Delete Message > Bogus example name' : [
@@ -1994,27 +2084,27 @@ describe 'TransactionRunner', ->
             ]
           sinon.stub configuration.emitter, 'emit'
 
-        afterEach () ->
+        afterEach ->
           configuration.emitter.emit.reset()
           configuration.emitter.emit.restore()
 
         it 'should make the request', (done) ->
-          runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
             assert.ok server.isDone()
             done()
 
         it 'it should fail the test', (done) ->
-          runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
             assert.ok configuration.emitter.emit.calledWith "test fail"
             done()
 
         it 'it should not pass the test', (done) ->
-          runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
             assert.notOk configuration.emitter.emit.calledWith "test pass"
             done()
 
         it 'it should pass the failing message to the emitter', (done) ->
-          runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
             messages = []
             callCount = configuration.emitter.emit.callCount
             for callNo in [0.. callCount - 1]
@@ -2023,7 +2113,7 @@ describe 'TransactionRunner', ->
             done()
 
         it 'should mention after hook in the error message', (done) ->
-          runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
             messages = []
             callCount = configuration.emitter.emit.callCount
             for callNo in [0.. callCount - 1]
@@ -2032,37 +2122,37 @@ describe 'TransactionRunner', ->
             done()
 
         it 'should set transaction test status to failed', (done) ->
-          runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
             assert.equal clonedTransaction.test.status, 'fail'
             done()
 
         it 'should add fail message as a error under `general` to the results', (done) ->
-          runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
             messages = clonedTransaction['results']['general']['results'].map (value, index) -> value['message']
             assert.include messages.join(), 'Message after pass'
             done()
 
         it 'should not add fail message as a error under `general` to the results on test passed to the emitter', (done) ->
-            runner.executeAllTransactions [clonedTransaction], runner.hooks, () ->
-              messages = []
-              callCount = configuration.emitter.emit.callCount
-              for callNo in [0.. callCount - 1]
-                messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
-                  (value, index) -> value['message']
-                )
-              assert.include messages.join(), 'Message after pass'
-              done()
+          runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
+            messages = []
+            callCount = configuration.emitter.emit.callCount
+            for callNo in [0.. callCount - 1]
+              messages.push configuration.emitter.emit.getCall(callNo).args[1]['results']['general']['results'].map(
+                (value, index) -> value['message']
+              )
+            assert.include messages.join(), 'Message after pass'
+            done()
 
-    describe 'without hooks', () ->
-      beforeEach () ->
+    describe 'without hooks', ->
+      beforeEach ->
         sinon.stub configuration.emitter, 'emit'
 
-      afterEach () ->
+      afterEach ->
         configuration.emitter.emit.reset()
         configuration.emitter.emit.restore()
 
       it 'should not run the hooks', (done) ->
-        runner.executeAllTransactions [transaction], runner.hooks, () ->
+        runner.executeAllTransactions [transaction], runner.hooks, ->
           done()
 
       it 'should pass the transactions', (done) ->
@@ -2071,11 +2161,11 @@ describe 'TransactionRunner', ->
           assert.ok configuration.emitter.emit.calledWith "test pass"
           done()
 
-    describe 'with hook modifying the transaction body and backend Express app using the body parser', () ->
-      before () ->
+    describe 'with hook modifying the transaction body and backend Express app using the body parser', ->
+      before ->
         nock.enableNetConnect()
 
-      after () ->
+      after ->
         nock.disableNetConnect()
 
       it 'should perform the transaction and don\'t hang', (done) ->
@@ -2104,28 +2194,28 @@ describe 'TransactionRunner', ->
           response = [machine]
           res.status(200).send response
 
-        server = app.listen transaction.port, () ->
-          runner.executeAllTransactions [transaction], runner.hooks, () ->
+        server = app.listen transaction.port, ->
+          runner.executeAllTransactions [transaction], runner.hooks, ->
             #should not hang here
             assert.ok true
             server.close()
 
-        server.on 'close', () ->
+        server.on 'close', ->
           assert.equal receivedRequests.length, 1
           done()
 
-  describe 'runHooksForData(hooks, data, legacy = true, callback)', () ->
-    describe 'when legacy is false', () ->
-      describe 'and an exception in hook appears', () ->
-        before () ->
+  describe 'runHooksForData(hooks, data, legacy = true, callback)', ->
+    describe 'when legacy is false', ->
+      describe 'and an exception in hook appears', ->
+        before ->
           configuration =
             emitter: new EventEmitter()
 
-          runner = new Runner configuration
+          runner = new Runner(configuration)
 
           sinon.stub configuration.emitter, 'emit'
 
-        after () ->
+        after ->
           configuration.emitter.emit.restore()
 
         it 'should be called with warning containing error message', (done) ->
@@ -2135,7 +2225,7 @@ describe 'TransactionRunner', ->
           }
           """
 
-          runner.runHooksForData [hook], {}, false, () ->
+          runner.runHooksForData [hook], {}, false, ->
             assert.ok configuration.emitter.emit.calledWith "test error"
             messages = []
             callCount = configuration.emitter.emit.callCount
@@ -2143,13 +2233,12 @@ describe 'TransactionRunner', ->
               messages.push configuration.emitter.emit.getCall(callNo).args[1].message
             done()
 
-  describe 'runHook(hook, transaction, callback)', () ->
-    describe 'when sandbox mode is on (hook function is a string)', () ->
+  describe 'runHook(hook, transaction, callback)', ->
+    describe 'when sandbox mode is on (hook function is a string)', ->
 
-      before () ->
+      before ->
         configuration = {}
-
-        runner = new Runner configuration
+        runner = new Runner(configuration)
 
       it 'should execute the code of hook', (done) ->
         hook = """
@@ -2168,7 +2257,7 @@ describe 'TransactionRunner', ->
           contextVar = "that";
         }
         """
-        runner.runHook hook, {}, () ->
+        runner.runHook hook, {}, ->
           assert.equal contextVar, 'this'
           done()
 
@@ -2189,7 +2278,7 @@ describe 'TransactionRunner', ->
         }
         """
         runner.runHook hook, {}, (err) ->
-          return done new Error err if err
+          return done new Error(err) if err
           assert.isUndefined err
           done()
 
@@ -2200,7 +2289,7 @@ describe 'TransactionRunner', ->
         }
         """
         runner.runHook hook, {}, (err) ->
-          return done new Error err if err
+          return done new Error(err) if err
           assert.property runner.hookStash, 'prop'
           done()
 
@@ -2212,7 +2301,7 @@ describe 'TransactionRunner', ->
         }
         """
         runner.runHook hook, {}, (err) ->
-          return done new Error err if err
+          return done new Error(err) if err
           assert.property runner.hookStash, 'prop'
 
           hook = """
@@ -2221,7 +2310,7 @@ describe 'TransactionRunner', ->
           }
           """
           runner.runHook hook, {}, (err) ->
-            return done new Error err if err
+            return done new Error(err) if err
             assert.property runner.hookStash, 'prop'
             assert.property runner.hookStash, 'prop2'
 
@@ -2235,7 +2324,7 @@ describe 'TransactionRunner', ->
         """
         transaction = {'some': 'mess'}
         runner.runHook hook, transaction, (err) ->
-          return done new Error err if err
+          return done new Error(err) if err
           assert.property transaction, 'prop'
           done()
 
@@ -2246,7 +2335,7 @@ describe 'TransactionRunner', ->
         }
         """
         runner.runHook hook, {}, (err) ->
-          return done new Error err if err
+          return done new Error(err) if err
           done()
 
       it 'should NOT have access to console', (done) ->

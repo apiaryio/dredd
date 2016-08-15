@@ -178,7 +178,6 @@ class TransactionRunner
       request: transaction.request
     @configuration.emitter.emit 'test error', error, test if error
 
-
   sandboxedHookResultsHandler: (err, data, results = {}, callback) ->
     return callback err if err
     # reference to `transaction` gets lost here if whole object is assigned
@@ -192,7 +191,6 @@ class TransactionRunner
       @logs.push log
     callback()
     return
-
 
   sandboxedWrappedCode: (hookCode) ->
     return """
@@ -209,7 +207,6 @@ class TransactionRunner
       output["logs"] = _logs;
       output;
     """
-
 
   runSandboxedHookFromString: (hookString, data, callback) ->
     wrappedCode = @sandboxedWrappedCode hookString
@@ -228,7 +225,6 @@ class TransactionRunner
     , (err, result = {}) =>
       sandbox.kill()
       @sandboxedHookResultsHandler err, data, result, callback
-
 
   # Will be used runHook instead in next major release, see deprecation warning
   runLegacyHook: (hook, data, callback) ->
@@ -265,7 +261,6 @@ class TransactionRunner
     if typeof(hook) == 'string'
       @runSandboxedHookFromString hook, data, callback
 
-
   runHook: (hook, data, callback) ->
     # not sandboxed mode - hook is a function
     if typeof(hook) == 'function'
@@ -288,25 +283,17 @@ class TransactionRunner
     {origin, request, response} = transaction
     mediaType = configuration.data[origin.filename]?.mediaType or 'text/vnd.apiblueprint'
 
-    # parse the server URL just once
-    @parsedUrl ?= url.parse configuration['server']
+    # Parse the server URL (just once, caching it in @parsedUrl)
+    @parsedUrl ?= @parseServerUrl(configuration.server)
+    fullPath = @getFullPath(@parsedUrl.path, request.uri)
 
-    # Joins paths regardless of slashes. There may be a nice way in the future:
-    # https://github.com/joyent/node/issues/2216 Note that path.join will fail
-    # on windows, and url.resolve can have undesirable behavior depending
-    # on slashes
-    if @parsedUrl['path'] is "/"
-      fullPath = request['uri']
-    else
-      fullPath = '/' + [@parsedUrl['path'].replace(/^\/|\/$/g, ""), request['uri'].replace(/^\/|\/$/g, "")].join("/")
+    flatHeaders = flattenHeaders(request['headers'])
 
-    flatHeaders = flattenHeaders request['headers']
-
-    # Add Dredd user agent if no User-Agent present
+    # Add Dredd User-Agent (if no User-Agent is already present)
     if not flatHeaders['User-Agent']
       system = os.type() + ' ' + os.release() + '; ' + os.arch()
       flatHeaders['User-Agent'] = "Dredd/" + \
-        packageConfig['version'] + \
+        packageConfig.version + \
         " (" + system + ")"
 
     # Parse and add headers from the config to the transaction
@@ -341,9 +328,9 @@ class TransactionRunner
 
     configuredTransaction =
       name: transaction.name
-      id: request['method'] + ' ' + request['uri']
-      host: @parsedUrl['hostname']
-      port: @parsedUrl['port']
+      id: request.method + ' ' + request.uri
+      host: @parsedUrl.hostname
+      port: @parsedUrl.port
       request: request
       expected: expected
       origin: origin
@@ -352,6 +339,32 @@ class TransactionRunner
       skip: skip
 
     return callback(null, configuredTransaction)
+
+  parseServerUrl: (serverUrl) ->
+    unless serverUrl.match(/^https?:\/\//i)
+      # Protocol is missing. Remove any : or / at the beginning of the URL
+      # and prepend the URL with 'http://' (assumed as default fallback).
+      serverUrl = 'http://' + serverUrl.replace(/^[:\/]*/, '')
+    url.parse(serverUrl)
+
+  getFullPath: (serverPath, requestPath) ->
+    return requestPath if serverPath is '/'
+    return serverPath unless requestPath
+
+    # Join two paths
+    #
+    # How:
+    # Removes all slashes from the beginning and from the end of each segment.
+    # Then joins them together with a single slash. Then prepends the whole
+    # string with a single slash.
+    #
+    # Why:
+    # Note that 'path.join' won't work on Windows and 'url.resolve' can have
+    # undesirable behavior depending on slashes.
+    # See also https://github.com/joyent/node/issues/2216
+    segments = [serverPath, requestPath]
+    segments = (segment.replace(/^\/|\/$/g, '') for segment in segments)
+    return '/' + segments.join('/')
 
   emitResult: (transaction, callback) ->
     # if transaction test was executed and was not skipped or failed
