@@ -288,25 +288,38 @@ class TransactionRunner
     {origin, request, response} = transaction
     mediaType = configuration.data[origin.filename]?.mediaType or 'text/vnd.apiblueprint'
 
-    # parse the server URL just once
-    @parsedUrl ?= url.parse configuration['server']
+    # Parse the server URL (just once, caching it in @parsedUrl)
+    unless @parsedUrl
+      serverUrl = configuration.server
+      unless serverUrl.match(/^https?:\/\//i)
+        # Protocol is missing. Remove any : or / at the beginning of the URL
+        # and prepend the URL with 'http://' (assumed default).
+        serverUrl = 'http://' + serverUrl.replace(/^[:\/]*/, '')
+      @parsedUrl = url.parse(serverUrl)
 
     # Joins paths regardless of slashes. There may be a nice way in the future:
     # https://github.com/joyent/node/issues/2216 Note that path.join will fail
     # on windows, and url.resolve can have undesirable behavior depending
     # on slashes
-    if @parsedUrl['path'] is "/"
-      fullPath = request['uri']
+    if @parsedUrl.path is '/'
+      fullPath = request.uri
+    else if not request.uri
+      fullPath = @parsedUrl.path
     else
-      fullPath = '/' + [@parsedUrl['path'].replace(/^\/|\/$/g, ""), request['uri'].replace(/^\/|\/$/g, "")].join("/")
+      # Removes all slashes from the beginning and from the end of each segment.
+      # Then joins them together with a single slash. Then prepends the whole
+      # string with a single slash.
+      fullPath = '/' + [@parsedUrl.path, request.uri].map((pathSegment) ->
+        pathSegment.replace(/^\/|\/$/g, '')
+      ).join('/')
 
-    flatHeaders = flattenHeaders request['headers']
+    flatHeaders = flattenHeaders(request['headers'])
 
-    # Add Dredd user agent if no User-Agent present
+    # Add Dredd User-Agent (if no User-Agent is already present)
     if not flatHeaders['User-Agent']
       system = os.type() + ' ' + os.release() + '; ' + os.arch()
       flatHeaders['User-Agent'] = "Dredd/" + \
-        packageConfig['version'] + \
+        packageConfig.version + \
         " (" + system + ")"
 
     # Parse and add headers from the config to the transaction
@@ -341,9 +354,9 @@ class TransactionRunner
 
     configuredTransaction =
       name: transaction.name
-      id: request['method'] + ' ' + request['uri']
-      host: @parsedUrl['hostname']
-      port: @parsedUrl['port']
+      id: request.method + ' ' + request.uri
+      host: @parsedUrl.hostname
+      port: @parsedUrl.port
       request: request
       expected: expected
       origin: origin

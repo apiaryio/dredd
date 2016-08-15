@@ -126,6 +126,92 @@ describe 'TransactionRunner', ->
 
       runner = new Runner(configuration)
 
+    describe('when server address', ->
+      filename = 'api-description.apib'
+      configuredTransaction = undefined
+
+      [
+        description: 'is hostname'
+        input: {serverUrl: 'https://localhost:8000', requestPath: '/hello'}
+        expected: {host: 'localhost', port: '8000', protocol: 'https:', fullPath: '/hello'}
+      ,
+        description: 'is IPv4'
+        input: {serverUrl: 'https://127.0.0.1:8000', requestPath: '/hello'}
+        expected: {host: '127.0.0.1', port: '8000', protocol: 'https:', fullPath: '/hello'}
+      ,
+        description: 'has path'
+        input: {serverUrl: 'http://localhost:8000/v1', requestPath: '/hello'}
+        expected: {host: 'localhost', port: '8000', protocol: 'http:', fullPath: '/v1/hello'}
+      ,
+        description: 'has path with trailing slash'
+        input: {serverUrl: 'http://127.0.0.1:8000/v1/', requestPath: '/hello'}
+        expected: {host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/hello'}
+      ,
+        description: 'has path and request path is /'
+        input: {serverUrl: 'http://localhost:8000/v1', requestPath: '/'}
+        expected: {host: 'localhost', port: '8000', protocol: 'http:', fullPath: '/v1/'}
+      ,
+        description: 'has path with trailing slash and request path is /'
+        input: {serverUrl: 'http://127.0.0.1:8000/v1/', requestPath: '/'}
+        expected: {host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/'}
+      ,
+        description: 'has path and request has no path'
+        input: {serverUrl: 'http://localhost:8000/v1', requestPath: ''}
+        expected: {host: 'localhost', port: '8000', protocol: 'http:', fullPath: '/v1'}
+      ,
+        description: 'has path with trailing slash and request has no path'
+        input: {serverUrl: 'http://127.0.0.1:8000/v1/', requestPath: ''}
+        expected: {host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/'}
+      ,
+        description: 'is hostname with no protocol'
+        input: {serverUrl: 'localhost', requestPath: '/hello'}
+        expected: {host: 'localhost', port: null, protocol: 'http:', fullPath: '/hello'}
+      ,
+        description: 'is IPv4 with no protocol'
+        input: {serverUrl: '127.0.0.1:4000', requestPath: '/hello'}
+        expected: {host: '127.0.0.1', port: '4000', protocol: 'http:', fullPath: '/hello'}
+      ,
+        description: 'is hostname with // instead of protocol'
+        input: {serverUrl: '//localhost', requestPath: '/hello'}
+        expected: {host: 'localhost', port: null, protocol: 'http:', fullPath: '/hello'}
+      ,
+        description: 'is hostname with trailing slash'
+        input: {serverUrl: 'http://localhost/', requestPath: '/hello'}
+        expected: {host: 'localhost', port: null, protocol: 'http:', fullPath: '/hello'}
+      ,
+        description: 'is hostname with no protocol and with trailing slash'
+        input: {serverUrl: 'localhost/', requestPath: '/hello'}
+        expected: {host: 'localhost', port: null, protocol: 'http:', fullPath: '/hello'}
+
+      ].forEach(({description, input, expected}) ->
+        context("#{description}: '#{input.serverUrl}' + '#{input.requestPath}'", ->
+          beforeEach((done) ->
+            transaction.request.uri = input.requestPath
+            transaction.origin.filename = filename
+
+            runner.configuration.server = input.serverUrl
+            runner.configuration.data ?= {}
+            runner.configuration.data[filename] ?= {}
+            runner.configuration.data[filename].mediaType = 'text/vnd.apiblueprint'
+
+            runner.configureTransaction(transaction, (args...) ->
+              [err, configuredTransaction] = args
+              done(err)
+            )
+          )
+
+          it("the transaction gets configured with fullPath '#{expected.fullPath}' and has expected host, port, and protocol", ->
+            assert.deepEqual(
+              host: configuredTransaction.host
+              port: configuredTransaction.port
+              protocol: configuredTransaction.protocol
+              fullPath: configuredTransaction.fullPath
+            , expected)
+          )
+        )
+      )
+    )
+
     describe('when processing Swagger document and given transaction has non-2xx status code', ->
       filename = 'api-description.yml'
       configuredTransaction = undefined
