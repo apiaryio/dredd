@@ -87,7 +87,7 @@ JOBS = [
 
 TRAVIS_CONFIG_FILE = '.travis.yml'
 LINKED_DREDD_DIR = './__dredd__'
-RE_DREDD_INSTALL_CMD = /npm ([ \-=\w]+ )?i(nstall)? ([ \-=\w]+ )?dredd/
+RE_DREDD_INSTALL_CMD = /npm ([ \-=\w]+ )?i(nstall)? ([ \-=\w]+ )?dredd(@\w+)?/
 DREDD_LINK_CMD = "npm link --python=python2 #{LINKED_DREDD_DIR}"
 
 
@@ -125,7 +125,8 @@ buildFindExcludes = (excludedPaths) ->
   return expressions.join(' -and ')
 
 
-# Replaces given pattern with replacement in given file. Returns boolean whether
+# Replaces command installing Dredd from npm with one installing Dredd from
+# local folder with source code of the tested version. Returns boolean whether
 # any changes were made.
 replaceDreddInstallation = ->
   contents = fs.readFileSync(TRAVIS_CONFIG_FILE, 'utf-8')
@@ -219,6 +220,9 @@ adjustTravisBuildConfig = (pullRequestId, testedCommit, jobName, matrixName) ->
 
   # Remove any deploy configuration, just to be sure
   delete config.deploy
+
+  # Make sure the latest npm gets installed
+  prependToTravisConfigProperty(config, 'before_install', 'npm install -g npm@latest')
 
   # Enhance the build configuration so it reports results back to PR and deletes
   # the branch afterwards.
