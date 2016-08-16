@@ -201,13 +201,12 @@ prependToTravisConfigProperty = (config, property, value) ->
 # *  Removes 'deploy'
 # *  Adds status reporting
 adjustTravisBuildConfig = (pullRequestId, testedCommit, jobName, matrixName) ->
-  if pullRequestId
-    # We will want to report under the Pull Request, so we will need GitHub
-    # token present in the configuration.
-    execSync("""\
-      travis encrypt GH_TOKEN=#{process.env.GH_TOKEN} \
-        --add --append --no-interactive --repo=apiaryio/dredd #{DROP_OUTPUT}
-    """)
+  # We will want to report under the Pull Request, so we will need GitHub
+  # token present in the configuration.
+  execSync("""\
+    travis encrypt GH_TOKEN=#{process.env.GH_TOKEN} \
+      --add --append --no-interactive --repo=apiaryio/dredd #{DROP_OUTPUT}
+  """)
 
   # Read contents of the '.travis.yml' file
   contents = fs.readFileSync(TRAVIS_CONFIG_FILE)
@@ -221,37 +220,36 @@ adjustTravisBuildConfig = (pullRequestId, testedCommit, jobName, matrixName) ->
   # Remove any deploy configuration, just to be sure
   delete config.deploy
 
-  if pullRequestId
-    # Enhance the build configuration so it reports results back to PR and deletes
-    # the branch afterwards.
-    command = createStatusCommand(testedCommit,
-      state: 'pending'
-      description: 'Dependent build created'
-      context: "continuous-integration/travis-ci/#{jobName}"
-      target_url: "https://travis-ci.org/apiaryio/dredd/builds/$TRAVIS_BUILD_ID"
-    )
-    prependToTravisConfigProperty(config, 'before_install', command)
+  # Enhance the build configuration so it reports results back to PR and deletes
+  # the branch afterwards.
+  command = createStatusCommand(testedCommit,
+    state: 'pending'
+    description: 'Dependent build created'
+    context: "continuous-integration/travis-ci/#{jobName}"
+    target_url: "https://travis-ci.org/apiaryio/dredd/builds/$TRAVIS_BUILD_ID"
+  )
+  prependToTravisConfigProperty(config, 'before_install', command)
 
-    command = createStatusCommand(testedCommit,
-      state: 'error'
-      description: 'Dependent build finished'
-      context: "continuous-integration/travis-ci/#{jobName}"
-      target_url: "https://travis-ci.org/apiaryio/dredd/builds/$TRAVIS_BUILD_ID"
-    )
-    prependToTravisConfigProperty(config, 'after_failure', command)
+  command = createStatusCommand(testedCommit,
+    state: 'error'
+    description: 'Dependent build finished'
+    context: "continuous-integration/travis-ci/#{jobName}"
+    target_url: "https://travis-ci.org/apiaryio/dredd/builds/$TRAVIS_BUILD_ID"
+  )
+  prependToTravisConfigProperty(config, 'after_failure', command)
 
-    command = createStatusCommand(testedCommit,
-      state: 'success'
-      description: 'Dependent build finished'
-      context: "continuous-integration/travis-ci/#{jobName}"
-      target_url: "https://travis-ci.org/apiaryio/dredd/builds/$TRAVIS_BUILD_ID"
-    )
-    prependToTravisConfigProperty(config, 'after_success', command)
+  command = createStatusCommand(testedCommit,
+    state: 'success'
+    description: 'Dependent build finished'
+    context: "continuous-integration/travis-ci/#{jobName}"
+    target_url: "https://travis-ci.org/apiaryio/dredd/builds/$TRAVIS_BUILD_ID"
+  )
+  prependToTravisConfigProperty(config, 'after_success', command)
 
-    config.after_success.push('if [[ $TRAVIS_BRANCH = master ]]; then echo "Deleting aborted (master)" && exit 1; fi')
-    config.after_success.push('git branch -D $TRAVIS_BRANCH')
-    config.after_success.push("git remote set-url origin \"https://$GH_TOKEN@github.com/apiaryio/dredd.git\" #{DROP_OUTPUT}")
-    config.after_success.push("git push origin -f --delete $TRAVIS_BRANCH #{DROP_OUTPUT}")
+  config.after_success.push('if [[ $TRAVIS_BRANCH = master ]]; then echo "Deleting aborted (master)" && exit 1; fi')
+  config.after_success.push('git branch -D $TRAVIS_BRANCH')
+  config.after_success.push("git remote set-url origin \"https://$GH_TOKEN@github.com/apiaryio/dredd.git\" #{DROP_OUTPUT}")
+  config.after_success.push("git push origin -f --delete $TRAVIS_BRANCH #{DROP_OUTPUT}")
 
   # Save all changes
   fs.writeFileSync(TRAVIS_CONFIG_FILE, yaml.dump(config), 'utf-8')
@@ -330,8 +328,7 @@ ensureGitOrigin()
 
 
 JOBS.forEach(({name, repo, matrixName}) ->
-  id = if pullRequestId then "pr#{pullRequestId}/#{buildId}" else buildId
-  integrationBranch = "dependent-build/#{id}/#{name}"
+  integrationBranch = "dependent-build/pr#{pullRequestId}/#{buildId}/#{name}"
   integrationBranches.push(integrationBranch)
   console.log("Preparing branch #{integrationBranch}")
 
