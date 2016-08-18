@@ -47,7 +47,6 @@ class Dredd
     configureReporters @configuration, @stats, @tests, @runner
 
   run: (callback) ->
-
     @configDataIsEmpty = true
 
     @configuration.files ?= []
