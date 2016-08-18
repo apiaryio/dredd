@@ -12,7 +12,7 @@ clone = require 'clone'
 flattenHeaders = require './flatten-headers'
 addHooks = require './add-hooks'
 sortTransactions = require './sort-transactions'
-packageConfig = require './../package.json'
+packageData = require './../package.json'
 logger = require './logger'
 
 
@@ -293,8 +293,7 @@ class TransactionRunner
     if not flatHeaders['User-Agent']
       system = os.type() + ' ' + os.release() + '; ' + os.arch()
       flatHeaders['User-Agent'] = "Dredd/" + \
-        packageConfig.version + \
-        " (" + system + ")"
+        packageData.version + " (" + system + ")"
 
     # Parse and add headers from the config to the transaction
     if configuration.options.header.length > 0

@@ -4,7 +4,7 @@ express = require 'express'
 proxyquire = require('proxyquire').noCallThru()
 
 options = require '../../src/options'
-packageJson = require '../../package.json'
+packageData = require '../../package.json'
 
 childProcessStub = require 'child_process'
 loggerStub = require '../../src/logger'
@@ -253,7 +253,7 @@ describe "DreddCommand class", () ->
           done()
 
       it 'prints out version', ->
-        assert.include stdout, "#{packageJson.name} v#{packageJson.version}"
+        assert.include stdout, "#{packageData.name} v#{packageData.version}"
 
     describe '"init" (nodejs)', ->
       before (done) ->
