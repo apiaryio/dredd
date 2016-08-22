@@ -44,8 +44,8 @@ describe 'DotReporter', () ->
       loggerStub.info.restore()
 
     it 'should log that testing has begun', () ->
-      emitter.emit 'start'
-      assert.ok loggerStub.info.called
+      emitter.emit 'start', '', () ->
+        assert.ok loggerStub.info.called
 
   describe 'when ending', () ->
 
@@ -153,4 +153,3 @@ describe 'DotReporter', () ->
 
     it 'should write an E', () ->
       assert.ok dotReporter.write.calledWith('E')
-
