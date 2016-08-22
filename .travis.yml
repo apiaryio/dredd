@@ -10,9 +10,6 @@ env:
   global:
     # GH_TOKEN and NPM_TOKEN encrypted by 'travis encrypt' utility
     - secure: "gO5DrzOfF+l3hjvs0kLYUrGEnYVwrDy7NTGNrtPmLrrfdS6qmUNbTVggjra2aDM82lZYo0slZaOtjedSd8GMNE41egHAq0aGMJfhNrXjr+ROOIkc1BRUn3vTp5lk/n4eU7bLozoiriBphmKHHwZqekSn2orvIpAtoWL/JPVzheY="
-  matrix:
-    - "DRAFTER=JS"
-    - "DRAFTER=CPP"
 cache:
   directories:
     - "node_modules"
@@ -23,9 +20,8 @@ before_install:
 before_script:
   - "npm run lint"
 script:
-  - "if [[ $DRAFTER = JS ]]; then find ./node_modules -name protagonist -type d -exec rm -rf {} +; fi"
   - "npm test"
-  - "if [[ $DRAFTER = JS ]]; then npm run test:hooks-handlers; fi"
+  - "npm run test:hooks-handlers"
 after_success:  # travis_after_all.py is needed due to travis-ci/travis-ci#1548 & travis-ci/travis-ci#929
   - "npm run coveralls"
   - "python travis_after_all.py"
