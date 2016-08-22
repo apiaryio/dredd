@@ -5,13 +5,12 @@ fs = require 'fs'
 spawnArgs = require 'spawn-args'
 {spawn} = require('child_process')
 
-parsePackageJson = require './parse-package-json'
 Dredd = require './dredd'
 interactiveConfig = require './interactive-config'
 configUtils = require './config-utils'
 logger = require './logger'
 
-version = parsePackageJson path.join(__dirname, '../package.json')
+packageData = require('../package.json')
 
 TERM_TIMEOUT = 1000
 TERM_RETRY = 500
@@ -178,7 +177,7 @@ class DreddCommand
 
     # show version
     else if @argv.version is true
-      console.log version
+      console.log("#{packageData.name} v#{packageData.version}")
       return @_processExit(0)
 
   loadDreddFile: ->

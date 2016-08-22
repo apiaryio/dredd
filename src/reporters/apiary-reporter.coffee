@@ -6,7 +6,7 @@ url = require 'url'
 clone = require 'clone'
 generateUuid = require('node-uuid').v4
 
-packageConfig = require './../../package.json'
+packageData = require './../../package.json'
 logger = require './../logger'
 
 CONNECTION_ERRORS = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
@@ -222,7 +222,7 @@ class ApiaryReporter
       path: path
       method: method
       headers:
-        'User-Agent': "Dredd REST Reporter/" + packageConfig['version'] + " (" + system + ")"
+        'User-Agent': "Dredd REST Reporter/" + packageData.version + " (" + system + ")"
         'Content-Type': 'application/json'
         'Content-Length': Buffer.byteLength(postData, 'utf8')
 

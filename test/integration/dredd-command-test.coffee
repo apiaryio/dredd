@@ -7,7 +7,6 @@ bodyParser = require 'body-parser'
 
 proxyquire = require('proxyquire').noCallThru()
 
-packageJson = require '../../package.json'
 loggerStub = require '../../src/logger'
 configUtils = require '../../src/config-utils'
 
