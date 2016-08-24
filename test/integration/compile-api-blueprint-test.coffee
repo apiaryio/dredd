@@ -91,7 +91,11 @@ describe('compile() · API Blueprint', ->
   describe('with multiple transaction examples', ->
     detectTransactionExamples = sinon.spy(require('../../src/detect-transaction-examples'))
     transactions = undefined
-    exampleNumbersPerTransaction = [1, 1, 2]
+    expected = [
+      {exampleName: '', requestContentType: 'application/json', responseStatusCode: 200}
+      {exampleName: 'Example 1', requestContentType: 'application/json', responseStatusCode: 200}
+      {exampleName: 'Example 2', requestContentType: 'text/plain', responseStatusCode: 415}
+    ]
 
     beforeEach((done) ->
       stubs = {'./detect-transaction-examples': detectTransactionExamples}
@@ -107,15 +111,29 @@ describe('compile() · API Blueprint', ->
       assert.isTrue(detectTransactionExamples.called)
     )
     it('is compiled into expected number of transactions', ->
-      assert.equal(transactions.length, exampleNumbersPerTransaction.length)
+      assert.equal(transactions.length, expected.length)
     )
-    for exampleNumber, i in exampleNumbersPerTransaction
-      do (exampleNumber, i) ->
+    for expectations, i in expected
+      do (expectations, i) ->
         context("transaction ##{i + 1}", ->
-          it("is identified as part of Example #{exampleNumber}", ->
+          {exampleName, requestContentType, responseStatusCode} = expectations
+
+          it("is identified as part of #{JSON.stringify(exampleName)}", ->
             assert.equal(
               transactions[i].origin.exampleName,
-              "Example #{exampleNumber}"
+              exampleName
+            )
+          )
+          it("has request with Content-Type: #{requestContentType}", ->
+            assert.equal(
+              transactions[i].request.headers['Content-Type'].value,
+              requestContentType
+            )
+          )
+          it("has response with status code #{responseStatusCode}", ->
+            assert.equal(
+              transactions[i].response.status,
+              responseStatusCode
             )
           )
         )

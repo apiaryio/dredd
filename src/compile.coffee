@@ -22,10 +22,7 @@ compile = (mediaType, parseResult, filename) ->
       location: content(child(annotation.attributes?.sourceMap, {element: 'sourceMap'}))
     })
 
-  if mediaType is 'text/vnd.apiblueprint'
-    children(parseResult, {element: 'transition'}).map(detectTransactionExamples)
-
-  for httpTransaction in children(parseResult, {element: 'httpTransaction'})
+  for httpTransaction in findRelevantTransactions(parseResult, mediaType)
     resource = parent(httpTransaction, parseResult, {element: 'resource'})
     httpRequest = child(httpTransaction, {element: 'httpRequest'})
     httpResponse = child(httpTransaction, {element: 'httpResponse'})
@@ -49,6 +46,35 @@ compile = (mediaType, parseResult, filename) ->
       warnings.push(warning)
 
   {transactions, errors, warnings}
+
+
+findRelevantTransactions = (parseResult, mediaType) ->
+  relevantTransactions = []
+
+  if mediaType is 'text/vnd.apiblueprint'
+    # API Blueprint has a concept of transaction examples and
+    # the API Blueprint AST used to expose it. The concept isn't present
+    # in API Elements anymore, so we have to detect and backport them.
+    children(parseResult, {element: 'transition'}).map(detectTransactionExamples)
+
+  # Dredd supports only testing of the first request-response pair within
+  # each transaction example. So if we're dealing with API Blueprint, we
+  # iterate over available transactions and skip those, which are not first
+  # within a particular example.
+  #
+  # That's achieved by tracking example number within each transition
+  # and skipping transactions with example number we've already seen.
+  for transition in children(parseResult, {element: 'transition'})
+    example = 0
+
+    for httpTransaction in children(transition, {element: 'httpTransaction'})
+      if mediaType is 'text/vnd.apiblueprint'
+        relevantTransactions.push(httpTransaction) unless httpTransaction.attributes.example is example
+      else
+        relevantTransactions.push(httpTransaction)
+      example = httpTransaction.attributes.example
+
+  return relevantTransactions
 
 
 compileRequest = (parseResult, httpRequest) ->
