@@ -96,23 +96,19 @@ describe('compile() · Swagger', ->
     )
   )
 
-  describe.only('with multiple responses', ->
+  describe('with multiple responses', ->
     transactions = undefined
     filename = 'apiDescription.json'
     detectTransactionExamples = sinon.spy(require('../../src/detect-transaction-examples'))
 
-    expected = [
-      {status: 200}
-      {status: 400}
-      {status: 500}
-    ]
+    expectedStatusCodes = [200, 400, 500]
 
     beforeEach((done) ->
       stubs = {'./detect-transaction-examples': detectTransactionExamples}
 
       compileFixture(fixtures.multipleResponses.swagger, {filename, stubs}, (args...) ->
         [err, compilationResult] = args
-        transactions = compilationResult.transactions
+        transactions = compilationResult?.transactions
         done(err)
       )
     )
@@ -121,11 +117,11 @@ describe('compile() · Swagger', ->
       assert.isFalse(detectTransactionExamples.called)
     )
     it('expected number of transactions was returned', ->
-      assert.equal(transactions.length, expected.length)
+      assert.equal(transactions.length, expectedStatusCodes.length)
     )
 
-    for expectations, i in expected
-      do (expectations, i) ->
+    for statusCode, i in expectedStatusCodes
+      do (statusCode, i) ->
         context("origin of transaction ##{i + 1}", ->
           it('uses URI as resource name', ->
             assert.equal(transactions[i].origin.resourceName, '/honey')
@@ -133,14 +129,11 @@ describe('compile() · Swagger', ->
           it('uses method as action name', ->
             assert.equal(transactions[i].origin.actionName, 'GET')
           )
-        )
-
-        context("pathOrigin of transaction ##{i + 1}", ->
-          it('uses URI as resource name', ->
-            assert.equal(transactions[i].pathOrigin.resourceName, '/honey')
-          )
-          it('uses method as action name', ->
-            assert.equal(transactions[i].pathOrigin.actionName, 'GET')
+          it('uses status code and response\'s Content-Type as example name', ->
+            assert.equal(
+              transactions[i].origin.exampleName,
+              "#{statusCode} > application/json"
+            )
           )
         )
   )
