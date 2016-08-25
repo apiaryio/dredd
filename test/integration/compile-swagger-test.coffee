@@ -96,20 +96,23 @@ describe('compile() · Swagger', ->
     )
   )
 
-  describe('with multiple responses', ->
-    # Multiple responses is the closest we can get with Swagger to something
-    # like transaction examples ¯\_(ツ)_/¯
-
+  describe.only('with multiple responses', ->
+    transactions = undefined
+    filename = 'apiDescription.json'
     detectTransactionExamples = sinon.spy(require('../../src/detect-transaction-examples'))
-    compilationResult = undefined
-    transaction = undefined
+
+    expected = [
+      {status: 200}
+      {status: 400}
+      {status: 500}
+    ]
 
     beforeEach((done) ->
       stubs = {'./detect-transaction-examples': detectTransactionExamples}
 
-      compileFixture(fixtures.multipleResponses.swagger, {stubs}, (args...) ->
+      compileFixture(fixtures.multipleResponses.swagger, {filename, stubs}, (args...) ->
         [err, compilationResult] = args
-        transaction = compilationResult.transactions[0]
+        transactions = compilationResult.transactions
         done(err)
       )
     )
@@ -117,5 +120,28 @@ describe('compile() · Swagger', ->
     it('detection of transaction examples was not called', ->
       assert.isFalse(detectTransactionExamples.called)
     )
+    it('expected number of transactions was returned', ->
+      assert.equal(transactions.length, expected.length)
+    )
+
+    for expectations, i in expected
+      do (expectations, i) ->
+        context("origin of transaction ##{i + 1}", ->
+          it('uses URI as resource name', ->
+            assert.equal(transactions[i].origin.resourceName, '/honey')
+          )
+          it('uses method as action name', ->
+            assert.equal(transactions[i].origin.actionName, 'GET')
+          )
+        )
+
+        context("pathOrigin of transaction ##{i + 1}", ->
+          it('uses URI as resource name', ->
+            assert.equal(transactions[i].pathOrigin.resourceName, '/honey')
+          )
+          it('uses method as action name', ->
+            assert.equal(transactions[i].pathOrigin.actionName, 'GET')
+          )
+        )
   )
 )
