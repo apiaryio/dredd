@@ -17,6 +17,7 @@
     "url": "https://github.com/apiaryio/dredd-transactions"
   },
   "dependencies": {
+    "caseless": "^0.11.0",
     "clone": "^1.0.2",
     "deckardcain": "^0.3.2",
     "fury": "^2.1.0",

@@ -1,5 +1,6 @@
 
 clone = require('clone')
+caseless = require('caseless')
 
 {child, children, parent, content} = require('./refract')
 validateParameters = require('./validate-parameters')
@@ -27,7 +28,7 @@ compile = (mediaType, parseResult, filename) ->
     httpRequest = child(httpTransaction, {element: 'httpRequest'})
     httpResponse = child(httpTransaction, {element: 'httpResponse'})
 
-    origin = compileOrigin(filename, parseResult, httpTransaction)
+    origin = compileOrigin(filename, parseResult, mediaType, httpTransaction)
     {request, annotations} = compileRequest(parseResult, httpRequest)
 
     if request
@@ -184,17 +185,12 @@ compileHeaders = (httpHeaders) ->
   headers
 
 
-compileOrigin = (filename, parseResult, httpTransaction) ->
+compileOrigin = (filename, parseResult, mediaType, httpTransaction) ->
   api = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'api'})
   resourceGroup = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'resourceGroup'})
   resource = parent(httpTransaction, parseResult, {element: 'resource'})
   transition = parent(httpTransaction, parseResult, {element: 'transition'})
   httpRequest = child(httpTransaction, {element: 'httpRequest'})
-
-  if content(transition.attributes.examples) > 1
-    exampleName = "Example #{httpTransaction.attributes.example}"
-  else
-    exampleName = ''
 
   {
     filename: filename or ''
@@ -202,7 +198,7 @@ compileOrigin = (filename, parseResult, httpTransaction) ->
     resourceGroupName: content(resourceGroup?.meta?.title) or ''
     resourceName: content(resource.meta?.title) or content(resource.attributes?.href) or ''
     actionName: content(transition.meta?.title) or content(httpRequest.attributes.method) or ''
-    exampleName
+    exampleName: compileOriginExampleName(parseResult, mediaType, httpTransaction)
   }
 
 
@@ -220,6 +216,28 @@ compilePathOrigin = (filename, parseResult, httpTransaction) ->
     actionName: content(transition.meta?.title) or content(httpRequest.attributes.method) or ''
     exampleName: "Example #{httpTransaction.attributes.example}"
   }
+
+
+compileOriginExampleName = (parseResult, mediaType, httpTransaction) ->
+  exampleName = ''
+
+  transition = parent(httpTransaction, parseResult, {element: 'transition'})
+  httpResponse = child(httpTransaction, {element: 'httpResponse'})
+
+  if mediaType is 'text/vnd.apiblueprint'
+    if content(transition.attributes.examples) > 1
+      exampleName = "Example #{httpTransaction.attributes.example}"
+  else
+    statusCode = content(httpResponse.attributes.statusCode)
+    headers = compileHeaders(child(httpResponse, {element: 'httpHeaders'}))
+    contentType = caseless(headers).get('content-type')?.value
+
+    segments = []
+    segments.push(statusCode) if statusCode
+    segments.push(contentType) if contentType
+    exampleName = segments.join(' > ')
+
+  return exampleName
 
 
 module.exports = compile
