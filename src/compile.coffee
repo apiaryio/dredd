@@ -23,18 +23,18 @@ compile = (mediaType, parseResult, filename) ->
       location: content(child(annotation.attributes?.sourceMap, {element: 'sourceMap'}))
     })
 
-  for httpTransaction in findRelevantTransactions(parseResult, mediaType)
+  for httpTransaction in findRelevantTransactions(mediaType, parseResult)
     resource = parent(httpTransaction, parseResult, {element: 'resource'})
     httpRequest = child(httpTransaction, {element: 'httpRequest'})
     httpResponse = child(httpTransaction, {element: 'httpResponse'})
 
-    origin = compileOrigin(filename, parseResult, mediaType, httpTransaction)
+    origin = compileOrigin(mediaType, parseResult, filename, httpTransaction)
     {request, annotations} = compileRequest(parseResult, httpRequest)
 
     if request
       transactions.push({
         origin
-        pathOrigin: compilePathOrigin(filename, parseResult, httpTransaction)
+        pathOrigin: compilePathOrigin(parseResult, filename, httpTransaction)
         request
         response: compileResponse(httpResponse)
       })
@@ -49,7 +49,7 @@ compile = (mediaType, parseResult, filename) ->
   {transactions, errors, warnings}
 
 
-findRelevantTransactions = (parseResult, mediaType) ->
+findRelevantTransactions = (mediaType, parseResult) ->
   relevantTransactions = []
 
   if mediaType is 'text/vnd.apiblueprint'
@@ -185,7 +185,7 @@ compileHeaders = (httpHeaders) ->
   headers
 
 
-compileOrigin = (filename, parseResult, mediaType, httpTransaction) ->
+compileOrigin = (mediaType, parseResult, filename, httpTransaction) ->
   api = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'api'})
   resourceGroup = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'resourceGroup'})
   resource = parent(httpTransaction, parseResult, {element: 'resource'})
@@ -198,11 +198,11 @@ compileOrigin = (filename, parseResult, mediaType, httpTransaction) ->
     resourceGroupName: content(resourceGroup?.meta?.title) or ''
     resourceName: content(resource.meta?.title) or content(resource.attributes?.href) or ''
     actionName: content(transition.meta?.title) or content(httpRequest.attributes.method) or ''
-    exampleName: compileOriginExampleName(parseResult, mediaType, httpTransaction)
+    exampleName: compileOriginExampleName(mediaType, parseResult, httpTransaction)
   }
 
 
-compilePathOrigin = (filename, parseResult, httpTransaction) ->
+compilePathOrigin = (parseResult, filename, httpTransaction) ->
   api = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'api'})
   resourceGroup = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'resourceGroup'})
   resource = parent(httpTransaction, parseResult, {element: 'resource'})
@@ -218,7 +218,7 @@ compilePathOrigin = (filename, parseResult, httpTransaction) ->
   }
 
 
-compileOriginExampleName = (parseResult, mediaType, httpTransaction) ->
+compileOriginExampleName = (mediaType, parseResult, httpTransaction) ->
   exampleName = ''
 
   transition = parent(httpTransaction, parseResult, {element: 'transition'})
