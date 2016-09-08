@@ -627,9 +627,9 @@ describe 'Dredd class Integration', ->
 
     it('transaction names contain status code and content type', ->
       assert.deepEqual(matches, [
+        '/honey > GET > 200 > application/json'
         '/honey > GET > 400 > application/json'
         '/honey > GET > 500 > application/json'
-        '/honey > GET > 200 > application/json'
       ])
     )
   )
