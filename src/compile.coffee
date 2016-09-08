@@ -219,10 +219,10 @@ compilePathOrigin = (parseResult, filename, httpTransaction) ->
 
 
 compileOriginExampleName = (mediaType, parseResult, httpTransaction) ->
-  exampleName = ''
-
   transition = parent(httpTransaction, parseResult, {element: 'transition'})
   httpResponse = child(httpTransaction, {element: 'httpResponse'})
+
+  exampleName = ''
 
   if mediaType is 'text/vnd.apiblueprint'
     if content(transition.attributes.examples) > 1
