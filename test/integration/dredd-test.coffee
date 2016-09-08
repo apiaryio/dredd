@@ -608,3 +608,28 @@ describe 'Dredd class Integration', ->
       assert.notEqual(matches[2][1], 'skip')
     )
   )
+
+  describe('when using Swagger document with hooks', ->
+    reTransactionName = /hook: (.+)/g
+    matches = undefined
+
+    beforeEach((done) ->
+      execCommand(
+        options:
+          path: './test/fixtures/multiple-responses.yaml'
+          hookfiles: './test/fixtures/swagger-transaction-names.js'
+      , (err) ->
+        matches = []
+        matches.push(groups[1]) while groups = reTransactionName.exec(stdout)
+        done(err)
+      )
+    )
+
+    it('transaction names contain status code and content type', ->
+      assert.deepEqual(matches, [
+        '/honey > GET > 400 > application/json'
+        '/honey > GET > 500 > application/json'
+        '/honey > GET > 200 > application/json'
+      ])
+    )
+  )
