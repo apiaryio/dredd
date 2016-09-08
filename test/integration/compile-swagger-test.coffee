@@ -97,19 +97,18 @@ describe('compile() · Swagger', ->
   )
 
   describe('with multiple responses', ->
-    # Multiple responses is the closest we can get with Swagger to something
-    # like transaction examples ¯\_(ツ)_/¯
-
+    transactions = undefined
+    filename = 'apiDescription.json'
     detectTransactionExamples = sinon.spy(require('../../src/detect-transaction-examples'))
-    compilationResult = undefined
-    transaction = undefined
+
+    expectedStatusCodes = [200, 400, 500]
 
     beforeEach((done) ->
       stubs = {'./detect-transaction-examples': detectTransactionExamples}
 
-      compileFixture(fixtures.multipleResponses.swagger, {stubs}, (args...) ->
+      compileFixture(fixtures.multipleResponses.swagger, {filename, stubs}, (args...) ->
         [err, compilationResult] = args
-        transaction = compilationResult.transactions[0]
+        transactions = compilationResult?.transactions
         done(err)
       )
     )
@@ -117,5 +116,25 @@ describe('compile() · Swagger', ->
     it('detection of transaction examples was not called', ->
       assert.isFalse(detectTransactionExamples.called)
     )
+    it('expected number of transactions was returned', ->
+      assert.equal(transactions.length, expectedStatusCodes.length)
+    )
+
+    for statusCode, i in expectedStatusCodes
+      do (statusCode, i) ->
+        context("origin of transaction ##{i + 1}", ->
+          it('uses URI as resource name', ->
+            assert.equal(transactions[i].origin.resourceName, '/honey')
+          )
+          it('uses method as action name', ->
+            assert.equal(transactions[i].origin.actionName, 'GET')
+          )
+          it('uses status code and response\'s Content-Type as example name', ->
+            assert.equal(
+              transactions[i].origin.exampleName,
+              "#{statusCode} > application/json"
+            )
+          )
+        )
   )
 )
