@@ -30,6 +30,7 @@ parseJSON = (body) ->
     body
 
 
+# This can be removed once https://github.com/apiaryio/dredd/issues/341 is done
 parseOutput = (output) ->
   # Parse individual entries (deals also with multi-line entries)
   entries = []

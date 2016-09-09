@@ -2,9 +2,7 @@
 var hooks = require('hooks');
 
 
-hooks.before('/honey > GET', function (transaction, done) {
-  if (transaction.expected.statusCode[0] == '5') {
-    transaction.skip = false;
-  }
+hooks.before('/honey > GET > 500 > application/json', function (transaction, done) {
+  transaction.skip = false;
   done();
 });

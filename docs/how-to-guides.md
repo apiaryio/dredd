@@ -126,9 +126,9 @@ To have an idea where we can hook our arbitrary code, we should first ask Dredd 
 
 ```
 $ dredd api-description.yml http://localhost:3000 --names
-info: /categories > POST
-info: /category/{id} > DELETE
-info: /category/{id}/items > POST
+info: /categories > POST > 200 > application/json
+info: /category/{id} > DELETE > 200 > application/json
+info: /category/{id}/items > POST > 200 > application/json
 ```
 
 Now we can create a `hooks.js` file. The file will contain setup and teardown of the database fixture:
@@ -165,11 +165,9 @@ To test various scenarios, you will want to write each of them into a separate A
 
 For workflows to work properly, you'll also need to keep **shared context** between individual HTTP transactions. You can use [hooks](hooks.md) in order to achieve that. See tips on how to [pass data between transactions](hooks.md#sharing-data-between-steps-in-request-stash).
 
-### Example
+### API Blueprint Example
 
 Imagine we have a simple workflow described:
-
-#### API Blueprint
 
 ```markdown
 FORMAT: 1A
@@ -209,7 +207,52 @@ FORMAT: 1A
 
 ```
 
-#### Swagger
+### Writing Hooks
+
+To have an idea where we can hook our arbitrary code, we should first ask Dredd to list all available transaction names:
+
+```
+$ dredd api-description.apib http://localhost:3000 --names
+info: /login > POST
+info: /cars > GET
+info: /cars/{id} > PATCH
+```
+
+Now we can create a `hooks.js` file. The code of the file will use global `stash` variable to share data between requests:
+
+```javascript
+hooks = require('hooks');
+db = require('./src/db');
+
+stash = {}
+
+// Stash the token we've got
+after('/login > POST', function (transaction) {
+  stash.token = JSON.parse(transaction.real.body).token;
+});
+
+// Add the token to all HTTP transactions
+beforeEach(function (transaction) {
+  if (stash.token) {
+    transaction.headers['X-Api-Key'] = stash.token
+  };
+});
+
+// Stash the car ID we've got
+after('/cars > GET', function (transaction) {
+  stash.carId = JSON.parse(transaction.real.body).id;
+});
+
+// Replace car ID in request with the one we've stashed
+before('/cars/{id} > PATCH', function (transaction) {
+  transaction.fullPath = transaction.fullPath.replace('42', stash.carId)
+  transaction.request.uri = transaction.fullPath
+})
+```
+
+### Swagger Example
+
+Imagine we have a simple workflow described:
 
 ```yaml
 swagger: "2.0"
@@ -291,15 +334,15 @@ paths:
                 type: string
 ```
 
-#### Writing Hooks
+### Writing Hooks
 
 To have an idea where we can hook our arbitrary code, we should first ask Dredd to list all available transaction names:
 
 ```
-$ dredd api-description.apib http://localhost:3000 --names  # for Swagger, use api-description.yml
-info: /login > POST
-info: /cars > GET
-info: /cars/{id} > PATCH
+$ dredd api-description.yml http://localhost:3000 --names
+info: /login > POST > 200 > application/json
+info: /cars > GET > 200 > application/json
+info: /cars/{id} > PATCH > 200 > application/json
 ```
 
 Now we can create a `hooks.js` file. The code of the file will use global `stash` variable to share data between requests:
@@ -311,7 +354,7 @@ db = require('./src/db');
 stash = {}
 
 // Stash the token we've got
-after('/login > POST', function (transaction) {
+after('/login > POST > 200 > application/json', function (transaction) {
   stash.token = JSON.parse(transaction.real.body).token;
 });
 
@@ -323,12 +366,12 @@ beforeEach(function (transaction) {
 });
 
 // Stash the car ID we've got
-after('/cars > GET', function (transaction) {
+after('/cars > GET > 200 > application/json', function (transaction) {
   stash.carId = JSON.parse(transaction.real.body).id;
 });
 
 // Replace car ID in request with the one we've stashed
-before('/cars/{id} > PATCH', function (transaction) {
+before('/cars/{id} > PATCH > 200 > application/json', function (transaction) {
   transaction.fullPath = transaction.fullPath.replace('42', stash.carId)
   transaction.request.uri = transaction.fullPath
 })
@@ -480,10 +523,8 @@ When using [Swagger][] format, by default Dredd tests only responses with `2xx` 
 ```javascript
 var hooks = require('hooks');
 
-hooks.before('/resource > GET', function (transaction, done) {
-  if (transaction.expected.statusCode[0] == '5') {
-    transaction.skip = false;
-  }
+hooks.before('/resource > GET > 500 > application/json', function (transaction, done) {
+  transaction.skip = false;
   done();
 });
 ```
