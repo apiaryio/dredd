@@ -2,6 +2,7 @@ path = require 'path'
 optimist = require 'optimist'
 console = require 'console'
 fs = require 'fs'
+os = require 'os'
 spawnArgs = require 'spawn-args'
 {spawn} = require('child_process')
 
@@ -177,7 +178,10 @@ class DreddCommand
 
     # show version
     else if @argv.version is true
-      console.log("#{packageData.name} v#{packageData.version}")
+      console.log("""\
+        #{packageData.name} v#{packageData.version} \
+        (#{os.type()} #{os.release()}; #{os.arch()})
+      """)
       return @_processExit(0)
 
   loadDreddFile: ->
