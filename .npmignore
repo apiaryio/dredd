@@ -1,3 +1,4 @@
 src/
 .travis.yml
 .git*
+test/
