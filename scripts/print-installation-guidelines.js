@@ -1,14 +1,11 @@
-'use strict'
+var colors = require('colors');
 
-const colors = require('colors')
-
-const command = colors.bold(colors.yellow('npm install dredd@stable'))
-console.error(colors.cyan(`
-  ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-  ::                                                                ::
-  ::    Install Dredd using ${command} in case you    ::
-  ::        prefer stability over new features (e.g. in CI)         ::
-  ::                                                                ::
-  ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-`))
+var command = colors.bold(colors.yellow('npm install dredd@stable'));
+console.error(colors.cyan([
+'  ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::',
+'  ::                                                                ::',
+'  ::    Install Dredd using ' + command + ' in case you    ::',
+'  ::        prefer stability over new features (e.g. in CI)         ::',
+'  ::                                                                ::',
+'  ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::'
+].join('\n')));
