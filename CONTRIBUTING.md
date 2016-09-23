@@ -196,7 +196,7 @@ There are also some environment variables you could find useful:
 [Mocha]: http://mochajs.org/
 [Semantic Release]: https://github.com/semantic-release/semantic-release
 [Conventional Changelog]: https://github.com/conventional-changelog/conventional-changelog-angular/blob/master/convention.md
-[Commitizen CLI][https://github.com/commitizen/cz-cli]
+[Commitizen CLI]: https://github.com/commitizen/cz-cli
 
 [docs]: docs
 [coffeelint.json]: coffeelint.json
