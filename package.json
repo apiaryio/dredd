@@ -7,8 +7,8 @@
     "dredd": "bin/dredd"
   },
   "scripts": {
-    "postinstall": "coffee scripts/print-installation-guidelines.coffee",
-    "postupdate": "coffee scripts/print-installation-guidelines.coffee",
+    "postinstall": "node scripts/print-installation-guidelines.js",
+    "postupdate": "node scripts/print-installation-guidelines.js",
     "lint": "coffeelint src",
     "docs:build": "mkdocs build",
     "docs:serve": "mkdocs serve",
