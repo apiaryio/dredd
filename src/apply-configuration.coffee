@@ -1,7 +1,8 @@
 {EventEmitter} = require 'events'
 clone = require 'clone'
 
-logger = require './logger'
+logger = require('./logger')
+
 
 coerceToArray = (value) ->
   if Array.isArray value
@@ -13,8 +14,23 @@ coerceToArray = (value) ->
   else
     return value
 
-applyConfiguration = (config) ->
 
+applyLoggingOptions = (options) ->
+  # coerce color to bool
+  if options.color == 'false'
+    options.color = false
+  else if options.color == 'true'
+    options.color = true
+
+  logger.transports.console.colorize = options.color
+  logger.transports.console.silent = options.silent
+  logger.transports.console.timestamp = options.timestamp
+  logger.transports.console.level = options.level
+
+  return options
+
+
+applyConfiguration = (config) ->
   configuration =
     blueprintPath: null
     server: null
@@ -53,7 +69,6 @@ applyConfiguration = (config) ->
       'hooks-worker-handler-host': 'localhost'
       'hooks-worker-handler-port': 61321
 
-
   # normalize options and config
   for own key, value of config
     # copy anything except "custom" hash
@@ -64,7 +79,7 @@ applyConfiguration = (config) ->
       for own customKey, customVal of config['custom'] or {}
         configuration['custom'][customKey] = clone customVal, false
 
-  #coerce single/multiple options into an array
+  # coerce single/multiple options into an array
   configuration.options.reporter = coerceToArray(configuration.options.reporter)
   configuration.options.output = coerceToArray(configuration.options.output)
   configuration.options.header = coerceToArray(configuration.options.header)
@@ -76,24 +91,19 @@ applyConfiguration = (config) ->
   if config.blueprintPath
     configuration.options.path.push config.blueprintPath
 
-  # coerce color to bool
-  if configuration.options.color == 'false'
-    configuration.options.color = false
-  else if configuration.options.color == 'true'
-    configuration.options.color = true
-
-  for method in configuration.options.method
+  configuration.options.method.map((method) ->
     method.toUpperCase()
+  )
 
   if configuration.options.user?
     authHeader = 'Authorization:Basic ' + new Buffer(configuration.options.user).toString('base64')
     configuration.options.header.push authHeader
 
-  logger.transports.console.colorize = configuration.options.color
-  logger.transports.console.silent = configuration.options.silent
-  logger.transports.console.level = configuration.options.level
-  logger.transports.console.timestamp = configuration.options.timestamp
-
+  configuration.options = applyLoggingOptions(configuration.options)
   return configuration
 
-module.exports = applyConfiguration
+
+module.exports = {
+  applyLoggingOptions
+  applyConfiguration
+}

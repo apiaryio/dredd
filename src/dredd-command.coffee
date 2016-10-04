@@ -8,6 +8,7 @@ spawnArgs = require 'spawn-args'
 
 Dredd = require './dredd'
 interactiveConfig = require './interactive-config'
+{applyLoggingOptions} = require './apply-configuration'
 configUtils = require './config-utils'
 logger = require('./logger')
 
@@ -36,25 +37,24 @@ class DreddCommand
       @custom.argv = []
 
   setOptimistArgv: ->
-    @optimist = optimist(@custom['argv'], @custom['cwd'])
+    @optimist = optimist(@custom.argv, @custom.cwd)
     @cliArgv = @optimist.argv
 
-    @optimist.usage(
-      """
+    @optimist.usage('''
       Usage:
         $ dredd init
 
       Or:
-        $ dredd <path or URL to API description document> <api_endpoint> [OPTIONS]
+        $ dredd <path or URL to API description document> <URL of tested server> [OPTIONS]
 
       Example:
         $ dredd ./api-description.apib http://localhost:3000 --dry-run
-      """
-    )
-    .options(Dredd.options)
-    .wrap(80)
+    ''')
+      .options(Dredd.options)
+      .wrap(80)
 
     @argv = @optimist.argv
+    @argv = applyLoggingOptions(@argv)
 
   # Gracefully terminate server
   stopServer: (callback) ->
@@ -195,8 +195,9 @@ class DreddCommand
       return @_processExit(0)
 
   loadDreddFile: ->
-    logger.verbose('Loading configuration file.')
     configPath = @argv.config
+    logger.verbose('Loading configuration file:', configPath)
+
     if configPath and fs.existsSync configPath
       logger.info("Configuration '#{configPath}' found, ignoring other arguments.")
       @argv = configUtils.load(configPath)
@@ -205,6 +206,8 @@ class DreddCommand
     for key, value of @cliArgv
       if key != "_" and key != "$0"
         @argv[key] = value
+
+    @argv = applyLoggingOptions(@argv)
 
   parseCustomConfig: ->
     @argv.custom = configUtils.parseCustom @argv.custom
@@ -266,7 +269,6 @@ class DreddCommand
       , waitMilis
 
   run: ->
-    logger.verbose('Preparing for start of testing.')
     for task in [
       @setOptimistArgv
       @parseCustomConfig
