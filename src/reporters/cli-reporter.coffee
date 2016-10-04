@@ -1,15 +1,17 @@
-logger = require './../logger'
+logger = require('./../logger')
 prettifyResponse = require './../prettify-response'
+
 
 class CliReporter
   constructor: (emitter, stats, tests, inlineErrors, details) ->
-    @type = "cli"
+    @type = 'cli'
     @stats = stats
     @tests = tests
     @configureEmitter emitter
     @inlineErrors = inlineErrors
     @details = details
     @errors = []
+    logger.verbose("Using '#{@type}' reporter.")
 
   configureEmitter: (emitter) =>
     emitter.on 'start', (rawBlueprint, callback) ->
@@ -69,5 +71,7 @@ class CliReporter
         logger.error test.message
       else
         logger.error error.stack
+
+
 
 module.exports = CliReporter

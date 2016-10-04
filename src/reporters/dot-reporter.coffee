@@ -4,13 +4,13 @@ prettifyResponse = require('../prettify-response')
 
 
 class DotReporter
-
   constructor: (emitter, stats, tests) ->
     @type = 'dot'
     @stats = stats
     @tests = tests
     @configureEmitter(emitter)
     @errors = []
+    logger.verbose("Using '#{@type}' reporter.")
 
   configureEmitter: (emitter) ->
     emitter.on('start', (rawBlueprint, callback) ->

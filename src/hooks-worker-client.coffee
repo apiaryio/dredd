@@ -5,7 +5,7 @@ child_process = require 'child_process'
 generateUuid = require('node-uuid').v4
 
 # for stubbing in tests
-logger = require './logger'
+logger = require('./logger')
 which = require './which'
 
 
@@ -29,14 +29,19 @@ class HooksWorkerClient
     @emitter = new EventEmitter
 
   start: (callback) ->
+    logger.verbose('Looking up hooks handler implementation:', @language)
     @setCommandAndCheckForExecutables (executablesError) =>
       return callback(executablesError) if executablesError
+
+      logger.verbose('Starting hooks handler.')
       @spawnHandler (spawnHandlerError) =>
         return callback(spawnHandlerError) if spawnHandlerError
 
+        logger.verbose('Connecting to hooks handler.')
         @connectToHandler (connectHandlerError) =>
           return callback(connectHandlerError) if connectHandlerError
 
+          logger.verbose('Registering hooks.')
           @registerHooks (registerHooksError) ->
             return callback(registerHooksError) if registerHooksError
             callback()
@@ -46,13 +51,15 @@ class HooksWorkerClient
     @terminateHandler callback
 
   terminateHandler: (callback) ->
+    logger.verbose('Gracefully terminating hooks handler process.')
+
     term = =>
-      logger.info 'Sending SIGTERM to the hooks handler'
+      logger.info('Sending SIGTERM to hooks handler process.')
       @handlerKilledIntentionally = true
       @handler.kill 'SIGTERM'
 
     kill = =>
-      logger.info 'Killing hooks handler'
+      logger.info('Killing hooks handler process')
       @handler.kill 'SIGKILL'
 
     start = Date.now()
@@ -61,8 +68,10 @@ class HooksWorkerClient
     waitForHandlerTermOrKill = =>
       if @handlerEnded == true
         clearTimeout timeout
+        logger.debug('Hooks handler process successfully terminated.')
         callback()
       else
+        logger.debug('Hooks handler process haven\'t terminated yet.')
         if (Date.now() - start) < @termTimeout
           term()
           timeout = setTimeout waitForHandlerTermOrKill, @termRetry
@@ -82,7 +91,7 @@ class HooksWorkerClient
       @handlerCommand = 'dredd-hooks-ruby'
       unless which.which @handlerCommand
         msg = """\
-          Ruby hooks handler server command not found: #{@handlerCommand}
+          Ruby hooks handler command not found: #{@handlerCommand}
           Install ruby hooks handler by running:
           $ gem install dredd_hooks
         """
@@ -94,7 +103,7 @@ class HooksWorkerClient
       @handlerCommand = 'dredd-hooks-python'
       unless which.which @handlerCommand
         msg = """\
-          Python hooks handler server command not found: #{@handlerCommand}
+          Python hooks handler command not found: #{@handlerCommand}
           Install python hooks handler by running:
           $ pip install dredd_hooks
         """
@@ -106,7 +115,7 @@ class HooksWorkerClient
       @handlerCommand = 'dredd-hooks-php'
       unless which.which @handlerCommand
         msg = """\
-          PHP hooks handler server command not found: #{@handlerCommand}
+          PHP hooks handler command not found: #{@handlerCommand}
           Install php hooks handler by running:
           $ composer require ddelnano/dredd-hooks-php --dev
         """
@@ -118,7 +127,7 @@ class HooksWorkerClient
       @handlerCommand = 'dredd-hooks-perl'
       unless which.which @handlerCommand
         msg = """\
-          Perl hooks handler server command not found: #{@handlerCommand}
+          Perl hooks handler command not found: #{@handlerCommand}
           Install perl hooks handler by running:
           $ cpanm Dredd::Hooks
         """
@@ -128,8 +137,8 @@ class HooksWorkerClient
 
     else if @language == 'nodejs'
       msg = '''\
-        Hooks handler should not be used for nodejs. \
-        Use Dredds' native node hooks instead.
+        Hooks handler should not be used for Node.js. \
+        Use Dredd's native Node.js hooks instead.
       '''
       return callback(new Error(msg))
 
@@ -138,20 +147,19 @@ class HooksWorkerClient
       @handlerCommand = "#{gopath}/bin/goodman"
       unless which.which @handlerCommand
         msg = '''\
-          Go hooks handler server command not found in $GOPATH/bin
+          Go hooks handler command not found in $GOPATH/bin
           Install go hooks handler by running:
           $ go get github.com/snikch/goodman
           $ cd $GOPATH/src/github.com/snikch/goodman
           $ go build -o $GOPATH/bin/goodman github.com/snikch/goodman/cmd/goodman
         '''
-
         return callback(new Error(msg))
       else
         callback()
     else
       @handlerCommand = @language
       unless which.which @handlerCommand
-        msg = "Hooks handler server command not found: #{@handlerCommand}"
+        msg = "Hooks handler command not found: #{@handlerCommand}"
         return callback(new Error(msg))
       else
         callback()
@@ -159,27 +167,27 @@ class HooksWorkerClient
   spawnHandler: (callback) ->
     pathGlobs = [].concat @runner.hooks?.configuration?.options?.hookfiles
 
-    logger.info "Spawning `#{@language}` hooks handler"
+    logger.info("Spawning `#{@language}` hooks handler process.")
     @handler = child_process.spawn @handlerCommand, pathGlobs
 
     @handler.stdout.on 'data', (data) ->
-      logger.info "Hook handler stdout:", data.toString()
+      logger.info("Hooks handler stdout:", data.toString())
 
     @handler.stderr.on 'data', (data) ->
-      logger.info "Hook handler stderr:", data.toString()
+      logger.info("Hooks handler stderr:", data.toString())
 
     @handler.on 'exit', (status) =>
       if status?
         if status isnt 0
-          msg = "Hook handler '#{@handlerCommand}' exited with status: #{status}"
-          logger.error msg
-          @runner.hookHandlerError = new Error msg
+          msg = "Hooks handler process '#{@handlerCommand}' exited with status: #{status}"
+          logger.error(msg)
+          @runner.hookHandlerError = new Error(msg)
       else
         # No exit status code means the hook handler was killed
         unless @handlerKilledIntentionally
-          msg = "Hook handler '#{@handlerCommand}' was killed"
-          logger.error msg
-          @runner.hookHandlerError = new Error msg
+          msg = "Hooks handler process '#{@handlerCommand}' was killed."
+          logger.error(msg)
+          @runner.hookHandlerError = new Error(msg)
       @handlerEnded = true
 
     @handler.on 'error', (error) =>
@@ -195,9 +203,7 @@ class HooksWorkerClient
         clearTimeout(timeout)
 
         if @connectError != false
-          msg = 'Error connecting to the hook handler. Is the handler running? Retrying...'
-          logger.warn msg
-
+          logger.warn('Error connecting to the hooks handler process. Is the handler running? Retrying.')
           @connectError = false
 
         if @clientConnected != true
@@ -206,33 +212,39 @@ class HooksWorkerClient
 
       else
         clearTimeout(timeout)
-        if ! @clientConnected
+        unless @clientConnected
           @handlerClient.destroy() if @handlerClient?
-          msg = "Connect timeout #{@connectTimeout / 1000}s to the handler " +
-          "on #{@handlerHost}:#{@handlerPort} exceeded, try increasing the limit."
+          msg = "Connection timeout #{@connectTimeout / 1000}s to hooks handler " +
+          "on #{@handlerHost}:#{@handlerPort} exceeded. Try increasing the limit."
           error = new Error(msg)
           callback(error)
 
     connectAndSetupClient = =>
+      logger.verbose('Starting TCP connection with hooks handler process.')
+
       if @runner.hookHandlerError?
         return callback(@runner.hookHandlerError)
 
       @handlerClient = net.connect port: @handlerPort, host: @handlerHost
 
       @handlerClient.on 'connect', =>
-        logger.info "Connected to the hook handler, waiting #{@afterConnectWait / 1000}s to start testing."
+        logger.info("Successfully connected to hooks handler. Waiting #{@afterConnectWait / 1000}s to start testing.")
         @clientConnected = true
         clearTimeout(timeout)
         setTimeout callback, @afterConnectWait
 
       @handlerClient.on 'close', ->
+        logger.debug('TCP communication with hooks handler closed.')
 
       @handlerClient.on 'error', (connectError) =>
+        logger.debug('TCP communication with hooks handler errored.', connectError)
         @connectError = connectError
 
-      handlerBuffer = ""
+      handlerBuffer = ''
 
       @handlerClient.on 'data', (data) =>
+        logger.debug('Dredd received some data from hooks handler.')
+
         handlerBuffer += data.toString()
         if data.toString().indexOf(@handlerMessageDelimiter) > -1
           splittedData = handlerBuffer.split(@handlerMessageDelimiter)
@@ -246,9 +258,10 @@ class HooksWorkerClient
 
           for message in messages
             if message.uuid?
+              logger.verbose('Dredd received a valid message from hooks handler:', message.uuid)
               @emitter.emit message.uuid, message
             else
-              logger.log 'UUID not present in message: ', JSON.stringify(message, null, 2)
+              logger.verbose('UUID not present in hooks handler message, ignoring:', JSON.stringify(message, null, 2))
 
     timeout = setTimeout waitForConnect, @connectRetry
 
@@ -271,18 +284,20 @@ class HooksWorkerClient
           uuid: uuid
           data: data
 
+        logger.verbose('Sending HTTP transaction data to hooks handler:', uuid)
         @handlerClient.write JSON.stringify message
         @handlerClient.write @handlerMessageDelimiter
 
         # register event for the sent transaction
         messageHandler = (receivedMessage) ->
+          logger.verbose('Handling hook:', uuid)
           clearTimeout timeout
 
           # We are directly modifying the `data` argument here. Neither direct
           # assignment (`data = receivedMessage.data`) nor `clone()` will work...
 
           # *All hooks receive array of transactions
-          if eventName.indexOf("All") > -1
+          if eventName.indexOf('All') > -1
             for value, index in receivedMessage.data
               data[index] = value
           # *Each hook receives single transaction
@@ -293,9 +308,9 @@ class HooksWorkerClient
           hookCallback()
 
         handleTimeout = =>
-          logger.warn 'Hook handling timed out.'
+          logger.warn('Hook handling timed out.')
 
-          if eventName.indexOf("All") is -1
+          if eventName.indexOf('All') is -1
             data.fail = 'Hook timed out.'
 
           @emitter.removeListener uuid, messageHandler
@@ -304,7 +319,6 @@ class HooksWorkerClient
 
         # set timeout for the hook
         timeout = setTimeout handleTimeout, @timeout
-
 
         @emitter.on uuid, messageHandler
 
@@ -323,5 +337,7 @@ class HooksWorkerClient
     )
 
     callback()
+
+
 
 module.exports = HooksWorkerClient

@@ -81,7 +81,7 @@ describe 'CLI - Server Process', ->
           done(err)
 
       it 'should inform about starting server with custom command', ->
-        assert.include dreddCommand.stdout, 'Starting server with command'
+        assert.include dreddCommand.stdout, 'Starting backend server process with command'
       it 'should redirect server\'s welcome message', ->
         assert.include dreddCommand.stdout, "Dummy server listening on port #{PORT}"
       it 'should exit with status 0', ->
@@ -125,7 +125,7 @@ describe 'CLI - Server Process', ->
               done(err)
 
           it 'should inform about starting server with custom command', ->
-            assert.include dreddCommand.stdout, 'Starting server with command'
+            assert.include dreddCommand.stdout, 'Starting backend server process with command'
           if scenario.expectServerBoot
             it 'should redirect server\'s boot message', ->
               assert.include dreddCommand.stdout, "Dummy server listening on port #{PORT}"
@@ -152,13 +152,13 @@ describe 'CLI - Server Process', ->
           done(err)
 
       it 'should inform about starting server with custom command', ->
-        assert.include dreddCommand.stdout, 'Starting server with command'
+        assert.include dreddCommand.stdout, 'Starting backend server process with command'
       it 'should inform about sending SIGTERM', ->
-        assert.include dreddCommand.stdout, 'Sending SIGTERM to the backend server'
+        assert.include dreddCommand.stdout, 'Sending SIGTERM to backend server process'
       it 'should redirect server\'s message about ignoring SIGTERM', ->
         assert.include dreddCommand.stdout, 'ignoring sigterm'
       it 'should inform about sending SIGKILL', ->
-        assert.include dreddCommand.stdout, 'Killing backend server'
+        assert.include dreddCommand.stdout, 'Killing backend server process'
       it 'the server should not be running', ->
         assert.isFalse isProcessRunning scenario.server
       it 'should exit with status 0', ->

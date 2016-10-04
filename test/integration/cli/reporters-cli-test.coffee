@@ -86,8 +86,8 @@ describe 'CLI - Reporters', ->
 
       it 'should print URL of the test report', ->
         assert.include dreddCommand.stdout, 'http://example.com/test/run/1234_id'
-      it 'should print warning about missing APIARY_API_KEY', ->
-        assert.include dreddCommand.stdout, 'Apiary reporter environment variable APIARY_API_KEY'
+      it 'should print warning about missing Apiary API settings', ->
+        assert.include dreddCommand.stdout, 'Apiary API Key or API Project Subdomain were not provided.'
       it 'should exit with status 0', ->
         assert.equal dreddCommand.exitStatus, 0
       it 'should perform 3 requests to Apiary', ->

@@ -535,8 +535,7 @@ Command-line output of complex HTTP responses and expectations can be hard to re
 
 ```
 $ dredd apiary.apib http://localhost --reporter=apiary
-info: Using apiary reporter.
-warn: Apiary reporter environment variable APIARY_API_KEY or APIARY_API_NAME not defined.
+warn: Apiary API Key or API Project Subdomain were not provided. Configure Dredd to be able to save test reports alongside your Apiary API project: http://dredd.readthedocs.io/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests
 info: Beginning Dredd testing...
 pass: DELETE /honey duration: 884ms
 complete: 1 passing, 0 failing, 0 errors, 0 skipped, 1 total
