@@ -2,6 +2,14 @@
 
 var fs = require('fs');
 
+
+// Ignore this block, it's pure magic, temporary fix
+// for https://github.com/nodejs/node/issues/6456
+[process.stdout, process.stderr].forEach(function (s) {
+  s && s.isTTY && s._handle && s._handle.setBlocking && s._handle.setBlocking(true);
+});
+
+
 var dir = process.env.COLLECT_COVERAGE ? 'src' : 'lib';
 var DreddCommand = require('../' + dir + '/dredd-command');
 
