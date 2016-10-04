@@ -23,9 +23,9 @@ module.exports = new (winston.Logger)({
     warn: 1
     error: 0
   colors:
-    silly: 'magenta'
-    debug: 'blue'
-    verbose: 'cyan'
+    silly: 'gray'
+    debug: 'cyan'
+    verbose: 'magenta'
     info: 'blue'
     test: 'yellow'
     pass: 'green'
