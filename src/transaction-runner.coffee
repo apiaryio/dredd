@@ -69,7 +69,7 @@ class TransactionRunner
       # we need to work with indexes (keys) here, no other way of access.
       async.timesSeries transactions.length, (transactionIndex, iterationCallback) =>
         transaction = transactions[transactionIndex]
-        logger.verbose("Processing transaction ##{transactionIndex}:", transaction.name)
+        logger.verbose("Processing transaction ##{transactionIndex + 1}:", transaction.name)
 
         logger.verbose('Running \'beforeEach\' hooks.')
         @runHooksForData hooks.beforeEachHooks, transaction, false, =>
@@ -97,7 +97,7 @@ class TransactionRunner
                 @runHooksForData hooks.afterHooks[transaction.name], transaction, false, =>
                   return iterationCallback(@hookHandlerError) if @hookHandlerError
 
-                  logger.debug("Evaluating results of transaction execution ##{transactionIndex}:", transaction.name)
+                  logger.debug("Evaluating results of transaction execution ##{transactionIndex + 1}:", transaction.name)
                   @emitResult transaction, iterationCallback
 
       , (iterationError) =>
@@ -518,7 +518,7 @@ class TransactionRunner
       logger.verbose('Handling HTTP response from tested server.')
 
       res.on 'data', (chunk) ->
-        logger.debug('Recieving some data from tested server.')
+        logger.silly('Recieving some data from tested server.')
         buffer += chunk
 
       res.on 'error', (error) =>
