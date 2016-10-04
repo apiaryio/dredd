@@ -21,7 +21,7 @@ configureReporters = (config, stats, tests, runner) ->
 
   reporters = config.options.reporter
   outputs = config.options.output
-  logger.debug('Configuring reporters:', reporters, outputs)
+  logger.verbose('Configuring reporters:', reporters, outputs)
 
   addCli = (reporters) ->
     if reporters.length > 0

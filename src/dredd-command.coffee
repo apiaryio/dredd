@@ -5,6 +5,7 @@ fs = require 'fs'
 os = require 'os'
 spawnArgs = require 'spawn-args'
 {spawn} = require('child_process')
+execSync = require('sync-exec')
 
 Dredd = require './dredd'
 interactiveConfig = require './interactive-config'
@@ -268,6 +269,20 @@ class DreddCommand
         @runDredd @dreddInstance
       , waitMilis
 
+  # This should be handled in a better way in the future:
+  # https://github.com/apiaryio/dredd/issues/625
+  logDebuggingInfo: (config) ->
+    logger.debug('Dredd version:', packageData.version)
+    logger.debug('Node.js version:', process.version)
+    logger.debug('Node.js environment:', process.versions)
+    logger.debug('System version:', os.type(), os.release(), os.arch())
+    try
+      npmVersion = execSync('npm --version').stdout.trim()
+      logger.debug('npm version:', npmVersion or 'unable to determine npm version')
+    catch err
+      logger.debug('npm version: unable to determine npm version:', err)
+    logger.debug('Configuration:', JSON.stringify(config))
+
   run: ->
     for task in [
       @setOptimistArgv
@@ -281,7 +296,8 @@ class DreddCommand
       return if @finished
 
     configurationForDredd = @initConfig()
-    @dreddInstance = @initDredd configurationForDredd
+    @logDebuggingInfo(configurationForDredd)
+    @dreddInstance = @initDredd(configurationForDredd)
 
     try
       @runServerAndThenDredd()
