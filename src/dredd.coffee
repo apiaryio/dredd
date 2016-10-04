@@ -7,7 +7,7 @@ url = require 'url'
 logger = require('./logger')
 options = require './options'
 Runner = require './transaction-runner'
-applyConfiguration = require './apply-configuration'
+{applyConfiguration} = require './apply-configuration'
 handleRuntimeProblems = require './handle-runtime-problems'
 dreddTransactions = require 'dredd-transactions'
 configureReporters = require './configure-reporters'
@@ -27,6 +27,7 @@ class Dredd
 
   # this is here only because there there is no way how to spy a constructor in CoffeScript
   init: (config) ->
+    @configuration = applyConfiguration(config)
     @tests = []
     @stats =
       tests: 0
@@ -37,14 +38,9 @@ class Dredd
       start: 0
       end: 0
       duration: 0
-
-    @configuration = applyConfiguration(config, @stats)
-    @configuration.options ?= {}
-
     @transactions = []
-
     @runner = new Runner(@configuration)
-    configureReporters @configuration, @stats, @tests, @runner
+    configureReporters(@configuration, @stats, @tests, @runner)
 
   run: (callback) ->
     @configDataIsEmpty = true
