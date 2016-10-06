@@ -91,8 +91,8 @@ applyConfiguration = (config) ->
   if config.blueprintPath
     configuration.options.path.push config.blueprintPath
 
-  configuration.options.method.map((method) ->
-    method.toUpperCase()
+  configuration.options.method = (
+    method.toUpperCase() for method in configuration.options.method
   )
 
   if configuration.options.user?
