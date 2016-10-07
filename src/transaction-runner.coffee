@@ -550,7 +550,6 @@ class TransactionRunner
       if isValidError
         configuration.emitter.emit 'test error', isValidError, test, () ->
 
-      test.start = test.start
       test.title = transaction.id
       test.actual = transaction.real
       test.expected = transaction.expected
