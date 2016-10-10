@@ -59,13 +59,13 @@ Dredd supports writing [hooks](https://dredd.readthedocs.io/en/latest/hooks/)
     - [Python](hooks-python.md)
     - [Ruby](hooks-ruby.md)
     - [Other Languages](hooks-new-language.md)
+- [Contributing](contributing.md)
 
 ## Useful Links
 
 - [GitHub Repository][]
 - [Bug Tracker][]
 - [Changelog][]
-- [Contributor's Guidelines][]
 
 ## Example Applications
 
@@ -79,7 +79,6 @@ Dredd supports writing [hooks](https://dredd.readthedocs.io/en/latest/hooks/)
 [GitHub Repository]: https://github.com/apiaryio/dredd
 [Bug Tracker]: https://github.com/apiaryio/dredd/issues?q=is%3Aopen
 [Changelog]: https://github.com/apiaryio/dredd/releases
-[Contributor's Guidelines]: https://github.com/apiaryio/dredd/blob/master/CONTRIBUTING.md
 
 [Travis CI]: https://travis-ci.org/
 [CircleCI]: https://circleci.com/
