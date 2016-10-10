@@ -1,23 +1,23 @@
 Filing a bug report? :bug:
 
-### What command line options do you use?
+#### What command line options do you use?
 
 ```
 $ dredd ( write your CLI options here )
 ```
 
-### What is in your `dredd.yml`?
+#### What is in your `dredd.yml`?
 
 ```yaml
 ( paste your dredd.yml contents here )
 ```
 
-### What's your `dredd --version` output?
+#### What's your `dredd --version` output?
 
 ```
 ( paste your output here )
 ```
 
-### Does `dredd --level=debug` uncover something?
+#### Does `dredd --level=debug` uncover something?
 
-### Can you send us failing test in a Pull Request?
+#### Can you send us failing test in a Pull Request?
