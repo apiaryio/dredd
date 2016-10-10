@@ -21,6 +21,7 @@ pages:
     - Python: hooks-python.md
     - Ruby: hooks-ruby.md
     - Other Languages: hooks-new-language.md
+  - Data Structures: data-structures.md
   - Contributing: contributing.md
 
 theme: readthedocs

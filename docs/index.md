@@ -59,6 +59,7 @@ Dredd supports writing [hooks](https://dredd.readthedocs.io/en/latest/hooks/)
     - [Python](hooks-python.md)
     - [Ruby](hooks-ruby.md)
     - [Other Languages](hooks-new-language.md)
+- [Data Structures](data-structures.md)
 - [Contributing](contributing.md)
 
 ## Useful Links

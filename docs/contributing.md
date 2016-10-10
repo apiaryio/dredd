@@ -169,6 +169,10 @@ If you want to build something on top of the Apiary Reporter, note that it uses 
 - [Apiary Tests API for anonymous test reports][]
 - [Apiary Tests API for authenticated test reports][]
 
+Following data are sent over the wire to Apiary:
+
+- [Apiary Reporter Test Data](data-structures.md#apiary-reporter-test-data)
+
 There is also one environment variable you could find useful:
 
 - `APIARY_API_URL='https://api.apiary.io'` - Allows to override host of the Apiary Tests API.

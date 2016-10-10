@@ -94,54 +94,8 @@ Refer to [Dredd execution lifecycle](how-it-works.md#execution-life-cycle) when 
 
 ### Transaction Object Structure
 
-Transaction object is used as a first argument for hook functions.
-Following is description is in a [MSON](https://github.com/apiaryio/mson) format
+The main purpose of hooks is to work with the transaction object they get as the first argument, in order to inspect or modify Dredd's behavior. See [transaction object reference](data-structures.md#transaction) to learn more about its contents.
 
-- transaction (object)
-    - name: `"Hello, world! > Retrieve Message"` (string) Transaction identification name used for referencing
-    - host: `"localhost"` (string) hostname without port
-    - port: `3000` (number)
-    - protocol: `"https:"` (string)
-    - fullPath: `"/message"` (string) expanded URI-Template with parameters (if any) used for the real HTTP(s) request
-
-    - request (object) Request compiled from API description
-        - body `"Hello world!\n"` (string)
-        - headers (object)
-        - uri `"/message"` (string) informative uri about the request
-        - method
-
-    - expected (object) Expected response from API description
-        - statusCode `"200"` (string)
-        - headers (object)
-        - body (string)
-        - schema (string)
-
-    - real (object) System under test response data. Present only in `after` hook.
-        - statusCode `"200"` (string)
-        - headers (object)
-        - body (string)
-
-    - origin (object)  Reference to the original API description
-        - filename `"./api-description.apib"` (string)
-        - apiName `"My Api"` (string)
-        - resourceGroupName `"Greetings"` (string)
-        - resourceName `"Hello, world!"` (string)
-        - actionName `"Retrieve Message"` (string)
-        - exampleName `"First example"` (string)
-
-    - skip `false` (boolean) Set to `true` to skip this transaction
-    - fail `false` (boolean/string) Set to `true` or string with message and transaction will result in fail
-
-    - test (object) Result of [Gavel][] validation, same object is passed to reporters
-        - status `"fail"` (string) Test status - phase
-        - start `"2015-03-19T00:58:32.796Z"` (string) Start time in [UTC ISO 8601][]
-        - valid `false` (boolean) Test result
-
-    - results (object) Results from [Gavel][] in it's format
-        - version `"2"` (string) Gavel Validation version
-        - statusCode (object) Validation results for status code
-        - headers (object) Validation results for headers
-        - body (object) Validation results for body
 
 [UTC ISO 8601]: http://wikipedia.org/wiki/ISO_8601
 [Gavel]: https://www.relishapp.com/apiary/gavel/docs

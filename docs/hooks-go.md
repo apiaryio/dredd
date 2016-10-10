@@ -63,14 +63,14 @@ func main() {
 The `Runner` type has the following callback methods.
 
 1. `BeforeEach`, `BeforeEachValidation`, `AfterEach`
-  - accepts a function as a first argument passing a [Transaction object](hooks.md#transaction-object-structure) as a first argument
+  - accepts a function as a first argument passing a [Transaction object](data-structures.md#transaction) as a first argument
 
 2. `Before`, `BeforeValidation`, `After`
   - accepts [transaction name](hooks.md#getting-transaction-names) as a first argument
-  - accepts a function as a second argument passing a [Transaction object](hooks.md#transaction-object-structure) as a first argument of it
+  - accepts a function as a second argument passing a [Transaction object](data-structures.md#transaction) as a first argument of it
 
 3. `BeforeAll`, `AfterAll`
-  - accepts a function as a first argument passing a Slice of [Transaction objects](hooks.md#transaction-object-structure) as a first argument
+  - accepts a function as a first argument passing a Slice of [Transaction objects](data-structures.md#transaction) as a first argument
 
 Refer to [Dredd execution lifecycle](how-it-works.md#execution-life-cycle) to find when each hook callback is executed.
 
