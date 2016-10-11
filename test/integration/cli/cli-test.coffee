@@ -940,4 +940,4 @@ describe 'CLI', () ->
       assert.include stdout, 'failed in sandboxed hook'
 
     it 'stdout shoud contain sandbox messagae', () ->
-      assert.include stdout, 'Loading hookfiles in sandboxed context'
+      assert.include stdout, 'Loading hook files in sandboxed context'

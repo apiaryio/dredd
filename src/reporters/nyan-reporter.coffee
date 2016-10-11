@@ -1,11 +1,12 @@
 tty = require 'tty'
 
-logger = require './../logger'
+logger = require('./../logger')
 prettifyResponse = require './../prettify-response'
+
 
 class NyanCatReporter
   constructor: (emitter, stats, tests) ->
-    @type = "nyan"
+    @type = 'nyan'
     @stats = stats
     @tests = tests
     @isatty = tty.isatty(1) and tty.isatty(2)
@@ -27,6 +28,7 @@ class NyanCatReporter
     @tick = 0
     @errors = []
     @configureEmitter emitter
+    logger.verbose("Using '#{@type}' reporter.")
 
   configureEmitter: (emitter) =>
     emitter.on 'start', (rawBlueprint, callback) =>

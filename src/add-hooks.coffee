@@ -44,11 +44,12 @@ addHooks = (runner, transactions, callback) ->
       fixLegacyTransactionNames runner.hooks
 
     catch error
-      logger.warn 'Skipping hook loading...'
-      logger.warn 'Error reading hook file "' + filePath + '"'
-      logger.warn 'This probably means one or more of your hookfiles is invalid.'
-      logger.warn 'Message: ' + error.message if error.message?
-      logger.warn 'Stack: ' + error.stack if error.stack?
+      logger.warn("""\
+        Skipping hook loading. Error reading hook file '#{filePath}'. \
+        This probably means one or more of your hook files are invalid.
+        Message: #{error.message}
+        Stack: #{error.stack}
+      """)
 
   loadSandboxHooksFromStrings = (callback) ->
     if typeof(runner.configuration.hooksData) != 'object' or Array.isArray(runner.configuration.hooksData) != false
@@ -87,10 +88,10 @@ addHooks = (runner, transactions, callback) ->
         loadSandboxHooksFromStrings(callback)
       else
         # not sandboxed code can't be loaded from the string
-        msg = """
-        Not sandboxed hooks loading from strings is not implemented,
-        Sandbox mode must be enabled when loading hooks from strings."
-        """
+        msg = '''\
+          Not sandboxed hooks loading from strings is not implemented, \
+          Sandbox mode must be enabled when loading hooks from strings.\
+        '''
         callback(new Error(msg))
     else
 
@@ -110,7 +111,7 @@ addHooks = (runner, transactions, callback) ->
     for globItem in globs
       files = files.concat glob.sync(globItem)
 
-    logger.info 'Found Hookfiles: ' + files
+    logger.info('Found Hookfiles:', files)
 
     # Loading files in non sandboxed nodejs
     if not runner.configuration.options.sandbox == true
@@ -137,7 +138,7 @@ addHooks = (runner, transactions, callback) ->
     else
 
       # load sandbox files from fs
-      logger.info 'Loading hookfiles in sandboxed context: ' + files
+      logger.info('Loading hook files in sandboxed context:', files)
       async.eachSeries files, (fileName, nextFile) ->
         resolvedPath = path.resolve((customConfigCwd or process.cwd()), fileName)
         # load hook file content

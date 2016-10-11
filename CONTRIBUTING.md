@@ -173,10 +173,9 @@ If you want to build something on top of the Apiary Reporter, note that it uses 
 - [Apiary Tests API for anonymous test reports][]
 - [Apiary Tests API for authenticated test reports][]
 
-There are also some environment variables you could find useful:
+There is also one environment variable you could find useful:
 
 - `APIARY_API_URL='https://api.apiary.io'` - Allows to override host of the Apiary Tests API.
-- `DREDD_REST_DEBUG=true` - Turns on some additional logging. Useful for debugging.
 
 
 [Apiary]: https://apiary.io/

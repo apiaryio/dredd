@@ -4,20 +4,22 @@ fs = require 'fs'
 md = require('markdown-it')()
 file = require 'file'
 
-logger = require './../logger'
+logger = require('./../logger')
 prettifyResponse = require './../prettify-response'
+
 
 class HtmlReporter extends EventEmitter
   constructor: (emitter, stats, tests, path, details) ->
     super()
-    @type = "html"
+    @type = 'html'
     @stats = stats
     @tests = tests
     @path = @sanitizedPath(path)
-    @buf = ""
+    @buf = ''
     @level = 1
     @details = details
     @configureEmitter emitter
+    logger.verbose("Using '#{@type}' reporter.")
 
   sanitizedPath: (path) ->
     filePath = if path? then file.path.abspath(path) else file.path.abspath("./report.html")
@@ -80,6 +82,7 @@ class HtmlReporter extends EventEmitter
       @buf += "\nError: \n"  + error + "\nStacktrace: \n" + error.stack + "\n"
       @buf += "```\n\n"
       @level--
+
 
 
 module.exports = HtmlReporter

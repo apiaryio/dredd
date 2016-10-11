@@ -4,18 +4,20 @@ fs = require 'fs'
 htmlencode = require 'htmlencode'
 file = require 'file'
 
-logger = require './../logger'
+logger = require('./../logger')
 prettifyResponse = require './../prettify-response'
+
 
 class XUnitReporter extends EventEmitter
   constructor: (emitter, stats, tests, path, details) ->
     super()
-    @type = "xUnit"
+    @type = 'xunit'
     @stats = stats
     @tests = tests
     @path = @sanitizedPath(path)
     @details = details
     @configureEmitter emitter
+    logger.verbose("Using '#{@type}' reporter.")
 
   sanitizedPath: (path) ->
     filePath = if path? then file.path.abspath(path) else file.path.abspath("./report.xml")

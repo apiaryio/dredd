@@ -5,16 +5,20 @@ fs = require 'fs'
 os = require 'os'
 spawnArgs = require 'spawn-args'
 {spawn} = require('child_process')
+execSync = require('sync-exec')
 
 Dredd = require './dredd'
 interactiveConfig = require './interactive-config'
+{applyLoggingOptions} = require './configuration'
 configUtils = require './config-utils'
-logger = require './logger'
+logger = require('./logger')
 
 packageData = require('../package.json')
 
+
 TERM_TIMEOUT = 1000
 TERM_RETRY = 500
+
 
 class DreddCommand
   constructor: (options = {}, @cb) ->
@@ -34,37 +38,38 @@ class DreddCommand
       @custom.argv = []
 
   setOptimistArgv: ->
-    @optimist = optimist(@custom['argv'], @custom['cwd'])
+    @optimist = optimist(@custom.argv, @custom.cwd)
     @cliArgv = @optimist.argv
 
-    @optimist.usage(
-      """
+    @optimist.usage('''
       Usage:
         $ dredd init
 
       Or:
-        $ dredd <path or URL to API description document> <api_endpoint> [OPTIONS]
+        $ dredd <path or URL to API description document> <URL of tested server> [OPTIONS]
 
       Example:
         $ dredd ./api-description.apib http://localhost:3000 --dry-run
-      """
-    )
-    .options(Dredd.options)
-    .wrap(80)
+    ''')
+      .options(Dredd.options)
+      .wrap(80)
 
     @argv = @optimist.argv
-
+    @argv = applyLoggingOptions(@argv)
 
   # Gracefully terminate server
   stopServer: (callback) ->
-    return callback() unless @serverProcess?
+    logger.verbose('Gracefully terminating backend server process.')
+    unless @serverProcess?
+      logger.verbose('No backend server process.')
+      return callback()
 
     term = =>
-      logger.info 'Sending SIGTERM to the backend server'
+      logger.info('Sending SIGTERM to backend server process.')
       @serverProcess.kill 'SIGTERM'
 
     kill = =>
-      logger.info 'Killing backend server'
+      logger.info('Killing backend server process.')
       @serverProcess.kill 'SIGKILL'
 
     start = Date.now()
@@ -73,8 +78,10 @@ class DreddCommand
     waitForServerTermOrKill = =>
       if @serverProcessEnded == true
         clearTimeout timeout
+        logger.debug('Backend server process successfully terminated.')
         callback()
       else
+        logger.debug('Backend server process haven\'t terminated yet.')
         if (Date.now() - start) < TERM_TIMEOUT
           term()
           timeout = setTimeout waitForServerTermOrKill, TERM_RETRY
@@ -85,7 +92,6 @@ class DreddCommand
 
     timeout = setTimeout waitForServerTermOrKill, TERM_RETRY
 
-
   # This thing-a-ma-bob here is only for purpose of testing
   # It's basically a dependency injection for the process.exit function
   setExitOrCallback: ->
@@ -95,33 +101,36 @@ class DreddCommand
 
       if @exit
         @_processExit = (exitStatus) =>
+          logger.verbose("Exiting Dredd process with status '#{exitStatus}'.")
+          logger.debug('Using configured custom exit() method to terminate the Dredd process.')
           @finished = true
-
-          @stopServer () =>
+          @stopServer =>
             @exit(exitStatus)
-
       else
         @_processExit = (exitStatus) =>
-
-          @stopServer () ->
+          logger.verbose("Exiting Dredd process with status '#{exitStatus}'.")
+          logger.debug('Using native process.exit() method to terminate the Dredd process.')
+          @stopServer ->
             process.exit exitStatus
-
     else
       @_processExit = (exitStatus) =>
+        logger.verbose("Exiting Dredd process with status '#{exitStatus}'.")
+        logger.debug('Using configured custom callback to terminate the Dredd process.')
         @finished = true
         if @sigIntEventAdded
-          @serverProcess.kill('SIGKILL') if @serverProcess?
-
+          if @serverProcess?
+            logger.verbose('Killing backend server process before Dredd exits.')
+            @serverProcess.kill('SIGKILL')
           process.removeEventListener 'SIGINT', @commandSigInt
         @cb exitStatus
         return @
 
-  moveBlueprintArgToPath: () ->
+  moveBlueprintArgToPath: ->
     # transform path and p argument to array if it's not
     if !Array.isArray(@argv['path'])
       @argv['path'] = @argv['p'] = [@argv['path']]
 
-  checkRequiredArgs: () ->
+  checkRequiredArgs: ->
     argError = false
 
     # if 'blueprint' is missing
@@ -140,10 +149,10 @@ class DreddCommand
       @optimist.showHelp(console.error)
       return @_processExit(1)
 
-
-  runExitingActions: () ->
+  runExitingActions: ->
     # run interactive config
     if @argv["_"][0] == "init" or @argv.init == true
+      logger.silly('Starting interactive configuration.')
       @finished = true
       interactiveConfig.run @argv, (config) =>
         configUtils.save(config)
@@ -173,11 +182,13 @@ class DreddCommand
 
     # show help
     else if @argv.help is true
+      logger.silly('Printing help.')
       @optimist.showHelp(console.error)
       return @_processExit(0)
 
     # show version
     else if @argv.version is true
+      logger.silly('Printing version.')
       console.log("""\
         #{packageData.name} v#{packageData.version} \
         (#{os.type()} #{os.release()}; #{os.arch()})
@@ -186,6 +197,8 @@ class DreddCommand
 
   loadDreddFile: ->
     configPath = @argv.config
+    logger.verbose('Loading configuration file:', configPath)
+
     if configPath and fs.existsSync configPath
       logger.info("Configuration '#{configPath}' found, ignoring other arguments.")
       @argv = configUtils.load(configPath)
@@ -195,20 +208,24 @@ class DreddCommand
       if key != "_" and key != "$0"
         @argv[key] = value
 
+    @argv = applyLoggingOptions(@argv)
 
-  parseCustomConfig: () ->
+  parseCustomConfig: ->
     @argv.custom = configUtils.parseCustom @argv.custom
 
   runServerAndThenDredd: (callback) ->
     if not @argv['server']?
+      logger.verbose('No backend server process specified, starting testing at once.')
       @runDredd @dreddInstance
     else
+      logger.verbose('Backend server process specified, starting backend server and then testing.')
+
       parsedArgs = spawnArgs(@argv['server'])
       command = parsedArgs.shift()
 
       @serverProcess = spawn command, parsedArgs
 
-      logger.info "Starting server with command: #{@argv['server']}"
+      logger.info("Starting backend server process with command: #{@argv['server']}")
 
       @serverProcess.stdout.setEncoding 'utf8'
 
@@ -223,30 +240,48 @@ class DreddCommand
       @serverProcess.on 'close' , (status) =>
         @serverProcessEnded = true
         if status?
-          logger.info 'Backend server exited'
+          logger.info('Backend server process exited.')
         else
-          logger.info 'Backend server was killed'
+          logger.info('Backend server process was killed.')
 
 
       @serverProcess.on 'error', (error) =>
-        logger.error "Server command failed, exiting Dredd..."
+        logger.error('Command to start backend server process failed, exiting Dredd.')
         @_processExit(2)
 
       # Ensure server is not running when dredd exits prematurely somewhere
-      process.on 'beforeExit', () =>
-        @serverProcess.kill('SIGKILL') if @serverProcess?
+      process.on 'beforeExit', =>
+        if @serverProcess?
+          logger.verbose('Killing backend server process before Dredd exits.')
+          @serverProcess.kill('SIGKILL')
 
       # Ensure server is not running when dredd exits prematurely somewhere
-      process.on 'exit', () =>
-        @serverProcess.kill('SIGKILL') if @serverProcess?
+      process.on 'exit', =>
+        if @serverProcess?
+          logger.verbose('Killing backend server process on Dredd\'s exit.')
+          @serverProcess.kill('SIGKILL')
 
       waitSecs = parseInt(@argv['server-wait'], 10)
       waitMilis = waitSecs * 1000
-      logger.info "Waiting #{waitSecs} seconds for server command to start..."
+      logger.info("Waiting #{waitSecs} seconds for backend server process to start.")
 
       @wait = setTimeout =>
         @runDredd @dreddInstance
       , waitMilis
+
+  # This should be handled in a better way in the future:
+  # https://github.com/apiaryio/dredd/issues/625
+  logDebuggingInfo: (config) ->
+    logger.debug('Dredd version:', packageData.version)
+    logger.debug('Node.js version:', process.version)
+    logger.debug('Node.js environment:', process.versions)
+    logger.debug('System version:', os.type(), os.release(), os.arch())
+    try
+      npmVersion = execSync('npm --version').stdout.trim()
+      logger.debug('npm version:', npmVersion or 'unable to determine npm version')
+    catch err
+      logger.debug('npm version: unable to determine npm version:', err)
+    logger.debug('Configuration:', JSON.stringify(config))
 
   run: ->
     for task in [
@@ -261,18 +296,16 @@ class DreddCommand
       return if @finished
 
     configurationForDredd = @initConfig()
-    @dreddInstance = @initDredd configurationForDredd
+    @logDebuggingInfo(configurationForDredd)
+    @dreddInstance = @initDredd(configurationForDredd)
 
     try
       @runServerAndThenDredd()
     catch e
-      logger.error e.message
-      logger.error e.stack
-      @stopServer () =>
+      logger.error(e.message, e.stack)
+      @stopServer =>
         @_processExit(2)
     return
-
-
 
   lastArgvIsApiEndpoint: ->
     # when API description path is a glob, some shells are automatically expanding globs and concating
@@ -288,9 +321,7 @@ class DreddCommand
     return @
 
   initConfig: ->
-    @
-    .lastArgvIsApiEndpoint()
-    .takeRestOfParamsAsPath()
+    @lastArgvIsApiEndpoint().takeRestOfParamsAsPath()
 
     configuration =
       'server': @server
@@ -305,11 +336,10 @@ class DreddCommand
     return configuration
 
   initDredd: (configuration) ->
-    dredd = new Dredd configuration
-    return dredd
+    return new Dredd(configuration)
 
   commandSigInt: ->
-    logger.error "\nShutting down from SIGINT (Ctrl-C)"
+    logger.error('\nShutting down from keyboard interruption (Ctrl+C)')
     @dreddInstance.transactionsComplete => @_processExit(0)
 
   runDredd: (dreddInstance) ->
@@ -318,16 +348,16 @@ class DreddCommand
       @sigIntEventAdded = !@sigIntEventAdd = false
       process.on 'SIGINT', @commandSigInt
 
+    logger.verbose('Running Dredd instance.')
     dreddInstance.run (error, stats) =>
+      logger.verbose('Dredd instance run finished.')
       @exitWithStatus(error, stats)
 
     return @
 
   exitWithStatus: (error, stats) ->
     if error
-      if error.message
-        logger.error error.message
-
+      logger.error(error.message) if error.message
       return @_processExit(1)
 
     if (stats.failures + stats.errors) > 0
@@ -335,5 +365,6 @@ class DreddCommand
     else
       @_processExit(0)
     return
+
 
 exports = module.exports = DreddCommand

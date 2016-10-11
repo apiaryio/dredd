@@ -7,13 +7,14 @@ clone = require 'clone'
 generateUuid = require('node-uuid').v4
 
 packageData = require './../../package.json'
-logger = require './../logger'
+logger = require('./../logger')
 
 CONNECTION_ERRORS = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
 
+
 class ApiaryReporter
   constructor: (emitter, stats, tests, config, runner) ->
-    @type = "cli"
+    @type = 'apiary'
     @stats = stats
     @tests = tests
     @uuid = null
@@ -25,16 +26,19 @@ class ApiaryReporter
     @reportUrl = null
     @configureEmitter emitter
     @errors = []
-    @verbose = @_get('dreddRestDebug', 'DREDD_REST_DEBUG', null)?
     @serverError = false
     @configuration =
       apiUrl: @_get 'apiaryApiUrl', 'APIARY_API_URL', 'https://api.apiary.io'
       apiToken: @_get 'apiaryApiKey', 'APIARY_API_KEY', null
       apiSuite: @_get 'apiaryApiName', 'APIARY_API_NAME', null
+    logger.verbose("Using '#{@type}' reporter.")
 
-    logger.info 'Using apiary reporter.'
-    if not @configuration.apiToken? and not @configuration.apiSuite?
-      logger.warn "Apiary reporter environment variable APIARY_API_KEY or APIARY_API_NAME not defined."
+    if not @configuration.apiToken and not @configuration.apiSuite
+      logger.warn('''\
+        Apiary API Key or API Project Subdomain were not provided. \
+        Configure Dredd to be able to save test reports alongside your Apiary API project: \
+        https://dredd.readthedocs.io/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests\
+      ''')
     @configuration.apiSuite ?= 'public'
 
   # THIS IS HIGHWAY TO HELL! Everything should have one single interafce
@@ -177,38 +181,34 @@ class ApiaryReporter
     return data
 
   _performRequestAsync: (path, method, body, callback) =>
+    logger.debug("""\
+      Performing #{method.toUpperCase()} request to '#{@configuration.apiUrl}' + '#{path}', \
+      #{if body then 'with' else 'without'} body.\
+    """)
+
     buffer = ""
 
-    handleResponse = (res) =>
+    handleResponse = (res) ->
       res.setEncoding 'utf8'
 
-      res.on 'data', (chunk) =>
-        if @verbose
-          logger.log 'REST Reporter HTTPS Response chunk: ' + chunk
+      res.on 'data', (chunk) ->
+        logger.verbose('Apiary reporter received HTTP response chunk:', chunk)
         buffer = buffer + chunk
 
-      res.on 'error', (error) =>
-        if @verbose
-          logger.log 'REST Reporter HTTPS Response error.'
+      res.on 'error', (error) ->
+        logger.debug('Apiary reporter got HTTP response error:', error)
         return callback error, req, res
 
-      res.on 'end', =>
-        if @verbose
-          logger.log 'Rest Reporter Response ended'
+      res.on 'end', ->
+        logger.verbose('Apiary reporter received response from Apiary API.')
 
         try
           parsedBody = JSON.parse buffer
         catch e
-          return callback new Error("Apiary reporter: Failed to JSON parse Apiary API response body: \n #{buffer}")
+          return callback new Error("Apiary reporter failed to parse Apiary API response body: #{e.message}\n#{buffer}")
 
-
-        if @verbose
-          info =
-            headers: res.headers
-            statusCode: res.statusCode
-            body: parsedBody
-          logger.log 'Rest Reporter Response:', JSON.stringify(info, null, 2)
-
+        info = {headers: res.headers, statusCode: res.statusCode, body: parsedBody}
+        logger.verbose('Apiary reporter response:', JSON.stringify(info, null, 2))
         return callback(undefined, res, parsedBody)
 
     parsedUrl = url.parse @configuration['apiUrl']
@@ -222,18 +222,14 @@ class ApiaryReporter
       path: path
       method: method
       headers:
-        'User-Agent': "Dredd REST Reporter/" + packageData.version + " (" + system + ")"
+        'User-Agent': "Dredd Apiary Reporter/" + packageData.version + " (" + system + ")"
         'Content-Type': 'application/json'
         'Content-Length': Buffer.byteLength(postData, 'utf8')
 
     unless @configuration['apiToken'] == null
       options.headers['Authentication'] = 'Token ' + @configuration['apiToken']
 
-    if @verbose
-      info =
-        options: options
-        body: body
-      logger.log 'Rest Reporter Request:', JSON.stringify(info, null, 2)
+    logger.verbose('Apiary reporter request:', JSON.stringify({options, body}, null, 2))
 
     handleReqError = (error) =>
       @serverError = true
@@ -242,21 +238,18 @@ class ApiaryReporter
       else
         return callback error, req, null
 
-    if @configuration.apiUrl?.indexOf('https') is 0
-      if @verbose
-        logger.log 'Starting REST Reporter HTTPS Request'
-      req = https.request options, handleResponse
-
-      req.on 'error', handleReqError
-
+    logger.verbose('Starting HTTP request from Apiary reporter to Apiary API')
+    if @configuration.apiUrl?.match(/^https/)
+      logger.debug('Using HTTPS for Apiary reporter request')
+      req = https.request(options, handleResponse)
     else
-      if @verbose
-        logger.log 'Starting REST Reporter HTTP Response'
-      req = http.request options, handleResponse
+      logger.debug('Using unsecured HTTP for Apiary reporter request')
+      req = http.request(options, handleResponse)
 
-      req.on 'error', handleReqError
-
-    req.write postData
+    req.on('error', handleReqError)
+    req.write(postData)
     req.end()
+
+
 
 module.exports = ApiaryReporter

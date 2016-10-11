@@ -4,10 +4,10 @@ async = require 'async'
 request = require 'request'
 url = require 'url'
 
-logger = require './logger'
+logger = require('./logger')
 options = require './options'
 Runner = require './transaction-runner'
-applyConfiguration = require './apply-configuration'
+{applyConfiguration} = require './configuration'
 handleRuntimeProblems = require './handle-runtime-problems'
 dreddTransactions = require 'dredd-transactions'
 configureReporters = require './configure-reporters'
@@ -27,6 +27,7 @@ class Dredd
 
   # this is here only because there there is no way how to spy a constructor in CoffeScript
   init: (config) ->
+    @configuration = applyConfiguration(config)
     @tests = []
     @stats =
       tests: 0
@@ -37,14 +38,9 @@ class Dredd
       start: 0
       end: 0
       duration: 0
-
-    @configuration = applyConfiguration(config, @stats)
-    @configuration.options ?= {}
-
     @transactions = []
-
-    @runner = new Runner @configuration
-    configureReporters @configuration, @stats, @tests, @runner
+    @runner = new Runner(@configuration)
+    configureReporters(@configuration, @stats, @tests, @runner)
 
   run: (callback) ->
     @configDataIsEmpty = true
@@ -74,21 +70,27 @@ class Dredd
     @configuration.options.path = removeDuplicates @configuration.options.path
 
     # spin that merry-go-round
+    logger.verbose('Expanding glob patterns.')
     @expandGlobs (globsErr) =>
       return callback(globsErr, @stats) if globsErr
 
+      logger.verbose('Reading API description files.')
       @loadFiles (loadErr) =>
         return callback(loadErr, @stats) if loadErr
 
+        logger.verbose('Parsing API description files and compiling a list of HTTP transactions to test.')
         @compileTransactions (compileErr) =>
           return callback(compileErr, @stats) if compileErr
 
+          logger.verbose('Starting reporters and waiting until all of them are ready.')
           @emitStart (emitStartErr) =>
             return callback(emitStartErr, @stats) if emitStartErr
 
+            logger.verbose('Starting transaction runner.')
             @startRunner (runnerErr) =>
               return callback(runnerErr, @stats) if runnerErr
 
+              logger.verbose('Wrapping up testing.')
               @transactionsComplete(callback)
 
   # expand all globs
@@ -107,10 +109,10 @@ class Dredd
       return callback(err, @stats) if err
 
       if @configDataIsEmpty and @configuration.files.length == 0
-        err = new Error """
+        err = new Error("""\
           API description document (or documents) not found on path: \
-          '#{@configuration.options.path}'
-        """
+          '#{@configuration.options.path}'\
+        """)
         return callback(err, @stats)
 
       # remove duplicate filenames
@@ -124,6 +126,7 @@ class Dredd
     async.eachLimit @configuration.files, 6, (fileUrlOrPath, loadCallback) =>
       {protocol, host} = url.parse(fileUrlOrPath)
       if host and protocol in ['http:', 'https:']
+        logger.verbose('Downloading remote file:', fileUrlOrPath)
         @downloadFile(fileUrlOrPath, loadCallback)
       else
         @readLocalFile(fileUrlOrPath, loadCallback)
@@ -136,16 +139,16 @@ class Dredd
       json: false
     , (downloadError, res, body) =>
       if downloadError
-        err = new Error """
+        err = new Error("""\
           Error when loading file from URL '#{fileUrl}'. \
-          Is the provided URL correct?
-        """
+          Is the provided URL correct?\
+        """)
         return callback err, @stats
       if not body or res.statusCode < 200 or res.statusCode >= 300
-        err = new Error """
+        err = new Error("""
           Unable to load file from URL '#{fileUrl}'. \
-          Server did not send any blueprint back and responded with status code #{res.statusCode}.
-        """
+          Server did not send any blueprint back and responded with status code #{res.statusCode}.\
+        """)
         return callback err, @stats
       @configuration.data[fileUrl] = {raw: body, filename: fileUrl}
       callback(null, @stats)
@@ -153,10 +156,10 @@ class Dredd
   readLocalFile: (filePath, callback) ->
     fs.readFile filePath, 'utf8', (readError, data) =>
       if readError
-        err = new Error """
+        err = new Error("""\
           Error when reading file '#{filePath}' (#{readError.message}). \
-          Is the provided path correct?
-        """
+          Is the provided path correct?\
+        """)
         return callback(err)
       @configuration.data[filePath] = {raw: data, filename: filePath}
       callback(null, @stats)
@@ -170,6 +173,7 @@ class Dredd
       fileData = @configuration.data[filename]
       fileData.annotations ?= []
 
+      logger.verbose('Compiling HTTP transactions from API description file:', filename)
       dreddTransactions.compile(fileData.raw, filename, (compilationError, compilationResult) =>
         return next(compilationError) if compilationError
 

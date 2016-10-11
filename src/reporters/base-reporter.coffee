@@ -1,9 +1,13 @@
+logger = require('./../logger')
+
+
 class BaseReporter
   constructor: (emitter, stats, tests) ->
     @type = "base"
     @stats = stats
     @tests = tests
     @configureEmitter emitter
+    logger.verbose("Using '#{@type}' reporter.")
 
   configureEmitter: (emitter) =>
     emitter.on 'start', (rawBlueprint, callback) =>
@@ -37,5 +41,7 @@ class BaseReporter
       @stats.errors += 1
       test['end'] = new Date()
       test['duration'] = test.end - test.start
+
+
 
 module.exports = BaseReporter

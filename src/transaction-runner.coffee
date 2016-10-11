@@ -31,14 +31,19 @@ class TransactionRunner
     @multiBlueprint = Object.keys(@configuration.data).length > 1
 
   run: (transactions, callback) ->
+    logger.verbose('Sorting HTTP transactions.')
     transactions = if @configuration.options['sorted'] then sortTransactions(transactions) else transactions
 
+    logger.verbose('Configuring HTTP transactions.')
     async.mapSeries transactions, @configureTransaction.bind(@), (err, results) =>
       transactions = results
 
       # Remainings of functional approach, probs to be eradicated
+      logger.verbose('Reading hook files and registering hooks.')
       addHooks @, transactions, (addHooksError) =>
         return callback addHooksError if addHooksError
+
+        logger.verbose('Executing HTTP transactions.')
         @executeAllTransactions(transactions, @hooks, callback)
 
   executeAllTransactions: (transactions, hooks, callback) ->
@@ -55,7 +60,7 @@ class TransactionRunner
 
     return callback(@hookHandlerError) if @hookHandlerError
 
-    # run beforeAll hooks
+    logger.verbose('Running \'beforeAll\' hooks.')
     @runHooksForData hooks.beforeAllHooks, transactions, true, =>
       return callback(@hookHandlerError) if @hookHandlerError
 
@@ -64,12 +69,13 @@ class TransactionRunner
       # we need to work with indexes (keys) here, no other way of access.
       async.timesSeries transactions.length, (transactionIndex, iterationCallback) =>
         transaction = transactions[transactionIndex]
+        logger.verbose("Processing transaction ##{transactionIndex + 1}:", transaction.name)
 
-        # run beforeEach hooks
+        logger.verbose('Running \'beforeEach\' hooks.')
         @runHooksForData hooks.beforeEachHooks, transaction, false, =>
           return iterationCallback(@hookHandlerError) if @hookHandlerError
 
-          # run before hooks
+          logger.verbose('Running \'before\' hooks.')
           @runHooksForData hooks.beforeHooks[transaction.name], transaction, false, =>
             return iterationCallback(@hookHandlerError) if @hookHandlerError
 
@@ -83,21 +89,21 @@ class TransactionRunner
             @executeTransaction transaction, hooks, =>
               return iterationCallback(@hookHandlerError) if @hookHandlerError
 
-              # run afterEach hooks
+              logger.verbose('Running \'afterEach\' hooks.')
               @runHooksForData hooks.afterEachHooks, transaction, false, =>
                 return iterationCallback(@hookHandlerError) if @hookHandlerError
 
-                # run after hooks
+                logger.verbose('Running \'after\' hooks.')
                 @runHooksForData hooks.afterHooks[transaction.name], transaction, false, =>
                   return iterationCallback(@hookHandlerError) if @hookHandlerError
 
-                  # decide and emit result
+                  logger.debug("Evaluating results of transaction execution ##{transactionIndex + 1}:", transaction.name)
                   @emitResult transaction, iterationCallback
 
       , (iterationError) =>
         return callback(iterationError) if iterationError
 
-        #runAfterHooks
+        logger.verbose('Running \'afterAll\' hooks.')
         @runHooksForData hooks.afterAllHooks, transactions, true, =>
           return callback(@hookHandlerError) if @hookHandlerError
           callback()
@@ -167,6 +173,7 @@ class TransactionRunner
       callback()
 
   emitError: (transaction, error) ->
+    logger.debug('Transaction runner is emitting an error:', transaction.name, error)
     # TODO investigate how event handler looks like, because it couldn't be able
     # to handle transactions instead of transaction
     test =
@@ -232,19 +239,22 @@ class TransactionRunner
     if typeof(hook) == 'function'
       if hook.length is 1
         # sync api
+        logger.warn('''\
+          DEPRECATION WARNING!
 
-        logger.warn "DEPRECATION WARNING!"
-        logger.warn "You are using only one argument for the `beforeAll` or `afterAll` hook function."
-        logger.warn "One argument hook functions will be treated as synchronous in next major release."
-        logger.warn "To keep the async behaviour, just define hook function with two parameters. "
-        logger.warn ""
-        logger.warn "Api of the hooks functions will be unified soon across all hook functions:"
-        logger.warn " - `beforeAll` and `afterAll` hooks will support sync API depending on number of arguments"
-        logger.warn " - API of callback all functions will be the same"
-        logger.warn " - First passed argument will be a `transactions` object"
-        logger.warn " - Second passed argument will be a optional callback function for async"
-        logger.warn " - `transactions` object in `hooks` module object will be removed"
-        logger.warn " - Manipulation of transactions will have to be performed on first function argument"
+          You are using only one argument for the `beforeAll` or `afterAll` hook function.
+          One argument hook functions will be treated as synchronous in the near future.
+          To keep the async behaviour, just define hook function with two parameters.
+
+          Interface of the hooks functions will be unified soon across all hook functions:
+
+           - `beforeAll` and `afterAll` hooks will support sync API depending on number of arguments
+           - Signatures of callbacks of all hooks will be the same
+           - First passed argument will be a `transactions` object
+           - Second passed argument will be a optional callback function for async
+           - `transactions` object in `hooks` module object will be removed
+           - Manipulation with transaction data will have to be performed on the first function argument
+        ''')
 
         # DEPRECATION WARNING
         # this will not be supported in future hook function will be called with
@@ -413,6 +423,7 @@ class TransactionRunner
       caseInsensitiveRequestHeadersMap[key.toLowerCase()] = key
 
     if not caseInsensitiveRequestHeadersMap['content-length'] and transaction.request['body'] != ''
+      logger.verbose('Calculating Content-Length of the request body.')
       transaction.request.headers['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
 
   # This is actually doing more some pre-flight and conditional skipping of
@@ -444,6 +455,8 @@ class TransactionRunner
 
     if transaction.skip
       # manually set to skip a test (can be done in hooks too)
+      logger.verbose('HTTP transaction was marked in hooks as to be skipped. Skipping.')
+
       message = "Skipped in before hook"
       transaction['results']['general']['results'].push {severity: "warning", message: message}
 
@@ -455,6 +468,8 @@ class TransactionRunner
 
     else if transaction.fail
       # manually set to fail a test in hooks
+      logger.verbose('HTTP transaction was marked in hooks as to be failed. Reporting as failed.')
+
       message = "Failed in before hook: " + transaction.fail
       transaction['results']['general']['results'].push {severity: 'error', message: message}
 
@@ -466,18 +481,27 @@ class TransactionRunner
       @configuration.emitter.emit 'test fail', test, () ->
       return callback()
     else if @configuration.options['dry-run']
-      logger.info "Dry run, skipping API Tests..."
+      logger.info('Dry run. Not performing HTTP request.')
       transaction.skip = true
       return callback()
     else if @configuration.options.names
-      logger.info transaction.name
+      logger.info(transaction.name)
       transaction.skip = true
       return callback()
     else if @configuration.options.method.length > 0 and not (transaction.request.method in @configuration.options.method)
+      logger.info("""\
+        Only #{(m.toUpperCase() for m in @configuration.options.method).join(', ')}\
+        requests are set to be executed. \
+        Not performing HTTP #{transaction.request.method.toUpperCase()} request.\
+      """)
       @configuration.emitter.emit 'test skip', test, () ->
       transaction.skip = true
       return callback()
     else if @configuration.options.only.length > 0 and not (transaction.name in @configuration.options.only)
+      logger.info("""\
+        Only '#{@configuration.options.only}' transaction is set to be executed. \
+        Not performing HTTP request for '#{transaction.name}'.\
+      """)
       @configuration.emitter.emit 'test skip', test, () ->
       transaction.skip = true
       return callback()
@@ -491,10 +515,14 @@ class TransactionRunner
     buffer = ""
 
     handleRequest = (res) =>
+      logger.verbose('Handling HTTP response from tested server.')
+
       res.on 'data', (chunk) ->
+        logger.silly('Recieving some data from tested server.')
         buffer += chunk
 
       res.on 'error', (error) =>
+        logger.debug('Recieving response from tested server errored:', error)
         if error
           test.title = transaction.id
           test.expected = transaction.expected
@@ -504,6 +532,8 @@ class TransactionRunner
         return callback()
 
       res.once 'end', =>
+        logger.debug('Response from tested server was recieved.')
+
         # The data models as used here must conform to Gavel.js
         # as defined in `http-response.coffee`
         real =
@@ -513,10 +543,14 @@ class TransactionRunner
 
         transaction['real'] = real
 
+        logger.verbose('Running \'beforeEachValidation\' hooks.')
         @runHooksForData hooks?.beforeEachValidationHooks, transaction, false, () =>
           return callback(@hookHandlerError) if @hookHandlerError
+
+          logger.verbose('Running \'beforeValidation\' hooks.')
           @runHooksForData hooks?.beforeValidationHooks[transaction.name], transaction, false, () =>
             return callback(@hookHandlerError) if @hookHandlerError
+
             @validateTransaction test, transaction, callback
 
 
@@ -525,9 +559,11 @@ class TransactionRunner
       @replaceLineFeedInBody transaction, requestOptions
 
     try
+      logger.verbose('About to perform an HTTP request to tested server.')
       req = transport.request requestOptions, handleRequest
 
       req.on 'error', (error) =>
+        logger.debug('Requesting tested server errored:', error)
         test.title = transaction.id
         test.expected = transaction.expected
         test.request = transaction.request
@@ -537,6 +573,7 @@ class TransactionRunner
       req.write(transaction.request.body) if transaction.request.body
       req.end()
     catch error
+      logger.debug('Requesting tested server errored:', error)
       test.title = transaction.id
       test.expected = transaction.expected
       test.request = transaction.request
@@ -546,8 +583,11 @@ class TransactionRunner
   validateTransaction: (test, transaction, callback) ->
     configuration = @configuration
 
+    logger.verbose('Validating HTTP transaction by Gavel.js.')
+    logger.debug('Determining whether HTTP transaction is valid (getting boolean verdict).')
     gavel.isValid transaction.real, transaction.expected, 'response', (isValidError, isValid) ->
       if isValidError
+        logger.debug('Gavel.js errored:', isValidError)
         configuration.emitter.emit 'test error', isValidError, test, () ->
 
       test.title = transaction.id
@@ -560,8 +600,10 @@ class TransactionRunner
       else
         test.status = "fail"
 
+      logger.debug('Validating HTTP transaction (getting verbose validation result).')
       gavel.validate transaction.real, transaction.expected, 'response', (validateError, gavelResult) ->
         if not isValidError and validateError
+          logger.debug('Gavel.js errored:', validateError)
           configuration.emitter.emit 'test error', validateError, test, () ->
 
         message = ''

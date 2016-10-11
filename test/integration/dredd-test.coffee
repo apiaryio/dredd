@@ -107,7 +107,7 @@ describe 'Dredd class Integration', ->
         assert.equal exitStatus, 1
 
 
-  describe "when using reporter -r apiary in DREDD_REST_DEBUG mode with custom apiaryApiKey and apiaryApiName", () ->
+  describe "when using reporter -r apiary with 'verbose' logging with custom apiaryApiKey and apiaryApiName", () ->
     server = null
     server2 = null
     receivedRequest = null
@@ -121,11 +121,11 @@ describe 'Dredd class Integration', ->
         options:
           path: ["./test/fixtures/single-get.apib"]
           reporter: ["apiary"]
+          level: 'verbose'
         custom:
           apiaryApiUrl: "http://127.0.0.1:#{PORT + 1}"
           apiaryApiKey: 'the-key'
           apiaryApiName: 'the-api-name'
-          dreddRestDebug: '1'
 
       receivedHeaders = {}
       receivedHeadersRuns = {}
@@ -162,21 +162,21 @@ describe 'Dredd class Integration', ->
               server.close () ->
                 done()
 
-    it 'should not print warning about missing APIARY_API_KEY and APIARY_API_NAME', () ->
-      assert.notInclude stderr, 'Apiary reporter environment variable APIARY_API_KEY or APIARY_API_NAME not defined.'
+    it 'should not print warning about missing Apiary API settings', ->
+      assert.notInclude stderr, 'Apiary API Key or API Project Subdomain were not provided.'
 
     it 'should contain Authentication header thanks to apiaryApiKey and apiaryApiName configuration', ->
       assert.propertyVal receivedHeaders, 'authentication', 'Token the-key'
       assert.propertyVal receivedHeadersRuns, 'authentication', 'Token the-key'
 
-    it 'should send the test-run as a non-public one', ()->
+    it 'should send the test-run as a non-public one', ->
       assert.isObject receivedRequestTestRuns
       assert.propertyVal receivedRequestTestRuns, 'public', false
 
-    it 'should print using the new reporter', () ->
+    it 'should print using the new reporter', ->
       assert.include stdout, 'http://url.me/test/run/1234_id'
 
-    it 'should send results from gavel', ()->
+    it 'should send results from Gavel', ->
       assert.isObject receivedRequest
       assert.deepProperty receivedRequest, 'resultData.request'
       assert.deepProperty receivedRequest, 'resultData.realResponse'
@@ -226,10 +226,10 @@ describe 'Dredd class Integration', ->
           options:
             path: ["./test/fixtures/single-get.apib"]
             reporter: ['apiary']
+            level: 'verbose'
           custom:
             apiaryReporterEnv:
               APIARY_API_URL: "http://127.0.0.1:#{PORT + 1}"
-              DREDD_REST_DEBUG: '1'
 
         apiary = express()
 
@@ -278,10 +278,10 @@ describe 'Dredd class Integration', ->
           options:
             path: ["./test/fixtures/single-get.apib"]
             reporter: ['apiary']
+            level: 'verbose'
           custom:
             apiaryReporterEnv:
               APIARY_API_URL: "http://127.0.0.1:#{PORT + 1}"
-              DREDD_REST_DEBUG: '1'
 
         apiary = express()
         app = express()
@@ -313,13 +313,16 @@ describe 'Dredd class Integration', ->
 
         server.on 'close', done
 
-      it 'should print warning about missing APIARY_API_KEY and APIARY_API_NAME', () ->
-        assert.include stderr, 'Apiary reporter environment variable APIARY_API_KEY or APIARY_API_NAME not defined.'
+      it 'should print warning about missing Apiary API settings', ->
+        assert.include stderr, 'Apiary API Key or API Project Subdomain were not provided.'
 
-      it 'should print using the new reporter', () ->
+      it 'should print link to documentation', ->
+        assert.include stderr, 'https://dredd.readthedocs.io/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests'
+
+      it 'should print using the new reporter', ->
         assert.include stdout, 'http://url.me/test/run/1234_id'
 
-      it 'should send results from gavel', ()->
+      it 'should send results from Gavel', ->
         assert.isObject receivedRequest
         assert.deepProperty receivedRequest, 'resultData.request'
         assert.deepProperty receivedRequest, 'resultData.realResponse'
@@ -468,7 +471,7 @@ describe 'Dredd class Integration', ->
         assert.include stdout, 'failed in sandboxed hook'
 
       it 'stdout shoud contain sandbox messagae', () ->
-        assert.include stdout, 'Loading hookfiles in sandboxed context'
+        assert.include stdout, 'Loading hook files in sandboxed context'
 
       it 'should perform the request', () ->
         assert.isTrue requested
@@ -507,7 +510,7 @@ describe 'Dredd class Integration', ->
         assert.include stdout, 'failed in sandboxed hook from string'
 
       it 'stdout shoud not sandbox messagae', () ->
-        assert.notInclude stdout, 'Loading hookfiles in sandboxed context'
+        assert.notInclude stdout, 'Loading hook files in sandboxed context'
 
       it 'should perform the request', () ->
         assert.isTrue requested

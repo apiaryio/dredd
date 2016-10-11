@@ -76,7 +76,7 @@ describe 'Hooks worker client', ->
         setTimeout ->
           hooksWorkerClient.stop (stopError) ->
             return done stopError if stopError
-            assert.include logs, "Hook handler stdout: standard output text\n"
+            assert.include logs, 'Hooks handler stdout: standard output text\n'
             done()
         , 100
 
@@ -92,7 +92,7 @@ describe 'Hooks worker client', ->
         setTimeout ->
           hooksWorkerClient.stop (stopError) ->
             return done stopError if stopError
-            assert.include logs, "Hook handler stderr: error output text\n"
+            assert.include logs, 'Hooks handler stderr: error output text\n'
             done()
         , 100
 
@@ -184,7 +184,7 @@ describe 'Hooks worker client', ->
       it 'should write a hint that native hooks should be used', (done) ->
         loadWorkerClient (err) ->
           assert.isDefined err
-          assert.include err.message, 'native node hooks instead'
+          assert.include err.message, 'native Node.js hooks instead'
           done()
 
     describe 'when --language ruby option is given and the worker is not installed', ->

@@ -7,7 +7,7 @@ HtmlReporter = require './reporters/html-reporter'
 MarkdownReporter = require './reporters/markdown-reporter'
 ApiaryReporter = require './reporters/apiary-reporter'
 
-logger = require './logger'
+logger = require('./logger')
 
 fileReporters = ['junit', 'html', 'markdown', 'apiary']
 cliReporters = ['dot', 'nyan']
@@ -18,8 +18,10 @@ intersection = (a, b) ->
 
 configureReporters = (config, stats, tests, runner) ->
   baseReporter = new BaseReporter(config.emitter, stats, tests)
+
   reporters = config.options.reporter
   outputs = config.options.output
+  logger.verbose('Configuring reporters:', reporters, outputs)
 
   addCli = (reporters) ->
     if reporters.length > 0
@@ -62,10 +64,10 @@ configureReporters = (config, stats, tests, runner) ->
       usedFileReportersLength = usedFileReportersLength - 1
 
     if usedFileReportersLength > outputs.length
-      logger.warn """
-      There are more reporters requiring output paths than there are output paths \
-      provided, using default paths for additional file-based reporters.
-      """
+      logger.warn('''\
+        There are more reporters requiring output paths than there are output paths \
+        provided. Using default paths for additional file-based reporters.\
+      ''')
 
     for reporter, i in usedFileReporters
       path = if outputs[i] then outputs[i] else null

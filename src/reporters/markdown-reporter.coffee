@@ -3,20 +3,22 @@ fs = require 'fs'
 
 file = require 'file'
 
-logger = require './../logger'
+logger = require('./../logger')
 prettifyResponse = require './../prettify-response'
+
 
 class MarkdownReporter extends EventEmitter
   constructor: (emitter, stats, tests, path, details) ->
     super()
-    @type = "markdown"
+    @type = 'markdown'
     @stats = stats
     @tests = tests
     @path = @sanitizedPath(path)
-    @buf = ""
+    @buf = ''
     @level = 1
     @details = details
     @configureEmitter emitter
+    logger.verbose("Using '#{@type}' reporter.")
 
   sanitizedPath: (path) ->
     filePath = if path? then file.path.abspath(path) else file.path.abspath("./report.md")
@@ -78,6 +80,7 @@ class MarkdownReporter extends EventEmitter
       @buf += "\nError: \n"  + error + "\nStacktrace: \n" + error.stack + "\n"
       @buf += "```\n\n"
       @level--
+
 
 
 module.exports = MarkdownReporter
