@@ -48,6 +48,7 @@
     "request": "^2.74.0",
     "spawn-args": "^0.2.0",
     "spawn-sync": "^1.0.15",
+    "sync-exec": "^0.6.2",
     "uri-template": "^1.0.1",
     "winston": "^2.2.0"
   },
@@ -67,8 +68,7 @@
     "mocha-lcov-reporter": "^1.2.0",
     "nock": "^8.0.0",
     "semantic-release": "^4.3.5",
-    "sinon": "^1.17.4",
-    "sync-exec": "^0.6.2"
+    "sinon": "^1.17.4"
   },
   "keywords": [
     "api",
