@@ -78,7 +78,7 @@ $ npm install -g dredd
 
 [Documentation]: https://dredd.readthedocs.io/en/latest/
 [Changelog]: CHANGELOG.md
-[Contributor's Guidelines]: CONTRIBUTING.md
+[Contributor's Guidelines]: https://dredd.readthedocs.io/en/latest/contributing/
 
 [Travis CI]: https://travis-ci.org/
 [CircleCI]: https://circleci.com/

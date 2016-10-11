@@ -28,14 +28,14 @@ $ dredd apiary.apib http://localhost:3000 --language vendor/bin/dredd-hooks-php 
 The `Dredd\Hooks` class provides the static methods listed below to create hooks
 
 1. `beforeEach`, `beforeEachValidation`, `afterEach`
-  - accepts a closure as a first argument passing a [Transaction object](hooks.md#transaction-object-structure) as a first argument
+  - accepts a closure as a first argument passing a [Transaction object](data-structures.md#transaction) as a first argument
 
 2. `before`, `beforeValidation`, `after`
   - accepts [transaction name](hooks.md#getting-transaction-names) as a first argument
-  - accepts a block as a second argument passing a [Transaction object](hooks.md#transaction-object-structure) as a first argument of it
+  - accepts a block as a second argument passing a [Transaction object](data-structures.md#transaction) as a first argument of it
 
 3. `beforeAll`, `afterAll`
-  - accepts a block as a first argument passing an Array of [Transaction objects](hooks.md#transaction-object-structure) as a first argument
+  - accepts a block as a first argument passing an Array of [Transaction objects](data-structures.md#transaction) as a first argument
 
 
 Refer to [Dredd execution lifecycle](how-it-works.md#execution-life-cycle) to find when is each hook function executed.

@@ -23,14 +23,14 @@ $ dredd apiary.apib http://localhost:3000 --language ruby --hookfiles=./hooks*.r
 Including module `Dredd::Hooks:Methods` expands current scope with methods
 
 1. `@before_each`, `before_each_validation`, `after_each`
-  - accepts a block as a first argument passing a [Transaction object](hooks.md#transaction-object-structure) as a first argument
+  - accepts a block as a first argument passing a [Transaction object](data-structures.md#transaction) as a first argument
 
 2. `before`, `before_validation`, `after`
   - accepts [transaction name](hooks.md#getting-transaction-names) as a first argument
-  - accepts a block as a second argument passing a [Transaction object](hooks.md#transaction-object-structure) as a first argument of it
+  - accepts a block as a second argument passing a [Transaction object](data-structures.md#transaction) as a first argument of it
 
 3. `before_all`, `after_all`
-  - accepts a block as a first argument passing an Array of [Transaction objects](hooks.md#transaction-object-structure) as a first argument
+  - accepts a block as a first argument passing an Array of [Transaction objects](data-structures.md#transaction) as a first argument
 
 
 Refer to [Dredd execution lifecycle](how-it-works.md#execution-life-cycle) to find when is each hook function executed.

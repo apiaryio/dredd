@@ -1,30 +1,30 @@
 # Contributing Guidelines
 
-If you are in hurry, just please scan the **Quick Start** section.
-
 ## Quick Start
 
-### Ideas, bugs...
+### Ideas
 
--   File an [issue][issues].
--   If you're reporting a bug and you want to be an awesome person, please
-    send a Pull Request with a failing test.
--   [API Blueprint][] prepares direct support for testing and scenarios. Interested?
-    Check out [apiaryio/api-blueprint#21](https://github.com/apiaryio/api-blueprint/issues/21)!
+- File an [issue][issues].
+- Explain why you want the feature. How does it help you? What for do you want the feature?
+
+### Bugs
+
+- File an [issue][issues].
+- Ideally, write a failing test and send it as a Pull Request.
 
 ### Coding
 
--   Dredd is written in [CoffeeScript][].
--   Dredd uses [Semantic Release][] and [Conventional Changelog][].
--   There's [ready-made virtual machine][vde] to get you started very quickly.
+- Dredd is written in [CoffeeScript][].
+- Dredd uses [Semantic Release and Conventional Changelog](#sem-rel).
 
-#### Recommended workflow
+#### Recommended Workflow
 
-1. Fork Dredd, create a feature branch.
-2. Write tests.
-3. Write code.
-4. Make sure [test coverage][] didn't drop and all CI builds are passing.
+1. Fork Dredd.
+2. Create a feature branch.
+3. Write tests.
+4. Write code.
 5. Send a Pull Request.
+6. Make sure [test coverage][] didn't drop and all CI builds are passing.
 
 <a name="sem-rel">
 #### Semantic Release and Conventional Changelog
@@ -47,7 +47,7 @@ Where `<type>` is:
 - `refactor` - Changes in code, but no changes in behavior
 - `test` - Tests added/removed/improved/...
 
-See existing commits as a reference. The [Commitizen CLI][] can also help you.
+See [existing commits][] as a reference. The [Commitizen CLI][] can also help you.
 
 Semantic Release will make sure correct version numbers get bumped according
 to the **meaning** of your changes once your PR gets merged to `master`.
@@ -94,21 +94,17 @@ When releasing, make sure you respect the tagging:
 - To release pre-release, e.g. `42.1.0-pre.7`, use just `npm publish`.
 - To release any other version, e.g. `42.1.0`, use `npm publish && npm dist-tag add dredd@42.1.0 stable`.
 
-Hopefully this will be automated one day.
+Releasing process for standard versions is currently automated by [Semantic Release][]. Releasing process for pre-releases is not automated and needs to be done manually, ideally from a special git branch.
 
 ### Testing
 
-Use `npm run test` or just `npm test` to run all tests. Use `npm run test:bdd`
-to run tests and watch for changes. Dredd uses [Mocha][] as a test framework.
+Use `npm test` to run all tests. Dredd uses [Mocha][] as a test framework.
 It's default options are in the `test/mocha.opts` file.
-
-If you experience a flaky test, you can use `npm run test:stress` in combination
-with `describe.only` to try to replicate the flaky behavior.
 
 ### Integration Tests of Hooks Handlers
 
 Every Pull Request spawns dependent integration builds of hook handlers. Thanks
-to this author of the PR can be sure they did not break hook handler
+to this, author of the PR can be sure they did not break hook handler
 implementations by the changes.
 
 The script `scripts/test-hooks-handlers.coffee` is automatically ran by
@@ -139,8 +135,8 @@ about how it works.
 The main documentation is written in [Markdown][] using [MkDocs][]. Dredd uses
 [ReadTheDocs][] to build and publish the documentation:
 
-- https://dredd.readthedocs.io/ - preferred long URL
-- http://dredd.rtfd.org/ - preferred short URL
+- [https://dredd.readthedocs.io](https://dredd.readthedocs.io) - preferred long URL
+- [http://dredd.rtfd.org](http://dredd.rtfd.org) - preferred short URL
 
 Source of the documentation can be found in the [docs][] directory. To contribute to Dredd's documentation, you will need to follow the [MkDocs installation instructions](http://www.mkdocs.org/#installation). Once installed, you may use following commands:
 
@@ -173,13 +169,16 @@ If you want to build something on top of the Apiary Reporter, note that it uses 
 - [Apiary Tests API for anonymous test reports][]
 - [Apiary Tests API for authenticated test reports][]
 
+Following data are sent over the wire to Apiary:
+
+- [Apiary Reporter Test Data](data-structures.md#apiary-reporter-test-data)
+
 There is also one environment variable you could find useful:
 
 - `APIARY_API_URL='https://api.apiary.io'` - Allows to override host of the Apiary Tests API.
 
 
 [Apiary]: https://apiary.io/
-[API Blueprint]: http://apiblueprint.org/
 
 [Semantic Versioning]: http://semver.org/
 [coffee-coverage]: https://github.com/benbria/coffee-coverage
@@ -197,10 +196,10 @@ There is also one environment variable you could find useful:
 [Conventional Changelog]: https://github.com/conventional-changelog/conventional-changelog-angular/blob/master/convention.md
 [Commitizen CLI]: https://github.com/commitizen/cz-cli
 
-[docs]: docs
-[coffeelint.json]: coffeelint.json
+[existing commits]: https://github.com/apiaryio/dredd/commits/master
+[docs]: https://github.com/apiaryio/dredd/tree/master/docs
+[coffeelint.json]: https://github.com/apiaryio/dredd/tree/master/coffeelint.json
 [GitHub Releases]: https://github.com/apiaryio/dredd/releases
-[vde]: VirtualDevelopmentEnvironment.md
 
 [upstream repository]: https://github.com/apiaryio/dredd
 [issues]: https://github.com/apiaryio/dredd/issues
