@@ -16,10 +16,11 @@ coerceToArray = (value) ->
 
 
 applyLoggingOptions = (options) ->
-  # coerce color to bool
-  if options.color == 'false'
+  # Color can be either specified as "stringified bool" or bool (nothing else
+  # is expected valid value). Here we're coercing the value to boolean.
+  if options.color is 'false'
     options.color = false
-  else if options.color == 'true'
+  else if options.color is 'true'
     options.color = true
 
   logger.transports.console.colorize = options.color

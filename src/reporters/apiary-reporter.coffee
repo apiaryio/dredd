@@ -192,20 +192,20 @@ class ApiaryReporter
       res.setEncoding 'utf8'
 
       res.on 'data', (chunk) ->
-        logger.verbose('Apiary Reporter HTTP response chunk:', chunk)
+        logger.verbose('Apiary reporter received HTTP response chunk:', chunk)
         buffer = buffer + chunk
 
       res.on 'error', (error) ->
-        logger.debug('Apiary Reporter HTTP response error:', error)
+        logger.debug('Apiary reporter got HTTP response error:', error)
         return callback error, req, res
 
       res.on 'end', ->
-        logger.verbose('Apiary reporter Response received.')
+        logger.verbose('Apiary reporter received response from Apiary API.')
 
         try
           parsedBody = JSON.parse buffer
         catch e
-          return callback new Error("Apiary reporter: Failed to parse Apiary API response body:\n#{buffer}")
+          return callback new Error("Apiary reporter failed to parse Apiary API response body: #{e.message}\n#{buffer}")
 
         info = {headers: res.headers, statusCode: res.statusCode, body: parsedBody}
         logger.verbose('Apiary reporter response:', JSON.stringify(info, null, 2))
@@ -229,7 +229,7 @@ class ApiaryReporter
     unless @configuration['apiToken'] == null
       options.headers['Authentication'] = 'Token ' + @configuration['apiToken']
 
-    logger.verbose('Apiary reporter request:', JSON.stringify({options: options, body}, null, 2))
+    logger.verbose('Apiary reporter request:', JSON.stringify({options, body}, null, 2))
 
     handleReqError = (error) =>
       @serverError = true
@@ -238,16 +238,16 @@ class ApiaryReporter
       else
         return callback error, req, null
 
-    logger.verbose('Starting Apiary reporter HTTP request')
-    if @configuration.apiUrl.match(/^https/)
+    logger.verbose('Starting HTTP request from Apiary reporter to Apiary API')
+    if @configuration.apiUrl?.match(/^https/)
       logger.debug('Using HTTPS for Apiary reporter request')
-      req = https.request options, handleResponse
+      req = https.request(options, handleResponse)
     else
       logger.debug('Using unsecured HTTP for Apiary reporter request')
-      req = http.request options, handleResponse
+      req = http.request(options, handleResponse)
 
-    req.on 'error', handleReqError
-    req.write postData
+    req.on('error', handleReqError)
+    req.write(postData)
     req.end()
 
 

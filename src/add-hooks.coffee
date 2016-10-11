@@ -46,7 +46,7 @@ addHooks = (runner, transactions, callback) ->
     catch error
       logger.warn("""\
         Skipping hook loading. Error reading hook file '#{filePath}'. \
-        This probably means one or more of your hook files is invalid.
+        This probably means one or more of your hook files are invalid.
         Message: #{error.message}
         Stack: #{error.stack}
       """)
@@ -88,10 +88,10 @@ addHooks = (runner, transactions, callback) ->
         loadSandboxHooksFromStrings(callback)
       else
         # not sandboxed code can't be loaded from the string
-        msg = """\
+        msg = '''\
           Not sandboxed hooks loading from strings is not implemented, \
           Sandbox mode must be enabled when loading hooks from strings.\
-        """
+        '''
         callback(new Error(msg))
     else
 

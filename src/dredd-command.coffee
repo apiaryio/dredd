@@ -9,7 +9,7 @@ execSync = require('sync-exec')
 
 Dredd = require './dredd'
 interactiveConfig = require './interactive-config'
-{applyLoggingOptions} = require './apply-configuration'
+{applyLoggingOptions} = require './configuration'
 configUtils = require './config-utils'
 logger = require('./logger')
 

@@ -1,11 +1,11 @@
 {assert} = require('chai')
 clone = require('clone')
 
-applyConfiguration = require('../../src/apply-configuration')
+configuration = require('../../src/configuration')
 logger = require('../../src/logger')
 
 
-describe('applyLoggingOptions()', ->
+describe('configuration.applyLoggingOptions()', ->
   loggerSettings = undefined
   config = undefined
 
@@ -17,7 +17,7 @@ describe('applyLoggingOptions()', ->
   )
 
   it('applies logging options', ->
-    config = applyConfiguration.applyLoggingOptions(
+    config = configuration.applyLoggingOptions(
       color: 'true'
       level: 'debug'
     )
@@ -31,21 +31,21 @@ describe('applyLoggingOptions()', ->
 
   describe('with color set to legacy \'true\' string value', ->
     it('resulting configuration should contain \'color\' set to boolean true', ->
-      options = applyConfiguration.applyLoggingOptions({color: 'true'})
+      options = configuration.applyLoggingOptions({color: 'true'})
       assert.propertyVal(options, 'color', true)
     )
   )
 
   describe('with color option set to legacy \'false\' string value', ->
     it('resulting configuration should contain \'color\' set to boolean false', ->
-      options = applyConfiguration.applyLoggingOptions({color: 'false'})
+      options = configuration.applyLoggingOptions({color: 'false'})
       assert.propertyVal(options, 'color', false)
     )
   )
 )
 
 
-describe('applyConfiguration()', ->
+describe('configuration.applyConfiguration()', ->
   loggerSettings = undefined
   config = undefined
 
@@ -57,7 +57,7 @@ describe('applyConfiguration()', ->
   )
 
   it('applies logging options', ->
-    config = applyConfiguration.applyConfiguration(
+    config = configuration.applyConfiguration(
       options:
         color: 'true'
         level: 'debug'
