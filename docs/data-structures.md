@@ -57,7 +57,7 @@ Transaction object is passed as a first argument to [hook functions](hooks.md) a
     - `pass` (string)
     - `fail` (string)
     - `skip` (string)
-- message (string) - concatenated all messages of all [Gavel Errors](#gavel-error) in `results` or Dredd's custom message (e.g. "failed in before hook")
+- message (string) - concatenation of all messages from all [Gavel Errors](#gavel-error) in `results` or Dredd's custom message (e.g. "failed in before hook")
 - results (Dredd's [transaction][].results)
 - valid (boolean)
 - origin (object) - [transaction][].origin
@@ -75,7 +75,7 @@ This is a slightly retarded cousin of the [Gavel Validation Result](#gavel-valid
     - results (array[[Gavel Validator Output][]])
 - body (object)
     - results (array[[Gavel Validator Output][]])
-- version (object, optional) - this is sometimes not present (correctly filtered out) and sometimes present
+- version (object, optional) - this is sometimes not present (correctly filtered out) but sometimes is
     - results (array) - empty array
 
 <a name="gavel-validation-result"></a>

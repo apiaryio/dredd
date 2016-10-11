@@ -94,7 +94,7 @@ When releasing, make sure you respect the tagging:
 - To release pre-release, e.g. `42.1.0-pre.7`, use just `npm publish`.
 - To release any other version, e.g. `42.1.0`, use `npm publish && npm dist-tag add dredd@42.1.0 stable`.
 
-Releasing standard versions is currently automated by [Semantic Release][]. Releasing pre-releases is not automated and needs to be done manually, ideally from a special git branch.
+Releasing process for standard versions is currently automated by [Semantic Release][]. Releasing process for pre-releases is not automated and needs to be done manually, ideally from a special git branch.
 
 ### Testing
 
