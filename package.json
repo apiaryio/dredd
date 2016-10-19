@@ -10,10 +10,11 @@
     "node": ">= 4"
   },
   "scripts": {
+    "docs:build": "sphinx-build -W -T -b html -d docs/_build/doctrees docs docs/_build/",
+    "docs:serve": "sphinx-autobuild docs docs/_build/",
+    "docs:install": "pip install -r docs/requirements.txt",
     "lint": "conventional-changelog-lint --from=master && coffeelint src",
-    "docs:build": "mkdocs build",
-    "docs:serve": "mkdocs serve",
-    "build": "coffee -b -c -o lib/ src/ && coffee scripts/generate-cli-docs.coffee",
+    "build": "coffee -b -c -o lib/ src/",
     "pretest": "npm run build",
     "test": "mocha \"test/**/*-test.coffee\"",
     "test:coverage": "scripts/coverage.sh",
@@ -61,6 +62,7 @@
     "drafter": "^1.0.0",
     "ect": "^0.5.9",
     "express": "^4.15.2",
+    "hercule": "^4.0.1",
     "jscoverage": "^0.6.0",
     "lcov-result-merger": "^1.2.0",
     "mocha": "^3.0.0",

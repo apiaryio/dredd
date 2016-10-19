@@ -41,28 +41,25 @@ Dredd supports writing [hooks](https://dredd.readthedocs.io/en/latest/hooks/)
 - [Travis CI][]
 - [CircleCI][]
 - [Jenkins][]
-- _...and any other *nix based CI!_
+- _...and any other \*nix based CI!_
 
-## Documentation Reference
+## Contents
 
-- [About Dredd](index.md)
 - [Installation](installation.md)
 - [Quickstart](quickstart.md)
 - [How It Works](how-it-works.md)
 - [How-To Guides](how-to-guides.md)
-- Usage
-    - [Command-line Interface](usage-cli.md)
-    - [As a JavaScript Library](usage-js.md)
-- Hooks
-    - [About Hooks](hooks.md)
-    - [Go](hooks-go.md)
-    - [JavaScript (Sandboxed)](hooks-js-sandbox.md)
-    - [Node.js](hooks-nodejs.md)
-    - [Perl](hooks-perl.md)
-    - [PHP](hooks-php.md)
-    - [Python](hooks-python.md)
-    - [Ruby](hooks-ruby.md)
-    - [Other Languages](hooks-new-language.md)
+- [Usage: CLI](usage-cli.md)
+- [Usage: JavaScript](usage-js.md)
+- [About Hooks](hooks.md)
+- [Hooks: Go](hooks-go.md)
+- [Hooks: JavaScript (Sandboxed)](hooks-js-sandbox.md)
+- [Hooks: Node.js](hooks-nodejs.md)
+- [Hooks: Perl](hooks-perl.md)
+- [Hooks: PHP](hooks-php.md)
+- [Hooks: Python](hooks-python.md)
+- [Hooks: Ruby](hooks-ruby.md)
+- [Hooks: Other Languages](hooks-new-language.md)
 - [Data Structures](data-structures.md)
 - [Contributing](contributing.md)
 
