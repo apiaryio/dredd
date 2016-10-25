@@ -5,10 +5,10 @@
   "main": "lib/dredd-transactions.js",
   "scripts": {
     "lint": "coffeelint ./src",
-    "compile": "coffee -b -c -o lib/ src/",
+    "build": "coffee -b -c -o lib/ src/",
     "test": "./scripts/test",
     "test:bdd": "./scripts/test -w",
-    "prepublish": "npm run compile",
+    "prepublish": "npm run build",
     "coveralls": "./scripts/cov mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
@@ -22,7 +22,7 @@
     "deckardcain": "^0.3.2",
     "fury": "^2.1.0",
     "fury-adapter-apib-parser": "^0.3.0",
-    "fury-adapter-swagger": "^0.9.1",
+    "fury-adapter-swagger": "^0.9.7",
     "sift": "^3.2.1",
     "traverse": "^0.6.6",
     "uri-template": "^1.0.0"

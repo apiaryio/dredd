@@ -48,7 +48,7 @@ describe('compile() · API Blueprint', ->
     )
   )
 
-  describe('causing a \'not specified in URI Template\' warning', ->
+  describe('causing a \'not found within URI Template\' warning', ->
     # The warning was previously handled by compiler, but now parser should
     # already provide the same kind of warning.
 
@@ -76,7 +76,7 @@ describe('compile() · API Blueprint', ->
         assert.isNumber(warnings[0].code)
       )
       it('has message', ->
-        assert.include(warnings[0].message.toLowerCase(), 'not specified in')
+        assert.include(warnings[0].message.toLowerCase(), 'not found within')
         assert.include(warnings[0].message.toLowerCase(), 'uri template')
       )
       it('has location', ->
