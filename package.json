@@ -32,7 +32,7 @@
     "clone": "^2.0.0",
     "coffee-script": "^1.10.0",
     "colors": "^1.1.2",
-    "dredd-transactions": "^3.0.0",
+    "dredd-transactions": "^3.0.1",
     "file": "^0.2.2",
     "gavel": "^0.5.3",
     "glob": "^7.0.5",
