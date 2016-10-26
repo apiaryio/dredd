@@ -15,24 +15,24 @@ hooks.after('Resource > Update Resource', function(transaction, done) {
   delete headers[name];
   transaction.test.expected.headers = headers;
 
-  // sanitation of the header in validation result
-  var validationResult = transaction.test.results.headers;
+  // sanitation of the header in validation output
+  var validationOutput = transaction.test.results.headers;
 
   var errors = [];
-  for (var i = 0; i < validationResult.length; i++) {
-    if (validationResult.results[i].pointer[0].toLowerCase() !== 'authorization') {
-      errors.push(validationResult.results[i]);
+  for (var i = 0; i < validationOutput.results.length; i++) {
+    if (validationOutput.results[i].pointer.toLowerCase() !== '/authorization') {
+      errors.push(validationOutput.results[i]);
     }
   }
-  validationResult.results = errors;
+  validationOutput.results = errors;
 
   var rawData = [];
-  for (var i = 0; i < validationResult.rawData.length; i++) {
-    if (validationResult.rawData[i].property[0].toLowerCase() !== 'authorization') {
-      rawData.push(validationResult.rawData[i]);
+  for (var i = 0; i < validationOutput.rawData.length; i++) {
+    if (validationOutput.rawData[i].property[0].toLowerCase() !== 'authorization') {
+      rawData.push(validationOutput.rawData[i]);
     }
   }
-  validationResult.rawData = rawData;
+  validationOutput.rawData = rawData;
 
   transaction.test.message = '';
   done();

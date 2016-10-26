@@ -24,6 +24,7 @@ class TransactionRunner
   constructor: (@configuration) ->
     @logs = []
     @hookStash = {}
+    @error = null
     @hookHandlerError = null
 
   config: (config) ->
@@ -31,19 +32,19 @@ class TransactionRunner
     @multiBlueprint = Object.keys(@configuration.data).length > 1
 
   run: (transactions, callback) ->
-    logger.verbose('Sorting HTTP transactions.')
+    logger.verbose('Sorting HTTP transactions')
     transactions = if @configuration.options['sorted'] then sortTransactions(transactions) else transactions
 
-    logger.verbose('Configuring HTTP transactions.')
+    logger.verbose('Configuring HTTP transactions')
     async.mapSeries transactions, @configureTransaction.bind(@), (err, results) =>
       transactions = results
 
       # Remainings of functional approach, probs to be eradicated
-      logger.verbose('Reading hook files and registering hooks.')
+      logger.verbose('Reading hook files and registering hooks')
       addHooks @, transactions, (addHooksError) =>
         return callback addHooksError if addHooksError
 
-        logger.verbose('Executing HTTP transactions.')
+        logger.verbose('Executing HTTP transactions')
         @executeAllTransactions(transactions, @hooks, callback)
 
   executeAllTransactions: (transactions, hooks, callback) ->
@@ -60,7 +61,7 @@ class TransactionRunner
 
     return callback(@hookHandlerError) if @hookHandlerError
 
-    logger.verbose('Running \'beforeAll\' hooks.')
+    logger.verbose('Running \'beforeAll\' hooks')
     @runHooksForData hooks.beforeAllHooks, transactions, true, =>
       return callback(@hookHandlerError) if @hookHandlerError
 
@@ -71,11 +72,11 @@ class TransactionRunner
         transaction = transactions[transactionIndex]
         logger.verbose("Processing transaction ##{transactionIndex + 1}:", transaction.name)
 
-        logger.verbose('Running \'beforeEach\' hooks.')
+        logger.verbose('Running \'beforeEach\' hooks')
         @runHooksForData hooks.beforeEachHooks, transaction, false, =>
           return iterationCallback(@hookHandlerError) if @hookHandlerError
 
-          logger.verbose('Running \'before\' hooks.')
+          logger.verbose('Running \'before\' hooks')
           @runHooksForData hooks.beforeHooks[transaction.name], transaction, false, =>
             return iterationCallback(@hookHandlerError) if @hookHandlerError
 
@@ -89,11 +90,11 @@ class TransactionRunner
             @executeTransaction transaction, hooks, =>
               return iterationCallback(@hookHandlerError) if @hookHandlerError
 
-              logger.verbose('Running \'afterEach\' hooks.')
+              logger.verbose('Running \'afterEach\' hooks')
               @runHooksForData hooks.afterEachHooks, transaction, false, =>
                 return iterationCallback(@hookHandlerError) if @hookHandlerError
 
-                logger.verbose('Running \'after\' hooks.')
+                logger.verbose('Running \'after\' hooks')
                 @runHooksForData hooks.afterHooks[transaction.name], transaction, false, =>
                   return iterationCallback(@hookHandlerError) if @hookHandlerError
 
@@ -103,12 +104,12 @@ class TransactionRunner
       , (iterationError) =>
         return callback(iterationError) if iterationError
 
-        logger.verbose('Running \'afterAll\' hooks.')
+        logger.verbose('Running \'afterAll\' hooks')
         @runHooksForData hooks.afterAllHooks, transactions, true, =>
           return callback(@hookHandlerError) if @hookHandlerError
           callback()
 
-  # Tha `data` argument can be transactions or transaction object
+  # The 'data' argument can be 'transactions' array or 'transaction' object
   runHooksForData: (hooks, data, legacy = false, callback) ->
     if hooks? and Array.isArray hooks
       logger.debug 'Running hooks...'
@@ -122,14 +123,14 @@ class TransactionRunner
 
             @runLegacyHook hookFn, data, (err) =>
               if err
-                error = new Error(err)
-                @emitError(data, error)
+                logger.debug('Legacy hook errored:', err)
+                @emitHookError(err, data)
               runHookCallback()
           else
             @runHook hookFn, data, (err) =>
               if err
-                error = new Error(err)
-                @emitError(data, error)
+                logger.debug('Hook errored:', err)
+                @emitHookError(err, data)
               runHookCallback()
 
         catch error
@@ -137,32 +138,12 @@ class TransactionRunner
           # catches also errors thrown in 'runHookCallback', i.e. in all
           # subsequent flow! Then also 'callback' is called twice and
           # all the flow can be executed twice. We need to reimplement this.
-
           if error instanceof chai.AssertionError
-            message = "Failed assertion in hooks: " + error.message
-
-            data['results'] ?= {}
-            data['results']['general'] ?= {}
-            data['results']['general']['results'] ?= []
-            data['results']['general']['results'].push { severity: 'error', message: message }
-
-            data['message'] = message
-
-            data['test'] ?= {}
-            data['test']['status'] = 'fail'
-
-            data['test']['results'] ?= {}
-
-            for key, value of data['results']
-              if key != 'version'
-                data['test']['results'][key] ?= {}
-                data['test']['results'][key]['results'] ?= []
-                data['test']['results'][key]['results'] =
-                  data['test']['results'][key]['results'].concat value
-
-            @configuration.emitter.emit 'test fail', data.test
+            transactions = if Array.isArray(data) then data else [data]
+            @failTransaction(transaction, "Failed assertion in hooks: #{error.message}") for transaction in transactions
           else
-            @emitError(data, error)
+            logger.debug('Hook errored:', error)
+            @emitHookError(error, data)
 
           runHookCallback()
 
@@ -172,18 +153,16 @@ class TransactionRunner
     else
       callback()
 
-  emitError: (transaction, error) ->
-    logger.debug('Transaction runner is emitting an error:', transaction.name, error)
-    # TODO investigate how event handler looks like, because it couldn't be able
-    # to handle transactions instead of transaction
-    test =
-      status: ''
-      title: transaction.id
-      message: transaction.name
-      origin: transaction.origin
-      startedAt: transaction.startedAt # number in ms (UNIX timestamp * 1000 precision)
-      request: transaction.request
-    @configuration.emitter.emit 'test error', error, test if error
+  # The 'data' argument can be 'transactions' array or 'transaction' object.
+  #
+  # If it's 'transactions', it is treated as single 'transaction' anyway in this
+  # function. That probably isn't correct and should be fixed eventually
+  # (beware, tests count with the current behavior).
+  emitHookError: (error, data) ->
+    error = new Error(error) unless error instanceof Error
+    test = @createTest(data)
+    test.request = data.request
+    @emitError(error, test)
 
   sandboxedHookResultsHandler: (err, data, results = {}, callback) ->
     return callback err if err
@@ -375,37 +354,85 @@ class TransactionRunner
     segments = (segment.replace(/^\/|\/$/g, '') for segment in segments)
     return '/' + segments.join('/')
 
+  # Factory for 'transaction.test' object creation
+  createTest: (transaction) ->
+    return {
+      status: ''
+      title: transaction.id
+      message: transaction.name
+      origin: transaction.origin
+      startedAt: transaction.startedAt
+    }
+
+  # Marks the transaction as failed and makes sure everything in the transaction
+  # object is set accordingly. Typically this would be invoked when transaction
+  # runner decides to force a transaction to behave as failed.
+  failTransaction: (transaction, reason) ->
+    transaction.fail = true
+
+    @ensureTransactionResultsGeneralSection(transaction)
+    transaction.results.general.results.push({severity: 'error', message: reason}) if reason
+
+    transaction.test ?= @createTest(transaction)
+    transaction.test.status = 'fail'
+    transaction.test.message = reason if reason
+    transaction.test.results ?= transaction.results
+
+  # Marks the transaction as skipped and makes sure everything in the transaction
+  # object is set accordingly.
+  skipTransaction: (transaction, reason) ->
+    transaction.skip = true
+
+    @ensureTransactionResultsGeneralSection(transaction)
+    transaction.results.general.results.push({severity: 'warning', message: reason}) if reason
+
+    transaction.test ?= @createTest(transaction)
+    transaction.test.status = 'skip'
+    transaction.test.message = reason if reason
+    transaction.test.results ?= transaction.results
+
+  # Ensures that given transaction object has 'results' with 'general' section
+  # where custom Gavel-like errors or warnings can be inserted.
+  ensureTransactionResultsGeneralSection: (transaction) ->
+    transaction.results ?= {}
+    transaction.results.general ?= {}
+    transaction.results.general.results ?= []
+
+  # Inspects given transaction and emits 'test *' events with 'transaction.test'
+  # according to the test's status
   emitResult: (transaction, callback) ->
-    # if transaction test was executed and was not skipped or failed
-    if transaction.test
-      if transaction.test.valid == true
+    if @error or not transaction.test
+      logger.debug('No emission of test data to reporters', @error, transaction.test)
+      @error = null # reset the error indicator
+      return callback()
 
-        # If the transaction is set programatically to fail by user in hooks
-        if transaction.fail
-          transaction.test.status = 'fail'
+    if transaction.skip
+      logger.debug('Emitting to reporters: test skip')
+      @configuration.emitter.emit('test skip', transaction.test, -> )
+      return callback()
 
-          message = "Failed in after hook: " + transaction.fail
-          transaction.test.message = message
+    if transaction.test.valid
+      if transaction.fail
+        @failTransaction(transaction, "Failed in after hook: #{transaction.fail}")
+        logger.debug('Emitting to reporters: test fail')
+        @configuration.emitter.emit('test fail', transaction.test, -> )
+      else
+        logger.debug('Emitting to reporters: test pass')
+        @configuration.emitter.emit('test pass', transaction.test, -> )
+      return callback()
 
-          transaction['results'] ?= {}
-          transaction['results']['general'] ?= []
-          transaction['results']['general']['results'] ?= []
-          transaction['results']['general']['results'].push {severity: 'error', message: message}
-
-          transaction['test'] ?= {}
-          transaction['test']['results'] ?= {}
-
-          for key, value of transaction['results']
-            if key != 'version'
-              transaction['test']['results'][key] ?= {}
-              transaction['test']['results'][key]['results'] ?= []
-              transaction['test']['results'][key]['results'] =
-                transaction['test']['results'][key]['results'].concat(value)
-
-          @configuration.emitter.emit 'test fail', transaction.test, () ->
-        else
-          @configuration.emitter.emit 'test pass', transaction.test, () ->
+    logger.debug('Emitting to reporters: test fail')
+    @configuration.emitter.emit('test fail', transaction.test, -> )
     callback()
+
+  # Emits 'test error' with given test data. Halts the transaction runner.
+  emitError: (error, test) ->
+    logger.debug('Emitting to reporters: test error')
+    @configuration.emitter.emit('test error', error, test, -> )
+
+    # Record the error to halt the transaction runner. Do not overwrite
+    # the first recorded error if more of them occured.
+    @error = @error or error
 
   getRequestOptionsFromTransaction: (transaction) ->
     requestOptions =
@@ -423,15 +450,13 @@ class TransactionRunner
       caseInsensitiveRequestHeadersMap[key.toLowerCase()] = key
 
     if not caseInsensitiveRequestHeadersMap['content-length'] and transaction.request['body'] != ''
-      logger.verbose('Calculating Content-Length of the request body.')
+      logger.verbose('Calculating Content-Length of the request body')
       transaction.request.headers['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
 
   # This is actually doing more some pre-flight and conditional skipping of
   # the transcation based on the configuration or hooks. TODO rename
   executeTransaction: (transaction, hooks, callback) =>
-    unless callback
-      callback = hooks
-      hooks = null
+    [callback, hooks] = [hooks, undefined] unless callback
 
     # Doing here instead of in configureTransaction, because request body can
     # be edited in the 'before' hook
@@ -440,71 +465,55 @@ class TransactionRunner
     # number in miliseconds (UNIX-like timestamp * 1000 precision)
     transaction.startedAt = Date.now()
 
-    test =
-      status: ''
-      title: transaction.id
-      message: transaction.name
-      origin: transaction.origin
-      startedAt: transaction.startedAt
+    test = @createTest(transaction)
+    logger.debug('Emitting to reporters: test start')
+    @configuration.emitter.emit('test start', test, -> )
 
-    @configuration.emitter.emit 'test start', test, () ->
-
-    transaction['results'] ?= {}
-    transaction['results']['general'] ?= {}
-    transaction['results']['general']['results'] ?= []
+    @ensureTransactionResultsGeneralSection(transaction)
 
     if transaction.skip
-      # manually set to skip a test (can be done in hooks too)
-      logger.verbose('HTTP transaction was marked in hooks as to be skipped. Skipping.')
-
-      message = "Skipped in before hook"
-      transaction['results']['general']['results'].push {severity: "warning", message: message}
-
-      test['results'] = transaction['results']
-      test['status'] = 'skip'
-
-      @configuration.emitter.emit 'test skip', test, () ->
+      logger.verbose('HTTP transaction was marked in hooks as to be skipped. Skipping')
+      transaction.test = test
+      @skipTransaction(transaction, 'Skipped in before hook')
       return callback()
 
     else if transaction.fail
-      # manually set to fail a test in hooks
-      logger.verbose('HTTP transaction was marked in hooks as to be failed. Reporting as failed.')
-
-      message = "Failed in before hook: " + transaction.fail
-      transaction['results']['general']['results'].push {severity: 'error', message: message}
-
-      test['message'] = message
-      test['status'] = 'fail'
-
-      test['results'] = transaction['results']
-
-      @configuration.emitter.emit 'test fail', test, () ->
+      logger.verbose('HTTP transaction was marked in hooks as to be failed. Reporting as failed')
+      transaction.test = test
+      @failTransaction(transaction, "Failed in before hook: #{transaction.fail}")
       return callback()
+
     else if @configuration.options['dry-run']
-      logger.info('Dry run. Not performing HTTP request.')
-      transaction.skip = true
+      logger.info('Dry run. Not performing HTTP request')
+      transaction.test = test
+      @skipTransaction(transaction)
       return callback()
+
     else if @configuration.options.names
       logger.info(transaction.name)
-      transaction.skip = true
+      transaction.test = test
+      @skipTransaction(transaction)
       return callback()
+
     else if @configuration.options.method.length > 0 and not (transaction.request.method in @configuration.options.method)
       logger.info("""\
         Only #{(m.toUpperCase() for m in @configuration.options.method).join(', ')}\
         requests are set to be executed. \
         Not performing HTTP #{transaction.request.method.toUpperCase()} request.\
       """)
-      @configuration.emitter.emit 'test skip', test, () ->
-      transaction.skip = true
+      transaction.test = test
+      @skipTransaction(transaction)
       return callback()
+
     else if @configuration.options.only.length > 0 and not (transaction.name in @configuration.options.only)
       logger.info("""\
         Only '#{@configuration.options.only}' transaction is set to be executed. \
         Not performing HTTP request for '#{transaction.name}'.\
       """)
-      @configuration.emitter.emit 'test skip', test, () ->
-      transaction.skip = true
+      transaction.test = test
+      @skipTransaction(transaction)
       return callback()
+
     else
       return @performRequestAndValidate(test, transaction, hooks, callback)
 
@@ -515,24 +524,23 @@ class TransactionRunner
     buffer = ""
 
     handleRequest = (res) =>
-      logger.verbose('Handling HTTP response from tested server.')
+      logger.verbose('Handling HTTP response from tested server')
 
       res.on 'data', (chunk) ->
-        logger.silly('Recieving some data from tested server.')
+        logger.silly('Recieving some data from tested server')
         buffer += chunk
 
       res.on 'error', (error) =>
         logger.debug('Recieving response from tested server errored:', error)
-        if error
-          test.title = transaction.id
-          test.expected = transaction.expected
-          test.request = transaction.request
-          @configuration.emitter.emit 'test error', error, test, () ->
+        test.title = transaction.id
+        test.expected = transaction.expected
+        test.request = transaction.request
+        @emitError(error, test)
 
         return callback()
 
       res.once 'end', =>
-        logger.debug('Response from tested server was recieved.')
+        logger.debug('Response from tested server was recieved')
 
         # The data models as used here must conform to Gavel.js
         # as defined in `http-response.coffee`
@@ -543,11 +551,11 @@ class TransactionRunner
 
         transaction['real'] = real
 
-        logger.verbose('Running \'beforeEachValidation\' hooks.')
+        logger.verbose('Running \'beforeEachValidation\' hooks')
         @runHooksForData hooks?.beforeEachValidationHooks, transaction, false, () =>
           return callback(@hookHandlerError) if @hookHandlerError
 
-          logger.verbose('Running \'beforeValidation\' hooks.')
+          logger.verbose('Running \'beforeValidation\' hooks')
           @runHooksForData hooks?.beforeValidationHooks[transaction.name], transaction, false, () =>
             return callback(@hookHandlerError) if @hookHandlerError
 
@@ -559,7 +567,7 @@ class TransactionRunner
       @replaceLineFeedInBody transaction, requestOptions
 
     try
-      logger.verbose('About to perform an HTTP request to tested server.')
+      logger.verbose('About to perform an HTTP request to tested server')
       req = transport.request requestOptions, handleRequest
 
       req.on 'error', (error) =>
@@ -567,7 +575,7 @@ class TransactionRunner
         test.title = transaction.id
         test.expected = transaction.expected
         test.request = transaction.request
-        @configuration.emitter.emit 'test error', error, test, () ->
+        @emitError(error, test)
         return callback()
 
       req.write(transaction.request.body) if transaction.request.body
@@ -577,18 +585,18 @@ class TransactionRunner
       test.title = transaction.id
       test.expected = transaction.expected
       test.request = transaction.request
-      @configuration.emitter.emit 'test error', error, test, () ->
+      @emitError(error, test)
       return callback()
 
   validateTransaction: (test, transaction, callback) ->
     configuration = @configuration
 
-    logger.verbose('Validating HTTP transaction by Gavel.js.')
-    logger.debug('Determining whether HTTP transaction is valid (getting boolean verdict).')
+    logger.verbose('Validating HTTP transaction by Gavel.js')
+    logger.debug('Determining whether HTTP transaction is valid (getting boolean verdict)')
     gavel.isValid transaction.real, transaction.expected, 'response', (isValidError, isValid) ->
       if isValidError
-        logger.debug('Gavel.js errored:', isValidError)
-        configuration.emitter.emit 'test error', isValidError, test, () ->
+        logger.debug('Gavel.js validation errored:', isValidError)
+        @emitError(isValidError, test)
 
       test.title = transaction.id
       test.actual = transaction.real
@@ -596,47 +604,53 @@ class TransactionRunner
       test.request = transaction.request
 
       if isValid
-        test.status = "pass"
+        test.status = 'pass'
       else
-        test.status = "fail"
+        test.status = 'fail'
 
-      logger.debug('Validating HTTP transaction (getting verbose validation result).')
+      logger.debug('Validating HTTP transaction (getting verbose validation result)')
       gavel.validate transaction.real, transaction.expected, 'response', (validateError, gavelResult) ->
         if not isValidError and validateError
-          logger.debug('Gavel.js errored:', validateError)
-          configuration.emitter.emit 'test error', validateError, test, () ->
+          logger.debug('Gavel.js validation errored:', validateError)
+          @emitError(validateError, test)
 
+        # Create test message from messages of all validation errors
         message = ''
+        for own sectionName, validatorOutput of gavelResult or {} when sectionName isnt 'version'
+          for gavelError in validatorOutput.results or []
+            message += "#{sectionName}: #{gavelError.message}\n"
+        test.message = message
 
-        for own resultKey, data of gavelResult or {}
-          if resultKey isnt 'version'
-            for entityResult in data['results'] or []
-              message += resultKey + ": " + entityResult['message'] + "\n"
+        # Record raw validation output to transaction results object
+        #
+        # It looks like the transaction object can already contain 'results'.
+        # (Needs to be prooved, the assumption is based just on previous
+        # version of the code.) In that case, we want to save the new validation
+        # output, but we want to keep at least the original array of Gavel errors.
+        results = transaction.results or {}
+        for own sectionName, validatorOutput of gavelResult when sectionName isnt 'version'
+          # Section names are 'statusCode', 'headers', 'body' (and 'version', which is irrelevant)
+          results[sectionName] ?= {}
 
-        test['message'] = message
+          # We don't want to modify the object and we want to get rid of some
+          # custom Gavel.js types ('clone' will keep just plain JS objects).
+          validatorOutput = clone(validatorOutput)
 
-        transaction['results'] ?= {}
+          # If transaction already has the 'results' object, ...
+          if results[sectionName].results
+            # ...then take all Gavel errors it contains and add them to the array
+            # of Gavel errors in the new validator output object...
+            validatorOutput.results = validatorOutput.results.concat(results[sectionName].results)
+          # ...and replace the original validator object with the new one.
+          results[sectionName] = validatorOutput
+        transaction.results = results
 
-        for own key, value of gavelResult or {}
-          beforeResults = null
-          if transaction['results'][key]?['results']?
-            beforeResults = clone transaction['results'][key]['results']
+        # Set the validation results and the boolean verdict to the test object
+        test.results = transaction.results
+        test.valid = isValid
 
-          transaction['results'][key] = value
-
-          if beforeResults?
-            transaction['results'][key]['results'] = transaction['results'][key]['results'].concat beforeResults
-
-        test['results'] = transaction['results']
-
-        test['valid'] = isValid
-
-        # propagate test to after hooks
-        transaction['test'] = test
-
-        if test['valid'] == false
-          configuration.emitter.emit 'test fail', test, () ->
-
+        # Propagate test object so 'after' hooks can modify it
+        transaction.test = test
         return callback()
 
   isMultipart: (requestOptions) ->

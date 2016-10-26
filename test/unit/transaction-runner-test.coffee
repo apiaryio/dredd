@@ -450,16 +450,16 @@ describe 'TransactionRunner', ->
 
       beforeEach ->
         configuration.options['method'] = ['GET']
-        sinon.stub configuration.emitter, 'emit'
         runner = new Runner(configuration)
+        sinon.spy runner, 'skipTransaction'
 
       afterEach ->
-        configuration.emitter.emit.restore()
         configuration.options['method'] = []
+        runner.skipTransaction.restore()
 
       it 'should only perform those requests', (done) ->
         runner.executeTransaction transaction, ->
-          assert.ok configuration.emitter.emit.calledWith 'test skip'
+          assert.ok runner.skipTransaction.called
           done()
 
     describe 'when only certain names are allowed by the configuration', ->
@@ -472,23 +472,23 @@ describe 'TransactionRunner', ->
             {'Content-Type': 'application/json'}
 
         configuration.options['only'] = ['Group Machine > Machine > Delete Message > Bogus example name']
-        sinon.stub configuration.emitter, 'emit'
         runner = new Runner(configuration)
+        sinon.spy runner, 'skipTransaction'
 
       afterEach ->
-        configuration.emitter.emit.restore()
+        runner.skipTransaction.restore()
         configuration.options['only'] = []
         nock.cleanAll()
 
       it 'should not skip transactions with matching names', (done) ->
         runner.executeTransaction transaction, ->
-          assert.notOk configuration.emitter.emit.calledWith 'test skip'
+          assert.notOk runner.skipTransaction.called
           done()
 
       it 'should skip transactions with different names', (done) ->
         transaction['name'] = 'Group Machine > Machine > Delete Message > Bogus different example name'
         runner.executeTransaction transaction, ->
-          assert.ok configuration.emitter.emit.calledWith 'test skip'
+          assert.ok runner.skipTransaction.called
           done()
 
     describe 'when a test has been manually set to skip in a hook', ->

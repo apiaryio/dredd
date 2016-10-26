@@ -3,7 +3,7 @@ clone = require('clone')
 express = require('express')
 {EventEmitter} = require('events')
 
-{runDredd, runDreddWithServer} = require('./utils')
+{runDredd, runDreddWithServer} = require('./helpers')
 Dredd = require('../../src/dredd')
 
 
@@ -26,10 +26,11 @@ describe('Sanitation of Reported Data', ->
     # the emitted events. We're using 'clone' to prevent propagation of subsequent
     # modifications of the 'test' object (Dredd can change the data after they're
     # reported and by reference they would change also here in the 'events' array).
-    emitter.on('test pass', (test) -> events.push({name: 'pass', test: clone(test)}))
-    emitter.on('test skip', (test) -> events.push({name: 'skip', test: clone(test)}))
-    emitter.on('test fail', (test) -> events.push({name: 'fail', test: clone(test)}))
-    emitter.on('test error', (err, test) -> events.push({name: 'error', test: clone(test), err}))
+    emitter.on('test start', (test) -> events.push({name: 'test start', test: clone(test)}))
+    emitter.on('test pass', (test) -> events.push({name: 'test pass', test: clone(test)}))
+    emitter.on('test skip', (test) -> events.push({name: 'test skip', test: clone(test)}))
+    emitter.on('test fail', (test) -> events.push({name: 'test fail', test: clone(test)}))
+    emitter.on('test error', (err, test) -> events.push({name: 'test error', test: clone(test), err}))
 
     # 'start' and 'end' events are asynchronous and they do not carry any data
     # significant for following scenarios
@@ -71,14 +72,16 @@ describe('Sanitation of Reported Data', ->
       assert.equal(results.stats.failures, 1)
       assert.equal(results.stats.tests, 1)
     )
-    it('emits expected events in expected order: start, fail, end', ->
-      assert.deepEqual((event.name for event in events), ['start', 'fail', 'end'])
+    it('emits expected events in expected order', ->
+      assert.deepEqual((event.name for event in events), [
+        'start', 'test start', 'test fail', 'end'
+      ])
     )
     it('emitted test data does not contain request body', ->
-      assert.equal(events[1].test.request.body, '')
+      assert.equal(events[2].test.request.body, '')
     )
     it('sensitive data cannot be found anywhere in the emitted test data', ->
-      test = JSON.stringify(events[1].test)
+      test = JSON.stringify(events)
       assert.notInclude(test, sensitiveKey)
       assert.notInclude(test, sensitiveValue)
     )
@@ -105,15 +108,17 @@ describe('Sanitation of Reported Data', ->
       assert.equal(results.stats.failures, 1)
       assert.equal(results.stats.tests, 1)
     )
-    it('emits expected events in expected order: start, fail, end', ->
-      assert.deepEqual((event.name for event in events), ['start', 'fail', 'end'])
+    it('emits expected events in expected order', ->
+      assert.deepEqual((event.name for event in events), [
+        'start', 'test start', 'test fail', 'end'
+      ])
     )
     it('emitted test data does not contain response body', ->
-      assert.equal(events[1].test.actual.body, '')
-      assert.equal(events[1].test.expected.body, '')
+      assert.equal(events[2].test.actual.body, '')
+      assert.equal(events[2].test.expected.body, '')
     )
     it('sensitive data cannot be found anywhere in the emitted test data', ->
-      test = JSON.stringify(events[1].test)
+      test = JSON.stringify(events)
       assert.notInclude(test, sensitiveKey)
       assert.notInclude(test, sensitiveValue)
     )
@@ -140,15 +145,17 @@ describe('Sanitation of Reported Data', ->
       assert.equal(results.stats.failures, 1)
       assert.equal(results.stats.tests, 1)
     )
-    it('emits expected events in expected order: start, fail, end', ->
-      assert.deepEqual((event.name for event in events), ['start', 'fail', 'end'])
+    it('emits expected events in expected order', ->
+      assert.deepEqual((event.name for event in events), [
+        'start', 'test start', 'test fail', 'end'
+      ])
     )
     it('emitted test data does not contain confidential body attribute', ->
-      attrs = Object.keys(JSON.parse(events[1].test.request.body))
+      attrs = Object.keys(JSON.parse(events[2].test.request.body))
       assert.deepEqual(attrs, ['name'])
     )
     it('sensitive data cannot be found anywhere in the emitted test data', ->
-      test = JSON.stringify(events[1].test)
+      test = JSON.stringify(events)
       assert.notInclude(test, sensitiveKey)
       assert.notInclude(test, sensitiveValue)
     )
@@ -175,18 +182,20 @@ describe('Sanitation of Reported Data', ->
       assert.equal(results.stats.failures, 1)
       assert.equal(results.stats.tests, 1)
     )
-    it('emits expected events in expected order: start, fail, end', ->
-      assert.deepEqual((event.name for event in events), ['start', 'fail', 'end'])
+    it('emits expected events in expected order', ->
+      assert.deepEqual((event.name for event in events), [
+        'start', 'test start', 'test fail', 'end'
+      ])
     )
     it('emitted test data does not contain confidential body attribute', ->
-      attrs = Object.keys(JSON.parse(events[1].test.actual.body))
+      attrs = Object.keys(JSON.parse(events[2].test.actual.body))
       assert.deepEqual(attrs, ['name'])
 
-      attrs = Object.keys(JSON.parse(events[1].test.expected.body))
+      attrs = Object.keys(JSON.parse(events[2].test.expected.body))
       assert.deepEqual(attrs, ['name'])
     )
     it('sensitive data cannot be found anywhere in the emitted test data', ->
-      test = JSON.stringify(events[1].test)
+      test = JSON.stringify(events)
       assert.notInclude(test, sensitiveKey)
       assert.notInclude(test, sensitiveValue)
     )
@@ -213,15 +222,17 @@ describe('Sanitation of Reported Data', ->
       assert.equal(results.stats.failures, 1)
       assert.equal(results.stats.tests, 1)
     )
-    it('emits expected events in expected order: start, fail, end', ->
-      assert.deepEqual((event.name for event in events), ['start', 'fail', 'end'])
+    it('emits expected events in expected order', ->
+      assert.deepEqual((event.name for event in events), [
+        'start', 'test start', 'test fail', 'end'
+      ])
     )
     it('emitted test data does contain the sensitive data censored', ->
-      assert.include(events[1].test.actual.body, '--- CENSORED ---')
-      assert.include(events[1].test.expected.body, '--- CENSORED ---')
+      assert.include(events[2].test.actual.body, '--- CENSORED ---')
+      assert.include(events[2].test.expected.body, '--- CENSORED ---')
     )
     it('sensitive data cannot be found anywhere in the emitted test data', ->
-      assert.notInclude(JSON.stringify(events[1].test), sensitiveValue)
+      assert.notInclude(JSON.stringify(events), sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
       assert.notInclude(results.logging, sensitiveValue)
@@ -245,15 +256,17 @@ describe('Sanitation of Reported Data', ->
       assert.equal(results.stats.failures, 1)
       assert.equal(results.stats.tests, 1)
     )
-    it('emits expected events in expected order: start, fail, end', ->
-      assert.deepEqual((event.name for event in events), ['start', 'fail', 'end'])
+    it('emits expected events in expected order', ->
+      assert.deepEqual((event.name for event in events), [
+        'start', 'test start', 'test fail', 'end'
+      ])
     )
     it('emitted test data does not contain confidential header', ->
-      names = (name.toLowerCase() for name of events[1].test.request.headers)
+      names = (name.toLowerCase() for name of events[2].test.request.headers)
       assert.notInclude(names, sensitiveHeaderName)
     )
     it('sensitive data cannot be found anywhere in the emitted test data', ->
-      test = JSON.stringify(events[1].test).toLowerCase()
+      test = JSON.stringify(events).toLowerCase()
       assert.notInclude(test, sensitiveHeaderName)
       assert.notInclude(test, sensitiveValue)
     )
@@ -281,18 +294,20 @@ describe('Sanitation of Reported Data', ->
       assert.equal(results.stats.failures, 1)
       assert.equal(results.stats.tests, 1)
     )
-    it('emits expected events in expected order: start, fail, end', ->
-      assert.deepEqual((event.name for event in events), ['start', 'fail', 'end'])
+    it('emits expected events in expected order', ->
+      assert.deepEqual((event.name for event in events), [
+        'start', 'test start', 'test fail', 'end'
+      ])
     )
     it('emitted test data does not contain confidential header', ->
-      names = (name.toLowerCase() for name of events[1].test.actual.headers)
+      names = (name.toLowerCase() for name of events[2].test.actual.headers)
       assert.notInclude(names, sensitiveHeaderName)
 
-      names = (name.toLowerCase() for name of events[1].test.expected.headers)
+      names = (name.toLowerCase() for name of events[2].test.expected.headers)
       assert.notInclude(names, sensitiveHeaderName)
     )
     it('sensitive data cannot be found anywhere in the emitted test data', ->
-      test = JSON.stringify(events[1].test).toLowerCase()
+      test = JSON.stringify(events).toLowerCase()
       assert.notInclude(test, sensitiveHeaderName)
       assert.notInclude(test, sensitiveValue)
     )
@@ -320,14 +335,16 @@ describe('Sanitation of Reported Data', ->
       assert.equal(results.stats.failures, 1)
       assert.equal(results.stats.tests, 1)
     )
-    it('emits expected events in expected order: start, fail, end', ->
-      assert.deepEqual((event.name for event in events), ['start', 'fail', 'end'])
+    it('emits expected events in expected order', ->
+      assert.deepEqual((event.name for event in events), [
+        'start', 'test start', 'test fail', 'end'
+      ])
     )
     it('emitted test data does contain the sensitive data censored', ->
-      assert.include(events[1].test.request.uri, 'CENSORED')
+      assert.include(events[2].test.request.uri, 'CENSORED')
     )
     it('sensitive data cannot be found anywhere in the emitted test data', ->
-      assert.notInclude(JSON.stringify(events[1].test), sensitiveValue)
+      assert.notInclude(JSON.stringify(events), sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
       assert.notInclude(results.logging, sensitiveValue)
@@ -353,22 +370,22 @@ describe('Sanitation of Reported Data', ->
       assert.equal(results.stats.failures, 1)
       assert.equal(results.stats.tests, 1)
     )
-    it('emits expected events in expected order: start, fail, end', ->
-      assert.deepEqual((event.name for event in events), ['start', 'fail', 'end'])
+    it('emits expected events in expected order', ->
+      assert.deepEqual((event.name for event in events), [
+        'start', 'test start', 'test fail', 'end'
+      ])
     )
     it('emitted test data does contain the sensitive data censored', ->
-      assert.include(JSON.stringify(events[1].test), 'CENSORED')
+      assert.include(JSON.stringify(events), 'CENSORED')
     )
     it('sensitive data cannot be found anywhere in the emitted test data', ->
-      assert.notInclude(JSON.stringify(events[1].test), sensitiveValue)
+      assert.notInclude(JSON.stringify(events), sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
       assert.notInclude(results.logging, sensitiveValue)
     )
   )
 
-  # This fails because Dredd incorrectly handles try/catch (search for
-  # 'Beware! This is very problematic part of code.' in transaction runner).
   describe('Ultimate \'afterEach\' Guard Using Pattern Matching', ->
     results = undefined
 
@@ -386,14 +403,20 @@ describe('Sanitation of Reported Data', ->
       assert.equal(results.stats.failures, 1)
       assert.equal(results.stats.tests, 1)
     )
-    it('emits expected events in expected order: start, fail, end', ->
-      assert.deepEqual((event.name for event in events), ['start', 'fail', 'end'])
+    it('emits expected events in expected order', ->
+      assert.deepEqual((event.name for event in events), [
+        'start', 'test start', 'test fail', 'end'
+      ])
     )
     it('sensitive data cannot be found anywhere in the emitted test data', ->
-      assert.notInclude(JSON.stringify(events[1].test), sensitiveValue)
+      test = JSON.stringify(events)
+      assert.notInclude(test, sensitiveValue)
     )
-    it('Dredd prints message about failed assertion in hooks', ->
-      assert.include(results.logging, 'Failed assertion in hooks')
+    it('sensitive data cannot be found anywhere in Dredd output', ->
+      assert.notInclude(results.logging, sensitiveValue)
+    )
+    it('custom error message is printed', ->
+      assert.include(results.logging, 'Sensitive data would be sent to Dredd reporter')
     )
   )
 
@@ -414,14 +437,16 @@ describe('Sanitation of Reported Data', ->
       assert.equal(results.stats.passes, 1)
       assert.equal(results.stats.tests, 1)
     )
-    it('emits expected events in expected order: start, pass, end', ->
-      assert.deepEqual((event.name for event in events), ['start', 'pass', 'end'])
+    it('emits expected events in expected order', ->
+      assert.deepEqual((event.name for event in events), [
+        'start', 'test start', 'test pass', 'end'
+      ])
     )
     it('emitted test data does not contain request body', ->
-      assert.equal(events[1].test.request.body, '')
+      assert.equal(events[2].test.request.body, '')
     )
     it('sensitive data cannot be found anywhere in the emitted test data', ->
-      test = JSON.stringify(events[1].test)
+      test = JSON.stringify(events)
       assert.notInclude(test, sensitiveKey)
       assert.notInclude(test, sensitiveValue)
     )
@@ -447,16 +472,20 @@ describe('Sanitation of Reported Data', ->
       assert.equal(results.stats.failures, 1)
       assert.equal(results.stats.tests, 1)
     )
-    it('emits expected events in expected order: start, fail, end', ->
-      assert.deepEqual((event.name for event in events), ['start', 'fail', 'end'])
+    it('emits expected events in expected order', ->
+      assert.deepEqual((event.name for event in events), [
+        'start', 'test start', 'test fail', 'end'
+      ])
     )
     it('emitted test is failed', ->
-      assert.equal(events[1].test.status, 'fail')
-      assert.deepEqual(Object.keys(events[1].test.results), ['general'])
-      assert.include(events[1].test.results.general.results[0].message.toLowerCase(), 'fail')
+      assert.equal(events[2].test.status, 'fail')
+      assert.include(events[2].test.results.general.results[0].message.toLowerCase(), 'fail')
+    )
+    it('emitted test data results contain just \'general\' section', ->
+      assert.deepEqual(Object.keys(events[2].test.results), ['general'])
     )
     it('sensitive data cannot be found anywhere in the emitted test data', ->
-      test = JSON.stringify(events[1].test)
+      test = JSON.stringify(events)
       assert.notInclude(test, sensitiveKey)
       assert.notInclude(test, sensitiveValue)
     )
@@ -466,26 +495,6 @@ describe('Sanitation of Reported Data', ->
     )
   )
 
-  # { general: { results: [ [Object], [Circular] ] },
-  # version: '2',
-  # headers:
-  #  { results: [ [Circular] ],
-  #    realType: 'application/vnd.apiary.http-headers+json',
-  #    expectedType: 'application/vnd.apiary.http-headers+json',
-  #    validator: 'HeadersJsonExample',
-  #    rawData: ValidationErrors { length: 0 } },
-  # body:
-  #  { results: [ [Circular] ],
-  #    realType: 'application/json; charset=utf-8',
-  #    expectedType: 'application/schema+json',
-  #    validator: 'JsonSchema',
-  #    rawData: ValidationErrors { length: 0 } },
-  # statusCode:
-  #  { realType: 'text/vnd.apiary.status-code',
-  #    expectedType: 'text/vnd.apiary.status-code',
-  #    validator: 'TextDiff',
-  #    rawData: '',
-  #    results: [ [Circular] ] } }
   describe('Sanitation of Test Data When Transaction Is Marked as Failed in \'after\' Hook', ->
     results = undefined
 
@@ -503,19 +512,23 @@ describe('Sanitation of Reported Data', ->
       assert.equal(results.stats.failures, 1)
       assert.equal(results.stats.tests, 1)
     )
-    it('emits expected events in expected order: start, fail, end', ->
-      assert.deepEqual((event.name for event in events), ['start', 'fail', 'end'])
+    it('emits expected events in expected order', ->
+      assert.deepEqual((event.name for event in events), [
+        'start', 'test start', 'test fail', 'end'
+      ])
     )
     it('emitted test data does not contain request body', ->
-      assert.equal(events[1].test.request.body, '')
+      assert.equal(events[2].test.request.body, '')
     )
     it('emitted test is failed', ->
-      assert.equal(events[1].test.status, 'fail')
-      assert.deepEqual(Object.keys(events[1].test.results), ['general'])
-      assert.include(events[1].test.results.general.results[0].message.toLowerCase(), 'fail')
+      assert.equal(events[2].test.status, 'fail')
+      assert.include(events[2].test.results.general.results[0].message.toLowerCase(), 'fail')
+    )
+    it('emitted test data results contain all regular sections', ->
+      assert.deepEqual(Object.keys(events[2].test.results), ['general', 'headers', 'body', 'statusCode'])
     )
     it('sensitive data cannot be found anywhere in the emitted test data', ->
-      test = JSON.stringify(events[1].test)
+      test = JSON.stringify(events)
       assert.notInclude(test, sensitiveKey)
       assert.notInclude(test, sensitiveValue)
     )
@@ -541,16 +554,18 @@ describe('Sanitation of Reported Data', ->
       assert.equal(results.stats.skipped, 1)
       assert.equal(results.stats.tests, 1)
     )
-    it('emits expected events in expected order: start, skip, end', ->
-      assert.deepEqual((event.name for event in events), ['start', 'skip', 'end'])
+    it('emits expected events in expected order', ->
+      assert.deepEqual((event.name for event in events), [
+        'start', 'test start', 'test skip', 'end'
+      ])
     )
     it('emitted test is skipped', ->
-      assert.equal(events[1].test.status, 'skip')
-      assert.deepEqual(Object.keys(events[1].test.results), ['general'])
-      assert.include(events[1].test.results.general.results[0].message.toLowerCase(), 'skip')
+      assert.equal(events[2].test.status, 'skip')
+      assert.deepEqual(Object.keys(events[2].test.results), ['general'])
+      assert.include(events[2].test.results.general.results[0].message.toLowerCase(), 'skip')
     )
     it('sensitive data cannot be found anywhere in the emitted test data', ->
-      test = JSON.stringify(events[1].test)
+      test = JSON.stringify(events)
       assert.notInclude(test, sensitiveKey)
       assert.notInclude(test, sensitiveValue)
     )
@@ -577,11 +592,13 @@ describe('Sanitation of Reported Data', ->
       assert.equal(results.stats.errors, 1)
       assert.equal(results.stats.tests, 1)
     )
-    it('emits expected events in expected order: start, error, end', ->
-      assert.deepEqual((event.name for event in events), ['start', 'error', 'end'])
+    it('emits expected events in expected order', ->
+      assert.deepEqual((event.name for event in events), [
+        'start', 'test start', 'test error', 'end'
+      ])
     )
     it('sensitive data leak to emitted test data', ->
-      test = JSON.stringify(events[1].test)
+      test = JSON.stringify(events)
       assert.include(test, sensitiveKey)
       assert.include(test, sensitiveValue)
     )
@@ -604,24 +621,26 @@ describe('Sanitation of Reported Data', ->
       )
     )
 
-    it('results in one erroring test', ->
-      assert.equal(results.stats.errors, 1)
+    it('results in one failed test', ->
+      assert.equal(results.stats.failures, 1)
       assert.equal(results.stats.tests, 1)
     )
-    it('emits expected events in expected order: start, error, end', ->
-      assert.deepEqual((event.name for event in events), ['start', 'error', 'end'])
-    )
-    it('emitted test data are completely sanitized', ->
-      assert.deepEqual(events[1].test, {})
+    it('emits expected events in expected order', ->
+      assert.deepEqual((event.name for event in events), [
+        'start', 'test start', 'test fail', 'end'
+      ])
     )
     it('sensitive data cannot be found anywhere in the emitted test data', ->
-      test = JSON.stringify(events[1].test)
+      test = JSON.stringify(events)
       assert.notInclude(test, sensitiveKey)
       assert.notInclude(test, sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
       assert.notInclude(results.logging, sensitiveKey)
       assert.notInclude(results.logging, sensitiveValue)
+    )
+    it('custom error message is printed', ->
+      assert.include(results.logging, 'Unexpected exception in hooks')
     )
   )
 )

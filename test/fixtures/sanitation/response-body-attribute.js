@@ -17,24 +17,24 @@ hooks.after('Resource > Update Resource', function(transaction, done) {
   delete bodySchema.properties.token;
   transaction.test.expected.bodySchema = JSON.stringify(bodySchema);
 
-  // sanitation of the attribute in validation result
-  var validationResult = transaction.test.results.body;
+  // sanitation of the attribute in validation output
+  var validationOutput = transaction.test.results.body;
 
   var errors = [];
-  for (var i = 0; i < validationResult.length; i++) {
-    if (validationResult.results[i].pointer[0] !== 'token') {
-      errors.push(validationResult.results[i]);
+  for (var i = 0; i < validationOutput.results.length; i++) {
+    if (validationOutput.results[i].pointer !== '/token') {
+      errors.push(validationOutput.results[i]);
     }
   }
-  validationResult.results = errors;
+  validationOutput.results = errors;
 
   var rawData = [];
-  for (var i = 0; i < validationResult.rawData.length; i++) {
-    if (validationResult.rawData[i].property[0] !== 'token') {
-      rawData.push(validationResult.rawData[i]);
+  for (var i = 0; i < validationOutput.rawData.length; i++) {
+    if (validationOutput.rawData[i].property[0] !== 'token') {
+      rawData.push(validationOutput.rawData[i]);
     }
   }
-  validationResult.rawData = rawData;
+  validationOutput.rawData = rawData;
 
   transaction.test.message = '';
   done();
