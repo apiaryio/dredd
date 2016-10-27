@@ -617,6 +617,7 @@ class TransactionRunner
         # Create test message from messages of all validation errors
         message = ''
         for own sectionName, validatorOutput of gavelResult or {} when sectionName isnt 'version'
+          # Section names are 'statusCode', 'headers', 'body' (and 'version', which is irrelevant)
           for gavelError in validatorOutput.results or []
             message += "#{sectionName}: #{gavelError.message}\n"
         test.message = message
