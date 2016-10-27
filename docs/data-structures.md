@@ -65,27 +65,22 @@ Transaction object is passed as a first argument to [hook functions](hooks.md) a
 <a name="transaction-results"></a>
 ## Transaction Results (object)
 
-This is a slightly retarded cousin of the [Gavel Validation Result](#gavel-validation-result). Why does this have `transaction.results.{something}.results` structure and not `transaction.results.{something}` as it's in the Gavel Validation Result? Answer: It's not intended, it's a mistake, but it's there now.
+This is a cousin of the [Gavel Validation Result](#gavel-validation-result).
 
 - general (object) - contains Dredd's custom messages (e.g. "test was skipped"), formatted the same way like those from Gavel
-    - results (array[[Gavel Validator Output][]])
-- statusCode (object)
-    - results (array[[Gavel Validator Output][]])
-- headers (object)
-    - results (array[[Gavel Validator Output][]])
-- body (object)
-    - results (array[[Gavel Validator Output][]])
-- version (object, optional) - this is sometimes not present (correctly filtered out) but sometimes is
-    - results (array) - empty array
+  - results (array[[Gavel Error][]])
+- statusCode ([Gavel Validator Output][])
+- headers ([Gavel Validator Output][])
+- body ([Gavel Validator Output][])
 
 <a name="gavel-validation-result"></a>
 ## Gavel Validation Result (object)
 
 Can be seen also [here](https://www.relishapp.com/apiary/gavel/docs/javascript/request-async-api#validate).
 
-- statusCode (array[[Gavel Validator Output][]])
-- headers (array[[Gavel Validator Output][]])
-- body (array[[Gavel Validator Output][]])
+- statusCode ([Gavel Validator Output][])
+- headers ([Gavel Validator Output][])
+- body ([Gavel Validator Output][])
 - version (string) - version number of the Gavel Validation Result structure
 
 <a name="gavel-validator-output"></a>
