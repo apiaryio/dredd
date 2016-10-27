@@ -593,6 +593,97 @@ paths:
 The `x-example` property is respected for all kinds of request parameters except
 of `body` parameters, where native `schema.example` should be used.
 
+## Removing Sensitive Data from Test Reports
+
+Sometimes your API sends back sensitive information you don't want to get disclosed in [Apiary Tests](how-to-guides.md#using-apiary-reporter-and-apiary-tests) or in your CI log. In that case you can use [Hooks](hooks.md) to do sanitation. Before diving into examples below, do not forget to consider following:
+
+- Only the [`transaction.test`](data-structures.md#transaction-test) object will make it to reporters. You don't have to care about sanitation of the rest of the [`transaction`](data-structures.md#transaction) object.
+- The `transaction.test.message` and all the `transaction.test.results.body.results.rawData.*.message` properties contain validation error messages. While they're very useful for learning about what's wrong on command line, they can contain direct mentions of header names, header values, body properties, body structure, body values, etc., thus it's recommended their contents are completely removed to prevent unintended leaks of sensitive information.
+- Without the `transaction.test.results.body.results.rawData` property [Apiary reporter](how-to-guides.md#using-apiary-reporter-and-apiary-tests) won't be able to render green/red difference between payloads.
+- You can use [Ultimate 'afterEach' Guard](#sanitation-ultimate-guard) to make sure you won't leak any sensitive data by mistake.
+- If your hooks crash, Dredd will send an error to reporters, alongside with current contents of the [`transaction.test`](data-structures.md#transaction-test) object. See the [Sanitation of Test Data of Transaction With Secured Erroring Hooks](#sanitation-secured-erroring-hooks) example to learn how to prevent this.
+
+### Sanitation of the Entire Request Body
+
+- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/entire-request-body.apib)
+- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/entire-request-body.js)
+
+### Sanitation of the Entire Response Body
+
+- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/entire-response-body.apib)
+- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/entire-response-body.js)
+
+### Sanitation of a Request Body Attribute
+
+- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/request-body-attribute.apib)
+- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/request-body-attribute.js)
+
+### Sanitation of a Response Body Attribute
+
+- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/response-body-attribute.apib)
+- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/response-body-attribute.js)
+
+### Sanitation of Plain Text Response Body by Pattern Matching
+
+- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/plain-text-response-body.apib)
+- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/plain-text-response-body.js)
+
+### Sanitation of Request Headers
+
+- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/request-headers.apib)
+- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/request-headers.js)
+
+### Sanitation of Response Headers
+
+- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/response-headers.apib)
+- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/response-headers.js)
+
+### Sanitation of URI Parameters by Pattern Matching
+
+- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/uri-parameters.apib)
+- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/uri-parameters.js)
+
+### Sanitation of Any Content by Pattern Matching
+
+- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/any-content-pattern-matching.apib)
+- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/any-content-pattern-matching.js)
+
+### Sanitation of Test Data of Passing Transaction
+
+- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-passing.apib)
+- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-passing.js)
+
+### Sanitation of Test Data When Transaction Is Marked as Failed in \'before\' Hook
+
+- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-marked-failed-before.apib)
+- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-marked-failed-before.js)
+
+### Sanitation of Test Data When Transaction Is Marked as Failed in \'after\' Hook
+
+- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-marked-failed-after.apib)
+- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-marked-failed-after.js)
+
+### Sanitation of Test Data When Transaction Is Marked as Skipped
+
+- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-marked-skipped.apib)
+- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-marked-skipped.js)
+
+<a name="sanitation-ultimate-guard"></a>
+### Ultimate 'afterEach' Guard Using Pattern Matching
+
+You can use this guard to make sure you won't leak any sensitive data by mistake.
+
+- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/any-content-guard-pattern-matching.apib)
+- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/any-content-guard-pattern-matching.js)
+
+<a name="sanitation-secured-erroring-hooks"></a>
+### Sanitation of Test Data of Transaction With Secured Erroring Hooks
+
+If your hooks crash, Dredd will send an error to reporters, alongside with current contents of the [`transaction.test`](data-structures.md#transaction-test) object. If you want to prevent this, you need to add `try/catch` to your hooks, sanitize the test object, and gracefully fail the transaction.
+
+- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-secured-erroring-hooks.apib)
+- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-secured-erroring-hooks.js)
+
 
 [Apiary]: https://apiary.io/
 [API Blueprint]: http://apiblueprint.org/
