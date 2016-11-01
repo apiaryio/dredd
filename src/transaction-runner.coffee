@@ -629,13 +629,13 @@ class TransactionRunner
         # version of the code.) In that case, we want to save the new validation
         # output, but we want to keep at least the original array of Gavel errors.
         results = transaction.results or {}
-        for own sectionName, validatorOutput of gavelResult when sectionName isnt 'version'
+        for own sectionName, rawValidatorOutput of gavelResult when sectionName isnt 'version'
           # Section names are 'statusCode', 'headers', 'body' (and 'version', which is irrelevant)
           results[sectionName] ?= {}
 
           # We don't want to modify the object and we want to get rid of some
           # custom Gavel.js types ('clone' will keep just plain JS objects).
-          validatorOutput = clone(validatorOutput)
+          validatorOutput = clone(rawValidatorOutput)
 
           # If transaction already has the 'results' object, ...
           if results[sectionName].results
