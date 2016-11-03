@@ -77,7 +77,7 @@ $ npm install -g dredd
 [Swagger]: http://swagger.io/
 
 [Documentation]: https://dredd.readthedocs.io/en/latest/
-[Changelog]: CHANGELOG.md
+[Changelog]: https://github.com/apiaryio/dredd/releases
 [Contributor's Guidelines]: https://dredd.readthedocs.io/en/latest/contributing/
 
 [Travis CI]: https://travis-ci.org/
