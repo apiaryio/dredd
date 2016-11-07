@@ -14,8 +14,11 @@ cache:
   directories:
     - "node_modules"
 before_install:
+  # Travis CI has only shallow clone of the repository. We need to get the 'master' branch
+  # so 'conventional-changelog-lint' could compare commits and lint them: marionebl/conventional-changelog-lint#7
+  - "git remote set-branches origin master && git fetch && git checkout master && git checkout -"
   - "npm -g install npm@latest"
-  - "gem install travis"
+  - "gem install travis"  # needed for 'npm run test:hooks-handlers'
   - "curl -Lo travis_after_all.py https://raw.githubusercontent.com/dmakhno/travis_after_all/master/travis_after_all.py"
 script:
   - "npm run lint"

@@ -9,7 +9,7 @@
   "scripts": {
     "postinstall": "node scripts/print-installation-guidelines.js",
     "postupdate": "node scripts/print-installation-guidelines.js",
-    "lint": "conventional-changelog-lint --from=HEAD~1 && coffeelint src",
+    "lint": "conventional-changelog-lint --from=master && coffeelint src",
     "docs:build": "mkdocs build",
     "docs:serve": "mkdocs serve",
     "build": "coffee -b -c -o lib/ src/ && coffee scripts/generate-cli-docs.coffee",
