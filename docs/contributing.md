@@ -23,15 +23,19 @@
 2. Create a feature branch.
 3. Write tests.
 4. Write code.
-5. Send a Pull Request.
-6. Make sure [test coverage][] didn't drop and all CI builds are passing.
+5. Lint what you created: `npm run lint`
+6. Send a Pull Request.
+7. Make sure [test coverage][] didn't drop and all CI builds are passing.
 
 <a name="sem-rel">
 #### Semantic Release and Conventional Changelog
 
-To make [Semantic Release][] and [Conventional Changelog][] work, all commit messages
-in the project should follow the Conventional Changelog format. If you're new to the
-concept, just make sure your commit messages look like this:
+Releasing of new Dredd versions to npm is automatically managed by [Semantic Release][].
+Semantic Release makes sure correct version numbers get bumped according to the **meaning**
+of your changes once your PR gets merged to `master`.
+
+To make it work, it's necessary to follow [Conventional Changelog][]. That basically
+means all commit messages in the project should follow a particular format:
 
 ```
 <type>: <subject>
@@ -47,14 +51,14 @@ Where `<type>` is:
 - `refactor` - Changes in code, but no changes in behavior
 - `test` - Tests added/removed/improved/...
 
-See [existing commits][] as a reference. The [Commitizen CLI][] can also help you.
-
-Semantic Release will make sure correct version numbers get bumped according
-to the **meaning** of your changes once your PR gets merged to `master`.
-Semantic Release then also automatically releases new Dredd to npm.
-
 In the rare cases when your changes break backwards compatibility, the message
-must include words `BREAKING CHANGE`. That will result in bumping the major version.
+must include string `BREAKING CHANGE:`. That will result in bumping the major version.
+
+Seems hard?
+
+- See [existing commits][] as a reference
+- [Commitizen CLI][] can help you to create correct commit messages
+- `npm run lint` validates format of your messages
 
 ## Handbook for Contributors and Maintainers
 
