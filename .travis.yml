@@ -21,7 +21,7 @@ before_install:
   - "gem install travis"  # needed for 'npm run test:hooks-handlers'
   - "curl -Lo travis_after_all.py https://raw.githubusercontent.com/dmakhno/travis_after_all/master/travis_after_all.py"
 script:
-  - "npm run lint"
+  - "if [[ $TRAVIS_NODE_VERSION = 6 ]]; then npm run lint; fi"  # 'conventional-changelog-lint' doesn't work with old Node.js versions
   - "npm test"
   - "npm run test:hooks-handlers"
 after_success:  # travis_after_all.py is needed due to travis-ci/travis-ci#1548 & travis-ci/travis-ci#929
