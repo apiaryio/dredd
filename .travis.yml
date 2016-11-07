@@ -17,9 +17,8 @@ before_install:
   - "npm -g install npm@latest"
   - "gem install travis"
   - "curl -Lo travis_after_all.py https://raw.githubusercontent.com/dmakhno/travis_after_all/master/travis_after_all.py"
-before_script:
-  - "npm run lint"
 script:
+  - "npm run lint"
   - "npm test"
   - "npm run test:hooks-handlers"
 after_success:  # travis_after_all.py is needed due to travis-ci/travis-ci#1548 & travis-ci/travis-ci#929
