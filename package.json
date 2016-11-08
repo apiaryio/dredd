@@ -9,7 +9,7 @@
   "scripts": {
     "postinstall": "node scripts/print-installation-guidelines.js",
     "postupdate": "node scripts/print-installation-guidelines.js",
-    "lint": "coffeelint src",
+    "lint": "conventional-changelog-lint --from=master && coffeelint src",
     "docs:build": "mkdocs build",
     "docs:serve": "mkdocs serve",
     "build": "coffee -b -c -o lib/ src/ && coffee scripts/generate-cli-docs.coffee",
@@ -57,6 +57,7 @@
     "codo": "^2.1.0",
     "coffee-coverage": "^1.0.1",
     "coffeelint": "^1.15.7",
+    "conventional-changelog-lint": "^1.1.0",
     "coveralls": "^2.11.9",
     "cz-conventional-changelog": "^1.1.6",
     "drafter": "^1.0.0",

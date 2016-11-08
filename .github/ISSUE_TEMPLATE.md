@@ -1,4 +1,6 @@
-Filing a bug report? :bug:
+If you want to share an idea :bulb:, feel free to delete all this and just write what you want. If you are reporting a bug :bug:, remove this paragraph and fill following:
+
+#### Describe your problem
 
 #### What command line options do you use?
 
