@@ -352,7 +352,11 @@ class TransactionRunner
     # See also https://github.com/joyent/node/issues/2216
     segments = [serverPath, requestPath]
     segments = (segment.replace(/^\/|\/$/g, '') for segment in segments)
-    return '/' + segments.join('/')
+    # Keep trailing slash at the end if specified in requestPath
+    # and if requestPath isn't only '/'
+    # https://github.com/apiaryio/dredd/issues/93
+    trailingSlash = (requestPath != '/' and requestPath.slice(-1) == '/' and '/' or '')
+    return '/' + segments.join('/') + trailingSlash
 
   # Factory for 'transaction.test' object creation
   createTest: (transaction) ->
