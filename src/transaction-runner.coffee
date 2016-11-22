@@ -354,8 +354,7 @@ class TransactionRunner
     segments = (segment.replace(/^\/|\/$/g, '') for segment in segments)
     # Keep trailing slash at the end if specified in requestPath
     # and if requestPath isn't only '/'
-    # https://github.com/apiaryio/dredd/issues/93
-    trailingSlash = (requestPath != '/' and requestPath.slice(-1) == '/' and '/' or '')
+    trailingSlash = if requestPath isnt '/' and requestPath.slice(-1) is '/' then '/' else ''
     return '/' + segments.join('/') + trailingSlash
 
   # Factory for 'transaction.test' object creation
