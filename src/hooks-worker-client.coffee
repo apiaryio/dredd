@@ -2,7 +2,7 @@ net = require 'net'
 {EventEmitter} = require 'events'
 crossSpawn = require('cross-spawn')
 
-generateUuid = require('node-uuid').v4
+generateUuid = require('uuid').v4
 
 # for stubbing in tests
 logger = require('./logger')

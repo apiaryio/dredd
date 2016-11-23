@@ -4,7 +4,7 @@ os = require 'os'
 url = require 'url'
 
 clone = require 'clone'
-generateUuid = require('node-uuid').v4
+generateUuid = require('uuid').v4
 
 packageData = require './../../package.json'
 logger = require('./../logger')
