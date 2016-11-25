@@ -1,8 +1,12 @@
-inquirer = require 'inquirer'
-fs = require 'fs'
-yaml = require 'js-yaml'
+inquirer = require('inquirer')
+fs = require('fs')
+yaml = require('js-yaml')
+
+packageData = require('../package.json')
+
 
 interactiveConfig = {}
+
 
 interactiveConfig.prompt = (config = {}, callback) ->
   questions = []
@@ -133,8 +137,8 @@ interactiveConfig.updateCircle = () ->
 
   config['dependencies'] ?= {}
   config['dependencies']['pre'] ?= []
-  if config['dependencies']['pre'].indexOf("npm install -g dredd@stable") == -1
-    config['dependencies']['pre'].push("npm install -g dredd@stable")
+  if config['dependencies']['pre'].indexOf("npm install -g dredd") == -1
+    config['dependencies']['pre'].push("npm install -g dredd@#{packageData.version}")
 
   config['test'] ?= {}
   config['test']['pre'] ?= []
@@ -154,8 +158,8 @@ interactiveConfig.updateTravis = () ->
     config = {}
 
   config['before_install'] ?= []
-  if config['before_install'].indexOf("npm install -g dredd@stable") == -1
-    config['before_install'].push("npm install -g dredd@stable")
+  if config['before_install'].indexOf("npm install -g dredd") == -1
+    config['before_install'].push("npm install -g dredd@#{packageData.version}")
 
   config['before_script'] ?= []
   if config['before_script'].indexOf("dredd") == -1

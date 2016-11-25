@@ -7,8 +7,6 @@
     "dredd": "bin/dredd"
   },
   "scripts": {
-    "postinstall": "node scripts/print-installation-guidelines.js",
-    "postupdate": "node scripts/print-installation-guidelines.js",
     "lint": "conventional-changelog-lint --from=master && coffeelint src",
     "docs:build": "mkdocs build",
     "docs:serve": "mkdocs serve",

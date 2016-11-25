@@ -91,7 +91,7 @@ to npm, but also for running user-provided hooks written in CoffeeScript.
 Dredd follows [Semantic Versioning][]. To ensure certain stability of Dredd installations (e.g. in CI builds), users can pin their version. They can also use release tags:
 
 - `npm install dredd` - Installs the latest published version including experimental pre-release versions.
-- `npm install dredd@stable` - Skips experimental pre-release versions. Recommended for CI installations.
+- `npm install dredd@stable` - Skips experimental pre-release versions.
 
 When releasing, make sure you respect the tagging:
 
