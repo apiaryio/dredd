@@ -5,9 +5,9 @@ net = require 'net'
 {assert} = require 'chai'
 clone = require 'clone'
 
-childProcessStub = require 'child_process'
-loggerStub = require '../../src/logger'
-whichStub =  require '../../src/which'
+crossSpawnStub = require('cross-spawn')
+whichStub = require('../../src/which')
+loggerStub = require('../../src/logger')
 
 Hooks = require '../../src/hooks'
 commandLineOptions = require '../../src/options'
@@ -18,11 +18,10 @@ runner = null
 logs = null
 logLevels = ['error', 'log', 'info', 'warn']
 
-HooksWorkerClient = proxyquire '../../src/hooks-worker-client', {
-  'child_process': childProcessStub
-  './logger': loggerStub
+HooksWorkerClient = proxyquire '../../src/hooks-worker-client',
+  'cross-spawn': crossSpawnStub
   './which': whichStub
-}
+  './logger': loggerStub
 
 TransactionRunner = require '../../src/transaction-runner'
 
@@ -130,9 +129,21 @@ describe 'Hooks worker client', ->
             done()
         , 100
 
+    describe 'when --language nodejs option is given', ->
+      beforeEach ->
+        runner.hooks['configuration'] =
+          options:
+            language: 'nodejs'
+
+      it 'should write a hint that native hooks should be used', (done) ->
+        loadWorkerClient (err) ->
+          assert.isDefined err
+          assert.include err.message, 'native Node.js hooks instead'
+          done()
+
     describe 'when --language ruby option is given and the worker is installed', ->
       beforeEach ->
-        sinon.stub childProcessStub, 'spawn', ->
+        sinon.stub crossSpawnStub, 'spawn', ->
           emitter = new EventEmitter
           emitter.stdout = new EventEmitter
           emitter.stderr = new EventEmitter
@@ -149,7 +160,7 @@ describe 'Hooks worker client', ->
           callback()
 
       afterEach ->
-        childProcessStub.spawn.restore()
+        crossSpawnStub.spawn.restore()
 
         runner.hooks['configuration'] = undefined
 
@@ -162,8 +173,8 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.isTrue childProcessStub.spawn.called
-            assert.equal childProcessStub.spawn.getCall(0).args[0], 'dredd-hooks-ruby'
+            assert.isTrue crossSpawnStub.spawn.called
+            assert.equal crossSpawnStub.spawn.getCall(0).args[0], 'dredd-hooks-ruby'
             done()
 
       it 'should pass --hookfiles option as an array of arguments', (done) ->
@@ -172,20 +183,8 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.equal childProcessStub.spawn.getCall(0).args[1][0], 'somefile.rb'
+            assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.rb'
             done()
-
-    describe 'when --language nodejs option is given', ->
-      beforeEach ->
-        runner.hooks['configuration'] =
-          options:
-            language: 'nodejs'
-
-      it 'should write a hint that native hooks should be used', (done) ->
-        loadWorkerClient (err) ->
-          assert.isDefined err
-          assert.include err.message, 'native Node.js hooks instead'
-          done()
 
     describe 'when --language ruby option is given and the worker is not installed', ->
       beforeEach ->
@@ -208,7 +207,7 @@ describe 'Hooks worker client', ->
 
     describe 'when --language python option is given and the worker is installed', ->
       beforeEach ->
-        sinon.stub childProcessStub, 'spawn', ->
+        sinon.stub crossSpawnStub, 'spawn', ->
           emitter = new EventEmitter
           emitter.stdout = new EventEmitter
           emitter.stderr = new EventEmitter
@@ -225,7 +224,7 @@ describe 'Hooks worker client', ->
           callback()
 
       afterEach ->
-        childProcessStub.spawn.restore()
+        crossSpawnStub.spawn.restore()
 
         runner.hooks['configuration'] = undefined
 
@@ -238,8 +237,8 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.isTrue childProcessStub.spawn.called
-            assert.equal childProcessStub.spawn.getCall(0).args[0], 'dredd-hooks-python'
+            assert.isTrue crossSpawnStub.spawn.called
+            assert.equal crossSpawnStub.spawn.getCall(0).args[0], 'dredd-hooks-python'
             done()
 
       it 'should pass --hookfiles option as an array of arguments', (done) ->
@@ -248,7 +247,7 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.equal childProcessStub.spawn.getCall(0).args[1][0], 'somefile.py'
+            assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.py'
             done()
 
     describe 'when --language python option is given and the worker is not installed', ->
@@ -271,7 +270,7 @@ describe 'Hooks worker client', ->
 
     describe 'when --language php option is given and the worker is installed', ->
       beforeEach ->
-        sinon.stub childProcessStub, 'spawn', ->
+        sinon.stub crossSpawnStub, 'spawn', ->
           emitter = new EventEmitter
           emitter.stdout = new EventEmitter
           emitter.stderr = new EventEmitter
@@ -288,7 +287,7 @@ describe 'Hooks worker client', ->
           callback()
 
       afterEach ->
-        childProcessStub.spawn.restore()
+        crossSpawnStub.spawn.restore()
 
         runner.hooks['configuration'] = undefined
 
@@ -301,8 +300,8 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.isTrue childProcessStub.spawn.called
-            assert.equal childProcessStub.spawn.getCall(0).args[0], 'dredd-hooks-php'
+            assert.isTrue crossSpawnStub.spawn.called
+            assert.equal crossSpawnStub.spawn.getCall(0).args[0], 'dredd-hooks-php'
             done()
 
       it 'should pass --hookfiles option as an array of arguments', (done) ->
@@ -311,7 +310,7 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.equal childProcessStub.spawn.getCall(0).args[1][0], 'somefile.py'
+            assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.py'
             done()
 
     describe 'when --language go option is given and the worker is not installed', ->
@@ -335,7 +334,7 @@ describe 'Hooks worker client', ->
 
     describe 'when --language go option is given and the worker is installed', ->
       beforeEach ->
-        sinon.stub childProcessStub, 'spawn', ->
+        sinon.stub crossSpawnStub, 'spawn', ->
           emitter = new EventEmitter
           emitter.stdout = new EventEmitter
           emitter.stderr = new EventEmitter
@@ -352,7 +351,7 @@ describe 'Hooks worker client', ->
           callback()
 
       afterEach ->
-        childProcessStub.spawn.restore()
+        crossSpawnStub.spawn.restore()
 
         runner.hooks['configuration'] = undefined
 
@@ -366,8 +365,8 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.isTrue childProcessStub.spawn.called
-            assert.equal childProcessStub.spawn.getCall(0).args[0], 'gopath/bin/goodman'
+            assert.isTrue crossSpawnStub.spawn.called
+            assert.equal crossSpawnStub.spawn.getCall(0).args[0], 'gopath/bin/goodman'
             done()
 
       it 'should pass --hookfiles option as an array of arguments', (done) ->
@@ -376,7 +375,7 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.equal childProcessStub.spawn.getCall(0).args[1][0], 'gobinary'
+            assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'gobinary'
             done()
 
     describe 'when --language php option is given and the worker is not installed', ->
@@ -399,7 +398,7 @@ describe 'Hooks worker client', ->
 
     describe 'when --language perl option is given and the worker is installed', ->
       beforeEach ->
-        sinon.stub childProcessStub, 'spawn', ->
+        sinon.stub crossSpawnStub, 'spawn', ->
           emitter = new EventEmitter
           emitter.stdout = new EventEmitter
           emitter.stderr = new EventEmitter
@@ -416,7 +415,7 @@ describe 'Hooks worker client', ->
           callback()
 
       afterEach ->
-        childProcessStub.spawn.restore()
+        crossSpawnStub.spawn.restore()
 
         runner.hooks['configuration'] = undefined
 
@@ -429,8 +428,8 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.isTrue childProcessStub.spawn.called
-            assert.equal childProcessStub.spawn.getCall(0).args[0], 'dredd-hooks-perl'
+            assert.isTrue crossSpawnStub.spawn.called
+            assert.equal crossSpawnStub.spawn.getCall(0).args[0], 'dredd-hooks-perl'
             done()
 
       it 'should pass --hookfiles option as an array of arguments', (done) ->
@@ -439,7 +438,7 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.equal childProcessStub.spawn.getCall(0).args[1][0], 'somefile.py'
+            assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.py'
             done()
 
     describe 'when --language perl option is given and the worker is not installed', ->
@@ -462,7 +461,7 @@ describe 'Hooks worker client', ->
 
     describe 'when --language ./any/other-command is given', ->
       beforeEach ->
-        sinon.stub childProcessStub, 'spawn', ->
+        sinon.stub crossSpawnStub, 'spawn', ->
           emitter = new EventEmitter
           emitter.stdout = new EventEmitter
           emitter.stderr = new EventEmitter
@@ -479,7 +478,7 @@ describe 'Hooks worker client', ->
         sinon.stub whichStub, 'which', -> true
 
       afterEach ->
-        childProcessStub.spawn.restore()
+        crossSpawnStub.spawn.restore()
 
         runner.hooks['configuration'] = undefined
 
@@ -492,8 +491,8 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.isTrue childProcessStub.spawn.called
-            assert.equal childProcessStub.spawn.getCall(0).args[0], './my-fancy-command'
+            assert.isTrue crossSpawnStub.spawn.called
+            assert.equal crossSpawnStub.spawn.getCall(0).args[0], './my-fancy-command'
             done()
 
       it 'should pass --hookfiles option as an array of arguments', (done) ->
@@ -502,7 +501,7 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.equal childProcessStub.spawn.getCall(0).args[1][0], 'someotherfile'
+            assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'someotherfile'
             done()
 
     describe "after loading", ->
