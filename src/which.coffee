@@ -1,5 +1,10 @@
-spawnSync = require 'spawn-sync'
+which = require('which')
+
 
 module.exports =
   which: (command) ->
-    spawnSync("which", [command]).status == 0
+    try
+      which.sync(command)
+      return true
+    catch e
+      return false

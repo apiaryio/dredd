@@ -1,12 +1,12 @@
 net = require 'net'
 {EventEmitter} = require 'events'
-child_process = require 'child_process'
+crossSpawn = require('cross-spawn')
 
 generateUuid = require('node-uuid').v4
 
 # for stubbing in tests
 logger = require('./logger')
-which = require './which'
+which = require('./which')
 
 
 class HooksWorkerClient
@@ -168,7 +168,7 @@ class HooksWorkerClient
     pathGlobs = [].concat @runner.hooks?.configuration?.options?.hookfiles
 
     logger.info("Spawning `#{@language}` hooks handler process.")
-    @handler = child_process.spawn @handlerCommand, pathGlobs
+    @handler = crossSpawn.spawn @handlerCommand, pathGlobs
 
     @handler.stdout.on 'data', (data) ->
       logger.info("Hooks handler stdout:", data.toString())

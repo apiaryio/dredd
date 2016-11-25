@@ -4,7 +4,7 @@ console = require 'console'
 fs = require 'fs'
 os = require 'os'
 spawnArgs = require 'spawn-args'
-{spawn} = require('child_process')
+{spawn} = require('cross-spawn')
 execSync = require('sync-exec')
 
 Dredd = require './dredd'
