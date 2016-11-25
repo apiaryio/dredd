@@ -43,6 +43,7 @@ Dredd supports writing [hooks](https://dredd.readthedocs.io/en/latest/hooks/)
 ## Documentation Reference
 
 - [About Dredd](index.md)
+- [Installation](installation.md)
 - [Quickstart](quickstart.md)
 - [How It Works](how-it-works.md)
 - [How-To Guides](how-to-guides.md)

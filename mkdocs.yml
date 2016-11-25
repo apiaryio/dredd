@@ -5,6 +5,7 @@ site_author: 'Apiary'
 
 pages:
   - About Dredd: index.md
+  - Installation: installation.md
   - Quickstart: quickstart.md
   - How It Works: how-it-works.md
   - How-To Guides: how-to-guides.md
