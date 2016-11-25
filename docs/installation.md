@@ -66,7 +66,7 @@ Dredd uses [Drafter][] for parsing [API Blueprint][] documents. Drafter is writt
 Dredd depends on the [drafter-npm][] package. That's why you can see `node-gyp` errors and failures during Dredd installation, although after the installation is done, Dredd seems to normally work and correctly parses API Blueprint documents. Usual problems leading to the JavaScript version of the parser being used as fallback:
 
 - **Your machine is missing a C++11 compiler.** See how to fix this on [Windows](Windows C++11) or [Travis CI][Travis CI C++11].
-- **npm was used with Python 3.** `node-gyp`, which performs the compilation, doesn't support Python 3. If your default Python is 3 (see `python --version`), [tell npm to use an older version](npm Python).
+- **npm was used with Python 3.** `node-gyp`, which performs the compilation, doesn't support Python 3. If your default Python is 3 (see `python --version`), [tell npm to use an older version][npm Python].
 - The `protagonist` package got manually deleted from Dredd's `node_modules` directory. This usually doesn't happen as an accident, it's basically a hack how to force the JavaScript version regardless your environment.
 
 
