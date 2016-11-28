@@ -68,8 +68,6 @@ When using [Swagger][], headers are taken from [`response.headers`][response-hea
 - [`produces`][produces] is propagated as response's `Content-Type` header.
 - Response's `Content-Type` header overrides any `produces`.
 
-> **Note:** There is a bug affecting the last item - [apiaryio/fury-adapter-swagger#65](https://github.com/apiaryio/fury-adapter-swagger/issues/65).
-
 ### Response Body Expectations
 
 If the HTTP response body is JSON, Dredd validates only its structure. Bodies in any other format are validated as plain text.

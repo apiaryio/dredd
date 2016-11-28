@@ -395,14 +395,14 @@ It's a good practice to make Dredd part of your continuous integration workflow.
 
 Dredd's interactive configuration wizard, `dredd init`, can help you with setting up `dredd.yml` configuration file and with modifying or generating CI configuration files for [Travis CI][] or [CircleCI][].
 
-If you prefer to add Dredd manually or you look for inspiration on how to add Dredd to other continuous integration services, see examples below:
+If you prefer to add Dredd yourself or you look for inspiration on how to add Dredd to other continuous integration services, see examples below. When testing in CI, always pin your Dredd version to a specific number and upgrade to newer releases manually.
 
 ### `circle.yml` Configuration File for [CircleCI][]
 
 ```
 dependencies:
   pre:
-    - npm install -g dredd@stable
+    - npm install -g dredd@x.x.x
 test:
   pre:
     - dredd apiary.apib http://localhost:3000
@@ -412,7 +412,7 @@ test:
 
 ```
 before_install:
-  - npm install -g dredd@stable
+  - npm install -g dredd@x.x.x
 before_script:
   - dredd apiary.apib http://localhost:3000
 ```

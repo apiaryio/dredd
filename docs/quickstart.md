@@ -2,13 +2,15 @@
 
 In following tutorial you can quickly learn how to test a simple HTTP API application with Dredd. The tested application will be very simple backend written in [Express.js][].
 
-### Prepare Your Environment
-
-If you don't have [Node.js](https://nodejs.org/) installed, you may want to use [nvm](https://github.com/creationix/nvm) and install it. Once `node` and `npm` commands exist on your computer, install Dredd globally:
+## Install Dredd
 
 ```
 $ npm install -g dredd
 ```
+
+If you're not familiar with the Node.js ecosystem or you bump into any issues, follow the [installation guide](installation.md).
+
+**Note:** While Dredd seems to work on Windows for many users, it's not officially supported on the platform yet. See [details](installation.md#windows-support).
 
 ## Document Your API
 
