@@ -19,13 +19,10 @@ before_install:
   - "git remote set-branches origin master && git fetch && git checkout master && git checkout -"
   - "npm -g install npm@latest"
   - "gem install travis"  # needed for 'npm run test:hooks-handlers'
-  - "curl -Lo travis_after_all.py https://raw.githubusercontent.com/dmakhno/travis_after_all/master/travis_after_all.py"
 script:
   - "if [[ $TRAVIS_NODE_VERSION = 6 ]]; then npm run lint; fi"  # 'conventional-changelog-lint' doesn't work with old Node.js versions
   - "npm test"
   - "npm run test:hooks-handlers"
-after_success:  # travis_after_all.py is needed due to travis-ci/travis-ci#1548 & travis-ci/travis-ci#929
+after_success:
   - "npm run coveralls"
-  - "python travis_after_all.py"
-  - "export $(cat .to_export_back)"
   - "npm run semantic-release || true"
