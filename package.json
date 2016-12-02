@@ -40,7 +40,6 @@
     "inquirer": "^1.1.0",
     "js-yaml": "^3.6.1",
     "markdown-it": "^8.0.1",
-    "node-uuid": "^1.4.7",
     "optimist": "^0.6.1",
     "pitboss-ng": "^0.3.2",
     "proxyquire": "^1.7.10",
@@ -48,6 +47,7 @@
     "spawn-args": "^0.2.0",
     "sync-exec": "^0.6.2",
     "uri-template": "^1.0.1",
+    "uuid": "^3.0.0",
     "which": "^1.2.12",
     "winston": "^2.2.0"
   },
