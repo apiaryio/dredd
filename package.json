@@ -6,6 +6,9 @@
   "bin": {
     "dredd": "bin/dredd"
   },
+  "engines": {
+    "node": ">= 0.10"
+  },
   "scripts": {
     "lint": "conventional-changelog-lint --from=master && coffeelint src",
     "docs:build": "mkdocs build",
