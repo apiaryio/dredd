@@ -6,6 +6,9 @@
   "bin": {
     "dredd": "bin/dredd"
   },
+  "engines": {
+    "node": ">= 0.10"
+  },
   "scripts": {
     "lint": "conventional-changelog-lint --from=master && coffeelint src",
     "docs:build": "mkdocs build",
@@ -67,7 +70,7 @@
     "mocha": "^3.0.0",
     "mocha-lcov-reporter": "^1.2.0",
     "nock": "^8.0.0",
-    "semantic-release": "^4.3.5",
+    "semantic-release": "^6.3.2",
     "sinon": "^1.17.4"
   },
   "keywords": [
