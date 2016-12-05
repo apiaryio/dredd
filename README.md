@@ -52,6 +52,12 @@ Dredd supports writing [hooks](https://dredd.readthedocs.io/en/latest/hooks/)
 $ npm install -g dredd
 ```
 
+or 
+
+```
+$ yarn global add dredd
+```
+ 
 ## Quick Start
 
 1.  Create an [API Blueprint][] file called `api-description.apib`.
