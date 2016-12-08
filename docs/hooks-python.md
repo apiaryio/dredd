@@ -79,6 +79,9 @@ def my_after_all_hook(transactions):
 
 ## Examples
 
+More complex examples are to be found in the Github repository
+[under the examples directory](https://github.com/apiaryio/dredd-hooks-python/tree/master/examples). If you want to share your own, don't hesitate and sumbit a PR.
+
 ### How to Skip Tests
 
 Any test step can be skipped by setting `skip` property of the `transaction` object to `true`.
