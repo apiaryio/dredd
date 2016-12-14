@@ -69,6 +69,8 @@ Dredd depends on the [drafter-npm][] package. That's why you can see `node-gyp` 
 - **npm was used with Python 3.** `node-gyp`, which performs the compilation, doesn't support Python 3. If your default Python is 3 (see `python --version`), [tell npm to use an older version][npm Python].
 - The `protagonist` package got manually deleted from Dredd's `node_modules` directory. This usually doesn't happen as an accident, it's basically a hack how to force the JavaScript version regardless your environment.
 
+To force the JavaScript version of Drafter and avoid any compilation attempts, use `npm install dredd --no-optional` when installing Dredd.
+
 
 [API Blueprint]: https://apiblueprint.org/
 [CoffeeScript]: http://coffeescript.org/
