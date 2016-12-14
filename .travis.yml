@@ -22,7 +22,7 @@ before_install:
 script:
   - "if [[ $TRAVIS_NODE_VERSION = 6 ]]; then npm run lint; fi"  # 'conventional-changelog-lint' doesn't work with old Node.js versions
   - "npm test"
-  - "npm run test:hooks-handlers"
+  # - "npm run test:hooks-handlers" # disabled because of https://github.com/apiaryio/dredd/issues/672
 after_success:
   - "npm run coveralls"
   - "npm run semantic-release || true"
