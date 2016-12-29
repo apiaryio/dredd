@@ -48,7 +48,7 @@ end
 
 before_each do |transaction|
   puts 'before each'
-ends
+end
 
 before "Machines > Machines collection > Get Machines" do |transaction|
   puts 'before'
