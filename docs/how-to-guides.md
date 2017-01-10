@@ -578,7 +578,7 @@ When using Apiary Reporter and Apiary Tests, you are sending your testing data t
 - complete testing results (see [Apiary Reporter Test Data](data-structures.md#apiary-reporter-test-data); you can [sanitize them before they get sent](#removing-sensitive-data-from-test-reports))
 - little meta data about your environment (CI detection, Dredd version detection, hostname, ...)
 
-See also [guidelines on how to develop Apiary Reporter](#hacking-apiary-reporter).
+See also [guidelines on how to develop Apiary Reporter](contributing.md#hacking-apiary-reporter).
 
 ## Example Values for Request Parameters
 
