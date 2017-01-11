@@ -1,5 +1,3 @@
-sudo: "required"
-dist: "trusty"
 language: "node_js"
 node_js:
   - "0.10"
@@ -18,11 +16,12 @@ before_install:
   # so 'conventional-changelog-lint' could compare commits and lint them: marionebl/conventional-changelog-lint#7
   - "git remote set-branches origin master && git fetch && git checkout master && git checkout -"
   - "npm -g install npm@latest"
-  - "gem install travis"  # needed for 'npm run test:hooks-handlers'
+  #- "gem install travis"  # needed for 'npm run test:hooks-handlers', disabled because of https://github.com/apiaryio/dredd/issues/672
+install: "npm install --no-optional"
 script:
   - "if [[ $TRAVIS_NODE_VERSION = 6 ]]; then npm run lint; fi"  # 'conventional-changelog-lint' doesn't work with old Node.js versions
   - "npm test"
-  # - "npm run test:hooks-handlers" # disabled because of https://github.com/apiaryio/dredd/issues/672
+  #- "npm run test:hooks-handlers" # disabled because of https://github.com/apiaryio/dredd/issues/672
 after_success:
   - "npm run coveralls"
   - "npm run semantic-release || true"
