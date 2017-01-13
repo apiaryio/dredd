@@ -4,12 +4,11 @@
   "description": "Compiles HTTP Transactions (Request-Response pairs) from API description document",
   "main": "lib/dredd-transactions.js",
   "scripts": {
-    "lint": "coffeelint ./src",
+    "lint": "coffeelint src",
     "build": "coffee -b -c -o lib/ src/",
-    "test": "./scripts/test",
-    "test:bdd": "./scripts/test -w",
+    "test": "mocha \"test/**/*-test.coffee\"",
     "prepublish": "npm run build",
-    "coveralls": "./scripts/cov mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js",
+    "coveralls": "scripts/cov mocha-lcov-reporter | node_modules/coveralls/bin/coveralls.js",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
