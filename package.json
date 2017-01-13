@@ -16,11 +16,11 @@
     "build": "coffee -b -c -o lib/ src/ && coffee scripts/generate-cli-docs.coffee",
     "pretest": "npm run build",
     "test": "mocha \"test/**/*-test.coffee\"",
+    "test:coverage": "scripts/coverage.sh",
     "test:hooks-handlers": "coffee scripts/test-hooks-handlers.coffee",
     "prepublish": "npm run build",
-    "coverage": "scripts/cov",
-    "coveralls": "npm run coverage && cat cov.info | coveralls",
-    "semantic-release": "scripts/semantic-release"
+    "coveralls": "scripts/coveralls.sh",
+    "semantic-release": "scripts/semantic-release.sh"
   },
   "repository": {
     "type": "git",
@@ -65,7 +65,7 @@
     "jscoverage": "^0.6.0",
     "lcov-result-merger": "^1.2.0",
     "mocha": "^3.0.0",
-    "mocha-lcov-reporter": "^1.2.0",
+    "mocha-lcov-reporter": "^1.3.0",
     "nock": "^9.0.4",
     "ps-node": "^0.1.4",
     "semantic-release": "^6.3.2",
