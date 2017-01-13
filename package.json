@@ -4,7 +4,7 @@
   "description": "Compiles HTTP Transactions (Request-Response pairs) from API description document",
   "main": "lib/dredd-transactions.js",
   "scripts": {
-    "lint": "coffeelint src",
+    "lint": "conventional-changelog-lint --from=master && coffeelint src",
     "build": "coffee -b -c -o lib/ src/",
     "test": "mocha \"test/**/*-test.coffee\"",
     "prepublish": "npm run build",
@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "caseless": "^0.11.0",
-    "clone": "^1.0.2",
+    "clone": "^2.1.0",
     "deckardcain": "^0.3.2",
     "fury": "^2.1.0",
     "fury-adapter-apib-parser": "^0.3.0",
@@ -39,7 +39,7 @@
     "mocha": "^3.0.2",
     "mocha-lcov-reporter": "^1.2.0",
     "proxyquire": "^1.7.10",
-    "semantic-release": "^4.3.5",
+    "semantic-release": "^6.3.2",
     "sinon": "^1.17.4",
     "swagger-zoo": "^2.1.6",
     "tv4": "^1.2.7"
