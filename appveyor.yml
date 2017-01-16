@@ -1,0 +1,15 @@
+environment:
+  nodejs_version: "6"
+install:
+  - ps: Install-Product node 6
+  - "npm -g install npm@latest"
+  - "set PATH=%APPDATA%\\npm;%PATH%"
+  - "npm install --no-optional"
+cache:
+  - "node_modules"
+  - "%APPDATA%\\npm-cache"
+build: off
+test_script:
+  - "node --version"
+  - "npm --version"
+  - "npm test"
