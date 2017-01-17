@@ -597,6 +597,7 @@ of `body` parameters, where native `schema.example` should be used.
 
 Sometimes your API sends back sensitive information you don't want to get disclosed in [Apiary Tests](how-to-guides.md#using-apiary-reporter-and-apiary-tests) or in your CI log. In that case you can use [Hooks](hooks.md) to do sanitation. Before diving into examples below, do not forget to consider following:
 
+- Be sure to read [section about security][how-it-works.md#security] first.
 - Only the [`transaction.test`](data-structures.md#transaction-test) object will make it to reporters. You don't have to care about sanitation of the rest of the [`transaction`](data-structures.md#transaction) object.
 - The `transaction.test.message` and all the `transaction.test.results.body.results.rawData.*.message` properties contain validation error messages. While they're very useful for learning about what's wrong on command line, they can contain direct mentions of header names, header values, body properties, body structure, body values, etc., thus it's recommended their contents are completely removed to prevent unintended leaks of sensitive information.
 - Without the `transaction.test.results.body.results.rawData` property [Apiary reporter](how-to-guides.md#using-apiary-reporter-and-apiary-tests) won't be able to render green/red difference between payloads.
