@@ -178,7 +178,23 @@ codes are marked as _skipped_ and can be activated in [hooks](hooks.md) - see [T
 only `application/json` media type is supported in [`produces`][produces] and [`consumes`][consumes].
 Other media types are skipped.
 
+## Security
 
+Depending on what you test and how, output of Dredd may contain sensitive data.
+
+Mind that if you run Dredd in a CI server provided as a service (such as [CircleCI][], [Travis CI][], etc.), you are disclosing the CLI output of Dredd to third parties.
+
+When using [Apiary Reporter and Apiary Tests](how-to-guides.md#using-apiary-reporter-and-apiary-tests), you are sending your testing data to [Apiary][] (Dredd creators and maintainers). See their [Terms of Service][] and [Privacy Policy][]. Which data exactly is being sent to Apiary?
+
+- **Complete API description under test.** This means your API Blueprint or Swagger files. The API description is stored encrypted in Apiary.
+- **Complete testing results.** Those can contain details of all requests made to the server under test and their responses. Apiary stores this data unencrypted, even if the original communication between Dredd and the API server under test happens to be over HTTPS. See [Apiary Reporter Test Data](data-structures.md#apiary-reporter-test-data) for detailed description of what is sent. You can [sanitize it before it gets sent](how-to-guides.md#removing-sensitive-data-from-test-reports).
+- **Little meta data about your environment.** Contents of environment variables `TRAVIS`, `CIRCLE`, `CI`, `DRONE`, `BUILD_ID`, `DREDD_AGENT`, `USER`, and `DREDD_HOSTNAME` can be sent to Apiary. Your [hostname][], version of your Dredd installation, and [type][os-type], [release][os-release] and [architecture][os-arch] of your OS can be sent as well. Apiary stores this data unencrypted.
+
+See also [guidelines on how to develop Apiary Reporter](contributing.md#hacking-apiary-reporter).
+
+
+
+[Apiary]: https://apiary.io/
 [Semantic Versioning]: http://semver.org/
 [API Blueprint]: http://apiblueprint.org/
 [Swagger]: http://swagger.io/
@@ -188,6 +204,15 @@ Other media types are skipped.
 [JSON Schema]: http://json-schema.org/
 [Swagger Adapter]: https://github.com/apiaryio/fury-adapter-swagger/
 [RFC6570]: https://tools.ietf.org/html/rfc6570
+
+[CircleCI]: https://circleci.com/
+[Travis CI]: http://travis-ci.org/
+[Terms of Service]: https://apiary.io/tos
+[Privacy Policy]: https://www.iubenda.com/privacy-policy/323220
+[hostname]: https://en.wikipedia.org/wiki/Hostname
+[os-type]: https://nodejs.org/api/os.html#os_os_type
+[os-release]: https://nodejs.org/api/os.html#os_os_release
+[os-arch]: https://nodejs.org/api/os.html#os_os_arch
 
 [schema-section]: https://apiblueprint.org/documentation/specification.html#def-schema-section
 [parameters-section]: https://apiblueprint.org/documentation/specification.html#def-uriparameters-section

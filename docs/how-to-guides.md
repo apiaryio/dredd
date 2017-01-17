@@ -570,16 +570,6 @@ When sending test reports to Apiary, Dredd inspects the environment where it was
 - hostname (string) - `DREDD_HOSTNAME` or hostname of the OS
 - CI (boolean) - looks for `TRAVIS`, `CIRCLE`, `CI`, `DRONE`, `BUILD_ID`, ...
 
-### Security Concerns
-
-When using Apiary Reporter and Apiary Tests, you are sending your testing data to a company called [Apiary][] (Dredd creators and maintainers). See their [Terms of Service][] and [Privacy Policy][]. Which data exactly is being sent to Apiary?
-
-- complete API description under the test
-- complete testing results (see [Apiary Reporter Test Data](data-structures.md#apiary-reporter-test-data); you can [sanitize them before they get sent](#removing-sensitive-data-from-test-reports))
-- little meta data about your environment (CI detection, Dredd version detection, hostname, ...)
-
-See also [guidelines on how to develop Apiary Reporter](contributing.md#hacking-apiary-reporter).
-
 ## Example Values for Request Parameters
 
 While example values are natural part of the API Blueprint format, the Swagger
@@ -607,7 +597,7 @@ of `body` parameters, where native `schema.example` should be used.
 
 Sometimes your API sends back sensitive information you don't want to get disclosed in [Apiary Tests](how-to-guides.md#using-apiary-reporter-and-apiary-tests) or in your CI log. In that case you can use [Hooks](hooks.md) to do sanitation. Before diving into examples below, do not forget to consider following:
 
-- Be sure to read [section about Apiary Reporter security concerns][#security-concerns] first.
+- Be sure to read [section about security][how-it-works.md#security] first.
 - Only the [`transaction.test`](data-structures.md#transaction-test) object will make it to reporters. You don't have to care about sanitation of the rest of the [`transaction`](data-structures.md#transaction) object.
 - The `transaction.test.message` and all the `transaction.test.results.body.results.rawData.*.message` properties contain validation error messages. While they're very useful for learning about what's wrong on command line, they can contain direct mentions of header names, header values, body properties, body structure, body values, etc., thus it's recommended their contents are completely removed to prevent unintended leaks of sensitive information.
 - Without the `transaction.test.results.body.results.rawData` property [Apiary reporter](how-to-guides.md#using-apiary-reporter-and-apiary-tests) won't be able to render green/red difference between payloads.
@@ -702,5 +692,3 @@ If your hooks crash, Dredd will send an error to reporters, alongside with curre
 [Travis CI]: https://travis-ci.org/
 [CircleCI]: https://circleci.com/
 [vendor extension property]: http://swagger.io/specification/#vendorExtensions
-[Terms of Service]: https://apiary.io/tos
-[Privacy Policy]: https://www.iubenda.com/privacy-policy/323220
