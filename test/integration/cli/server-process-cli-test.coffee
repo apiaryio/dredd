@@ -71,7 +71,7 @@ describe 'CLI - Server Process', ->
       args = [
         './test/fixtures/single-get.apib'
         "http://localhost:#{PORT}"
-        "--server='coffee ./test/fixtures/scripts/dummy-server.coffee #{PORT}'"
+        "--server=coffee ./test/fixtures/scripts/dummy-server.coffee #{PORT}"
         '--server-wait=1'
       ]
 
@@ -115,7 +115,7 @@ describe 'CLI - Server Process', ->
           args = [
             scenario.apiDescriptionDocument
             "http://localhost:#{PORT}"
-            "--server='#{scenario.server}'"
+            "--server=#{scenario.server}"
             '--server-wait=1'
           ]
 
@@ -142,7 +142,7 @@ describe 'CLI - Server Process', ->
       args = [
         './test/fixtures/single-get.apib'
         "http://localhost:#{PORT}"
-        "--server='coffee ./test/fixtures/scripts/dummy-server-nosigterm.coffee #{PORT}'"
+        "--server=coffee ./test/fixtures/scripts/dummy-server-nosigterm.coffee #{PORT}"
         '--server-wait=1'
       ]
 
