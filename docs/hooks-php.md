@@ -20,7 +20,7 @@ $ composer require ddelnano/dredd-hooks-php --dev
 ## Usage
 
 ```
-$ dredd apiary.apib http://localhost:3000 --language vendor/bin/dredd-hooks-php --hookfiles=./hooks*.php
+$ dredd apiary.apib http://localhost:3000 --language=vendor/bin/dredd-hooks-php --hookfiles=./hooks*.php
 ```
 
 ## API Reference

@@ -15,7 +15,7 @@ $ cpanm Dredd::Hooks
 ## Usage
 
 ```
-$ dredd apiary.apib http://localhost:3000 --language dredd-hooks-perl --hookfiles=./hooks*.pl
+$ dredd apiary.apib http://localhost:3000 --language=dredd-hooks-perl --hookfiles=./hooks*.pl
 ```
 
 ## API Reference

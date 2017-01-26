@@ -181,6 +181,12 @@ There is also one environment variable you could find useful:
 
 - `APIARY_API_URL='https://api.apiary.io'` - Allows to override host of the Apiary Tests API.
 
+### Misc Tips
+
+- When using long CLI options in tests or documentation, please always use the notation with `=`. For example,
+  use `--path=/dev/null`, not `--path /dev/null`. While both should work, the version with `=` feels
+  more like standard GNU-style long options and it makes arrays of arguments for `spawn` more readable.
+
 
 [Apiary]: https://apiary.io/
 
