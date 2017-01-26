@@ -4,7 +4,7 @@
 
 Dredd comes with concept of hooks language abstraction bridge via simple TCP socket.
 
-When you run Dredd with `--language` argument, it runs the command in argument and tries to connect to `http://localhost:61321`. If connection to the hook handling server wasn't successful, it exits with exit code `3`.
+When you run Dredd with `--language` argument, it runs the command in argument and tries to connect to `http://127.0.0.1:61321`. If connection to the hook handling server wasn't successful, it exits with exit code `3`.
 
 Dredd internally registers a function for each [type of hooks](hooks.md#types-of-hooks) and when this function is executed it assigns execution `uuid` to that event, serializes received function parameters (a [Transaction object](data-structures.md#transaction) or an Array of it), sends it to the TCP socket to be handled (executed) in other language and waits until message with same `uuid` is received. After data reception it assigns received `data` back to the transaction, so other language can interact with transactions same way like [native Node.js hooks](hooks-nodejs.md).
 
@@ -34,7 +34,7 @@ If you want to write a hook handler for your language you will have to implement
     - it exposes API similar to those in [Ruby](hooks-ruby.md), [Python](hooks-python.md) and [Node.js](hooks-nodejs.md) to each loaded file
     - it registers functions declared in files for later execution
 
-  - starts a TCP socket server and starts listening on `http://localhost:61321`.
+  - starts a TCP socket server and starts listening on `http://127.0.0.1:61321`.
 
 - When any data is received by the server
   - Adds every received character to a buffer

@@ -31,7 +31,7 @@ describe 'TransactionRunner', ->
 
   server = {}
   configuration =
-    server: 'http://localhost:3000'
+    server: 'http://127.0.0.1:3000'
     emitter: new EventEmitter()
     options:
       'dry-run': false
@@ -68,7 +68,7 @@ describe 'TransactionRunner', ->
     describe 'when single file in data is present', ->
       it 'should set multiBlueprint to false', ->
         configuration =
-          server: 'http://localhost:3000'
+          server: 'http://127.0.0.1:3000'
           emitter: new EventEmitter()
           data: {"file1": {"raw": "blueprint1"}}
           options:
@@ -86,7 +86,7 @@ describe 'TransactionRunner', ->
     describe 'when multiple files in data are present', ->
       it 'should set multiBlueprint to true', ->
         configuration =
-          server: 'http://localhost:3000'
+          server: 'http://127.0.0.1:3000'
           emitter: new EventEmitter()
           data: {"file1": {"raw": "blueprint1"}, "file2": {"raw": "blueprint2"} }
           options:
@@ -132,56 +132,56 @@ describe 'TransactionRunner', ->
 
       [
         description: 'is hostname'
-        input: {serverUrl: 'https://localhost:8000', requestPath: '/hello'}
-        expected: {host: 'localhost', port: '8000', protocol: 'https:', fullPath: '/hello'}
+        input: {serverUrl: 'https://127.0.0.1:8000', requestPath: '/hello'}
+        expected: {host: '127.0.0.1', port: '8000', protocol: 'https:', fullPath: '/hello'}
       ,
         description: 'is IPv4'
         input: {serverUrl: 'https://127.0.0.1:8000', requestPath: '/hello'}
         expected: {host: '127.0.0.1', port: '8000', protocol: 'https:', fullPath: '/hello'}
       ,
         description: 'has path'
-        input: {serverUrl: 'http://localhost:8000/v1', requestPath: '/hello'}
-        expected: {host: 'localhost', port: '8000', protocol: 'http:', fullPath: '/v1/hello'}
+        input: {serverUrl: 'http://127.0.0.1:8000/v1', requestPath: '/hello'}
+        expected: {host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/hello'}
       ,
         description: 'has path with trailing slash'
         input: {serverUrl: 'http://127.0.0.1:8000/v1/', requestPath: '/hello'}
         expected: {host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/hello'}
       ,
         description: 'has path and request path is /'
-        input: {serverUrl: 'http://localhost:8000/v1', requestPath: '/'}
-        expected: {host: 'localhost', port: '8000', protocol: 'http:', fullPath: '/v1/'}
+        input: {serverUrl: 'http://127.0.0.1:8000/v1', requestPath: '/'}
+        expected: {host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/'}
       ,
         description: 'has path with trailing slash and request path is /'
         input: {serverUrl: 'http://127.0.0.1:8000/v1/', requestPath: '/'}
         expected: {host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/'}
       ,
         description: 'has path and request has no path'
-        input: {serverUrl: 'http://localhost:8000/v1', requestPath: ''}
-        expected: {host: 'localhost', port: '8000', protocol: 'http:', fullPath: '/v1'}
+        input: {serverUrl: 'http://127.0.0.1:8000/v1', requestPath: ''}
+        expected: {host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1'}
       ,
         description: 'has path with trailing slash and request has no path'
         input: {serverUrl: 'http://127.0.0.1:8000/v1/', requestPath: ''}
         expected: {host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/'}
       ,
         description: 'is hostname with no protocol'
-        input: {serverUrl: 'localhost', requestPath: '/hello'}
-        expected: {host: 'localhost', port: null, protocol: 'http:', fullPath: '/hello'}
+        input: {serverUrl: '127.0.0.1', requestPath: '/hello'}
+        expected: {host: '127.0.0.1', port: null, protocol: 'http:', fullPath: '/hello'}
       ,
         description: 'is IPv4 with no protocol'
         input: {serverUrl: '127.0.0.1:4000', requestPath: '/hello'}
         expected: {host: '127.0.0.1', port: '4000', protocol: 'http:', fullPath: '/hello'}
       ,
         description: 'is hostname with // instead of protocol'
-        input: {serverUrl: '//localhost', requestPath: '/hello'}
-        expected: {host: 'localhost', port: null, protocol: 'http:', fullPath: '/hello'}
+        input: {serverUrl: '//127.0.0.1', requestPath: '/hello'}
+        expected: {host: '127.0.0.1', port: null, protocol: 'http:', fullPath: '/hello'}
       ,
         description: 'is hostname with trailing slash'
-        input: {serverUrl: 'http://localhost/', requestPath: '/hello'}
-        expected: {host: 'localhost', port: null, protocol: 'http:', fullPath: '/hello'}
+        input: {serverUrl: 'http://127.0.0.1/', requestPath: '/hello'}
+        expected: {host: '127.0.0.1', port: null, protocol: 'http:', fullPath: '/hello'}
       ,
         description: 'is hostname with no protocol and with trailing slash'
-        input: {serverUrl: 'localhost/', requestPath: '/hello'}
-        expected: {host: 'localhost', port: null, protocol: 'http:', fullPath: '/hello'}
+        input: {serverUrl: '127.0.0.1/', requestPath: '/hello'}
+        expected: {host: '127.0.0.1', port: null, protocol: 'http:', fullPath: '/hello'}
 
       ].forEach(({description, input, expected}) ->
         context("#{description}: '#{input.serverUrl}' + '#{input.requestPath}'", ->
@@ -361,7 +361,7 @@ describe 'TransactionRunner', ->
       transaction =
         name: 'Group Machine > Machine > Delete Message > Bogus example name'
         id: 'POST /machines'
-        host: 'localhost'
+        host: '127.0.0.1'
         port: '3000'
         request:
           body: '{\n  "type": "bulldozer",\n  "name": "willy"}\n'
@@ -387,7 +387,7 @@ describe 'TransactionRunner', ->
 
       beforeEach ->
         delete transaction.request.headers["Content-Length"]
-        server = nock('http://localhost:3000').
+        server = nock('http://127.0.0.1:3000').
           post('/machines', {"type":"bulldozer", "name":"willy"}).
           reply transaction['expected']['status'],
             transaction['expected']['body'],
@@ -405,7 +405,7 @@ describe 'TransactionRunner', ->
 
       beforeEach ->
         transaction.request.headers["Content-Length"] = 44
-        server = nock('http://localhost:3000').
+        server = nock('http://127.0.0.1:3000').
           post('/machines', {"type":"bulldozer", "name":"willy"}).
           reply transaction['expected']['status'],
             transaction['expected']['body'],
@@ -472,7 +472,7 @@ describe 'TransactionRunner', ->
     describe 'when only certain names are allowed by the configuration', ->
 
       beforeEach ->
-        server = nock('http://localhost:3000').
+        server = nock('http://127.0.0.1:3000').
           post('/machines', {"type":"bulldozer", "name":"willy"}).
           reply transaction['expected']['status'],
             transaction['expected']['body'],
@@ -561,12 +561,12 @@ describe 'TransactionRunner', ->
     describe 'when server uses https', ->
 
       beforeEach ->
-        server = nock('https://localhost:3000').
+        server = nock('https://127.0.0.1:3000').
           post('/machines', {"type":"bulldozer", "name":"willy"}).
           reply transaction['expected']['status'],
             transaction['expected']['body'],
             {'Content-Type': 'application/json'}
-        configuration.server = 'https://localhost:3000'
+        configuration.server = 'https://127.0.0.1:3000'
         transaction.protocol = 'https:'
         runner = new Runner(configuration)
 
@@ -581,12 +581,12 @@ describe 'TransactionRunner', ->
     describe 'when server uses http', ->
 
       beforeEach ->
-        server = nock('http://localhost:3000').
+        server = nock('http://127.0.0.1:3000').
           post('/machines', {"type":"bulldozer", "name":"willy"}).
           reply transaction['expected']['status'],
             transaction['expected']['body'],
             {'Content-Type': 'application/json'}
-        configuration.server = 'http://localhost:3000'
+        configuration.server = 'http://127.0.0.1:3000'
         transaction.protocol = 'http:'
         runner = new Runner(configuration)
 
@@ -600,7 +600,7 @@ describe 'TransactionRunner', ->
 
     describe 'when backend responds as it should', ->
       beforeEach ->
-        server = nock('http://localhost:3000').
+        server = nock('http://127.0.0.1:3000').
           post('/machines', {"type":"bulldozer", "name":"willy"}).
           reply transaction['expected']['status'],
             transaction['expected']['body'],
@@ -622,7 +622,7 @@ describe 'TransactionRunner', ->
 
     describe 'when backend responds with invalid response', ->
       beforeEach ->
-        server = nock('http://localhost:3000').
+        server = nock('http://127.0.0.1:3000').
           post('/machines', {"type":"bulldozer", "name":"willy"}).
           reply 400,
             'Foo bar',
@@ -671,7 +671,7 @@ describe 'TransactionRunner', ->
         transaction = clone {
           name: name
           id: 'POST /machines' + name
-          host: 'localhost'
+          host: '127.0.0.1'
           port: '3000'
           request:
             body: '{\n  "type": "bulldozer",\n  "name": "willy"}\n'
@@ -728,13 +728,13 @@ describe 'TransactionRunner', ->
 
       runner.hooks = hooks
 
-      serverNock1 = nock('http://localhost:3000').
+      serverNock1 = nock('http://127.0.0.1:3000').
         post('/machines1', {"type":"bulldozer", "name":"willy"}).
         reply transaction['expected']['statusCode'],
           transaction['expected']['body'],
           {'Content-Type': 'application/json'}
 
-      serverNock2 = nock('http://localhost:3000').
+      serverNock2 = nock('http://127.0.0.1:3000').
         post('/machines2', {"type":"bulldozer", "name":"willy"}).
         reply transaction['expected']['statusCode'],
           transaction['expected']['body'],
@@ -1139,7 +1139,7 @@ describe 'TransactionRunner', ->
       multiPartTransaction =
           name: 'Group Machine > Machine > Post Message> Bogus example name'
           id: 'POST /machines/message'
-          host: 'localhost'
+          host: '127.0.0.1'
           port: '3000'
           request:
             body: '\n--BOUNDARY \ncontent-disposition: form-data; name="mess12"\n\n{"message":"mess1"}\n--BOUNDARY\n\nContent-Disposition: form-data; name="mess2"\n\n{"message":"mess1"}\n--BOUNDARY--'
@@ -1165,7 +1165,7 @@ describe 'TransactionRunner', ->
       notMultiPartTransaction =
           name: 'Group Machine > Machine > Post Message> Bogus example name'
           id: 'POST /machines/message'
-          host: 'localhost'
+          host: '127.0.0.1'
           port: '3000'
           request:
             body: '\n--BOUNDARY \ncontent-disposition: form-data; name="mess12"\n\n{"message":"mess1"}\n--BOUNDARY\n\nContent-Disposition: form-data; name="mess2"\n\n{"message":"mess1"}\n--BOUNDARY--'
@@ -1192,10 +1192,10 @@ describe 'TransactionRunner', ->
 
       parsedBody = '\r\n--BOUNDARY \r\ncontent-disposition: form-data; name="mess12"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY\r\n\r\nContent-Disposition: form-data; name="mess2"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY--'
       beforeEach ->
-        server = nock('http://localhost:3000').
+        server = nock('http://127.0.0.1:3000').
         post('/machines/message').
         reply 204
-        configuration.server = 'http://localhost:3000'
+        configuration.server = 'http://127.0.0.1:3000'
 
       afterEach ->
         nock.cleanAll()
@@ -1211,10 +1211,10 @@ describe 'TransactionRunner', ->
 
       parsedBody = '\r\n--BOUNDARY \r\ncontent-disposition: form-data; name="mess12"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY\r\n\r\nContent-Disposition: form-data; name="mess2"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY--'
       beforeEach ->
-        server = nock('http://localhost:3000').
+        server = nock('http://127.0.0.1:3000').
         post('/machines/message').
         reply 204
-        configuration.server = 'http://localhost:3000'
+        configuration.server = 'http://127.0.0.1:3000'
 
         delete multiPartTransaction['request']['headers']['Content-Type']
         multiPartTransaction['request']['headers']['content-type'] = 'multipart/form-data; boundary=BOUNDARY'
@@ -1231,10 +1231,10 @@ describe 'TransactionRunner', ->
 
     describe 'when multipart header in request, but body already has some CR (added in hooks e.g.s)', ->
       beforeEach ->
-        server = nock('http://localhost:3000').
+        server = nock('http://127.0.0.1:3000').
         post('/machines/message').
         reply 204
-        configuration.server = 'http://localhost:3000'
+        configuration.server = 'http://127.0.0.1:3000'
         multiPartTransaction['request']['body'] = '\r\n--BOUNDARY \r\ncontent-disposition: form-data; name="mess12"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY\r\n\r\nContent-Disposition: form-data; name="mess2"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY--'
 
       afterEach ->
@@ -1248,10 +1248,10 @@ describe 'TransactionRunner', ->
 
     describe 'when multipart header is not in request', ->
       beforeEach ->
-        server = nock('http://localhost:3000').
+        server = nock('http://127.0.0.1:3000').
         post('/machines/message').
         reply 204
-        configuration.server = 'http://localhost:3000'
+        configuration.server = 'http://127.0.0.1:3000'
 
       afterEach ->
         nock.cleanAll()
@@ -1265,7 +1265,7 @@ describe 'TransactionRunner', ->
   describe '#executeAllTransactions', ->
 
     configuration =
-      server: 'http://localhost:3000'
+      server: 'http://127.0.0.1:3000'
       emitter: new EventEmitter()
       options:
         'dry-run': false
@@ -1283,7 +1283,7 @@ describe 'TransactionRunner', ->
       transaction = clone {
         name: 'Group Machine > Machine > Delete Message > Bogus example name'
         id: 'POST /machines'
-        host: 'localhost'
+        host: '127.0.0.1'
         port: '3000'
         request:
           body: '{\n  "type": "bulldozer",\n  "name": "willy"}\n'
@@ -1305,7 +1305,7 @@ describe 'TransactionRunner', ->
         fullPath: '/machines'
       }
 
-      server = nock('http://localhost:3000').
+      server = nock('http://127.0.0.1:3000').
         post('/machines', {"type":"bulldozer", "name":"willy"}).
         reply transaction['expected']['statusCode'],
           transaction['expected']['body'],
@@ -1647,7 +1647,7 @@ describe 'TransactionRunner', ->
         transaction =
           name: 'Group Machine > Machine > Delete Message > Bogus example name'
           id: 'POST /machines'
-          host: 'localhost'
+          host: '127.0.0.1'
           port: '3000'
           request:
             body: '{\n  "type": "bulldozer",\n  "name": "willy"}\n'
@@ -1681,7 +1681,7 @@ describe 'TransactionRunner', ->
 
         beforeEach ->
           runner.hooks.beforeEach beforeEachStub
-          server = nock('http://localhost:3000').
+          server = nock('http://127.0.0.1:3000').
             post('/machines', {"type":"bulldozer", "name":"willy"}).
             reply transactionsForExecution[0]['expected']['statusCode'],
               transactionsForExecution[0]['expected']['body'],
@@ -1710,7 +1710,7 @@ describe 'TransactionRunner', ->
 
         beforeEach ->
           runner.hooks.beforeEachValidation beforeEachValidationStub
-          server = nock('http://localhost:3000').
+          server = nock('http://127.0.0.1:3000').
             post('/machines', {"type":"bulldozer", "name":"willy"}).
             reply transactionsForExecution[0]['expected']['statusCode'],
               transactionsForExecution[0]['expected']['body'],
@@ -1747,7 +1747,7 @@ describe 'TransactionRunner', ->
 
         beforeEach ->
           runner.hooks.afterEach afterEachStub
-          server = nock('http://localhost:3000').
+          server = nock('http://127.0.0.1:3000').
             post('/machines', {"type":"bulldozer", "name":"willy"}).
             reply transactionsForExecution[0]['expected']['statusCode'],
               transactionsForExecution[0]['expected']['body'],

@@ -157,7 +157,7 @@ options =
 
   'hooks-worker-handler-host':
     description: 'Host of the hook worker.'
-    default: 'localhost'
+    default: '127.0.0.1'
 
   'hooks-worker-handler-port':
     description: 'Port of the hook worker.'

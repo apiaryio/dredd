@@ -19,7 +19,7 @@ class HooksWorkerClient
     @afterConnectWait = options['hooks-worker-after-connect-wait'] || 100
     @termTimeout = options['hooks-worker-term-timeout'] || 5000
     @termRetry = options['hooks-worker-term-retry'] || 500
-    @handlerHost = options['hooks-worker-handler-host'] || 'localhost'
+    @handlerHost = options['hooks-worker-handler-host'] || '127.0.0.1'
     @handlerPort = options['hooks-worker-handler-port'] || 61321
     @handlerMessageDelimiter = '\n'
     @clientConnected = false

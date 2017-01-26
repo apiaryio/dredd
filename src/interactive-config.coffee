@@ -28,7 +28,7 @@ interactiveConfig.prompt = (config = {}, callback) ->
     type: "input"
     name: "endpoint"
     message: "URL of tested API endpoint"
-    default: config['endpoint'] || "http://localhost:3000"
+    default: config['endpoint'] || "http://127.0.0.1:3000"
   }
 
   questions.push {

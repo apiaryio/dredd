@@ -29,7 +29,7 @@ describe 'CLI - Server Process', ->
 
     describe 'When is running', ->
       dreddCommand = undefined
-      args = ['./test/fixtures/single-get.apib', "http://localhost:#{PORT}"]
+      args = ['./test/fixtures/single-get.apib', "http://127.0.0.1:#{PORT}"]
 
       beforeEach (done) ->
         execDredd args, (err, commandInfo) ->
@@ -43,7 +43,7 @@ describe 'CLI - Server Process', ->
 
     describe 'When is not running', ->
       dreddCommand = undefined
-      args = ['./test/fixtures/apiary.apib', "http://localhost:#{PORT_NON_EXISTENT}"]
+      args = ['./test/fixtures/apiary.apib', "http://127.0.0.1:#{PORT_NON_EXISTENT}"]
 
       beforeEach (done) ->
         execDredd args, (err, commandInfo) ->
@@ -70,7 +70,7 @@ describe 'CLI - Server Process', ->
       dreddCommand = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT}"
         "--server=coffee ./test/fixtures/scripts/dummy-server.coffee #{PORT}"
         '--server-wait=1'
       ]
@@ -114,7 +114,7 @@ describe 'CLI - Server Process', ->
           dreddCommand = undefined
           args = [
             scenario.apiDescriptionDocument
-            "http://localhost:#{PORT}"
+            "http://127.0.0.1:#{PORT}"
             "--server=#{scenario.server}"
             '--server-wait=1'
           ]
@@ -141,7 +141,7 @@ describe 'CLI - Server Process', ->
       dreddCommand = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT}"
         "--server=coffee ./test/fixtures/scripts/dummy-server-nosigterm.coffee #{PORT}"
         '--server-wait=1'
       ]

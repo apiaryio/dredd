@@ -9,7 +9,7 @@ $ dredd '<API Description Document>' '<API Location>' [OPTIONS]
 Example:
 
 ```
-$ dredd ./apiary.md 'http://localhost:3000'
+$ dredd ./apiary.md http://127.0.0.1:3000
 ```
 
 ## Arguments
@@ -21,8 +21,8 @@ URL or path to the API description document (API Blueprint, Swagger).
 
 ### API Location (string)
 
-URL, the root address of your API.  
-**Sample values:** `http://localhost:3000`, `http://api.example.com`
+URL, the root address of your API.
+**Sample values:** `http://127.0.0.1:3000`, `http://api.example.com`
 
 ## Configuration File
 
@@ -67,7 +67,7 @@ timestamp: false
 silent: false
 path: []
 blueprint: api-description.apib
-endpoint: "http://localhost:3000"
+endpoint: "http://127.0.0.1:3000"
 ```
 
 > **Note:** Do not get confused by Dredd using a keyword `blueprint` also for paths to Swagger documents. This is for historical reasons and will be changed in the future.
@@ -118,7 +118,7 @@ Total hook worker connection timeout (includes all retries). [ms]
 
 ### --hooks-worker-handler-host
 Host of the hook worker.  
-**Default value:** `"localhost"`
+**Default value:** `"127.0.0.1"`
 
 ### --hooks-worker-handler-port
 Port of the hook worker.  

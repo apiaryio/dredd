@@ -33,7 +33,7 @@ execCommand = (options = {}, cb) ->
   stderr = ''
   exitStatus = null
   finished = false
-  options.server ?= "http://localhost:#{PORT}"
+  options.server ?= "http://127.0.0.1:#{PORT}"
   options.level ?= 'info'
   new Dredd(options).run (error, stats = {}) ->
     if not finished
@@ -340,17 +340,17 @@ describe 'Dredd class Integration', ->
     fileFound = null
 
     errorCmd =
-      server: "http://localhost:#{PORT + 1}"
+      server: "http://127.0.0.1:#{PORT + 1}"
       options:
-        path: ["http://localhost:#{PORT + 1}/connection-error.apib"]
+        path: ["http://127.0.0.1:#{PORT + 1}/connection-error.apib"]
 
     wrongCmd =
       options:
-        path: ["http://localhost:#{PORT}/not-found.apib"]
+        path: ["http://127.0.0.1:#{PORT}/not-found.apib"]
 
     goodCmd =
       options:
-        path: ["http://localhost:#{PORT}/file.apib"]
+        path: ["http://127.0.0.1:#{PORT}/file.apib"]
 
     afterEach ->
       connectedToServer = null

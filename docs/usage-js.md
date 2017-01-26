@@ -28,7 +28,7 @@ Let's have a look at an example configuration first. (Please also see [options s
 
 ```javascript
 {
-  server: 'http://localhost:3000/api', // your URL to API endpoint the tests will run against
+  server: 'http://127.0.0.1:3000/api', // your URL to API endpoint the tests will run against
   options: {
 
     'path': [],       // Required Array if Strings; filepaths to API description documents, can use glob wildcards

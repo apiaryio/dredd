@@ -41,7 +41,7 @@ describe 'CLI - API Blueprint Document', ->
 
     describe 'When successfully loaded', ->
       dreddCommand = undefined
-      args = ['./test/fixtures/single-get.apib', "http://localhost:#{PORT}"]
+      args = ['./test/fixtures/single-get.apib', "http://127.0.0.1:#{PORT}"]
 
       beforeEach (done) ->
         execDredd args, (err, commandInfo) ->
@@ -57,7 +57,7 @@ describe 'CLI - API Blueprint Document', ->
       dreddCommand = undefined
       args = [
         './test/fixtures/error-blueprint.apib'
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT}"
       ]
 
       beforeEach (done) ->
@@ -74,7 +74,7 @@ describe 'CLI - API Blueprint Document', ->
       dreddCommand = undefined
       args = [
         './test/fixtures/warning-blueprint.apib'
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT}"
         '--no-color'
       ]
 

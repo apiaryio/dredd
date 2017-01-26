@@ -72,7 +72,7 @@ describe "DreddCommand class Integration", () ->
     describe('When specifying custom configuration file by --config', ->
       configPath = '../../custom-dredd-config-path.yaml'
       cmd = {argv: ['--config', configPath]}
-      options = {_: ['api-description.apib', 'http://localhost']}
+      options = {_: ['api-description.apib', 'http://127.0.0.1']}
 
       fsExistsSync = undefined
       configUtilsLoad = undefined
@@ -101,7 +101,7 @@ describe "DreddCommand class Integration", () ->
     describe('When dredd.yml exists', ->
       configPath = './dredd.yml'
       cmd = {argv: []}
-      options = {_: ['api-description.apib', 'http://localhost']}
+      options = {_: ['api-description.apib', 'http://127.0.0.1']}
 
       fsExistsSync = undefined
       configUtilsLoad = undefined
@@ -130,7 +130,7 @@ describe "DreddCommand class Integration", () ->
     describe('When dredd.yml does not exist', ->
       configPath = './dredd.yml'
       cmd = {argv: []}
-      options = {_: ['api-description.apib', 'http://localhost']}
+      options = {_: ['api-description.apib', 'http://127.0.0.1']}
 
       fsExistsSync = undefined
       configUtilsLoad = undefined
@@ -161,16 +161,16 @@ describe "DreddCommand class Integration", () ->
     server = null
 
     errorCmd = argv: [
-      "http://localhost:#{PORT+1}/connection-error.apib"
-      "http://localhost:#{PORT+1}"
+      "http://127.0.0.1:#{PORT+1}/connection-error.apib"
+      "http://127.0.0.1:#{PORT+1}"
     ]
     wrongCmd = argv: [
-      "http://localhost:#{PORT}/not-found.apib"
-      "http://localhost:#{PORT}"
+      "http://127.0.0.1:#{PORT}/not-found.apib"
+      "http://127.0.0.1:#{PORT}"
     ]
     goodCmd = argv: [
-      "http://localhost:#{PORT}/file.apib"
-      "http://localhost:#{PORT}"
+      "http://127.0.0.1:#{PORT}/file.apib"
+      "http://127.0.0.1:#{PORT}"
     ]
 
     before (done) ->
