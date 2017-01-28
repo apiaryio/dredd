@@ -173,7 +173,7 @@ class DreddCommand
         else if config['language'] == 'perl'
           console.log "  $ cpanm Dredd::Hooks"
         else if config['language'] == 'go'
-          console.log "  $ go get github.com/snikch/goodman"
+          console.log "  $ go get github.com/snikch/goodman/cmd/goodman"
 
         console.log "  $ dredd"
         console.log ""

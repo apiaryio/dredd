@@ -9,9 +9,7 @@ Go hooks are using [Dredd's hooks handler socket interface](hooks-new-language.m
 ## Installation
 
 ```
-$ go get github.com/snikch/goodman
-$ cd $GOPATH/src/github.com/snikch/goodman
-$ go build -o $GOPATH/bin/goodman github.com/snikch/goodman/cmd/goodman
+$ go get github.com/snikch/goodman/cmd/goodman
 ```
 
 ## Usage
