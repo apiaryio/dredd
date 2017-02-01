@@ -149,9 +149,7 @@ class HooksWorkerClient
         msg = '''\
           Go hooks handler command not found in $GOPATH/bin
           Install go hooks handler by running:
-          $ go get github.com/snikch/goodman
-          $ cd $GOPATH/src/github.com/snikch/goodman
-          $ go build -o $GOPATH/bin/goodman github.com/snikch/goodman/cmd/goodman
+          $ go get github.com/snikch/goodman/cmd/goodman
         '''
         return callback(new Error(msg))
       else

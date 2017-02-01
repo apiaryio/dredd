@@ -327,9 +327,7 @@ describe 'Hooks worker client', ->
       it 'should write a hint how to install', (done) ->
         loadWorkerClient (err) ->
           assert.isDefined err
-          assert.include err.message, "go get github.com/snikch/goodman"
-          assert.include err.message, "cd $GOPATH/src/github.com/snikch/goodman"
-          assert.include err.message, "go build -o $GOPATH/bin/goodman github.com/snikch/goodman/cmd/goodman"
+          assert.include err.message, "go get github.com/snikch/goodman/cmd/goodman"
           done()
 
     describe 'when --language go option is given and the worker is installed', ->
