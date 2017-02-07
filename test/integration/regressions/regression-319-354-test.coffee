@@ -5,7 +5,7 @@ clone = require 'clone'
 
 
 PORT = 3333
-DREDD_BIN = require.resolve '../../bin/dredd'
+DREDD_BIN = require.resolve '../../../bin/dredd'
 
 
 runDredd = (descriptionFile, cb) ->

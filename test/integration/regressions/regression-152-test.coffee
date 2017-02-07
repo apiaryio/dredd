@@ -1,13 +1,13 @@
 {assert} = require('chai')
 {exec} = require('child_process')
-express = require 'express'
-clone = require 'clone'
-bodyParser = require 'body-parser'
-fs = require 'fs'
+express = require('express')
+clone = require('clone')
+bodyParser = require('body-parser')
+fs = require('fs')
 
 PORT = 3333
 CMD_PREFIX = ''
-DREDD_BIN = require.resolve '../../bin/dredd'
+DREDD_BIN = require.resolve '../../../bin/dredd'
 
 stderr = ''
 stdout = ''
