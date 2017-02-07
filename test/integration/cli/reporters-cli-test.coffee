@@ -3,7 +3,7 @@ fs = require 'fs'
 clone = require 'clone'
 {assert} = require 'chai'
 
-{runDreddCommand, startServer} = require './helpers'
+{runDreddCommand, startServer} = require '../helpers'
 
 
 PORT = 8887

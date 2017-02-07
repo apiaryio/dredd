@@ -1,6 +1,7 @@
 {assert} = require 'chai'
 
-{runDreddCommand, startServer, isProcessRunning, killAll} = require './helpers'
+{runDreddCommand, startServer} = require '../helpers'
+{isProcessRunning, killAll} = require './helpers'
 
 
 PORT = 8887
