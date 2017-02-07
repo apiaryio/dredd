@@ -3,7 +3,7 @@ fs = require 'fs'
 clone = require 'clone'
 {assert} = require 'chai'
 
-{execDredd, startServer} = require './helpers'
+{runDreddCommand, startServer} = require './helpers'
 
 
 PORT = 8887
@@ -35,7 +35,7 @@ describe 'CLI - Reporters', ->
     ]
 
     beforeEach (done) ->
-      execDredd args, (err, commandInfo) ->
+      runDreddCommand args, (err, commandInfo) ->
         dreddCommand = commandInfo
         done(err)
 
@@ -79,7 +79,7 @@ describe 'CLI - Reporters', ->
       ]
 
       beforeEach (done) ->
-        execDredd args, {env}, (err, commandInfo) ->
+        runDreddCommand args, {env}, (err, commandInfo) ->
           dreddCommand = commandInfo
           stepRequest = apiary.requests['/apis/public/tests/steps?testRunId=1234_id'][0]
           done(err)
@@ -116,7 +116,7 @@ describe 'CLI - Reporters', ->
       ]
 
       beforeEach (done) ->
-        execDredd args, {env}, (err, commandInfo) ->
+        runDreddCommand args, {env}, (err, commandInfo) ->
           dreddCommand = commandInfo
           updateRequest = apiary.requests['/apis/public/tests/run/1234_id'][0]
           stepRequest = apiary.requests['/apis/public/tests/steps?testRunId=1234_id'][0]
@@ -172,7 +172,7 @@ describe 'CLI - Reporters', ->
       ]
 
       beforeEach (done) ->
-        execDredd args, {env}, (err, commandInfo) ->
+        runDreddCommand args, {env}, (err, commandInfo) ->
           dreddCommand = commandInfo
           updateRequest = apiary.requests['/apis/public/tests/run/1234_id'][0]
           stepRequest = apiary.requests['/apis/public/tests/steps?testRunId=1234_id'][0]
@@ -215,7 +215,7 @@ describe 'CLI - Reporters', ->
     ]
 
     beforeEach (done) ->
-      execDredd args, (err, commandInfo) ->
+      runDreddCommand args, (err, commandInfo) ->
         dreddCommand = commandInfo
         done(err)
 
@@ -238,7 +238,7 @@ describe 'CLI - Reporters', ->
     ]
 
     beforeEach (done) ->
-      execDredd args, (err, commandInfo) ->
+      runDreddCommand args, (err, commandInfo) ->
         dreddCommand = commandInfo
         done(err)
 

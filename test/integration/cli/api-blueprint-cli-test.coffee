@@ -2,7 +2,7 @@
 fs = require 'fs'
 {assert} = require 'chai'
 
-{execDredd, startServer} = require './helpers'
+{runDreddCommand, startServer} = require './helpers'
 
 
 PORT = 8887
@@ -44,7 +44,7 @@ describe 'CLI - API Blueprint Document', ->
       args = ['./test/fixtures/single-get.apib', "http://127.0.0.1:#{PORT}"]
 
       beforeEach (done) ->
-        execDredd args, (err, commandInfo) ->
+        runDreddCommand args, (err, commandInfo) ->
           dreddCommand = commandInfo
           done(err)
 
@@ -61,7 +61,7 @@ describe 'CLI - API Blueprint Document', ->
       ]
 
       beforeEach (done) ->
-        execDredd args, (err, commandInfo) ->
+        runDreddCommand args, (err, commandInfo) ->
           dreddCommand = commandInfo
           done(err)
 
@@ -79,7 +79,7 @@ describe 'CLI - API Blueprint Document', ->
       ]
 
       beforeEach (done) ->
-        execDredd args, (err, commandInfo) ->
+        runDreddCommand args, (err, commandInfo) ->
           dreddCommand = commandInfo
           done(err)
 

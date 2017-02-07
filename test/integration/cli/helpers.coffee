@@ -10,7 +10,7 @@ bodyParser = require 'body-parser'
 DREDD_BIN = require.resolve('../../../bin/dredd')
 
 
-execCommand = (command, args, options = {}, callback) ->
+runCommand = (command, args, options = {}, callback) ->
   [callback, options] = [options, undefined] if typeof options is 'function'
 
   stdout = ''
@@ -26,8 +26,8 @@ execCommand = (command, args, options = {}, callback) ->
   )
 
 
-execDredd = (args, options, callback) ->
-  execCommand('node', [DREDD_BIN].concat(args), options, callback)
+runDreddCommand = (args, options, callback) ->
+  runCommand('node', [DREDD_BIN].concat(args), options, callback)
 
 
 startServer = (configure, port, callback) ->
@@ -69,7 +69,7 @@ killAll = ->
 
 module.exports = {
   DREDD_BIN
-  execDredd
+  runDreddCommand
   startServer
   isProcessRunning
   killAll

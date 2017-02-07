@@ -1,6 +1,6 @@
 {assert} = require 'chai'
 
-{execDredd, startServer, isProcessRunning, killAll} = require './helpers'
+{runDreddCommand, startServer, isProcessRunning, killAll} = require './helpers'
 
 
 PORT = 8887
@@ -32,7 +32,7 @@ describe 'CLI - Server Process', ->
       args = ['./test/fixtures/single-get.apib', "http://127.0.0.1:#{PORT}"]
 
       beforeEach (done) ->
-        execDredd args, (err, commandInfo) ->
+        runDreddCommand args, (err, commandInfo) ->
           dreddCommand = commandInfo
           done(err)
 
@@ -46,7 +46,7 @@ describe 'CLI - Server Process', ->
       args = ['./test/fixtures/apiary.apib', "http://127.0.0.1:#{PORT_NON_EXISTENT}"]
 
       beforeEach (done) ->
-        execDredd args, (err, commandInfo) ->
+        runDreddCommand args, (err, commandInfo) ->
           dreddCommand = commandInfo
           done(err)
 
@@ -76,7 +76,7 @@ describe 'CLI - Server Process', ->
       ]
 
       beforeEach (done) ->
-        execDredd args, (err, commandInfo) ->
+        runDreddCommand args, (err, commandInfo) ->
           dreddCommand = commandInfo
           done(err)
 
@@ -120,7 +120,7 @@ describe 'CLI - Server Process', ->
           ]
 
           beforeEach (done) ->
-            execDredd args, (err, commandInfo) ->
+            runDreddCommand args, (err, commandInfo) ->
               dreddCommand = commandInfo
               done(err)
 
@@ -147,7 +147,7 @@ describe 'CLI - Server Process', ->
       ]
 
       beforeEach (done) ->
-        execDredd args, (err, commandInfo) ->
+        runDreddCommand args, (err, commandInfo) ->
           dreddCommand = commandInfo
           done(err)
 
