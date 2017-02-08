@@ -183,7 +183,7 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.rb'
+            assert.equal crossSpawnStub.spawn.getCall(0).args[1][4], 'somefile.rb'
             done()
 
     describe 'when --language ruby option is given and the worker is not installed', ->
@@ -247,7 +247,7 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.py'
+            assert.equal crossSpawnStub.spawn.getCall(0).args[1][4], 'somefile.py'
             done()
 
     describe 'when --language python option is given and the worker is not installed', ->
@@ -310,7 +310,7 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.py'
+            assert.equal crossSpawnStub.spawn.getCall(0).args[1][4], 'somefile.py'
             done()
 
     describe 'when --language go option is given and the worker is not installed', ->
@@ -373,7 +373,7 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'gobinary'
+            assert.equal crossSpawnStub.spawn.getCall(0).args[1][4], 'gobinary'
             done()
 
     describe 'when --language php option is given and the worker is not installed', ->
@@ -436,7 +436,7 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.py'
+            assert.equal crossSpawnStub.spawn.getCall(0).args[1][4], 'somefile.py'
             done()
 
     describe 'when --language perl option is given and the worker is not installed', ->
@@ -499,7 +499,7 @@ describe 'Hooks worker client', ->
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
-            assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'someotherfile'
+            assert.equal crossSpawnStub.spawn.getCall(0).args[1][4], 'someotherfile'
             done()
 
     describe "after loading", ->
