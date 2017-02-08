@@ -10,30 +10,6 @@ DEFAULT_SERVER_PORT = 9876
 DREDD_BIN = require.resolve('../../bin/dredd')
 
 
-# Runs CLI command with given arguments. Records and provides stdout, stderr
-# and also 'output', which is the two combined. Also provides 'exitStatus'
-# of the process.
-runCommand = (command, args, spawnOptions = {}, callback) ->
-  [callback, spawnOptions] = [spawnOptions, undefined] if typeof spawnOptions is 'function'
-
-  stdout = ''
-  stderr = ''
-
-  cli = spawn(command, args, spawnOptions)
-
-  cli.stdout.on('data', (data) -> stdout += data)
-  cli.stderr.on('data', (data) -> stderr += data)
-
-  cli.on('close', (exitStatus) ->
-    callback(null, {stdout, stderr, output: stdout + stderr, exitStatus})
-  )
-
-
-# Runs Dredd as a CLI command, with given arguments.
-runDreddCommand = (args, spawnOptions, callback) ->
-  runCommand('node', [DREDD_BIN].concat(args), spawnOptions, callback)
-
-
 # Creates a new Express.js instance. Automatically records everything about
 # requests which the server has recieved during runtime. Sets JSON body parser
 # and 'application/json' as default value for the Content-Type header. In
@@ -136,10 +112,51 @@ runDreddWithServer = (dredd, app, serverPort, callback) ->
   )
 
 
+# Runs CLI command with given arguments. Records and provides stdout, stderr
+# and also 'output', which is the two combined. Also provides 'exitStatus'
+# of the process.
+runCommand = (command, args, spawnOptions = {}, callback) ->
+  [callback, spawnOptions] = [spawnOptions, undefined] if typeof spawnOptions is 'function'
+
+  stdout = ''
+  stderr = ''
+
+  cli = spawn(command, args, spawnOptions)
+
+  cli.stdout.on('data', (data) -> stdout += data)
+  cli.stderr.on('data', (data) -> stderr += data)
+
+  cli.on('close', (exitStatus) ->
+    callback(null, {stdout, stderr, output: stdout + stderr, exitStatus})
+  )
+
+
+# Runs Dredd as a CLI command, with given arguments.
+runDreddCommand = (args, spawnOptions, callback) ->
+  runCommand('node', [DREDD_BIN].concat(args), spawnOptions, callback)
+
+
+# Runs given Express.js server instance and then runs Dredd command with given
+# arguments. Collects their runtime information and provides it to the callback.
+runDreddCommandWithServer = (args, app, serverPort, callback) ->
+  [callback, serverPort] = [serverPort, DEFAULT_SERVER_PORT] if typeof serverPort is 'function'
+
+  server = app.listen(serverPort, (err, serverRuntimeInfo) ->
+    return callback(err) if err
+
+    runDreddCommand(args, (err, dreddCommandInfo) ->
+      server.close( ->
+        callback(err, {server: serverRuntimeInfo, dredd: dreddCommandInfo})
+      )
+    )
+  )
+
+
 module.exports = {
   DEFAULT_SERVER_PORT
-  runDreddCommand
   createServer
   runDredd
   runDreddWithServer
+  runDreddCommand
+  runDreddCommandWithServer
 }
