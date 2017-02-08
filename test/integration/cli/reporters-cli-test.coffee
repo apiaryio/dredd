@@ -3,54 +3,58 @@ fs = require 'fs'
 clone = require 'clone'
 {assert} = require 'chai'
 
-{runDreddCommand, startServer} = require '../helpers'
+{runDreddCommand, createServer, DEFAULT_SERVER_PORT} = require '../helpers'
 
 
-PORT = 8887
-PORT_APIARY = PORT + 1
+APIARY_PORT = DEFAULT_SERVER_PORT + 1
 
 
 describe 'CLI - Reporters', ->
   server = undefined
+  serverRuntimeInfo = undefined
 
-  configureServer = (app) ->
+  beforeEach (done) ->
+    app = createServer()
+
     app.get '/machines', (req, res) ->
       res.send [{type: 'bulldozer', name: 'willy'}]
 
-  beforeEach (done) ->
-    startServer configureServer, PORT, (err, serverInfo) ->
-      server = serverInfo
+    server = app.listen (err, info) ->
+      serverRuntimeInfo = info
       done(err)
 
   afterEach (done) ->
-    server.process.close(done)
+    server.close(done)
 
 
   describe 'When -r/--reporter is provided to use additional reporters', ->
-    dreddCommand = undefined
+    dreddCommandInfo = undefined
     args = [
       './test/fixtures/single-get.apib'
-      "http://127.0.0.1:#{PORT}"
+      "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
       '--reporter=nyan'
     ]
 
     beforeEach (done) ->
-      runDreddCommand args, (err, commandInfo) ->
-        dreddCommand = commandInfo
+      runDreddCommand args, (err, info) ->
+        dreddCommandInfo = info
         done(err)
 
     it 'should use given reporter', ->
       # nyan cat ears should exist in stdout
-      assert.include dreddCommand.stdout, '/\\_/\\'
+      assert.include dreddCommandInfo.stdout, '/\\_/\\'
 
 
   describe 'When apiary reporter is used', ->
     apiary = undefined
+    apiaryRuntimeInfo = undefined
 
     env = clone process.env
-    env.APIARY_API_URL = "http://127.0.0.1:#{PORT_APIARY}"
+    env.APIARY_API_URL = "http://127.0.0.1:#{APIARY_PORT}"
 
-    configureApiary = (app) ->
+    beforeEach (done) ->
+      app = createServer()
+
       app.post '/apis/*', (req, res) ->
         res.send
           _id: '1234_id'
@@ -60,38 +64,36 @@ describe 'CLI - Reporters', ->
       app.all '*', (req, res) ->
         res.send {}
 
-    beforeEach (done) ->
-      startServer configureApiary, PORT_APIARY, (err, serverInfo) ->
-        apiary = serverInfo
+      apiary = app.listen APIARY_PORT, (err, info) ->
+        apiaryRuntimeInfo = info
         done(err)
 
     afterEach (done) ->
-      apiary.process.close(done)
-
+      apiary.close(done)
 
     describe 'When Dredd successfully performs requests to Apiary', ->
-      dreddCommand = undefined
+      dreddCommandInfo = undefined
       stepRequest = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://127.0.0.1:#{PORT}"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
         '--reporter=apiary'
       ]
 
       beforeEach (done) ->
-        runDreddCommand args, {env}, (err, commandInfo) ->
-          dreddCommand = commandInfo
-          stepRequest = apiary.requests['/apis/public/tests/steps?testRunId=1234_id'][0]
+        runDreddCommand args, {env}, (err, info) ->
+          dreddCommandInfo = info
+          stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0]
           done(err)
 
       it 'should print URL of the test report', ->
-        assert.include dreddCommand.stdout, 'http://example.com/test/run/1234_id'
+        assert.include dreddCommandInfo.stdout, 'http://example.com/test/run/1234_id'
       it 'should print warning about missing Apiary API settings', ->
-        assert.include dreddCommand.stdout, 'Apiary API Key or API Project Subdomain were not provided.'
+        assert.include dreddCommandInfo.stdout, 'Apiary API Key or API Project Subdomain were not provided.'
       it 'should exit with status 0', ->
-        assert.equal dreddCommand.exitStatus, 0
+        assert.equal dreddCommandInfo.exitStatus, 0
       it 'should perform 3 requests to Apiary', ->
-        assert.deepEqual apiary.requestCounts,
+        assert.deepEqual apiaryRuntimeInfo.requestCounts,
           '/apis/public/tests/runs': 1
           '/apis/public/tests/run/1234_id': 1
           '/apis/public/tests/steps?testRunId=1234_id': 1
@@ -105,30 +107,30 @@ describe 'CLI - Reporters', ->
         assert.deepProperty stepRequest.body, 'resultData.result.statusCode.validator'
 
     describe 'When hooks file uses hooks.log function for logging', ->
-      dreddCommand = undefined
+      dreddCommandInfo = undefined
       updateRequest = undefined
       stepRequest = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://127.0.0.1:#{PORT}"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
         '--reporter=apiary'
         '--hookfiles=./test/fixtures/hooks_log.coffee'
       ]
 
       beforeEach (done) ->
-        runDreddCommand args, {env}, (err, commandInfo) ->
-          dreddCommand = commandInfo
-          updateRequest = apiary.requests['/apis/public/tests/run/1234_id'][0]
-          stepRequest = apiary.requests['/apis/public/tests/steps?testRunId=1234_id'][0]
+        runDreddCommand args, {env}, (err, info) ->
+          dreddCommandInfo = info
+          updateRequest = apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0]
+          stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0]
           done(err)
 
       it 'hooks.log should print also to console', ->
         # because --level=info is lower than --level=hook
-        assert.include dreddCommand.output, 'using hooks.log to debug'
+        assert.include dreddCommandInfo.output, 'using hooks.log to debug'
       it 'hooks.log should use toString on objects', ->
-        assert.include dreddCommand.output, 'Error object!'
+        assert.include dreddCommandInfo.output, 'Error object!'
       it 'should exit with status 0', ->
-        assert.equal dreddCommand.exitStatus, 0
+        assert.equal dreddCommandInfo.exitStatus, 0
       it 'should send result stats in PATCH request to Apiary with logs', ->
         assert.isObject updateRequest.body
         assert.deepPropertyVal updateRequest.body, 'status', 'passed'
@@ -159,12 +161,12 @@ describe 'CLI - Reporters', ->
         assert.operator stepRequest.body.startedAt, '<=', updateRequest.body.logs[2].timestamp
 
     describe 'When hooks file uses hooks.log function for logging and hooks are in sandbox mode', ->
-      dreddCommand = undefined
+      dreddCommandInfo = undefined
       updateRequest = undefined
       stepRequest = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://127.0.0.1:#{PORT}"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
         '--reporter=apiary'
         '--level=info'
         '--sandbox'
@@ -172,18 +174,18 @@ describe 'CLI - Reporters', ->
       ]
 
       beforeEach (done) ->
-        runDreddCommand args, {env}, (err, commandInfo) ->
-          dreddCommand = commandInfo
-          updateRequest = apiary.requests['/apis/public/tests/run/1234_id'][0]
-          stepRequest = apiary.requests['/apis/public/tests/steps?testRunId=1234_id'][0]
+        runDreddCommand args, {env}, (err, info) ->
+          dreddCommandInfo = info
+          updateRequest = apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0]
+          stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0]
           done(err)
 
       it 'hooks.log should not print also to console', ->
         # because we are running in sandboxed mode with higher --level
-        assert.notInclude dreddCommand.output, 'using sandboxed hooks.log'
-        assert.notInclude dreddCommand.output, 'shall not print'
+        assert.notInclude dreddCommandInfo.output, 'using sandboxed hooks.log'
+        assert.notInclude dreddCommandInfo.output, 'shall not print'
       it 'should exit with status 0', ->
-        assert.equal dreddCommand.exitStatus, 0
+        assert.equal dreddCommandInfo.exitStatus, 0
       it 'should send result stats in PATCH request to Apiary with logs', ->
         assert.isObject updateRequest.body
         assert.deepPropertyVal updateRequest.body, 'status', 'passed'
@@ -206,17 +208,17 @@ describe 'CLI - Reporters', ->
 
 
   describe 'When -o/--output is used to specify output file', ->
-    dreddCommand = undefined
+    dreddCommandInfo = undefined
     args = [
       './test/fixtures/single-get.apib'
-      "http://127.0.0.1:#{PORT}"
+      "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
       '--reporter=junit'
       '--output=__test_file_output__.xml'
     ]
 
     beforeEach (done) ->
-      runDreddCommand args, (err, commandInfo) ->
-        dreddCommand = commandInfo
+      runDreddCommand args, (err, info) ->
+        dreddCommandInfo = info
         done(err)
 
     afterEach ->
@@ -227,10 +229,10 @@ describe 'CLI - Reporters', ->
 
 
   describe 'When -o/--output is used multiple times to specify output files', ->
-    dreddCommand = undefined
+    dreddCommandInfo = undefined
     args = [
       './test/fixtures/single-get.apib'
-      "http://127.0.0.1:#{PORT}"
+      "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
       '--reporter=junit'
       '--output=__test_file_output1__.xml'
       '--reporter=junit'
@@ -238,8 +240,8 @@ describe 'CLI - Reporters', ->
     ]
 
     beforeEach (done) ->
-      runDreddCommand args, (err, commandInfo) ->
-        dreddCommand = commandInfo
+      runDreddCommand args, (err, info) ->
+        dreddCommandInfo = info
         done(err)
 
     afterEach ->

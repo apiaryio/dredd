@@ -3,16 +3,19 @@ fs = require 'fs'
 os = require 'os'
 {assert} = require 'chai'
 
-{runDreddCommand, startServer} = require '../helpers'
+{runDreddCommand, createServer, DEFAULT_SERVER_PORT} = require '../helpers'
 
 
-PORT = 8887
-PORT_NON_EXISTENT = PORT + 1
+NON_EXISTENT_PORT = DEFAULT_SERVER_PORT + 1
 
 
 describe 'CLI - API Description Document', ->
   server = undefined
-  configureServer = (app) ->
+  serverRuntimeInfo = undefined
+
+  beforeEach (done) ->
+    app = createServer()
+
     app.get '/single-get.apib', (req, res) ->
       res.type 'text/vnd.apiblueprint'
       stream = fs.createReadStream './test/fixtures/single-get.apib'
@@ -33,221 +36,220 @@ describe 'CLI - API Description Document', ->
     app.post '/machine-types', (req, res) ->
       res.send [{name: 'bulldozer'}]
 
-  beforeEach (done) ->
-    startServer configureServer, PORT, (err, serverInfo) ->
-      server = serverInfo
+    server = app.listen (err, info) ->
+      serverRuntimeInfo = info
       done(err)
 
   afterEach (done) ->
-    server.process.close(done)
+    server.close(done)
 
 
   describe 'When loaded from file', ->
 
     describe 'When loaded by glob pattern', ->
-      dreddCommand = undefined
-      args = ['./test/fixtures/single-g*t.apib', "http://127.0.0.1:#{PORT}"]
+      dreddCommandInfo = undefined
+      args = ['./test/fixtures/single-g*t.apib', "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"]
 
       beforeEach (done) ->
-        runDreddCommand args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should request /machines', ->
-        assert.deepEqual server.requestCounts, {'/machines': 1}
+        assert.deepEqual serverRuntimeInfo.requestCounts, {'/machines': 1}
       it 'should exit with status 0', ->
-        assert.equal dreddCommand.exitStatus, 0
+        assert.equal dreddCommandInfo.exitStatus, 0
 
     describe 'When file not found', ->
-      dreddCommand = undefined
+      dreddCommandInfo = undefined
       args = [
         './test/fixtures/__non-existent__.apib'
-        "http://127.0.0.1:#{PORT}"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
       ]
 
       beforeEach (done) ->
-        runDreddCommand args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should exit with status 1', ->
-        assert.equal dreddCommand.exitStatus, 1
+        assert.equal dreddCommandInfo.exitStatus, 1
       it 'should print error message to stderr', ->
-        assert.include dreddCommand.stderr, 'not found'
+        assert.include dreddCommandInfo.stderr, 'not found'
 
     describe 'When given path exists, but can\'t be read', ->
-      dreddCommand = undefined
+      dreddCommandInfo = undefined
       args = [
         os.homedir(),
-        "http://127.0.0.1:#{PORT}"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
       ]
 
       beforeEach (done) ->
-        runDreddCommand args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should exit with status 1', ->
-        assert.equal dreddCommand.exitStatus, 1
+        assert.equal dreddCommandInfo.exitStatus, 1
       it 'should print error message to stderr', ->
-        assert.include dreddCommand.stderr, 'Error when reading file'
+        assert.include dreddCommandInfo.stderr, 'Error when reading file'
 
 
   describe 'When loaded from URL', ->
 
     describe 'When successfully loaded from URL', ->
-      dreddCommand = undefined
+      dreddCommandInfo = undefined
       args = [
-        "http://127.0.0.1:#{PORT}/single-get.apib"
-        "http://127.0.0.1:#{PORT}"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}/single-get.apib"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
       ]
 
       beforeEach (done) ->
-        runDreddCommand args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should download API Description Document from server', ->
-        assert.equal server.requestCounts['/single-get.apib'], 1
+        assert.equal serverRuntimeInfo.requestCounts['/single-get.apib'], 1
       it 'should request /machines', ->
-        assert.deepEqual server.requestCounts, {'/machines': 1, '/single-get.apib': 1}
+        assert.deepEqual serverRuntimeInfo.requestCounts, {'/machines': 1, '/single-get.apib': 1}
       it 'should exit with status 0', ->
-        assert.equal dreddCommand.exitStatus, 0
+        assert.equal dreddCommandInfo.exitStatus, 0
 
     describe 'When URL points to non-existent server', ->
-      dreddCommand = undefined
+      dreddCommandInfo = undefined
       args = [
-        "http://127.0.0.1:#{PORT_NON_EXISTENT}/single-get.apib"
-        "http://127.0.0.1:#{PORT}"
+        "http://127.0.0.1:#{NON_EXISTENT_PORT}/single-get.apib"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
       ]
 
       beforeEach (done) ->
-        runDreddCommand args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should not request server', ->
-        assert.isFalse server.requested
+        assert.isFalse serverRuntimeInfo.requested
       it 'should exit with status 1', ->
-        assert.equal dreddCommand.exitStatus, 1
+        assert.equal dreddCommandInfo.exitStatus, 1
       it 'should print error message to stderr', ->
-        assert.include dreddCommand.stderr, 'Error when loading file from URL'
-        assert.include dreddCommand.stderr, 'Is the provided URL correct?'
-        assert.include dreddCommand.stderr, "http://127.0.0.1:#{PORT_NON_EXISTENT}/single-get.apib"
+        assert.include dreddCommandInfo.stderr, 'Error when loading file from URL'
+        assert.include dreddCommandInfo.stderr, 'Is the provided URL correct?'
+        assert.include dreddCommandInfo.stderr, "http://127.0.0.1:#{NON_EXISTENT_PORT}/single-get.apib"
 
     describe 'When URL points to non-existent resource', ->
-      dreddCommand = undefined
+      dreddCommandInfo = undefined
       args = [
-        "http://127.0.0.1:#{PORT}/__non-existent__.apib"
-        "http://127.0.0.1:#{PORT}"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}/__non-existent__.apib"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
       ]
 
       beforeEach (done) ->
-        runDreddCommand args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should request server', ->
-        assert.isTrue server.requested
+        assert.isTrue serverRuntimeInfo.requested
       it 'should exit with status 1', ->
-        assert.equal dreddCommand.exitStatus, 1
+        assert.equal dreddCommandInfo.exitStatus, 1
       it 'should print error message to stderr', ->
-        assert.include dreddCommand.stderr, 'Unable to load file from URL'
-        assert.include dreddCommand.stderr, 'responded with status code 404'
-        assert.include dreddCommand.stderr, "http://127.0.0.1:#{PORT}/__non-existent__.apib"
+        assert.include dreddCommandInfo.stderr, 'Unable to load file from URL'
+        assert.include dreddCommandInfo.stderr, 'responded with status code 404'
+        assert.include dreddCommandInfo.stderr, "http://127.0.0.1:#{DEFAULT_SERVER_PORT}/__non-existent__.apib"
 
 
   describe 'When loaded by -p/--path', ->
 
     describe 'When loaded from file', ->
-      dreddCommand = undefined
+      dreddCommandInfo = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://127.0.0.1:#{PORT}"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
         "--path=./test/fixtures/single-get-uri-template.apib"
       ]
 
       beforeEach (done) ->
-        runDreddCommand args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should request /machines, /machines/willy', ->
-        assert.deepEqual server.requestCounts, {'/machines': 1, '/machines/willy': 1}
+        assert.deepEqual serverRuntimeInfo.requestCounts, {'/machines': 1, '/machines/willy': 1}
       it 'should exit with status 0', ->
-        assert.equal dreddCommand.exitStatus, 0
+        assert.equal dreddCommandInfo.exitStatus, 0
 
     describe 'When loaded from URL', ->
-      dreddCommand = undefined
+      dreddCommandInfo = undefined
       args = [
         './test/fixtures/single-get-uri-template.apib'
-        "http://127.0.0.1:#{PORT}"
-        "--path=http://127.0.0.1:#{PORT}/single-get.apib"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+        "--path=http://127.0.0.1:#{DEFAULT_SERVER_PORT}/single-get.apib"
       ]
 
       beforeEach (done) ->
-        runDreddCommand args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should download API Description Document from server', ->
-        assert.equal server.requestCounts['/single-get.apib'], 1
+        assert.equal serverRuntimeInfo.requestCounts['/single-get.apib'], 1
       it 'should request /machines, /machines/willy', ->
-        assert.deepEqual server.requestCounts, {'/machines': 1, '/machines/willy': 1, '/single-get.apib': 1}
+        assert.deepEqual serverRuntimeInfo.requestCounts, {'/machines': 1, '/machines/willy': 1, '/single-get.apib': 1}
       it 'should exit with status 0', ->
-        assert.equal dreddCommand.exitStatus, 0
+        assert.equal dreddCommandInfo.exitStatus, 0
 
     describe 'When used multiple times', ->
-      dreddCommand = undefined
+      dreddCommandInfo = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://127.0.0.1:#{PORT}"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
         "--path=./test/fixtures/single-get-uri-template.apib"
         "--path=./test/fixtures/single-get-path.apib"
       ]
 
       beforeEach (done) ->
-        runDreddCommand args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should request /machines, /machines/willy, /machines/caterpillar', ->
-        assert.deepEqual server.requestCounts, {'/machines': 1, '/machines/willy': 1, '/machines/caterpillar': 1}
+        assert.deepEqual serverRuntimeInfo.requestCounts, {'/machines': 1, '/machines/willy': 1, '/machines/caterpillar': 1}
       it 'should exit with status 0', ->
-        assert.equal dreddCommand.exitStatus, 0
+        assert.equal dreddCommandInfo.exitStatus, 0
 
     describe 'When loaded by glob pattern', ->
-      dreddCommand = undefined
+      dreddCommandInfo = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://127.0.0.1:#{PORT}"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
         "--path=./test/fixtures/single-get-uri-temp*.apib"
       ]
 
       beforeEach (done) ->
-        runDreddCommand args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should request /machines, /machines/willy', ->
-        assert.deepEqual server.requestCounts, {'/machines': 1, '/machines/willy': 1}
+        assert.deepEqual serverRuntimeInfo.requestCounts, {'/machines': 1, '/machines/willy': 1}
       it 'should exit with status 0', ->
-        assert.equal dreddCommand.exitStatus, 0
+        assert.equal dreddCommandInfo.exitStatus, 0
 
     describe 'When additional file not found', ->
-      dreddCommand = undefined
+      dreddCommandInfo = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://127.0.0.1:#{PORT}"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
         "--path=./test/fixtures/__non-existent__.apib"
       ]
 
       beforeEach (done) ->
-        runDreddCommand args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should request /machines', ->
-        assert.deepEqual server.requestCounts, {'/machines': 1}
+        assert.deepEqual serverRuntimeInfo.requestCounts, {'/machines': 1}
       it 'should exit with status 0', ->
-        assert.equal dreddCommand.exitStatus, 0
+        assert.equal dreddCommandInfo.exitStatus, 0

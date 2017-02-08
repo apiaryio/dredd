@@ -1,7 +1,7 @@
 syncExec = require 'sync-exec'
 
 
-DREDD_BIN = require.resolve('../../bin/dredd')
+DREDD_BIN = require.resolve('../../../bin/dredd')
 
 
 isProcessRunning = (processName) ->

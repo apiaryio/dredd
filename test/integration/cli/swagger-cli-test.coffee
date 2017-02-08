@@ -2,15 +2,16 @@
 fs = require 'fs'
 {assert} = require 'chai'
 
-{runDreddCommand, startServer} = require '../helpers'
-
-
-PORT = 8887
+{runDreddCommand, createServer, DEFAULT_SERVER_PORT} = require '../helpers'
 
 
 describe 'CLI - Swagger Document', ->
   server = undefined
-  configureServer = (app) ->
+  serverRuntimeInfo = undefined
+
+  beforeEach (done) ->
+    app = createServer()
+
     app.get '/single-get.yaml', (req, res) ->
       res.type 'application/yaml'
       stream = fs.createReadStream './test/fixtures/single-get.yaml'
@@ -28,62 +29,61 @@ describe 'CLI - Swagger Document', ->
     app.post '/machine-types', (req, res) ->
       res.send [{name: 'bulldozer'}]
 
-  beforeEach (done) ->
-    startServer configureServer, PORT, (err, serverInfo) ->
-      server = serverInfo
+    server = app.listen (err, info) ->
+      serverRuntimeInfo = info
       done(err)
 
   afterEach (done) ->
-    server.process.close(done)
+    server.close(done)
 
 
   describe 'When loaded from file', ->
 
     describe 'When successfully loaded', ->
-      dreddCommand = undefined
-      args = ['./test/fixtures/single-get.yaml', "http://127.0.0.1:#{PORT}"]
+      dreddCommandInfo = undefined
+      args = ['./test/fixtures/single-get.yaml', "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"]
 
       beforeEach (done) ->
-        runDreddCommand args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should request /machines', ->
-        assert.deepEqual server.requestCounts, {'/machines': 1}
+        assert.deepEqual serverRuntimeInfo.requestCounts, {'/machines': 1}
       it 'should exit with status 0', ->
-        assert.equal dreddCommand.exitStatus, 0
+        assert.equal dreddCommandInfo.exitStatus, 0
 
     describe 'When Swagger is loaded with errors', ->
-      dreddCommand = undefined
+      dreddCommandInfo = undefined
       args = [
         './test/fixtures/error-swagger.yaml'
-        "http://127.0.0.1:#{PORT}"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
       ]
 
       beforeEach (done) ->
-        runDreddCommand args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should exit with status 1', ->
-        assert.equal dreddCommand.exitStatus, 1
+        assert.equal dreddCommandInfo.exitStatus, 1
       it 'should print error message to stderr', ->
-        assert.include dreddCommand.stderr, 'Error when processing API description'
+        assert.include dreddCommandInfo.stderr, 'Error when processing API description'
 
     describe 'When Swagger is loaded with warnings', ->
-      dreddCommand = undefined
+      dreddCommandInfo = undefined
       args = [
         './test/fixtures/warning-swagger.yaml'
-        "http://127.0.0.1:#{PORT}"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
         '--no-color'
       ]
 
       beforeEach (done) ->
-        runDreddCommand args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should exit with status 0', ->
-        assert.equal dreddCommand.exitStatus, 0
+        assert.equal dreddCommandInfo.exitStatus, 0
       it 'should print warning to stdout', ->
-        assert.include dreddCommand.stdout, 'warn: Parser warning'
+        assert.include dreddCommandInfo.stdout, 'warn: Parser warning'

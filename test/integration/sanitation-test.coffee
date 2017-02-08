@@ -3,7 +3,7 @@ clone = require('clone')
 express = require('express')
 {EventEmitter} = require('events')
 
-{runDredd, runDreddWithServer} = require('./helpers')
+{runDredd, createServer, runDreddWithServer} = require('./helpers')
 Dredd = require('../../src/dredd')
 
 
@@ -39,7 +39,7 @@ describe('Sanitation of Reported Data', ->
   )
 
   # helper for preparing Dredd instance with our custom emitter
-  createDredd = (fixtureName) ->
+  createDreddFromFixture = (fixtureName) ->
     new Dredd({
       emitter
       options: {
@@ -48,29 +48,30 @@ describe('Sanitation of Reported Data', ->
       }
     })
 
-  # helper for preparing server
-  createServer = (response) ->
-    app = express()
+  # helper for preparing the server under test
+  createServerFromResponse = (response) ->
+    app = createServer()
     app.put('/resource', (req, res) -> res.json(response))
     return app
 
 
   describe('Sanitation of the Entire Request Body', ->
-    results = undefined
+    dreddRuntimeInfo = undefined
 
     beforeEach((done) ->
-      dredd = createDredd('entire-request-body')
-      app = createServer({name: 123}) # 'name' should be string → failing test
+      dredd = createDreddFromFixture('entire-request-body')
+      app = createServerFromResponse({name: 123}) # 'name' should be string → failing test
 
-      runDreddWithServer(dredd, app, (args...) ->
-        [err, results] = args
-        done(err)
+      runDreddWithServer(dredd, app, (err, runtimeInfo) ->
+        return done(err) if err
+        dreddRuntimeInfo = runtimeInfo.dredd
+        done()
       )
     )
 
     it('results in one failed test', ->
-      assert.equal(results.stats.failures, 1)
-      assert.equal(results.stats.tests, 1)
+      assert.equal(dreddRuntimeInfo.stats.failures, 1)
+      assert.equal(dreddRuntimeInfo.stats.tests, 1)
     )
     it('emits expected events in expected order', ->
       assert.deepEqual((event.name for event in events), [
@@ -86,27 +87,28 @@ describe('Sanitation of Reported Data', ->
       assert.notInclude(test, sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
-      assert.notInclude(results.logging, sensitiveKey)
-      assert.notInclude(results.logging, sensitiveValue)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue)
     )
   )
 
   describe('Sanitation of the Entire Response Body', ->
-    results = undefined
+    dreddRuntimeInfo = undefined
 
     beforeEach((done) ->
-      dredd = createDredd('entire-response-body')
-      app = createServer({token: 123}) # 'token' should be string → failing test
+      dredd = createDreddFromFixture('entire-response-body')
+      app = createServerFromResponse({token: 123}) # 'token' should be string → failing test
 
-      runDreddWithServer(dredd, app, (args...) ->
-        [err, results] = args
-        done(err)
+      runDreddWithServer(dredd, app, (err, runtimeInfo) ->
+        return done(err) if err
+        dreddRuntimeInfo = runtimeInfo.dredd
+        done()
       )
     )
 
     it('results in one failed test', ->
-      assert.equal(results.stats.failures, 1)
-      assert.equal(results.stats.tests, 1)
+      assert.equal(dreddRuntimeInfo.stats.failures, 1)
+      assert.equal(dreddRuntimeInfo.stats.tests, 1)
     )
     it('emits expected events in expected order', ->
       assert.deepEqual((event.name for event in events), [
@@ -123,27 +125,28 @@ describe('Sanitation of Reported Data', ->
       assert.notInclude(test, sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
-      assert.notInclude(results.logging, sensitiveKey)
-      assert.notInclude(results.logging, sensitiveValue)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue)
     )
   )
 
   describe('Sanitation of a Request Body Attribute', ->
-    results = undefined
+    dreddRuntimeInfo = undefined
 
     beforeEach((done) ->
-      dredd = createDredd('request-body-attribute')
-      app = createServer({name: 123}) # 'name' should be string → failing test
+      dredd = createDreddFromFixture('request-body-attribute')
+      app = createServerFromResponse({name: 123}) # 'name' should be string → failing test
 
-      runDreddWithServer(dredd, app, (args...) ->
-        [err, results] = args
-        done(err)
+      runDreddWithServer(dredd, app, (err, runtimeInfo) ->
+        return done(err) if err
+        dreddRuntimeInfo = runtimeInfo.dredd
+        done()
       )
     )
 
     it('results in one failed test', ->
-      assert.equal(results.stats.failures, 1)
-      assert.equal(results.stats.tests, 1)
+      assert.equal(dreddRuntimeInfo.stats.failures, 1)
+      assert.equal(dreddRuntimeInfo.stats.tests, 1)
     )
     it('emits expected events in expected order', ->
       assert.deepEqual((event.name for event in events), [
@@ -160,27 +163,28 @@ describe('Sanitation of Reported Data', ->
       assert.notInclude(test, sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
-      assert.notInclude(results.logging, sensitiveKey)
-      assert.notInclude(results.logging, sensitiveValue)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue)
     )
   )
 
   describe('Sanitation of a Response Body Attribute', ->
-    results = undefined
+    dreddRuntimeInfo = undefined
 
     beforeEach((done) ->
-      dredd = createDredd('response-body-attribute')
-      app = createServer({token: 123, name: 'Bob'}) # 'token' should be string → failing test
+      dredd = createDreddFromFixture('response-body-attribute')
+      app = createServerFromResponse({token: 123, name: 'Bob'}) # 'token' should be string → failing test
 
-      runDreddWithServer(dredd, app, (args...) ->
-        [err, results] = args
-        done(err)
+      runDreddWithServer(dredd, app, (err, runtimeInfo) ->
+        return done(err) if err
+        dreddRuntimeInfo = runtimeInfo.dredd
+        done()
       )
     )
 
     it('results in one failed test', ->
-      assert.equal(results.stats.failures, 1)
-      assert.equal(results.stats.tests, 1)
+      assert.equal(dreddRuntimeInfo.stats.failures, 1)
+      assert.equal(dreddRuntimeInfo.stats.tests, 1)
     )
     it('emits expected events in expected order', ->
       assert.deepEqual((event.name for event in events), [
@@ -200,27 +204,28 @@ describe('Sanitation of Reported Data', ->
       assert.notInclude(test, sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
-      assert.notInclude(results.logging, sensitiveKey)
-      assert.notInclude(results.logging, sensitiveValue)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue)
     )
   )
 
   describe('Sanitation of Plain Text Response Body by Pattern Matching', ->
-    results = undefined
+    dreddRuntimeInfo = undefined
 
     beforeEach((done) ->
-      dredd = createDredd('plain-text-response-body')
-      app = createServer("#{sensitiveKey}=42#{sensitiveValue}") # should be without '42' → failing test
+      dredd = createDreddFromFixture('plain-text-response-body')
+      app = createServerFromResponse("#{sensitiveKey}=42#{sensitiveValue}") # should be without '42' → failing test
 
-      runDreddWithServer(dredd, app, (args...) ->
-        [err, results] = args
-        done(err)
+      runDreddWithServer(dredd, app, (err, runtimeInfo) ->
+        return done(err) if err
+        dreddRuntimeInfo = runtimeInfo.dredd
+        done()
       )
     )
 
     it('results in one failed test', ->
-      assert.equal(results.stats.failures, 1)
-      assert.equal(results.stats.tests, 1)
+      assert.equal(dreddRuntimeInfo.stats.failures, 1)
+      assert.equal(dreddRuntimeInfo.stats.tests, 1)
     )
     it('emits expected events in expected order', ->
       assert.deepEqual((event.name for event in events), [
@@ -235,26 +240,27 @@ describe('Sanitation of Reported Data', ->
       assert.notInclude(JSON.stringify(events), sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
-      assert.notInclude(results.logging, sensitiveValue)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue)
     )
   )
 
   describe('Sanitation of Request Headers', ->
-    results = undefined
+    dreddRuntimeInfo = undefined
 
     beforeEach((done) ->
-      dredd = createDredd('request-headers')
-      app = createServer({name: 123}) # 'name' should be string → failing test
+      dredd = createDreddFromFixture('request-headers')
+      app = createServerFromResponse({name: 123}) # 'name' should be string → failing test
 
-      runDreddWithServer(dredd, app, (args...) ->
-        [err, results] = args
-        done(err)
+      runDreddWithServer(dredd, app, (err, runtimeInfo) ->
+        return done(err) if err
+        dreddRuntimeInfo = runtimeInfo.dredd
+        done()
       )
     )
 
     it('results in one failed test', ->
-      assert.equal(results.stats.failures, 1)
-      assert.equal(results.stats.tests, 1)
+      assert.equal(dreddRuntimeInfo.stats.failures, 1)
+      assert.equal(dreddRuntimeInfo.stats.tests, 1)
     )
     it('emits expected events in expected order', ->
       assert.deepEqual((event.name for event in events), [
@@ -271,28 +277,29 @@ describe('Sanitation of Reported Data', ->
       assert.notInclude(test, sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
-      logging = results.logging.toLowerCase()
+      logging = dreddRuntimeInfo.logging.toLowerCase()
       assert.notInclude(logging, sensitiveHeaderName)
       assert.notInclude(logging, sensitiveValue)
     )
   )
 
   describe('Sanitation of Response Headers', ->
-    results = undefined
+    dreddRuntimeInfo = undefined
 
     beforeEach((done) ->
-      dredd = createDredd('response-headers')
-      app = createServer({name: 'Bob'}) # Authorization header is missing → failing test
+      dredd = createDreddFromFixture('response-headers')
+      app = createServerFromResponse({name: 'Bob'}) # Authorization header is missing → failing test
 
-      runDreddWithServer(dredd, app, (args...) ->
-        [err, results] = args
-        done(err)
+      runDreddWithServer(dredd, app, (err, runtimeInfo) ->
+        return done(err) if err
+        dreddRuntimeInfo = runtimeInfo.dredd
+        done()
       )
     )
 
     it('results in one failed test', ->
-      assert.equal(results.stats.failures, 1)
-      assert.equal(results.stats.tests, 1)
+      assert.equal(dreddRuntimeInfo.stats.failures, 1)
+      assert.equal(dreddRuntimeInfo.stats.tests, 1)
     )
     it('emits expected events in expected order', ->
       assert.deepEqual((event.name for event in events), [
@@ -312,28 +319,29 @@ describe('Sanitation of Reported Data', ->
       assert.notInclude(test, sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
-      logging = results.logging.toLowerCase()
+      logging = dreddRuntimeInfo.logging.toLowerCase()
       assert.notInclude(logging, sensitiveHeaderName)
       assert.notInclude(logging, sensitiveValue)
     )
   )
 
   describe('Sanitation of URI Parameters by Pattern Matching', ->
-    results = undefined
+    dreddRuntimeInfo = undefined
 
     beforeEach((done) ->
-      dredd = createDredd('uri-parameters')
-      app = createServer({name: 123}) # 'name' should be string → failing test
+      dredd = createDreddFromFixture('uri-parameters')
+      app = createServerFromResponse({name: 123}) # 'name' should be string → failing test
 
-      runDreddWithServer(dredd, app, (args...) ->
-        [err, results] = args
-        done(err)
+      runDreddWithServer(dredd, app, (err, runtimeInfo) ->
+        return done(err) if err
+        dreddRuntimeInfo = runtimeInfo.dredd
+        done()
       )
     )
 
     it('results in one failed test', ->
-      assert.equal(results.stats.failures, 1)
-      assert.equal(results.stats.tests, 1)
+      assert.equal(dreddRuntimeInfo.stats.failures, 1)
+      assert.equal(dreddRuntimeInfo.stats.tests, 1)
     )
     it('emits expected events in expected order', ->
       assert.deepEqual((event.name for event in events), [
@@ -347,28 +355,29 @@ describe('Sanitation of Reported Data', ->
       assert.notInclude(JSON.stringify(events), sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
-      assert.notInclude(results.logging, sensitiveValue)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue)
     )
   )
 
   # This fails because it's not possible to do 'transaction.test = myOwnTestObject;'
   # at the moment, Dredd ignores the new object.
   describe('Sanitation of Any Content by Pattern Matching', ->
-    results = undefined
+    dreddRuntimeInfo = undefined
 
     beforeEach((done) ->
-      dredd = createDredd('any-content-pattern-matching')
-      app = createServer({name: 123}) # 'name' should be string → failing test
+      dredd = createDreddFromFixture('any-content-pattern-matching')
+      app = createServerFromResponse({name: 123}) # 'name' should be string → failing test
 
-      runDreddWithServer(dredd, app, (args...) ->
-        [err, results] = args
-        done(err)
+      runDreddWithServer(dredd, app, (err, runtimeInfo) ->
+        return done(err) if err
+        dreddRuntimeInfo = runtimeInfo.dredd
+        done()
       )
     )
 
     it('results in one failed test', ->
-      assert.equal(results.stats.failures, 1)
-      assert.equal(results.stats.tests, 1)
+      assert.equal(dreddRuntimeInfo.stats.failures, 1)
+      assert.equal(dreddRuntimeInfo.stats.tests, 1)
     )
     it('emits expected events in expected order', ->
       assert.deepEqual((event.name for event in events), [
@@ -382,26 +391,27 @@ describe('Sanitation of Reported Data', ->
       assert.notInclude(JSON.stringify(events), sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
-      assert.notInclude(results.logging, sensitiveValue)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue)
     )
   )
 
   describe('Ultimate \'afterEach\' Guard Using Pattern Matching', ->
-    results = undefined
+    dreddRuntimeInfo = undefined
 
     beforeEach((done) ->
-      dredd = createDredd('any-content-guard-pattern-matching')
-      app = createServer({name: 123}) # 'name' should be string → failing test
+      dredd = createDreddFromFixture('any-content-guard-pattern-matching')
+      app = createServerFromResponse({name: 123}) # 'name' should be string → failing test
 
-      runDreddWithServer(dredd, app, (args...) ->
-        [err, results] = args
-        done(err)
+      runDreddWithServer(dredd, app, (err, runtimeInfo) ->
+        return done(err) if err
+        dreddRuntimeInfo = runtimeInfo.dredd
+        done()
       )
     )
 
     it('results in one failed test', ->
-      assert.equal(results.stats.failures, 1)
-      assert.equal(results.stats.tests, 1)
+      assert.equal(dreddRuntimeInfo.stats.failures, 1)
+      assert.equal(dreddRuntimeInfo.stats.tests, 1)
     )
     it('emits expected events in expected order', ->
       assert.deepEqual((event.name for event in events), [
@@ -413,29 +423,30 @@ describe('Sanitation of Reported Data', ->
       assert.notInclude(test, sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
-      assert.notInclude(results.logging, sensitiveValue)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue)
     )
     it('custom error message is printed', ->
-      assert.include(results.logging, 'Sensitive data would be sent to Dredd reporter')
+      assert.include(dreddRuntimeInfo.logging, 'Sensitive data would be sent to Dredd reporter')
     )
   )
 
   describe('Sanitation of Test Data of Passing Transaction', ->
-    results = undefined
+    dreddRuntimeInfo = undefined
 
     beforeEach((done) ->
-      dredd = createDredd('transaction-passing')
-      app = createServer({name: 'Bob'}) # passing test
+      dredd = createDreddFromFixture('transaction-passing')
+      app = createServerFromResponse({name: 'Bob'}) # passing test
 
-      runDreddWithServer(dredd, app, (args...) ->
-        [err, results] = args
-        done(err)
+      runDreddWithServer(dredd, app, (err, runtimeInfo) ->
+        return done(err) if err
+        dreddRuntimeInfo = runtimeInfo.dredd
+        done()
       )
     )
 
     it('results in one passing test', ->
-      assert.equal(results.stats.passes, 1)
-      assert.equal(results.stats.tests, 1)
+      assert.equal(dreddRuntimeInfo.stats.passes, 1)
+      assert.equal(dreddRuntimeInfo.stats.tests, 1)
     )
     it('emits expected events in expected order', ->
       assert.deepEqual((event.name for event in events), [
@@ -451,26 +462,26 @@ describe('Sanitation of Reported Data', ->
       assert.notInclude(test, sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
-      assert.notInclude(results.logging, sensitiveKey)
-      assert.notInclude(results.logging, sensitiveValue)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue)
     )
   )
 
   describe('Sanitation of Test Data When Transaction Is Marked as Failed in \'before\' Hook', ->
-    results = undefined
+    dreddRuntimeInfo = undefined
 
     beforeEach((done) ->
-      dredd = createDredd('transaction-marked-failed-before')
+      dredd = createDreddFromFixture('transaction-marked-failed-before')
 
       runDredd(dredd, (args...) ->
-        [err, results] = args
-        done(err)
+        [err, dreddRuntimeInfo] = args
+        done()
       )
     )
 
     it('results in one failed test', ->
-      assert.equal(results.stats.failures, 1)
-      assert.equal(results.stats.tests, 1)
+      assert.equal(dreddRuntimeInfo.stats.failures, 1)
+      assert.equal(dreddRuntimeInfo.stats.tests, 1)
     )
     it('emits expected events in expected order', ->
       assert.deepEqual((event.name for event in events), [
@@ -490,27 +501,28 @@ describe('Sanitation of Reported Data', ->
       assert.notInclude(test, sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
-      assert.notInclude(results.logging, sensitiveKey)
-      assert.notInclude(results.logging, sensitiveValue)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue)
     )
   )
 
   describe('Sanitation of Test Data When Transaction Is Marked as Failed in \'after\' Hook', ->
-    results = undefined
+    dreddRuntimeInfo = undefined
 
     beforeEach((done) ->
-      dredd = createDredd('transaction-marked-failed-after')
-      app = createServer({name: 'Bob'}) # passing test
+      dredd = createDreddFromFixture('transaction-marked-failed-after')
+      app = createServerFromResponse({name: 'Bob'}) # passing test
 
-      runDreddWithServer(dredd, app, (args...) ->
-        [err, results] = args
-        done(err)
+      runDreddWithServer(dredd, app, (err, runtimeInfo) ->
+        return done(err) if err
+        dreddRuntimeInfo = runtimeInfo.dredd
+        done()
       )
     )
 
     it('results in one failed test', ->
-      assert.equal(results.stats.failures, 1)
-      assert.equal(results.stats.tests, 1)
+      assert.equal(dreddRuntimeInfo.stats.failures, 1)
+      assert.equal(dreddRuntimeInfo.stats.tests, 1)
     )
     it('emits expected events in expected order', ->
       assert.deepEqual((event.name for event in events), [
@@ -533,26 +545,26 @@ describe('Sanitation of Reported Data', ->
       assert.notInclude(test, sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
-      assert.notInclude(results.logging, sensitiveKey)
-      assert.notInclude(results.logging, sensitiveValue)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue)
     )
   )
 
   describe('Sanitation of Test Data When Transaction Is Marked as Skipped', ->
-    results = undefined
+    dreddRuntimeInfo = undefined
 
     beforeEach((done) ->
-      dredd = createDredd('transaction-marked-skipped')
+      dredd = createDreddFromFixture('transaction-marked-skipped')
 
       runDredd(dredd, (args...) ->
-        [err, results] = args
-        done(err)
+        [err, dreddRuntimeInfo] = args
+        done()
       )
     )
 
     it('results in one skipped test', ->
-      assert.equal(results.stats.skipped, 1)
-      assert.equal(results.stats.tests, 1)
+      assert.equal(dreddRuntimeInfo.stats.skipped, 1)
+      assert.equal(dreddRuntimeInfo.stats.tests, 1)
     )
     it('emits expected events in expected order', ->
       assert.deepEqual((event.name for event in events), [
@@ -570,27 +582,28 @@ describe('Sanitation of Reported Data', ->
       assert.notInclude(test, sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
-      assert.notInclude(results.logging, sensitiveKey)
-      assert.notInclude(results.logging, sensitiveValue)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue)
     )
   )
 
   describe('Sanitation of Test Data of Transaction With Erroring Hooks', ->
-    results = undefined
+    dreddRuntimeInfo = undefined
 
     beforeEach((done) ->
-      dredd = createDredd('transaction-erroring-hooks')
-      app = createServer({name: 'Bob'}) # passing test
+      dredd = createDreddFromFixture('transaction-erroring-hooks')
+      app = createServerFromResponse({name: 'Bob'}) # passing test
 
-      runDreddWithServer(dredd, app, (args...) ->
-        [err, results] = args
-        done(err)
+      runDreddWithServer(dredd, app, (err, runtimeInfo) ->
+        return done(err) if err
+        dreddRuntimeInfo = runtimeInfo.dredd
+        done()
       )
     )
 
     it('results in one erroring test', ->
-      assert.equal(results.stats.errors, 1)
-      assert.equal(results.stats.tests, 1)
+      assert.equal(dreddRuntimeInfo.stats.errors, 1)
+      assert.equal(dreddRuntimeInfo.stats.tests, 1)
     )
     it('emits expected events in expected order', ->
       assert.deepEqual((event.name for event in events), [
@@ -603,27 +616,28 @@ describe('Sanitation of Reported Data', ->
       assert.include(test, sensitiveValue)
     )
     it('sensitive data leak to Dredd output', ->
-      assert.include(results.logging, sensitiveKey)
-      assert.include(results.logging, sensitiveValue)
+      assert.include(dreddRuntimeInfo.logging, sensitiveKey)
+      assert.include(dreddRuntimeInfo.logging, sensitiveValue)
     )
   )
 
   describe('Sanitation of Test Data of Transaction With Secured Erroring Hooks', ->
-    results = undefined
+    dreddRuntimeInfo = undefined
 
     beforeEach((done) ->
-      dredd = createDredd('transaction-secured-erroring-hooks')
-      app = createServer({name: 'Bob'}) # passing test
+      dredd = createDreddFromFixture('transaction-secured-erroring-hooks')
+      app = createServerFromResponse({name: 'Bob'}) # passing test
 
-      runDreddWithServer(dredd, app, (args...) ->
-        [err, results] = args
-        done(err)
+      runDreddWithServer(dredd, app, (err, runtimeInfo) ->
+        return done(err) if err
+        dreddRuntimeInfo = runtimeInfo.dredd
+        done()
       )
     )
 
     it('results in one failed test', ->
-      assert.equal(results.stats.failures, 1)
-      assert.equal(results.stats.tests, 1)
+      assert.equal(dreddRuntimeInfo.stats.failures, 1)
+      assert.equal(dreddRuntimeInfo.stats.tests, 1)
     )
     it('emits expected events in expected order', ->
       assert.deepEqual((event.name for event in events), [
@@ -636,11 +650,11 @@ describe('Sanitation of Reported Data', ->
       assert.notInclude(test, sensitiveValue)
     )
     it('sensitive data cannot be found anywhere in Dredd output', ->
-      assert.notInclude(results.logging, sensitiveKey)
-      assert.notInclude(results.logging, sensitiveValue)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey)
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue)
     )
     it('custom error message is printed', ->
-      assert.include(results.logging, 'Unexpected exception in hooks')
+      assert.include(dreddRuntimeInfo.logging, 'Unexpected exception in hooks')
     )
   )
 )
