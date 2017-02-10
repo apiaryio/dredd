@@ -3,6 +3,9 @@
   "version": "0.0.0-semantically-released",
   "description": "Compiles HTTP Transactions (Request-Response pairs) from API description document",
   "main": "lib/dredd-transactions.js",
+  "engines": {
+    "node": ">= 4"
+  },
   "scripts": {
     "lint": "conventional-changelog-lint --from=master && coffeelint src",
     "build": "coffee -b -c -o lib/ src/",
