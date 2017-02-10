@@ -67,6 +67,7 @@
     "mocha": "^3.0.0",
     "mocha-lcov-reporter": "^1.2.0",
     "nock": "^9.0.4",
+    "ps-node": "^0.1.4",
     "semantic-release": "^6.3.2",
     "sinon": "^1.17.4"
   },

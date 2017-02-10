@@ -1,7 +1,6 @@
 {assert} = require 'chai'
 
-{runDreddCommand, createServer, DEFAULT_SERVER_PORT} = require '../helpers'
-{isProcessRunning, killAll} = require './helpers'
+{isProcessRunning, killAll, runDreddCommand, createServer, DEFAULT_SERVER_PORT} = require '../helpers'
 
 
 NON_EXISTENT_PORT = DEFAULT_SERVER_PORT + 1
@@ -66,8 +65,8 @@ describe 'CLI - Server Process', ->
 
   describe 'When specified by -g/--server', ->
 
-    afterEach ->
-      killAll()
+    afterEach (done) ->
+      killAll('test/fixtures/scripts/', done)
 
     describe 'When works as expected', ->
       dreddCommandInfo = undefined
@@ -132,13 +131,15 @@ describe 'CLI - Server Process', ->
           if scenario.expectServerBoot
             it 'should redirect server\'s boot message', ->
               assert.include dreddCommandInfo.stdout, "Dummy server listening on port #{DEFAULT_SERVER_PORT}"
-          it 'the server should not be running', ->
-            assert.isFalse isProcessRunning scenario.server
+          it 'the server should not be running', (done) ->
+            isProcessRunning('test/fixtures/scripts/', (err, isRunning) ->
+              assert.isFalse isRunning unless err
+              done(err)
+            )
           it 'should report problems with connection to server', ->
             assert.include dreddCommandInfo.stderr, 'Error connecting to server'
           it 'should exit with status 1', ->
             assert.equal dreddCommandInfo.exitStatus, 1
-
 
     describe 'When didn\'t terminate and had to be killed by Dredd', ->
       dreddCommandInfo = undefined
@@ -162,7 +163,10 @@ describe 'CLI - Server Process', ->
         assert.include dreddCommandInfo.stdout, 'ignoring sigterm'
       it 'should inform about sending SIGKILL', ->
         assert.include dreddCommandInfo.stdout, 'Killing backend server process'
-      it 'the server should not be running', ->
-        assert.isFalse isProcessRunning scenario.server
+      it 'the server should not be running', (done) ->
+        isProcessRunning('test/fixtures/scripts/', (err, isRunning) ->
+          assert.isFalse isRunning unless err
+          done(err)
+        )
       it 'should exit with status 0', ->
         assert.equal dreddCommandInfo.exitStatus, 0
