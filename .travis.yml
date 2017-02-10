@@ -1,8 +1,6 @@
 sudo: false
 language: "node_js"
 node_js:
-  - "0.10"
-  - "0.12"
   - "4"
   - "6"
 env:
@@ -19,7 +17,7 @@ before_install:
   - "npm -g install npm@latest"
 install: "npm install --no-optional"
 script:
-  - "if [[ $TRAVIS_NODE_VERSION = 6 ]]; then npm run lint; fi"  # 'conventional-changelog-lint' doesn't work with old Node.js versions
+  - "npm run lint"
   - "npm test"
 after_success:
   - "npm run coveralls"
