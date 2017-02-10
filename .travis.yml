@@ -1,8 +1,6 @@
 sudo: false
 language: "node_js"
 node_js:
-  - "0.10"
-  - "0.12"
   - "4"
   - "6"
 env:
@@ -20,7 +18,7 @@ before_install:
   #- "gem install travis"  # needed for 'npm run test:hooks-handlers', disabled because of https://github.com/apiaryio/dredd/issues/672
 install: "npm install --no-optional"
 script:
-  - "if [[ $TRAVIS_NODE_VERSION = 6 ]]; then npm run lint; fi"  # 'conventional-changelog-lint' doesn't work with old Node.js versions
+  - "npm run lint"
   - "npm test"
   #- "npm run test:hooks-handlers" # disabled because of https://github.com/apiaryio/dredd/issues/672
 after_success:
