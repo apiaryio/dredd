@@ -154,7 +154,7 @@ describe 'CLI - Server Process', ->
       it 'should inform about starting server with custom command', ->
         assert.include dreddCommand.stdout, 'Starting backend server process with command'
       it 'should inform about sending SIGTERM', ->
-        assert.include dreddCommand.stdout, 'Sending SIGTERM to backend server process'
+        assert.include dreddCommand.stdout, 'Gracefully terminating backend server process'
       it 'should redirect server\'s message about ignoring SIGTERM', ->
         assert.include dreddCommand.stdout, 'ignoring sigterm'
       it 'should inform about sending SIGKILL', ->

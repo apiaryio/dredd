@@ -1,6 +1,7 @@
-net = require 'net'
-{EventEmitter} = require 'events'
+net = require('net')
+{EventEmitter} = require('events')
 crossSpawn = require('cross-spawn')
+spawnArgs = require('spawn-args')
 
 generateUuid = require('uuid').v4
 
@@ -89,6 +90,7 @@ class HooksWorkerClient
     # Select handler based on option, use option string as command if not match anything
     if @language == 'ruby'
       @handlerCommand = 'dredd-hooks-ruby'
+      @handlerCommandArgs = []
       unless which.which @handlerCommand
         msg = """\
           Ruby hooks handler command not found: #{@handlerCommand}
@@ -101,6 +103,7 @@ class HooksWorkerClient
 
     else if @language == 'python'
       @handlerCommand = 'dredd-hooks-python'
+      @handlerCommandArgs = []
       unless which.which @handlerCommand
         msg = """\
           Python hooks handler command not found: #{@handlerCommand}
@@ -113,6 +116,7 @@ class HooksWorkerClient
 
     else if @language == 'php'
       @handlerCommand = 'dredd-hooks-php'
+      @handlerCommandArgs = []
       unless which.which @handlerCommand
         msg = """\
           PHP hooks handler command not found: #{@handlerCommand}
@@ -125,6 +129,7 @@ class HooksWorkerClient
 
     else if @language == 'perl'
       @handlerCommand = 'dredd-hooks-perl'
+      @handlerCommandArgs = []
       unless which.which @handlerCommand
         msg = """\
           Perl hooks handler command not found: #{@handlerCommand}
@@ -145,6 +150,7 @@ class HooksWorkerClient
     else if @language == 'go'
       gopath = process.env.GOPATH
       @handlerCommand = "#{gopath}/bin/goodman"
+      @handlerCommandArgs = []
       unless which.which @handlerCommand
         msg = '''\
           Go hooks handler command not found in $GOPATH/bin
@@ -155,8 +161,11 @@ class HooksWorkerClient
       else
         callback()
     else
-      @handlerCommand = @language
-      unless which.which @handlerCommand
+      parsedArgs = spawnArgs(@language)
+      @handlerCommand = parsedArgs.shift()
+      @handlerCommandArgs = parsedArgs
+
+      unless which.which(@handlerCommand)
         msg = "Hooks handler command not found: #{@handlerCommand}"
         return callback(new Error(msg))
       else
@@ -164,9 +173,10 @@ class HooksWorkerClient
 
   spawnHandler: (callback) ->
     pathGlobs = [].concat @runner.hooks?.configuration?.options?.hookfiles
+    handlerCommandArgs = @handlerCommandArgs.concat pathGlobs
 
     logger.info("Spawning `#{@language}` hooks handler process.")
-    @handler = crossSpawn.spawn @handlerCommand, pathGlobs
+    @handler = crossSpawn.spawn @handlerCommand, handlerCommandArgs
 
     @handler.stdout.on 'data', (data) ->
       logger.info("Hooks handler stdout:", data.toString())
