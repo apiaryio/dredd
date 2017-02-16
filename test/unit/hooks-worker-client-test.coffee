@@ -12,6 +12,16 @@ loggerStub = require('../../src/logger')
 Hooks = require '../../src/hooks'
 commandLineOptions = require '../../src/options'
 
+measureExecutionDurationMs = (fn) ->
+  time = process.hrtime()
+  fn()
+  timeDiff = process.hrtime(time) # timeDiff = [seconds, nanoseconds]
+  return (timeDiff[0] * 1000 + timeDiff[1] * 1e-6)
+
+COFFEE_BIN = 'node_modules/.bin/coffee'
+MIN_COMMAND_EXECUTION_DURATION_MS = 2 * measureExecutionDurationMs( ->
+  crossSpawnStub.sync(COFFEE_BIN, ['test/fixtures/scripts/noop.coffee'])
+)
 PORT = 61321
 
 runner = null
@@ -36,7 +46,7 @@ describe 'Hooks worker client', ->
   beforeEach ->
     logs = []
 
-    runner = new TransactionRunner {}
+    runner = new TransactionRunner({})
     runner.hooks = new Hooks(logs: [], logger: console)
     runner.hooks.configuration = {options: {}}
 
@@ -64,7 +74,7 @@ describe 'Hooks worker client', ->
       HooksWorkerClient.prototype.connectToHandler.restore()
 
     it 'should pipe spawned process stdout to the Dredd process stdout', (done) ->
-      runner.hooks.configuration.options.language = './test/fixtures/scripts/stdout.sh'
+      runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/stdout.coffee"
       loadWorkerClient (workerError) ->
         return done workerError if workerError
 
@@ -77,10 +87,10 @@ describe 'Hooks worker client', ->
             return done stopError if stopError
             assert.include logs, 'Hooks handler stdout: standard output text\n'
             done()
-        , 100
+        , MIN_COMMAND_EXECUTION_DURATION_MS
 
     it 'should pipe spawned process stderr to the Dredd process stderr', (done) ->
-      runner.hooks.configuration.options.language = './test/fixtures/scripts/stderr.sh'
+      runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/stderr.coffee"
       loadWorkerClient (workerError) ->
         return done workerError if workerError
 
@@ -93,11 +103,11 @@ describe 'Hooks worker client', ->
             return done stopError if stopError
             assert.include logs, 'Hooks handler stderr: error output text\n'
             done()
-        , 100
+        , MIN_COMMAND_EXECUTION_DURATION_MS
 
     it 'should not set the error on worker if process gets intentionally killed by Dredd ' +
     'because it can be killed after all hooks execution if SIGTERM isn\'t handled', (done) ->
-      runner.hooks.configuration.options.language = './test/fixtures/scripts/endless-nosigterm.sh'
+      runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/endless-nosigterm.coffee"
       loadWorkerClient (workerError) ->
         return done workerError if workerError
 
@@ -110,10 +120,10 @@ describe 'Hooks worker client', ->
             return done stopError if stopError
             assert.isNull runner.hookHandlerError
             done()
-        , 100
+        , MIN_COMMAND_EXECUTION_DURATION_MS
 
     it 'should include the status in the error if spawned process ends with non-zero exit status', (done) ->
-      runner.hooks.configuration.options.language = './test/fixtures/scripts/exit_3.sh'
+      runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/exit-3.coffee"
       loadWorkerClient (workerError) ->
         return done workerError if workerError
 
@@ -124,10 +134,10 @@ describe 'Hooks worker client', ->
         setTimeout ->
           hooksWorkerClient.stop (stopError) ->
             return done stopError if stopError
-            assert.isDefined runner.hookHandlerError
+            assert.ok runner.hookHandlerError
             assert.include runner.hookHandlerError.message, '3'
             done()
-        , 100
+        , MIN_COMMAND_EXECUTION_DURATION_MS
 
     describe 'when --language=nodejs option is given', ->
       beforeEach ->
@@ -137,7 +147,7 @@ describe 'Hooks worker client', ->
 
       it 'should write a hint that native hooks should be used', (done) ->
         loadWorkerClient (err) ->
-          assert.isDefined err
+          assert.ok err
           assert.include err.message, 'native Node.js hooks instead'
           done()
 
@@ -201,7 +211,7 @@ describe 'Hooks worker client', ->
 
       it 'should write a hint how to install', (done) ->
         loadWorkerClient (err) ->
-          assert.isDefined err
+          assert.ok err
           assert.include err.message, "gem install dredd_hooks"
           done()
 
@@ -264,7 +274,7 @@ describe 'Hooks worker client', ->
 
       it 'should write a hint how to install', (done) ->
         loadWorkerClient (err) ->
-          assert.isDefined err
+          assert.ok err
           assert.include err.message, "pip install dredd_hooks"
           done()
 
@@ -315,18 +325,18 @@ describe 'Hooks worker client', ->
 
     describe 'when --language=go option is given and the worker is not installed', ->
       beforeEach ->
-          sinon.stub whichStub, 'which', (command) -> false
+        sinon.stub whichStub, 'which', (command) -> false
 
-          runner.hooks['configuration'] =
-            options:
-              language: 'go'
-              hookfiles: 'gobinary'
+        runner.hooks['configuration'] =
+          options:
+            language: 'go'
+            hookfiles: 'gobinary'
       afterEach ->
-          whichStub.which.restore()
+        whichStub.which.restore()
 
       it 'should write a hint how to install', (done) ->
         loadWorkerClient (err) ->
-          assert.isDefined err
+          assert.ok err
           assert.include err.message, "go get github.com/snikch/goodman/cmd/goodman"
           done()
 
@@ -390,7 +400,7 @@ describe 'Hooks worker client', ->
 
       it 'should write a hint how to install', (done) ->
         loadWorkerClient (err) ->
-          assert.isDefined err
+          assert.ok err
           assert.include err.message, "composer require ddelnano/dredd-hooks-php --dev"
           done()
 
@@ -453,7 +463,7 @@ describe 'Hooks worker client', ->
 
       it 'should write a hint how to install', (done) ->
         loadWorkerClient (err) ->
-          assert.isDefined err
+          assert.ok err
           assert.include err.message, "cpanm Dredd::Hooks"
           done()
 
@@ -581,7 +591,7 @@ describe 'Hooks worker client', ->
 
 
     it 'should connect to the server', (done) ->
-      runner.hooks.configuration.options.language = 'true'
+      runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/noop.coffee"
 
       loadWorkerClient (err) ->
         assert.isUndefined err
@@ -604,7 +614,7 @@ describe 'Hooks worker client', ->
         if eventType.indexOf("All") > -1
           beforeEach (done) ->
             receivedData = ""
-            runner.hooks.configuration.options.language = 'true'
+            runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/noop.coffee"
             sentData = clone [transaction]
             loadWorkerClient (err) ->
               assert.isUndefined err
@@ -614,7 +624,7 @@ describe 'Hooks worker client', ->
         else
           beforeEach (done) ->
             receivedData = ""
-            runner.hooks.configuration.options.language = 'true'
+            runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/noop.coffee"
             sentData = clone transaction
             loadWorkerClient (err) ->
               assert.isUndefined err
@@ -659,98 +669,87 @@ describe 'Hooks worker client', ->
               assert.propertyVal receivedObject['data'], 'key', 'value'
 
   describe 'when hook handler server is running and modifying transactions', ->
-    server = null
-    receivedData = ""
-    transaction = null
-    connected = null
-    currentSocket = null
-    sentData = ""
+    transaction =
+      name: 'API > Hello > World'
+      request: {method: 'POST', uri: '/message', headers: {}, body: 'Hello World!'}
 
-    beforeEach ->
-      receivedData = ""
-
-      transaction =
-        key: "value"
-
-      server = net.createServer()
-      server.on 'connection', (socket) ->
-        currentSocket = socket
-        connected = true
-        socket.on 'data', (data) ->
-          receivedData += data.toString()
-
-      server.listen PORT
-
-    afterEach ->
-      server.close()
-
-    eventTypes = [
+    [
+      'beforeAll'
       'beforeEach'
       'beforeEachValidation'
       'afterEach'
-      'beforeAll'
       'afterAll'
-    ]
+    ].forEach((eventName) ->
+      if eventName.match(/All$/)
+        # the hooks which are called '*All' recieve an array of transactions
+        # as a parameter
+        transactionData = clone([transaction])
+        getFirstTransaction = (transactionData) -> transactionData[0]
+      else
+        # all the other hooks recieve a single transaction as a parameter
+        transactionData = clone(transaction)
+        getFirstTransaction = (transactionData) -> transactionData
 
-    for eventType in eventTypes then do (eventType) ->
-      describe "when '#{eventType}' hook function is triggered", ->
-        if eventType.indexOf("All") > -1
-          beforeEach (done) ->
-            receivedData = ""
-            runner.hooks.configuration.options.language = 'true'
-            sentData = clone [transaction]
-            loadWorkerClient (err) ->
-              assert.isUndefined err
-              runner.hooks["#{eventType}Hooks"][0] sentData, ->
-              done() # intentionally unindented!
+      describe("when '#{eventName}' function is triggered and the hook handler replies", ->
+        hookHandler = undefined
 
-        else
-          beforeEach (done) ->
-            receivedData = ""
-            runner.hooks.configuration.options.language = 'true'
-            sentData = clone transaction
-            loadWorkerClient (err) ->
-              assert.isUndefined err
-              runner.hooks["#{eventType}Hooks"][0] sentData, ->
-              done() # intentionally unindented!
+        beforeEach((done) ->
+          # Dummy placeholder for a real hook handler
+          runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/noop.coffee"
 
-        afterEach (done) ->
-          hooksWorkerClient.stop done
+          # Mock hook handler implementation, which ocuppies expected port instead
+          # of a real hook handler.
+          hookHandler = net.createServer()
+          hookHandler.on('connection', (socket) ->
+            # -- 3 --, recieving transaction(s) from hooks worker client
+            bufferedData = ''
+            socket.on('data', (data) ->
+              # We're buffering data here into a string, until...
+              bufferedData += data.toString()
 
-        if eventType.indexOf("All") > -1
-          describe 'when server sends a response with matching uuid', ->
-            beforeEach ->
-              receivedObject = null
-              receivedObject = JSON.parse clone(receivedData).replace("\n", "")
+              # -- 4 --, ...until there's a message separator (new line), which
+              # means we've got one complete message in our buffer
+              if '\n' in bufferedData
+                messageIn = JSON.parse(bufferedData)
 
-              objectToSend = clone receivedObject
-              # *all events are handling array of transactions
-              objectToSend['data'][0]['key'] = "newValue"
-              message = JSON.stringify(objectToSend) + "\n"
-              currentSocket.write message
+                # once the hooks worker client finishes processing of data it
+                # got back from the hook handler, it triggers this event
+                hooksWorkerClient.emitter.on(messageIn.uuid, ->
+                  # -- 7 --
+                  done()
+                )
 
-            it 'should add data from the response to the transaction', (done) ->
-              setTimeout ->
-                assert.equal sentData[0]['key'], 'newValue'
-                done()
-              , 200
-        else
-          describe 'when server sends a response with matching uuid', ->
-            beforeEach ->
-              receivedObject = null
-              receivedObject = JSON.parse clone(receivedData).replace("\n", "")
+                # -- 5 --, modifying the transaction
+                transaction = getFirstTransaction(messageIn.data)
+                transaction.request.uri += '?param=value'
 
-              objectToSend = clone receivedObject
-              objectToSend['data']['key'] = "newValue"
+                # -- 6 --, sending modified data back to hooks worker client
+                messageOut = JSON.stringify(messageIn) + '\n'
+                socket.write(messageOut)
+            )
+          )
 
-              message = JSON.stringify(objectToSend) + "\n"
-              currentSocket.write message
+          # -- 1 --, starts the mock hook handler
+          hookHandler.listen(PORT)
 
-            it 'should add data from the response to the transaction', (done) ->
-              setTimeout ->
-                assert.equal sentData['key'], 'newValue'
-                done()
-              , 200
+          # -- 2 --, runs hooks worker client, starts to send transaction(s),
+          # thus triggers the 'connection' event above
+          loadWorkerClient((err) ->
+            return done(err) if err
+            runner.hooks["#{eventName}Hooks"][0](transactionData, -> )
+          )
+        )
+        afterEach((done) ->
+          hookHandler.close()
+          hooksWorkerClient.stop(done)
+        )
+
+        it('modifications get applied to the original transaction object', ->
+          transaction = getFirstTransaction(transactionData)
+          assert.equal(transaction.request.uri, '/message?param=value')
+        )
+      )
+    )
 
   describe "'hooks-worker-*' configuration options", ->
     scenarios = [
