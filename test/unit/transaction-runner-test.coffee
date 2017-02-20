@@ -15,14 +15,10 @@ clone = require 'clone'
 htmlStub = require 'html'
 loggerStub = require '../../src/logger'
 addHooks = require '../../src/add-hooks'
-httpStub = require 'http'
-httpsStub = require 'https'
 
 Runner = proxyquire  '../../src/transaction-runner', {
   'html': htmlStub,
   './logger': loggerStub
-  'http': httpStub
-  'https': httpsStub
 }
 CliReporter = require '../../src/reporters/cli-reporter'
 Hooks = require '../../src/hooks'
@@ -441,16 +437,16 @@ describe 'TransactionRunner', ->
       beforeEach ->
         configuration.options['dry-run'] = true
         runner = new Runner(configuration)
-        sinon.stub httpStub, 'request'
+        sinon.spy runner, 'performRequest'
 
 
       afterEach ->
         configuration.options['dry-run'] = false
-        httpStub.request.restore()
+        runner.performRequest.restore()
 
       it 'should skip the tests', (done) ->
         runner.executeTransaction transaction, ->
-          assert.ok httpStub.request.notCalled
+          assert.ok runner.performRequest.notCalled
           done()
 
     describe 'when only certain methods are allowed by the configuration', ->
@@ -691,6 +687,7 @@ describe 'TransactionRunner', ->
             actionName: 'Delete Message'
             exampleName: 'Bogus example name'
           fullPath: '/machines' + name
+          protocol: 'http:'
         }
 
         transactions.push transaction
@@ -1303,6 +1300,7 @@ describe 'TransactionRunner', ->
           actionName: 'Delete Message'
           exampleName: 'Bogus example name'
         fullPath: '/machines'
+        protocol: 'http:'
       }
 
       server = nock('http://localhost:3000').
@@ -1667,6 +1665,7 @@ describe 'TransactionRunner', ->
             actionName: 'Delete Message'
             exampleName: 'Bogus example name'
           fullPath: '/machines'
+          protocol: 'http:'
 
         for i in [1, 2]
           clonedTransaction = clone transaction
