@@ -1,11 +1,10 @@
 path = require 'path'
 optimist = require 'optimist'
-console = require 'console'
 fs = require 'fs'
 os = require 'os'
 spawnArgs = require 'spawn-args'
-{spawn} = require('cross-spawn')
-execSync = require('sync-exec')
+spawn = require('cross-spawn')
+console = require('console') # stubbed in tests by proxyquire
 
 Dredd = require './dredd'
 interactiveConfig = require './interactive-config'
@@ -59,18 +58,18 @@ class DreddCommand
 
   # Gracefully terminate server
   stopServer: (callback) ->
-    logger.verbose('Gracefully terminating backend server process.')
     unless @serverProcess?
-      logger.verbose('No backend server process.')
+      logger.verbose('No backend server process to terminate.')
       return callback()
+    logger.verbose('Terminating backend server process, PID', @serverProcess.pid)
 
     term = =>
-      logger.info('Sending SIGTERM to backend server process.')
-      @serverProcess.kill 'SIGTERM'
+      logger.info('Gracefully terminating backend server process.')
+      @serverProcess.kill('SIGTERM')
 
     kill = =>
       logger.info('Killing backend server process.')
-      @serverProcess.kill 'SIGKILL'
+      @serverProcess.kill('SIGKILL')
 
     start = Date.now()
     term()
@@ -223,17 +222,15 @@ class DreddCommand
       parsedArgs = spawnArgs(@argv['server'])
       command = parsedArgs.shift()
 
+      logger.verbose("Using '#{command}' as a server command, #{JSON.stringify(parsedArgs)} as arguments")
       @serverProcess = spawn command, parsedArgs
-
       logger.info("Starting backend server process with command: #{@argv['server']}")
 
       @serverProcess.stdout.setEncoding 'utf8'
-
       @serverProcess.stdout.on 'data', (data) ->
         process.stdout.write data.toString()
 
       @serverProcess.stderr.setEncoding 'utf8'
-
       @serverProcess.stderr.on 'data', (data) ->
         process.stdout.write data.toString()
 
@@ -244,9 +241,8 @@ class DreddCommand
         else
           logger.info('Backend server process was killed.')
 
-
       @serverProcess.on 'error', (error) =>
-        logger.error('Command to start backend server process failed, exiting Dredd.')
+        logger.error('Command to start backend server process failed, exiting Dredd.', error)
         @_processExit(2)
 
       # Ensure server is not running when dredd exits prematurely somewhere
@@ -277,7 +273,7 @@ class DreddCommand
     logger.debug('Node.js environment:', process.versions)
     logger.debug('System version:', os.type(), os.release(), os.arch())
     try
-      npmVersion = execSync('npm --version').stdout.trim()
+      npmVersion = spawn.sync('npm', ['--version']).stdout.toString().trim()
       logger.debug('npm version:', npmVersion or 'unable to determine npm version')
     catch err
       logger.debug('npm version: unable to determine npm version:', err)

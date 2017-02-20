@@ -52,10 +52,10 @@ class HooksWorkerClient
     @terminateHandler callback
 
   terminateHandler: (callback) ->
-    logger.verbose('Gracefully terminating hooks handler process.')
+    logger.verbose('Terminating hooks handler process.')
 
     term = =>
-      logger.info('Sending SIGTERM to hooks handler process.')
+      logger.info('Gracefully terminating hooks handler process.')
       @handlerKilledIntentionally = true
       @handler.kill 'SIGTERM'
 
@@ -165,6 +165,7 @@ class HooksWorkerClient
       @handlerCommand = parsedArgs.shift()
       @handlerCommandArgs = parsedArgs
 
+      logger.verbose("Using '#{@handlerCommand}' as a hook handler command, '#{@handlerCommandArgs.join(' ')}' as arguments")
       unless which.which(@handlerCommand)
         msg = "Hooks handler command not found: #{@handlerCommand}"
         return callback(new Error(msg))
