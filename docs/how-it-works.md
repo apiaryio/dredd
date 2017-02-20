@@ -208,7 +208,7 @@ See also [guidelines on how to develop Apiary Reporter](contributing.md#hacking-
 [CircleCI]: https://circleci.com/
 [Travis CI]: http://travis-ci.org/
 [Terms of Service]: https://apiary.io/tos
-[Privacy Policy]: https://www.iubenda.com/privacy-policy/323220
+[Privacy Policy]: https://apiary.io/privacy
 [hostname]: https://en.wikipedia.org/wiki/Hostname
 [os-type]: https://nodejs.org/api/os.html#os_os_type
 [os-release]: https://nodejs.org/api/os.html#os_os_release
