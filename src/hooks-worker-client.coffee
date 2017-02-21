@@ -163,7 +163,7 @@ class HooksWorkerClient
         callback()
 
   spawnHandler: (callback) ->
-    args = [].concat ["--port", "#{@handlerPort}", "--host", "#{@handlerHost}"], @runner.hooks?.configuration?.options?.hookfiles
+    args = [].concat ["--port=#{@handlerPort}","--host=#{@handlerHost}"], @runner.hooks?.configuration?.options?.hookfiles
 
     logger.info("Spawning `#{@language}` hooks handler process with command `#{@handlerCommand} #{args.join ","}`.")
     @handler = crossSpawn.spawn @handlerCommand, args
