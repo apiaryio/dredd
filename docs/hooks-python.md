@@ -181,7 +181,7 @@ def stash_session_id(transaction):
 # hook to set the session cookie in all following requests
 @hooks.before_each
 def add_session_cookie(transaction):
-  if 'token' not in stash:
+  if 'token' in stash:
     transaction['request']['headers']['Cookie'] = "id=" + stash['token']
 ```
 
