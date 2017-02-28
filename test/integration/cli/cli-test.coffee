@@ -4,7 +4,7 @@ net = require('net')
 
 {isProcessRunning, killAll, createServer, runDreddCommandWithServer, runDreddCommand, DEFAULT_SERVER_PORT} = require('../helpers')
 
-
+COFFEE_BIN = 'node_modules/.bin/coffee'
 DEFAULT_HOOK_HANDLER_PORT = 61321
 
 
@@ -65,6 +65,18 @@ describe 'CLI', ->
   describe "when called with arguments", ->
 
     describe 'when using language hook handler and spawning the server', ->
+      # Some tests are disabled for Windows. There are multiple known issues which
+      # need to be addressed:
+      #
+      # *  Windows do not support graceful termination of command-line processes
+      #    or not in a simple way. CLI process can be only forefully killed, by
+      #    default. Thus the functionality around SIGTERM needs to be either
+      #    marked as unsupported or some special handling needs to be introduced.
+      #
+      # *  Killing a process on Windows requires a bit smarter approach then just
+      #    calling process.kill(), which is what Dredd does as of now. For that
+      #    reason, Dredd isn't able to effectively kill a process on Windows.
+      itNotWindows = if process.platform is 'win32' then it.skip else it
 
       describe "and handler file doesn't exist", ->
         runtimeInfo = undefined
@@ -120,7 +132,7 @@ describe 'CLI', ->
             './test/fixtures/single-get.apib'
             "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
             '--server-wait=0'
-            '--language=./test/fixtures/scripts/exit_3.sh'
+            "--language=#{COFFEE_BIN} ./test/fixtures/scripts/exit-3.coffee"
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ]
           runDreddCommandWithServer(args, app, (err, info) ->
@@ -137,7 +149,7 @@ describe 'CLI', ->
         it 'should return message announcing the fact', ->
           assert.include runtimeInfo.dredd.stderr, 'exited'
 
-        it 'should term or kill the server', (done) ->
+        itNotWindows 'should term or kill the server', (done) ->
           isProcessRunning('endless-nosigterm', (err, isRunning) ->
             assert.isFalse isRunning unless err
             done(err)
@@ -157,9 +169,9 @@ describe 'CLI', ->
           args = [
             './test/fixtures/single-get.apib'
             "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-            '--server=./test/fixtures/scripts/endless-nosigterm.sh'
+            "--server=#{COFFEE_BIN} ./test/fixtures/scripts/endless-nosigterm.coffee"
             '--server-wait=0'
-            '--language=./test/fixtures/scripts/kill-self.sh'
+            "--language=#{COFFEE_BIN} ./test/fixtures/scripts/kill-self.coffee"
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ]
           runDreddCommandWithServer(args, app, (err, info) ->
@@ -173,10 +185,10 @@ describe 'CLI', ->
         it 'should return with status 1', ->
           assert.equal runtimeInfo.dredd.exitStatus, 1
 
-        it 'should return message announcing the fact', ->
+        itNotWindows 'should return message announcing the fact', ->
           assert.include runtimeInfo.dredd.stderr, 'killed'
 
-        it 'should term or kill the server', (done) ->
+        itNotWindows 'should term or kill the server', (done) ->
           isProcessRunning('endless-nosigterm', (err, isRunning) ->
             assert.isFalse isRunning unless err
             done(err)
@@ -185,14 +197,11 @@ describe 'CLI', ->
         it 'should not execute any transaction', ->
           assert.deepEqual runtimeInfo.server.requestCounts, {}
 
-
       describe "and handler is killed during execution", ->
-        dreddCommandInfo = undefined
-        serverRuntimeInfo = undefined
+        runtimeInfo = undefined
 
         before (done) ->
           app = createServer()
-
           app.get '/machines', (req, res) ->
             killAll('endless-nosigterm.+[^=]foo/bar/hooks', (err) ->
               done err if err
@@ -200,49 +209,45 @@ describe 'CLI', ->
             )
 
           # TCP server echoing transactions back
-          hookServer = net.createServer (socket) ->
-            socket.on 'data', (data) ->
-              socket.write data
+          hookHandler = net.createServer (socket) ->
+            socket.on 'data', (data) -> socket.write data
+            socket.on 'error', (err) -> console.error err
 
-          hookServer.listen DEFAULT_HOOK_HANDLER_PORT, ->
-            server = app.listen DEFAULT_SERVER_PORT, (err, info) ->
-              serverRuntimeInfo = info
-              runDreddCommand [
-                './test/fixtures/single-get.apib'
-                "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-                '--server=./test/fixtures/scripts/endless-nosigterm.sh'
-                '--language=./test/fixtures/scripts/endless-nosigterm.sh'
-                '--hookfiles=foo/bar/hooks'
-                '--server-wait=0'
-              ], (err, info) ->
-                dreddCommandInfo = info
-                server.close()
-
-            server.on 'close', ->
-              hookServer.close()
-              done()
+          args = [
+            './test/fixtures/single-get.apib'
+            "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+            "--server=#{COFFEE_BIN} ./test/fixtures/scripts/endless-nosigterm.coffee"
+            '--server-wait=0'
+            "--language=#{COFFEE_BIN} ./test/fixtures/scripts/endless-nosigterm.coffee"
+            '--hookfiles=foo/bar/hooks'
+          ]
+          hookHandler.listen DEFAULT_HOOK_HANDLER_PORT, ->
+            runDreddCommandWithServer(args, app, (err, info) ->
+              hookHandler.close()
+              runtimeInfo = info
+              done(err)
+            )
 
         after (done) ->
           killAll('test/fixtures/scripts/', done)
 
         it 'should return with status 1', ->
-          assert.equal dreddCommandInfo.exitStatus, 1
+          assert.equal runtimeInfo.dredd.exitStatus, 1
 
-        it 'should return message announcing the fact', ->
-          assert.include dreddCommandInfo.stderr, 'killed'
+        itNotWindows 'should return message announcing the fact', ->
+          assert.include runtimeInfo.dredd.stderr, 'killed'
 
-        it 'should term or kill the server', (done) ->
+        itNotWindows 'should term or kill the server', (done) ->
           isProcessRunning('endless-nosigterm', (err, isRunning) ->
             assert.isFalse isRunning unless err
             done(err)
           )
 
         it 'should execute the transaction', ->
-          assert.deepEqual serverRuntimeInfo.requestCounts, {'/machines': 1}
+          assert.deepEqual runtimeInfo.server.requestCounts, {'/machines': 1}
 
       describe "and handler didn't quit but all Dredd tests were OK", ->
-        dreddCommandInfo = undefined
-        serverRuntimeInfo = undefined
+        runtimeInfo = undefined
 
         before (done) ->
           app = createServer()
@@ -251,40 +256,36 @@ describe 'CLI', ->
             res.json([{type: 'bulldozer', name: 'willy'}])
 
           # TCP server echoing transactions back
-          hookServer = net.createServer (socket) ->
+          hookHandler = net.createServer (socket) ->
+            socket.on 'data', (data) -> socket.write data
+            socket.on 'error', (err) -> console.error err
 
-            socket.on 'data', (data) ->
-              socket.write data
-
-          hookServer.listen DEFAULT_HOOK_HANDLER_PORT, ->
-            server = app.listen DEFAULT_SERVER_PORT, (err, info) ->
-              serverRuntimeInfo = info
-              runDreddCommand [
-                './test/fixtures/single-get.apib'
-                "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-                '--server=./test/fixtures/scripts/endless-nosigterm.sh'
-                '--language=./test/fixtures/scripts/endless-nosigterm.sh'
-                '--hookfiles=./test/fixtures/scripts/emptyfile'
-                '--server-wait=0'
-              ], (err, info) ->
-                dreddCommandInfo = info
-                server.close()
-
-            server.on 'close', ->
-              hookServer.close()
-              done()
+          args = [
+            './test/fixtures/single-get.apib'
+            "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+            "--server=#{COFFEE_BIN} ./test/fixtures/scripts/endless-nosigterm.coffee"
+            '--server-wait=0'
+            "--language=#{COFFEE_BIN} ./test/fixtures/scripts/endless-nosigterm.coffee"
+            '--hookfiles=./test/fixtures/scripts/emptyfile'
+          ]
+          hookHandler.listen DEFAULT_HOOK_HANDLER_PORT, ->
+            runDreddCommandWithServer(args, app, (err, info) ->
+              hookHandler.close()
+              runtimeInfo = info
+              done(err)
+            )
 
         after (done) ->
           killAll('test/fixtures/scripts/', done)
 
         it 'should return with status 0', ->
-          assert.equal dreddCommandInfo.exitStatus, 0
+          assert.equal runtimeInfo.dredd.exitStatus, 0
 
         it 'should not return any killed or exited message', ->
-          assert.notInclude dreddCommandInfo.stderr, 'killed'
-          assert.notInclude dreddCommandInfo.stderr, 'exited'
+          assert.notInclude runtimeInfo.dredd.stderr, 'killed'
+          assert.notInclude runtimeInfo.dredd.stderr, 'exited'
 
-        it 'should kill the handler', (done) ->
+        itNotWindows 'should kill the handler', (done) ->
           isProcessRunning('dredd-fake-handler', (err, isRunning) ->
             assert.isFalse isRunning unless err
             done(err)
@@ -297,7 +298,7 @@ describe 'CLI', ->
           )
 
         it 'should execute some transaction', ->
-          assert.deepEqual serverRuntimeInfo.requestCounts, {'/machines': 1}
+          assert.deepEqual runtimeInfo.server.requestCounts, {'/machines': 1}
 
     describe "when adding additional headers with -h", ->
       runtimeInfo = undefined

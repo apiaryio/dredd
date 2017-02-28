@@ -153,8 +153,8 @@ describe 'CLI - Server Process', ->
     # *  Killing a process on Windows requires a bit smarter approach then just
     #    calling process.kill(), which is what Dredd does as of now. For that
     #    reason, Dredd isn't able to effectively kill a process on Windows.
-    desc = if process.platform is 'win32' then describe.skip else describe
-    desc 'When didn\'t terminate and had to be killed by Dredd', ->
+    describeNotWindows = if process.platform is 'win32' then describe.skip else describe
+    describeNotWindows 'When didn\'t terminate and had to be killed by Dredd', ->
       dreddCommandInfo = undefined
       args = [
         './test/fixtures/single-get.apib'
