@@ -147,6 +147,14 @@ Source of the documentation can be found in the [docs][] directory. To contribut
 - `npm run docs:build` - Builds the documentation.
 - `npm run docs:serve` - Runs live preview of the documentation.
 
+> **Note:** The `docs/contributing.md` file is a [symbolic link][] to the
+> `.github/CONTRIBUTING.md` file, where the actual content lives.
+> This is to be able to serve the same content also as [GitHub contributing guidelines][]
+> when someone opens a Pull Request.
+
+[symbolic link]: https://en.wikipedia.org/wiki/Symbolic_link
+[contributing guidelines]: https://github.com/blog/1184-contributing-guidelines
+
 ### Coverage
 
 Dredd strives for as much test coverage as possible. [Coveralls][] help us to
