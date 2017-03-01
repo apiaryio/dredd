@@ -129,7 +129,7 @@ describe 'Hooks worker client', ->
             done()
         , 100
 
-    describe 'when --language nodejs option is given', ->
+    describe 'when --language=nodejs option is given', ->
       beforeEach ->
         runner.hooks['configuration'] =
           options:
@@ -141,7 +141,7 @@ describe 'Hooks worker client', ->
           assert.include err.message, 'native Node.js hooks instead'
           done()
 
-    describe 'when --language ruby option is given and the worker is installed', ->
+    describe 'when --language=ruby option is given and the worker is installed', ->
       beforeEach ->
         sinon.stub crossSpawnStub, 'spawn', ->
           emitter = new EventEmitter
@@ -186,7 +186,7 @@ describe 'Hooks worker client', ->
             assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.rb'
             done()
 
-    describe 'when --language ruby option is given and the worker is not installed', ->
+    describe 'when --language=ruby option is given and the worker is not installed', ->
       beforeEach ->
         sinon.stub whichStub, 'which', (command) -> false
 
@@ -205,7 +205,7 @@ describe 'Hooks worker client', ->
           assert.include err.message, "gem install dredd_hooks"
           done()
 
-    describe 'when --language python option is given and the worker is installed', ->
+    describe 'when --language=python option is given and the worker is installed', ->
       beforeEach ->
         sinon.stub crossSpawnStub, 'spawn', ->
           emitter = new EventEmitter
@@ -250,7 +250,7 @@ describe 'Hooks worker client', ->
             assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.py'
             done()
 
-    describe 'when --language python option is given and the worker is not installed', ->
+    describe 'when --language=python option is given and the worker is not installed', ->
       beforeEach ->
         sinon.stub whichStub, 'which', (command) -> false
 
@@ -268,7 +268,7 @@ describe 'Hooks worker client', ->
           assert.include err.message, "pip install dredd_hooks"
           done()
 
-    describe 'when --language php option is given and the worker is installed', ->
+    describe 'when --language=php option is given and the worker is installed', ->
       beforeEach ->
         sinon.stub crossSpawnStub, 'spawn', ->
           emitter = new EventEmitter
@@ -313,7 +313,7 @@ describe 'Hooks worker client', ->
             assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.py'
             done()
 
-    describe 'when --language go option is given and the worker is not installed', ->
+    describe 'when --language=go option is given and the worker is not installed', ->
       beforeEach ->
           sinon.stub whichStub, 'which', (command) -> false
 
@@ -330,7 +330,7 @@ describe 'Hooks worker client', ->
           assert.include err.message, "go get github.com/snikch/goodman/cmd/goodman"
           done()
 
-    describe 'when --language go option is given and the worker is installed', ->
+    describe 'when --language=go option is given and the worker is installed', ->
       beforeEach ->
         sinon.stub crossSpawnStub, 'spawn', ->
           emitter = new EventEmitter
@@ -376,7 +376,7 @@ describe 'Hooks worker client', ->
             assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'gobinary'
             done()
 
-    describe 'when --language php option is given and the worker is not installed', ->
+    describe 'when --language=php option is given and the worker is not installed', ->
       beforeEach ->
         sinon.stub whichStub, 'which', (command) -> false
 
@@ -394,7 +394,7 @@ describe 'Hooks worker client', ->
           assert.include err.message, "composer require ddelnano/dredd-hooks-php --dev"
           done()
 
-    describe 'when --language perl option is given and the worker is installed', ->
+    describe 'when --language=perl option is given and the worker is installed', ->
       beforeEach ->
         sinon.stub crossSpawnStub, 'spawn', ->
           emitter = new EventEmitter
@@ -439,7 +439,7 @@ describe 'Hooks worker client', ->
             assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.py'
             done()
 
-    describe 'when --language perl option is given and the worker is not installed', ->
+    describe 'when --language=perl option is given and the worker is not installed', ->
       beforeEach ->
         sinon.stub whichStub, 'which', (command) -> false
 
@@ -457,7 +457,7 @@ describe 'Hooks worker client', ->
           assert.include err.message, "cpanm Dredd::Hooks"
           done()
 
-    describe 'when --language ./any/other-command is given', ->
+    describe 'when --language=./any/other-command is given', ->
       beforeEach ->
         sinon.stub crossSpawnStub, 'spawn', ->
           emitter = new EventEmitter

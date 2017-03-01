@@ -31,7 +31,7 @@ describe 'CLI - Reporters', ->
     args = [
       './test/fixtures/single-get.apib'
       "http://localhost:#{PORT}"
-      '--reporter nyan'
+      '--reporter=nyan'
     ]
 
     beforeEach (done) ->

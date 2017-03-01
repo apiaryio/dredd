@@ -123,7 +123,7 @@ describe 'CLI', () ->
         before (done) ->
           languageCmd = "./foo/bar.sh"
           hookfiles = "./test/fixtures/scripts/emptyfile"
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --language #{languageCmd} --hookfiles #{hookfiles} --server-wait 0"
+          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --language=#{languageCmd} --hookfiles=#{hookfiles} --server-wait=0"
           app = express()
 
           app.get '/machines', (req, res) ->
@@ -168,7 +168,7 @@ describe 'CLI', () ->
         before (done) ->
           languageCmd = "./test/fixtures/scripts/exit_3.sh"
           hookfiles = "./test/fixtures/scripts/emptyfile"
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --language #{languageCmd} --hookfiles #{hookfiles} --server-wait 0"
+          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --language=#{languageCmd} --hookfiles=#{hookfiles} --server-wait=0"
           app = express()
 
           app.get '/machines', (req, res) ->
@@ -210,7 +210,7 @@ describe 'CLI', () ->
           serverCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
           languageCmd = "./test/fixtures/scripts/kill-self.sh"
           hookFiles = "./test/fixtures/scripts/emptyfile"
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --server #{serverCmd} --language #{languageCmd} --hookfiles #{hookFiles} --server-wait 0"
+          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --server=#{serverCmd} --language=#{languageCmd} --hookfiles=#{hookFiles} --server-wait=0"
 
           app = express()
 
@@ -254,7 +254,7 @@ describe 'CLI', () ->
           serverCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
           languageCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
           hookFiles = "./test/fixtures/scripts/hooks-kill-after-all.coffee"
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --server #{serverCmd} --language #{languageCmd} --hookfiles #{hookFiles} --server-wait 0"
+          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --server=#{serverCmd} --language=#{languageCmd} --hookfiles=#{hookFiles} --server-wait=0"
 
           killHandlerCmd = 'ps aux | grep "bash" | grep "endless-nosigterm.sh" | grep -v grep | awk \'{print $2}\' | xargs kill -9'
 
@@ -310,7 +310,7 @@ describe 'CLI', () ->
           serverCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
           languageCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
           hookFiles = "./test/fixtures/scripts/emptyfile"
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --server '#{serverCmd}' --language '#{languageCmd}' --hookfiles #{hookFiles} --server-wait 0"
+          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --server='#{serverCmd}' --language='#{languageCmd}' --hookfiles=#{hookFiles} --server-wait=0"
 
           app = express()
 
