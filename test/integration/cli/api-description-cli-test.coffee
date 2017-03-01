@@ -1,5 +1,6 @@
 
 fs = require 'fs'
+os = require 'os'
 {assert} = require 'chai'
 
 {execDredd, startServer} = require './helpers'
@@ -77,7 +78,7 @@ describe 'CLI - API Description Document', ->
     describe 'When given path exists, but can\'t be read', ->
       dreddCommand = undefined
       args = [
-        './test/fixtures/'
+        os.homedir(),
         "http://localhost:#{PORT}"
       ]
 
