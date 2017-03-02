@@ -2,32 +2,32 @@
 {exec} = require 'child_process'
 clone = require 'clone'
 express = require 'express'
+{spawn} = require('cross-spawn')
 syncExec = require 'sync-exec'
 bodyParser = require 'body-parser'
 
 
-DREDD_BIN = require.resolve '../../../bin/dredd'
+DREDD_BIN = require.resolve('../../../bin/dredd')
 
 
-execCommand = (cmd, options = {}, callback) ->
+execCommand = (command, args, options = {}, callback) ->
   [callback, options] = [options, undefined] if typeof options is 'function'
 
-  stderr = ''
   stdout = ''
-  exitStatus = null
+  stderr = ''
 
-  cli = exec cmd, options, (error, out, err) ->
-    stdout = out
-    stderr = err
-    exitStatus = error.code if error
+  cli = spawn(command, args, options)
 
-  cli.on 'close', (code) ->
-    exitStatus = code if exitStatus == null and code != undefined
-    callback null, {stdout, stderr, output: stdout + stderr, exitStatus}
+  cli.stdout.on('data', (data) -> stdout += data)
+  cli.stderr.on('data', (data) -> stderr += data)
+
+  cli.on('close', (exitStatus) ->
+    callback(null, {stdout, stderr, output: stdout + stderr, exitStatus})
+  )
 
 
 execDredd = (args, options, callback) ->
-  execCommand "#{DREDD_BIN} #{args.join(' ')}", options, callback
+  execCommand('node', [DREDD_BIN].concat(args), options, callback)
 
 
 startServer = (configure, port, callback) ->
