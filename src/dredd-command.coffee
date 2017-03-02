@@ -221,9 +221,17 @@ class DreddCommand
       logger.verbose('Backend server process specified, starting backend server and then testing.')
 
       parsedArgs = spawnArgs(@argv['server'])
+      commandExtraOptions = {}
       command = parsedArgs.shift()
 
-      @serverProcess = spawn command, parsedArgs
+      while /^([A-Z_]+)=([A-Za-z0-9_\.\-]+)$/.test command
+        if not commandExtraOptions.env?
+          commandExtraOptions.env = {}
+        commandEnvVarMatch = /^([A-Z_]+)=([A-Za-z0-9_\.\-]+)$/.exec command
+        commandExtraOptions.env[commandEnvVarMatch[1]] = commandEnvVarMatch[2]
+        command = parsedArgs.shift()
+
+      @serverProcess = spawn command, parsedArgs, commandExtraOptions
 
       logger.info("Starting backend server process with command: #{@argv['server']}")
 
