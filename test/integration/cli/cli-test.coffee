@@ -197,7 +197,7 @@ describe 'CLI', ->
           app = createServer()
 
           app.get '/machines', (req, res) ->
-            killAll(/endless-nosigterm.+[^=]foo\/bar\/hooks/, (err) ->
+            killAll('endless-nosigterm.+[^=]foo/bar/hooks', (err) ->
               done err if err
               res.json([{type: 'bulldozer', name: 'willy'}])
             )
