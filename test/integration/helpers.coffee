@@ -8,7 +8,7 @@ DEFAULT_SERVER_PORT = 9876
 
 
 runDredd = (dredd, cb) ->
-  dredd.configuration.server ?= "http://localhost:#{DEFAULT_SERVER_PORT}"
+  dredd.configuration.server ?= "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
 
   silent = !!logger.transports.console.silent
   logger.transports.console.silent = true # supress Dredd's console output (remove if debugging)
@@ -32,7 +32,7 @@ runDredd = (dredd, cb) ->
 
 runDreddWithServer = (dredd, app, port, cb) ->
   [cb, port] = [port, DEFAULT_SERVER_PORT] if typeof port is 'function'
-  dredd.configuration.server ?= "http://localhost:#{port}"
+  dredd.configuration.server ?= "http://127.0.0.1:#{port}"
 
   server = app.listen(port, (err) ->
     return cb(err) if err

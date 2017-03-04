@@ -30,7 +30,7 @@ describe 'CLI - Reporters', ->
     dreddCommand = undefined
     args = [
       './test/fixtures/single-get.apib'
-      "http://localhost:#{PORT}"
+      "http://127.0.0.1:#{PORT}"
       '--reporter=nyan'
     ]
 
@@ -48,7 +48,7 @@ describe 'CLI - Reporters', ->
     apiary = undefined
 
     env = clone process.env
-    env.APIARY_API_URL = "http://localhost:#{PORT_APIARY}"
+    env.APIARY_API_URL = "http://127.0.0.1:#{PORT_APIARY}"
 
     configureApiary = (app) ->
       app.post '/apis/*', (req, res) ->
@@ -74,7 +74,7 @@ describe 'CLI - Reporters', ->
       stepRequest = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT}"
         '--reporter=apiary'
       ]
 
@@ -110,7 +110,7 @@ describe 'CLI - Reporters', ->
       stepRequest = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT}"
         '--reporter=apiary'
         '--hookfiles=./test/fixtures/hooks_log.coffee'
       ]
@@ -164,7 +164,7 @@ describe 'CLI - Reporters', ->
       stepRequest = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT}"
         '--reporter=apiary'
         '--level=info'
         '--sandbox'
@@ -209,7 +209,7 @@ describe 'CLI - Reporters', ->
     dreddCommand = undefined
     args = [
       './test/fixtures/single-get.apib'
-      "http://localhost:#{PORT}"
+      "http://127.0.0.1:#{PORT}"
       '--reporter=junit'
       '--output=__test_file_output__.xml'
     ]
@@ -230,7 +230,7 @@ describe 'CLI - Reporters', ->
     dreddCommand = undefined
     args = [
       './test/fixtures/single-get.apib'
-      "http://localhost:#{PORT}"
+      "http://127.0.0.1:#{PORT}"
       '--reporter=junit'
       '--output=__test_file_output1__.xml'
       '--reporter=junit'

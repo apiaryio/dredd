@@ -44,7 +44,7 @@ FORMAT: 1A
 To have an idea where we can hook our arbitrary code, we should first ask Dredd to list all available transaction names:
 
 ```
-$ dredd api-description.apib http://localhost:3000 --names
+$ dredd api-description.apib http://127.0.0.1:3000 --names
 info: Categories > Create a category
 info: Category > Delete a category
 info: Category Items > Create an item
@@ -125,7 +125,7 @@ paths:
 To have an idea where we can hook our arbitrary code, we should first ask Dredd to list all available transaction names:
 
 ```
-$ dredd api-description.yml http://localhost:3000 --names
+$ dredd api-description.yml http://127.0.0.1:3000 --names
 info: /categories > POST > 200 > application/json
 info: /category/{id} > DELETE > 200 > application/json
 info: /category/{id}/items > POST > 200 > application/json
@@ -212,7 +212,7 @@ FORMAT: 1A
 To have an idea where we can hook our arbitrary code, we should first ask Dredd to list all available transaction names:
 
 ```
-$ dredd api-description.apib http://localhost:3000 --names
+$ dredd api-description.apib http://127.0.0.1:3000 --names
 info: /login > POST
 info: /cars > GET
 info: /cars/{id} > PATCH
@@ -339,7 +339,7 @@ paths:
 To have an idea where we can hook our arbitrary code, we should first ask Dredd to list all available transaction names:
 
 ```
-$ dredd api-description.yml http://localhost:3000 --names
+$ dredd api-description.yml http://127.0.0.1:3000 --names
 info: /login > POST > 200 > application/json
 info: /cars > GET > 200 > application/json
 info: /cars/{id} > PATCH > 200 > application/json
@@ -405,7 +405,7 @@ dependencies:
     - npm install -g dredd@x.x.x
 test:
   pre:
-    - dredd apiary.apib http://localhost:3000
+    - dredd apiary.apib http://127.0.0.1:3000
 ```
 
 ### `.travis.yml` Configuration File for [Travis CI][]
@@ -414,7 +414,7 @@ test:
 before_install:
   - npm install -g dredd@x.x.x
 before_script:
-  - dredd apiary.apib http://localhost:3000
+  - dredd apiary.apib http://127.0.0.1:3000
 ```
 
 ## Authenticated APIs
@@ -508,7 +508,7 @@ FORMAT: 1A
 Dredd will detect two HTTP transaction examples and will compile following transaction names:
 
 ```
-$ dredd api-description.apib http://localhost --names
+$ dredd api-description.apib http://127.0.0.1 --names
 info: Beginning Dredd testing...
 info: Resource > Update Resource > Example 1
 info: Resource > Update Resource > Example 2
@@ -534,7 +534,7 @@ hooks.before('/resource > GET > 500 > application/json', function (transaction, 
 Command-line output of complex HTTP responses and expectations can be hard to read. To tackle the problem, you can use Dredd to send test reports to [Apiary][]. Apiary provides a comfortable interface for browsing complex test reports:
 
 ```
-$ dredd apiary.apib http://localhost --reporter=apiary
+$ dredd apiary.apib http://127.0.0.1 --reporter=apiary
 warn: Apiary API Key or API Project Subdomain were not provided. Configure Dredd to be able to save test reports alongside your Apiary API project: http://dredd.readthedocs.io/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests
 info: Beginning Dredd testing...
 pass: DELETE /honey duration: 884ms

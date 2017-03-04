@@ -92,8 +92,8 @@ $ node app.js &
 Finally, let Dredd validate whether your freshly implemented API complies with the description you have:
 
 ```sh
-$ dredd api-description.apib http://localhost:3000  # API Blueprint
-$ dredd api-description.yml http://localhost:3000  # Swagger
+$ dredd api-description.apib http://127.0.0.1:3000  # API Blueprint
+$ dredd api-description.yml http://127.0.0.1:3000  # Swagger
 ```
 
 ## Configure Dredd
@@ -104,7 +104,7 @@ Dredd can be configured by [many CLI options](usage-cli.md). It's recommended to
 $ dredd init
 ? Location of the API description document: api-description.apib
 ? Command to start API backend server e.g. (bundle exec rails server)
-? URL of tested API endpoint: http://localhost:3000
+? URL of tested API endpoint: http://127.0.0.1:3000
 ? Programming language of hooks:
 ❯ nodejs
   python

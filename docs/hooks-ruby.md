@@ -15,7 +15,7 @@ $ gem install dredd_hooks
 ## Usage
 
 ```
-$ dredd apiary.apib http://localhost:3000 --language=ruby --hookfiles=./hooks*.rb
+$ dredd apiary.apib http://127.0.0.1:3000 --language=ruby --hookfiles=./hooks*.rb
 ```
 
 ## API Reference

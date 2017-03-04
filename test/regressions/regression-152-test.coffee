@@ -42,7 +42,7 @@ describe "Regression: Issue #152", () ->
     receivedRequest = {}
 
     before (done) ->
-      cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/regression-152.coffee"
+      cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --hookfiles=./test/fixtures/regression-152.coffee"
 
       app = express()
 

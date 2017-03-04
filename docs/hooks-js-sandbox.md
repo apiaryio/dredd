@@ -3,7 +3,7 @@
 ## Usage
 
 ```
-$ dredd apiary.apib http://localhost:3000 --sandbox --hookfiles=./hooks*.js
+$ dredd apiary.apib http://127.0.0.1:3000 --sandbox --hookfiles=./hooks*.js
 ```
 
 ### Dredd JS API Option
@@ -13,7 +13,7 @@ Sandbox mode can be enabled in Dredd JavaScript API
 ```javascript
 var Dredd = require('dredd');
 var configuration = {
-  server: "http://localhost",
+  server: "http://127.0.0.1",
   options: {
     path: "./test/fixtures/single-get.apib",
     sandbox: true,

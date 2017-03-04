@@ -46,7 +46,7 @@ describe 'CLI - API Description Document', ->
 
     describe 'When loaded by glob pattern', ->
       dreddCommand = undefined
-      args = ['./test/fixtures/single-g*t.apib', "http://localhost:#{PORT}"]
+      args = ['./test/fixtures/single-g*t.apib', "http://127.0.0.1:#{PORT}"]
 
       beforeEach (done) ->
         execDredd args, (err, commandInfo) ->
@@ -62,7 +62,7 @@ describe 'CLI - API Description Document', ->
       dreddCommand = undefined
       args = [
         './test/fixtures/__non-existent__.apib'
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT}"
       ]
 
       beforeEach (done) ->
@@ -79,7 +79,7 @@ describe 'CLI - API Description Document', ->
       dreddCommand = undefined
       args = [
         os.homedir(),
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT}"
       ]
 
       beforeEach (done) ->
@@ -98,8 +98,8 @@ describe 'CLI - API Description Document', ->
     describe 'When successfully loaded from URL', ->
       dreddCommand = undefined
       args = [
-        "http://localhost:#{PORT}/single-get.apib"
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT}/single-get.apib"
+        "http://127.0.0.1:#{PORT}"
       ]
 
       beforeEach (done) ->
@@ -117,8 +117,8 @@ describe 'CLI - API Description Document', ->
     describe 'When URL points to non-existent server', ->
       dreddCommand = undefined
       args = [
-        "http://localhost:#{PORT_NON_EXISTENT}/single-get.apib"
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT_NON_EXISTENT}/single-get.apib"
+        "http://127.0.0.1:#{PORT}"
       ]
 
       beforeEach (done) ->
@@ -133,13 +133,13 @@ describe 'CLI - API Description Document', ->
       it 'should print error message to stderr', ->
         assert.include dreddCommand.stderr, 'Error when loading file from URL'
         assert.include dreddCommand.stderr, 'Is the provided URL correct?'
-        assert.include dreddCommand.stderr, "http://localhost:#{PORT_NON_EXISTENT}/single-get.apib"
+        assert.include dreddCommand.stderr, "http://127.0.0.1:#{PORT_NON_EXISTENT}/single-get.apib"
 
     describe 'When URL points to non-existent resource', ->
       dreddCommand = undefined
       args = [
-        "http://localhost:#{PORT}/__non-existent__.apib"
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT}/__non-existent__.apib"
+        "http://127.0.0.1:#{PORT}"
       ]
 
       beforeEach (done) ->
@@ -154,7 +154,7 @@ describe 'CLI - API Description Document', ->
       it 'should print error message to stderr', ->
         assert.include dreddCommand.stderr, 'Unable to load file from URL'
         assert.include dreddCommand.stderr, 'responded with status code 404'
-        assert.include dreddCommand.stderr, "http://localhost:#{PORT}/__non-existent__.apib"
+        assert.include dreddCommand.stderr, "http://127.0.0.1:#{PORT}/__non-existent__.apib"
 
 
   describe 'When loaded by -p/--path', ->
@@ -163,7 +163,7 @@ describe 'CLI - API Description Document', ->
       dreddCommand = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT}"
         "--path=./test/fixtures/single-get-uri-template.apib"
       ]
 
@@ -181,8 +181,8 @@ describe 'CLI - API Description Document', ->
       dreddCommand = undefined
       args = [
         './test/fixtures/single-get-uri-template.apib'
-        "http://localhost:#{PORT}"
-        "--path=http://localhost:#{PORT}/single-get.apib"
+        "http://127.0.0.1:#{PORT}"
+        "--path=http://127.0.0.1:#{PORT}/single-get.apib"
       ]
 
       beforeEach (done) ->
@@ -201,7 +201,7 @@ describe 'CLI - API Description Document', ->
       dreddCommand = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT}"
         "--path=./test/fixtures/single-get-uri-template.apib"
         "--path=./test/fixtures/single-get-path.apib"
       ]
@@ -220,7 +220,7 @@ describe 'CLI - API Description Document', ->
       dreddCommand = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT}"
         "--path=./test/fixtures/single-get-uri-temp*.apib"
       ]
 
@@ -238,7 +238,7 @@ describe 'CLI - API Description Document', ->
       dreddCommand = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT}"
         "--path=./test/fixtures/__non-existent__.apib"
       ]
 

@@ -10,7 +10,7 @@ DREDD_BIN = require.resolve '../../bin/dredd'
 
 runDredd = (descriptionFile, cb) ->
   result = {}
-  cmd = "#{DREDD_BIN} #{descriptionFile} http://localhost:#{PORT} -ed --no-color"
+  cmd = "#{DREDD_BIN} #{descriptionFile} http://127.0.0.1:#{PORT} -ed --no-color"
 
   cli = exec cmd, (err, stdout, stderr) ->
     result.exitStatus = err?.code or null

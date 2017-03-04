@@ -46,7 +46,7 @@ describe 'CLI', () ->
     describe "when executing the command and the server is responding as specified in the API description", () ->
 
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT}"
+        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT}"
 
         app = express()
 
@@ -69,7 +69,7 @@ describe 'CLI', () ->
 
     describe "when executing the command and the server is responding as specified in the API description, endpoint with path", () ->
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT}/v2/"
+        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT}/v2/"
 
         app = express()
 
@@ -92,7 +92,7 @@ describe 'CLI', () ->
 
     describe "when executing the command and the server is sending different response", () ->
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT}"
+        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT}"
 
         app = express()
 
@@ -123,7 +123,7 @@ describe 'CLI', () ->
         before (done) ->
           languageCmd = "./foo/bar.sh"
           hookfiles = "./test/fixtures/scripts/emptyfile"
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --language=#{languageCmd} --hookfiles=#{hookfiles} --server-wait=0"
+          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --no-color --language=#{languageCmd} --hookfiles=#{hookfiles} --server-wait=0"
           app = express()
 
           app.get '/machines', (req, res) ->
@@ -168,7 +168,7 @@ describe 'CLI', () ->
         before (done) ->
           languageCmd = "./test/fixtures/scripts/exit_3.sh"
           hookfiles = "./test/fixtures/scripts/emptyfile"
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --language=#{languageCmd} --hookfiles=#{hookfiles} --server-wait=0"
+          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --no-color --language=#{languageCmd} --hookfiles=#{hookfiles} --server-wait=0"
           app = express()
 
           app.get '/machines', (req, res) ->
@@ -210,7 +210,7 @@ describe 'CLI', () ->
           serverCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
           languageCmd = "./test/fixtures/scripts/kill-self.sh"
           hookFiles = "./test/fixtures/scripts/emptyfile"
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --server=#{serverCmd} --language=#{languageCmd} --hookfiles=#{hookFiles} --server-wait=0"
+          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --no-color --server=#{serverCmd} --language=#{languageCmd} --hookfiles=#{hookFiles} --server-wait=0"
 
           app = express()
 
@@ -254,7 +254,7 @@ describe 'CLI', () ->
           serverCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
           languageCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
           hookFiles = "./test/fixtures/scripts/hooks-kill-after-all.coffee"
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --server=#{serverCmd} --language=#{languageCmd} --hookfiles=#{hookFiles} --server-wait=0"
+          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --no-color --server=#{serverCmd} --language=#{languageCmd} --hookfiles=#{hookFiles} --server-wait=0"
 
           killHandlerCmd = 'ps aux | grep "bash" | grep "endless-nosigterm.sh" | grep -v grep | awk \'{print $2}\' | xargs kill -9'
 
@@ -310,7 +310,7 @@ describe 'CLI', () ->
           serverCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
           languageCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
           hookFiles = "./test/fixtures/scripts/emptyfile"
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --server='#{serverCmd}' --language='#{languageCmd}' --hookfiles=#{hookFiles} --server-wait=0"
+          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --no-color --server='#{serverCmd}' --language='#{languageCmd}' --hookfiles=#{hookFiles} --server-wait=0"
 
           app = express()
 
@@ -363,7 +363,7 @@ describe 'CLI', () ->
       receivedRequest = {}
 
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} -h Accept:application/json"
+        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} -h Accept:application/json"
 
         app = express()
 
@@ -391,7 +391,7 @@ describe 'CLI', () ->
       receivedRequest = {}
 
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} -u username:password"
+        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} -u username:password"
 
         app = express()
 
@@ -419,7 +419,7 @@ describe 'CLI', () ->
 
     describe "when sorting requests with -s", () ->
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/apiary.apib http://localhost:#{PORT} -s"
+        cmd = "#{DREDD_BIN} ./test/fixtures/apiary.apib http://127.0.0.1:#{PORT} -s"
 
         app = express()
 
@@ -443,7 +443,7 @@ describe 'CLI', () ->
     describe 'when displaying errors inline with -e', () ->
 
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} -e"
+        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} -e"
 
         app = express()
 
@@ -469,7 +469,7 @@ describe 'CLI', () ->
 
     describe 'when showing details for all requests with -d', () ->
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} -d"
+        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} -d"
 
         app = express()
 
@@ -498,7 +498,7 @@ describe 'CLI', () ->
         receivedRequest = {}
 
         before (done) ->
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} -m POST"
+          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} -m POST"
 
           app = express()
 
@@ -525,7 +525,7 @@ describe 'CLI', () ->
         receivedRequest = {}
 
         before (done) ->
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} -m GET"
+          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} -m GET"
 
           app = express()
 
@@ -552,7 +552,7 @@ describe 'CLI', () ->
       machineHit = false
       messageHit = false
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --path=./test/fixtures/multifile/*.apib --only=\"Message API > /message > GET\" --no-color"
+        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --path=./test/fixtures/multifile/*.apib --only=\"Message API > /message > GET\" --no-color"
 
         app = express()
 
@@ -590,7 +590,7 @@ describe 'CLI', () ->
 
     describe 'when suppressing color with --no-color', () ->
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color"
+        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --no-color"
 
         app = express()
 
@@ -615,7 +615,7 @@ describe 'CLI', () ->
 
     describe 'when suppressing color with --color false', () ->
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --color false"
+        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --color false"
 
         app = express()
 
@@ -640,7 +640,7 @@ describe 'CLI', () ->
 
     describe 'when setting the log output level with -l', () ->
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} -l=error"
+        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} -l=error"
 
         app = express()
 
@@ -664,7 +664,7 @@ describe 'CLI', () ->
 
     describe 'when showing timestamps with -t', () ->
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} -t"
+        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} -t"
 
         app = express()
 
@@ -691,7 +691,7 @@ describe 'CLI', () ->
     receivedRequest = {}
 
     before (done) ->
-      cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/*_hooks.*"
+      cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --hookfiles=./test/fixtures/*_hooks.*"
 
       app = express()
 
@@ -723,7 +723,7 @@ describe 'CLI', () ->
       return false
 
     before (done) ->
-      cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/*_events.*"
+      cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --hookfiles=./test/fixtures/*_events.*"
 
       app = express()
 
@@ -758,7 +758,7 @@ describe 'CLI', () ->
       return ret.join(',')
 
     before (done) ->
-      cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/*_all.*"
+      cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --hookfiles=./test/fixtures/*_all.*"
 
       app = express()
 
@@ -786,7 +786,7 @@ describe 'CLI', () ->
     describe "and server is responding in accordance with the schema", () ->
 
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/schema.apib http://localhost:#{PORT}"
+        cmd = "#{DREDD_BIN} ./test/fixtures/schema.apib http://127.0.0.1:#{PORT}"
 
         app = express()
 
@@ -811,7 +811,7 @@ describe 'CLI', () ->
     describe "and server is NOT responding in accordance with the schema", () ->
 
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/schema.apib http://localhost:#{PORT}"
+        cmd = "#{DREDD_BIN} ./test/fixtures/schema.apib http://127.0.0.1:#{PORT}"
 
         app = express()
 
@@ -836,7 +836,7 @@ describe 'CLI', () ->
   describe "when API description document path is a glob", () ->
     describe "and called with --names options", () ->
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/multifile/*.apib http://localhost --names"
+        cmd = "#{DREDD_BIN} ./test/fixtures/multifile/*.apib http://127.0.0.1 --names"
         execCommand cmd, () ->
           done()
 
@@ -853,7 +853,7 @@ describe 'CLI', () ->
       receivedRequests = []
 
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/multifile/*.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/multifile/multifile_hooks.coffee"
+        cmd = "#{DREDD_BIN} ./test/fixtures/multifile/*.apib http://127.0.0.1:#{PORT} --hookfiles=./test/fixtures/multifile/multifile_hooks.coffee"
 
         app = express()
 
@@ -893,7 +893,7 @@ describe 'CLI', () ->
   describe "when called with additional --path argument which is a glob", () ->
     describe "and called with --names options", () ->
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/multiple-examples.apib http://localhost --path=./test/fixtures/multifile/*.apib --names --no-color"
+        cmd = "#{DREDD_BIN} ./test/fixtures/multiple-examples.apib http://127.0.0.1 --path=./test/fixtures/multifile/*.apib --names --no-color"
         execCommand cmd, () ->
           done()
 
@@ -911,7 +911,7 @@ describe 'CLI', () ->
     resourceRequested = false
 
     before (done) ->
-      cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://localhost:#{PORT} --no-color --sandbox --hookfiles=./test/fixtures/sandboxed-hook.js"
+      cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --no-color --sandbox --hookfiles=./test/fixtures/sandboxed-hook.js"
 
       app = express()
 

@@ -31,7 +31,7 @@ describe 'Dredd class', ->
   describe 'with legacy configuration', ->
     before ->
       configuration =
-        server: 'http://localhost:3000/'
+        server: 'http://127.0.0.1:3000/'
         blueprintPath: './test/fixtures/apiary.apib'
        sinon.stub loggerStub, 'info', ->
        sinon.stub loggerStub, 'log', ->
@@ -56,7 +56,7 @@ describe 'Dredd class', ->
   describe 'with valid configuration', ->
     before ->
       configuration =
-        server: 'http://localhost:3000/'
+        server: 'http://127.0.0.1:3000/'
         options:
           silent: true
           method: 'get'
@@ -110,7 +110,7 @@ describe 'Dredd class', ->
     describe 'when paths specified with glob paterns', ->
       before ->
         configuration =
-          server: 'http://localhost:3000/'
+          server: 'http://127.0.0.1:3000/'
           options:
             silent: true
             path: ['./test/fixtures/multifile/*.apib', './test/fixtures/multifile/*.apib' ,'./test/fixtures/multifile/*.balony']
@@ -160,7 +160,7 @@ describe 'Dredd class', ->
     describe 'when glob pattern does not match any files', ->
       before ->
         configuration =
-          server: 'http://localhost:3000/'
+          server: 'http://127.0.0.1:3000/'
           options:
             silent: true
             path: ['./test/fixtures/multifile/*.balony']
@@ -182,7 +182,7 @@ describe 'Dredd class', ->
     describe 'when configuration contains data object with "filename" as key, and an API description document contents as value', ->
       beforeEach ->
         configuration =
-          server: 'http://localhost:3000/'
+          server: 'http://127.0.0.1:3000/'
           options:
             silent: true
           data:
@@ -270,7 +270,7 @@ describe 'Dredd class', ->
       blueprintCode = null
       before (done) ->
         configuration =
-          server: 'http://localhost:3000/'
+          server: 'http://127.0.0.1:3000/'
           options:
             silent: true
             path: ['http://some.path.to/file.apib', 'https://another.path.to/apiary.apib', './test/fixtures/multifile/*.apib']
@@ -397,7 +397,7 @@ describe 'Dredd class', ->
   describe 'when API description document parsing error', ->
     before ->
       configuration =
-        url: 'http://localhost:3000/'
+        url: 'http://127.0.0.1:3000/'
         options:
           silent: true
           path: ['./test/fixtures/error-blueprint.apib']
@@ -423,7 +423,7 @@ describe 'Dredd class', ->
   describe 'when API description document parsing warning', ->
     before ->
       configuration =
-        url: 'http://localhost:3000/'
+        url: 'http://127.0.0.1:3000/'
         options:
           silent: true
           path: ['./test/fixtures/warning-ambiguous.apib']
@@ -451,7 +451,7 @@ describe 'Dredd class', ->
   describe 'when non existing API description document path', ->
     beforeEach ->
       configuration =
-        url: 'http://localhost:3000/'
+        url: 'http://127.0.0.1:3000/'
         options:
           silent: true
           path: ['./balony/path.apib']
@@ -475,7 +475,7 @@ describe 'Dredd class', ->
   describe 'when runtime contains any error', ->
     beforeEach ->
       configuration =
-        server: 'http://localhost:3000/'
+        server: 'http://127.0.0.1:3000/'
         options:
           silent: true
           path: ['./test/fixtures/error-uri-template.apib']
@@ -500,7 +500,7 @@ describe 'Dredd class', ->
   describe 'when runtime contains any warning', ->
     beforeEach ->
       configuration =
-        server: 'http://localhost:3000/'
+        server: 'http://127.0.0.1:3000/'
         options:
           silent: true
           path: ['./test/fixtures/warning-ambiguous.apib']
@@ -531,7 +531,7 @@ describe 'Dredd class', ->
   describe 'when runtime is without errors and warnings', ->
     beforeEach ->
       configuration =
-        server: 'http://localhost:3000/'
+        server: 'http://127.0.0.1:3000/'
         options:
           silent: true
           path: ['./test/fixtures/apiary.apib']
@@ -556,7 +556,7 @@ describe 'Dredd class', ->
 
       beforeEach (done) ->
         configuration =
-          server: 'http://localhost:3000/'
+          server: 'http://127.0.0.1:3000/'
           options:
             silent: true
             reporter: ['apiary']
@@ -606,7 +606,7 @@ describe 'Dredd class', ->
 
       beforeEach ->
         configuration =
-          server: 'http://localhost:3000/'
+          server: 'http://127.0.0.1:3000/'
           options:
 
             reporter: ['apiary']

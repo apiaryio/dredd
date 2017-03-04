@@ -41,7 +41,7 @@ describe 'CLI - Swagger Document', ->
 
     describe 'When successfully loaded', ->
       dreddCommand = undefined
-      args = ['./test/fixtures/single-get.yaml', "http://localhost:#{PORT}"]
+      args = ['./test/fixtures/single-get.yaml', "http://127.0.0.1:#{PORT}"]
 
       beforeEach (done) ->
         execDredd args, (err, commandInfo) ->
@@ -57,7 +57,7 @@ describe 'CLI - Swagger Document', ->
       dreddCommand = undefined
       args = [
         './test/fixtures/error-swagger.yaml'
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT}"
       ]
 
       beforeEach (done) ->
@@ -74,7 +74,7 @@ describe 'CLI - Swagger Document', ->
       dreddCommand = undefined
       args = [
         './test/fixtures/warning-swagger.yaml'
-        "http://localhost:#{PORT}"
+        "http://127.0.0.1:#{PORT}"
         '--no-color'
       ]
 

@@ -139,7 +139,7 @@ describe "DreddCommand class", () ->
       dc = new DreddCommand({
         exit: ->
         custom:
-          argv: ['./file.apib', 'http://localhost:3000']
+          argv: ['./file.apib', 'http://127.0.0.1:3000']
           env: {'NO_KEY': 'NO_VAL'}
       })
 
@@ -197,7 +197,7 @@ describe "DreddCommand class", () ->
         custom:
           argv: [
             './test/fixtures/single-get.apib'
-            "http://localhost:#{PORT}"
+            "http://127.0.0.1:#{PORT}"
             '--path=./test/fixtures/single-get.apib'
           ]
         exit: (code) ->
@@ -219,7 +219,7 @@ describe "DreddCommand class", () ->
 
       it 'propagates configuration options to Dredd class', ->
         assert.equal dc.dreddInstance.configuration.options.path[0], "./test/fixtures/single-get.apib"
-        assert.equal dc.dreddInstance.configuration.server, "http://localhost:#{PORT}"
+        assert.equal dc.dreddInstance.configuration.server, "http://127.0.0.1:#{PORT}"
 
     describe 'with server returning wrong things', ->
 
@@ -231,7 +231,7 @@ describe "DreddCommand class", () ->
 
       it 'propagates configuration options to Dredd class', ->
         assert.equal dc.dreddInstance.configuration.options.path[0], "./test/fixtures/single-get.apib"
-        assert.equal dc.dreddInstance.configuration.server, "http://localhost:#{PORT}"
+        assert.equal dc.dreddInstance.configuration.server, "http://127.0.0.1:#{PORT}"
 
 
   describe "when called w/ OR wo/ exiting arguments", () ->
@@ -422,7 +422,7 @@ describe "DreddCommand class", () ->
   #       custom:
   #         argv: [
   #           "./test/fixtures/single-get.apib"
-  #           "http://localhost:#{PORT}"
+  #           "http://127.0.0.1:#{PORT}"
   #           "--server"
   #           "./test/fixtures/scripts/fake-server.sh"
   #         ]

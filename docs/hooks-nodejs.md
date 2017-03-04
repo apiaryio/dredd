@@ -3,7 +3,7 @@
 ## Usage
 
 ```
-$ dredd apiary.apib http://localhost:30000 --hookfiles=./hooks*.js
+$ dredd apiary.apib http://127.0.0.1:30000 --hookfiles=./hooks*.js
 ```
 
 ## API Reference
@@ -244,5 +244,5 @@ With this workaround you can use [Babel](https://babeljs.io/) for support of all
 ```
 npm install -g babel-cli babel-preset-es2015
 echo '{ "presets": ["es2015"] }' > .babelrc
-babel-node `which dredd` test/fixtures/single-get.apib http://localhost:3000 --hookfiles=./es2015.js
+babel-node `which dredd` test/fixtures/single-get.apib http://127.0.0.1:3000 --hookfiles=./es2015.js
 ```
