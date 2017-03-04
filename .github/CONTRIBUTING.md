@@ -194,6 +194,8 @@ There is also one environment variable you could find useful:
 - When using long CLI options in tests or documentation, please always use the notation with `=`. For example,
   use `--path=/dev/null`, not `--path /dev/null`. While both should work, the version with `=` feels
   more like standard GNU-style long options and it makes arrays of arguments for `spawn` more readable.
+- Using `127.0.0.1` (in code, tests, documentation) is preferred over `localhost`.
+- Prefer explicit `<br>` tags instead of [two spaces][md-two-spaces] at the end of the line when writing documentation in Markdown.
 
 
 [Apiary]: https://apiary.io/
@@ -213,6 +215,7 @@ There is also one environment variable you could find useful:
 [Semantic Release]: https://github.com/semantic-release/semantic-release
 [Conventional Changelog]: https://github.com/conventional-changelog/conventional-changelog-angular/blob/master/convention.md
 [Commitizen CLI]: https://github.com/commitizen/cz-cli
+[md-two-spaces]: https://daringfireball.net/projects/markdown/syntax#p
 
 [existing commits]: https://github.com/apiaryio/dredd/commits/master
 [docs]: https://github.com/apiaryio/dredd/tree/master/docs
