@@ -1,5 +1,4 @@
-http = require 'http'
-https = require 'https'
+requestLib = require 'request'
 url = require 'url'
 path = require 'path'
 os = require 'os'
@@ -438,13 +437,17 @@ class TransactionRunner
     @error = @error or error
 
   getRequestOptionsFromTransaction: (transaction) ->
-    requestOptions =
-      host: transaction.host
+    urlObject =
+      protocol: transaction.protocol
+      hostname: transaction.host
       port: transaction.port
-      path: transaction.fullPath
-      method: transaction.request['method']
+
+    return {
+      uri: url.format(urlObject) + transaction.fullPath
+      method: transaction.request.method
       headers: transaction.request.headers
-    return requestOptions
+      body: transaction.request.body
+    }
 
   # Add length of body if no Content-Length present
   setContentLength: (transaction) ->
@@ -524,65 +527,47 @@ class TransactionRunner
   # and the response validation is invoked here
   performRequestAndValidate: (test, transaction, hooks, callback) ->
     requestOptions = @getRequestOptionsFromTransaction(transaction)
-    buffer = ""
 
-    handleRequest = (res) =>
-      logger.verbose('Handling HTTP response from tested server')
-
-      res.on 'data', (chunk) ->
-        logger.silly('Recieving some data from tested server')
-        buffer += chunk
-
-      res.on 'error', (error) =>
-        logger.debug('Recieving response from tested server errored:', error)
+    handleRequest = (err, res, body) =>
+      if err
+        logger.debug('Requesting tested server errored:', err)
         test.title = transaction.id
         test.expected = transaction.expected
         test.request = transaction.request
-        @emitError(error, test)
-
+        @emitError(err, test)
         return callback()
 
-      res.once 'end', =>
-        logger.debug('Response from tested server was recieved')
+      logger.verbose('Handling HTTP response from tested server')
 
-        # The data models as used here must conform to Gavel.js
-        # as defined in `http-response.coffee`
-        real =
-          statusCode: res.statusCode
-          headers: res.headers
-          body: buffer
+      # The data models as used here must conform to Gavel.js
+      # as defined in `http-response.coffee`
+      real =
+        statusCode: res.statusCode
+        headers: res.headers
+        body: body
 
-        transaction['real'] = real
+      transaction['real'] = real
 
-        logger.verbose('Running \'beforeEachValidation\' hooks')
-        @runHooksForData hooks?.beforeEachValidationHooks, transaction, false, () =>
+      logger.verbose('Running \'beforeEachValidation\' hooks')
+      @runHooksForData hooks?.beforeEachValidationHooks, transaction, false, () =>
+        return callback(@hookHandlerError) if @hookHandlerError
+
+        logger.verbose('Running \'beforeValidation\' hooks')
+        @runHooksForData hooks?.beforeValidationHooks[transaction.name], transaction, false, () =>
           return callback(@hookHandlerError) if @hookHandlerError
 
-          logger.verbose('Running \'beforeValidation\' hooks')
-          @runHooksForData hooks?.beforeValidationHooks[transaction.name], transaction, false, () =>
-            return callback(@hookHandlerError) if @hookHandlerError
-
-            @validateTransaction test, transaction, callback
+          @validateTransaction test, transaction, callback
 
 
-    transport = if transaction.protocol is 'https:' then https else http
     if transaction.request['body'] and @isMultipart requestOptions
       @replaceLineFeedInBody transaction, requestOptions
 
+    logger.verbose("""\
+      About to perform #{transaction.protocol.slice(0, -1).toUpperCase()} \
+      request to tested server: #{requestOptions.method} #{requestOptions.uri}
+    """)
     try
-      logger.verbose('About to perform an HTTP request to tested server')
-      req = transport.request requestOptions, handleRequest
-
-      req.on 'error', (error) =>
-        logger.debug('Requesting tested server errored:', error)
-        test.title = transaction.id
-        test.expected = transaction.expected
-        test.request = transaction.request
-        @emitError(error, test)
-        return callback()
-
-      req.write(transaction.request.body) if transaction.request.body
-      req.end()
+      @performRequest(requestOptions, handleRequest)
     catch error
       logger.debug('Requesting tested server errored:', error)
       test.title = transaction.id
@@ -590,6 +575,9 @@ class TransactionRunner
       test.request = transaction.request
       @emitError(error, test)
       return callback()
+
+  performRequest: (options, callback) ->
+    requestLib(options, callback)
 
   validateTransaction: (test, transaction, callback) ->
     configuration = @configuration
