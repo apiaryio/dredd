@@ -65,7 +65,7 @@ describe 'Hooks worker client', ->
 
   describe "when methods dealing with connection to the handler are stubbed", ->
     beforeEach ->
-      sinon.stub HooksWorkerClient.prototype, 'disconnectFromHandler'
+      sinon.stub HooksWorkerClient.prototype, 'disconnectFromHandler', ->
       sinon.stub HooksWorkerClient.prototype, 'connectToHandler', (cb) ->
         cb()
 
@@ -323,6 +323,24 @@ describe 'Hooks worker client', ->
             assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.py'
             done()
 
+    describe 'when --language=php option is given and the worker is not installed', ->
+      beforeEach ->
+        sinon.stub whichStub, 'which', (command) -> false
+
+        runner.hooks['configuration'] =
+          options:
+            language: 'php'
+            hookfiles: "somefile.py"
+
+      afterEach ->
+        whichStub.which.restore()
+
+      it 'should write a hint how to install', (done) ->
+        loadWorkerClient (err) ->
+          assert.ok err
+          assert.include err.message, "composer require ddelnano/dredd-hooks-php --dev"
+          done()
+
     describe 'when --language=go option is given and the worker is not installed', ->
       beforeEach ->
         sinon.stub whichStub, 'which', (command) -> false
@@ -385,24 +403,6 @@ describe 'Hooks worker client', ->
             assert.isUndefined err
             assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'gobinary'
             done()
-
-    describe 'when --language=php option is given and the worker is not installed', ->
-      beforeEach ->
-        sinon.stub whichStub, 'which', (command) -> false
-
-        runner.hooks['configuration'] =
-          options:
-            language: 'php'
-            hookfiles: "somefile.py"
-
-      afterEach ->
-        whichStub.which.restore()
-
-      it 'should write a hint how to install', (done) ->
-        loadWorkerClient (err) ->
-          assert.ok err
-          assert.include err.message, "composer require ddelnano/dredd-hooks-php --dev"
-          done()
 
     describe 'when --language=perl option is given and the worker is installed', ->
       beforeEach ->
