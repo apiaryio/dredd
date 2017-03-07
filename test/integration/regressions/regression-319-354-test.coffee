@@ -1,46 +1,31 @@
-{assert} = require 'chai'
-{exec} = require 'child_process'
-express = require 'express'
-clone = require 'clone'
+{assert} = require('chai')
+clone = require('clone')
+
+Dredd = require('../../../src/dredd')
+{runDreddCommandWithServer, createServer, parseDreddStdout, DEFAULT_SERVER_PORT} = require('../helpers')
 
 
-PORT = 3333
-DREDD_BIN = require.resolve '../../bin/dredd'
-
-
-runDredd = (descriptionFile, cb) ->
-  result = {}
-  cmd = "#{DREDD_BIN} #{descriptionFile} http://127.0.0.1:#{PORT} -ed --no-color"
-
-  cli = exec cmd, (err, stdout, stderr) ->
-    result.exitStatus = err?.code or null
-    result.stdout = '' + stdout
-    result.stderr = '' + stderr
-
-  cli.on 'close', (code) ->
-    result.exitStatus ?= code if code
-    cb null, result
-
-
-parseJSON = (body) ->
+# Helper, tries to parse given HTTP body and in case it can be parsed as JSON,
+# it returns the resulting JS object, otherwise it returns whatever came in.
+parseIfJson = (body) ->
   return undefined unless body
   try
-    JSON.parse body
+    JSON.parse(body)
   catch
     body
 
 
 # This can be removed once https://github.com/apiaryio/dredd/issues/341 is done
-parseOutput = (output) ->
+parseDreddStdout = (stdout) ->
   # Parse individual entries (deals also with multi-line entries)
   entries = []
   entry = undefined
-  for line in output.split /\r?\n/
-    match = line.match /^(\w+): (.+)?$/
+  for line in stdout.split(/\r?\n/)
+    match = line.match(/^(\w+): (.+)?$/)
     if match
       if entry
         entry.body = entry.body.trim()
-        entries.push entry
+        entries.push(entry)
       entry = {label: match[1], body: match[2] or ''}
     else
       entry.body += "\n#{line.trim()}"
@@ -50,21 +35,22 @@ parseOutput = (output) ->
   # fail: POST /customers duration: 13ms
   # fail: body: At '/name' Invalid type: null (expected string)
   # body: At '/shoeSize' Invalid type: string (expected number)
-  entries = entries.filter (entry, i) ->
+  entries = entries.filter((entry, i) ->
     previousEntry = entries[i - 1]
     if entry.label is 'body' and previousEntry.label is 'fail'
       previousEntry.body += '\n' + entry.body
       return false
     return true
+  )
 
   # Re-arrange data from entries
   results = {summary: '', failures: [], bodies: [], schemas: []}
   for entry in entries
     switch entry.label
-      when 'body' then results.bodies.push parseJSON entry.body
-      when 'bodySchema' then results.schemas.push parseJSON entry.body
+      when 'body' then results.bodies.push(parseIfJson(entry.body))
+      when 'bodySchema' then results.schemas.push(parseIfJson(entry.body))
       when 'complete' then results.summary = entry.body
-      when 'fail' then results.failures.push entry.body
+      when 'fail' then results.failures.push(entry.body)
   return results
 
 
@@ -130,27 +116,30 @@ describe 'Regression: Issues #319 and #354', ->
 
   describe 'Tested app is consistent with the API description', ->
     beforeEach (done) ->
-      app = express()
+      app = createServer()
 
       # Attaching endpoint for each testing scenario
       app.get '/bricks/XYZ42', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        res.status(200).send brickTypePayload
+        res.json brickTypePayload
       app.post '/bricks', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        res.status(200).send brickTypePayload
+        res.json brickTypePayload
       app.get '/customers', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        res.status(200).send userArrayPayload
+        res.json userArrayPayload
       app.post '/customers', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        res.status(200).send userPayload
+        res.json userPayload
 
       # Spinning up the Express server, running Dredd, and saving results
-      server = app.listen PORT, ->
-        runDredd './test/fixtures/regression-319-354.apib', (err, result) ->
-          results = parseOutput result.stdout
-          server.close done
+      args = [
+        './test/fixtures/regression-319-354.apib',
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}",
+        '--inline-errors',
+        '--details',
+        '--no-color',
+      ]
+      runDreddCommandWithServer(args, app, (err, info) ->
+        results = parseDreddStdout(info.dredd.stdout) if info
+        done(err)
+      )
 
     it 'outputs no failures', ->
       # Intentionally not testing just '.length' as this approach will output the difference
@@ -214,27 +203,30 @@ describe 'Regression: Issues #319 and #354', ->
       items: [incorrectUserPayload]
 
     beforeEach (done) ->
-      app = express()
+      app = createServer()
 
       # Attaching endpoint for each testing scenario
       app.get '/bricks/XYZ42', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        res.status(200).send incorrectBrickTypePayload
+        res.json incorrectBrickTypePayload
       app.post '/bricks', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        res.status(200).send incorrectBrickTypePayload
+        res.json incorrectBrickTypePayload
       app.get '/customers', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        res.status(200).send incorrectUserArrayPayload
+        res.json incorrectUserArrayPayload
       app.post '/customers', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        res.status(200).send incorrectUserPayload
+        res.json incorrectUserPayload
 
       # Spinning up the Express server, running Dredd, and saving results
-      server = app.listen PORT, ->
-        runDredd './test/fixtures/regression-319-354.apib', (err, result) ->
-          results = parseOutput result.stdout
-          server.close done
+      args = [
+        './test/fixtures/regression-319-354.apib',
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}",
+        '--inline-errors',
+        '--details',
+        '--no-color',
+      ]
+      runDreddCommandWithServer(args, app, (err, info) ->
+        results = parseDreddStdout(info.dredd.stdout) if info
+        done(err)
+      )
 
     it 'outputs failures', ->
       assert.ok results.failures.length

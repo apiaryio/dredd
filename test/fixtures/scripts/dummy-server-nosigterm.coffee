@@ -8,10 +8,10 @@ process.on 'SIGTERM', ->
 
 
 app.get '/machines', (req, res) ->
-  res.send [{type: 'bulldozer', name: 'willy'}]
+  res.json [{type: 'bulldozer', name: 'willy'}]
 
 app.get '/machines/:name', (req, res) ->
-  res.send {type: 'bulldozer', name: req.params.name}
+  res.json {type: 'bulldozer', name: req.params.name}
 
 
 app.listen process.argv[2], ->

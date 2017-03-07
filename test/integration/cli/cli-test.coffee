@@ -1,277 +1,254 @@
 {assert} = require('chai')
+net = require('net')
 {exec} = require('child_process')
-express = require 'express'
-clone = require 'clone'
-bodyParser = require 'body-parser'
-fs = require 'fs'
-syncExec = require 'sync-exec'
-net = require 'net'
 
-{DREDD_BIN, isProcessRunning} = require './helpers'
+{isProcessRunning, killAll, createServer, runDreddCommandWithServer, runDreddCommand, DEFAULT_SERVER_PORT} = require('../helpers')
 
 
-PORT = 8887
-CMD_PREFIX = ''
-
-stderr = ''
-stdout = ''
-exitStatus = null
-requests = []
+DEFAULT_HOOK_HANDLER_PORT = 61321
 
 
-execCommand = (cmd, options = {}, callback) ->
-  stderr = ''
-  stdout = ''
-  exitStatus = null
+describe 'CLI', ->
 
-  if typeof options is 'function'
-    callback = options
-    options = undefined
-
-  cli = exec CMD_PREFIX + cmd, options, (error, out, err) ->
-    stdout = out
-    stderr = err
-
-    if error
-      exitStatus = error.code
-
-  cli.on 'close', (code) ->
-    exitStatus = code if exitStatus == null and code != undefined
-    callback(undefined, stdout, stderr, exitStatus)
-
-
-describe 'CLI', () ->
-
-  describe "Arguments with existing API description document and responding server", () ->
-    describe "when executing the command and the server is responding as specified in the API description", () ->
+  describe "Arguments with existing API description document and responding server", ->
+    describe "when executing the command and the server is responding as specified in the API description", ->
+      runtimeInfo = undefined
 
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT}"
-
-        app = express()
-
+        app = createServer()
         app.get '/machines', (req, res) ->
-          res.setHeader 'Content-Type', 'application/json'
-          machine =
-            type: 'bulldozer'
-            name: 'willy'
-          response = [machine]
-          res.status(200).send response
+          res.json([{type: 'bulldozer', name: 'willy'}])
 
-        server = app.listen PORT, () ->
-          execCommand cmd, () ->
-            server.close()
+        args = ['./test/fixtures/single-get.apib', "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"]
+        runDreddCommandWithServer(args, app, (err, info) ->
+          runtimeInfo = info
+          done(err)
+        )
 
-        server.on 'close', done
+      it 'exit status should be 0', ->
+        assert.equal runtimeInfo.dredd.exitStatus, 0
 
-      it 'exit status should be 0', () ->
-        assert.equal exitStatus, 0
+    describe "when executing the command and the server is responding as specified in the API description, endpoint with path", ->
+      runtimeInfo = undefined
 
-    describe "when executing the command and the server is responding as specified in the API description, endpoint with path", () ->
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT}/v2/"
-
-        app = express()
-
+        app = createServer()
         app.get '/v2/machines', (req, res) ->
-          res.setHeader 'Content-Type', 'application/json'
-          machine =
-            type: 'bulldozer'
-            name: 'willy'
-          response = [machine]
-          res.status(200).send response
+          res.json([{type: 'bulldozer', name: 'willy'}])
 
-        server = app.listen PORT, () ->
-          execCommand cmd, () ->
-            server.close()
+        args = ['./test/fixtures/single-get.apib', "http://127.0.0.1:#{DEFAULT_SERVER_PORT}/v2/"]
+        runDreddCommandWithServer(args, app, (err, info) ->
+          runtimeInfo = info
+          done(err)
+        )
 
-        server.on 'close', done
+      it 'exit status should be 0', ->
+        assert.equal runtimeInfo.dredd.exitStatus, 0
 
-      it 'exit status should be 0', () ->
-        assert.equal exitStatus, 0
+    describe "when executing the command and the server is sending different response", ->
+      runtimeInfo = undefined
 
-    describe "when executing the command and the server is sending different response", () ->
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT}"
-
-        app = express()
-
+        app = createServer()
         app.get '/machines', (req, res) ->
-          res.setHeader 'Content-Type', 'application/json'
-          machine =
-            kind: 'bulldozer'
-            imatriculation: 'willy'
-          response = [machine]
-          res.status(201).send response
+          res.status(201).json([{kind: 'bulldozer', imatriculation: 'willy'}])
 
-        server = app.listen PORT, () ->
-          execCommand cmd, () ->
-            server.close()
+        args = ['./test/fixtures/single-get.apib', "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"]
+        runDreddCommandWithServer(args, app, (err, info) ->
+          runtimeInfo = info
+          done(err)
+        )
 
-        server.on 'close', done
+      it 'exit status should be 1', ->
+        assert.equal runtimeInfo.dredd.exitStatus, 1
 
-      it 'exit status should be 1', () ->
-        assert.equal exitStatus, 1
+  describe "when called with arguments", ->
 
-  describe "when called with arguments", () ->
+    describe 'when using language hook handler and spawning the server', ->
 
-    describe 'when using language hook handler and spawning the server', () ->
-
-      describe "and handler file doesn't exist", () ->
-        apiHit = false
+      describe "and handler file doesn't exist", ->
+        runtimeInfo = undefined
 
         before (done) ->
-          languageCmd = "./foo/bar.sh"
-          hookfiles = "./test/fixtures/scripts/emptyfile"
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --no-color --language=#{languageCmd} --hookfiles=#{hookfiles} --server-wait=0"
-          app = express()
-
+          app = createServer()
           app.get '/machines', (req, res) ->
-            apiHit = true
+            res.json([{type: 'bulldozer', name: 'willy'}])
 
-            res.setHeader 'Content-Type', 'application/json'
-            machine =
-              type: 'bulldozer'
-              name: 'willy'
-            response = [machine]
+          args = [
+            './test/fixtures/single-get.apib'
+            "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+            '--server-wait=0'
+            '--language=foo/bar/hook-handler'
+            '--hookfiles=./test/fixtures/scripts/emptyfile'
+          ]
+          runDreddCommandWithServer(args, app, (err, info) ->
+            runtimeInfo = info
+            done(err)
+          )
 
-            res.status(200).send response
+        after (done) ->
+          killAll('test/fixtures/scripts/', done)
 
-          server = app.listen PORT, () ->
-            execCommand cmd, () ->
-              server.close()
+        it 'should return with status 1', ->
+          assert.equal runtimeInfo.dredd.exitStatus, 1
 
-          server.on 'close', done
+        it 'should not return message containing exited or killed', ->
+          assert.notInclude runtimeInfo.dredd.stderr, 'exited'
+          assert.notInclude runtimeInfo.dredd.stderr, 'killed'
 
-        after () ->
-          syncExec "ps aux | grep test/fixtures/scripts/ | grep -v grep | awk '{print $2}' | xargs kill -9"
+        it 'should not return message announcing the fact', ->
+          assert.include runtimeInfo.dredd.stderr, 'not found'
 
-        it 'should return with status 1', () ->
-          assert.equal exitStatus, 1
+        it 'should term or kill the server', (done) ->
+          isProcessRunning('endless-nosigterm', (err, isRunning) ->
+            assert.isFalse isRunning unless err
+            done(err)
+          )
 
-        it 'should not return message containing exited or killed', () ->
-          assert.notInclude stderr, 'exited'
-          assert.notInclude stderr, 'killed'
+        it 'should not execute any transaction', ->
+          assert.deepEqual runtimeInfo.server.requestCounts, {}
 
-        it 'should not return message announcing the fact', () ->
-          assert.include stderr, 'not found'
-
-        it 'should term or kill the server', () ->
-          assert.isFalse isProcessRunning("endless-nosigterm")
-
-        it 'should not execute any transaction', () ->
-          assert.isFalse apiHit
-
-      describe 'and handler crashes before execution', () ->
-        apiHit = false
+      describe 'and handler crashes before execution', ->
+        runtimeInfo = undefined
 
         before (done) ->
-          languageCmd = "./test/fixtures/scripts/exit_3.sh"
-          hookfiles = "./test/fixtures/scripts/emptyfile"
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --no-color --language=#{languageCmd} --hookfiles=#{hookfiles} --server-wait=0"
-          app = express()
-
+          app = createServer()
           app.get '/machines', (req, res) ->
-            apiHit = true
+            res.json([{type: 'bulldozer', name: 'willy'}])
 
-            res.setHeader 'Content-Type', 'application/json'
-            machine =
-              type: 'bulldozer'
-              name: 'willy'
-            response = [machine]
+          args = [
+            './test/fixtures/single-get.apib'
+            "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+            '--server-wait=0'
+            '--language=./test/fixtures/scripts/exit_3.sh'
+            '--hookfiles=./test/fixtures/scripts/emptyfile'
+          ]
+          runDreddCommandWithServer(args, app, (err, info) ->
+            runtimeInfo = info
+            done(err)
+          )
 
-            res.status(200).send response
+        after (done) ->
+          killAll('test/fixtures/scripts/', done)
 
-          server = app.listen PORT, () ->
-            execCommand cmd, () ->
-              server.close()
+        it 'should return with status 1', ->
+          assert.equal runtimeInfo.dredd.exitStatus, 1
 
-          server.on 'close', done
+        it 'should return message announcing the fact', ->
+          assert.include runtimeInfo.dredd.stderr, 'exited'
 
-        after () ->
-          syncExec "ps aux | grep test/fixtures/scripts/ | grep -v grep | awk '{print $2}' | xargs kill -9"
+        it 'should term or kill the server', (done) ->
+          isProcessRunning('endless-nosigterm', (err, isRunning) ->
+            assert.isFalse isRunning unless err
+            done(err)
+          )
 
-        it 'should return with status 1', () ->
-          assert.equal exitStatus, 1
+        it 'should not execute any transaction', ->
+          assert.deepEqual runtimeInfo.server.requestCounts, {}
 
-        it 'should return message announcing the fact', () ->
-          assert.include stderr, 'exited'
-
-        it 'should term or kill the server', () ->
-          assert.isFalse isProcessRunning("endless-nosigterm")
-
-        it 'should not execute any transaction', () ->
-          assert.isFalse apiHit
-
-      describe "and handler is killed before execution", () ->
-        apiHit = false
+      describe "and handler is killed before execution", ->
+        runtimeInfo = undefined
 
         before (done) ->
-          serverCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
-          languageCmd = "./test/fixtures/scripts/kill-self.sh"
-          hookFiles = "./test/fixtures/scripts/emptyfile"
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --no-color --server=#{serverCmd} --language=#{languageCmd} --hookfiles=#{hookFiles} --server-wait=0"
-
-          app = express()
-
+          app = createServer()
           app.get '/machines', (req, res) ->
-            apiHit = true
+            res.json([{type: 'bulldozer', name: 'willy'}])
 
-            res.setHeader 'Content-Type', 'application/json'
-            machine =
-              type: 'bulldozer'
-              name: 'willy'
-            response = [machine]
-            res.status(200).send response
+          args = [
+            './test/fixtures/single-get.apib'
+            "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+            '--server=./test/fixtures/scripts/endless-nosigterm.sh'
+            '--server-wait=0'
+            '--language=./test/fixtures/scripts/kill-self.sh'
+            '--hookfiles=./test/fixtures/scripts/emptyfile'
+          ]
+          runDreddCommandWithServer(args, app, (err, info) ->
+            runtimeInfo = info
+            done(err)
+          )
 
-          server = app.listen PORT, () ->
-            execCommand cmd, () ->
-              server.close()
+        after (done) ->
+          killAll('test/fixtures/scripts/', done)
 
-          server.on 'close', () ->
-            done()
+        it 'should return with status 1', ->
+          assert.equal runtimeInfo.dredd.exitStatus, 1
 
-        after () ->
-          syncExec "ps aux | grep test/fixtures/scripts/ | grep -v grep | awk '{print $2}' | xargs kill -9"
+        it 'should return message announcing the fact', ->
+          assert.include runtimeInfo.dredd.stderr, 'killed'
 
-        it 'should return with status 1', () ->
-          assert.equal exitStatus, 1
+        it 'should term or kill the server', (done) ->
+          isProcessRunning('endless-nosigterm', (err, isRunning) ->
+            assert.isFalse isRunning unless err
+            done(err)
+          )
 
-        it 'should return message announcing the fact', () ->
-          assert.include stderr, 'killed'
-
-        it 'should term or kill the server', () ->
-          assert.isFalse isProcessRunning("endless-nosigterm")
-
-        it 'should not execute any transaction', () ->
-          assert.isFalse apiHit
+        it 'should not execute any transaction', ->
+          assert.deepEqual runtimeInfo.server.requestCounts, {}
 
 
-      describe "and handler is killed during execution", () ->
-        apiHit = false
+      describe "and handler is killed during execution", ->
+        dreddCommandInfo = undefined
+        serverRuntimeInfo = undefined
 
         before (done) ->
-          serverCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
-          languageCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
-          hookFiles = "./test/fixtures/scripts/hooks-kill-after-all.coffee"
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --no-color --server=#{serverCmd} --language=#{languageCmd} --hookfiles=#{hookFiles} --server-wait=0"
-
-          killHandlerCmd = 'ps aux | grep "bash" | grep "endless-nosigterm.sh" | grep -v grep | awk \'{print $2}\' | xargs kill -9'
-
-          app = express()
+          app = createServer()
 
           app.get '/machines', (req, res) ->
-            apiHit = true
+            killAll('endless-nosigterm.+[^=]foo/bar/hooks', (err) ->
+              done err if err
+              res.json([{type: 'bulldozer', name: 'willy'}])
+            )
 
-            res.setHeader 'Content-Type', 'application/json'
-            machine =
-              type: 'bulldozer'
-              name: 'willy'
-            response = [machine]
+          # TCP server echoing transactions back
+          hookServer = net.createServer (socket) ->
+            socket.on 'data', (data) ->
+              socket.write data
 
-            exec killHandlerCmd, (error, stdout, stderr) ->
-              done error if error
-              res.status(200).send response
+          hookServer.listen DEFAULT_HOOK_HANDLER_PORT, ->
+            server = app.listen DEFAULT_SERVER_PORT, (err, info) ->
+              serverRuntimeInfo = info
+              runDreddCommand [
+                './test/fixtures/single-get.apib'
+                "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+                '--server=./test/fixtures/scripts/endless-nosigterm.sh'
+                '--language=./test/fixtures/scripts/endless-nosigterm.sh'
+                '--hookfiles=foo/bar/hooks'
+                '--server-wait=0'
+              ], (err, info) ->
+                dreddCommandInfo = info
+                server.close()
+
+            server.on 'close', ->
+              hookServer.close()
+              done()
+
+        after (done) ->
+          killAll('test/fixtures/scripts/', done)
+
+        it 'should return with status 1', ->
+          assert.equal dreddCommandInfo.exitStatus, 1
+
+        it 'should return message announcing the fact', ->
+          assert.include dreddCommandInfo.stderr, 'killed'
+
+        it 'should term or kill the server', (done) ->
+          isProcessRunning('endless-nosigterm', (err, isRunning) ->
+            assert.isFalse isRunning unless err
+            done(err)
+          )
+
+        it 'should execute the transaction', ->
+          assert.deepEqual serverRuntimeInfo.requestCounts, {'/machines': 1}
+
+      describe "and handler didn't quit but all Dredd tests were OK", ->
+        dreddCommandInfo = undefined
+        serverRuntimeInfo = undefined
+
+        before (done) ->
+          app = createServer()
+
+          app.get '/machines', (req, res) ->
+            res.json([{type: 'bulldozer', name: 'willy'}])
 
           # TCP server echoing transactions back
           hookServer = net.createServer (socket) ->
@@ -279,442 +256,357 @@ describe 'CLI', () ->
             socket.on 'data', (data) ->
               socket.write data
 
-          hookServer.listen 61321, () ->
-            server = app.listen PORT, () ->
-              execCommand cmd, () ->
+          hookServer.listen DEFAULT_HOOK_HANDLER_PORT, ->
+            server = app.listen DEFAULT_SERVER_PORT, (err, info) ->
+              serverRuntimeInfo = info
+              runDreddCommand [
+                './test/fixtures/single-get.apib'
+                "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+                '--server=./test/fixtures/scripts/endless-nosigterm.sh'
+                '--language=./test/fixtures/scripts/endless-nosigterm.sh'
+                '--hookfiles=./test/fixtures/scripts/emptyfile'
+                '--server-wait=0'
+              ], (err, info) ->
+                dreddCommandInfo = info
                 server.close()
 
-            server.on 'close', () ->
+            server.on 'close', ->
               hookServer.close()
               done()
 
-        after () ->
-          syncExec "ps aux | grep test/fixtures/scripts/ | grep -v grep | awk '{print $2}' | xargs kill -9"
+        after (done) ->
+          killAll('test/fixtures/scripts/', done)
 
-        it 'should return with status 1', () ->
-          assert.equal exitStatus, 1
+        it 'should return with status 0', ->
+          assert.equal dreddCommandInfo.exitStatus, 0
 
-        it 'should return message announcing the fact', () ->
-          assert.include stderr, 'killed'
+        it 'should not return any killed or exited message', ->
+          assert.notInclude dreddCommandInfo.stderr, 'killed'
+          assert.notInclude dreddCommandInfo.stderr, 'exited'
 
-        it 'should term or kill the server', () ->
-          assert.isFalse isProcessRunning("endless-nosigterm")
+        it 'should kill the handler', (done) ->
+          isProcessRunning('dredd-fake-handler', (err, isRunning) ->
+            assert.isFalse isRunning unless err
+            done(err)
+          )
 
-        it 'should execute the transaction', () ->
-          assert.isTrue apiHit
+        it 'should kill the server', (done) ->
+          isProcessRunning('dredd-fake-server', (err, isRunning) ->
+            assert.isFalse isRunning unless err
+            done(err)
+          )
 
-      describe "and handler didn't quit but all Dredd tests were OK", () ->
-        apiHit = false
+        it 'should execute some transaction', ->
+          assert.deepEqual serverRuntimeInfo.requestCounts, {'/machines': 1}
 
-        before (done) ->
-          serverCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
-          languageCmd = "./test/fixtures/scripts/endless-nosigterm.sh"
-          hookFiles = "./test/fixtures/scripts/emptyfile"
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --no-color --server='#{serverCmd}' --language='#{languageCmd}' --hookfiles=#{hookFiles} --server-wait=0"
-
-          app = express()
-
-          app.get '/machines', (req, res) ->
-            apiHit = true
-            res.setHeader 'Content-Type', 'application/json'
-            machine =
-              type: 'bulldozer'
-              name: 'willy'
-            response = [machine]
-            res.status(200).send response
-
-          # TCP server echoing transactions back
-          hookServer = net.createServer (socket) ->
-
-            socket.on 'data', (data) ->
-              socket.write data
-
-          hookServer.listen 61321, () ->
-            server = app.listen PORT, () ->
-              execCommand cmd, () ->
-                server.close()
-
-            server.on 'close', () ->
-              hookServer.close()
-              done()
-
-        after () ->
-          syncExec "ps aux | grep test/fixtures/scripts/ | grep -v grep | awk '{print $2}' | xargs kill -9"
-
-        it 'should return with status 0', () ->
-          assert.equal exitStatus, 0
-
-        it 'should not return any killed or exited message', () ->
-          assert.notInclude stderr, 'killed'
-          assert.notInclude stderr, 'exited'
-
-        it 'should kill the handler', () ->
-          assert.isFalse isProcessRunning "dredd-fake-handler"
-
-        it 'should kill the server', () ->
-          assert.isFalse isProcessRunning "dredd-fake-server"
-
-        it 'should execute some transaction', () ->
-          assert.isTrue apiHit
-
-
-    describe "when adding additional headers with -h", () ->
-
-      receivedRequest = {}
+    describe "when adding additional headers with -h", ->
+      runtimeInfo = undefined
 
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} -h Accept:application/json"
-
-        app = express()
-
+        app = createServer()
         app.get '/machines', (req, res) ->
-          receivedRequest = req
-          res.setHeader 'Content-Type', 'application/json'
-          machine =
-            type: 'bulldozer'
-            name: 'willy'
-          response = [machine]
-          res.status(200).send response
+          res.json([{type: 'bulldozer', name: 'willy'}])
 
-        server = app.listen PORT, () ->
-          execCommand cmd, () ->
-            server.close()
+        args = [
+          './test/fixtures/single-get.apib'
+          "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+          '-h'
+          'Accept:application/json'
+        ]
+        runDreddCommandWithServer(args, app, (err, info) ->
+          runtimeInfo = info
+          done(err)
+        )
 
-        server.on 'close', done
-
-      it 'should have an additional header in the request', () ->
-        assert.deepPropertyVal receivedRequest, 'headers.accept', 'application/json'
+      it 'should have an additional header in the request', ->
+        assert.deepPropertyVal runtimeInfo.server.requests['/machines'][0], 'headers.accept', 'application/json'
 
 
-    describe "when adding basic auth credentials with -u", () ->
-
-      receivedRequest = {}
+    describe "when adding basic auth credentials with -u", ->
+      runtimeInfo = undefined
 
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} -u username:password"
-
-        app = express()
-
+        app = createServer()
         app.get '/machines', (req, res) ->
-          receivedRequest = req
-          res.setHeader 'Content-Type', 'application/json'
-          machine =
-            type: 'bulldozer'
-            name: 'willy'
-          response = [machine]
-          res.status(200).send response
+          res.json([{type: 'bulldozer', name: 'willy'}])
 
-        server = app.listen PORT, () ->
-          execCommand cmd, () ->
-            server.close()
+        args = [
+          './test/fixtures/single-get.apib'
+          "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+          '-u'
+          'username:password'
+        ]
+        runDreddCommandWithServer(args, app, (err, info) ->
+          runtimeInfo = info
+          done(err)
+        )
 
-        server.on 'close', done
+      it 'should have an authorization header in the request', ->
+        assert.ok runtimeInfo.server.requests['/machines'][0].headers.authorization
 
-      it 'should have an authorization header in the request', () ->
-        assert.ok receivedRequest.headers.authorization
-
-      it 'should contain a base64 encoded string of the username and password', () ->
-        assert.ok receivedRequest.headers.authorization is 'Basic ' + new Buffer('username:password').toString('base64')
+      it 'should contain a base64 encoded string of the username and password', ->
+        assert.ok runtimeInfo.server.requests['/machines'][0].headers.authorization is 'Basic ' + new Buffer('username:password').toString('base64')
 
 
-    describe "when sorting requests with -s", () ->
-      before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/apiary.apib http://127.0.0.1:#{PORT} -s"
-
-        app = express()
-
-        app.get '/machines', (req, res) ->
-          res.setHeader 'Content-Type', 'application/json'
-          machine =
-            type: 'bulldozer'
-            name: 'willy'
-          response = [machine]
-          res.status(200).send response
-
-        server = app.listen PORT, () ->
-          execCommand cmd, () ->
-            server.close()
-
-        server.on 'close', done
-
-      it 'should perform the POST, GET, PUT, DELETE in order', () ->
-        assert.ok stdout.indexOf('POST') < stdout.indexOf('GET') < stdout.indexOf('PUT') < stdout.indexOf('DELETE')
-
-    describe 'when displaying errors inline with -e', () ->
+    describe "when sorting requests with -s", ->
+      runtimeInfo = undefined
 
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} -e"
-
-        app = express()
-
+        app = createServer()
         app.get '/machines', (req, res) ->
-          res.setHeader 'Content-Type', 'application/json'
-          machine =
-            kind: 'bulldozer'
-            imatriculation: 'willy'
-          response = [machine]
-          res.status(201).send response
+          res.json([{type: 'bulldozer', name: 'willy'}])
 
-        server = app.listen PORT, () ->
-          execCommand cmd, () ->
-            server.close()
+        args = [
+          './test/fixtures/apiary.apib'
+          "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+          '-s'
+        ]
+        runDreddCommandWithServer(args, app, (err, info) ->
+          runtimeInfo = info
+          done(err)
+        )
 
-        server.on 'close', done
+      it 'should perform the POST, GET, PUT, DELETE in order', ->
+        assert.ok runtimeInfo.dredd.stdout.indexOf('POST') < runtimeInfo.dredd.stdout.indexOf('GET') < runtimeInfo.dredd.stdout.indexOf('PUT') < runtimeInfo.dredd.stdout.indexOf('DELETE')
 
-      it 'should display errors inline', () ->
+    describe 'when displaying errors inline with -e', ->
+      runtimeInfo = undefined
+
+      before (done) ->
+        app = createServer()
+        app.get '/machines', (req, res) ->
+          res.status(201).json([{kind: 'bulldozer', imatriculation: 'willy'}])
+
+        args = [
+          './test/fixtures/single-get.apib'
+          "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+          '-e'
+        ]
+        runDreddCommandWithServer(args, app, (err, info) ->
+          runtimeInfo = info
+          done(err)
+        )
+
+      it 'should display errors inline', ->
         # when displayed inline, a single fail request only creates two "fail:" messages,
         # as opposed to the usual three
-        count = stdout.split("fail").length - 2 #says fail in the epilogue
+        count = runtimeInfo.dredd.stdout.split("fail").length - 2 #says fail in the epilogue
         assert.equal count, 2
 
-    describe 'when showing details for all requests with -d', () ->
+    describe 'when showing details for all requests with -d', ->
+      runtimeInfo = undefined
+
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} -d"
-
-        app = express()
-
+        app = createServer()
         app.get '/machines', (req, res) ->
-          res.setHeader 'Content-Type', 'application/json'
-          machine =
-            type: 'bulldozer'
-            name: 'willy'
-          response = [machine]
-          res.status(200).send response
+          res.json([{type: 'bulldozer', name: 'willy'}])
 
-        server = app.listen PORT, () ->
-          execCommand cmd, () ->
-            server.close()
+        args = [
+          './test/fixtures/single-get.apib'
+          "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+          '-d'
+        ]
+        runDreddCommandWithServer(args, app, (err, info) ->
+          runtimeInfo = info
+          done(err)
+        )
 
-        server.on 'close', done
-
-      it 'should display details on passing tests', () ->
+      it 'should display details on passing tests', ->
         # the request: block is not shown for passing tests normally
-        assert.ok stdout.indexOf('request') > -1
+        assert.ok runtimeInfo.dredd.stdout.indexOf('request') > -1
 
-    describe "when filtering request methods with -m", () ->
+    describe "when filtering request methods with -m", ->
 
-      describe 'when blocking a request', () ->
-
-        receivedRequest = {}
-
-        before (done) ->
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} -m POST"
-
-          app = express()
-
-          app.get '/machines', (req, res) ->
-            receivedRequest = req
-            res.setHeader 'Content-Type', 'application/json'
-            machine =
-              type: 'bulldozer'
-              name: 'willy'
-            response = [machine]
-            res.status(200).send response
-
-          server = app.listen PORT, () ->
-            execCommand cmd, () ->
-              server.close()
-
-          server.on 'close', done
-
-        it 'should not send the request request', () ->
-          assert.deepEqual receivedRequest, {}
-
-      describe 'when not blocking a request', () ->
-
-        receivedRequest = {}
+      describe 'when blocking a request', ->
+        runtimeInfo = undefined
 
         before (done) ->
-          cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} -m GET"
-
-          app = express()
-
+          app = createServer()
           app.get '/machines', (req, res) ->
-            receivedRequest = req
-            res.setHeader 'Content-Type', 'application/json'
-            machine =
-              type: 'bulldozer'
-              name: 'willy'
-            response = [machine]
-            res.status(200).send response
+            res.json([{type: 'bulldozer', name: 'willy'}])
 
-          server = app.listen PORT, () ->
-            execCommand cmd, () ->
-              server.close()
+          args = [
+            './test/fixtures/single-get.apib'
+            "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+            '-m',
+            'POST'
+          ]
+          runDreddCommandWithServer(args, app, (err, info) ->
+            runtimeInfo = info
+            done(err)
+          )
 
-          server.on 'close', done
+        it 'should not send the request request', ->
+          assert.deepEqual runtimeInfo.server.requestCounts, {}
 
-        it 'should allow the request to go through', () ->
-          assert.ok receivedRequest.headers
+      describe 'when not blocking a request', ->
+        runtimeInfo = undefined
 
-    describe "when filtering transaction to particular name with -x or --only", () ->
+        before (done) ->
+          app = createServer()
+          app.get '/machines', (req, res) ->
+            res.json([{type: 'bulldozer', name: 'willy'}])
 
-      machineHit = false
-      messageHit = false
+          args = [
+            './test/fixtures/single-get.apib'
+            "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+            '-m',
+            'GET'
+          ]
+          runDreddCommandWithServer(args, app, (err, info) ->
+            runtimeInfo = info
+            done(err)
+          )
+
+        it 'should allow the request to go through', ->
+          assert.deepEqual runtimeInfo.server.requestCounts, {'/machines': 1}
+
+    describe "when filtering transaction to particular name with -x or --only", ->
+      runtimeInfo = undefined
+
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --path=./test/fixtures/multifile/*.apib --only=\"Message API > /message > GET\" --no-color"
-
-        app = express()
-
+        app = createServer()
         app.get '/machines', (req, res) ->
-          machineHit = true
-          res.setHeader 'Content-Type', 'application/json; charset=utf-8'
-          machine =
-            type: 'bulldozer'
-            name: 'willy'
-          response = [machine]
-          res.status(200).send response
+          res.json([{type: 'bulldozer', name: 'willy'}])
 
         app.get '/message', (req, res) ->
-          messageHit = true
-          res.setHeader 'Content-Type', 'text/plain; charset=utf-8'
-          res.status(200).send "Hello World!\n"
+          res.type('text/plain').send "Hello World!\n"
 
-        server = app.listen PORT, () ->
-          execCommand cmd, () ->
-            server.close()
+        args = [
+          './test/fixtures/single-get.apib'
+          "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+          '--path=./test/fixtures/multifile/*.apib'
+          '--only=Message API > /message > GET'
+          '--no-color'
+        ]
+        runDreddCommandWithServer(args, app, (err, info) ->
+          runtimeInfo = info
+          done(err)
+        )
 
-        server.on 'close', done
+      it 'should notify skipping to the stdout', ->
+        assert.include runtimeInfo.dredd.stdout, 'skip: GET /machines'
 
-      it 'should not send the request', () ->
-        assert.isFalse machineHit
+      it 'should hit the only transaction', ->
+        assert.deepEqual runtimeInfo.server.requestCounts, {'/message': 1}
 
-      it 'should notify skipping to the stdout', () ->
-        assert.include stdout, 'skip: GET /machines'
+      it 'exit status should be 0', ->
+        assert.equal runtimeInfo.dredd.exitStatus, 0
 
-      it 'should hit the only transaction', () ->
-        assert.isTrue messageHit
+    describe 'when suppressing color with --no-color', ->
+      runtimeInfo = undefined
 
-      it 'exit status should be 0', () ->
-        assert.equal exitStatus, 0
-
-    describe 'when suppressing color with --no-color', () ->
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --no-color"
-
-        app = express()
-
+        app = createServer()
         app.get '/machines', (req, res) ->
-          res.setHeader 'Content-Type', 'application/json'
-          machine =
-            type: 'bulldozer'
-            name: 'willy'
-          response = [machine]
-          res.status(200).send response
+          res.json([{type: 'bulldozer', name: 'willy'}])
 
-        server = app.listen PORT, () ->
-          execCommand cmd, () ->
-            server.close()
+        args = [
+          './test/fixtures/single-get.apib'
+          "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+          '--no-color'
+        ]
+        runDreddCommandWithServer(args, app, (err, info) ->
+          runtimeInfo = info
+          done(err)
+        )
 
-        server.on 'close', done
-
-      it 'should print without colors', () ->
+      it 'should print without colors', ->
         # if colors are not on, there is no closing color code between
         # the "pass" and the ":"
-        assert.include stdout, 'pass:'
+        assert.include runtimeInfo.dredd.stdout, 'pass:'
 
-    describe 'when suppressing color with --color false', () ->
+    describe 'when suppressing color with --color=false', ->
+      runtimeInfo = undefined
+
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --color false"
-
-        app = express()
-
+        app = createServer()
         app.get '/machines', (req, res) ->
-          res.setHeader 'Content-Type', 'application/json'
-          machine =
-            type: 'bulldozer'
-            name: 'willy'
-          response = [machine]
-          res.status(200).send response
+          res.json([{type: 'bulldozer', name: 'willy'}])
 
-        server = app.listen PORT, () ->
-          execCommand cmd, () ->
-            server.close()
+        args = [
+          './test/fixtures/single-get.apib'
+          "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+          '--color=false'
+        ]
+        runDreddCommandWithServer(args, app, (err, info) ->
+          runtimeInfo = info
+          done(err)
+        )
 
-        server.on 'close', done
-
-      it 'should print without colors', () ->
+      it 'should print without colors', ->
         # if colors are not on, there is no closing color code between
         # the "pass" and the ":"
-        assert.include stdout, 'pass:'
+        assert.include runtimeInfo.dredd.stdout, 'pass:'
 
-    describe 'when setting the log output level with -l', () ->
+    describe 'when setting the log output level with -l', ->
+      runtimeInfo = undefined
+
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} -l=error"
-
-        app = express()
-
+        app = createServer()
         app.get '/machines', (req, res) ->
-          res.setHeader 'Content-Type', 'application/json'
-          machine =
-            type: 'bulldozer'
-            name: 'willy'
-          response = [machine]
-          res.status(200).send response
+          res.json([{type: 'bulldozer', name: 'willy'}])
 
-        server = app.listen PORT, () ->
-          execCommand cmd, () ->
-            server.close()
+        args = [
+          './test/fixtures/single-get.apib'
+          "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+          '-l=error'
+        ]
+        runDreddCommandWithServer(args, app, (err, info) ->
+          runtimeInfo = info
+          done(err)
+        )
 
-        server.on 'close', done
-
-      it 'should not display anything', () ->
+      it 'should not display anything', ->
         # at the "error" level, complete should not be shown
-        assert.ok stdout.indexOf('complete') is -1
+        assert.ok runtimeInfo.dredd.stdout.indexOf('complete') is -1
 
-    describe 'when showing timestamps with -t', () ->
+    describe 'when showing timestamps with -t', ->
+      runtimeInfo = undefined
+
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} -t"
-
-        app = express()
-
+        app = createServer()
         app.get '/machines', (req, res) ->
-          res.setHeader 'Content-Type', 'application/json'
-          machine =
-            type: 'bulldozer'
-            name: 'willy'
-          response = [machine]
-          res.status(200).send response
+          res.json([{type: 'bulldozer', name: 'willy'}])
 
-        server = app.listen PORT, () ->
-          execCommand cmd, () ->
-            server.close()
+        args = [
+          './test/fixtures/single-get.apib'
+          "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+          '-t'
+        ]
+        runDreddCommandWithServer(args, app, (err, info) ->
+          runtimeInfo = info
+          done(err)
+        )
 
-        server.on 'close', done
-
-      it 'should display timestamps', () ->
+      it 'should display timestamps', ->
         # look for the prefix for cli output with timestamps
-        assert.notEqual stdout.indexOf('Z -'), -1
+        assert.notEqual runtimeInfo.dredd.stdout.indexOf('Z -'), -1
 
-  describe 'when loading hooks with --hookfiles', () ->
-
-    receivedRequest = {}
+  describe 'when loading hooks with --hookfiles', ->
+    runtimeInfo = undefined
 
     before (done) ->
-      cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --hookfiles=./test/fixtures/*_hooks.*"
-
-      app = express()
-
+      app = createServer()
       app.get '/machines', (req, res) ->
-        receivedRequest = req
-        res.setHeader 'Content-Type', 'application/json'
-        machine =
-          type: 'bulldozer'
-          name: 'willy'
-        response = [machine]
-        res.status(200).send response
+        res.json([{type: 'bulldozer', name: 'willy'}])
 
-      server = app.listen PORT, () ->
-        execCommand cmd, () ->
-          server.close()
+      args = [
+        './test/fixtures/single-get.apib'
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+        '--hookfiles=./test/fixtures/*_hooks.*'
+      ]
+      runDreddCommandWithServer(args, app, (err, info) ->
+        runtimeInfo = info
+        done(err)
+      )
 
-      server.on 'close', done
+    it 'should modify the transaction with hooks', ->
+      assert.equal runtimeInfo.server.requests['/machines'][0].headers['header'], '123232323'
 
-    it 'should modify the transaction with hooks', () ->
-      assert.equal receivedRequest.headers['header'], '123232323'
+  describe 'when describing events in hookfiles', ->
+    runtimeInfo = undefined
 
-  describe 'when describing events in hookfiles', () ->
-    output = {}
     containsLine = (str, expected) ->
       lines = str.split('\n')
       for line in lines
@@ -723,32 +615,27 @@ describe 'CLI', () ->
       return false
 
     before (done) ->
-      cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --hookfiles=./test/fixtures/*_events.*"
-
-      app = express()
-
+      app = createServer()
       app.get '/machines', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        machine =
-          type: 'bulldozer'
-          name: 'willy'
-        response = [machine]
-        res.status(200).send response
+        res.json([{type: 'bulldozer', name: 'willy'}])
 
-      server = app.listen PORT, () ->
-        execCommand cmd, (err, stdout, stderr) ->
-          output.stdout = stdout
-          output.stderr = stderr
-          server.close()
+      args = [
+        './test/fixtures/single-get.apib'
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+        '--hookfiles=./test/fixtures/*_events.*'
+      ]
+      runDreddCommandWithServer(args, app, (err, info) ->
+        runtimeInfo = info
+        done(err)
+      )
 
-      server.on 'close', done
+    it 'should execute the before and after events', ->
+      assert.ok containsLine(runtimeInfo.dredd.stdout, 'hooks.beforeAll'), (runtimeInfo.dredd.stdout)
+      assert.ok containsLine(runtimeInfo.dredd.stdout, 'hooks.afterAll'), (runtimeInfo.dredd.stdout)
 
-    it 'should execute the before and after events', () ->
-      assert.ok containsLine(output.stdout, 'hooks.beforeAll'), (stdout)
-      assert.ok containsLine(output.stdout, 'hooks.afterAll'), (stdout)
+  describe 'when describing both hooks and events in hookfiles', ->
+    runtimeInfo = undefined
 
-  describe 'when describing both hooks and events in hookfiles', () ->
-    output = {}
     getResults = (str) ->
       ret = []
       lines = str.split('\n')
@@ -758,186 +645,188 @@ describe 'CLI', () ->
       return ret.join(',')
 
     before (done) ->
-      cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --hookfiles=./test/fixtures/*_all.*"
-
-      app = express()
-
+      app = createServer()
       app.get '/machines', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        machine =
-          type: 'bulldozer'
-          name: 'willy'
-        response = [machine]
-        res.status(200).send response
+        res.json([{type: 'bulldozer', name: 'willy'}])
 
-      server = app.listen PORT, () ->
-        execCommand cmd, (err, stdout, stderr) ->
-          output.stdout = stdout
-          output.stderr = stderr
-          server.close()
+      args = [
+        './test/fixtures/single-get.apib'
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+        '--hookfiles=./test/fixtures/*_all.*'
+      ]
+      runDreddCommandWithServer(args, app, (err, info) ->
+        runtimeInfo = info
+        done(err)
+      )
 
-      server.on 'close', done
-
-    it 'should execute hooks and events in order', () ->
-      events = getResults(output.stdout)
+    it 'should execute hooks and events in order', ->
+      events = getResults(runtimeInfo.dredd.stdout)
       assert.ok events is 'beforeAll,before,after,afterAll'
 
-  describe "tests an API description containing an endpoint with schema", () ->
-    describe "and server is responding in accordance with the schema", () ->
+  describe "tests an API description containing an endpoint with schema", ->
+    describe "and server is responding in accordance with the schema", ->
+      runtimeInfo = undefined
 
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/schema.apib http://127.0.0.1:#{PORT}"
-
-        app = express()
-
+        app = createServer()
         app.get '/', (req, res) ->
-          res.setHeader 'Content-Type', 'application/json'
-          response =
+          res.json(
             data:
               expires: 1234,
               token: 'this should pass since it is a string'
+          )
 
-          res.status(200).send response
+        args = [
+          './test/fixtures/schema.apib'
+          "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+        ]
+        runDreddCommandWithServer(args, app, (err, info) ->
+          runtimeInfo = info
+          done(err)
+        )
 
-        server = app.listen PORT, () ->
-          execCommand cmd, () ->
-            server.close()
+      it 'exit status should be 0 (success)', ->
+        assert.equal runtimeInfo.dredd.exitStatus, 0
 
-        server.on 'close', done
-
-      it 'exit status should be 0 (success)', () ->
-        assert.equal exitStatus, 0
-
-    describe "and server is NOT responding in accordance with the schema", () ->
+    describe "and server is NOT responding in accordance with the schema", ->
+      runtimeInfo = undefined
 
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/schema.apib http://127.0.0.1:#{PORT}"
-
-        app = express()
-
+        app = createServer()
         app.get '/', (req, res) ->
-          res.setHeader 'Content-Type', 'application/json'
-          response =
+          res.json(
             data:
               expires: 'this should fail since it is a string',
               token: 'this should pass since it is a string'
+          )
 
-          res.status(200).send response
+        args = [
+          './test/fixtures/schema.apib'
+          "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+        ]
+        runDreddCommandWithServer(args, app, (err, info) ->
+          runtimeInfo = info
+          done(err)
+        )
 
-        server = app.listen PORT, () ->
-          execCommand cmd, () ->
-            server.close()
+      it 'exit status should be 1 (failure)', ->
+        assert.equal runtimeInfo.dredd.exitStatus, 1
 
-        server.on 'close', done
-
-      it 'exit status should be 1 (failure)', () ->
-        assert.equal exitStatus, 1
-
-  describe "when API description document path is a glob", () ->
-    describe "and called with --names options", () ->
-      before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/multifile/*.apib http://127.0.0.1 --names"
-        execCommand cmd, () ->
-          done()
-
-      it 'it should include all paths from all API description documents matching the glob', () ->
-        assert.include stdout, '> /greeting > GET'
-        assert.include stdout, '> /message > GET'
-        assert.include stdout, '> /name > GET'
-
-      it 'should exit with status 0', () ->
-        assert.equal exitStatus, 0
-
-    describe 'and called with hooks', () ->
-
-      receivedRequests = []
+  describe "when API description document path is a glob", ->
+    describe "and called with --names options", ->
+      dreddCommandInfo = undefined
 
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/multifile/*.apib http://127.0.0.1:#{PORT} --hookfiles=./test/fixtures/multifile/multifile_hooks.coffee"
+        args = [
+          './test/fixtures/multifile/*.apib'
+          "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+          '--names'
+        ]
+        runDreddCommand(args, (err, info) ->
+          dreddCommandInfo = info
+          done(err)
+        )
 
-        app = express()
+      it 'it should include all paths from all API description documents matching the glob', ->
+        assert.include dreddCommandInfo.stdout, '> /greeting > GET'
+        assert.include dreddCommandInfo.stdout, '> /message > GET'
+        assert.include dreddCommandInfo.stdout, '> /name > GET'
 
+      it 'should exit with status 0', ->
+        assert.equal dreddCommandInfo.exitStatus, 0
+
+    describe 'and called with hooks', ->
+      runtimeInfo = undefined
+
+      before (done) ->
+        app = createServer()
         app.get '/name', (req, res) ->
-          receivedRequests.push req
-          res.setHeader 'content-type', 'text/plain'
-          res.status(200).send "Adam\n"
+          res.type('text/plain').send "Adam\n"
 
         app.get '/greeting', (req, res) ->
-          receivedRequests.push req
-          res.setHeader 'content-type', 'text/plain'
-          res.status(200).send "Howdy!\n"
+          res.type('text/plain').send "Howdy!\n"
 
         app.get '/message', (req, res) ->
-          receivedRequests.push req
-          res.setHeader 'content-type', 'text/plain'
-          res.status(200).send "Hello World!\n"
+          res.type('text/plain').send "Hello World!\n"
 
-        server = app.listen PORT, () ->
-          execCommand cmd, () ->
-            server.close()
+        args = [
+          './test/fixtures/multifile/*.apib'
+          "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+          '--hookfiles=./test/fixtures/multifile/multifile_hooks.coffee'
+        ]
+        runDreddCommandWithServer(args, app, (err, info) ->
+          runtimeInfo = info
+          done(err)
+        )
 
-        server.on 'close', done
+      it 'should eval the hook for each transaction', ->
+        assert.include runtimeInfo.dredd.stdout, 'after name'
+        assert.include runtimeInfo.dredd.stdout, 'after greeting'
+        assert.include runtimeInfo.dredd.stdout, 'after message'
 
-      it 'should eval the hook for each transaction', () ->
-        assert.include stdout, 'after name'
-        assert.include stdout, 'after greeting'
-        assert.include stdout, 'after message'
+      it 'should exit with status 0', ->
+        assert.equal runtimeInfo.dredd.exitStatus, 0, (runtimeInfo.dredd.output)
 
-      it 'should exit with status 0', () ->
-        assert.equal exitStatus, 0, (stdout+stderr)
-
-      it 'server should receive 3 requests', () ->
-        assert.lengthOf receivedRequests, 3
+      it 'server should receive 3 requests', ->
+        assert.deepEqual runtimeInfo.server.requestCounts,
+          '/name': 1
+          '/greeting': 1
+          '/message': 1
 
 
-  describe "when called with additional --path argument which is a glob", () ->
-    describe "and called with --names options", () ->
+  describe "when called with additional --path argument which is a glob", ->
+    describe "and called with --names options", ->
+      dreddCommandInfo = undefined
+
       before (done) ->
-        cmd = "#{DREDD_BIN} ./test/fixtures/multiple-examples.apib http://127.0.0.1 --path=./test/fixtures/multifile/*.apib --names --no-color"
-        execCommand cmd, () ->
-          done()
+        args = [
+          './test/fixtures/multiple-examples.apib'
+          "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+          '--path=./test/fixtures/multifile/*.apib'
+          '--names'
+        ]
+        runDreddCommand(args, (err, info) ->
+          dreddCommandInfo = info
+          done(err)
+        )
 
-      it 'it should include all paths from all API description documents matching all paths and globs', () ->
-        assert.include stdout, 'Greeting API > /greeting > GET'
-        assert.include stdout, 'Message API > /message > GET'
-        assert.include stdout, 'Name API > /name > GET'
-        assert.include stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 1'
-        assert.include stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 2'
+      it 'it should include all paths from all API description documents matching all paths and globs', ->
+        assert.include dreddCommandInfo.stdout, 'Greeting API > /greeting > GET'
+        assert.include dreddCommandInfo.stdout, 'Message API > /message > GET'
+        assert.include dreddCommandInfo.stdout, 'Name API > /name > GET'
+        assert.include dreddCommandInfo.stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 1'
+        assert.include dreddCommandInfo.stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 2'
 
-      it 'should exit with status 0', () ->
-        assert.equal exitStatus, 0
+      it 'should exit with status 0', ->
+        assert.equal dreddCommandInfo.exitStatus, 0
 
-  describe "Using sandboxed hooks", () ->
-    resourceRequested = false
+  describe "Using sandboxed hooks", ->
+    runtimeInfo = undefined
 
     before (done) ->
-      cmd = "#{DREDD_BIN} ./test/fixtures/single-get.apib http://127.0.0.1:#{PORT} --no-color --sandbox --hookfiles=./test/fixtures/sandboxed-hook.js"
-
-      app = express()
-
+      app = createServer()
       app.get '/machines', (req, res) ->
-        resourceRequested = true
-        res.setHeader 'Content-Type', 'application/json'
-        machine =
-          type: 'bulldozer'
-          name: 'willy'
-        response = [machine]
-        res.status(200).send response
+        res.json([{type: 'bulldozer', name: 'willy'}])
 
-      server = app.listen PORT, () ->
-        execCommand cmd, () ->
-          server.close()
+      args = [
+        './test/fixtures/single-get.apib'
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+        '--sandbox'
+        '--hookfiles=./test/fixtures/sandboxed-hook.js'
+      ]
+      runDreddCommandWithServer(args, app, (err, info) ->
+        runtimeInfo = info
+        done(err)
+      )
 
-      server.on 'close', done
+    it 'should hit the resource', ->
+      assert.deepEqual runtimeInfo.server.requestCounts, {'/machines': 1}
 
-    it 'should hit the resource', () ->
-      assert.ok resourceRequested
+    it 'exit status should be 1', ->
+      assert.equal runtimeInfo.dredd.exitStatus, 1
 
-    it 'exit status should be 0', () ->
-      assert.equal exitStatus, 1
+    it 'stdout shoud contain fail message', ->
+      assert.include runtimeInfo.dredd.stdout, 'failed in sandboxed hook'
 
-    it 'stdout shoud contain fail message', () ->
-      assert.include stdout, 'failed in sandboxed hook'
-
-    it 'stdout shoud contain sandbox messagae', () ->
-      assert.include stdout, 'Loading hook files in sandboxed context'
+    it 'stdout shoud contain sandbox messagae', ->
+      assert.include runtimeInfo.dredd.stdout, 'Loading hook files in sandboxed context'

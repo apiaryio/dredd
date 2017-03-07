@@ -52,10 +52,10 @@ class HooksWorkerClient
     @terminateHandler callback
 
   terminateHandler: (callback) ->
-    logger.verbose('Terminating hooks handler process.')
+    logger.verbose('Terminating hooks handler process, PID', @handler.pid)
 
     term = =>
-      logger.info('Gracefully terminating hooks handler process.')
+      logger.info('Gracefully terminating hooks handler process')
       @handlerKilledIntentionally = true
       @handler.kill 'SIGTERM'
 

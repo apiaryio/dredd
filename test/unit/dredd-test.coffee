@@ -573,15 +573,13 @@ describe 'Dredd class', ->
         apiary.use bodyParser.json(size:'5mb')
 
         apiary.post '/apis/*', (req, res) ->
-          res.type('json')
-          res.status(201).send
+          res.status(201).json
             _id: '1234_id'
             testRunId: '6789_testRunId'
             reportUrl: 'http://url.me/test/run/1234_id'
 
         apiary.all '*', (req, res) ->
-          res.type 'json'
-          res.send {}
+          res.json {}
 
         apiaryServer = apiary.listen (PORT+1), ->
           done()

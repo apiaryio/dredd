@@ -1,91 +1,93 @@
 {assert} = require 'chai'
 
-{execDredd, startServer, isProcessRunning, killAll} = require './helpers'
+{isProcessRunning, killAll, runDreddCommand, createServer, DEFAULT_SERVER_PORT} = require '../helpers'
 
 
-PORT = 8887
-PORT_NON_EXISTENT = PORT + 1
+NON_EXISTENT_PORT = DEFAULT_SERVER_PORT + 1
 
 
 describe 'CLI - Server Process', ->
 
   describe 'When specified by URL', ->
     server = undefined
-    configureServer = (app) ->
-      app.get '/machines', (req, res) ->
-        res.send [{type: 'bulldozer', name: 'willy'}]
-
-      app.get '/machines/willy', (req, res) ->
-        res.send {type: 'bulldozer', name: 'willy'}
+    serverRuntimeInfo = undefined
 
     beforeEach (done) ->
-      startServer configureServer, PORT, (err, serverInfo) ->
-        server = serverInfo
+      app = createServer()
+
+      app.get '/machines', (req, res) ->
+        res.json [{type: 'bulldozer', name: 'willy'}]
+
+      app.get '/machines/willy', (req, res) ->
+        res.json {type: 'bulldozer', name: 'willy'}
+
+      server = app.listen (err, info) ->
+        serverRuntimeInfo = info
         done(err)
 
     afterEach (done) ->
-      server.process.close(done)
+      server.close(done)
 
 
     describe 'When is running', ->
-      dreddCommand = undefined
-      args = ['./test/fixtures/single-get.apib', "http://127.0.0.1:#{PORT}"]
+      dreddCommandInfo = undefined
+      args = ['./test/fixtures/single-get.apib', "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"]
 
       beforeEach (done) ->
-        execDredd args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should request /machines', ->
-        assert.deepEqual server.requestCounts, {'/machines': 1}
+        assert.deepEqual serverRuntimeInfo.requestCounts, {'/machines': 1}
       it 'should exit with status 0', ->
-        assert.equal dreddCommand.exitStatus, 0
+        assert.equal dreddCommandInfo.exitStatus, 0
 
     describe 'When is not running', ->
-      dreddCommand = undefined
-      args = ['./test/fixtures/apiary.apib', "http://127.0.0.1:#{PORT_NON_EXISTENT}"]
+      dreddCommandInfo = undefined
+      args = ['./test/fixtures/apiary.apib', "http://127.0.0.1:#{NON_EXISTENT_PORT}"]
 
       beforeEach (done) ->
-        execDredd args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should return understandable message', ->
-        assert.include dreddCommand.stdout, 'Error connecting'
+        assert.include dreddCommandInfo.stdout, 'Error connecting'
       it 'should report error for all transactions', ->
-        occurences = (dreddCommand.stdout.match(/Error connecting/g) or []).length
+        occurences = (dreddCommandInfo.stdout.match(/Error connecting/g) or []).length
         assert.equal occurences, 5
       it 'should return stats', ->
-        assert.include dreddCommand.stdout, '5 errors'
+        assert.include dreddCommandInfo.stdout, '5 errors'
       it 'should exit with status 1', ->
-        assert.equal dreddCommand.exitStatus, 1
+        assert.equal dreddCommandInfo.exitStatus, 1
 
 
   describe 'When specified by -g/--server', ->
 
-    afterEach ->
-      killAll()
+    afterEach (done) ->
+      killAll('test/fixtures/scripts/', done)
 
     describe 'When works as expected', ->
-      dreddCommand = undefined
+      dreddCommandInfo = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://127.0.0.1:#{PORT}"
-        "--server=coffee ./test/fixtures/scripts/dummy-server.coffee #{PORT}"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+        "--server=coffee ./test/fixtures/scripts/dummy-server.coffee #{DEFAULT_SERVER_PORT}"
         '--server-wait=1'
       ]
 
       beforeEach (done) ->
-        execDredd args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should inform about starting server with custom command', ->
-        assert.include dreddCommand.stdout, 'Starting backend server process with command'
+        assert.include dreddCommandInfo.stdout, 'Starting backend server process with command'
       it 'should redirect server\'s welcome message', ->
-        assert.include dreddCommand.stdout, "Dummy server listening on port #{PORT}"
+        assert.include dreddCommandInfo.stdout, "Dummy server listening on port #{DEFAULT_SERVER_PORT}"
       it 'should exit with status 0', ->
-        assert.equal dreddCommand.exitStatus, 0
+        assert.equal dreddCommandInfo.exitStatus, 0
 
 
     for scenario in [
@@ -96,7 +98,7 @@ describe 'CLI - Server Process', ->
       ,
         description: 'When crashes during requests'
         apiDescriptionDocument: './test/fixtures/apiary.apib'
-        server: "coffee ./test/fixtures/scripts/dummy-server-crash.coffee #{PORT}"
+        server: "coffee ./test/fixtures/scripts/dummy-server-crash.coffee #{DEFAULT_SERVER_PORT}"
         expectServerBoot: true
       ,
         description: 'When killed before requests'
@@ -106,60 +108,65 @@ describe 'CLI - Server Process', ->
       ,
         description: 'When killed during requests'
         apiDescriptionDocument: './test/fixtures/apiary.apib'
-        server: "coffee ./test/fixtures/scripts/dummy-server-kill.coffee #{PORT}"
+        server: "coffee ./test/fixtures/scripts/dummy-server-kill.coffee #{DEFAULT_SERVER_PORT}"
         expectServerBoot: true
     ]
       do (scenario) ->
         describe scenario.description, ->
-          dreddCommand = undefined
+          dreddCommandInfo = undefined
           args = [
             scenario.apiDescriptionDocument
-            "http://127.0.0.1:#{PORT}"
+            "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
             "--server=#{scenario.server}"
             '--server-wait=1'
           ]
 
           beforeEach (done) ->
-            execDredd args, (err, commandInfo) ->
-              dreddCommand = commandInfo
+            runDreddCommand args, (err, info) ->
+              dreddCommandInfo = info
               done(err)
 
           it 'should inform about starting server with custom command', ->
-            assert.include dreddCommand.stdout, 'Starting backend server process with command'
+            assert.include dreddCommandInfo.stdout, 'Starting backend server process with command'
           if scenario.expectServerBoot
             it 'should redirect server\'s boot message', ->
-              assert.include dreddCommand.stdout, "Dummy server listening on port #{PORT}"
-          it 'the server should not be running', ->
-            assert.isFalse isProcessRunning scenario.server
+              assert.include dreddCommandInfo.stdout, "Dummy server listening on port #{DEFAULT_SERVER_PORT}"
+          it 'the server should not be running', (done) ->
+            isProcessRunning('test/fixtures/scripts/', (err, isRunning) ->
+              assert.isFalse isRunning unless err
+              done(err)
+            )
           it 'should report problems with connection to server', ->
-            assert.include dreddCommand.stderr, 'Error connecting to server'
+            assert.include dreddCommandInfo.stderr, 'Error connecting to server'
           it 'should exit with status 1', ->
-            assert.equal dreddCommand.exitStatus, 1
-
+            assert.equal dreddCommandInfo.exitStatus, 1
 
     describe 'When didn\'t terminate and had to be killed by Dredd', ->
-      dreddCommand = undefined
+      dreddCommandInfo = undefined
       args = [
         './test/fixtures/single-get.apib'
-        "http://127.0.0.1:#{PORT}"
-        "--server=coffee ./test/fixtures/scripts/dummy-server-nosigterm.coffee #{PORT}"
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+        "--server=coffee ./test/fixtures/scripts/dummy-server-nosigterm.coffee #{DEFAULT_SERVER_PORT}"
         '--server-wait=1'
       ]
 
       beforeEach (done) ->
-        execDredd args, (err, commandInfo) ->
-          dreddCommand = commandInfo
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
           done(err)
 
       it 'should inform about starting server with custom command', ->
-        assert.include dreddCommand.stdout, 'Starting backend server process with command'
+        assert.include dreddCommandInfo.stdout, 'Starting backend server process with command'
       it 'should inform about sending SIGTERM', ->
-        assert.include dreddCommand.stdout, 'Gracefully terminating backend server process'
+        assert.include dreddCommandInfo.stdout, 'Gracefully terminating backend server process'
       it 'should redirect server\'s message about ignoring SIGTERM', ->
-        assert.include dreddCommand.stdout, 'ignoring sigterm'
+        assert.include dreddCommandInfo.stdout, 'ignoring sigterm'
       it 'should inform about sending SIGKILL', ->
-        assert.include dreddCommand.stdout, 'Killing backend server process'
-      it 'the server should not be running', ->
-        assert.isFalse isProcessRunning scenario.server
+        assert.include dreddCommandInfo.stdout, 'Killing backend server process'
+      it 'the server should not be running', (done) ->
+        isProcessRunning('test/fixtures/scripts/', (err, isRunning) ->
+          assert.isFalse isRunning unless err
+          done(err)
+        )
       it 'should exit with status 0', ->
-        assert.equal dreddCommand.exitStatus, 0
+        assert.equal dreddCommandInfo.exitStatus, 0
