@@ -48,18 +48,13 @@ If you work on projects installable by `npm`, i.e. projects containing `package.
 
 Dredd sometimes issues a pre-release version to test experimental features or to ensure that significant internal revamp of existing features didn't cause any regressions. It's possible to use `npm install dredd@stable` to avoid installing the pre-release versions. However, for most of the time, there are no pre-releases and the `stable` tag just points to the latest version.
 
-### Windows Support
+#### Compiled vs pure JavaScript
 
-While Dredd seems to work on Windows for many users, the platform **isn't officially supported yet**. Dredd should correctly install and run on Windows, but it's not tested on Windows at all. Also, there are [several known limitations][Windows Issues]:
+You can simplify and speedup your installation using `npm install dredd --no-optional` if you are
 
-- only JavaScript hooks work
-- problems with Windows/UNIX newlines when using API Blueprint
-- problems with running subprocesses
-- problems developing Dredd or running Dredd's test suite on Windows
-
-Windows support [is planned](https://github.com/apiaryio/dredd/issues/204). As an **experimental** prove that Dredd executes on Windows, the [Dredd Example][] repository features also one Windows-based CI, [AppVeyor][].
-
-### Compiled vs pure JavaScript
+- using Dredd with Swagger,
+- using Dredd with smaller API Bluepint files,
+- using Dredd on Windows or other environments with complicated C++11 compiler setup.
 
 Dredd uses [Drafter][] for parsing [API Blueprint][] documents. Drafter is written in C++11 and needs to be compiled during installation. Since that can be problematic for some environments and leads to a lot of troubleshooting, there's also pure JavaScript version of the parser, [drafter.js][]. While drafter.js is fully equivalent, it can have slower performance. That's why there's [drafter-npm][] package, which first tries to compile the C++11 version of the parser and if it's unsuccessful, uses the JavaScript equivalent.
 
@@ -67,18 +62,21 @@ Dredd depends on the [drafter-npm][] package. That's why you can see `node-gyp` 
 
 - **Your machine is missing a C++11 compiler.** See how to fix this on [Windows](Windows C++11) or [Travis CI][Travis CI C++11].
 - **npm was used with Python 3.** `node-gyp`, which performs the compilation, doesn't support Python 3. If your default Python is 3 (see `python --version`), [tell npm to use an older version][npm Python].
-- The `protagonist` package got manually deleted from Dredd's `node_modules` directory. This usually doesn't happen as an accident, it's basically a hack how to force the JavaScript version regardless your environment.
+- The `protagonist` package got manually deleted from Dredd's `node_modules` directory.
 
-To force the JavaScript version of Drafter and avoid any compilation attempts, use `npm install dredd --no-optional` when installing Dredd.
+The `--no-optional` option forces the JavaScript version of Drafter and avoids any compilation attempts when installing Dredd.
+
+### Windows Support
+
+There are still [several known limitations][Windows Issues] when using Dredd on Windows, but the intention is to support it without any compromises. If you find any new issues, please [file them in the bug tracker][New Issue].
 
 
 [API Blueprint]: https://apiblueprint.org/
 [CoffeeScript]: http://coffeescript.org/
 [CI]: how-to-guides.md#continuous-integration
-[Dredd Example]: https://github.com/apiaryio/dredd-example
 
-[AppVeyor]: http://appveyor.com/
 [Windows Issues]: https://github.com/apiaryio/dredd/issues?utf8=%E2%9C%93&q=is%3Aissue%20is%3Aopen%20label%3AWindows%20
+[New Issue]: https://github.com/apiaryio/dredd/issues/new
 
 [Homebrew]: http://brew.sh/
 [Node.js]: https://nodejs.org/en/
