@@ -120,17 +120,13 @@ describe 'Regression: Issues #319 and #354', ->
 
       # Attaching endpoint for each testing scenario
       app.get '/bricks/XYZ42', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        res.status(200).send brickTypePayload
+        res.json brickTypePayload
       app.post '/bricks', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        res.status(200).send brickTypePayload
+        res.json brickTypePayload
       app.get '/customers', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        res.status(200).send userArrayPayload
+        res.json userArrayPayload
       app.post '/customers', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        res.status(200).send userPayload
+        res.json userPayload
 
       # Spinning up the Express server, running Dredd, and saving results
       args = [
@@ -211,17 +207,13 @@ describe 'Regression: Issues #319 and #354', ->
 
       # Attaching endpoint for each testing scenario
       app.get '/bricks/XYZ42', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        res.status(200).send incorrectBrickTypePayload
+        res.json incorrectBrickTypePayload
       app.post '/bricks', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        res.status(200).send incorrectBrickTypePayload
+        res.json incorrectBrickTypePayload
       app.get '/customers', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        res.status(200).send incorrectUserArrayPayload
+        res.json incorrectUserArrayPayload
       app.post '/customers', (req, res) ->
-        res.setHeader 'Content-Type', 'application/json'
-        res.status(200).send incorrectUserPayload
+        res.json incorrectUserPayload
 
       # Spinning up the Express server, running Dredd, and saving results
       args = [

@@ -2193,12 +2193,7 @@ describe 'TransactionRunner', ->
 
         app.post '/machines', (req, res) ->
           receivedRequests.push req
-          res.setHeader 'Content-Type', 'application/json'
-          machine =
-            type: 'bulldozer'
-            name: 'willy'
-          response = [machine]
-          res.status(200).send response
+          res.json [{type: 'bulldozer', name: 'willy'}]
 
         server = app.listen transaction.port, ->
           runner.executeAllTransactions [transaction], runner.hooks, ->

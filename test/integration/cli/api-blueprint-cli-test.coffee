@@ -18,16 +18,16 @@ describe 'CLI - API Blueprint Document', ->
       stream.pipe res
 
     app.get '/machines', (req, res) ->
-      res.send [{type: 'bulldozer', name: 'willy'}]
+      res.json [{type: 'bulldozer', name: 'willy'}]
 
     app.get '/machines/willy', (req, res) ->
-      res.send {type: 'bulldozer', name: 'willy'}
+      res.json {type: 'bulldozer', name: 'willy'}
 
     app.get '/machines/caterpillar', (req, res) ->
-      res.send {type: 'bulldozer', name: 'caterpillar'}
+      res.json {type: 'bulldozer', name: 'caterpillar'}
 
     app.post '/machine-types', (req, res) ->
-      res.send [{name: 'bulldozer'}]
+      res.json [{name: 'bulldozer'}]
 
     server = app.listen (err, info) ->
       serverRuntimeInfo = info

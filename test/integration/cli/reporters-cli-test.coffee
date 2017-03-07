@@ -17,7 +17,7 @@ describe 'CLI - Reporters', ->
     app = createServer()
 
     app.get '/machines', (req, res) ->
-      res.send [{type: 'bulldozer', name: 'willy'}]
+      res.json [{type: 'bulldozer', name: 'willy'}]
 
     server = app.listen (err, info) ->
       serverRuntimeInfo = info
@@ -56,13 +56,13 @@ describe 'CLI - Reporters', ->
       app = createServer()
 
       app.post '/apis/*', (req, res) ->
-        res.send
+        res.json
           _id: '1234_id'
           testRunId: '6789_testRunId'
           reportUrl: 'http://example.com/test/run/1234_id'
 
       app.all '*', (req, res) ->
-        res.send {}
+        res.json {}
 
       apiary = app.listen APIARY_PORT, (err, info) ->
         apiaryRuntimeInfo = info

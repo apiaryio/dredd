@@ -189,9 +189,9 @@ describe "DreddCommand class", () ->
 
       app.get '/machines', (req, res) ->
         if returnGood
-          res.type('json').status(200).send [type: 'bulldozer', name: 'willy']
+          res.json [type: 'bulldozer', name: 'willy']
         else
-          res.type('json').status(200).send [my: 'another', world: 'service']
+          res.json [my: 'another', world: 'service']
 
       dc = new DreddCommand({
         custom:

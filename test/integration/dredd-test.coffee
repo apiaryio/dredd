@@ -75,7 +75,7 @@ describe 'Dredd class Integration', ->
         app = express()
 
         app.get '/machines', (req, res) ->
-          res.type('json').status(200).send [type: 'bulldozer', name: 'willy']
+          res.json [type: 'bulldozer', name: 'willy']
 
         server = app.listen PORT, () ->
           execCommand cmd, ->
@@ -95,7 +95,7 @@ describe 'Dredd class Integration', ->
         app = express()
 
         app.get '/machines', (req, res) ->
-          res.type('json').status(201).send [kind: 'bulldozer', imatriculation: 'willy']
+          res.status(201).json [kind: 'bulldozer', imatriculation: 'willy']
 
         server = app.listen PORT, () ->
           execCommand cmd, () ->
@@ -142,18 +142,16 @@ describe 'Dredd class Integration', ->
         if req.body and req.url.indexOf('/tests/runs') > -1
           receivedRequestTestRuns ?= clone(req.body)
           receivedHeadersRuns[key.toLowerCase()] = val for key, val of req.headers
-        res.type('json')
-        res.status(201).send
+        res.status(201).json
           _id: '1234_id'
           testRunId: '6789_testRunId'
           reportUrl: 'http://url.me/test/run/1234_id'
 
       apiary.all '*', (req, res) ->
-        res.type 'json'
-        res.send {}
+        res.json {}
 
       app.get '/machines', (req, res) ->
-        res.type('json').status(200).send [type: 'bulldozer', name: 'willy']
+        res.json [type: 'bulldozer', name: 'willy']
 
       server = app.listen PORT, () ->
         server2 = apiary.listen (PORT + 1), ->
@@ -201,7 +199,7 @@ describe 'Dredd class Integration', ->
 
         app.get '/machines', (req, res) ->
           response = [type: 'bulldozer', name: 'willy']
-          res.type('json').status(200).send response
+          res.json response
 
         server = app.listen PORT, () ->
           execCommand cmd, (error, stdOut, stdErr, code) ->
@@ -238,15 +236,13 @@ describe 'Dredd class Integration', ->
         apiary.post '/apis/*', (req, res) ->
           if req.body and req.url.indexOf('/tests/steps') > -1
             receivedRequest ?= clone(req.body)
-          res.type('json')
-          res.status(201).send
+          res.status(201).json
             _id: '1234_id'
             testRunId: '6789_testRunId'
             reportUrl: 'http://url.me/test/run/1234_id'
 
         apiary.all '*', (req, res) ->
-          res.type 'json'
-          res.send {}
+          res.json {}
 
         server2 = apiary.listen (PORT + 1), ->
           execCommand cmd, () ->
@@ -291,18 +287,16 @@ describe 'Dredd class Integration', ->
         apiary.post '/apis/*', (req, res) ->
           if req.body and req.url.indexOf('/tests/steps') > -1
             receivedRequest ?= clone(req.body)
-          res.type('json')
-          res.status(201).send
+          res.status(201).json
             _id: '1234_id'
             testRunId: '6789_testRunId'
             reportUrl: 'http://url.me/test/run/1234_id'
 
         apiary.all '*', (req, res) ->
-          res.type 'json'
-          res.send {}
+          res.json {}
 
         app.get '/machines', (req, res) ->
-          res.type('json').status(200).send [type: 'bulldozer', name: 'willy']
+          res.json [type: 'bulldozer', name: 'willy']
 
         server = app.listen PORT, () ->
           server2 = apiary.listen (PORT + 1), ->
@@ -372,7 +366,7 @@ describe 'Dredd class Integration', ->
         stream.pipe res
 
       app.get '/machines', (req, res) ->
-        res.type('json').status(200).send [type: 'bulldozer', name: 'willy']
+        res.json [type: 'bulldozer', name: 'willy']
 
       app.get '/not-found.apib', (req, res) ->
         notFound = true
@@ -456,7 +450,7 @@ describe 'Dredd class Integration', ->
 
         app.get '/machines', (req, res) ->
           requested = true
-          res.type('json').status(200).send [type: 'bulldozer', name: 'willy']
+          res.json [type: 'bulldozer', name: 'willy']
 
         server = app.listen PORT, () ->
           execCommand cmd, ->
@@ -495,7 +489,7 @@ describe 'Dredd class Integration', ->
 
         app.get '/machines', (req, res) ->
           requested = true
-          res.type('json').status(200).send [type: 'bulldozer', name: 'willy']
+          res.json [type: 'bulldozer', name: 'willy']
 
         server = app.listen PORT, () ->
           execCommand cmd, ->
@@ -539,7 +533,7 @@ describe 'Dredd class Integration', ->
 
         app.get '/machines', (req, res) ->
           requested = true
-          res.type('json').status(200).send [type: 'bulldozer', name: 'willy']
+          res.json [type: 'bulldozer', name: 'willy']
 
         server = app.listen PORT, () ->
           execCommand cmd, ->

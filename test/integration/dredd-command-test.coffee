@@ -183,7 +183,7 @@ describe "DreddCommand class Integration", () ->
         stream.pipe res.type('text')
 
       app.get '/machines', (req, res) ->
-        res.type('json').status(200).send [type: 'bulldozer', name: 'willy']
+        res.json [type: 'bulldozer', name: 'willy']
 
       app.get '/not-found.apib', (req, res) ->
         res.status(404).end()
