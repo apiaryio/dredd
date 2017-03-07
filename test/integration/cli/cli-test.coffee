@@ -77,7 +77,6 @@ describe 'CLI', ->
           args = [
             './test/fixtures/single-get.apib'
             "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-            '--no-color'
             '--server-wait=0'
             '--language=foo/bar/hook-handler'
             '--hookfiles=./test/fixtures/scripts/emptyfile'
@@ -120,7 +119,6 @@ describe 'CLI', ->
           args = [
             './test/fixtures/single-get.apib'
             "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-            '--no-color'
             '--server-wait=0'
             '--language=./test/fixtures/scripts/exit_3.sh'
             '--hookfiles=./test/fixtures/scripts/emptyfile'
@@ -159,7 +157,6 @@ describe 'CLI', ->
           args = [
             './test/fixtures/single-get.apib'
             "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-            '--no-color'
             '--server=./test/fixtures/scripts/endless-nosigterm.sh'
             '--server-wait=0'
             '--language=./test/fixtures/scripts/kill-self.sh'
@@ -213,7 +210,6 @@ describe 'CLI', ->
               runDreddCommand [
                 './test/fixtures/single-get.apib'
                 "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-                '--no-color'
                 '--server=./test/fixtures/scripts/endless-nosigterm.sh'
                 '--language=./test/fixtures/scripts/endless-nosigterm.sh'
                 '--hookfiles=foo/bar/hooks'
@@ -266,7 +262,6 @@ describe 'CLI', ->
               runDreddCommand [
                 './test/fixtures/single-get.apib'
                 "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-                '--no-color'
                 '--server=./test/fixtures/scripts/endless-nosigterm.sh'
                 '--language=./test/fixtures/scripts/endless-nosigterm.sh'
                 '--hookfiles=./test/fixtures/scripts/emptyfile'
@@ -789,7 +784,6 @@ describe 'CLI', ->
           "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
           '--path=./test/fixtures/multifile/*.apib'
           '--names'
-          '--no-color'
         ]
         runDreddCommand(args, (err, info) ->
           dreddCommandInfo = info
@@ -817,7 +811,6 @@ describe 'CLI', ->
       args = [
         './test/fixtures/single-get.apib'
         "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-        '--no-color'
         '--sandbox'
         '--hookfiles=./test/fixtures/sandboxed-hook.js'
       ]
