@@ -822,7 +822,7 @@ describe 'CLI', ->
     it 'should hit the resource', ->
       assert.deepEqual runtimeInfo.server.requestCounts, {'/machines': 1}
 
-    it 'exit status should be 0', ->
+    it 'exit status should be 1', ->
       assert.equal runtimeInfo.dredd.exitStatus, 1
 
     it 'stdout shoud contain fail message', ->
