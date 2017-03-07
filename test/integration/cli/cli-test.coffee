@@ -521,7 +521,7 @@ describe 'CLI', ->
         # the "pass" and the ":"
         assert.include runtimeInfo.dredd.stdout, 'pass:'
 
-    describe 'when suppressing color with --color false', ->
+    describe 'when suppressing color with --color=false', ->
       runtimeInfo = undefined
 
       before (done) ->
@@ -532,8 +532,7 @@ describe 'CLI', ->
         args = [
           './test/fixtures/single-get.apib'
           "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-          '--color'
-          'false'
+          '--color=false'
         ]
         runDreddCommandWithServer(args, app, (err, info) ->
           runtimeInfo = info
