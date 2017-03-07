@@ -713,6 +713,46 @@ describe 'CLI', () ->
     it 'should modify the transaction with hooks', () ->
       assert.equal receivedRequest.headers['header'], '123232323'
 
+  describe 'when loading hooks with --hookfiles and blueprints with glob', () ->
+
+    receivedRequest1 = {}
+    receivedRequest2 = {}
+
+    before (done) ->
+      cmd = "#{DREDD_BIN} ./test/fixtures/glob*.apib http://localhost:#{PORT} --hookfiles=./test/fixtures/glob*_hook.*"
+
+      app = express()
+
+      app.get '/machines', (req, res) ->
+        receivedRequest1 = req
+        res.setHeader 'Content-Type', 'application/json'
+        machine =
+          type: 'bulldozer'
+          name: 'willy'
+        response = [machine]
+        res.status(200).send response
+
+      app.get '/planes', (req, res) ->
+        receivedRequest2 = req
+        res.setHeader 'Content-Type', 'application/json'
+        plane =
+          type: 'Gee Bee Model R'
+          name: 'El Chupacabra'
+        response = [plane]
+        res.status(200).send response
+
+      server = app.listen PORT, () ->
+        execCommand cmd, () ->
+          server.close()
+
+      server.on 'close', done
+
+    it 'should modify the transaction 1 with hooks', () ->
+      assert.equal receivedRequest1.headers['header'], '123-machine'
+
+    it 'should modify the transaction 2 with hooks', () ->
+      assert.equal receivedRequest2.headers['header'], '123-plane'
+
   describe 'when describing events in hookfiles', () ->
     output = {}
     containsLine = (str, expected) ->
