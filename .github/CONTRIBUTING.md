@@ -105,6 +105,10 @@ Releasing process for standard versions is currently automated by [Semantic Rele
 Use `npm test` to run all tests. Dredd uses [Mocha][] as a test framework.
 It's default options are in the `test/mocha.opts` file.
 
+### Windows
+
+Dredd is tested on the [AppVeyor][], a Windows-based CI. There are still [several known limitations][windows issues] when using Dredd on Windows, but the intention is to support it without any compromises. Any help with fixing problems on Windows is greatly appreciated!
+
 ### Integration Tests of Hooks Handlers
 
 Every Pull Request spawns dependent integration builds of hook handlers. Thanks
@@ -216,14 +220,17 @@ There is also one environment variable you could find useful:
 [Conventional Changelog]: https://github.com/conventional-changelog/conventional-changelog-angular/blob/master/convention.md
 [Commitizen CLI]: https://github.com/commitizen/cz-cli
 [md-two-spaces]: https://daringfireball.net/projects/markdown/syntax#p
+[AppVeyor]: http://appveyor.com/
 
 [existing commits]: https://github.com/apiaryio/dredd/commits/master
 [docs]: https://github.com/apiaryio/dredd/tree/master/docs
 [coffeelint.json]: https://github.com/apiaryio/dredd/tree/master/coffeelint.json
 [GitHub Releases]: https://github.com/apiaryio/dredd/releases
 
+
 [upstream repository]: https://github.com/apiaryio/dredd
 [issues]: https://github.com/apiaryio/dredd/issues
+[windows issues]: https://github.com/apiaryio/dredd/issues?utf8=%E2%9C%93&q=is%3Aissue%20is%3Aopen%20label%3AWindows%20
 
 [Apiary Tests API for anonymous test reports]: https://github.com/apiaryio/dredd/blob/master/ApiaryReportingApiAnonymous.apib
 [Apiary Tests API for authenticated test reports]: https://github.com/apiaryio/dredd/blob/master/ApiaryReportingApi.apib

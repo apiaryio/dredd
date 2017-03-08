@@ -3,7 +3,7 @@ optimist = require 'optimist'
 fs = require 'fs'
 os = require 'os'
 spawnArgs = require 'spawn-args'
-spawn = require('cross-spawn')
+crossSpawn = require('cross-spawn')
 console = require('console') # stubbed in tests by proxyquire
 
 Dredd = require './dredd'
@@ -223,7 +223,7 @@ class DreddCommand
       command = parsedArgs.shift()
 
       logger.verbose("Using '#{command}' as a server command, #{JSON.stringify(parsedArgs)} as arguments")
-      @serverProcess = spawn command, parsedArgs
+      @serverProcess = crossSpawn.spawn command, parsedArgs
       logger.info("Starting backend server process with command: #{@argv['server']}")
 
       @serverProcess.stdout.setEncoding 'utf8'
@@ -273,7 +273,7 @@ class DreddCommand
     logger.debug('Node.js environment:', process.versions)
     logger.debug('System version:', os.type(), os.release(), os.arch())
     try
-      npmVersion = spawn.sync('npm', ['--version']).stdout.toString().trim()
+      npmVersion = crossSpawn.sync('npm', ['--version']).stdout.toString().trim()
       logger.debug('npm version:', npmVersion or 'unable to determine npm version')
     catch err
       logger.debug('npm version: unable to determine npm version:', err)

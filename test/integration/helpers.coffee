@@ -1,7 +1,7 @@
 clone = require('clone')
 async = require('async')
 express = require('express')
-{spawn} = require('cross-spawn')
+spawn = require('cross-spawn')
 bodyParser = require('body-parser')
 ps = require('ps-node')
 

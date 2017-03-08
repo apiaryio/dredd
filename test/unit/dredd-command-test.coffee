@@ -6,11 +6,11 @@ proxyquire = require('proxyquire').noCallThru()
 options = require '../../src/options'
 packageData = require '../../package.json'
 
-childProcessStub = require 'child_process'
 loggerStub = require '../../src/logger'
 interactiveConfigStub = require '../../src/interactive-config'
 configUtilsStub = require '../../src/config-utils'
 fsStub = require 'fs'
+crossSpawnStub = require 'cross-spawn'
 
 PORT = 9876
 
@@ -38,9 +38,9 @@ DreddCommand = proxyquire '../../src/dredd-command', {
   'console': loggerStub
   './logger': loggerStub
   './interactive-init': interactiveConfigStub
-  'child_process': childProcessStub
   './config-utils': configUtilsStub
   'fs': fsStub
+  'cross-spawn': crossSpawnStub
 }
 
 
@@ -310,10 +310,46 @@ describe "DreddCommand class", () ->
       it 'should save configuration', ->
         assert.isTrue configUtilsStub.save.called
 
+    describe '"init" (ruby)', ->
+      before (done) ->
+        sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
+          cb({language: 'ruby'})
+        sinon.stub configUtilsStub, 'save'
+        execCommand argv: ['init'], ->
+          done()
+
+      after () ->
+        interactiveConfigStub.run.restore()
+        configUtilsStub.save.restore()
+
+      it 'should run interactive config', ->
+        assert.isTrue interactiveConfigStub.run.called
+
+      it 'should save configuration', ->
+        assert.isTrue configUtilsStub.save.called
+
     describe '"init" (perl)', ->
       before (done) ->
         sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
           cb({language: 'perl'})
+        sinon.stub configUtilsStub, 'save'
+        execCommand argv: ['init'], ->
+          done()
+
+      after () ->
+        interactiveConfigStub.run.restore()
+        configUtilsStub.save.restore()
+
+      it 'should run interactive config', ->
+        assert.isTrue interactiveConfigStub.run.called
+
+      it 'should save configuration', ->
+        assert.isTrue configUtilsStub.save.called
+
+    describe '"init" (go)', ->
+      before (done) ->
+        sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
+          cb({language: 'go'})
         sinon.stub configUtilsStub, 'save'
         execCommand argv: ['init'], ->
           done()
@@ -409,28 +445,21 @@ describe "DreddCommand class", () ->
         passedConf = call.args[0]
         assert.propertyVal passedConf.options, 'names', true
 
-  # describe 'when using --server', () ->
+  describe 'when using --server', ->
 
-  #   beforeEach (done) ->
+    beforeEach (done) ->
+      sinon.spy crossSpawnStub, 'spawn'
+      sinon.stub transactionRunner.prototype, 'executeAllTransactions', (transactions, hooks, cb) -> cb()
+      execCommand argv: [
+        './test/fixtures/single-get.apib'
+        "http://127.0.0.1:#{PORT}"
+        '--server'
+        'foo/bar'
+      ], ->
+        done()
 
-  #     sinon.stub childProcessStub, 'exec'
-  #     sinon.stub transactionRunner.prototype, 'executeAllTransactions', (cb) -> cb()
-  #     dc = new DreddCommand({
-  #       exit: (status) ->
-  #         done()
+    afterEach ->
+      crossSpawnStub.spawn.restore()
 
-  #       custom:
-  #         argv: [
-  #           "./test/fixtures/single-get.apib"
-  #           "http://127.0.0.1:#{PORT}"
-  #           "--server"
-  #           "./test/fixtures/scripts/fake-server.sh"
-  #         ]
-  #     }).run()
-
-  #   afterEach () ->
-  #     childProcessStub.exec.restore()
-
-
-  #   it 'stdout shoud run child process', () ->
-  #     assert.isTrue childProcessStub.exec.called
+    it 'stdout shoud run child process', ->
+      assert.isTrue crossSpawnStub.spawn.called
