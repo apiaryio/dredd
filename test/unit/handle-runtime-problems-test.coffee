@@ -68,13 +68,13 @@ describe('handleRuntimeProblems()', ->
     )
 
     it('returns error', ->
-      assert.ok(error)
+      assert.isOk(error)
     )
     it('has no warning output', ->
       assert.equal(warnOutput, '')
     )
     it('has error output', ->
-      assert.ok(errorOutput)
+      assert.isOk(errorOutput)
     )
     context('the error output', ->
       it('mentions it is from parser', ->
@@ -122,7 +122,7 @@ describe('handleRuntimeProblems()', ->
       assert.equal(errorOutput, '')
     )
     it('has warning output', ->
-      assert.ok(warnOutput)
+      assert.isOk(warnOutput)
     )
     context('the warning output', ->
       it('mentions it is from parser', ->
@@ -167,7 +167,7 @@ describe('handleRuntimeProblems()', ->
       assert.equal(errorOutput, '')
     )
     it('has warning output', ->
-      assert.ok(warnOutput)
+      assert.isOk(warnOutput)
     )
     context('the warning output', ->
       it('mentions it is from parser', ->

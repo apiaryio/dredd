@@ -536,7 +536,7 @@ describe 'ApiaryReporter', () ->
         apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
         emitter.emit 'end', () ->
-          assert.ok loggerStub.complete.calledWith 'See results in Apiary at: https://app.apiary.io/public/tests/run/507f1f77bcf86cd799439011'
+          assert.isOk loggerStub.complete.calledWith 'See results in Apiary at: https://app.apiary.io/public/tests/run/507f1f77bcf86cd799439011'
           done()
 
       it 'should return reportUrl from testRun entity', (done) ->
@@ -545,7 +545,7 @@ describe 'ApiaryReporter', () ->
         apiaryReporter.remoteId = runId
         apiaryReporter.reportUrl = "https://absolutely.fancy.url/wich-can-change/some/id"
         emitter.emit 'end', () ->
-          assert.ok loggerStub.complete.calledWith 'See results in Apiary at: https://absolutely.fancy.url/wich-can-change/some/id'
+          assert.isOk loggerStub.complete.calledWith 'See results in Apiary at: https://absolutely.fancy.url/wich-can-change/some/id'
           done()
 
       it 'should send runner.logs to Apiary at the end of testRun', (done) ->
@@ -805,7 +805,7 @@ describe 'ApiaryReporter', () ->
         apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom:apiaryReporterEnv:env}
         apiaryReporter.remoteId = runId
         emitter.emit 'end', () ->
-          assert.ok loggerStub.complete.calledWith 'See results in Apiary at: https://app.apiary.io/jakubtest/tests/run/507f1f77bcf86cd799439011'
+          assert.isOk loggerStub.complete.calledWith 'See results in Apiary at: https://app.apiary.io/jakubtest/tests/run/507f1f77bcf86cd799439011'
           done()
 
       it 'should return reportUrl from testRun entity', (done) ->
@@ -814,5 +814,5 @@ describe 'ApiaryReporter', () ->
         apiaryReporter.remoteId = runId
         apiaryReporter.reportUrl = "https://absolutely.fancy.url/wich-can-change/some/id"
         emitter.emit 'end', () ->
-          assert.ok loggerStub.complete.calledWith 'See results in Apiary at: https://absolutely.fancy.url/wich-can-change/some/id'
+          assert.isOk loggerStub.complete.calledWith 'See results in Apiary at: https://absolutely.fancy.url/wich-can-change/some/id'
           done()

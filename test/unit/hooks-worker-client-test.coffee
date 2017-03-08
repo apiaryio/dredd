@@ -134,7 +134,7 @@ describe 'Hooks worker client', ->
         setTimeout ->
           hooksWorkerClient.stop (stopError) ->
             return done stopError if stopError
-            assert.ok runner.hookHandlerError
+            assert.isOk runner.hookHandlerError
             assert.include runner.hookHandlerError.message, '3'
             done()
         , MIN_COMMAND_EXECUTION_DURATION_MS
@@ -147,7 +147,7 @@ describe 'Hooks worker client', ->
 
       it 'should write a hint that native hooks should be used', (done) ->
         loadWorkerClient (err) ->
-          assert.ok err
+          assert.isOk err
           assert.include err.message, 'native Node.js hooks instead'
           done()
 
@@ -211,7 +211,7 @@ describe 'Hooks worker client', ->
 
       it 'should write a hint how to install', (done) ->
         loadWorkerClient (err) ->
-          assert.ok err
+          assert.isOk err
           assert.include err.message, "gem install dredd_hooks"
           done()
 
@@ -274,7 +274,7 @@ describe 'Hooks worker client', ->
 
       it 'should write a hint how to install', (done) ->
         loadWorkerClient (err) ->
-          assert.ok err
+          assert.isOk err
           assert.include err.message, "pip install dredd_hooks"
           done()
 
@@ -337,7 +337,7 @@ describe 'Hooks worker client', ->
 
       it 'should write a hint how to install', (done) ->
         loadWorkerClient (err) ->
-          assert.ok err
+          assert.isOk err
           assert.include err.message, "composer require ddelnano/dredd-hooks-php --dev"
           done()
 
@@ -354,7 +354,7 @@ describe 'Hooks worker client', ->
 
       it 'should write a hint how to install', (done) ->
         loadWorkerClient (err) ->
-          assert.ok err
+          assert.isOk err
           assert.include err.message, "go get github.com/snikch/goodman/cmd/goodman"
           done()
 
@@ -463,7 +463,7 @@ describe 'Hooks worker client', ->
 
       it 'should write a hint how to install', (done) ->
         loadWorkerClient (err) ->
-          assert.ok err
+          assert.isOk err
           assert.include err.message, "cpanm Dredd::Hooks"
           done()
 

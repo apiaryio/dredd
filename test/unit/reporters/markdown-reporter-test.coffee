@@ -53,7 +53,7 @@ describe 'MarkdownReporter', () ->
         loggerStub.info.restore()
 
       it 'should inform about the existing file', () ->
-        assert.ok loggerStub.info.called
+        assert.isOk loggerStub.info.called
 
     describe 'when file does not exist', () ->
 
@@ -67,14 +67,14 @@ describe 'MarkdownReporter', () ->
         fsStub.unlinkSync.restore()
 
       it 'should create the file', (done) ->
-        assert.ok fsStub.unlinkSync.notCalled
+        assert.isOk fsStub.unlinkSync.notCalled
         done()
 
   describe 'when starting', () ->
 
     it 'should write the title to the buffer', (done) ->
       emitter.emit 'start', '', () ->
-        assert.ok ~mdReporter.buf.indexOf 'Dredd'
+        assert.isOk ~mdReporter.buf.indexOf 'Dredd'
         done()
 
   describe 'when ending', () ->
@@ -87,7 +87,7 @@ describe 'MarkdownReporter', () ->
 
     it 'should write buffer to file', (done) ->
       emitter.emit 'end'
-      assert.ok fsStub.writeFile.called
+      assert.isOk fsStub.writeFile.called
       done()
 
   describe 'when test passes', () ->
@@ -100,7 +100,7 @@ describe 'MarkdownReporter', () ->
       emitter.emit 'test pass', test
 
     it 'should write pass to the buffer', (done) ->
-      assert.ok ~mdReporter.buf.indexOf 'Pass'
+      assert.isOk ~mdReporter.buf.indexOf 'Pass'
       done()
 
     describe 'when details=true', () ->
@@ -108,7 +108,7 @@ describe 'MarkdownReporter', () ->
       it 'should write details for passing tests', (done) ->
         mdReporter.details = true
         emitter.emit 'test pass', test
-        assert.ok ~mdReporter.buf.indexOf 'Request'
+        assert.isOk ~mdReporter.buf.indexOf 'Request'
         done()
 
   describe 'when test is skipped', () ->
@@ -120,7 +120,7 @@ describe 'MarkdownReporter', () ->
       emitter.emit 'test skip', test
 
     it 'should write skip to the buffer', (done) ->
-      assert.ok ~mdReporter.buf.indexOf 'Skip'
+      assert.isOk ~mdReporter.buf.indexOf 'Skip'
       done()
 
   describe 'when test fails', () ->
@@ -133,7 +133,7 @@ describe 'MarkdownReporter', () ->
       emitter.emit 'test fail', test
 
     it 'should write fail to the buffer', (done) ->
-      assert.ok ~mdReporter.buf.indexOf 'Fail'
+      assert.isOk ~mdReporter.buf.indexOf 'Fail'
       done()
 
   describe 'when test errors', () ->
@@ -146,5 +146,5 @@ describe 'MarkdownReporter', () ->
       emitter.emit 'test error', new Error('Error'), test
 
     it 'should write error to the buffer', (done) ->
-      assert.ok ~mdReporter.buf.indexOf 'Error'
+      assert.isOk ~mdReporter.buf.indexOf 'Error'
       done()

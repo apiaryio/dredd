@@ -54,7 +54,7 @@ describe 'prettifyResponse(response)', () ->
       sinon.stub loggerStub.debug.restore()
 
     it 'should\'ve printed into debug', () ->
-      assert.ok loggerStub.debug.called
+      assert.isOk loggerStub.debug.called
       assert.isObject loggerStub.debug.firstCall
       assert.isArray loggerStub.debug.firstCall.args
       assert.lengthOf loggerStub.debug.firstCall.args, 1

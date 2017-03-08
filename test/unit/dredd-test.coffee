@@ -47,7 +47,7 @@ describe 'Dredd class', ->
         sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
           callback()
         dredd.run (error) ->
-          assert.ok dredd.runner.executeTransaction.called
+          assert.isOk dredd.runner.executeTransaction.called
           dredd.runner.executeTransaction.restore()
           done()
 
@@ -67,7 +67,7 @@ describe 'Dredd class', ->
 
     it 'should copy configuration on creation', ->
       dredd = new Dredd(configuration)
-      assert.ok(dredd.configuration.options.silent)
+      assert.isOk(dredd.configuration.options.silent)
       assert.notOk(dredd.configuration.options['dry-run'])
 
     it 'should load the file on given path', (done) ->
@@ -75,7 +75,7 @@ describe 'Dredd class', ->
       sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
       dredd.run (error) ->
-        assert.ok fsStub.readFile.calledWith configuration.options.path[0]
+        assert.isOk fsStub.readFile.calledWith configuration.options.path[0]
         dredd.runner.executeTransaction.restore()
         done()
 
@@ -103,7 +103,7 @@ describe 'Dredd class', ->
       sinon.stub dredd.runner, 'executeTransaction', (transaction, hooks, callback) ->
         callback()
       dredd.run (error) ->
-        assert.ok dreddTransactionsStub.compile.called
+        assert.isOk dreddTransactionsStub.compile.called
         dredd.runner.executeTransaction.restore()
         done()
 
@@ -175,7 +175,7 @@ describe 'Dredd class', ->
 
       it 'should return error', (done) ->
         dredd.run (error) ->
-          assert.ok error
+          assert.isOk error
           done()
 
 
@@ -359,7 +359,7 @@ describe 'Dredd class', ->
 
         it 'should exit with an error', (done) ->
           dredd.run (error) ->
-            assert.ok error
+            assert.isOk error
             assert.instanceOf error, Error
             assert.property error, 'message'
             assert.include error.message, 'Unable to load file from URL'
@@ -383,7 +383,7 @@ describe 'Dredd class', ->
 
         it 'should exit with an error', (done) ->
           dredd.run (error) ->
-            assert.ok error
+            assert.isOk error
             assert.instanceOf error, Error
             assert.property error, 'message'
             assert.include error.message, 'Error when loading file from URL'
@@ -412,7 +412,7 @@ describe 'Dredd class', ->
 
     it 'should exit with an error', (done) ->
       dredd.run (error) ->
-        assert.ok error
+        assert.isOk error
         done()
 
     it 'should NOT execute any transaction', (done) ->
@@ -440,12 +440,12 @@ describe 'Dredd class', ->
 
     it 'should execute the runtime', (done) ->
       dredd.run ->
-        assert.ok dredd.runner.run.called
+        assert.isOk dredd.runner.run.called
         done()
 
     it 'should write warnings to warn logger', (done) ->
       dredd.run ->
-        assert.ok loggerStub.warn.called
+        assert.isOk loggerStub.warn.called
         done()
 
   describe 'when non existing API description document path', ->
@@ -464,7 +464,7 @@ describe 'Dredd class', ->
 
     it 'should pass the error to the callback function', (done) ->
       dredd.run (error) ->
-        assert.ok error
+        assert.isOk error
         done()
 
     it 'should NOT execute any transaction', (done) ->
@@ -494,7 +494,7 @@ describe 'Dredd class', ->
 
     it 'should exit with an error', (done) ->
       dredd.run (error) ->
-        assert.ok error
+        assert.isOk error
         done()
 
   describe 'when runtime contains any warning', ->
@@ -515,12 +515,12 @@ describe 'Dredd class', ->
 
     it 'should execute some transaction', (done) ->
       dredd.run (error) ->
-        assert.ok dredd.runner.executeTransaction.called
+        assert.isOk dredd.runner.executeTransaction.called
         done()
 
     it 'should print runtime warnings to stdout', (done) ->
       dredd.run (error) ->
-        assert.ok loggerStub.warn.called
+        assert.isOk loggerStub.warn.called
         done()
 
     it 'should not exit', (done) ->
@@ -544,7 +544,7 @@ describe 'Dredd class', ->
 
     it 'should execute the runtime', (done) ->
       dredd.run (error) ->
-        assert.ok dredd.runner.executeTransaction.called
+        assert.isOk dredd.runner.executeTransaction.called
         done()
 
   describe "#emitStart", ->
@@ -592,7 +592,7 @@ describe 'Dredd class', ->
       it 'should call the callback', (done) ->
         callback = sinon.spy (error) ->
           done error if error
-          assert.ok callback.called
+          assert.isOk callback.called
           done()
 
         dredd.emitStart callback
@@ -620,7 +620,7 @@ describe 'Dredd class', ->
       it 'should call the callback with error', (done) ->
         callback = sinon.spy (error) ->
           assert.isNotNull error
-          assert.ok callback.called
+          assert.isOk callback.called
           done()
 
         dredd.emitStart callback

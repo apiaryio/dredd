@@ -225,7 +225,7 @@ describe 'CLI - Reporters', ->
       fs.unlinkSync "#{process.cwd()}/__test_file_output__.xml"
 
     it 'should create given file', ->
-      assert.ok fs.existsSync "#{process.cwd()}/__test_file_output__.xml"
+      assert.isOk fs.existsSync "#{process.cwd()}/__test_file_output__.xml"
 
 
   describe 'When -o/--output is used multiple times to specify output files', ->
@@ -249,5 +249,5 @@ describe 'CLI - Reporters', ->
       fs.unlinkSync "#{process.cwd()}/__test_file_output2__.xml"
 
     it 'should create given files', ->
-      assert.ok fs.existsSync "#{process.cwd()}/__test_file_output1__.xml"
-      assert.ok fs.existsSync "#{process.cwd()}/__test_file_output2__.xml"
+      assert.isOk fs.existsSync "#{process.cwd()}/__test_file_output1__.xml"
+      assert.isOk fs.existsSync "#{process.cwd()}/__test_file_output2__.xml"

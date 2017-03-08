@@ -229,7 +229,7 @@ describe 'Regression: Issues #319 and #354', ->
       )
 
     it 'outputs failures', ->
-      assert.ok results.failures.length
+      assert.isOk results.failures.length
     it 'results in exactly four tests', ->
       assert.include results.summary, '4 total'
     it 'results in four failing tests', ->
