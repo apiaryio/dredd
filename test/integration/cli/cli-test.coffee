@@ -343,10 +343,10 @@ describe 'CLI', ->
         )
 
       it 'should have an authorization header in the request', ->
-        assert.ok runtimeInfo.server.requests['/machines'][0].headers.authorization
+        assert.isOk runtimeInfo.server.requests['/machines'][0].headers.authorization
 
       it 'should contain a base64 encoded string of the username and password', ->
-        assert.ok runtimeInfo.server.requests['/machines'][0].headers.authorization is 'Basic ' + new Buffer('username:password').toString('base64')
+        assert.isOk runtimeInfo.server.requests['/machines'][0].headers.authorization is 'Basic ' + new Buffer('username:password').toString('base64')
 
 
     describe "when sorting requests with -s", ->
@@ -368,7 +368,7 @@ describe 'CLI', ->
         )
 
       it 'should perform the POST, GET, PUT, DELETE in order', ->
-        assert.ok runtimeInfo.dredd.stdout.indexOf('POST') < runtimeInfo.dredd.stdout.indexOf('GET') < runtimeInfo.dredd.stdout.indexOf('PUT') < runtimeInfo.dredd.stdout.indexOf('DELETE')
+        assert.isOk runtimeInfo.dredd.stdout.indexOf('POST') < runtimeInfo.dredd.stdout.indexOf('GET') < runtimeInfo.dredd.stdout.indexOf('PUT') < runtimeInfo.dredd.stdout.indexOf('DELETE')
 
     describe 'when displaying errors inline with -e', ->
       runtimeInfo = undefined
@@ -414,7 +414,7 @@ describe 'CLI', ->
 
       it 'should display details on passing tests', ->
         # the request: block is not shown for passing tests normally
-        assert.ok runtimeInfo.dredd.stdout.indexOf('request') > -1
+        assert.isOk runtimeInfo.dredd.stdout.indexOf('request') > -1
 
     describe "when filtering request methods with -m", ->
 
@@ -560,7 +560,7 @@ describe 'CLI', ->
 
       it 'should not display anything', ->
         # at the "error" level, complete should not be shown
-        assert.ok runtimeInfo.dredd.stdout.indexOf('complete') is -1
+        assert.isOk runtimeInfo.dredd.stdout.indexOf('complete') is -1
 
     describe 'when showing timestamps with -t', ->
       runtimeInfo = undefined
@@ -631,8 +631,8 @@ describe 'CLI', ->
       )
 
     it 'should execute the before and after events', ->
-      assert.ok containsLine(runtimeInfo.dredd.stdout, 'hooks.beforeAll'), (runtimeInfo.dredd.stdout)
-      assert.ok containsLine(runtimeInfo.dredd.stdout, 'hooks.afterAll'), (runtimeInfo.dredd.stdout)
+      assert.isOk containsLine(runtimeInfo.dredd.stdout, 'hooks.beforeAll'), (runtimeInfo.dredd.stdout)
+      assert.isOk containsLine(runtimeInfo.dredd.stdout, 'hooks.afterAll'), (runtimeInfo.dredd.stdout)
 
   describe 'when describing both hooks and events in hookfiles', ->
     runtimeInfo = undefined
@@ -662,7 +662,7 @@ describe 'CLI', ->
 
     it 'should execute hooks and events in order', ->
       events = getResults(runtimeInfo.dredd.stdout)
-      assert.ok events is 'beforeAll,before,after,afterAll'
+      assert.isOk events is 'beforeAll,before,after,afterAll'
 
   describe "tests an API description containing an endpoint with schema", ->
     describe "and server is responding in accordance with the schema", ->

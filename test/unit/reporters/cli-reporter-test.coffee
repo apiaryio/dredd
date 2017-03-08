@@ -32,7 +32,7 @@ describe 'CliReporter', () ->
       emitter = new EventEmitter()
       cliReporter = new CliReporter(emitter, {}, {}, true)
       emitter.emit 'start', '', () ->
-        assert.ok loggerStub.info.calledOnce
+        assert.isOk loggerStub.info.calledOnce
         done()
 
   describe 'when adding passing test', () ->
@@ -51,7 +51,7 @@ describe 'CliReporter', () ->
       emitter = new EventEmitter()
       cliReporter = new CliReporter(emitter, {}, {}, true)
       emitter.emit 'test pass', test
-      assert.ok loggerStub.pass.calledOnce
+      assert.isOk loggerStub.pass.calledOnce
 
     describe 'when details=true', () ->
 
@@ -65,7 +65,7 @@ describe 'CliReporter', () ->
         emitter = new EventEmitter()
         cliReporter = new CliReporter(emitter, {}, {}, true, true)
         emitter.emit 'test pass', test
-        assert.ok loggerStub.request.calledOnce
+        assert.isOk loggerStub.request.calledOnce
 
   describe 'when adding failing test', () ->
 
@@ -86,7 +86,7 @@ describe 'CliReporter', () ->
         emitter = new EventEmitter()
         cliReporter = new CliReporter(emitter, {}, {}, true)
         emitter.emit 'test fail', test
-        assert.ok loggerStub.fail.calledTwice
+        assert.isOk loggerStub.fail.calledTwice
 
     describe 'when errors are aggregated', () ->
 
@@ -100,14 +100,14 @@ describe 'CliReporter', () ->
         emitter = new EventEmitter()
         cliReporter = new CliReporter(emitter, {}, {}, false)
         emitter.emit 'test fail', test
-        assert.ok loggerStub.fail.calledOnce
+        assert.isOk loggerStub.fail.calledOnce
 
       it 'should write full failure to the console after execution is complete', (done) ->
         emitter = new EventEmitter()
         cliReporter = new CliReporter(emitter, {}, {}, false)
         cliReporter.errors = [ test ]
         emitter.emit 'end', () ->
-          assert.ok loggerStub.fail.calledTwice
+          assert.isOk loggerStub.fail.calledTwice
           done()
 
   describe 'when adding error test', () ->
@@ -127,7 +127,7 @@ describe 'CliReporter', () ->
       emitter = new EventEmitter()
       cliReporter = new CliReporter(emitter, {}, {}, false)
       emitter.emit 'test error', new Error('Error'), test
-      assert.ok loggerStub.error.calledTwice
+      assert.isOk loggerStub.error.calledTwice
 
 
   describe 'when adding error test with connection refused', () ->
@@ -175,7 +175,7 @@ describe 'CliReporter', () ->
       emitter = new EventEmitter()
       cliReporter = new CliReporter(emitter, {}, {}, false)
       emitter.emit 'test skip', test
-      assert.ok loggerStub.skip.calledOnce
+      assert.isOk loggerStub.skip.calledOnce
 
 
   describe 'when creating report', () ->
@@ -199,7 +199,7 @@ describe 'CliReporter', () ->
         cliReporter.tests = [ test ]
         cliReporter.stats.tests = 1
         emitter.emit 'end', () ->
-          assert.ok loggerStub.complete.calledTwice
+          assert.isOk loggerStub.complete.calledTwice
           done()
 
     describe 'when there are no tests', () ->
@@ -208,7 +208,7 @@ describe 'CliReporter', () ->
         emitter = new EventEmitter()
         cliReporter = new CliReporter(emitter, {}, {}, false)
         emitter.emit 'end', () ->
-          assert.ok loggerStub.complete.calledOnce
+          assert.isOk loggerStub.complete.calledOnce
           done()
 
 

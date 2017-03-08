@@ -49,8 +49,8 @@ describe 'NyanCatReporter', () ->
 
     it 'should hide the cursor and draw the cat', (done) ->
       emitter.emit 'start', '', () ->
-        assert.ok nyanReporter.cursorHide.calledOnce
-        assert.ok nyanReporter.draw.calledOnce
+        assert.isOk nyanReporter.cursorHide.calledOnce
+        assert.isOk nyanReporter.draw.calledOnce
         done()
 
   describe 'when ending', () ->
@@ -67,7 +67,7 @@ describe 'NyanCatReporter', () ->
 
     it 'should log that testing is complete', (done) ->
       emitter.emit 'end', () ->
-        assert.ok loggerStub.complete.calledTwice
+        assert.isOk loggerStub.complete.calledTwice
         done()
 
     describe 'when there are failures', () ->
@@ -85,7 +85,7 @@ describe 'NyanCatReporter', () ->
 
       it 'should log the failures at the end of testing', (done) ->
         emitter.emit 'end', ()->
-          assert.ok loggerStub.fail.calledTwice
+          assert.isOk loggerStub.fail.calledTwice
           done()
 
   describe 'when test finished', () ->
@@ -105,7 +105,7 @@ describe 'NyanCatReporter', () ->
         nyanReporter.write.restore()
 
       it 'should draw the cat', () ->
-        assert.ok nyanReporter.draw.calledOnce
+        assert.isOk nyanReporter.draw.calledOnce
 
     describe 'when test is skipped', () ->
       beforeEach () ->
@@ -121,7 +121,7 @@ describe 'NyanCatReporter', () ->
         nyanReporter.write.restore()
 
       it 'should draw the cat', () ->
-        assert.ok nyanReporter.draw.calledOnce
+        assert.isOk nyanReporter.draw.calledOnce
 
     describe 'when test fails', () ->
 
@@ -138,7 +138,7 @@ describe 'NyanCatReporter', () ->
         nyanReporter.write.restore()
 
       it 'should draw the cat', () ->
-        assert.ok nyanReporter.draw.calledOnce
+        assert.isOk nyanReporter.draw.calledOnce
 
     describe 'when test errors', () ->
 
@@ -155,5 +155,5 @@ describe 'NyanCatReporter', () ->
         nyanReporter.draw.restore()
 
       it 'should draw the cat', () ->
-        assert.ok nyanReporter.draw.calledOnce
+        assert.isOk nyanReporter.draw.calledOnce
 

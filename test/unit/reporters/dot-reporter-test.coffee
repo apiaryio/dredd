@@ -45,7 +45,7 @@ describe 'DotReporter', () ->
 
     it 'should log that testing has begun', () ->
       emitter.emit 'start', '', () ->
-        assert.ok loggerStub.info.called
+        assert.isOk loggerStub.info.called
 
   describe 'when ending', () ->
 
@@ -60,7 +60,7 @@ describe 'DotReporter', () ->
 
     it 'should log that testing is complete', () ->
       emitter.emit 'end', () ->
-        assert.ok loggerStub.complete.calledTwice
+        assert.isOk loggerStub.complete.calledTwice
 
     describe 'when there are failures', () ->
 
@@ -80,7 +80,7 @@ describe 'DotReporter', () ->
 
       it 'should log the failures at the end of testing', (done) ->
         emitter.emit 'end', () ->
-          assert.ok loggerStub.fail.called
+          assert.isOk loggerStub.fail.called
           done()
 
   describe 'when test passes', () ->
@@ -99,7 +99,7 @@ describe 'DotReporter', () ->
       dotReporter.write.restore()
 
     it 'should write a .', () ->
-      assert.ok dotReporter.write.calledWith '.'
+      assert.isOk dotReporter.write.calledWith '.'
 
   describe 'when test is skipped', () ->
     before () ->
@@ -116,7 +116,7 @@ describe 'DotReporter', () ->
       dotReporter.write.restore()
 
     it 'should write a -', () ->
-      assert.ok dotReporter.write.calledWith('-')
+      assert.isOk dotReporter.write.calledWith('-')
 
   describe 'when test fails', () ->
 
@@ -134,7 +134,7 @@ describe 'DotReporter', () ->
       dotReporter.write.restore()
 
     it 'should write an F', () ->
-      assert.ok dotReporter.write.calledWith('F')
+      assert.isOk dotReporter.write.calledWith('F')
 
   describe 'when test errors', () ->
 
@@ -152,4 +152,4 @@ describe 'DotReporter', () ->
       dotReporter.write.restore()
 
     it 'should write an E', () ->
-      assert.ok dotReporter.write.calledWith('E')
+      assert.isOk dotReporter.write.calledWith('E')

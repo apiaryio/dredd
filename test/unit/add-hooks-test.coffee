@@ -84,7 +84,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
 
     it 'should not expand any glob', (done) ->
       addHooks runner, transactions, (err) ->
-        assert.ok globStub.sync.notCalled
+        assert.isOk globStub.sync.notCalled
         done()
 
   describe 'with non `nodejs` language option', () ->
@@ -121,7 +121,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
       sinon.spy globStub, 'sync'
       addHooks runner, transactions, (err) ->
         return done err if err
-        assert.ok globStub.sync.called
+        assert.isOk globStub.sync.called
         globStub.sync.restore()
         done()
 
@@ -144,7 +144,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
       it 'should load the files', (done) ->
         addHooks runner, transactions, (err) ->
           return done err if err
-          assert.ok pathStub.resolve.called
+          assert.isOk pathStub.resolve.called
           done()
 
       it 'should add configuration object to the hooks object proxyquired to the each hookfile', (done) ->

@@ -52,7 +52,7 @@ describe 'TransactionRunner', ->
       runner = new Runner(configuration)
 
     it 'should copy configuration', ->
-      assert.ok runner.configuration.server
+      assert.isOk runner.configuration.server
 
     it 'should have an empty hookStash object', ->
       assert.deepEqual runner.hookStash, {}
@@ -94,7 +94,7 @@ describe 'TransactionRunner', ->
         runner = new Runner(configuration)
         runner.config(configuration)
 
-        assert.ok runner.multiBlueprint
+        assert.isOk runner.multiBlueprint
 
   describe 'configureTransaction(transaction, callback)', ->
     beforeEach ->
@@ -303,7 +303,7 @@ describe 'TransactionRunner', ->
 
       it 'should add the Dredd User-Agent', (done) ->
         runner.configureTransaction transaction, (err, configuredTransaction) ->
-          assert.ok configuredTransaction.request.headers['User-Agent']
+          assert.isOk configuredTransaction.request.headers['User-Agent']
           done()
 
     describe 'when an additional header has a colon', ->
@@ -323,9 +323,9 @@ describe 'TransactionRunner', ->
         runner.configureTransaction transaction, (err, configuredTransaction) ->
           assert.equal configuredTransaction.name, 'Group Machine > Machine > Delete Message > Bogus example name'
           assert.equal configuredTransaction.id, 'POST /machines'
-          assert.ok configuredTransaction.host
-          assert.ok configuredTransaction.request
-          assert.ok configuredTransaction.expected
+          assert.isOk configuredTransaction.host
+          assert.isOk configuredTransaction.request
+          assert.isOk configuredTransaction.expected
           assert.strictEqual transaction.origin, configuredTransaction.origin
           done()
 
@@ -394,7 +394,7 @@ describe 'TransactionRunner', ->
 
       it 'should add a Content-Length header', (done) ->
         runner.executeTransaction transaction, ->
-          assert.ok transaction.request.headers['Content-Length']
+          assert.isOk transaction.request.headers['Content-Length']
           done()
 
     describe 'when Content-Length header is present', ->
@@ -429,7 +429,7 @@ describe 'TransactionRunner', ->
 
       it 'should print the names and return', (done) ->
         runner.executeTransaction transaction, ->
-          assert.ok loggerStub.info.called
+          assert.isOk loggerStub.info.called
           done()
 
     describe 'when a dry run', ->
@@ -446,7 +446,7 @@ describe 'TransactionRunner', ->
 
       it 'should skip the tests', (done) ->
         runner.executeTransaction transaction, ->
-          assert.ok runner.performRequest.notCalled
+          assert.isOk runner.performRequest.notCalled
           done()
 
     describe 'when only certain methods are allowed by the configuration', ->
@@ -462,7 +462,7 @@ describe 'TransactionRunner', ->
 
       it 'should only perform those requests', (done) ->
         runner.executeTransaction transaction, ->
-          assert.ok runner.skipTransaction.called
+          assert.isOk runner.skipTransaction.called
           done()
 
     describe 'when only certain names are allowed by the configuration', ->
@@ -491,7 +491,7 @@ describe 'TransactionRunner', ->
       it 'should skip transactions with different names', (done) ->
         transaction['name'] = 'Group Machine > Machine > Delete Message > Bogus different example name'
         runner.executeTransaction transaction, ->
-          assert.ok runner.skipTransaction.called
+          assert.isOk runner.skipTransaction.called
           done()
 
     describe 'when a test has been manually set to skip in a hook', ->
@@ -522,7 +522,7 @@ describe 'TransactionRunner', ->
 
       it 'should skip the test', (done) ->
         runner.executeAllTransactions [clonedTransaction], runner.hooks, (err) ->
-          assert.ok configuration.emitter.emit.calledWith 'test skip'
+          assert.isOk configuration.emitter.emit.calledWith 'test skip'
           done(err)
 
       it 'should add skip message as a warning under `general` to the results on transaction', (done) ->
@@ -571,7 +571,7 @@ describe 'TransactionRunner', ->
 
       it 'should make the request with https', (done) ->
         runner.executeTransaction transaction, ->
-          assert.ok server.isDone()
+          assert.isOk server.isDone()
           done()
 
     describe 'when server uses http', ->
@@ -591,7 +591,7 @@ describe 'TransactionRunner', ->
 
       it 'should make the request with http', (done) ->
         runner.executeTransaction transaction, ->
-          assert.ok server.isDone()
+          assert.isOk server.isDone()
           done()
 
     describe 'when backend responds as it should', ->
@@ -608,7 +608,7 @@ describe 'TransactionRunner', ->
 
       it 'should perform the request', (done) ->
         runner.executeTransaction transaction, ->
-          assert.ok server.isDone()
+          assert.isOk server.isDone()
           done()
 
       it 'should not return an error', (done) ->
@@ -630,7 +630,7 @@ describe 'TransactionRunner', ->
 
       it 'should perform the request', (done) ->
         runner.executeTransaction transaction, ->
-          assert.ok server.isDone()
+          assert.isOk server.isDone()
           done()
 
 
@@ -644,7 +644,7 @@ describe 'TransactionRunner', ->
 
       it 'should report a error', (done) ->
         runner.executeTransaction transaction, ->
-          assert.ok configuration.emitter.emit.called
+          assert.isOk configuration.emitter.emit.called
           events = Object.keys(configuration.emitter.emit.args).map (value, index) ->
             configuration.emitter.emit.args[value][0]
           assert.include events, 'test error'
@@ -1199,7 +1199,7 @@ describe 'TransactionRunner', ->
 
       it 'should replace line feed in body', (done) ->
         runner.executeTransaction multiPartTransaction, ->
-          assert.ok server.isDone()
+          assert.isOk server.isDone()
           assert.equal multiPartTransaction['request']['body'], parsedBody, 'Body'
           assert.include multiPartTransaction['request']['body'], "\r\n"
           done()
@@ -1221,7 +1221,7 @@ describe 'TransactionRunner', ->
 
       it 'should replace line feed in body', (done) ->
         runner.executeTransaction multiPartTransaction, ->
-          assert.ok server.isDone()
+          assert.isOk server.isDone()
           assert.equal multiPartTransaction['request']['body'], parsedBody, 'Body'
           assert.include multiPartTransaction['request']['body'], "\r\n"
           done()
@@ -1239,7 +1239,7 @@ describe 'TransactionRunner', ->
 
       it 'should not add CR again', (done) ->
         runner.executeTransaction multiPartTransaction, ->
-          assert.ok server.isDone()
+          assert.isOk server.isDone()
           assert.notInclude multiPartTransaction['request']['body'], "\r\r"
           done()
 
@@ -1255,7 +1255,7 @@ describe 'TransactionRunner', ->
 
       it 'should not include any line-feed in body', (done) ->
         runner.executeTransaction notMultiPartTransaction, ->
-          assert.ok server.isDone()
+          assert.isOk server.isDone()
           assert.notInclude multiPartTransaction['request']['body'], "\r\n"
           done()
 
@@ -1342,9 +1342,9 @@ describe 'TransactionRunner', ->
 
       it 'should run the hooks', (done) ->
         runner.executeAllTransactions [transaction], runner.hooks, ->
-          assert.ok loggerStub.info.calledWith "before"
-          assert.ok loggerStub.info.calledWith "beforeValidation"
-          assert.ok loggerStub.info.calledWith "after"
+          assert.isOk loggerStub.info.calledWith "before"
+          assert.isOk loggerStub.info.calledWith "beforeValidation"
+          assert.isOk loggerStub.info.calledWith "after"
           done()
 
     describe 'with hooks, but without hooks.transactions set', ->
@@ -1374,9 +1374,9 @@ describe 'TransactionRunner', ->
       it 'should run the hooks', (done) ->
         runner.hooks.transactions = null
         runner.executeAllTransactions [transaction], runner.hooks, ->
-          assert.ok loggerStub.info.calledWith "before"
-          assert.ok loggerStub.info.calledWith "beforeValidation"
-          assert.ok loggerStub.info.calledWith "after"
+          assert.isOk loggerStub.info.calledWith "before"
+          assert.isOk loggerStub.info.calledWith "beforeValidation"
+          assert.isOk loggerStub.info.calledWith "after"
           done()
 
     describe 'with multiple hooks for the same transaction', ->
@@ -1396,8 +1396,8 @@ describe 'TransactionRunner', ->
 
       it 'should run all hooks', (done) ->
         runner.executeAllTransactions [transaction], runner.hooks, ->
-          assert.ok loggerStub.info.calledWith "first"
-          assert.ok loggerStub.info.calledWith "second"
+          assert.isOk loggerStub.info.calledWith "first"
+          assert.isOk loggerStub.info.calledWith "second"
           done()
 
     describe '‘*All’ hooks with legacy async interface (fist argument is a callback)', ->
@@ -1416,8 +1416,8 @@ describe 'TransactionRunner', ->
 
         it 'should run the hooks', (done) ->
           runner.executeAllTransactions [], runner.hooks, ->
-            assert.ok beforeAllStub.called
-            assert.ok beforeAllStubAnother.called
+            assert.isOk beforeAllStub.called
+            assert.isOk beforeAllStubAnother.called
             done()
 
       describe 'with an ‘afterAll’ hook', ->
@@ -1435,8 +1435,8 @@ describe 'TransactionRunner', ->
 
         it 'should run the hooks', (done) ->
           runner.executeAllTransactions [], runner.hooks, ->
-            assert.ok afterAllStub.called
-            assert.ok afterAllStubAnother.called
+            assert.isOk afterAllStub.called
+            assert.isOk afterAllStubAnother.called
             done()
 
       describe 'with multiple hooks for the same events', ->
@@ -1456,11 +1456,11 @@ describe 'TransactionRunner', ->
 
         it 'should run all the events in order', (done) ->
           runner.executeAllTransactions [], runner.hooks, ->
-            assert.ok beforeAllStub1.calledBefore(beforeAllStub2)
-            assert.ok beforeAllStub2.called
-            assert.ok beforeAllStub2.calledBefore(afterAllStub1)
-            assert.ok afterAllStub1.calledBefore(afterAllStub2)
-            assert.ok afterAllStub2.called
+            assert.isOk beforeAllStub1.calledBefore(beforeAllStub2)
+            assert.isOk beforeAllStub2.called
+            assert.isOk beforeAllStub2.calledBefore(afterAllStub1)
+            assert.isOk afterAllStub1.calledBefore(afterAllStub2)
+            assert.isOk afterAllStub2.called
             done()
 
     describe '‘*All’ hooks with standard async API (first argument transactions, second callback)', ->
@@ -1476,7 +1476,7 @@ describe 'TransactionRunner', ->
 
         it 'should run the hooks', (done) ->
           runner.executeAllTransactions [], runner.hooks, ->
-            assert.ok beforeAllStub.called
+            assert.isOk beforeAllStub.called
             done()
 
       describe 'with an ‘afterAll’ hook', ->
@@ -1490,7 +1490,7 @@ describe 'TransactionRunner', ->
 
         it 'should run the hooks', (done) ->
           runner.executeAllTransactions [], runner.hooks, ->
-            assert.ok afterAllStub.called
+            assert.isOk afterAllStub.called
             done()
 
       describe 'with multiple hooks for the same events', ->
@@ -1510,11 +1510,11 @@ describe 'TransactionRunner', ->
 
         it 'should run all the events in order', (done) ->
           runner.executeAllTransactions [], runner.hooks, ->
-            assert.ok beforeAllStub1.calledBefore(beforeAllStub2)
-            assert.ok beforeAllStub2.called
-            assert.ok beforeAllStub2.calledBefore(afterAllStub1)
-            assert.ok afterAllStub1.calledBefore(afterAllStub2)
-            assert.ok afterAllStub2.called
+            assert.isOk beforeAllStub1.calledBefore(beforeAllStub2)
+            assert.isOk beforeAllStub2.called
+            assert.isOk beforeAllStub2.calledBefore(afterAllStub1)
+            assert.isOk afterAllStub1.calledBefore(afterAllStub2)
+            assert.isOk afterAllStub2.called
             done()
 
     describe '‘*All’ hooks with sandboxed API (functions as strings)', ->
@@ -1538,7 +1538,7 @@ describe 'TransactionRunner', ->
 
           runner.executeAllTransactions [], runner.hooks, (err) ->
             call = configuration.emitter.emit.getCall(0)
-            assert.ok configuration.emitter.emit.calledWith "test error"
+            assert.isOk configuration.emitter.emit.calledWith "test error"
             done(err)
 
         it 'should not have access to require', (done) ->
@@ -1551,7 +1551,7 @@ describe 'TransactionRunner', ->
 
           runner.executeAllTransactions [], runner.hooks, (err) ->
             call = configuration.emitter.emit.getCall(0)
-            assert.ok configuration.emitter.emit.calledWith "test error"
+            assert.isOk configuration.emitter.emit.calledWith "test error"
             assert.include call.args[1].message, 'require'
             done(err)
 
@@ -1692,7 +1692,7 @@ describe 'TransactionRunner', ->
 
         it 'should run the hooks', (done) ->
           runner.executeAllTransactions transactionsForExecution, runner.hooks, ->
-            assert.ok beforeEachStub.called
+            assert.isOk beforeEachStub.called
             done()
 
         it 'should run the hook for each transaction', (done) ->
@@ -1722,7 +1722,7 @@ describe 'TransactionRunner', ->
         it 'should run the hooks', (done) ->
           transaction = clone(transactionsForExecution[0])
           runner.executeAllTransactions [transaction], runner.hooks, ->
-            assert.ok beforeEachValidationStub.called
+            assert.isOk beforeEachValidationStub.called
             assert.equal transaction.test.status, 'fail'
             done()
 
@@ -1758,7 +1758,7 @@ describe 'TransactionRunner', ->
 
         it 'should run the hooks', (done) ->
           runner.executeAllTransactions transactionsForExecution, runner.hooks, ->
-            assert.ok afterEachStub.called
+            assert.isOk afterEachStub.called
             done()
 
         it 'should run the hook for each transaction', (done) ->
@@ -1783,10 +1783,10 @@ describe 'TransactionRunner', ->
 
         it 'should run all the events in order', (done) ->
           runner.executeAllTransactions [], runner.hooks, ->
-            assert.ok beforeAllStub1.calledBefore(beforeAllStub2)
-            assert.ok beforeAllStub2.called
-            assert.ok afterAllStub1.calledBefore(afterAllStub2)
-            assert.ok afterAllStub2.called
+            assert.isOk beforeAllStub1.calledBefore(beforeAllStub2)
+            assert.isOk beforeAllStub2.called
+            assert.isOk afterAllStub1.calledBefore(afterAllStub2)
+            assert.isOk afterAllStub2.called
             done()
 
     describe 'with ‘before’ hook that throws an error', ->
@@ -1803,7 +1803,7 @@ describe 'TransactionRunner', ->
 
       it 'should report an error with the test', (done) ->
         runner.executeAllTransactions [transaction], runner.hooks, ->
-          assert.ok configuration.emitter.emit.calledWith "test error"
+          assert.isOk configuration.emitter.emit.calledWith "test error"
           done()
 
     describe 'with ‘after’ hook that throws an error', ->
@@ -1820,7 +1820,7 @@ describe 'TransactionRunner', ->
 
       it 'should report an error with the test', (done) ->
         runner.executeAllTransactions [transaction], runner.hooks, ->
-          assert.ok configuration.emitter.emit.calledWith "test error"
+          assert.isOk configuration.emitter.emit.calledWith "test error"
           done()
 
     describe 'with ‘before’ hook that throws a chai expectation error', ->
@@ -1828,7 +1828,7 @@ describe 'TransactionRunner', ->
         runner.hooks.beforeHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
             (transaction) ->
-              assert.ok false
+              assert.isOk false
           ]
         sinon.stub configuration.emitter, 'emit'
 
@@ -1842,7 +1842,7 @@ describe 'TransactionRunner', ->
 
       it 'should report a fail', (done) ->
         runner.executeAllTransactions [transaction], runner.hooks, ->
-          assert.ok configuration.emitter.emit.calledWith "test fail"
+          assert.isOk configuration.emitter.emit.calledWith "test fail"
           done()
 
       it 'should add fail message as a error under `general` to the results on transaction', (done) ->
@@ -1867,7 +1867,7 @@ describe 'TransactionRunner', ->
         runner.hooks.afterHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
             (transaction) ->
-              assert.ok false
+              assert.isOk false
           ]
         sinon.stub configuration.emitter, 'emit'
 
@@ -1881,7 +1881,7 @@ describe 'TransactionRunner', ->
 
       it 'should report a fail', (done) ->
         runner.executeAllTransactions [transaction], runner.hooks, ->
-          assert.ok configuration.emitter.emit.calledWith "test fail"
+          assert.isOk configuration.emitter.emit.calledWith "test fail"
           done()
 
       it 'should set test as failed', (done) ->
@@ -1923,7 +1923,7 @@ describe 'TransactionRunner', ->
 
         it 'should fail the test', (done) ->
           runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
-            assert.ok configuration.emitter.emit.calledWith "test fail"
+            assert.isOk configuration.emitter.emit.calledWith "test fail"
             done()
 
         it 'should not run the transaction', (done) ->
@@ -2030,7 +2030,7 @@ describe 'TransactionRunner', ->
 
         it 'should make the request', (done) ->
           runner.executeAllTransactions [modifiedTransaction], runner.hooks, ->
-            assert.ok server.isDone()
+            assert.isOk server.isDone()
             done()
 
         it 'should not fail again', (done) ->
@@ -2096,12 +2096,12 @@ describe 'TransactionRunner', ->
 
         it 'should make the request', (done) ->
           runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
-            assert.ok server.isDone()
+            assert.isOk server.isDone()
             done()
 
         it 'it should fail the test', (done) ->
           runner.executeAllTransactions [clonedTransaction], runner.hooks, ->
-            assert.ok configuration.emitter.emit.calledWith "test fail"
+            assert.isOk configuration.emitter.emit.calledWith "test fail"
             done()
 
         it 'it should not pass the test', (done) ->
@@ -2164,7 +2164,7 @@ describe 'TransactionRunner', ->
       it 'should pass the transactions', (done) ->
         runner.executeAllTransactions [transaction], runner.hooks, (error) ->
           done error if error
-          assert.ok configuration.emitter.emit.calledWith "test pass"
+          assert.isOk configuration.emitter.emit.calledWith "test pass"
           done()
 
     describe 'with hook modifying the transaction body and backend Express app using the body parser', ->
@@ -2198,7 +2198,7 @@ describe 'TransactionRunner', ->
         server = app.listen transaction.port, ->
           runner.executeAllTransactions [transaction], runner.hooks, ->
             #should not hang here
-            assert.ok true
+            assert.isOk true
             server.close()
 
         server.on 'close', ->
@@ -2227,7 +2227,7 @@ describe 'TransactionRunner', ->
           """
 
           runner.runHooksForData [hook], {}, false, ->
-            assert.ok configuration.emitter.emit.calledWith "test error"
+            assert.isOk configuration.emitter.emit.calledWith "test error"
             messages = []
             callCount = configuration.emitter.emit.callCount
             for callNo in [0.. callCount - 1]

@@ -39,7 +39,7 @@ describe 'XUnitReporter', () ->
       it 'should inform about the existing file', () ->
         emitter = new EventEmitter()
         xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
-        assert.ok loggerStub.info.called
+        assert.isOk loggerStub.info.called
 
     describe 'when file does not exist', () ->
 
@@ -55,7 +55,7 @@ describe 'XUnitReporter', () ->
       it 'should create the file', () ->
         emitter = new EventEmitter()
         xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
-        assert.ok fsStub.unlinkSync.notCalled
+        assert.isOk fsStub.unlinkSync.notCalled
 
   describe 'when starting', () ->
 
@@ -69,7 +69,7 @@ describe 'XUnitReporter', () ->
       emitter = new EventEmitter()
       xUnitReporter = new XUnitReporter(emitter, {}, {})
       emitter.emit 'start', '', () ->
-        assert.ok fsStub.appendFileSync.called
+        assert.isOk fsStub.appendFileSync.called
         done()
 
   describe 'when ending', () ->
@@ -94,7 +94,7 @@ describe 'XUnitReporter', () ->
         xUnitReporter.tests = [ test ]
         xUnitReporter.stats.tests = 1
         emitter.emit 'test pass', test
-        assert.ok fsStub.appendFileSync.called
+        assert.isOk fsStub.appendFileSync.called
 
       describe 'when the file writes successfully', () ->
 
@@ -105,7 +105,7 @@ describe 'XUnitReporter', () ->
           xUnitReporter.stats.tests = 1
 
           emitter.emit 'end', () ->
-            assert.ok fsStub.writeFile.called
+            assert.isOk fsStub.writeFile.called
             done()
 
     describe 'when there are no tests', () ->
@@ -114,7 +114,7 @@ describe 'XUnitReporter', () ->
         emitter = new EventEmitter()
         xUnitReporter = new XUnitReporter(emitter, {}, {})
         emitter.emit 'end', () ->
-          assert.ok fsStub.writeFile.called
+          assert.isOk fsStub.writeFile.called
           done()
 
   describe 'when test passes', () ->
@@ -149,7 +149,7 @@ describe 'XUnitReporter', () ->
       xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
       emitter.emit 'test start', test
       emitter.emit 'test pass', test
-      assert.ok fsStub.appendFileSync.called
+      assert.isOk fsStub.appendFileSync.called
 
     describe 'when details=true', () ->
 
@@ -158,7 +158,7 @@ describe 'XUnitReporter', () ->
         cliReporter = new XUnitReporter(emitter, {}, {}, "test.xml", true)
         emitter.emit 'test start', test
         emitter.emit 'test pass', test
-        assert.ok fsStub.appendFileSync.called
+        assert.isOk fsStub.appendFileSync.called
 
   describe 'when test is skipped', () ->
     before () ->
@@ -177,7 +177,7 @@ describe 'XUnitReporter', () ->
       xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
       emitter.emit 'test start', test
       emitter.emit 'test skip', test
-      assert.ok fsStub.appendFileSync.called
+      assert.isOk fsStub.appendFileSync.called
 
   describe 'when test fails', () ->
 
@@ -197,7 +197,7 @@ describe 'XUnitReporter', () ->
       xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
       emitter.emit 'test start', test
       emitter.emit 'test fail', test
-      assert.ok fsStub.appendFileSync.called
+      assert.isOk fsStub.appendFileSync.called
 
   describe 'when test errors', () ->
 
@@ -217,4 +217,4 @@ describe 'XUnitReporter', () ->
       xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
       emitter.emit 'test start', test
       emitter.emit 'test error', new Error('Error'), test
-      assert.ok fsStub.appendFileSync.called
+      assert.isOk fsStub.appendFileSync.called

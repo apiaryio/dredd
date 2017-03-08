@@ -63,7 +63,7 @@ describe 'configureReporters(config, stats, tests, onSaveCallback)', () ->
 
     it 'should only add a CliReporter', (done) ->
       configureReporters(configuration, {}, {}, null)
-      assert.ok CliReporterStub.called
+      assert.isOk CliReporterStub.called
       done()
 
     describe 'when silent', ()->
@@ -95,7 +95,7 @@ describe 'configureReporters(config, stats, tests, onSaveCallback)', () ->
 
     it 'should add a cli-based reporter', (done) ->
       configureReporters(configuration, {}, {}, null)
-      assert.ok DotReporterStub.called
+      assert.isOk DotReporterStub.called
       done()
 
     it 'should not add more than one cli-based reporters', (done) ->
@@ -117,7 +117,7 @@ describe 'configureReporters(config, stats, tests, onSaveCallback)', () ->
 
     it 'should add a CliReporter', (done) ->
       configureReporters(configuration, {}, {}, () -> )
-      assert.ok CliReporterStub.called
+      assert.isOk CliReporterStub.called
       done()
 
     describe 'when the number of outputs is greater than or equals the number of reporters', () ->
@@ -133,8 +133,8 @@ describe 'configureReporters(config, stats, tests, onSaveCallback)', () ->
 
       it 'should use the output paths in the order provided', (done) ->
         configureReporters(configuration, {}, {}, () -> )
-        assert.ok XUnitReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file1')
-        assert.ok MarkdownReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file2')
+        assert.isOk XUnitReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file1')
+        assert.isOk MarkdownReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file2')
         done()
 
     describe 'when the number of outputs is less than the number of reporters', () ->
@@ -150,8 +150,8 @@ describe 'configureReporters(config, stats, tests, onSaveCallback)', () ->
 
       it 'should use the default output paths for the additional reporters', (done) ->
         configureReporters(configuration, {}, {}, () -> )
-        assert.ok XUnitReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file1')
-        assert.ok MarkdownReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, null)
+        assert.isOk XUnitReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file1')
+        assert.isOk MarkdownReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, null)
         done()
 
   describe 'when there are both cli-based and file-based reporters', () ->
@@ -167,7 +167,7 @@ describe 'configureReporters(config, stats, tests, onSaveCallback)', () ->
 
     it 'should add a cli-based reporter', (done) ->
       configureReporters(configuration, {}, {}, () ->)
-      assert.ok NyanCatReporterStub.called
+      assert.isOk NyanCatReporterStub.called
       done()
 
     it 'should not add more than one cli-based reporters', (done) ->
@@ -189,8 +189,8 @@ describe 'configureReporters(config, stats, tests, onSaveCallback)', () ->
 
       it 'should use the output paths in the order provided', (done) ->
         configureReporters(configuration, {}, {}, () -> )
-        assert.ok MarkdownReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file1')
-        assert.ok HtmlReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file2')
+        assert.isOk MarkdownReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file1')
+        assert.isOk HtmlReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file2')
         done()
 
     describe 'when the number of outputs is less than the number of file-based reporters', () ->
@@ -205,6 +205,6 @@ describe 'configureReporters(config, stats, tests, onSaveCallback)', () ->
 
       it 'should use the default output paths for the additional reporters', (done) ->
         configureReporters(configuration, {}, {}, () -> )
-        assert.ok MarkdownReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file1')
-        assert.ok HtmlReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, null)
+        assert.isOk MarkdownReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file1')
+        assert.isOk HtmlReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, null)
         done()

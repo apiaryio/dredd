@@ -52,7 +52,7 @@ describe 'HtmlReporter', () ->
         loggerStub.info.restore()
 
       it 'should inform about the existing file', () ->
-        assert.ok loggerStub.info.called
+        assert.isOk loggerStub.info.called
 
     describe 'when file does not exist', () ->
 
@@ -66,11 +66,11 @@ describe 'HtmlReporter', () ->
         fsStub.unlinkSync.restore()
 
       it 'should not attempt to delete a file', () ->
-        assert.ok fsStub.unlinkSync.notCalled
+        assert.isOk fsStub.unlinkSync.notCalled
 
     it 'should write the prelude to the buffer', (done) ->
       emitter.emit 'start', '' , () ->
-        assert.ok ~htmlReporter.buf.indexOf 'Dredd'
+        assert.isOk ~htmlReporter.buf.indexOf 'Dredd'
         done()
 
   describe 'when ending', () ->
@@ -87,7 +87,7 @@ describe 'HtmlReporter', () ->
 
     it 'should write the file', (done) ->
       emitter.emit 'end', () ->
-        assert.ok fsStub.writeFile.called
+        assert.isOk fsStub.writeFile.called
         done()
 
   describe 'when test passes', () ->
@@ -100,14 +100,14 @@ describe 'HtmlReporter', () ->
     it 'should call the pass event', () ->
       emitter.emit 'test start', test
       emitter.emit 'test pass', test
-      assert.ok ~htmlReporter.buf.indexOf 'Pass'
+      assert.isOk ~htmlReporter.buf.indexOf 'Pass'
 
     describe 'when details=true', () ->
 
       it 'should write details for passing tests', () ->
         htmlReporter.details = true
         emitter.emit 'test pass', test
-        assert.ok ~htmlReporter.buf.indexOf 'Request'
+        assert.isOk ~htmlReporter.buf.indexOf 'Request'
 
   describe 'when test is skipped', () ->
     before () ->
@@ -118,7 +118,7 @@ describe 'HtmlReporter', () ->
     it 'should call the skip event', () ->
       emitter.emit 'test start', test
       emitter.emit 'test skip', test
-      assert.ok ~htmlReporter.buf.indexOf 'Skip'
+      assert.isOk ~htmlReporter.buf.indexOf 'Skip'
 
   describe 'when test fails', () ->
 
@@ -130,7 +130,7 @@ describe 'HtmlReporter', () ->
     it 'should call the fail event', () ->
       emitter.emit 'test start', test
       emitter.emit 'test fail', test
-      assert.ok ~htmlReporter.buf.indexOf 'Fail'
+      assert.isOk ~htmlReporter.buf.indexOf 'Fail'
 
   describe 'when test errors', () ->
 
@@ -142,4 +142,4 @@ describe 'HtmlReporter', () ->
     it 'should call the error event', () ->
       emitter.emit 'test start', test
       emitter.emit 'test error', new Error('Error'), test
-      assert.ok ~htmlReporter.buf.indexOf 'Error'
+      assert.isOk ~htmlReporter.buf.indexOf 'Error'

@@ -38,7 +38,7 @@ describe 'BaseReporter', () ->
 
     it 'should set the start date', (done) ->
       emitter.emit 'start', '', () ->
-        assert.ok stats.start
+        assert.isOk stats.start
         done()
 
   describe 'when ending', () ->
@@ -49,7 +49,7 @@ describe 'BaseReporter', () ->
 
     it 'should set the end date', (done) ->
       emitter.emit 'end', () ->
-        assert.ok stats.end
+        assert.isOk stats.end
         done()
 
   describe 'when test starts', () ->
@@ -61,7 +61,7 @@ describe 'BaseReporter', () ->
 
     it 'should add the test', () ->
       emitter.emit 'test start', test
-      assert.ok tests.length is 1
+      assert.isOk tests.length is 1
 
   describe 'when test passes', () ->
 
@@ -76,7 +76,7 @@ describe 'BaseReporter', () ->
       assert.equal stats.passes, 1
 
     it 'should set the end time', () ->
-      assert.ok tests[0].end
+      assert.isOk tests[0].end
 
   describe 'when test is skipped', () ->
     beforeEach () ->
@@ -87,7 +87,7 @@ describe 'BaseReporter', () ->
       emitter.emit 'test skip', test
 
     it 'should increment the counter', () ->
-      assert.ok stats.skipped is 1
+      assert.isOk stats.skipped is 1
 
   describe 'when test fails', () ->
 
@@ -99,10 +99,10 @@ describe 'BaseReporter', () ->
       emitter.emit 'test fail', test
 
     it 'should increment the counter', () ->
-      assert.ok stats.failures is 1
+      assert.isOk stats.failures is 1
 
     it 'should set the end time', () ->
-      assert.ok tests[0].end
+      assert.isOk tests[0].end
 
   describe 'when test errors', () ->
 
@@ -114,7 +114,7 @@ describe 'BaseReporter', () ->
       emitter.emit 'test error', new Error('Error'), test
 
     it 'should increment the counter', () ->
-      assert.ok stats.errors is 1
+      assert.isOk stats.errors is 1
 
     it 'should set the end time', () ->
-      assert.ok tests[0].end
+      assert.isOk tests[0].end
