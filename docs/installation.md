@@ -50,7 +50,7 @@ Dredd sometimes issues a pre-release version to test experimental features or to
 
 #### Compiled vs pure JavaScript
 
-You can simplify and speedup your installation using `npm install dredd --no-optional` if you are
+You can simplify and speedup your installation using `npm install dredd --no-optional` if you are:
 
 - using Dredd with Swagger,
 - using Dredd with smaller API Bluepint files,
