@@ -450,12 +450,16 @@ class TransactionRunner
       hostname: transaction.host
       port: transaction.port
 
-    return {
+    options =
       uri: url.format(urlObject) + transaction.fullPath
       method: transaction.request.method
       headers: transaction.request.headers
       body: transaction.request.body
-    }
+
+    if @configuration.options.proxy
+      options.proxy = @configuration.options.proxy
+
+    return options
 
   # Add length of body if no Content-Length present
   setContentLength: (transaction) ->
@@ -538,7 +542,7 @@ class TransactionRunner
 
     handleRequest = (err, res, body) =>
       if err
-        logger.debug('Requesting tested server errored:', err)
+        logger.debug('Requesting tested server errored:', "#{err}" or err.code)
         test.title = transaction.id
         test.expected = transaction.expected
         test.request = transaction.request
@@ -570,10 +574,6 @@ class TransactionRunner
     if transaction.request['body'] and @isMultipart requestOptions
       @replaceLineFeedInBody transaction, requestOptions
 
-    logger.verbose("""\
-      About to perform #{transaction.protocol.slice(0, -1).toUpperCase()} \
-      request to tested server: #{requestOptions.method} #{requestOptions.uri}
-    """)
     try
       @performRequest(requestOptions, handleRequest)
     catch error
@@ -585,6 +585,11 @@ class TransactionRunner
       return callback()
 
   performRequest: (options, callback) ->
+    protocol = options.uri.split(':')[0].toUpperCase()
+    logger.verbose("""\
+      About to perform an #{protocol} request to the server \
+      under test: #{options.method} #{options.uri}\
+    """)
     requestLib(options, callback)
 
   validateTransaction: (test, transaction, callback) ->

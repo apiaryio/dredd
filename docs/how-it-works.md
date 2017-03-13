@@ -192,7 +192,15 @@ When using [Apiary Reporter and Apiary Tests](how-to-guides.md#using-apiary-repo
 
 See also [guidelines on how to develop Apiary Reporter](contributing.md#hacking-apiary-reporter).
 
+## Using HTTP(S) Proxy
 
+If you're behind an HTTP(S) proxy, you may want to tell Dredd to use the proxy for its requests.
+
+Dredd respects `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`, `http_proxy`, `https_proxy`, and `no_proxy` environment variables. You can use [`--proxy` CLI option][proxy-cli] or [`proxy` option][dredd-yml] in the `dredd.yml` configuration file to override the environment variables. For more information on how this works see [relevant section][request-proxies] of the underlying library's documentation.
+
+[proxy-cli]: usage-cli.md#-proxy
+[dredd-yml]: https://dredd.readthedocs.io/en/latest/usage-cli/#configuration-file
+[request-proxies]: https://github.com/request/request#proxies
 
 [Apiary]: https://apiary.io/
 [Semantic Versioning]: http://semver.org/

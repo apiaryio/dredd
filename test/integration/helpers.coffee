@@ -62,14 +62,19 @@ createServer = ->
 
   app.use(bodyParser.json({size: '5mb'}))
   app.use((req, res, next) ->
+    serverRuntimeInfo.requestedOnce = not serverRuntimeInfo.requested
     serverRuntimeInfo.requested = true
 
-    serverRuntimeInfo.requests[req.url] ?= []
-    serverRuntimeInfo.requests[req.url].push(
+    request =
       method: req.method
+      url: req.url
       headers: clone(req.headers)
       body: clone(req.body)
-    )
+
+    serverRuntimeInfo.lastRequest = request
+
+    serverRuntimeInfo.requests[req.url] ?= []
+    serverRuntimeInfo.requests[req.url].push(request)
 
     serverRuntimeInfo.requestCounts[req.url] ?= 0
     serverRuntimeInfo.requestCounts[req.url] += 1

@@ -1,5 +1,4 @@
-http = require 'http'
-https = require 'https'
+request = require 'request'
 os = require 'os'
 url = require 'url'
 
@@ -177,79 +176,63 @@ class ApiaryReporter
         realResponse: test['actual']
         expectedResponse: test['expected']
         result: test['results']
-
     return data
 
-  _performRequestAsync: (path, method, body, callback) =>
-    logger.debug("""\
-      Performing #{method.toUpperCase()} request to '#{@configuration.apiUrl}' + '#{path}', \
-      #{if body then 'with' else 'without'} body.\
-    """)
+  _performRequestAsync: (path, method, reqBody, callback) ->
+    handleRequest = (err, res, resBody) =>
+      if err
+        @serverError = true
+        logger.debug('Requesting Apiary API errored:', "#{err}" or err.code)
 
-    buffer = ""
+        if CONNECTION_ERRORS.indexOf(err.code) > -1
+          return callback(new Error('Apiary reporter could not connect to Apiary API'))
+        else
+          return callback(err)
 
-    handleResponse = (res) ->
-      res.setEncoding 'utf8'
+      logger.verbose('Handling HTTP response from Apiary API')
+      try
+        parsedBody = JSON.parse(resBody)
+      catch err
+        err = new Error("""\
+          Apiary reporter failed to parse Apiary API response body: \
+          #{err.message}\n#{resBody}\
+        """)
+        return callback(err)
 
-      res.on 'data', (chunk) ->
-        logger.verbose('Apiary reporter received HTTP response chunk:', chunk)
-        buffer = buffer + chunk
+      info = {headers: res.headers, statusCode: res.statusCode, body: parsedBody}
+      logger.debug('Apiary reporter response:', JSON.stringify(info, null, 2))
+      return callback(null, res, parsedBody)
 
-      res.on 'error', (error) ->
-        logger.debug('Apiary reporter got HTTP response error:', error)
-        return callback error, req, res
-
-      res.on 'end', ->
-        logger.verbose('Apiary reporter received response from Apiary API.')
-
-        try
-          parsedBody = JSON.parse buffer
-        catch e
-          return callback new Error("Apiary reporter failed to parse Apiary API response body: #{e.message}\n#{buffer}")
-
-        info = {headers: res.headers, statusCode: res.statusCode, body: parsedBody}
-        logger.verbose('Apiary reporter response:', JSON.stringify(info, null, 2))
-        return callback(undefined, res, parsedBody)
-
-    parsedUrl = url.parse @configuration['apiUrl']
+    body = JSON.stringify(reqBody)
     system = os.type() + ' ' + os.release() + '; ' + os.arch()
+    headers =
+      'User-Agent': "Dredd Apiary Reporter/#{packageData.version} (#{system})"
+      'Content-Type': 'application/json'
+      'Content-Length': Buffer.byteLength(body, 'utf8')
 
-    postData = JSON.stringify body
+    options = {
+      uri: @configuration.apiUrl + path
+      method
+      headers
+      body
+    }
+    if @configuration.apiToken
+      options.headers['Authentication'] = 'Token ' + @configuration.apiToken
+    if @config?.options?.proxy
+      options.proxy = @config.options.proxy
 
-    options =
-      host: parsedUrl['hostname']
-      port: parsedUrl['port']
-      path: path
-      method: method
-      headers:
-        'User-Agent': "Dredd Apiary Reporter/" + packageData.version + " (" + system + ")"
-        'Content-Type': 'application/json'
-        'Content-Length': Buffer.byteLength(postData, 'utf8')
-
-    unless @configuration['apiToken'] == null
-      options.headers['Authentication'] = 'Token ' + @configuration['apiToken']
-
-    logger.verbose('Apiary reporter request:', JSON.stringify({options, body}, null, 2))
-
-    handleReqError = (error) =>
-      @serverError = true
-      if CONNECTION_ERRORS.indexOf(error.code) > -1
-        return callback "Apiary reporter: Error connecting to Apiary test reporting API."
-      else
-        return callback error, req, null
-
-    logger.verbose('Starting HTTP request from Apiary reporter to Apiary API')
-    if @configuration.apiUrl?.match(/^https/)
-      logger.debug('Using HTTPS for Apiary reporter request')
-      req = https.request(options, handleResponse)
-    else
-      logger.debug('Using unsecured HTTP for Apiary reporter request')
-      req = http.request(options, handleResponse)
-
-    req.on('error', handleReqError)
-    req.write(postData)
-    req.end()
-
+    try
+      protocol = options.uri.split(':')[0].toUpperCase()
+      logger.verbose("""\
+        About to perform an #{protocol} request from Apiary reporter \
+        to Apiary API: #{options.method} #{options.uri} \
+        (#{if body then 'with' else 'without'} body)\
+      """)
+      logger.debug('Request details:', JSON.stringify({options, body}, null, 2))
+      request(options, handleRequest)
+    catch error
+      logger.debug('Requesting Apiary API errored:', error)
+      return callback(error)
 
 
 module.exports = ApiaryReporter

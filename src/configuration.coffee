@@ -69,6 +69,7 @@ applyConfiguration = (config) ->
       'hooks-worker-term-retry': 500
       'hooks-worker-handler-host': '127.0.0.1'
       'hooks-worker-handler-port': 61321
+      proxy: null
 
   # normalize options and config
   for own key, value of config

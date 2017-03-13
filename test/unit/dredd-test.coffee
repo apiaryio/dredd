@@ -624,3 +624,115 @@ describe 'Dredd class', ->
           done()
 
         dredd.emitStart callback
+
+  describe('#logProxySettings', ->
+    verboseLogger = undefined
+
+    beforeEach( ->
+      verboseLogger = sinon.spy(loggerStub, 'verbose')
+    )
+    afterEach( ->
+      loggerStub.verbose.restore()
+    )
+
+    describe('when the proxy is set by lowercase environment variable', ->
+      beforeEach( ->
+        process.env.http_proxy = 'http://proxy.example.com'
+        dredd = new Dredd({options: {}})
+      )
+      afterEach( ->
+        delete process.env.http_proxy
+      )
+
+      it('logs about the setting', ->
+        assert.equal(verboseLogger.lastCall.args[0],
+          'HTTP(S) proxy specified by environment variables: http_proxy=http://proxy.example.com'
+        )
+      )
+    )
+
+    describe('when the proxy is set by uppercase environment variable', ->
+      beforeEach( ->
+        process.env.HTTPS_PROXY = 'http://proxy.example.com'
+        dredd = new Dredd({options: {}})
+      )
+      afterEach( ->
+        delete process.env.HTTPS_PROXY
+      )
+
+      it('logs about the setting', ->
+        assert.equal(verboseLogger.lastCall.args[0],
+          'HTTP(S) proxy specified by environment variables: ' +
+          'HTTPS_PROXY=http://proxy.example.com'
+        )
+      )
+    )
+
+    describe('when NO_PROXY environment variable is set', ->
+      beforeEach( ->
+        process.env.HTTPS_PROXY = 'http://proxy.example.com'
+        process.env.NO_PROXY = 'whitelisted.example.com'
+        dredd = new Dredd({options: {}})
+      )
+      afterEach( ->
+        delete process.env.HTTPS_PROXY
+        delete process.env.NO_PROXY
+      )
+
+      it('logs about the setting', ->
+        assert.equal(verboseLogger.lastCall.args[0],
+          'HTTP(S) proxy specified by environment variables: ' +
+          'HTTPS_PROXY=http://proxy.example.com, ' +
+          'NO_PROXY=whitelisted.example.com'
+        )
+      )
+    )
+
+    describe('when DUMMY_PROXY environment variable is set', ->
+      beforeEach( ->
+        process.env.DUMMY_PROXY = 'http://proxy.example.com'
+        process.env.NO_PROXY = 'whitelisted.example.com'
+        dredd = new Dredd({options: {}})
+      )
+      afterEach( ->
+        delete process.env.DUMMY_PROXY
+        delete process.env.NO_PROXY
+      )
+
+      it('is ignored', ->
+        assert.equal(verboseLogger.lastCall.args[0],
+          'HTTP(S) proxy specified by environment variables: ' +
+          'NO_PROXY=whitelisted.example.com'
+        )
+      )
+    )
+
+    describe('when proxy is set by Dredd option', ->
+      beforeEach( ->
+        dredd = new Dredd({options: {proxy: 'http://proxy.example.com'}})
+      )
+
+      it('logs about the setting', ->
+        assert.equal(verboseLogger.lastCall.args[0],
+          'HTTP(S) proxy specified by Dredd options: http://proxy.example.com'
+        )
+      )
+    )
+
+    describe('when proxy is set by environment variables and overridden by Dredd option', ->
+      beforeEach( ->
+        process.env.http_proxy = 'http://example.com'
+        dredd = new Dredd({options: {proxy: 'http://proxy.example.com'}})
+      )
+      afterEach( ->
+        delete process.env.http_proxy
+      )
+
+      it('logs about the setting', ->
+        assert.equal(verboseLogger.lastCall.args[0],
+          'HTTP(S) proxy specified by Dredd options: http://proxy.example.com ' +
+          '(overrides environment variables: http_proxy=http://example.com)'
+        )
+      )
+    )
+  )
