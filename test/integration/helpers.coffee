@@ -12,6 +12,30 @@ DEFAULT_SERVER_PORT = 9876
 DREDD_BIN = require.resolve('../../bin/dredd')
 
 
+# Records logging during runtime of a given function. Given function
+# is provided with a 'next' callback. The final callback is provided
+# with:
+#
+# - err (Error) - in case the recordLogging function failed (never)
+# - args (array) - array of all arguments the 'next' callback obtained
+#                  from the 'fn' function
+# - logging (string) - the recorded logging output
+recordLogging = (fn, callback) ->
+  silent = !!logger.transports.console.silent
+  logger.transports.console.silent = true # supress Dredd's console output (remove if debugging)
+
+  logging = ''
+  record = (transport, level, message, meta) ->
+    logging += "#{level}: #{message}\n"
+
+  logger.on('logging', record)
+  fn((args...) ->
+    logger.removeListener('logging', record)
+    logger.transports.console.silent = silent
+    callback(null, args, logging)
+  )
+
+
 # Creates a new Express.js instance. Automatically records everything about
 # requests which the server has recieved during runtime. Sets JSON body parser
 # and 'application/json' as default value for the Content-Type header. In
@@ -82,20 +106,13 @@ runDredd = (dredd, serverPort, callback) ->
   dredd.configuration.options ?= {}
   dredd.configuration.options.level ?= 'silly'
 
-  silent = !!logger.transports.console.silent
-  logger.transports.console.silent = true # supress Dredd's console output (remove if debugging)
-
   err = undefined
   stats = undefined
-  logging = ''
 
-  recordLogging = (transport, level, message, meta) ->
-    logging += "#{level}: #{message}\n"
-
-  logger.on('logging', recordLogging)
-  dredd.run((args...) ->
-    logger.removeListener('logging', recordLogging)
-    logger.transports.console.silent = silent
+  recordLogging((next) ->
+    dredd.run(next)
+  , (err, args, logging) ->
+    return callback(err) if err
 
     [err, stats] = args
     callback(null, {err, stats, logging})
@@ -176,6 +193,7 @@ killAll = (pattern, callback) ->
 
 module.exports = {
   DEFAULT_SERVER_PORT
+  recordLogging
   createServer
   runDredd
   runDreddWithServer
