@@ -165,6 +165,7 @@ class TransactionRunner
 
   sandboxedHookResultsHandler: (err, data, results = {}, callback) ->
     return callback err if err
+
     # reference to `transaction` gets lost here if whole object is assigned
     # this is workaround how to copy properties - clone doesn't work either
     for key, value of results.data or {}
@@ -174,6 +175,15 @@ class TransactionRunner
     @logs ?= []
     for log in results.logs or []
       @logs.push log
+
+    # For unknown reasons, the sandboxed code in Pitboss runs in "future"
+    # on Windows (and just sometimes - it's flaky). The extreme case is
+    # that sandboxed 'before' hooks can have timestamps with a millisecond
+    # later time then the HTTP transaction itself. Following line
+    # synchronizes the time. It waits until the time of the normal Node.js
+    # runtime happens to be later than time inside the Pitboss sandbox.
+    while Date.now() - results.now < 0 then # ...then do nothing...
+
     callback()
     return
 
@@ -190,16 +200,14 @@ class TransactionRunner
       output["data"] = _data;
       output["stash"] = stash;
       output["logs"] = _logs;
+      output["now"] = Date.now();
       output;
     """
 
   runSandboxedHookFromString: (hookString, data, callback) ->
     wrappedCode = @sandboxedWrappedCode hookString
 
-    sandbox = new Pitboss(wrappedCode, {
-      timeout: 500
-    })
-
+    sandbox = new Pitboss(wrappedCode, {timeout: 500})
     sandbox.run
       context:
         '_data': data

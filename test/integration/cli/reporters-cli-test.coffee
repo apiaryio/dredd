@@ -114,7 +114,7 @@ describe 'CLI - Reporters', ->
         './test/fixtures/single-get.apib'
         "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
         '--reporter=apiary'
-        '--hookfiles=./test/fixtures/hooks_log.coffee'
+        '--hookfiles=./test/fixtures/hooks-log.coffee'
       ]
 
       beforeEach (done) ->
@@ -131,34 +131,46 @@ describe 'CLI - Reporters', ->
         assert.include dreddCommandInfo.output, 'Error object!'
       it 'should exit with status 0', ->
         assert.equal dreddCommandInfo.exitStatus, 0
-      it 'should send result stats in PATCH request to Apiary with logs', ->
-        assert.isObject updateRequest.body
-        assert.deepPropertyVal updateRequest.body, 'status', 'passed'
-        assert.deepProperty updateRequest.body, 'endedAt'
-        assert.deepProperty updateRequest.body, 'logs'
-        assert.isArray updateRequest.body.logs
-        assert.lengthOf updateRequest.body.logs, 3
-        assert.property updateRequest.body.logs[0], 'timestamp'
-        assert.include updateRequest.body.logs[0].content, 'Error object!'
-        assert.property updateRequest.body.logs[1], 'timestamp'
-        assert.deepPropertyVal updateRequest.body.logs[1], 'content', 'true'
-        assert.property updateRequest.body.logs[2], 'timestamp'
-        assert.deepPropertyVal updateRequest.body.logs[2], 'content', 'using hooks.log to debug'
-        assert.deepProperty updateRequest.body, 'result.tests'
-        assert.deepProperty updateRequest.body, 'result.failures'
-        assert.deepProperty updateRequest.body, 'result.errors'
-        assert.deepProperty updateRequest.body, 'result.passes'
-        assert.deepProperty updateRequest.body, 'result.start'
-        assert.deepProperty updateRequest.body, 'result.end'
-      it 'should send test step with startedAt larger than \'before\' hook log timestamp', ->
-        assert.isObject stepRequest.body
-        assert.isNumber stepRequest.body.startedAt
-        assert.operator stepRequest.body.startedAt, '>=', updateRequest.body.logs[0].timestamp
-        assert.operator stepRequest.body.startedAt, '>=', updateRequest.body.logs[1].timestamp
-      it 'should send test step with startedAt smaller than \'after\' hook log timestamp', ->
-        assert.isObject stepRequest.body
-        assert.isNumber stepRequest.body.startedAt
-        assert.operator stepRequest.body.startedAt, '<=', updateRequest.body.logs[2].timestamp
+
+      it 'should request Apiary API to start a test run', ->
+        assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/runs'], 1)
+        assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/runs'][0].method, 'POST')
+      it 'should request Apiary API to create a test step', ->
+        assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/steps?testRunId=1234_id'], 1)
+        assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0].method, 'POST')
+      it 'should request Apiary API to update the test run', ->
+        assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/run/1234_id'], 1)
+        assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0].method, 'PATCH')
+
+      context 'the update request', ->
+        it 'should have result stats with logs', ->
+          assert.isObject updateRequest.body
+          assert.deepPropertyVal updateRequest.body, 'status', 'passed'
+          assert.deepProperty updateRequest.body, 'endedAt'
+          assert.deepProperty updateRequest.body, 'logs'
+          assert.isArray updateRequest.body.logs
+          assert.lengthOf updateRequest.body.logs, 3
+          assert.property updateRequest.body.logs[0], 'timestamp'
+          assert.include updateRequest.body.logs[0].content, 'Error object!'
+          assert.property updateRequest.body.logs[1], 'timestamp'
+          assert.deepPropertyVal updateRequest.body.logs[1], 'content', 'true'
+          assert.property updateRequest.body.logs[2], 'timestamp'
+          assert.deepPropertyVal updateRequest.body.logs[2], 'content', 'using hooks.log to debug'
+          assert.deepProperty updateRequest.body, 'result.tests'
+          assert.deepProperty updateRequest.body, 'result.failures'
+          assert.deepProperty updateRequest.body, 'result.errors'
+          assert.deepProperty updateRequest.body, 'result.passes'
+          assert.deepProperty updateRequest.body, 'result.start'
+          assert.deepProperty updateRequest.body, 'result.end'
+        it 'should have startedAt larger than \'before\' hook log timestamp', ->
+          assert.isObject stepRequest.body
+          assert.isNumber stepRequest.body.startedAt
+          assert.operator stepRequest.body.startedAt, '>=', updateRequest.body.logs[0].timestamp
+          assert.operator stepRequest.body.startedAt, '>=', updateRequest.body.logs[1].timestamp
+        it 'should have startedAt smaller than \'after\' hook log timestamp', ->
+          assert.isObject stepRequest.body
+          assert.isNumber stepRequest.body.startedAt
+          assert.operator stepRequest.body.startedAt, '<=', updateRequest.body.logs[2].timestamp
 
     describe 'When hooks file uses hooks.log function for logging and hooks are in sandbox mode', ->
       dreddCommandInfo = undefined
@@ -170,7 +182,7 @@ describe 'CLI - Reporters', ->
         '--reporter=apiary'
         '--level=info'
         '--sandbox'
-        '--hookfiles=./test/fixtures/sandboxed_hooks_log.js'
+        '--hookfiles=./test/fixtures/sandboxed-hooks-log.js'
       ]
 
       beforeEach (done) ->
@@ -186,26 +198,37 @@ describe 'CLI - Reporters', ->
         assert.notInclude dreddCommandInfo.output, 'shall not print'
       it 'should exit with status 0', ->
         assert.equal dreddCommandInfo.exitStatus, 0
-      it 'should send result stats in PATCH request to Apiary with logs', ->
-        assert.isObject updateRequest.body
-        assert.deepPropertyVal updateRequest.body, 'status', 'passed'
-        assert.deepProperty updateRequest.body, 'endedAt'
-        assert.deepProperty updateRequest.body, 'logs'
-        assert.isArray updateRequest.body.logs
-        assert.lengthOf updateRequest.body.logs, 2
-        assert.property updateRequest.body.logs[0], 'timestamp'
-        assert.deepPropertyVal updateRequest.body.logs[0], 'content', 'shall not print, but be present in logs'
-        assert.property updateRequest.body.logs[1], 'timestamp'
-        assert.deepPropertyVal updateRequest.body.logs[1], 'content', 'using sandboxed hooks.log'
-      it 'should send test step with startedAt larger than \'before\' hook log timestamp', ->
-        assert.isObject stepRequest.body
-        assert.isNumber stepRequest.body.startedAt
-        assert.operator stepRequest.body.startedAt, '>=', updateRequest.body.logs[0].timestamp
-      it 'should send test step with startedAt smaller than \'after\' hook log timestamp', ->
-        assert.isObject stepRequest.body
-        assert.isNumber stepRequest.body.startedAt
-        assert.operator stepRequest.body.startedAt, '<=', updateRequest.body.logs[1].timestamp
 
+      it 'should request Apiary API to start a test run', ->
+        assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/runs'], 1)
+        assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/runs'][0].method, 'POST')
+      it 'should request Apiary API to create a test step', ->
+        assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/steps?testRunId=1234_id'], 1)
+        assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0].method, 'POST')
+      it 'should request Apiary API to update the test run', ->
+        assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/run/1234_id'], 1)
+        assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0].method, 'PATCH')
+
+      context 'the update request', ->
+        it 'should have result stats with logs', ->
+          assert.isObject updateRequest.body
+          assert.deepPropertyVal updateRequest.body, 'status', 'passed'
+          assert.deepProperty updateRequest.body, 'endedAt'
+          assert.deepProperty updateRequest.body, 'logs'
+          assert.isArray updateRequest.body.logs
+          assert.lengthOf updateRequest.body.logs, 2
+          assert.property updateRequest.body.logs[0], 'timestamp'
+          assert.deepPropertyVal updateRequest.body.logs[0], 'content', 'shall not print, but be present in logs'
+          assert.property updateRequest.body.logs[1], 'timestamp'
+          assert.deepPropertyVal updateRequest.body.logs[1], 'content', 'using sandboxed hooks.log'
+        it 'should have startedAt larger than \'before\' hook log timestamp', ->
+          assert.isObject stepRequest.body
+          assert.isNumber stepRequest.body.startedAt
+          assert.operator stepRequest.body.startedAt, '>=', updateRequest.body.logs[0].timestamp
+        it 'should have startedAt smaller than \'after\' hook log timestamp', ->
+          assert.isObject stepRequest.body
+          assert.isNumber stepRequest.body.startedAt
+          assert.operator stepRequest.body.startedAt, '<=', updateRequest.body.logs[1].timestamp
 
   describe 'When -o/--output is used to specify output file', ->
     dreddCommandInfo = undefined
