@@ -455,7 +455,7 @@ class TransactionRunner
     for key, value of transaction.request.headers
       caseInsensitiveRequestHeadersMap[key.toLowerCase()] = key
 
-    if not caseInsensitiveRequestHeadersMap['content-length'] and transaction.request['body'] != ''
+    if transaction.request.body and not caseInsensitiveRequestHeadersMap['content-length']
       logger.verbose('Calculating Content-Length of the request body')
       transaction.request.headers['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
 
