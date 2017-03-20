@@ -27,7 +27,7 @@
 6. Send a Pull Request.
 7. Make sure [test coverage][] didn't drop and all CI builds are passing.
 
-<a name="sem-rel">
+<a name="sem-rel"></a>
 #### Semantic Release and Conventional Changelog
 
 Releasing of new Dredd versions to npm is automatically managed by [Semantic Release][].
@@ -148,13 +148,15 @@ The main documentation is written in [Markdown][] using [MkDocs][]. Dredd uses
 
 Source of the documentation can be found in the [docs][] directory. To contribute to Dredd's documentation, you will need to follow the [MkDocs installation instructions](http://www.mkdocs.org/#installation). Once installed, you may use following commands:
 
-- `npm run docs:build` - Builds the documentation.
-- `npm run docs:serve` - Runs live preview of the documentation.
+- `npm run docs:build` - Builds the documentation
+- `npm run docs:serve` - Runs live preview of the documentation
 
-> **Note:** The `docs/contributing.md` file is a [symbolic link][] to the
-> `.github/CONTRIBUTING.md` file, where the actual content lives.
-> This is to be able to serve the same content also as [GitHub contributing guidelines][]
-> when someone opens a Pull Request.
+#### Note
+
+The `docs/contributing.md` file is a [symbolic link][] to the
+`.github/CONTRIBUTING.md` file, where the actual content lives.
+This is to be able to serve the same content also as
+[GitHub contributing guidelines][] when someone opens a Pull Request.
 
 [symbolic link]: https://en.wikipedia.org/wiki/Symbolic_link
 [contributing guidelines]: https://github.com/blog/1184-contributing-guidelines
@@ -162,8 +164,16 @@ Source of the documentation can be found in the [docs][] directory. To contribut
 ### Coverage
 
 Dredd strives for as much test coverage as possible. [Coveralls][] help us to
-monitor how successful we are in achieving the goal. The process of collecting
-coverage:
+monitor how successful we are in achieving the goal. If a Pull Request
+introduces drop in coverage, it won't be accepted unless the author or reviewer
+provides a good reason why an exception should be made.
+
+The Travis CI build uses following commands to deliver coverage reports:
+
+- `npm run test:coverage` - Tests Dredd and creates the `cov.info` file
+- `npm run coveralls` - Uploads the `cov.info` file to Coveralls
+
+The first mentioned command goes like this:
 
 1. [coffee-coverage][] is used to instrument the CoffeeScipt code.
 2. Instrumented code is copied into a separate directory. We run tests in the
@@ -175,8 +185,15 @@ coverage:
 4. All lcov files are then merged into one using [lcov-result-merger][]
    and sent to Coveralls.
 
-If a Pull Request introduces drop in coverage, it won't be accepted unless
-the author or reviewer provides a good reason why an exception should be made.
+#### Notes
+
+-  Hand-made combined Mocha reporter is used to achieve running tests and collecting
+   coverage at the same time.
+-  Both Dredd code and the combined reporter decide whether to collect coverage
+   or not according to contents of the `COVERAGE_DIR` environment variable, which
+   sets the directory for temporary LCOV files created during coverage collection.
+   (If set, collecting takes place.)
+
 
 ### Hacking Apiary Reporter
 
