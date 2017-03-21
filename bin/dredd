@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var fs = require('fs');
+var path = require('path');
 
 
 // Ignore this block, it's pure magic, temporary fix
@@ -10,7 +11,7 @@ var fs = require('fs');
 });
 
 
-var dir = process.env.COLLECT_COVERAGE ? 'src' : 'lib';
+var dir = process.env.COVERAGE_DIR ? 'src' : 'lib';
 var DreddCommand = require('../' + dir + '/dredd-command');
 
 
@@ -24,38 +25,36 @@ var dreddCli = new DreddCommand({
 
 
 function exit(exitStatus) {
-  if (process.env.COLLECT_COVERAGE) {
+  if (process.env.COVERAGE_DIR) {
     // Before Dredd exits, we need to collect coverage stats and save them to
     // a file. We abuse 'mocha-lcov-reporter' to do this.
+    var LCov = require('mocha-lcov-reporter');
 
     // Pretending there is Mocha runner
     var EventEmitter = require('events').EventEmitter;
     var runner = new EventEmitter();
 
-    // Monkey-patching 'process.stdout.write' to catch all stdout in a variable
+    // Monkey-patching 'LCov.prototype.write' to catch all output to a variable
     var content = '';
-    var write = process.stdout.write;
-    process.stdout.write = function(stdout) {
-      content += stdout;
-    };
+    var write = LCov.prototype.write;
+
+    LCov.prototype.write = function(string) {
+      content += string;
+    }
 
     // Collecting the stats
-    var LCov = require('mocha-lcov-reporter');
-    LCov(runner);
+    new LCov(runner);
     runner.emit('end');
 
     // Undo the monkey-patching
-    process.stdout.write = write;
+    LCov.prototype.write = write;
 
     // Save stats as lcov file
-    fs.appendFile('./lcov/dredd-bin.info', content, function (err) {
-      if (err) { console.error(err); }
-      process.exit(exitStatus);
-    });
-  } else {
-    // Regular exit, no coverage collecting
-    process.exit(exitStatus);
+    var file = path.join(process.env.COVERAGE_DIR, 'dredd-bin.info');
+    fs.appendFileSync(file, content);
   }
+
+  process.exit(exitStatus);
 }
 
 
