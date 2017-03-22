@@ -6,6 +6,7 @@ chai = require 'chai'
 gavel = require 'gavel'
 async = require 'async'
 clone = require 'clone'
+caseless = require 'caseless'
 {Pitboss} = require 'pitboss-ng'
 
 flattenHeaders = require './flatten-headers'
@@ -461,24 +462,10 @@ class TransactionRunner
 
     return options
 
-  # Add length of body if no Content-Length present
-  setContentLength: (transaction) ->
-    caseInsensitiveRequestHeadersMap = {}
-    for key, value of transaction.request.headers
-      caseInsensitiveRequestHeadersMap[key.toLowerCase()] = key
-
-    if transaction.request.body and not caseInsensitiveRequestHeadersMap['content-length']
-      logger.verbose('Calculating Content-Length of the request body')
-      transaction.request.headers['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
-
   # This is actually doing more some pre-flight and conditional skipping of
   # the transcation based on the configuration or hooks. TODO rename
   executeTransaction: (transaction, hooks, callback) =>
     [callback, hooks] = [hooks, undefined] unless callback
-
-    # Doing here instead of in configureTransaction, because request body can
-    # be edited in the 'before' hook
-    @setContentLength(transaction)
 
     # number in miliseconds (UNIX-like timestamp * 1000 precision)
     transaction.startedAt = Date.now()
@@ -535,9 +522,40 @@ class TransactionRunner
     else
       return @performRequestAndValidate(test, transaction, hooks, callback)
 
+  # Sets the Content-Length header. Overrides user-provided Content-Length
+  # header value in case it's out of sync with the real length of the body.
+  setContentLength: (transaction) ->
+    headers = transaction.request.headers
+    body = transaction.request.body
+
+    contentLengthHeaderName = caseless(headers).has('Content-Length')
+    if contentLengthHeaderName
+      contentLengthValue = parseInt(headers[contentLengthHeaderName], 10)
+
+      if body
+        calculatedContentLengthValue = Buffer.byteLength(body)
+        if contentLengthValue isnt calculatedContentLengthValue
+          logger.warn("""\
+            Specified Content-Length header is #{contentLengthValue}, but \
+            the real body length is #{calculatedContentLengthValue}. Using \
+            #{calculatedContentLengthValue} instead.\
+          """)
+          headers[contentLengthHeaderName] = calculatedContentLengthValue
+
+      else if contentLengthValue isnt 0
+        logger.warn("""\
+          Specified Content-Length header is #{contentLengthValue}, but \
+          the real body length is 0. Using 0 instead.\
+        """)
+        headers[contentLengthHeaderName] = 0
+
+    else
+      headers['Content-Length'] = if body then Buffer.byteLength(body) else 0
+
   # An actual HTTP request, before validation hooks triggering
   # and the response validation is invoked here
   performRequestAndValidate: (test, transaction, hooks, callback) ->
+    @setContentLength(transaction)
     requestOptions = @getRequestOptionsFromTransaction(transaction)
 
     handleRequest = (err, res, body) =>

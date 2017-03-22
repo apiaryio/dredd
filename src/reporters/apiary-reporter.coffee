@@ -208,7 +208,6 @@ class ApiaryReporter
     headers =
       'User-Agent': "Dredd Apiary Reporter/#{packageData.version} (#{system})"
       'Content-Type': 'application/json'
-      'Content-Length': Buffer.byteLength(body, 'utf8')
 
     options = {
       uri: @configuration.apiUrl + path

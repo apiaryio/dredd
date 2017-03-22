@@ -3,6 +3,7 @@
 {EventEmitter} = require 'events'
 {assert} = require 'chai'
 clone = require 'clone'
+caseless = require 'caseless'
 nock = require 'nock'
 nock.enableNetConnect()
 
@@ -10,7 +11,6 @@ proxyquire = require 'proxyquire'
 sinon = require 'sinon'
 express = require 'express'
 bodyParser = require 'body-parser'
-clone = require 'clone'
 
 htmlStub = require 'html'
 loggerStub = require '../../src/logger'
@@ -379,43 +379,6 @@ describe 'TransactionRunner', ->
         fullPath: '/machines'
         protocol: 'http:'
 
-    describe 'when no Content-Length is present', ->
-
-      beforeEach ->
-        delete transaction.request.headers["Content-Length"]
-        server = nock('http://127.0.0.1:3000').
-          post('/machines', {"type":"bulldozer", "name":"willy"}).
-          reply transaction['expected']['status'],
-            transaction['expected']['body'],
-            {'Content-Type': 'application/json'}
-
-      afterEach ->
-        nock.cleanAll()
-
-      it 'should add a Content-Length header', (done) ->
-        runner.executeTransaction transaction, ->
-          assert.isOk transaction.request.headers['Content-Length']
-          done()
-
-    describe 'when Content-Length header is present', ->
-
-      beforeEach ->
-        transaction.request.headers["Content-Length"] = 44
-        server = nock('http://127.0.0.1:3000').
-          post('/machines', {"type":"bulldozer", "name":"willy"}).
-          reply transaction['expected']['status'],
-            transaction['expected']['body'],
-            {'Content-Type': 'application/json'}
-
-      afterEach ->
-        nock.cleanAll()
-
-      it 'should not add a Content-Length header', (done) ->
-        runner.executeTransaction transaction, ->
-          assert.equal transaction.request.headers['Content-Length'], 44
-          done()
-
-
     describe 'when printing the names', ->
 
       beforeEach ->
@@ -649,6 +612,140 @@ describe 'TransactionRunner', ->
             configuration.emitter.emit.args[value][0]
           assert.include events, 'test error'
           done()
+
+  describe('setContentLength(transaction)', ->
+    bodyFixture = JSON.stringify(
+      type: 'bulldozer'
+      name: 'willy'
+      id: '5229c6e8e4b0bd7dbb07e29c'
+    , null, 2)
+
+    transactionFixture =
+      name: 'Group Machine > Machine > Delete Message > Bogus example name'
+      id: 'POST /machines'
+      host: '127.0.0.1'
+      port: '3000'
+      request:
+        headers:
+          'Content-Type': 'application/json'
+          'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)'
+        uri: '/machines'
+        method: 'POST'
+      expected:
+        headers: 'content-type': 'application/json'
+        status: '202'
+        body: bodyFixture
+      origin:
+        resourceGroupName: 'Group Machine'
+        resourceName: 'Machine'
+        actionName: 'Delete Message'
+        exampleName: 'Bogus example name'
+      fullPath: '/machines'
+      protocol: 'http:'
+
+    scenarios = [
+        name: 'Content-Length is not set, body is not set'
+        headers: {}
+        body: ''
+        warning: false
+      ,
+        name: 'Content-Length is set, body is not set'
+        headers: {'Content-Length': 0}
+        body: ''
+        warning: false
+      ,
+        name: 'Content-Length is not set, body is set'
+        headers: {}
+        body: bodyFixture
+        warning: false
+      ,
+        name: 'Content-Length is set, body is set'
+        headers: {'Content-Length': bodyFixture.length}
+        body: bodyFixture
+        warning: false
+      ,
+        name: 'Content-Length has wrong value, body is not set'
+        headers: {'Content-Length': bodyFixture.length}
+        body: ''
+        warning: true
+      ,
+        name: 'Content-Length has wrong value, body is set'
+        headers: {'Content-Length': 0}
+        body: bodyFixture
+        warning: true
+      ,
+        name: 'case of the header name does not matter'
+        headers: {'CoNtEnT-lEnGtH': bodyFixture.length}
+        body: bodyFixture
+        warning: false
+    ]
+
+    scenarios.forEach((scenario) ->
+      describe(scenario.name, ->
+        expectedContentLength = scenario.body.length
+        realRequest = undefined
+        loggerSpy = undefined
+
+        beforeEach((done) ->
+          loggerSpy = sinon.spy(loggerStub, 'warn')
+
+          transaction = clone(transactionFixture)
+          transaction.request.body = scenario.body
+          for name, value of scenario.headers
+            transaction.request.headers[name] = value
+
+          nock('http://127.0.0.1:3000').
+            post('/machines').
+            reply(transaction.expected.status, ->
+              realRequest = @req
+              return scenario.body
+            )
+
+          runner.executeTransaction(transaction, done)
+        )
+        afterEach( ->
+          nock.cleanAll()
+          loggerSpy.restore()
+        )
+
+        if scenario.warning
+          it('warns about discrepancy between provided Content-Length and real body length', ->
+            assert.isTrue(loggerSpy.calledOnce)
+
+            message = loggerSpy.getCall(0).args[0].toLowerCase()
+            assert.include(message, "the real body length is #{expectedContentLength}")
+            assert.include(message, "using #{expectedContentLength} instead")
+          )
+        else
+          it('does not warn', ->
+            assert.isFalse(loggerSpy.called)
+          )
+
+        context('the real request', ->
+          it('has the Content-Length header', ->
+            assert.isOk(caseless(realRequest.headers).has('Content-Length'))
+          )
+          it("has the Content-Length header set to #{expectedContentLength}", ->
+            assert.equal(
+              caseless(realRequest.headers).get('Content-Length'),
+              expectedContentLength
+            )
+          )
+        )
+        context('the transaction object', ->
+          it('has the Content-Length header', ->
+            assert.isOk(caseless(transaction.request.headers).has('Content-Length'))
+          )
+          it("has the Content-Length header set to #{expectedContentLength}", ->
+            assert.equal(
+              caseless(transaction.request.headers).get('Content-Length'),
+              expectedContentLength
+            )
+          )
+        )
+      )
+    )
+  )
 
   describe 'exceuteAllTransactions(transactions, hooks, callback)', ->
     runner = null
