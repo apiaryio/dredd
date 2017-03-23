@@ -194,12 +194,20 @@ See also [guidelines on how to develop Apiary Reporter](contributing.md#hacking-
 
 ## Using HTTP(S) Proxy
 
-If you're behind an HTTP(S) proxy, you may want to tell Dredd to use the proxy for its requests.
+You can tell Dredd to use HTTP(S) proxy for:
 
-Dredd respects `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`, `http_proxy`, `https_proxy`, and `no_proxy` environment variables. You can use [`--proxy` CLI option][proxy-cli] or [`proxy` option][dredd-yml] in the `dredd.yml` configuration file to override the environment variables. For more information on how this works see [relevant section][request-proxies] of the underlying library's documentation.
+-  downloading API description documents<br>
+   ([the positional argument][path-argument] or the [`--path` option][path-option] accepts also URL)
+-  [reporting to Apiary][apiary-reporter]
 
-[proxy-cli]: usage-cli.md#-proxy
-[dredd-yml]: https://dredd.readthedocs.io/en/latest/usage-cli/#configuration-file
+Dredd respects `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`, `http_proxy`, `https_proxy`, and `no_proxy` environment variables. For more information on how those work see [relevant section][request-proxies] of the underlying library's documentation.
+
+Dredd intentionally **does not support HTTP(S) proxies for testing**. Proxy can deliberately modify requests and responses or to behave in a very different way then the server under test. Testing over a proxy is, in the first place, testing of the proxy itself. That makes the test results irrelevant (and hard to debug).
+
+
+[path-argument]: usage-cli.md#api-description-document-string
+[path-option]: usage-cli.md#-path-p
+[apiary-reporter]: how-to-guides.md#using-apiary-reporter-and-apiary-tests
 [request-proxies]: https://github.com/request/request#proxies
 
 [Apiary]: https://apiary.io/

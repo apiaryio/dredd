@@ -451,15 +451,12 @@ class TransactionRunner
       hostname: transaction.host
       port: transaction.port
 
-    options =
-      uri: url.format(urlObject) + transaction.fullPath
-      method: transaction.request.method
-      headers: transaction.request.headers
-      body: transaction.request.body
-
-    if @configuration.options.proxy
-      options.proxy = @configuration.options.proxy
-
+    options = clone(@configuration.http or {})
+    options.uri = url.format(urlObject) + transaction.fullPath
+    options.method = transaction.request.method
+    options.headers = transaction.request.headers
+    options.body = transaction.request.body
+    options.proxy = false
     return options
 
   # This is actually doing more some pre-flight and conditional skipping of

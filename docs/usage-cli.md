@@ -169,9 +169,6 @@ Specifies output file when using additional file-based reporter. This option can
 Additional API description paths or URLs. Can be used multiple times with glob pattern for paths.<br>
 **Default value:** `[]`
 
-### --proxy
-HTTP(S) proxy settings. Overrides `http_proxy`, `HTTP_PROXY`, `https_proxy`, `HTTPS_PROXY`, `no_proxy`, and `NO_PROXY` environment variables.<br>
-
 ### --reporter, -r
 Output additional report format. This option can be used multiple times to add multiple reporters. Options: junit, nyan, dot, markdown, html, apiary.<br>
 **Default value:** `[]`

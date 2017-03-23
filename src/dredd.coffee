@@ -1,5 +1,6 @@
 glob = require 'glob'
 fs = require 'fs'
+clone = require 'clone'
 async = require 'async'
 request = require 'request'
 url = require 'url'
@@ -29,6 +30,8 @@ class Dredd
   # this is here only because there there is no way how to spy a constructor in CoffeScript
   init: (config) ->
     @configuration = applyConfiguration(config)
+    @configuration.http = {}
+
     @tests = []
     @stats =
       tests: 0
@@ -51,14 +54,13 @@ class Dredd
       continue unless process.env[envVariable] isnt ''
       proxySettings.push("#{envVariable}=#{process.env[envVariable]}")
 
-    if @configuration.options.proxy
-      message = "HTTP(S) proxy specified by Dredd options: #{@configuration.options.proxy}"
-      if proxySettings.length
-        message += " (overrides environment variables: #{proxySettings.join(', ')})"
-      logger.verbose(message)
-
-    else if proxySettings.length
-      message = "HTTP(S) proxy specified by environment variables: #{proxySettings.join(', ')}"
+    if proxySettings.length
+      message = """\
+        HTTP(S) proxy specified by environment variables: \
+        #{proxySettings.join(', ')}. Please read documentation on how \
+        Dredd works with proxies: \
+        https://dredd.readthedocs.io/en/latest/how-it-works/#using-https-proxy\
+      """
       logger.verbose(message)
 
   run: (callback) ->
@@ -152,8 +154,9 @@ class Dredd
     , callback
 
   downloadFile: (fileUrl, callback) ->
-    options = {url: fileUrl, timeout: 5000, json: false}
-    options.proxy = @configuration.options.proxy if @configuration.options.proxy
+    options = clone(@configuration.http)
+    options.url = fileUrl
+    options.timeout = 5000
 
     request.get options, (downloadError, res, body) =>
       if downloadError

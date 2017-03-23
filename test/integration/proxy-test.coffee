@@ -1,4 +1,5 @@
 http = require('http')
+https = require('https')
 url = require('url')
 clone = require('clone')
 {assert} = require('chai')
@@ -27,10 +28,11 @@ createAndRunDredd = (configuration, done) ->
   dredd = undefined
   recordLogging((next) ->
     dredd = new Dredd(configuration)
+    dredd.configuration.http.strictSSL = false
     next()
   , (err, args, dreddInitLogging) ->
     runDredd(dredd, (err, info) ->
-      info.logging = dreddInitLogging
+      info.logging = "#{dreddInitLogging}\n#{info.logging}"
       done(err, info)
     )
   )
@@ -40,8 +42,8 @@ createAndRunDredd = (configuration, done) ->
 # about the first received request to the object given as a second
 # argument.
 createProxyServer = (protocol, proxyRequestInfo) ->
-  app = http.createServer()
   if protocol is 'http'
+    app = http.createServer()
     app.on('request', (req, res) ->
       proxyRequestInfo.url = req.url
       proxyRequestInfo.method = req.method
@@ -58,6 +60,7 @@ createProxyServer = (protocol, proxyRequestInfo) ->
     #
     # See https://en.wikipedia.org/wiki/HTTP_tunnel#HTTP_CONNECT_tunneling
     # and https://github.com/request/request#proxies
+    app = http.createServer()
     app.on('connect', (req, socket) ->
       proxyRequestInfo.url = req.url
       proxyRequestInfo.method = req.method
@@ -91,6 +94,7 @@ test = (scenario) ->
     proxy = app.listen(PROXY_PORT, done)
   )
   afterEach((done) ->
+    proxyRequestInfo = {}
     proxy.close(done)
   )
 
@@ -99,7 +103,7 @@ test = (scenario) ->
   serverRuntimeInfo = undefined
 
   beforeEach((done) ->
-    app = createServer()
+    app = createServer({protocol: scenario.protocol})
     server = app.listen(DEFAULT_SERVER_PORT, (err, info) ->
       serverRuntimeInfo = info
       done(err)
@@ -127,6 +131,9 @@ test = (scenario) ->
   # Assertions...
   it('logs the proxy settings', ->
     assert.include(dreddLogging, scenario.expectedLog)
+  )
+  it('recommends user to read the documentation about using HTTP(S) proxies', ->
+    assert.include(dreddLogging, '#using-https-proxy')
   )
 
   if scenario.expectedDestination is 'proxy'
@@ -162,12 +169,11 @@ test = (scenario) ->
     it('does request the server', ->
       assert.isTrue(serverRuntimeInfo.requestedOnce)
     )
-
     it('requests the server with regular HTTP method', ->
       assert.oneOf(serverRuntimeInfo.lastRequest.method, REGULAR_HTTP_METHODS)
     )
     it('requests the server with the original path', ->
-      assert.equal(serverRuntimeInfo.lastRequest.url, url.parse(scenario.expectedUrl).path)
+      assert.equal(serverRuntimeInfo.lastRequest.url, scenario.expectedUrl)
     )
 
   else
@@ -177,175 +183,61 @@ test = (scenario) ->
 ['http', 'https'].forEach((protocol) ->
   serverUrl = "#{protocol}://#{SERVER_HOST}"
 
-  describe("Respecting #{protocol.toUpperCase()} Proxy Settings", ->
-    describe('When Set by Environment Variables', ->
-      expectedLog = """\
-        proxy specified by environment variables: \
-        #{protocol}_proxy=#{PROXY_URL}\
-      """
+  describe("Respecting ‘#{protocol}_proxy’ Environment Variable", ->
+    expectedLog = """\
+      proxy specified by environment variables: \
+      #{protocol}_proxy=#{PROXY_URL}\
+    """
 
-      beforeEach( ->
-        process.env["#{protocol}_proxy"] = PROXY_URL
-      )
-      afterEach( ->
-        delete process.env["#{protocol}_proxy"]
-      )
-
-      describe('Requesting Server Under Test', ->
-        test({
-          protocol
-          configureDredd: (configuration) ->
-            configuration.server = serverUrl
-            configuration.options.path = './test/fixtures/single-get.apib'
-          expectedLog
-          expectedDestination: 'proxy'
-          expectedUrl: serverUrl + '/machines'
-        })
-      )
-
-      describe('Using Apiary Reporter', ->
-        beforeEach( ->
-          process.env.APIARY_API_URL = serverUrl
-        )
-        afterEach( ->
-          delete process.env.APIARY_API_URL
-        )
-
-        test({
-          protocol
-          configureDredd: (configuration) ->
-            configuration.server = DUMMY_URL
-            configuration.options.path = './test/fixtures/single-get.apib'
-            configuration.options.reporter = ['apiary']
-          expectedLog
-          expectedDestination: 'proxy'
-          expectedUrl: serverUrl + '/apis/public/tests/runs'
-        })
-      )
-
-      describe('Downloading API Description Document', ->
-        test({
-          protocol
-          configureDredd: (configuration) ->
-            configuration.server = DUMMY_URL
-            configuration.options.path = serverUrl + '/example.apib'
-          expectedLog
-          expectedDestination: 'proxy'
-          expectedUrl: serverUrl + '/example.apib'
-        })
-      )
+    beforeEach( ->
+      process.env["#{protocol}_proxy"] = PROXY_URL
+    )
+    afterEach( ->
+      delete process.env["#{protocol}_proxy"]
     )
 
-    describe('When Set by Dredd Option', ->
-      expectedLog = "proxy specified by Dredd options: #{PROXY_URL}"
-
-      describe('Requesting Server Under Test', ->
-        test({
-          protocol
-          configureDredd: (configuration) ->
-            configuration.server = serverUrl
-            configuration.options.path = './test/fixtures/single-get.apib'
-            configuration.options.proxy = PROXY_URL
-          expectedLog
-          expectedDestination: 'proxy'
-          expectedUrl: serverUrl + '/machines'
-        })
-      )
-
-      describe('Using Apiary Reporter', ->
-        beforeEach( ->
-          process.env.APIARY_API_URL = serverUrl
-        )
-        afterEach( ->
-          delete process.env.APIARY_API_URL
-        )
-
-        test({
-          protocol
-          configureDredd: (configuration) ->
-            configuration.server = DUMMY_URL
-            configuration.options.path = './test/fixtures/single-get.apib'
-            configuration.options.proxy = PROXY_URL
-            configuration.options.reporter = ['apiary']
-          expectedLog
-          expectedDestination: 'proxy'
-          expectedUrl: serverUrl + '/apis/public/tests/runs'
-        })
-      )
-
-      describe('Downloading API Description Document', ->
-        test({
-          protocol
-          configureDredd: (configuration) ->
-            configuration.server = DUMMY_URL
-            configuration.options.path = serverUrl + '/example.apib'
-            configuration.options.proxy = PROXY_URL
-          expectedLog
-          expectedDestination: 'proxy'
-          expectedUrl: serverUrl + '/example.apib'
-        })
-      )
+    describe('Requesting Server Under Test', ->
+      test({
+        protocol
+        configureDredd: (configuration) ->
+          configuration.server = serverUrl
+          configuration.options.path = './test/fixtures/single-get.apib'
+        expectedLog
+        expectedDestination: 'server'
+        expectedUrl: '/machines'
+      })
     )
 
-    describe('When Set by Environment Variables and Overriden by Dredd Option', ->
-      expectedLog = """\
-        proxy specified by Dredd options: #{PROXY_URL} \
-        (overrides environment variables: #{protocol}_proxy=#{DUMMY_URL})\
-      """
-
+    describe('Using Apiary Reporter', ->
       beforeEach( ->
-        process.env["#{protocol}_proxy"] = DUMMY_URL
+        process.env.APIARY_API_URL = serverUrl
       )
       afterEach( ->
-        delete process.env["#{protocol}_proxy"]
+        delete process.env.APIARY_API_URL
       )
 
-      describe('Requesting Server Under Test', ->
-        test({
-          protocol
-          configureDredd: (configuration) ->
-            configuration.server = serverUrl
-            configuration.options.path = './test/fixtures/single-get.apib'
-            configuration.options.proxy = PROXY_URL
-          expectedLog
-          expectedDestination: 'proxy'
-          expectedUrl: serverUrl + '/machines'
-        })
-      )
+      test({
+        protocol
+        configureDredd: (configuration) ->
+          configuration.server = DUMMY_URL
+          configuration.options.path = './test/fixtures/single-get.apib'
+          configuration.options.reporter = ['apiary']
+        expectedLog
+        expectedDestination: 'proxy'
+        expectedUrl: serverUrl + '/apis/public/tests/runs'
+      })
+    )
 
-      describe('Using Apiary Reporter', ->
-        beforeEach( ->
-          process.env.APIARY_API_URL = serverUrl
-        )
-        afterEach( ->
-          delete process.env.APIARY_API_URL
-        )
-
-        test({
-          protocol
-          configureDredd: (configuration) ->
-            configuration.server = DUMMY_URL
-            configuration.options.path = './test/fixtures/single-get.apib'
-            configuration.options.proxy = PROXY_URL
-            configuration.options.reporter = ['apiary']
-          expectedLog
-          expectedDestination: 'proxy'
-          expectedUrl: serverUrl + '/apis/public/tests/runs'
-        })
-      )
-
-      describe('Downloading API Description Document', ->
-        test({
-          protocol
-          configureDredd: (configuration) ->
-            configuration.server = DUMMY_URL
-            configuration.options.path = serverUrl + '/example.apib'
-            configuration.options.proxy = PROXY_URL
-          expectedLog
-          expectedDestination: 'proxy'
-          expectedUrl: serverUrl + '/example.apib'
-        })
-      )
+    describe('Downloading API Description Document', ->
+      test({
+        protocol
+        configureDredd: (configuration) ->
+          configuration.server = DUMMY_URL
+          configuration.options.path = serverUrl + '/example.apib'
+        expectedLog
+        expectedDestination: 'proxy'
+        expectedUrl: serverUrl + '/example.apib'
+      })
     )
   )
 )
@@ -353,128 +245,61 @@ test = (scenario) ->
 
 describe("Respecting ‘no_proxy’ Environment Variable", ->
   serverUrl = "http://#{SERVER_HOST}"
+  expectedLog = """\
+    proxy specified by environment variables: \
+    http_proxy=#{PROXY_URL}, no_proxy=#{SERVER_HOST}
+  """
 
-  describe('When Set', ->
-    expectedLog = """\
-      proxy specified by environment variables: \
-      http_proxy=#{PROXY_URL}, no_proxy=#{SERVER_HOST}
-    """
-
-    beforeEach( ->
-      process.env.http_proxy = PROXY_URL
-      process.env.no_proxy = SERVER_HOST
-    )
-    afterEach( ->
-      delete process.env.http_proxy
-      delete process.env.no_proxy
-    )
-
-    describe('Requesting Server Under Test', ->
-      test({
-        protocol: 'http'
-        configureDredd: (configuration) ->
-          configuration.server = serverUrl
-          configuration.options.path = './test/fixtures/single-get.apib'
-        expectedLog
-        expectedDestination: 'server'
-        expectedUrl: serverUrl + '/machines'
-      })
-    )
-
-    describe('Using Apiary Reporter', ->
-      beforeEach( ->
-        process.env.APIARY_API_URL = serverUrl
-      )
-      afterEach( ->
-        delete process.env.APIARY_API_URL
-      )
-
-      test({
-        protocol: 'http'
-        configureDredd: (configuration) ->
-          configuration.server = DUMMY_URL
-          configuration.options.path = './test/fixtures/single-get.apib'
-          configuration.options.reporter = ['apiary']
-        expectedLog
-        expectedDestination: 'server'
-        expectedUrl: serverUrl + '/apis/public/tests/runs'
-      })
-    )
-
-    describe('Downloading API Description Document', ->
-      test({
-        protocol: 'http'
-        configureDredd: (configuration) ->
-          configuration.server = DUMMY_URL
-          configuration.options.path = serverUrl + '/example.apib'
-        expectedLog
-        expectedDestination: 'server'
-        expectedUrl: serverUrl + '/example.apib'
-      })
-    )
+  beforeEach( ->
+    process.env.http_proxy = PROXY_URL
+    process.env.no_proxy = SERVER_HOST
+  )
+  afterEach( ->
+    delete process.env.http_proxy
+    delete process.env.no_proxy
   )
 
-  describe('When Overridden by Dredd Option', ->
-    expectedLog = """\
-      proxy specified by Dredd options: #{PROXY_URL} \
-      (overrides environment variables: \
-      http_proxy=#{DUMMY_URL}, no_proxy=#{SERVER_HOST})\
-    """
+  describe('Requesting Server Under Test', ->
+    test({
+      protocol: 'http'
+      configureDredd: (configuration) ->
+        configuration.server = serverUrl
+        configuration.options.path = './test/fixtures/single-get.apib'
+      expectedLog
+      expectedDestination: 'server'
+      expectedUrl: '/machines'
+    })
+  )
 
+  describe('Using Apiary Reporter', ->
     beforeEach( ->
-      process.env.http_proxy = DUMMY_URL
-      process.env.no_proxy = SERVER_HOST
+      process.env.APIARY_API_URL = serverUrl
     )
     afterEach( ->
-      delete process.env.http_proxy
-      delete process.env.no_proxy
+      delete process.env.APIARY_API_URL
     )
 
-    describe('Requesting Server Under Test', ->
-      test({
-        protocol: 'http'
-        configureDredd: (configuration) ->
-          configuration.server = serverUrl
-          configuration.options.proxy = PROXY_URL
-          configuration.options.path = './test/fixtures/single-get.apib'
-        expectedLog
-        expectedDestination: 'proxy'
-        expectedUrl: serverUrl + '/machines'
-      })
-    )
+    test({
+      protocol: 'http'
+      configureDredd: (configuration) ->
+        configuration.server = DUMMY_URL
+        configuration.options.path = './test/fixtures/single-get.apib'
+        configuration.options.reporter = ['apiary']
+      expectedLog
+      expectedDestination: 'server'
+      expectedUrl: '/apis/public/tests/runs'
+    })
+  )
 
-    describe('Using Apiary Reporter', ->
-      beforeEach( ->
-        process.env.APIARY_API_URL = serverUrl
-      )
-      afterEach( ->
-        delete process.env.APIARY_API_URL
-      )
-
-      test({
-        protocol: 'http'
-        configureDredd: (configuration) ->
-          configuration.server = DUMMY_URL
-          configuration.options.path = './test/fixtures/single-get.apib'
-          configuration.options.proxy = PROXY_URL
-          configuration.options.reporter = ['apiary']
-        expectedLog
-        expectedDestination: 'proxy'
-        expectedUrl: serverUrl + '/apis/public/tests/runs'
-      })
-    )
-
-    describe('Downloading API Description Document', ->
-      test({
-        protocol: 'http'
-        configureDredd: (configuration) ->
-          configuration.server = DUMMY_URL
-          configuration.options.path = serverUrl + '/example.apib'
-          configuration.options.proxy = PROXY_URL
-        expectedLog
-        expectedDestination: 'proxy'
-        expectedUrl: serverUrl + '/example.apib'
-      })
-    )
+  describe('Downloading API Description Document', ->
+    test({
+      protocol: 'http'
+      configureDredd: (configuration) ->
+        configuration.server = DUMMY_URL
+        configuration.options.path = serverUrl + '/example.apib'
+      expectedLog
+      expectedDestination: 'server'
+      expectedUrl: '/example.apib'
+    })
   )
 )

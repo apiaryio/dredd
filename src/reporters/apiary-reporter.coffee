@@ -1,7 +1,6 @@
 request = require 'request'
 os = require 'os'
 url = require 'url'
-
 clone = require 'clone'
 generateUuid = require('uuid').v4
 
@@ -209,16 +208,14 @@ class ApiaryReporter
       'User-Agent': "Dredd Apiary Reporter/#{packageData.version} (#{system})"
       'Content-Type': 'application/json'
 
-    options = {
-      uri: @configuration.apiUrl + path
-      method
-      headers
-      body
-    }
+    options = clone(@config.http or {})
+    options.uri = @configuration.apiUrl + path
+    options.method = method
+    options.headers = headers
+    options.body = body
+
     if @configuration.apiToken
       options.headers['Authentication'] = 'Token ' + @configuration.apiToken
-    if @config?.options?.proxy
-      options.proxy = @config.options.proxy
 
     try
       protocol = options.uri.split(':')[0].toUpperCase()

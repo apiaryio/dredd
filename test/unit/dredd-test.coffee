@@ -645,7 +645,7 @@ describe 'Dredd class', ->
       )
 
       it('logs about the setting', ->
-        assert.equal(verboseLogger.lastCall.args[0],
+        assert.include(verboseLogger.lastCall.args[0],
           'HTTP(S) proxy specified by environment variables: http_proxy=http://proxy.example.com'
         )
       )
@@ -661,7 +661,7 @@ describe 'Dredd class', ->
       )
 
       it('logs about the setting', ->
-        assert.equal(verboseLogger.lastCall.args[0],
+        assert.include(verboseLogger.lastCall.args[0],
           'HTTP(S) proxy specified by environment variables: ' +
           'HTTPS_PROXY=http://proxy.example.com'
         )
@@ -680,7 +680,7 @@ describe 'Dredd class', ->
       )
 
       it('logs about the setting', ->
-        assert.equal(verboseLogger.lastCall.args[0],
+        assert.include(verboseLogger.lastCall.args[0],
           'HTTP(S) proxy specified by environment variables: ' +
           'HTTPS_PROXY=http://proxy.example.com, ' +
           'NO_PROXY=whitelisted.example.com'
@@ -700,38 +700,9 @@ describe 'Dredd class', ->
       )
 
       it('is ignored', ->
-        assert.equal(verboseLogger.lastCall.args[0],
+        assert.include(verboseLogger.lastCall.args[0],
           'HTTP(S) proxy specified by environment variables: ' +
           'NO_PROXY=whitelisted.example.com'
-        )
-      )
-    )
-
-    describe('when proxy is set by Dredd option', ->
-      beforeEach( ->
-        dredd = new Dredd({options: {proxy: 'http://proxy.example.com'}})
-      )
-
-      it('logs about the setting', ->
-        assert.equal(verboseLogger.lastCall.args[0],
-          'HTTP(S) proxy specified by Dredd options: http://proxy.example.com'
-        )
-      )
-    )
-
-    describe('when proxy is set by environment variables and overridden by Dredd option', ->
-      beforeEach( ->
-        process.env.http_proxy = 'http://example.com'
-        dredd = new Dredd({options: {proxy: 'http://proxy.example.com'}})
-      )
-      afterEach( ->
-        delete process.env.http_proxy
-      )
-
-      it('logs about the setting', ->
-        assert.equal(verboseLogger.lastCall.args[0],
-          'HTTP(S) proxy specified by Dredd options: http://proxy.example.com ' +
-          '(overrides environment variables: http_proxy=http://example.com)'
         )
       )
     )
