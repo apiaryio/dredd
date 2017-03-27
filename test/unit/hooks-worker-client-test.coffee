@@ -20,7 +20,7 @@ measureExecutionDurationMs = (fn) ->
 
 COFFEE_BIN = 'node_modules/.bin/coffee'
 MIN_COMMAND_EXECUTION_DURATION_MS = 2 * measureExecutionDurationMs( ->
-  crossSpawnStub.sync(COFFEE_BIN, ['test/fixtures/scripts/noop.coffee'])
+  crossSpawnStub.sync(COFFEE_BIN, ['test/fixtures/scripts/exit-0.coffee'])
 )
 PORT = 61321
 
@@ -107,7 +107,7 @@ describe 'Hooks worker client', ->
 
     it 'should not set the error on worker if process gets intentionally killed by Dredd ' +
     'because it can be killed after all hooks execution if SIGTERM isn\'t handled', (done) ->
-      runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/endless-nosigterm.coffee"
+      runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/endless-ignore-term.coffee"
       loadWorkerClient (workerError) ->
         return done workerError if workerError
 
@@ -591,7 +591,7 @@ describe 'Hooks worker client', ->
 
 
     it 'should connect to the server', (done) ->
-      runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/noop.coffee"
+      runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/exit-0.coffee"
 
       loadWorkerClient (err) ->
         assert.isUndefined err
@@ -614,7 +614,7 @@ describe 'Hooks worker client', ->
         if eventType.indexOf("All") > -1
           beforeEach (done) ->
             receivedData = ""
-            runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/noop.coffee"
+            runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/exit-0.coffee"
             sentData = clone [transaction]
             loadWorkerClient (err) ->
               assert.isUndefined err
@@ -624,7 +624,7 @@ describe 'Hooks worker client', ->
         else
           beforeEach (done) ->
             receivedData = ""
-            runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/noop.coffee"
+            runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/exit-0.coffee"
             sentData = clone transaction
             loadWorkerClient (err) ->
               assert.isUndefined err
@@ -695,7 +695,7 @@ describe 'Hooks worker client', ->
 
         beforeEach((done) ->
           # Dummy placeholder for a real hook handler
-          runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/noop.coffee"
+          runner.hooks.configuration.options.language = "#{COFFEE_BIN} test/fixtures/scripts/exit-0.coffee"
 
           # Mock hook handler implementation, which ocuppies expected port instead
           # of a real hook handler.

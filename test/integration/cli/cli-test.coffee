@@ -112,7 +112,7 @@ describe 'CLI', ->
           assert.include runtimeInfo.dredd.stderr, 'not found'
 
         it 'should term or kill the server', (done) ->
-          isProcessRunning('endless-nosigterm', (err, isRunning) ->
+          isProcessRunning('endless-ignore-term', (err, isRunning) ->
             assert.isFalse isRunning unless err
             done(err)
           )
@@ -150,7 +150,7 @@ describe 'CLI', ->
           assert.include runtimeInfo.dredd.stderr, 'exited'
 
         itNotWindows 'should term or kill the server', (done) ->
-          isProcessRunning('endless-nosigterm', (err, isRunning) ->
+          isProcessRunning('endless-ignore-term', (err, isRunning) ->
             assert.isFalse isRunning unless err
             done(err)
           )
@@ -169,7 +169,7 @@ describe 'CLI', ->
           args = [
             './test/fixtures/single-get.apib'
             "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-            "--server=#{COFFEE_BIN} ./test/fixtures/scripts/endless-nosigterm.coffee"
+            "--server=#{COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee"
             '--server-wait=0'
             "--language=#{COFFEE_BIN} ./test/fixtures/scripts/kill-self.coffee"
             '--hookfiles=./test/fixtures/scripts/emptyfile'
@@ -189,7 +189,7 @@ describe 'CLI', ->
           assert.include runtimeInfo.dredd.stderr, 'killed'
 
         itNotWindows 'should term or kill the server', (done) ->
-          isProcessRunning('endless-nosigterm', (err, isRunning) ->
+          isProcessRunning('endless-ignore-term', (err, isRunning) ->
             assert.isFalse isRunning unless err
             done(err)
           )
@@ -203,7 +203,7 @@ describe 'CLI', ->
         before (done) ->
           app = createServer()
           app.get '/machines', (req, res) ->
-            killAll('endless-nosigterm.+[^=]foo/bar/hooks', (err) ->
+            killAll('endless-ignore-term.+[^=]foo/bar/hooks', (err) ->
               done err if err
               res.json([{type: 'bulldozer', name: 'willy'}])
             )
@@ -216,9 +216,9 @@ describe 'CLI', ->
           args = [
             './test/fixtures/single-get.apib'
             "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-            "--server=#{COFFEE_BIN} ./test/fixtures/scripts/endless-nosigterm.coffee"
+            "--server=#{COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee"
             '--server-wait=0'
-            "--language=#{COFFEE_BIN} ./test/fixtures/scripts/endless-nosigterm.coffee"
+            "--language=#{COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee"
             '--hookfiles=foo/bar/hooks'
           ]
           hookHandler.listen DEFAULT_HOOK_HANDLER_PORT, ->
@@ -238,7 +238,7 @@ describe 'CLI', ->
           assert.include runtimeInfo.dredd.stderr, 'killed'
 
         itNotWindows 'should term or kill the server', (done) ->
-          isProcessRunning('endless-nosigterm', (err, isRunning) ->
+          isProcessRunning('endless-ignore-term', (err, isRunning) ->
             assert.isFalse isRunning unless err
             done(err)
           )
@@ -263,9 +263,9 @@ describe 'CLI', ->
           args = [
             './test/fixtures/single-get.apib'
             "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-            "--server=#{COFFEE_BIN} ./test/fixtures/scripts/endless-nosigterm.coffee"
+            "--server=#{COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee"
             '--server-wait=0'
-            "--language=#{COFFEE_BIN} ./test/fixtures/scripts/endless-nosigterm.coffee"
+            "--language=#{COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee"
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ]
           hookHandler.listen DEFAULT_HOOK_HANDLER_PORT, ->

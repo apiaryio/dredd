@@ -159,7 +159,7 @@ describe 'CLI - Server Process', ->
       args = [
         './test/fixtures/single-get.apib'
         "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-        "--server=#{COFFEE_BIN} test/fixtures/scripts/dummy-server-nosigterm.coffee #{DEFAULT_SERVER_PORT}"
+        "--server=#{COFFEE_BIN} test/fixtures/scripts/dummy-server-ignore-term.coffee #{DEFAULT_SERVER_PORT}"
         '--server-wait=1'
       ]
 
@@ -172,8 +172,8 @@ describe 'CLI - Server Process', ->
         assert.include dreddCommandInfo.stdout, 'Starting backend server process with command'
       it 'should inform about sending SIGTERM', ->
         assert.include dreddCommandInfo.stdout, 'Gracefully terminating backend server process'
-      it 'should redirect server\'s message about ignoring SIGTERM', ->
-        assert.include dreddCommandInfo.stdout, 'ignoring sigterm'
+      it 'should redirect server\'s message about ignoring termination', ->
+        assert.include dreddCommandInfo.stdout, 'ignoring termination'
       it 'should inform about sending SIGKILL', ->
         assert.include dreddCommandInfo.stdout, 'Killing backend server process'
       it 'the server should not be running', (done) ->

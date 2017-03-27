@@ -164,12 +164,24 @@ isProcessRunning = (pattern, callback) ->
   )
 
 
+kill = (pid, callback) ->
+  if process.platform is 'win32'
+    taskkill = spawn('taskkill', ['/F', '/T', '/PID', pid])
+    taskkill.on('close', -> callback())
+  else
+    try
+      process.kill(pid, 'SIGKILL')
+    catch
+      # do nothing
+    process.nextTick(callback)
+
+
 killAll = (pattern, callback) ->
   ps.lookup({arguments: pattern}, (err, processList) ->
     return callback(err) if err or not processList.length
 
     async.each(processList, (processListItem, next) ->
-      ps.kill(processListItem.pid, {signal: 9}, next) # 9 is SIGKILL
+      kill(processListItem.pid, next)
     , callback)
   )
 
@@ -182,5 +194,6 @@ module.exports = {
   runDreddCommand
   runDreddCommandWithServer
   isProcessRunning
+  kill
   killAll
 }
