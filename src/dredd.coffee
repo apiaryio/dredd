@@ -1,5 +1,6 @@
 glob = require 'glob'
 fs = require 'fs'
+clone = require 'clone'
 async = require 'async'
 request = require 'request'
 url = require 'url'
@@ -12,7 +13,10 @@ handleRuntimeProblems = require './handle-runtime-problems'
 dreddTransactions = require 'dredd-transactions'
 configureReporters = require './configure-reporters'
 
-CONNECTION_ERRORS = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
+
+PROXY_ENV_VARIABLES = ['HTTP_PROXY', 'HTTPS_PROXY', 'NO_PROXY']
+FILE_DOWNLOAD_TIMEOUT = 5000
+
 
 removeDuplicates = (arr) ->
   arr.reduce (alreadyProcessed, currentItem) ->
@@ -28,6 +32,8 @@ class Dredd
   # this is here only because there there is no way how to spy a constructor in CoffeScript
   init: (config) ->
     @configuration = applyConfiguration(config)
+    @configuration.http = {}
+
     @tests = []
     @stats =
       tests: 0
@@ -41,6 +47,23 @@ class Dredd
     @transactions = []
     @runner = new Runner(@configuration)
     configureReporters(@configuration, @stats, @tests, @runner)
+    @logProxySettings()
+
+  logProxySettings: ->
+    proxySettings = []
+    for own envVariableName, envVariableValue of process.env
+      continue unless envVariableName.toUpperCase() in PROXY_ENV_VARIABLES
+      continue unless envVariableValue isnt ''
+      proxySettings.push("#{envVariableName}=#{envVariableValue}")
+
+    if proxySettings.length
+      message = """\
+        HTTP(S) proxy specified by environment variables: \
+        #{proxySettings.join(', ')}. Please read documentation on how \
+        Dredd works with proxies: \
+        https://dredd.readthedocs.io/en/latest/how-it-works/#using-https-proxy\
+      """
+      logger.verbose(message)
 
   run: (callback) ->
     @configDataIsEmpty = true
@@ -133,12 +156,13 @@ class Dredd
     , callback
 
   downloadFile: (fileUrl, callback) ->
-    request.get
-      url: fileUrl
-      timeout: 5000
-      json: false
-    , (downloadError, res, body) =>
+    options = clone(@configuration.http)
+    options.url = fileUrl
+    options.timeout = FILE_DOWNLOAD_TIMEOUT
+
+    request.get(options, (downloadError, res, body) =>
       if downloadError
+        logger.debug("Downloading #{fileUrl} errored:", "#{downloadError}" or downloadError.code)
         err = new Error("""\
           Error when loading file from URL '#{fileUrl}'. \
           Is the provided URL correct?\
@@ -152,6 +176,7 @@ class Dredd
         return callback err, @stats
       @configuration.data[fileUrl] = {raw: body, filename: fileUrl}
       callback(null, @stats)
+    )
 
   readLocalFile: (filePath, callback) ->
     fs.readFile filePath, 'utf8', (readError, data) =>

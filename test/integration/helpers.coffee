@@ -1,5 +1,8 @@
 clone = require('clone')
+https = require('https')
 async = require('async')
+fs = require('fs')
+path = require('path')
 express = require('express')
 spawn = require('cross-spawn')
 bodyParser = require('body-parser')
@@ -10,6 +13,63 @@ logger = require('../../src/logger')
 
 DEFAULT_SERVER_PORT = 9876
 DREDD_BIN = require.resolve('../../bin/dredd')
+
+
+# Records logging during runtime of a given function. Given function
+# is provided with a 'next' callback. The final callback is provided
+# with:
+#
+# - err (Error) - in case the recordLogging function failed (never)
+# - args (array) - array of all arguments the 'next' callback obtained
+#                  from the 'fn' function
+# - logging (string) - the recorded logging output
+recordLogging = (fn, callback) ->
+  silent = !!logger.transports.console.silent
+  logger.transports.console.silent = true # supress Dredd's console output (remove if debugging)
+
+  logging = ''
+  record = (transport, level, message, meta) ->
+    logging += "#{level}: #{message}\n"
+
+  logger.on('logging', record)
+  fn((args...) ->
+    logger.removeListener('logging', record)
+    logger.transports.console.silent = silent
+    callback(null, args, logging)
+  )
+
+
+# Helper function which records incoming server request to given
+# server runtime info object.
+recordServerRequest = (serverRuntimeInfo, req) ->
+  # Initial values before any request is made:
+  # - requestedOnce = false
+  # - requested = false
+  serverRuntimeInfo.requestedOnce = not serverRuntimeInfo.requested
+  serverRuntimeInfo.requested = true
+
+  recordedReq =
+    method: req.method
+    url: req.url
+    headers: clone(req.headers)
+    body: clone(req.body)
+
+  serverRuntimeInfo.lastRequest = recordedReq
+
+  serverRuntimeInfo.requests[req.url] ?= []
+  serverRuntimeInfo.requests[req.url].push(recordedReq)
+
+  serverRuntimeInfo.requestCounts[req.url] ?= 0
+  serverRuntimeInfo.requestCounts[req.url] += 1
+
+
+# Helper to get SSL credentials. Uses dummy self-signed certificate.
+getSSLCredentials = ->
+  httpsDir = path.join(__dirname, '../fixtures/https')
+  {
+    key: fs.readFileSync(path.join(httpsDir, 'server.key'), 'utf8')
+    cert: fs.readFileSync(path.join(httpsDir, 'server.crt'), 'utf8')
+  }
 
 
 # Creates a new Express.js instance. Automatically records everything about
@@ -28,34 +88,24 @@ DREDD_BIN = require.resolve('../../bin/dredd')
 #             - body (string)
 # - requestCounts (object)
 #     - *endpointUrl*: 0 (number, default) - number of requests to the endpoint
-createServer = ->
-  app = express()
+createServer = (options = {}) ->
+  protocol = options.protocol or 'http'
 
   serverRuntimeInfo =
+    requestedOnce: false
     requested: false
+    lastRequest: null
     requests: {}
     requestCounts: {}
 
+  app = express()
   app.use(bodyParser.json({size: '5mb'}))
   app.use((req, res, next) ->
-    serverRuntimeInfo.requested = true
-
-    serverRuntimeInfo.requests[req.url] ?= []
-    serverRuntimeInfo.requests[req.url].push(
-      method: req.method
-      headers: clone(req.headers)
-      body: clone(req.body)
-    )
-
-    serverRuntimeInfo.requestCounts[req.url] ?= 0
-    serverRuntimeInfo.requestCounts[req.url] += 1
-
-    # sensible defaults, which can be overriden
-    res.type('json')
-    res.status(200)
-
+    recordServerRequest(serverRuntimeInfo, req)
+    res.type('json').status(200) # sensible defaults, can be overriden
     next()
   )
+  app = https.createServer(getSSLCredentials(), app) if protocol is 'https'
 
   # Monkey-patching the app.listen() function. The 'port' argument
   # is made optional, defaulting to the 'DEFAULT_SERVER_PORT' value.
@@ -82,20 +132,13 @@ runDredd = (dredd, serverPort, callback) ->
   dredd.configuration.options ?= {}
   dredd.configuration.options.level ?= 'silly'
 
-  silent = !!logger.transports.console.silent
-  logger.transports.console.silent = true # supress Dredd's console output (remove if debugging)
-
   err = undefined
   stats = undefined
-  logging = ''
 
-  recordLogging = (transport, level, message, meta) ->
-    logging += "#{level}: #{message}\n"
-
-  logger.on('logging', recordLogging)
-  dredd.run((args...) ->
-    logger.removeListener('logging', recordLogging)
-    logger.transports.console.silent = silent
+  recordLogging((next) ->
+    dredd.run(next)
+  , (err, args, logging) ->
+    return callback(err) if err
 
     [err, stats] = args
     callback(null, {err, stats, logging})
@@ -176,6 +219,7 @@ killAll = (pattern, callback) ->
 
 module.exports = {
   DEFAULT_SERVER_PORT
+  recordLogging
   createServer
   runDredd
   runDreddWithServer

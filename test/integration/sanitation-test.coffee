@@ -1,6 +1,5 @@
 {assert} = require('chai')
 clone = require('clone')
-express = require('express')
 {EventEmitter} = require('events')
 
 {runDredd, createServer, runDreddWithServer} = require('./helpers')
