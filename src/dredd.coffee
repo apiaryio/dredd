@@ -13,8 +13,10 @@ handleRuntimeProblems = require './handle-runtime-problems'
 dreddTransactions = require 'dredd-transactions'
 configureReporters = require './configure-reporters'
 
+
 PROXY_ENV_VARIABLES = ['HTTP_PROXY', 'HTTPS_PROXY', 'NO_PROXY']
-CONNECTION_ERRORS = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
+FILE_DOWNLOAD_TIMEOUT = 5000
+
 
 removeDuplicates = (arr) ->
   arr.reduce (alreadyProcessed, currentItem) ->
@@ -49,10 +51,10 @@ class Dredd
 
   logProxySettings: ->
     proxySettings = []
-    for envVariable in Object.keys(process.env)
-      continue unless envVariable.toUpperCase() in PROXY_ENV_VARIABLES
-      continue unless process.env[envVariable] isnt ''
-      proxySettings.push("#{envVariable}=#{process.env[envVariable]}")
+    for own envVariableName, envVariableValue of process.env
+      continue unless envVariableName.toUpperCase() in PROXY_ENV_VARIABLES
+      continue unless envVariableValue isnt ''
+      proxySettings.push("#{envVariableName}=#{envVariableValue}")
 
     if proxySettings.length
       message = """\
@@ -156,9 +158,9 @@ class Dredd
   downloadFile: (fileUrl, callback) ->
     options = clone(@configuration.http)
     options.url = fileUrl
-    options.timeout = 5000
+    options.timeout = FILE_DOWNLOAD_TIMEOUT
 
-    request.get options, (downloadError, res, body) =>
+    request.get(options, (downloadError, res, body) =>
       if downloadError
         logger.debug("Downloading #{fileUrl} errored:", "#{downloadError}" or downloadError.code)
         err = new Error("""\
@@ -174,6 +176,7 @@ class Dredd
         return callback err, @stats
       @configuration.data[fileUrl] = {raw: body, filename: fileUrl}
       callback(null, @stats)
+    )
 
   readLocalFile: (filePath, callback) ->
     fs.readFile filePath, 'utf8', (readError, data) =>

@@ -133,7 +133,7 @@ class ApiaryReporter
       data.resultData.result ?= {}
       data.resultData.result.general ?= []
 
-      if CONNECTION_ERRORS.indexOf(error.code) > -1
+      if error.code in CONNECTION_ERRORS
         data.resultData.result.general.push {
           severity: 'error', message: "Error connecting to server under test!"
         }
@@ -183,7 +183,7 @@ class ApiaryReporter
         @serverError = true
         logger.debug('Requesting Apiary API errored:', "#{err}" or err.code)
 
-        if CONNECTION_ERRORS.indexOf(err.code) > -1
+        if err.code in CONNECTION_ERRORS
           return callback(new Error('Apiary reporter could not connect to Apiary API'))
         else
           return callback(err)

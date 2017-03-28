@@ -42,6 +42,9 @@ recordLogging = (fn, callback) ->
 # Helper function which records incoming server request to given
 # server runtime info object.
 recordServerRequest = (serverRuntimeInfo, req) ->
+  # Initial values before any request is made:
+  # - requestedOnce = false
+  # - requested = false
   serverRuntimeInfo.requestedOnce = not serverRuntimeInfo.requested
   serverRuntimeInfo.requested = true
 
