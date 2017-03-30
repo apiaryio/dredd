@@ -148,12 +148,20 @@ class HooksWorkerClient
       return callback(new Error(msg))
 
     else if @language == 'go'
-      gopath = process.env.GOPATH
-      @handlerCommand = "#{gopath}/bin/goodman"
+      # https://golang.org/cmd/go/
+      # "you can add DIR/bin to your PATH to get at the installed commands.
+      # If the GOBIN environment variable is set, commands are installed to the
+      # directory it names instead of DIR/bin. GOBIN must be an absolute path."
+      # Use the gobin if provided, otherwise fall back to gopath
+      gobin = process.env.GOBIN
+      if !gobin
+        gobin = "#{process.env.GOPATH}/bin"
+
+      @handlerCommand = "#{gobin}/goodman"
       @handlerCommandArgs = []
       unless which.which @handlerCommand
         msg = '''\
-          Go hooks handler command not found in $GOPATH/bin
+          Go hooks handler command not found in $GOBIN or $GOPATH/bin
           Install go hooks handler by running:
           $ go get github.com/snikch/goodman/cmd/goodman
         '''
