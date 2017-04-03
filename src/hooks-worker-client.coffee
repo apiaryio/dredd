@@ -1,11 +1,9 @@
 net = require('net')
 {EventEmitter} = require('events')
-crossSpawn = require('cross-spawn')
 spawnArgs = require('spawn-args')
-
 generateUuid = require('uuid').v4
 
-# for stubbing in tests
+{spawn} = require('./child-process')
 logger = require('./logger')
 which = require('./which')
 
@@ -24,8 +22,6 @@ class HooksWorkerClient
     @handlerPort = options['hooks-worker-handler-port'] || 61321
     @handlerMessageDelimiter = '\n'
     @clientConnected = false
-    @handlerEnded = false
-    @handlerKilledIntentionally = false
     @connectError = false
     @emitter = new EventEmitter
 
@@ -49,39 +45,16 @@ class HooksWorkerClient
 
   stop: (callback) ->
     @disconnectFromHandler()
-    @terminateHandler callback
+    @terminateHandler(callback)
 
   terminateHandler: (callback) ->
     logger.verbose('Terminating hooks handler process, PID', @handler.pid)
+    if @handler.terminated
+      logger.debug('The hooks handler process has already terminated')
+      return callback()
 
-    term = =>
-      logger.info('Gracefully terminating hooks handler process')
-      @handlerKilledIntentionally = true
-      @handler.kill 'SIGTERM'
-
-    kill = =>
-      logger.info('Killing hooks handler process')
-      @handler.kill 'SIGKILL'
-
-    start = Date.now()
-    term()
-
-    waitForHandlerTermOrKill = =>
-      if @handlerEnded == true
-        clearTimeout timeout
-        logger.debug('Hooks handler process successfully terminated.')
-        callback()
-      else
-        logger.debug('Hooks handler process haven\'t terminated yet.')
-        if (Date.now() - start) < @termTimeout
-          term()
-          timeout = setTimeout waitForHandlerTermOrKill, @termRetry
-        else
-          kill()
-          clearTimeout(timeout)
-          callback()
-
-    timeout = setTimeout waitForHandlerTermOrKill, @termRetry
+    @handler.terminate({force: true, timeout: @termTimeout, retryDelay: @termRetry})
+    @handler.on('close', -> callback())
 
   disconnectFromHandler: ->
     @handlerClient.destroy()
@@ -174,35 +147,36 @@ class HooksWorkerClient
 
   spawnHandler: (callback) ->
     pathGlobs = [].concat @runner.hooks?.configuration?.options?.hookfiles
-    handlerCommandArgs = @handlerCommandArgs.concat pathGlobs
+    handlerCommandArgs = @handlerCommandArgs.concat(pathGlobs)
 
-    logger.info("Spawning `#{@language}` hooks handler process.")
-    @handler = crossSpawn.spawn @handlerCommand, handlerCommandArgs
+    logger.info("Spawning '#{@language}' hooks handler process.")
+    @handler = spawn(@handlerCommand, handlerCommandArgs)
 
-    @handler.stdout.on 'data', (data) ->
+    @handler.stdout.on('data', (data) ->
       logger.info("Hooks handler stdout:", data.toString())
-
-    @handler.stderr.on 'data', (data) ->
+    )
+    @handler.stderr.on('data', (data) ->
       logger.info("Hooks handler stderr:", data.toString())
+    )
 
-    @handler.on 'exit', (status) =>
-      if status?
-        if status isnt 0
-          msg = "Hooks handler process '#{@handlerCommand}' exited with status: #{status}"
-          logger.error(msg)
-          @runner.hookHandlerError = new Error(msg)
+    @handler.on('signalTerm', ->
+      logger.verbose('Gracefully terminating the hooks handler process')
+    )
+    @handler.on('signalKill', ->
+      logger.verbose('Killing the hooks handler process')
+    )
+
+    @handler.on('crash', (statusCode, killed) =>
+      if killed
+        msg = "Hooks handler process '#{@handlerCommand} #{handlerCommandArgs.join(' ')}' was killed."
       else
-        # No exit status code means the hook handler was killed
-        unless @handlerKilledIntentionally
-          msg = "Hooks handler process '#{@handlerCommand}' was killed."
-          logger.error(msg)
-          @runner.hookHandlerError = new Error(msg)
-      @handlerEnded = true
-
-    @handler.on 'error', (error) =>
-      @runner.hookHandlerError = error
-      @handlerEnded = true
-
+        msg = "Hooks handler process '#{@handlerCommand} #{handlerCommandArgs.join(' ')}' exited with status: #{statusCode}"
+      logger.error(msg)
+      @runner.hookHandlerError = new Error(msg)
+    )
+    @handler.on('error', (err) =>
+      @runner.hookHandlerError = err
+    )
     callback()
 
   connectToHandler: (callback) ->

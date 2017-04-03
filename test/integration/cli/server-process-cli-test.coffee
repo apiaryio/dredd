@@ -142,25 +142,14 @@ describe 'CLI - Server Process', ->
           it 'should exit with status 1', ->
             assert.equal dreddCommandInfo.exitStatus, 1
 
-    # This test is disabled for Windows. There are multiple known issues which
-    # need to be addressed:
-    #
-    # *  Windows do not support graceful termination of command-line processes
-    #    or not in a simple way. CLI process can be only forefully killed, by
-    #    default. Thus the functionality around SIGTERM needs to be either
-    #    marked as unsupported or some special handling needs to be introduced.
-    #
-    # *  Killing a process on Windows requires a bit smarter approach then just
-    #    calling process.kill(), which is what Dredd does as of now. For that
-    #    reason, Dredd isn't able to effectively kill a process on Windows.
-    describeNotWindows = if process.platform is 'win32' then describe.skip else describe
-    describeNotWindows 'When didn\'t terminate and had to be killed by Dredd', ->
+    describe 'When didn\'t terminate and had to be killed by Dredd', ->
       dreddCommandInfo = undefined
       args = [
         './test/fixtures/single-get.apib'
         "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
         "--server=#{COFFEE_BIN} test/fixtures/scripts/dummy-server-ignore-term.coffee #{DEFAULT_SERVER_PORT}"
         '--server-wait=1'
+        '--level=verbose'
       ]
 
       beforeEach (done) ->
@@ -170,12 +159,12 @@ describe 'CLI - Server Process', ->
 
       it 'should inform about starting server with custom command', ->
         assert.include dreddCommandInfo.stdout, 'Starting backend server process with command'
-      it 'should inform about sending SIGTERM', ->
-        assert.include dreddCommandInfo.stdout, 'Gracefully terminating backend server process'
+      it 'should inform about gracefully terminating the server', ->
+        assert.include dreddCommandInfo.stdout, 'Gracefully terminating the backend server process'
       it 'should redirect server\'s message about ignoring termination', ->
         assert.include dreddCommandInfo.stdout, 'ignoring termination'
-      it 'should inform about sending SIGKILL', ->
-        assert.include dreddCommandInfo.stdout, 'Killing backend server process'
+      it 'should inform about forcefully killing the server', ->
+        assert.include dreddCommandInfo.stdout, 'Killing the backend server process'
       it 'the server should not be running', (done) ->
         isProcessRunning('test/fixtures/scripts/', (err, isRunning) ->
           assert.isFalse isRunning unless err

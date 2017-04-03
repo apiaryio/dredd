@@ -4,10 +4,9 @@ crossSpawn = require('cross-spawn')
 IS_WINDOWS = process.platform is 'win32'
 ASCII_CTRL_C = 3
 
-TERMINATION_DEFAULT_TIMEOUT_MS = 1000
-TERMINATION_FIRST_CHECK_TIMEOUT_MS = 1
-TERMINATION_MIN_RETRY_TIMEOUT_MS = 100
-TERMINATION_PREFERRED_RETRY_COUNT = 3
+TERM_FIRST_CHECK_TIMEOUT_MS = 1
+TERM_DEFAULT_TIMEOUT_MS = 1000
+TERM_DEFAULT_RETRY_MS = 300
 
 
 # Signals the child process to forcefully terminate
@@ -65,21 +64,17 @@ signalTerm = (childProcess, callback) ->
 #
 # Available options:
 # - timeout (number) - Time period in ms for which the termination
-#.                     attempts will be done
+#                      attempts will be done
+# - retryDelay (number) - Delay in ms between termination attempts
 # - force (boolean) - Kills the process forcefully after the timeout
 terminate = (childProcess, options = {}, callback) ->
   [callback, options] = [options, {}] if typeof options is 'function'
   force = options.force or false
 
-  # By default, the period between retries is calculated from the total
-  # timeout, but there's minimum meaningful value for the period.
-  #
-  # If the timeout is zero or less then the minimum meaningful period
-  # for waiting between retries, there will be just one termination
-  # attempt.
-  timeout = if options.timeout? then options.timeout else TERMINATION_DEFAULT_TIMEOUT_MS
-  retryTimeout = if timeout > 0 then timeout / TERMINATION_PREFERRED_RETRY_COUNT else 0
-  retryTimeout = Math.max(retryTimeout, TERMINATION_MIN_RETRY_TIMEOUT_MS)
+  # If the timeout is zero or less then the delay for waiting between
+  # retries, there will be just one termination attempt
+  timeout = if options.timeout? then options.timeout else TERM_DEFAULT_TIMEOUT_MS
+  retryDelay = if options.retryDelay? then options.retryDelay else TERM_DEFAULT_RETRY_MS
 
   terminated = false
   onClose = ->
@@ -102,7 +97,7 @@ terminate = (childProcess, options = {}, callback) ->
         # Still not terminated, try again
         signalTerm(childProcess, (err) ->
           return callback(err) if err
-          t = setTimeout(check, retryTimeout)
+          t = setTimeout(check, retryDelay)
         )
       else
         # Still not terminated and the timeout has passed, either
@@ -116,7 +111,7 @@ terminate = (childProcess, options = {}, callback) ->
   # Fire the first termination attempt and check the result
   signalTerm(childProcess, (err) ->
     return callback(err) if err
-    t = setTimeout(check, TERMINATION_FIRST_CHECK_TIMEOUT_MS)
+    t = setTimeout(check, TERM_FIRST_CHECK_TIMEOUT_MS)
   )
 
 
