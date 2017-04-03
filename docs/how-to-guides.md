@@ -234,7 +234,7 @@ after('/login > POST', function (transaction) {
 // Add the token to all HTTP transactions
 beforeEach(function (transaction) {
   if (stash.token) {
-    transaction.headers['X-Api-Key'] = stash.token
+    transaction.request.headers['X-Api-Key'] = stash.token
   };
 });
 
@@ -361,7 +361,7 @@ after('/login > POST > 200 > application/json', function (transaction) {
 // Add the token to all HTTP transactions
 beforeEach(function (transaction) {
   if (stash.token) {
-    transaction.headers['X-Api-Key'] = stash.token
+    transaction.request.headers['X-Api-Key'] = stash.token
   };
 });
 
