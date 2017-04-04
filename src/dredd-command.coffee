@@ -213,7 +213,7 @@ class DreddCommand
         logger.verbose('Killing the backend server process')
       )
 
-      @serverProcess.on 'crash', (statusCode, killed) =>
+      @serverProcess.on 'crash', (exitStatus, killed) =>
         logger.info('Backend server process was killed') if killed
 
       @serverProcess.on 'close', =>

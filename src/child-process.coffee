@@ -14,8 +14,8 @@ signalKill = (childProcess, callback) ->
   childProcess.emit('signalKill')
   if IS_WINDOWS
     taskkill = spawn('taskkill', ['/F', '/T', '/PID', childProcess.pid])
-    taskkill.on('close', (statusCode) ->
-      if statusCode
+    taskkill.on('close', (exitStatus) ->
+      if exitStatus
         err = new Error("Unable to forcefully terminate process #{childProcess.pid}")
         return callback(err)
       callback()
@@ -140,7 +140,7 @@ spawn = (args...) ->
       childProcess.emit('error', err) if err
     )
 
-  childProcess.on('close', (statusCode, signal) ->
+  childProcess.on('close', (exitStatus, signal) ->
     childProcess.terminated = true
     childProcess.killedIntentionally = killedIntentionally
     childProcess.terminatedIntentionally = terminatedIntentionally
@@ -149,17 +149,17 @@ spawn = (args...) ->
     # unintentionally terminated with non-zero status code.
     # The 'crash' event's signature:
     #
-    # - statusCode (number, nullable) - The non-zero status code
+    # - exitStatus (number, nullable) - The non-zero status code
     # - killed (boolean) - Whether the process was killed or not
     #
     # How to distinguish a process was killed?
     #
     # UNIX:
-    # - statusCode is null or 137 or... https://github.com/apiaryio/dredd/issues/735
+    # - exitStatus is null or 137 or... https://github.com/apiaryio/dredd/issues/735
     # - signal is 'SIGKILL'
     #
     # Windows:
-    # - statusCode is usually 1
+    # - exitStatus is usually 1
     # - signal isn't set (Windows do not have signals)
     #
     # Yes, you got it - on Windows there's no way to distinguish
@@ -167,8 +167,8 @@ spawn = (args...) ->
     if not killedIntentionally and not terminatedIntentionally
       if signal is 'SIGKILL'
         childProcess.emit('crash', null, true)
-      else if statusCode isnt 0
-        childProcess.emit('crash', statusCode, false)
+      else if exitStatus isnt 0
+        childProcess.emit('crash', exitStatus, false)
   )
 
   return childProcess

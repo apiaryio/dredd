@@ -166,11 +166,11 @@ class HooksWorkerClient
       logger.verbose('Killing the hooks handler process')
     )
 
-    @handler.on('crash', (statusCode, killed) =>
+    @handler.on('crash', (exitStatus, killed) =>
       if killed
         msg = "Hooks handler process '#{@handlerCommand} #{handlerCommandArgs.join(' ')}' was killed."
       else
-        msg = "Hooks handler process '#{@handlerCommand} #{handlerCommandArgs.join(' ')}' exited with status: #{statusCode}"
+        msg = "Hooks handler process '#{@handlerCommand} #{handlerCommandArgs.join(' ')}' exited with status: #{exitStatus}"
       logger.error(msg)
       @runner.hookHandlerError = new Error(msg)
     )

@@ -17,7 +17,7 @@ runChildProcess = (command, fn, callback) ->
     stdout: ''
     stderr: ''
     terminated: false
-    statusCode: undefined
+    exitStatus: undefined
     signal: undefined
     onCrash: onCrash
 
@@ -26,9 +26,9 @@ runChildProcess = (command, fn, callback) ->
   childProcess.stdout.on('data', (data) -> processInfo.stdout += data.toString())
   childProcess.stderr.on('data', (data) -> processInfo.stderr += data.toString())
 
-  onClose = (statusCode, signal) ->
+  onClose = (exitStatus, signal) ->
     processInfo.terminated = true
-    processInfo.statusCode = statusCode
+    processInfo.exitStatus = exitStatus
     processInfo.signal = signal
   childProcess.on('close', onClose)
 
@@ -77,14 +77,14 @@ describe('Babysitting Child Processes', ->
       )
       if process.platform is 'win32'
         it('returns non-zero status code', ->
-          assert.isAbove(processInfo.statusCode, 0)
+          assert.isAbove(processInfo.exitStatus, 0)
         )
       else
         it('gets killed', ->
           assert.equal(processInfo.signal, 'SIGKILL')
         )
         it('returns no status code', ->
-          assert.isNull(processInfo.statusCode)
+          assert.isNull(processInfo.exitStatus)
         )
       it('does not emit an error', ->
         assert.isUndefined(processInfo.error)
@@ -114,14 +114,14 @@ describe('Babysitting Child Processes', ->
       )
       if process.platform is 'win32'
         it('returns non-zero status code', ->
-          assert.isAbove(processInfo.statusCode, 0)
+          assert.isAbove(processInfo.exitStatus, 0)
         )
       else
         it('gets killed', ->
           assert.equal(processInfo.signal, 'SIGKILL')
         )
         it('returns no status code', ->
-          assert.isNull(processInfo.statusCode)
+          assert.isNull(processInfo.exitStatus)
         )
       it('does not emit an error', ->
         assert.isUndefined(processInfo.error)
@@ -157,7 +157,7 @@ describe('Babysitting Child Processes', ->
             assert.isNull(processInfo.signal)
           )
         it('returns zero status code', ->
-          assert.equal(processInfo.statusCode, 0)
+          assert.equal(processInfo.exitStatus, 0)
         )
         it('does not emit an error', ->
           assert.isUndefined(processInfo.error)
@@ -186,7 +186,7 @@ describe('Babysitting Child Processes', ->
           assert.isFalse(processInfo.terminated)
         )
         it('has undefined status code', ->
-          assert.isUndefined(processInfo.statusCode)
+          assert.isUndefined(processInfo.exitStatus)
         )
         it('emits an error', ->
           assert.instanceOf(processInfo.error, Error)
@@ -228,7 +228,7 @@ describe('Babysitting Child Processes', ->
           assert.isNull(processInfo.signal)
         )
       it('returns zero status code', ->
-        assert.equal(processInfo.statusCode, 0)
+        assert.equal(processInfo.exitStatus, 0)
       )
       it('does not emit an error', ->
         assert.isUndefined(processInfo.error)
@@ -260,14 +260,14 @@ describe('Babysitting Child Processes', ->
         # Windows does not have signals and when a process gets
         # forcefully terminated, it has a non-zero status code.
         it('returns non-zero status code', ->
-          assert.isAbove(processInfo.statusCode, 0)
+          assert.isAbove(processInfo.exitStatus, 0)
         )
       else
         it('gets killed', ->
           assert.equal(processInfo.signal, 'SIGKILL')
         )
         it('returns no status code', ->
-          assert.isNull(processInfo.statusCode)
+          assert.isNull(processInfo.exitStatus)
         )
       it('does not emit an error', ->
         assert.isUndefined(processInfo.error)
@@ -292,7 +292,7 @@ describe('Babysitting Child Processes', ->
       )
 
       it('returns zero status code', ->
-        assert.equal(processInfo.statusCode, 0)
+        assert.equal(processInfo.exitStatus, 0)
       )
       it('does not emit the \'crash\' event', ->
         assert.isFalse(processInfo.onCrash.called)
@@ -324,7 +324,7 @@ describe('Babysitting Child Processes', ->
       )
 
       it('returns non-zero status code', ->
-        assert.isAbove(processInfo.statusCode, 0)
+        assert.isAbove(processInfo.exitStatus, 0)
       )
       it('does emit the \'crash\' event', ->
         assert.isTrue(processInfo.onCrash.called)
@@ -362,7 +362,7 @@ describe('Babysitting Child Processes', ->
       )
 
       it('returns zero status code', ->
-        assert.equal(processInfo.statusCode, 0)
+        assert.equal(processInfo.exitStatus, 0)
       )
       it('does not emit the \'crash\' event', ->
         assert.isFalse(processInfo.onCrash.called)
@@ -394,7 +394,7 @@ describe('Babysitting Child Processes', ->
       )
 
       it('returns non-zero status code', ->
-        assert.isAbove(processInfo.statusCode, 0)
+        assert.isAbove(processInfo.exitStatus, 0)
       )
       it('does not emit the \'crash\' event', ->
         assert.isFalse(processInfo.onCrash.called)
@@ -427,14 +427,14 @@ describe('Babysitting Child Processes', ->
 
       if process.platform is 'win32'
         it('returns non-zero status code', ->
-          assert.isAbove(processInfo.statusCode, 0)
+          assert.isAbove(processInfo.exitStatus, 0)
         )
       else
         it('gets killed', ->
           assert.equal(processInfo.signal, 'SIGKILL')
         )
         it('returns no status code', ->
-          assert.isNull(processInfo.statusCode)
+          assert.isNull(processInfo.exitStatus)
         )
       it('does not emit the \'crash\' event', ->
         assert.isFalse(processInfo.onCrash.called)
@@ -469,7 +469,7 @@ describe('Babysitting Child Processes', ->
       )
 
       it('returns zero status code', ->
-        assert.equal(processInfo.statusCode, 0)
+        assert.equal(processInfo.exitStatus, 0)
       )
       it('does not emit the \'crash\' event', ->
         assert.isFalse(processInfo.onCrash.called)
@@ -504,7 +504,7 @@ describe('Babysitting Child Processes', ->
       )
 
       it('returns non-zero status code', ->
-        assert.isAbove(processInfo.statusCode, 0)
+        assert.isAbove(processInfo.exitStatus, 0)
       )
       it('does emit the \'crash\' event', ->
         assert.isTrue(processInfo.onCrash.called)
@@ -546,14 +546,14 @@ describe('Babysitting Child Processes', ->
 
       if process.platform is 'win32'
         it('returns non-zero status code', ->
-          assert.isAbove(processInfo.statusCode, 0)
+          assert.isAbove(processInfo.exitStatus, 0)
         )
       else
         it('gets killed', ->
           assert.equal(processInfo.signal, 'SIGKILL')
         )
         it('returns no status code', ->
-          assert.isNull(processInfo.statusCode)
+          assert.isNull(processInfo.exitStatus)
         )
       it('does emit the \'crash\' event', ->
         assert.isTrue(processInfo.onCrash.called)
