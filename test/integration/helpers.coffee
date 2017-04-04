@@ -169,14 +169,21 @@ runCommand = (command, args, spawnOptions = {}, callback) ->
 
   stdout = ''
   stderr = ''
+  output = ''
 
   cli = spawn(command, args, spawnOptions)
 
-  cli.stdout.on('data', (data) -> stdout += data)
-  cli.stderr.on('data', (data) -> stderr += data)
+  cli.stdout.on('data', (data) ->
+    stdout += data
+    output += data
+  )
+  cli.stderr.on('data', (data) ->
+    stderr += data
+    output += data
+  )
 
   cli.on('close', (exitStatus) ->
-    callback(null, {stdout, stderr, output: stdout + stderr, exitStatus})
+    callback(null, {stdout, stderr, output, exitStatus})
   )
 
 
