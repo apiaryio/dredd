@@ -1,18 +1,22 @@
+express = require('express')
 
-express = require 'express'
+require('./handle-windows-sigint')()
+
+
+ignore = ->
+  console.log('ignoring termination')
+
+process.on('SIGTERM', ignore)
+process.on('SIGINT', ignore)
+
+
 app = express()
-
-
-process.on 'SIGTERM', ->
-  console.log 'ignoring sigterm'
-
 
 app.get '/machines', (req, res) ->
   res.json [{type: 'bulldozer', name: 'willy'}]
 
 app.get '/machines/:name', (req, res) ->
   res.json {type: 'bulldozer', name: req.params.name}
-
 
 app.listen process.argv[2], ->
   console.log "Dummy server listening on port #{process.argv[2]}!"

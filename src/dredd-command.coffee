@@ -3,28 +3,23 @@ optimist = require 'optimist'
 fs = require 'fs'
 os = require 'os'
 spawnArgs = require 'spawn-args'
-crossSpawn = require('cross-spawn')
+spawnSync = require('cross-spawn').sync
 console = require('console') # stubbed in tests by proxyquire
 
 Dredd = require './dredd'
 interactiveConfig = require './interactive-config'
 {applyLoggingOptions} = require './configuration'
 configUtils = require './config-utils'
+{spawn} = require './child-process'
 logger = require('./logger')
 
 packageData = require('../package.json')
-
-
-TERM_TIMEOUT = 1000
-TERM_RETRY = 500
 
 
 class DreddCommand
   constructor: (options = {}, @cb) ->
     @finished = false
     {@exit, @custom} = options
-
-    @serverProcessEnded = false
 
     @setExitOrCallback()
 
@@ -61,35 +56,12 @@ class DreddCommand
     unless @serverProcess?
       logger.verbose('No backend server process to terminate.')
       return callback()
+    if @serverProcess.terminated
+      logger.debug('The backend server process has already terminated')
+      return callback()
     logger.verbose('Terminating backend server process, PID', @serverProcess.pid)
-
-    term = =>
-      logger.info('Gracefully terminating backend server process.')
-      @serverProcess.kill('SIGTERM')
-
-    kill = =>
-      logger.info('Killing backend server process.')
-      @serverProcess.kill('SIGKILL')
-
-    start = Date.now()
-    term()
-
-    waitForServerTermOrKill = =>
-      if @serverProcessEnded == true
-        clearTimeout timeout
-        logger.debug('Backend server process successfully terminated.')
-        callback()
-      else
-        logger.debug('Backend server process haven\'t terminated yet.')
-        if (Date.now() - start) < TERM_TIMEOUT
-          term()
-          timeout = setTimeout waitForServerTermOrKill, TERM_RETRY
-        else
-          kill()
-          clearTimeout(timeout)
-          callback()
-
-    timeout = setTimeout waitForServerTermOrKill, TERM_RETRY
+    @serverProcess.terminate({force: true})
+    @serverProcess.on('close', -> callback())
 
   # This thing-a-ma-bob here is only for purpose of testing
   # It's basically a dependency injection for the process.exit function
@@ -117,9 +89,9 @@ class DreddCommand
         logger.debug('Using configured custom callback to terminate the Dredd process.')
         @finished = true
         if @sigIntEventAdded
-          if @serverProcess?
+          if @serverProcess? and not @serverProcess.terminated
             logger.verbose('Killing backend server process before Dredd exits.')
-            @serverProcess.kill('SIGKILL')
+            @serverProcess.signalKill()
           process.removeEventListener 'SIGINT', @commandSigInt
         @cb exitStatus
         return @
@@ -214,16 +186,16 @@ class DreddCommand
 
   runServerAndThenDredd: (callback) ->
     if not @argv['server']?
-      logger.verbose('No backend server process specified, starting testing at once.')
+      logger.verbose('No backend server process specified, starting testing at once')
       @runDredd @dreddInstance
     else
-      logger.verbose('Backend server process specified, starting backend server and then testing.')
+      logger.verbose('Backend server process specified, starting backend server and then testing')
 
       parsedArgs = spawnArgs(@argv['server'])
       command = parsedArgs.shift()
 
       logger.verbose("Using '#{command}' as a server command, #{JSON.stringify(parsedArgs)} as arguments")
-      @serverProcess = crossSpawn.spawn command, parsedArgs
+      @serverProcess = spawn(command, parsedArgs)
       logger.info("Starting backend server process with command: #{@argv['server']}")
 
       @serverProcess.stdout.setEncoding 'utf8'
@@ -234,32 +206,38 @@ class DreddCommand
       @serverProcess.stderr.on 'data', (data) ->
         process.stdout.write data.toString()
 
-      @serverProcess.on 'close' , (status) =>
-        @serverProcessEnded = true
-        if status?
-          logger.info('Backend server process exited.')
-        else
-          logger.info('Backend server process was killed.')
+      @serverProcess.on('signalTerm', ->
+        logger.verbose('Gracefully terminating the backend server process')
+      )
+      @serverProcess.on('signalKill', ->
+        logger.verbose('Killing the backend server process')
+      )
+
+      @serverProcess.on 'crash', (exitStatus, killed) =>
+        logger.info('Backend server process was killed') if killed
+
+      @serverProcess.on 'close', =>
+        logger.info('Backend server process exited')
 
       @serverProcess.on 'error', (error) =>
-        logger.error('Command to start backend server process failed, exiting Dredd.', error)
+        logger.error('Command to start backend server process failed, exiting Dredd', error)
         @_processExit(2)
 
       # Ensure server is not running when dredd exits prematurely somewhere
       process.on 'beforeExit', =>
-        if @serverProcess?
-          logger.verbose('Killing backend server process before Dredd exits.')
-          @serverProcess.kill('SIGKILL')
+        if @serverProcess? and not @serverProcess.terminated
+          logger.verbose('Killing backend server process before Dredd exits')
+          @serverProcess.signalKill()
 
       # Ensure server is not running when dredd exits prematurely somewhere
       process.on 'exit', =>
-        if @serverProcess?
-          logger.verbose('Killing backend server process on Dredd\'s exit.')
-          @serverProcess.kill('SIGKILL')
+        if @serverProcess? and not @serverProcess.terminated
+          logger.verbose('Killing backend server process on Dredd\'s exit')
+          @serverProcess.signalKill()
 
       waitSecs = parseInt(@argv['server-wait'], 10)
       waitMilis = waitSecs * 1000
-      logger.info("Waiting #{waitSecs} seconds for backend server process to start.")
+      logger.info("Waiting #{waitSecs} seconds for backend server process to start")
 
       @wait = setTimeout =>
         @runDredd @dreddInstance
@@ -273,7 +251,7 @@ class DreddCommand
     logger.debug('Node.js environment:', process.versions)
     logger.debug('System version:', os.type(), os.release(), os.arch())
     try
-      npmVersion = crossSpawn.sync('npm', ['--version']).stdout.toString().trim()
+      npmVersion = spawnSync('npm', ['--version']).stdout.toString().trim()
       logger.debug('npm version:', npmVersion or 'unable to determine npm version')
     catch err
       logger.debug('npm version: unable to determine npm version:', err)

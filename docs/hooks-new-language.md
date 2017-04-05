@@ -17,57 +17,59 @@ Dredd hooks language abstraction bridge comes with [the language agnostic test s
 If you want to write a hook handler for your language you will have to implement:
 
 - CLI Command runnning TCP socket server
-  - [Must return message `Starting` to stdout](https://github.com/apiaryio/dredd-hooks-template/blob/master/features/tcp_server.feature#L5)
-
+    - [Must return message `Starting` to stdout](https://github.com/apiaryio/dredd-hooks-template/blob/master/features/tcp_server.feature#L5)
 - Hooks API in your language for registering code being executed during the [Dredd lifecycle](how-it-works.md#execution-life-cycle):
-  - before all transactions
-  - before each transaction
-  - before transaction
-  - before each transaction validation
-  - before transaction validation
-  - after transaction
-  - after each transaction
-  - after all transactions
-
+    - before all transactions
+    - before each transaction
+    - before transaction
+    - before each transaction validation
+    - before transaction validation
+    - after transaction
+    - after each transaction
+    - after all transactions
 - When CLI command is executed
-  - it loads files specified as CLI server arguments
-    - it exposes API similar to those in [Ruby](hooks-ruby.md), [Python](hooks-python.md) and [Node.js](hooks-nodejs.md) to each loaded file
-    - it registers functions declared in files for later execution
-
-  - starts a TCP socket server and starts listening on `http://127.0.0.1:61321`.
-
+    - it loads files specified as CLI server arguments
+        - it exposes API similar to those in [Ruby](hooks-ruby.md), [Python](hooks-python.md) and [Node.js](hooks-nodejs.md) to each loaded file
+        - it registers functions declared in files for later execution
+    - starts a TCP socket server and starts listening on `http://127.0.0.1:61321`.
 - When any data is received by the server
-  - Adds every received character to a buffer
-
-  - When delimiting newline (`"\n"`) character is received
-    - It parses the [message](#tcp-socket-message-format) in the buffer as JSON
-    - It looks for `event` key in received object and executes appropriate registered hooks functions
-
+    - Adds every received character to a buffer
+    - When delimiting newline (`\n`) character is received
+        - It parses the [message](#tcp-socket-message-format) in the buffer as JSON
+        - It looks for `event` key in received object and executes appropriate registered hooks functions
     - When the hook function is being executed
-      - It passes value of `data` key from received object to the executed function
-      - Hook function is able to modify data
-
+        - It passes value of `data` key from received object to the executed function
+        - Hook function is able to modify data
     - When function was executed
-      - It should serialize message to JSON
-      - Send the serialized message back to the socket with same `uuid` as received
-      - Send a newline character as message delimiter
+        - It should serialize message to JSON
+        - Send the serialized message back to the socket with same `uuid` as received
+        - Send a newline character as message delimiter
+
+## Termination
+
+When the testing is done, Dredd signals the hook handler process to terminate. This is done repeatedly with delays. When termination timeout is over, Dredd loses its patience and kills the process forcefully.
+
+- **retry delays** can be configured by [--hooks-worker-term-retry](usage-cli.md#-hooks-worker-term-retry)
+- **timeout** can be configured by [--hooks-worker-term-timeout](usage-cli.md#-hooks-worker-term-timeout)
+
+On Linux or macOS, Dredd uses the `SIGTERM` signal to tell the hook handler process it should terminate. On Windows, where signals do not exist, Dredd sends the `END OF TEXT` character (`\u0003`, which is ASCII representation of <kbd>Ctrl+C</kbd>) to standard input of the process.
 
 ## TCP Socket Message format
 
 - transaction (object)
-    - uuid: `234567-asdfghjkl` (string) Id used for event unique identification on both server and client sides
-
-    - event: `event` (enum) Event type
-      - beforeAll (string)
-      - beforeEach (string)
-      - before (string)
-      - beforeEachValidation (string)
-      - beforeValidation (string)
-      - after (string)
-      - afterEach (string)
-      - afterAll (string)
-
-    - data: (object, array) Data passed as a argument to the function
+    - uuid: `234567-asdfghjkl` (string) - Id used for event unique identification on both server and client sides
+    - event: `event` (enum) - Event type
+        - beforeAll (string)
+        - beforeEach (string)
+        - before (string)
+        - beforeEachValidation (string)
+        - beforeValidation (string)
+        - after (string)
+        - afterEach (string)
+        - afterAll (string)
+    - data (enum) - Data passed as a argument to the function
+        - (object)
+        - (array)
 
 ## Configuration Options
 

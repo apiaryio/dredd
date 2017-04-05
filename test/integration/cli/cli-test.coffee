@@ -65,19 +65,6 @@ describe 'CLI', ->
   describe "when called with arguments", ->
 
     describe 'when using language hook handler and spawning the server', ->
-      # Some tests are disabled for Windows. There are multiple known issues which
-      # need to be addressed:
-      #
-      # *  Windows do not support graceful termination of command-line processes
-      #    or not in a simple way. CLI process can be only forefully killed, by
-      #    default. Thus the functionality around SIGTERM needs to be either
-      #    marked as unsupported or some special handling needs to be introduced.
-      #
-      # *  Killing a process on Windows requires a bit smarter approach then just
-      #    calling process.kill(), which is what Dredd does as of now. For that
-      #    reason, Dredd isn't able to effectively kill a process on Windows.
-      itNotWindows = if process.platform is 'win32' then it.skip else it
-
       describe "and handler file doesn't exist", ->
         runtimeInfo = undefined
 
@@ -112,7 +99,7 @@ describe 'CLI', ->
           assert.include runtimeInfo.dredd.stderr, 'not found'
 
         it 'should term or kill the server', (done) ->
-          isProcessRunning('endless-nosigterm', (err, isRunning) ->
+          isProcessRunning('endless-ignore-term', (err, isRunning) ->
             assert.isFalse isRunning unless err
             done(err)
           )
@@ -149,8 +136,8 @@ describe 'CLI', ->
         it 'should return message announcing the fact', ->
           assert.include runtimeInfo.dredd.stderr, 'exited'
 
-        itNotWindows 'should term or kill the server', (done) ->
-          isProcessRunning('endless-nosigterm', (err, isRunning) ->
+        it 'should term or kill the server', (done) ->
+          isProcessRunning('endless-ignore-term', (err, isRunning) ->
             assert.isFalse isRunning unless err
             done(err)
           )
@@ -169,7 +156,7 @@ describe 'CLI', ->
           args = [
             './test/fixtures/single-get.apib'
             "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-            "--server=#{COFFEE_BIN} ./test/fixtures/scripts/endless-nosigterm.coffee"
+            "--server=#{COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee"
             '--server-wait=0'
             "--language=#{COFFEE_BIN} ./test/fixtures/scripts/kill-self.coffee"
             '--hookfiles=./test/fixtures/scripts/emptyfile'
@@ -185,11 +172,15 @@ describe 'CLI', ->
         it 'should return with status 1', ->
           assert.equal runtimeInfo.dredd.exitStatus, 1
 
-        itNotWindows 'should return message announcing the fact', ->
-          assert.include runtimeInfo.dredd.stderr, 'killed'
+        it 'should return message announcing the fact', ->
+          if process.platform is 'win32'
+            # On Windows there's no way to detect a process was killed
+            assert.include runtimeInfo.dredd.stderr, 'exited'
+          else
+            assert.include runtimeInfo.dredd.stderr, 'killed'
 
-        itNotWindows 'should term or kill the server', (done) ->
-          isProcessRunning('endless-nosigterm', (err, isRunning) ->
+        it 'should term or kill the server', (done) ->
+          isProcessRunning('endless-ignore-term', (err, isRunning) ->
             assert.isFalse isRunning unless err
             done(err)
           )
@@ -203,7 +194,7 @@ describe 'CLI', ->
         before (done) ->
           app = createServer()
           app.get '/machines', (req, res) ->
-            killAll('endless-nosigterm.+[^=]foo/bar/hooks', (err) ->
+            killAll('endless-ignore-term.+[^=]foo/bar/hooks', (err) ->
               done err if err
               res.json([{type: 'bulldozer', name: 'willy'}])
             )
@@ -216,9 +207,9 @@ describe 'CLI', ->
           args = [
             './test/fixtures/single-get.apib'
             "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-            "--server=#{COFFEE_BIN} ./test/fixtures/scripts/endless-nosigterm.coffee"
+            "--server=#{COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee"
             '--server-wait=0'
-            "--language=#{COFFEE_BIN} ./test/fixtures/scripts/endless-nosigterm.coffee"
+            "--language=#{COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee"
             '--hookfiles=foo/bar/hooks'
           ]
           hookHandler.listen DEFAULT_HOOK_HANDLER_PORT, ->
@@ -234,11 +225,15 @@ describe 'CLI', ->
         it 'should return with status 1', ->
           assert.equal runtimeInfo.dredd.exitStatus, 1
 
-        itNotWindows 'should return message announcing the fact', ->
-          assert.include runtimeInfo.dredd.stderr, 'killed'
+        it 'should return message announcing the fact', ->
+          if process.platform is 'win32'
+            # On Windows there's no way to detect a process was killed
+            assert.include runtimeInfo.dredd.stderr, 'exited'
+          else
+            assert.include runtimeInfo.dredd.stderr, 'killed'
 
-        itNotWindows 'should term or kill the server', (done) ->
-          isProcessRunning('endless-nosigterm', (err, isRunning) ->
+        it 'should term or kill the server', (done) ->
+          isProcessRunning('endless-ignore-term', (err, isRunning) ->
             assert.isFalse isRunning unless err
             done(err)
           )
@@ -263,9 +258,9 @@ describe 'CLI', ->
           args = [
             './test/fixtures/single-get.apib'
             "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-            "--server=#{COFFEE_BIN} ./test/fixtures/scripts/endless-nosigterm.coffee"
+            "--server=#{COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee"
             '--server-wait=0'
-            "--language=#{COFFEE_BIN} ./test/fixtures/scripts/endless-nosigterm.coffee"
+            "--language=#{COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee"
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ]
           hookHandler.listen DEFAULT_HOOK_HANDLER_PORT, ->
@@ -285,14 +280,8 @@ describe 'CLI', ->
           assert.notInclude runtimeInfo.dredd.stderr, 'killed'
           assert.notInclude runtimeInfo.dredd.stderr, 'exited'
 
-        itNotWindows 'should kill the handler', (done) ->
-          isProcessRunning('dredd-fake-handler', (err, isRunning) ->
-            assert.isFalse isRunning unless err
-            done(err)
-          )
-
-        it 'should kill the server', (done) ->
-          isProcessRunning('dredd-fake-server', (err, isRunning) ->
+        it 'should kill both the handler and the server', (done) ->
+          isProcessRunning('endless-ignore-term', (err, isRunning) ->
             assert.isFalse isRunning unless err
             done(err)
           )
