@@ -182,7 +182,7 @@ runCommand = (command, args, spawnOptions = {}, callback) ->
     output += data
   )
 
-  cli.on('close', (exitStatus) ->
+  cli.on('exit', (exitStatus) ->
     callback(null, {stdout, stderr, output, exitStatus})
   )
 
@@ -220,7 +220,7 @@ isProcessRunning = (pattern, callback) ->
 kill = (pid, callback) ->
   if process.platform is 'win32'
     taskkill = spawn('taskkill', ['/F', '/T', '/PID', pid])
-    taskkill.on('close', -> callback())
+    taskkill.on('exit', -> callback())
     # no error handling - we don't care about the result of the command
   else
     try

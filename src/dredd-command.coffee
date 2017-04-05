@@ -61,7 +61,7 @@ class DreddCommand
       return callback()
     logger.verbose('Terminating backend server process, PID', @serverProcess.pid)
     @serverProcess.terminate({force: true})
-    @serverProcess.on('close', -> callback())
+    @serverProcess.on('exit', -> callback())
 
   # This thing-a-ma-bob here is only for purpose of testing
   # It's basically a dependency injection for the process.exit function
@@ -216,7 +216,7 @@ class DreddCommand
       @serverProcess.on 'crash', (exitStatus, killed) =>
         logger.info('Backend server process was killed') if killed
 
-      @serverProcess.on 'close', =>
+      @serverProcess.on 'exit', =>
         logger.info('Backend server process exited')
 
       @serverProcess.on 'error', (error) =>

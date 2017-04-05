@@ -14,7 +14,7 @@ signalKill = (childProcess, callback) ->
   childProcess.emit('signalKill')
   if IS_WINDOWS
     taskkill = spawn('taskkill', ['/F', '/T', '/PID', childProcess.pid])
-    taskkill.on('close', (exitStatus) ->
+    taskkill.on('exit', (exitStatus) ->
       if exitStatus
         err = new Error("Unable to forcefully terminate process #{childProcess.pid}")
         return callback(err)
@@ -77,10 +77,10 @@ terminate = (childProcess, options = {}, callback) ->
   retryDelay = if options.retryDelay? then options.retryDelay else TERM_DEFAULT_RETRY_MS
 
   terminated = false
-  onClose = ->
+  onExit = ->
     terminated = true
-    childProcess.removeListener('close', onClose)
-  childProcess.on('close', onClose)
+    childProcess.removeListener('exit', onExit)
+  childProcess.on('exit', onExit)
 
   start = Date.now()
   t = undefined
@@ -140,7 +140,7 @@ spawn = (args...) ->
       childProcess.emit('error', err) if err
     )
 
-  childProcess.on('close', (exitStatus, signal) ->
+  childProcess.on('exit', (exitStatus, signal) ->
     childProcess.terminated = true
     childProcess.killedIntentionally = killedIntentionally
     childProcess.terminatedIntentionally = terminatedIntentionally
