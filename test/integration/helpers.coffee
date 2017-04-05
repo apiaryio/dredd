@@ -158,24 +158,30 @@ runDreddCommandWithServer = (args, app, serverPort, callback) ->
   )
 
 
+# Checks whether there's a process with name matching given pattern.
 isProcessRunning = (pattern, callback) ->
   ps.lookup({arguments: pattern}, (err, processList) ->
     callback(err, !!processList?.length)
   )
 
 
+# Kills process with given PID if the process exists. Otherwise
+# does nothing.
 kill = (pid, callback) ->
   if process.platform is 'win32'
     taskkill = spawn('taskkill', ['/F', '/T', '/PID', pid])
     taskkill.on('close', -> callback())
+    # no error handling - we don't care about the result of the command
   else
     try
       process.kill(pid, 'SIGKILL')
     catch
-      # do nothing
+      # if the PID doesn't exist, process.kill() throws - we do not care
     process.nextTick(callback)
 
 
+# Kills processes which have names matching given pattern. Does
+# nothing if there are no matching processes.
 killAll = (pattern, callback) ->
   ps.lookup({arguments: pattern}, (err, processList) ->
     return callback(err) if err or not processList.length
