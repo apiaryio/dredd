@@ -26,11 +26,11 @@ runChildProcess = (command, fn, callback) ->
   childProcess.stdout.on('data', (data) -> processInfo.stdout += data.toString())
   childProcess.stderr.on('data', (data) -> processInfo.stderr += data.toString())
 
-  onClose = (exitStatus, signal) ->
+  onExit = (exitStatus, signal) ->
     processInfo.terminated = true
     processInfo.exitStatus = exitStatus
     processInfo.signal = signal
-  childProcess.on('close', onClose)
+  childProcess.on('exit', onExit)
 
   onError = (err) ->
     processInfo.error = err
@@ -42,7 +42,7 @@ runChildProcess = (command, fn, callback) ->
     fn(childProcess)
 
     setTimeout( ->
-      childProcess.removeListener('close', onClose)
+      childProcess.removeListener('exit', onExit)
       childProcess.removeListener('error', onError)
       childProcess.removeListener('crash', onCrash)
 
