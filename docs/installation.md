@@ -90,3 +90,4 @@ There are still [several known limitations][Windows Issues] when using Dredd on 
 [Windows C++11]: https://github.com/apiaryio/drafter/wiki/Building-on-Windows
 [Travis CI C++11]: https://github.com/apiaryio/protagonist/blob/master/.travis.yml
 [npm Python]: http://stackoverflow.com/a/22433804/325365
+[Dredd Example]: https://github.com/apiaryio/dredd-example/
