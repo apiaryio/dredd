@@ -72,6 +72,8 @@ $ npm install -g dredd
     [full documentation][Documentation].
 
 
+To build docs, install [Docker](https://www.docker.com/) and run `./build-docs.sh`. To see HTML version, open `docs/build/html/index.html`. 
+
 [API Blueprint]: http://apiblueprint.org/
 [API Blueprint tutorial]: https://apiblueprint.org/documentation/tutorial.html
 [API Blueprint examples]: https://github.com/apiaryio/api-blueprint/tree/master/examples
