@@ -48,7 +48,6 @@
     "proxyquire": "^1.7.10",
     "request": "^2.81.0",
     "spawn-args": "^0.2.0",
-    "sync-exec": "^0.6.2",
     "uuid": "^3.0.0",
     "which": "^1.2.14",
     "winston": "^2.2.0"
@@ -70,7 +69,8 @@
     "nock": "^9.0.13",
     "ps-node": "^0.1.5",
     "semantic-release": "^6.3.2",
-    "sinon": "^2.1.0"
+    "sinon": "^2.1.0",
+    "sync-exec": "^0.6.2"
   },
   "keywords": [
     "api",
