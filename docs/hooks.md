@@ -15,7 +15,7 @@ Hooks are usually used for:
 - setting custom expectations
 - debugging via logging stuff
 
-# Languages
+## Languages
 
 You can interact with your server implementation in following languages:
 

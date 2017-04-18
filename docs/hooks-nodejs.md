@@ -103,7 +103,7 @@ hooks.afterAll(function (transactions, done) {
 })
 ```
 
-# Examples
+## Examples
 
 ### How to Skip Tests
 

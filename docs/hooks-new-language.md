@@ -49,8 +49,8 @@ If you want to write a hook handler for your language you will have to implement
 
 When the testing is done, Dredd signals the hook handler process to terminate. This is done repeatedly with delays. When termination timeout is over, Dredd loses its patience and kills the process forcefully.
 
-- **retry delays** can be configured by [--hooks-worker-term-retry](usage-cli.md#-hooks-worker-term-retry)
-- **timeout** can be configured by [--hooks-worker-term-timeout](usage-cli.md#-hooks-worker-term-timeout)
+- **retry delays** can be configured by [`--hooks-worker-term-retry`](usage-cli.md#hooks-worker-term-retry)
+- **timeout** can be configured by [`--hooks-worker-term-timeout`](usage-cli.md#hooks-worker-term-timeout)
 
 On Linux or macOS, Dredd uses the `SIGTERM` signal to tell the hook handler process it should terminate. On Windows, where signals do not exist, Dredd sends the `END OF TEXT` character (`\u0003`, which is ASCII representation of <kbd>Ctrl+C</kbd>) to standard input of the process.
 
@@ -75,14 +75,14 @@ On Linux or macOS, Dredd uses the `SIGTERM` signal to tell the hook handler proc
 
 There are several configuration options, which can help you during development:
 
-- [--hooks-worker-timeout](usage-cli.md#-hooks-worker-timeout)
-- [--hooks-worker-connect-timeout](usage-cli.md#-hooks-worker-connect-timeout)
-- [--hooks-worker-connect-retry](usage-cli.md#-hooks-worker-connect-retry)
-- [--hooks-worker-after-connect-wait](usage-cli.md#-hooks-worker-after-connect-wait)
-- [--hooks-worker-term-timeout](usage-cli.md#-hooks-worker-term-timeout)
-- [--hooks-worker-term-retry](usage-cli.md#-hooks-worker-term-retry)
-- [--hooks-worker-handler-host](usage-cli.md#-hooks-worker-handler-host)
-- [--hooks-worker-handler-port](usage-cli.md#-hooks-worker-handler-port)
+- `--hooks-worker-timeout` - [docs](usage-cli.md#hooks-worker-timeout)
+- `--hooks-worker-connect-timeout` - [docs](usage-cli.md#hooks-worker-connect-timeout)
+- `--hooks-worker-connect-retry` - [docs](usage-cli.md#hooks-worker-connect-retry)
+- `--hooks-worker-after-connect-wait` - [docs](usage-cli.md#hooks-worker-after-connect-wait)
+- `--hooks-worker-term-timeout` - [docs](usage-cli.md#hooks-worker-term-timeout)
+- `--hooks-worker-term-retry` - [docs](usage-cli.md#hooks-worker-term-retry)
+- `--hooks-worker-handler-host` - [docs](usage-cli.md#hooks-worker-handler-host)
+- `--hooks-worker-handler-port` - [docs](usage-cli.md#hooks-worker-handler-port)
 
 ## Need help? No problem!
 

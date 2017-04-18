@@ -161,7 +161,7 @@ Often you want to test a sequence of steps, a scenario, rather than just one req
 > **Note:** [API Blueprint][] prepares direct support for testing and scenarios. Interested?
   Check out [apiaryio/api-blueprint#21](https://github.com/apiaryio/api-blueprint/issues/21)!
 
-To test various scenarios, you will want to write each of them into a separate API description document. To load them during a single test run, use the [--path](usage-cli.md#-path-p) option.
+To test various scenarios, you will want to write each of them into a separate API description document. To load them during a single test run, use the `--path` option ([docs](usage-cli.md#path-p)).
 
 For workflows to work properly, you'll also need to keep **shared context** between individual HTTP transactions. You can use [hooks](hooks.md) in order to achieve that. See tips on how to [pass data between transactions](hooks.md#sharing-data-between-steps-in-request-stash).
 
