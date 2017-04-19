@@ -612,7 +612,7 @@ class TransactionRunner
 
     logger.verbose('Validating HTTP transaction by Gavel.js')
     logger.debug('Determining whether HTTP transaction is valid (getting boolean verdict)')
-    gavel.isValid transaction.real, transaction.expected, 'response', (isValidError, isValid) ->
+    gavel.isValid transaction.real, transaction.expected, 'response', (isValidError, isValid) =>
       if isValidError
         logger.debug('Gavel.js validation errored:', isValidError)
         @emitError(isValidError, test)
@@ -628,7 +628,7 @@ class TransactionRunner
         test.status = 'fail'
 
       logger.debug('Validating HTTP transaction (getting verbose validation result)')
-      gavel.validate transaction.real, transaction.expected, 'response', (validateError, gavelResult) ->
+      gavel.validate transaction.real, transaction.expected, 'response', (validateError, gavelResult) =>
         if not isValidError and validateError
           logger.debug('Gavel.js validation errored:', validateError)
           @emitError(validateError, test)
