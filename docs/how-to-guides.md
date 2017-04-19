@@ -207,7 +207,7 @@ FORMAT: 1A
 
 ```
 
-### Writing Hooks
+#### Writing Hooks
 
 To have an idea where we can hook our arbitrary code, we should first ask Dredd to list all available transaction names:
 
@@ -334,7 +334,7 @@ paths:
                 type: string
 ```
 
-### Writing Hooks
+#### Writing Hooks
 
 To have an idea where we can hook our arbitrary code, we should first ask Dredd to list all available transaction names:
 
@@ -376,6 +376,66 @@ before('/cars/{id} > PATCH > 200 > application/json', function (transaction) {
   transaction.request.uri = transaction.fullPath
 })
 ```
+
+## Making Dredd Validation Stricter
+
+API Blueprint or Swagger files are usually created primarily with _documentation_ in mind. But what's enough for documentation doesn't need to be enough for _testing_.
+
+That applies to both [MSON][] (a language powering API Blueprint's [`+ Attributes`][apib-attributes-section] sections) and [JSON Schema][] (a language powering the Swagger format and API Blueprint's [`+ Schema`][apib-schema-section] sections).
+
+In following sections you can learn about how to deal with common scenarios.
+
+### Avoiding Additional Properties
+
+If you describe a JSON body which has attributes `name` and `size`, the following payload will be considered as correct:
+
+```json
+{"name": "Sparta", "size": 300, "luck": false}
+```
+
+It's because in both [MSON][] and [JSON Schema][] additional properties are not forbidden by default.
+
+- In API Blueprint's [`+ Attributes`][apib-attributes-section] sections you can mark your object with [`fixed-type`][apib-fixed-type], which doesn't allow additional properties.
+- In API Blueprint's [`+ Schema`][apib-schema-section] sections and in Swagger you can use [`additionalProperties: false`][json-schema-additional-properties] on the objects.
+
+### Requiring Properties
+
+If you describe a JSON body which has attributes `name` and `size`, the following payload will be considered as correct:
+
+```json
+{"name": "Sparta"}
+```
+
+It's because properties are optional by default in both [MSON][] and [JSON Schema][] and you need to explicitly specify them as required.
+
+- In API Blueprint's [`+ Attributes`][apib-attributes-section] section, you can use [`required`][apib-required].
+- In API Blueprint's [`+ Schema`][apib-schema-section] sections and in Swagger you can use [`required`][json-schema-required], where you list the required properties. (Note this is true only for the [Draft v4][] JSON Schema, in older versions the `required` functionality was done differently.)
+
+### Validating Structure of Array Items
+
+If you describe an array of items, where each of the items should have a `name` property, the following payload will be considered as correct:
+
+```json
+[{"name": "Sparta"}, {"title": "Athens"}, "Thebes"]
+```
+
+That's because in [MSON][], the default behavior is that you are specifying what _may_ appear in the array.
+
+- In API Blueprint's [`+ Attributes`][apib-attributes-section] sections you can mark your array with [`fixed-type`][apib-fixed-type], which doesn't allow array items of a different structure then specified.
+- In API Blueprint's [`+ Schema`][apib-schema-section] sections and in Swagger make sure to learn about how [validation of arrays][json-schema-arrays] exactly works.
+
+### Validating Specific Values
+
+If you describe a JSON body which has attributes `name` and `size`, the following payload will be considered as correct:
+
+```json
+{"name": "Sparta", "size": 42}
+```
+
+If the size should be always equal to 300, you need to specify the fact in your API description.
+
+- In API Blueprint's [`+ Attributes`][apib-attributes-section] sections you can mark your property with [`fixed`][apib-fixed], which turns the sample value into a required value. You can also use [`enum`][apib-enum] to provide a set of possible values.
+- In API Blueprint's [`+ Schema`][apib-schema-section] sections and in Swagger you can use [`enum`][json-schema-enum] with one or more possible values.
 
 ## Integrating Dredd with Your Test Suite
 
@@ -692,3 +752,18 @@ If your hooks crash, Dredd will send an error to reporters, alongside with curre
 [Travis CI]: https://travis-ci.org/
 [CircleCI]: https://circleci.com/
 [vendor extension property]: http://swagger.io/specification/#vendorExtensions
+
+[MSON]: https://apiblueprint.org/documentation/mson/specification.html
+[JSON Schema]: http://json-schema.org/
+[Draft v4]: https://tools.ietf.org/html/draft-zyp-json-schema-04
+
+[apib-attributes-section]: https://apiblueprint.org/documentation/specification.html#def-attributes-section
+[apib-schema-section]: https://apiblueprint.org/documentation/specification.html#def-schema-section
+[apib-fixed-type]: https://apiblueprint.org/documentation/mson/specification.html#353-type-attribute
+[apib-required]: https://apiblueprint.org/documentation/mson/specification.html#353-type-attribute
+[apib-fixed]: https://apiblueprint.org/documentation/mson/specification.html#353-type-attribute
+[apib-enum]: https://apiblueprint.org/documentation/mson/specification.html#212-structure-types
+[json-schema-enum]: https://spacetelescope.github.io/understanding-json-schema/reference/generic.html#enumerated-values
+[json-schema-additional-properties]: https://spacetelescope.github.io/understanding-json-schema/reference/object.html#properties
+[json-schema-required]: https://spacetelescope.github.io/understanding-json-schema/reference/object.html#required-properties
+[json-schema-arrays]: https://spacetelescope.github.io/understanding-json-schema/reference/array.html

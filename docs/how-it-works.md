@@ -76,7 +76,7 @@ To validate the structure Dredd uses [JSON Schema][] inferred from the API descr
 
 #### API Blueprint
 
-1. [`+ Schema`][schema-section] section - provided custom JSON Schema (draft v4 or v3) will be used.
+1. [`+ Schema`][schema-section] section - provided custom JSON Schema ([Draft v4][] and [v3][Draft v3]) will be used.
 2. [`+ Attributes`][attributes-section] section with data structure description in [MSON][] - API Blueprint parser automatically generates JSON Schema from MSON.
 3. [`+ Body`][body-section] section with sample JSON payload - [Gavel.js][], which is responsible for validation in Dredd, automatically infers some basic expectations described below.
 
@@ -220,6 +220,8 @@ Dredd intentionally **does not support HTTP(S) proxies for testing**. Proxy can 
 [JSON Schema]: http://json-schema.org/
 [Swagger Adapter]: https://github.com/apiaryio/fury-adapter-swagger/
 [RFC6570]: https://tools.ietf.org/html/rfc6570
+[Draft v4]: https://tools.ietf.org/html/draft-zyp-json-schema-04
+[Draft v3]: https://tools.ietf.org/html/draft-zyp-json-schema-03
 
 [CircleCI]: https://circleci.com/
 [Travis CI]: http://travis-ci.org/
