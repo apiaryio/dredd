@@ -128,7 +128,7 @@ Dredd's [hooks](hooks.md) enable you to write some glue code in your favorite la
 For more complex example applications, please refer to:
 
 - [Express.js example application](http://github.com/apiaryio/dredd-example)
-- [Ruby on Rails example application](https://github.com/theodorton/dredd-test-rails)
+- [Ruby on Rails example application](https://github.com/apiaryio/dredd-test-rails)
 - [Laravel example application](https://github.com/ddelnano/dredd-hooks-php/wiki/Laravel-Example)
 
 
