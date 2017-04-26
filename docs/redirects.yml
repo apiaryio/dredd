@@ -1,0 +1,35 @@
+# This file is a documentation of which redirects need to be manually set
+# on the https://readthedocs.org/dashboard/dredd-docs-sphinx-test/redirects/
+# page. It's up to Dredd maintainers to keep this list in sync with reality.
+#
+# You can use https://github.com/honzajavorek/rtd-redirects to programmatically
+# upload the redirects to ReadTheDocs admin interface.
+redirects:
+  # removed pages
+  "/example/": "/quickstart.html"
+  "/example.html": "/quickstart.html"
+  "/execution-lifecycle/": "/how-it-works.html#execution-life-cycle"
+  "/execution-lifecycle.html": "/how-it-works.html#execution-life-cycle"
+  "/overview/": "/how-it-works.html"
+  "/overview.html": "/how-it-works.html"
+  "/usage/": "/usage-cli.html"
+  "/usage.html": "/usage-cli.html"
+
+  # MkDocs to Sphinx migration
+  "/hooks-go/": "/hooks-go.html"
+  "/usage-js/": "/usage-js.html"
+  "/data-structures/": "/data-structures.html"
+  "/contributing/": "/contributing.html"
+  "/hooks-new-language/": "/hooks-new-language.html"
+  "/hooks-perl/": "/hooks-perl.html"
+  "/hooks-nodejs/": "/hooks-nodejs.html"
+  "/how-to-guides/": "/how-to-guides.html"
+  "/hooks/": "/hooks.html"
+  "/quickstart/": "/quickstart.html"
+  "/hooks-ruby/": "/hooks-ruby.html"
+  "/how-it-works/": "/how-it-works.html"
+  "/hooks-php/": "/hooks-php.html"
+  "/installation/": "/installation.html"
+  "/usage-cli/": "/usage-cli.html"
+  "/hooks-python/": "/hooks-python.html"
+  "/hooks-js-sandbox/": "/hooks-js-sandbox.html"

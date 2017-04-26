@@ -25,7 +25,7 @@ project_dir = os.path.join(docs_dir, '..')
 node_modules_bin_dir = os.path.join(project_dir, 'node_modules', '.bin')
 
 if os.environ.get('READTHEDOCS') == 'True':
-    installation_output = subprocess.getoutput('bash ' + os.path.join(docs_dir, 'install_node.sh'))
+    installation_output = subprocess.getoutput('bash ' + os.path.join(docs_dir, 'install-node.sh'))
     node_bin = installation_output.splitlines()[-1].strip()
 else:
     node_bin = 'node'

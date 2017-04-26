@@ -12,3 +12,4 @@ cov.*
 # List specific to .gitignore
 node_modules
 .idea/
+_build
