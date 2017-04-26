@@ -36,7 +36,7 @@
     "cross-spawn": "^5.0.1",
     "dredd-transactions": "^4.0.0",
     "file": "^0.2.2",
-    "gavel": "^1.1.0",
+    "gavel": "^1.1.1",
     "glob": "^7.0.5",
     "html": "^1.0.0",
     "htmlencode": "0.0.4",
