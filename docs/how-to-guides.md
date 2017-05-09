@@ -16,7 +16,7 @@ To solve the situation, it's recommended to isolate the deletion test by [hooks]
 
 #### API Blueprint
 
-```markdown
+```apiblueprint
 FORMAT: 1A
 
 # Categories API
@@ -169,7 +169,7 @@ For workflows to work properly, you'll also need to keep **shared context** betw
 
 Imagine we have a simple workflow described:
 
-```markdown
+```apiblueprint
 FORMAT: 1A
 
 # My Scenario
@@ -443,7 +443,7 @@ Most of the authentication schemes use HTTP header for carrying the authenticati
 
 API Blueprint format supports `multipart/form-data` media type and so does Dredd. In the example below, Dredd will automatically add `LF` to all lines in request body:
 
-```markdown
+```apiblueprint
 # POST /images
 
 + Request (multipart/form-data;boundary=---BOUNDARY)
@@ -473,7 +473,7 @@ API Blueprint format supports `multipart/form-data` media type and so does Dredd
 
 To test multiple requests and responses within one action in Dredd, you need to cluster them into pairs:
 
-```markdown
+```apiblueprint
 FORMAT: 1A
 
 # My API

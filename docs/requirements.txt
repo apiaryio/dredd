@@ -1,0 +1,14 @@
+appdirs==1.4.3
+click==6.7
+Jinja2==2.9.6
+livereload==2.5.1
+Markdown==2.6.8
+MarkupSafe==1.0
+mkdocs==0.16.3
+packaging==16.8
+Pygments==2.2.0
+pygments-markdown-lexer==0.1.0.dev39
+pyparsing==2.2.0
+PyYAML==3.12
+six==1.10.0
+tornado==4.5.1
