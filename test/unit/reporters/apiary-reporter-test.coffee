@@ -153,7 +153,67 @@ describe 'ApiaryReporter', () ->
       nock.cleanAll()
       done()
 
+    describe 'constructor', ->
+      describe 'when custom settings contain API URL without trailing slash', ->
+        custom =
+          apiaryReporterEnv: env
+          apiaryApiUrl: 'https://api.example.com:1234'
+
+        it 'uses the provided API URL in configuration', ->
+          emitter = new EventEmitter
+          apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom}
+          assert.equal(
+            apiaryReporter.configuration.apiUrl,
+            'https://api.example.com:1234'
+          )
+
+      describe 'when custom settings contain API URL with trailing slash', ->
+        custom =
+          apiaryReporterEnv: env
+          apiaryApiUrl: 'https://api.example.com:1234/'
+
+        it 'uses the provided API URL in configuration, without trailing slash', ->
+          emitter = new EventEmitter
+          apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom}
+          assert.equal(
+            apiaryReporter.configuration.apiUrl,
+            'https://api.example.com:1234'
+          )
+
     describe "_performRequestAsync", () ->
+      describe 'when custom settings contain API URL without trailing slash', ->
+        custom =
+          apiaryReporterEnv: env
+          apiaryApiUrl: 'https://api.example.com:1234'
+
+        it 'should use API URL without double slashes', (done) ->
+          emitter = new EventEmitter
+          apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom}
+          apiaryReporter._performRequestAsync '/', 'POST', '', (error) ->
+            assert.isOk loggerStub.verbose.calledWithMatch('POST https://api.example.com:1234/ (without body)')
+            done()
+
+      describe 'when custom settings contain API URL with trailing slash', ->
+        custom =
+          apiaryReporterEnv: env
+          apiaryApiUrl: 'https://api.example.com:1234/'
+
+        describe 'when provided with root path', ->
+          it 'should use API URL without double slashes', (done) ->
+            emitter = new EventEmitter
+            apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom}
+            apiaryReporter._performRequestAsync '/', 'POST', '', (error) ->
+              assert.isOk loggerStub.verbose.calledWithMatch('POST https://api.example.com:1234/ (without body)')
+              done()
+
+        describe 'when provided with non-root path', ->
+          it 'should use API URL without double slashes', (done) ->
+            emitter = new EventEmitter
+            apiaryReporter = new ApiaryReporter emitter, {}, {}, {custom}
+            apiaryReporter._performRequestAsync '/hello?q=1', 'POST', '', (error) ->
+              assert.isOk loggerStub.verbose.calledWithMatch('POST https://api.example.com:1234/hello?q=1 (without body)')
+              done()
+
       describe 'when server is not available', () ->
         beforeEach () ->
           nock.enableNetConnect()
