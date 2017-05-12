@@ -49,7 +49,7 @@ In order to retrieve transaction names please run Dredd with the `--names` argum
 
 For example, given an API Blueprint file `api-description.apib` as following:
 
-```markdown
+```apiblueprint
 FORMAT: 1A
 
 # Machines API

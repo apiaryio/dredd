@@ -21,7 +21,7 @@ First, let's design the API we are about to build and test. That means you will 
 
 If you choose API Blueprint, create a file called `api-description.apib` in the root of your project and save it with following content:
 
-```markdown
+```apiblueprint
 FORMAT: 1A
 
 # GET /
