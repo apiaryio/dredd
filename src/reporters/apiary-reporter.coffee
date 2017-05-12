@@ -26,7 +26,7 @@ class ApiaryReporter
     @errors = []
     @serverError = false
     @configuration =
-      apiUrl: @_get 'apiaryApiUrl', 'APIARY_API_URL', 'https://api.apiary.io'
+      apiUrl: (@_get 'apiaryApiUrl', 'APIARY_API_URL', 'https://api.apiary.io').replace(/\/$/, '')
       apiToken: @_get 'apiaryApiKey', 'APIARY_API_KEY', null
       apiSuite: @_get 'apiaryApiName', 'APIARY_API_NAME', null
     logger.verbose("Using '#{@type}' reporter.")
@@ -202,7 +202,7 @@ class ApiaryReporter
       logger.debug('Apiary reporter response:', JSON.stringify(info, null, 2))
       return callback(null, res, parsedBody)
 
-    body = JSON.stringify(reqBody)
+    body = if reqBody then JSON.stringify(reqBody) else ''
     system = os.type() + ' ' + os.release() + '; ' + os.arch()
     headers =
       'User-Agent': "Dredd Apiary Reporter/#{packageData.version} (#{system})"
