@@ -86,6 +86,17 @@ Also mind that CoffeeScript is production dependency (not dev dependency),
 because it's needed not only for compiling Dredd package before uploading
 to npm, but also for running user-provided hooks written in CoffeeScript.
 
+### Compiled vs pure JavaScript
+
+Dredd uses [Drafter][] for parsing [API Blueprint][] documents. Drafter is written in C++11 and needs to be compiled during installation. Since that can be problematic for some environments and leads to a lot of troubleshooting, there's also pure JavaScript version of the parser, [drafter.js][]. While drafter.js is fully equivalent, it can have slower performance. That's why there's [drafter-npm][] package, which first tries to compile the C++11 version of the parser and if it's unsuccessful, uses the JavaScript equivalent.
+
+Dredd depends on the [drafter-npm][] package. That's why you can see `node-gyp` errors and failures during Dredd installation, although after the installation is done, Dredd seems to normally work and correctly parses API Blueprint documents. Usual problems leading to the JavaScript version of the parser being used as fallback:
+
+- **Your machine is missing a C++11 compiler.** See how to fix this on [Windows][Windows C++11] or [Travis CI][Travis CI C++11].
+- **npm was used with Python 3.** `node-gyp`, which performs the compilation, doesn't support Python 3. If your default Python is 3 (see `python --version`), [tell npm to use an older version][npm Python].
+
+The `--no-optional` option forces the JavaScript version of Drafter and avoids any compilation attempts when installing Dredd.
+
 ### Versioning
 
 Dredd follows [Semantic Versioning][]. To ensure certain stability of Dredd installations (e.g. in CI builds), users can pin their version. They can also use release tags:
@@ -239,11 +250,18 @@ There is also one environment variable you could find useful:
 [md-two-spaces]: https://daringfireball.net/projects/markdown/syntax#p
 [AppVeyor]: http://appveyor.com/
 
+[Drafter]: https://github.com/apiaryio/drafter
+[API Blueprint]: https://apiblueprint.org/
+[drafter.js]: https://github.com/apiaryio/drafter.js
+[drafter-npm]: https://github.com/apiaryio/drafter-npm/
+[Windows C++11]: https://github.com/apiaryio/drafter/wiki/Building-on-Windows
+[Travis CI C++11]: https://github.com/apiaryio/protagonist/blob/master/.travis.yml
+[npm Python]: http://stackoverflow.com/a/22433804/325365
+
 [existing commits]: https://github.com/apiaryio/dredd/commits/master
 [docs]: https://github.com/apiaryio/dredd/tree/master/docs
 [coffeelint.json]: https://github.com/apiaryio/dredd/tree/master/coffeelint.json
 [GitHub Releases]: https://github.com/apiaryio/dredd/releases
-
 
 [upstream repository]: https://github.com/apiaryio/dredd
 [issues]: https://github.com/apiaryio/dredd/issues

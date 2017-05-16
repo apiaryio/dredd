@@ -33,38 +33,32 @@ Dredd is a command-line application written in [CoffeeScript][], a dialect of th
 
 If the second command works, you're done!
 
-> **Note:** The installation process can print several errors related to `node-gyp`. If `dredd --version` works for you after the installation ends, feel free to ignore the errors ([learn more about this](#compiled-vs-pure-javascript)).
-
 ### Globally vs locally
 
 The `-g` ensures Dredd will be installed "globally". That means you'll be able to access it from any directory just by typing `dredd`.
 
 If you work on projects installable by `npm`, i.e. projects containing `package.json`, you might want to have Dredd installed as a development dependency instead. Just install Dredd by `npm install dredd --save-dev`. See `package.json` of the [Dredd Example][] repository for inspiration.
 
-### Which version?
+### Which Version?
 
 - **For development**, always go with the latest version.
-- **For testing in [CI][]**, always pin your Dredd version to a specific number and upgrade to newer releases manually.
+- **For testing in [CI][]**, always pin your Dredd version to a specific number and upgrade to newer releases manually (but often!).
 
-Dredd sometimes issues a pre-release version to test experimental features or to ensure that significant internal revamp of existing features didn't cause any regressions. It's possible to use `npm install dredd@stable` to avoid installing the pre-release versions. However, for most of the time, there are no pre-releases and the `stable` tag just points to the latest version.
+### Why I'm Seeing Some `node-gyp` Errors?
 
-#### Compiled vs pure JavaScript
+The installation process features compilation of some C++ components, which may not be successful. In that case, errors related to `node-gyp` are printed. However, if `dredd --version` works for you when the installation is done, feel free to ignore the errors.
 
-You can simplify and speedup your installation using `npm install dredd --no-optional` if you are:
+In case of compilation errors, Dredd automatically uses a less performant solution written in pure JavaScript. Next time when installing Dredd, you can use `npm install -g dredd --no-optional` to skip the compilation step ([learn more about this][C++11 vs JS]).
 
-- using Dredd with Swagger,
-- using Dredd with smaller API Bluepint files,
+### Why Is the Installation So Slow?
+
+The installation process features compilation of some C++ components, which may take some time ([learn more about this][C++11 vs JS]). You can simplify and speed up the process using `npm install -g dredd --no-optional` if you are:
+
+- using Dredd exclusively with [Swagger][],
+- using Dredd with small [API Bluepint][] files,
 - using Dredd on Windows or other environments with complicated C++11 compiler setup.
 
-Dredd uses [Drafter][] for parsing [API Blueprint][] documents. Drafter is written in C++11 and needs to be compiled during installation. Since that can be problematic for some environments and leads to a lot of troubleshooting, there's also pure JavaScript version of the parser, [drafter.js][]. While drafter.js is fully equivalent, it can have slower performance. That's why there's [drafter-npm][] package, which first tries to compile the C++11 version of the parser and if it's unsuccessful, uses the JavaScript equivalent.
-
-Dredd depends on the [drafter-npm][] package. That's why you can see `node-gyp` errors and failures during Dredd installation, although after the installation is done, Dredd seems to normally work and correctly parses API Blueprint documents. Usual problems leading to the JavaScript version of the parser being used as fallback:
-
-- **Your machine is missing a C++11 compiler.** See how to fix this on [Windows](Windows C++11) or [Travis CI][Travis CI C++11].
-- **npm was used with Python 3.** `node-gyp`, which performs the compilation, doesn't support Python 3. If your default Python is 3 (see `python --version`), [tell npm to use an older version][npm Python].
-- The `protagonist` package got manually deleted from Dredd's `node_modules` directory.
-
-The `--no-optional` option forces the JavaScript version of Drafter and avoids any compilation attempts when installing Dredd.
+The `--no-optional` option avoids any compilation attempts when installing Dredd, but causes slower reading of the API Blueprint files, especially the large ones.
 
 ### Windows Support
 
@@ -72,6 +66,8 @@ There are still [several known limitations][Windows Issues] when using Dredd on 
 
 
 [API Blueprint]: https://apiblueprint.org/
+[Swagger]: http://swagger.io/
+
 [CoffeeScript]: http://coffeescript.org/
 [CI]: how-to-guides.md#continuous-integration
 
@@ -84,10 +80,5 @@ There are still [several known limitations][Windows Issues] when using Dredd on 
 [Download Node.js]: https://nodejs.org/en/#download
 [Install Node.js as system package]: https://nodejs.org/en/download/package-manager/
 
-[Drafter]: https://github.com/apiaryio/drafter
-[drafter.js]: https://github.com/apiaryio/drafter.js
-[drafter-npm]: https://github.com/apiaryio/drafter-npm/
-[Windows C++11]: https://github.com/apiaryio/drafter/wiki/Building-on-Windows
-[Travis CI C++11]: https://github.com/apiaryio/protagonist/blob/master/.travis.yml
-[npm Python]: http://stackoverflow.com/a/22433804/325365
+[C++11 vs JS]: CONTRIBUTING.md#compiled-vs-pure-javascript
 [Dredd Example]: https://github.com/apiaryio/dredd-example/
