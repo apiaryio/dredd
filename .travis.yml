@@ -15,12 +15,10 @@ before_install:
   # so 'conventional-changelog-lint' could compare commits and lint them: marionebl/conventional-changelog-lint#7
   - "git remote set-branches origin master && git fetch && git checkout master && git checkout -"
   - "npm -g install npm@latest"
-  #- "gem install travis"  # needed for 'npm run test:hooks-handlers', disabled because of https://github.com/apiaryio/dredd/issues/672
 install: "npm install --no-optional"
 script:
   - "npm run lint"
   - "npm run test:coverage"
-  #- "npm run test:hooks-handlers" # disabled because of https://github.com/apiaryio/dredd/issues/672
 after_success:
   - "npm run coveralls || true"
   - "npm run semantic-release || true"
