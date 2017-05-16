@@ -44,9 +44,9 @@ If you work on projects installable by `npm`, i.e. projects containing `package.
 - **For development**, always go with the latest version.
 - **For testing in [CI][]**, always pin your Dredd version to a specific number and upgrade to newer releases manually (but often!).
 
-### Why I'm Seeing Network Errors?
+### Why Am I Seeing Network Errors?
 
-If you're in restricted network (VPN, firewall, proxy), it's possible you see errors similar to the following ones:
+In a restricted network (VPN, firewall, proxy) you can see errors similar to the following ones:
 
 ```text
 npmERR! Cannot read property 'path' of null

@@ -88,14 +88,24 @@ to npm, but also for running user-provided hooks written in CoffeeScript.
 
 ### Compiled vs pure JavaScript
 
-Dredd uses [Drafter][] for parsing [API Blueprint][] documents. Drafter is written in C++11 and needs to be compiled during installation. Since that can be problematic for some environments and leads to a lot of troubleshooting, there's also pure JavaScript version of the parser, [drafter.js][]. While drafter.js is fully equivalent, it can have slower performance. That's why there's [drafter-npm][] package, which first tries to compile the C++11 version of the parser and if it's unsuccessful, uses the JavaScript equivalent.
+Dredd uses [Drafter][] for parsing [API Blueprint][] documents. Drafter is written in C++11 and needs to be compiled during installation. Because that can cause a lot of problems in some environments, there's also pure JavaScript version of the parser, [drafter.js][]. Drafter.js is fully equivalent, but it can have slower performance. Therefore there's [drafter-npm][] package, which tries to compile the C++11 version of the parser and uses the JavaScript equivalent in case of failure.
 
-Dredd depends on the [drafter-npm][] package. That's why you can see `node-gyp` errors and failures during Dredd installation, although after the installation is done, Dredd seems to normally work and correctly parses API Blueprint documents. Usual problems leading to the JavaScript version of the parser being used as fallback:
+Dredd depends on the [drafter-npm][] package. That's the reason why you can see `node-gyp` errors and failures during the installation process, even though when it's done, Dredd seems to normally work and correctly parses API Blueprint documents.
+
+#### Forcing the JavaScript version
+
+The `--no-optional` option forces the JavaScript version of Drafter and avoids any compilation attempts when installing Dredd:
+
+```sh
+$ npm install -g dredd --no-optional
+```
+
+#### Troubleshooting the compilation
+
+If you need the performance of the C++11 parser, but you are struggling to get it installed, it's usually because of the following problems:
 
 - **Your machine is missing a C++11 compiler.** See how to fix this on [Windows][Windows C++11] or [Travis CI][Travis CI C++11].
 - **npm was used with Python 3.** `node-gyp`, which performs the compilation, doesn't support Python 3. If your default Python is 3 (see `python --version`), [tell npm to use an older version][npm Python].
-
-The `--no-optional` option forces the JavaScript version of Drafter and avoids any compilation attempts when installing Dredd.
 
 ### Versioning
 
