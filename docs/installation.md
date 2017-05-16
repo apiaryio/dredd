@@ -44,7 +44,37 @@ If you work on projects installable by `npm`, i.e. projects containing `package.
 - **For development**, always go with the latest version.
 - **For testing in [CI][]**, always pin your Dredd version to a specific number and upgrade to newer releases manually (but often!).
 
-### Why I'm Seeing Some `node-gyp` Errors?
+### Why I'm Seeing Network Errors?
+
+If you're in restricted network (VPN, firewall, proxy), it's possible you see errors similar to the following ones:
+
+```text
+npmERR! Cannot read property 'path' of null
+npmERR!code ECONNRESET
+npmERR!network socket hang up
+```
+
+```text
+Error: Command failed: git config --get remote.origin.url
+ssh: connect to host github.com port 22: Operation timed out
+fatal: Could not read from remote repository.
+```
+
+To solve these issues, you need to set your proxy settings for both `npm` and `git`:
+
+```sh
+$ npm config set proxy "http://proxy.company.com:8080"
+$ npm config set https-proxy "https://proxy.company.com:8080"
+
+$ git config --global http.proxy "http://proxy.company.com:8080"
+$ git config --global https.proxy "https://proxy.company.com:8080"
+```
+
+When using `git config`, make sure you have the port specified even
+when it's the standard `:80`. Also check out
+[how to set up Dredd to correctly work with proxies][Dredd Proxy].
+
+### Why I'm Seeing `node-gyp` Errors?
 
 The installation process features compilation of some C++ components, which may not be successful. In that case, errors related to `node-gyp` are printed. However, if `dredd --version` works for you when the installation is done, feel free to ignore the errors.
 
@@ -81,4 +111,5 @@ There are still [several known limitations][Windows Issues] when using Dredd on 
 [Install Node.js as system package]: https://nodejs.org/en/download/package-manager/
 
 [C++11 vs JS]: CONTRIBUTING.md#compiled-vs-pure-javascript
+[Dredd Proxy]: how-it-works.md#using-http-s-proxy
 [Dredd Example]: https://github.com/apiaryio/dredd-example/
