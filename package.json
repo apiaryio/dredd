@@ -17,7 +17,6 @@
     "pretest": "npm run build",
     "test": "mocha \"test/**/*-test.coffee\"",
     "test:coverage": "scripts/coverage.sh",
-    "test:hooks-handlers": "coffee scripts/test-hooks-handlers.coffee",
     "prepublish": "npm run build",
     "coveralls": "scripts/coveralls.sh",
     "semantic-release": "scripts/semantic-release.sh"
@@ -69,8 +68,7 @@
     "nock": "^9.0.13",
     "ps-node": "^0.1.5",
     "semantic-release": "^6.3.2",
-    "sinon": "^2.1.0",
-    "sync-exec": "^0.6.2"
+    "sinon": "^2.1.0"
   },
   "keywords": [
     "api",
