@@ -6,8 +6,8 @@ install:
   - "set PATH=%APPDATA%\\npm;%PATH%"
   - "npm install --no-optional"
 cache:
-  - "node_modules"
-  - "%APPDATA%\\npm-cache"
+  - "node_modules -> package.json"
+  - "%APPDATA%\\npm-cache -> package.json"
 build: off
 test_script:
   - "node --version"
