@@ -10,8 +10,9 @@
     "lint": "conventional-changelog-lint --from=master && coffeelint src",
     "build": "coffee -b -c -o lib/ src/",
     "test": "mocha \"test/**/*-test.coffee\"",
+    "test:coverage": "scripts/coverage.sh",
     "prepublish": "npm run build",
-    "coveralls": "scripts/cov mocha-lcov-reporter | node_modules/coveralls/bin/coveralls.js",
+    "coveralls": "scripts/coveralls.sh",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
