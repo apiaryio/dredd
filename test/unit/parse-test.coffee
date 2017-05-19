@@ -113,7 +113,7 @@ describe('Parsing API description document', ->
     apiElements = undefined
 
     beforeEach((done) ->
-      sinon.stub(fury, 'parse', (args...) ->
+      sinon.stub(fury, 'parse').callsFake((args...) ->
         args.pop()() # calling the callback with neither error or parse result
       )
       parse('... dummy API description document ...', (args...) ->

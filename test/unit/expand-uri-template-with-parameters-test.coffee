@@ -105,7 +105,7 @@ describe 'expandUriTemplateWithParameters', ->
           before ->
             warning = data['warnings'][data['warnings'].length - 1]
 
-          it 'sohuld contain proper text', ->
+          it 'should contain proper text', ->
             text =  "Parameter not defined"
             assert.include warning, text
 
@@ -174,7 +174,7 @@ describe 'expandUriTemplateWithParameters', ->
             before ->
               warning = data['warnings'][data['warnings'].length - 1]
 
-            it 'sohuld contain proper text', ->
+            it 'should contain proper text', ->
               text = "No example value for required parameter"
               assert.include warning, text
 
