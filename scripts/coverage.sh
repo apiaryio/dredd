@@ -1,6 +1,8 @@
 #!/bin/sh
 # Runs tests and collects code coverage to ./cov.info file
 
+set -e # aborts as soon as anything returns non-zero exit status
+
 
 PROJECT_DIR=$(pwd -P)
 
