@@ -22,3 +22,6 @@ script:
 after_success:
   - "npm run coveralls || true"
   - "npm run semantic-release || true"
+notifications:
+  slack:
+    secure: "ksNlJ+AQ9+AENr7nml2t45XDl6ngDjeY+cq60xzQjKoanW49X5RN5CGJwhZ+JlpSR6M2QyeZM4udDh7QVm8oEn0XeDmOKsN/Z1jVdTK5k0TqRX3ZrvA2X94KGqL4a9qELKxMUFm7sfnwyHGfpVj+ftLKWWIK8FRjEsJCanByZjY="
