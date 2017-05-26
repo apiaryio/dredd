@@ -241,13 +241,13 @@ There is also one environment variable you could find useful:
 [Markdown]: https://en.wikipedia.org/wiki/Markdown
 [MkDocs]: http://www.mkdocs.org/
 [ReadTheDocs]: https://readthedocs.org/
-[test coverage]: https://coveralls.io/r/apiaryio/dredd?branch=master
+[test coverage]: https://coveralls.io/github/apiaryio/dredd
 [Mocha]: http://mochajs.org/
 [Semantic Release]: https://github.com/semantic-release/semantic-release
-[Conventional Changelog]: https://github.com/conventional-changelog/conventional-changelog-angular/blob/master/convention.md
+[Conventional Changelog]: https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#user-content-commit-message-format
 [Commitizen CLI]: https://github.com/commitizen/cz-cli
 [md-two-spaces]: https://daringfireball.net/projects/markdown/syntax#p
-[AppVeyor]: http://appveyor.com/
+[AppVeyor]: https://www.appveyor.com/
 
 [Drafter]: https://github.com/apiaryio/drafter
 [API Blueprint]: https://apiblueprint.org/
@@ -259,7 +259,7 @@ There is also one environment variable you could find useful:
 
 [existing commits]: https://github.com/apiaryio/dredd/commits/master
 [docs]: https://github.com/apiaryio/dredd/tree/master/docs
-[coffeelint.json]: https://github.com/apiaryio/dredd/tree/master/coffeelint.json
+[coffeelint.json]: https://github.com/apiaryio/dredd/blob/master/coffeelint.json
 [GitHub Releases]: https://github.com/apiaryio/dredd/releases
 
 [upstream repository]: https://github.com/apiaryio/dredd

@@ -15,7 +15,7 @@ $ dredd apiary.apib http://127.0.0.1:30000 --hookfiles=./hooks*.js
 - You can use `hooks.log` function inside the hook function to print
   yours debug messages and other information.
 
-- [`configuration`](https://dredd.readthedocs.io/en/latest/usage/#configuration-object-for-dredd-class) object is populated on the `hooks` object
+- [`configuration`](usage-js.md#configuration-object-for-dredd-class) object is populated on the `hooks` object
 
 ### Sync API
 

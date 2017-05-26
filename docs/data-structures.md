@@ -77,7 +77,7 @@ This is a cousin of the [Gavel Validation Result](#gavel-validation-result).
 <a name="gavel-validation-result"></a>
 ## Gavel Validation Result (object)
 
-Can be seen also [here](https://www.relishapp.com/apiary/gavel/docs/javascript/request-async-api#validate).
+Can be seen also [here](https://relishapp.com/apiary/gavel/docs/javascript/request-async-api#validate).
 
 - statusCode ([Gavel Validator Output][])
 - headers ([Gavel Validator Output][])
@@ -87,7 +87,7 @@ Can be seen also [here](https://www.relishapp.com/apiary/gavel/docs/javascript/r
 <a name="gavel-validator-output"></a>
 ## Gavel Validator Output (object)
 
-Can be seen also [here](https://www.relishapp.com/apiary/gavel/docs/data-validators-and-output-format#validators-output-format).
+Can be seen also [here](https://relishapp.com/apiary/gavel/docs/data-validators-and-output-format#validators-output-format).
 
 - results (array[[Gavel Error][]])
 - realType (string) - media type
@@ -107,7 +107,7 @@ This validation result is returned not only when validating against [JSON Schema
 - length: `0` (number, default) - number of error properties
 - errorMessages (object) - doesn't seem to ever contain anything or be used for anything
 - *0* (object) - validation error details, property is always a string containing a number (0, 1, 2, ...)
-    - property (array[string]) - path to the problematic property in format of [json-pointer's `parse()` output](https://github.com/manuelstofer/json-pointer#parsestr)
+    - property (array[string]) - path to the problematic property in format of [json-pointer's `parse()` output](https://github.com/manuelstofer/json-pointer#user-content-parsestr)
     - propertyValue (mixed) - real value of the problematic property (can be also `undefined` etc.)
     - attributeName: `enum`, `required` (string) - name of the relevant JSON Schema attribute, which triggered the error
     - attributeValue (mixed) - value of the relevant JSON Schema attribute, which triggered the error
@@ -119,12 +119,12 @@ This validation result is returned not only when validating against [JSON Schema
 <a name="textdiff-validation-result"></a>
 ## TextDiff Validation Result (string)
 
-Block of text which looks extremely similar to the standard GNU diff/patch format. Result of the [`patch_toText()` function of the `google-diff-match-patch` library](https://code.google.com/p/google-diff-match-patch/wiki/API).
+Block of text which looks extremely similar to the standard GNU diff/patch format. Result of the [`patch_toText()` function of the `google-diff-match-patch` library](https://code.google.com/archive/p/google-diff-match-patch/wikis/API.wiki).
 
 <a name="gavel-error"></a>
 ## Gavel Error (object)
 
-Can also be seen as part of Gavel Validator Output [here](https://www.relishapp.com/apiary/gavel/docs/data-validators-and-output-format#validators-output-format).
+Can also be seen as part of Gavel Validator Output [here](https://relishapp.com/apiary/gavel/docs/data-validators-and-output-format#validators-output-format).
 
 - pointer (string) - [JSON Pointer][] path
 - severity (string) - severity of the error
@@ -197,4 +197,4 @@ Also known as `stats` in Dredd's code.
 
 [Apiary Tests API for anonymous test reports]: https://github.com/apiaryio/dredd/blob/master/ApiaryReportingApiAnonymous.apib
 [Apiary Tests API for authenticated test reports]: https://github.com/apiaryio/dredd/blob/master/ApiaryReportingApi.apib
-[Dredd Transactions]: https://github.com/apiaryio/dredd-transactions#data-structures
+[Dredd Transactions]: https://github.com/apiaryio/dredd-transactions#user-content-data-structures

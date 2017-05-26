@@ -4,8 +4,8 @@
 [![Build Status](https://travis-ci.org/apiaryio/dredd.svg?branch=master)](https://travis-ci.org/apiaryio/dredd)
 [![Build Status](https://ci.appveyor.com/api/projects/status/n3ixfxh72qushyr4/branch/master?svg=true)](https://ci.appveyor.com/project/Apiary/dredd/branch/master)
 [![Dependency Status](https://david-dm.org/apiaryio/dredd.svg)](https://david-dm.org/apiaryio/dredd)
-[![devDependency Status](https://david-dm.org/apiaryio/dredd/dev-status.svg)](https://david-dm.org/apiaryio/dredd#info=devDependencies)
-[![Coverage Status](https://coveralls.io/repos/apiaryio/dredd/badge.svg?branch=master)](https://coveralls.io/r/apiaryio/dredd?branch=master)
+[![devDependency Status](https://david-dm.org/apiaryio/dredd/dev-status.svg)](https://david-dm.org/apiaryio/dredd?type=dev)
+[![Coverage Status](https://coveralls.io/repos/apiaryio/dredd/badge.svg?branch=master)](https://coveralls.io/github/apiaryio/dredd)
 [![Known Vulnerabilities](https://snyk.io/test/npm/dredd/badge.svg)](https://snyk.io/test/npm/dredd)
 [![Join the chat at https://gitter.im/apiaryio/dredd](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/apiaryio/dredd?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
@@ -72,7 +72,7 @@ $ npm install -g dredd
     [full documentation][Documentation].
 
 
-[API Blueprint]: http://apiblueprint.org/
+[API Blueprint]: https://apiblueprint.org/
 [API Blueprint tutorial]: https://apiblueprint.org/documentation/tutorial.html
 [API Blueprint examples]: https://github.com/apiaryio/api-blueprint/tree/master/examples
 [Swagger]: http://swagger.io/
@@ -83,4 +83,4 @@ $ npm install -g dredd
 
 [Travis CI]: https://travis-ci.org/
 [CircleCI]: https://circleci.com/
-[Jenkins]: http://jenkins-ci.org/
+[Jenkins]: https://jenkins.io/

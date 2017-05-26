@@ -33,7 +33,7 @@ Dredd doesn't speak your language? [**It's very easy to write support for your l
 ## Using Hook Files
 
 To use a hook file with Dredd, use the `--hookfiles` flag in the command line.
-You can use this flag multiple times or use a [glob](http://npmjs.com/package/glob) expression for loading multiple hook files. Dredd executes hook files in alphabetical order.
+You can use this flag multiple times or use a [glob](https://www.npmjs.com/package/glob) expression for loading multiple hook files. Dredd executes hook files in alphabetical order.
 
 Example:
 
@@ -75,8 +75,6 @@ info: Machines > Machines collection > Get Machines
 
 The `Machines > Machines collection > Get Machines` is the name of a transaction which you can use in your hooks. The same approach works also for Swagger documents.
 
-See [Hooks JavaScript API Reference](#hooks-javascript-api-reference) for broader information of how is it used.
-
 ## Types of Hooks
 
 Dredd supports following types of hooks:
@@ -98,4 +96,4 @@ The main purpose of hooks is to work with the transaction object they get as the
 
 
 [UTC ISO 8601]: http://wikipedia.org/wiki/ISO_8601
-[Gavel]: https://www.relishapp.com/apiary/gavel/docs
+[Gavel]: https://relishapp.com/apiary/gavel/docs
