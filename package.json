@@ -10,11 +10,12 @@
     "node": ">= 4"
   },
   "scripts": {
-    "docs:build": "sphinx-build -W -T -b html -d docs/_build/doctrees docs docs/_build/",
+    "lint": "conventional-changelog-lint --from=master && npm run docs:lint && coffeelint src",
+    "build": "coffee -b -c -o lib/ src/",
+    "docs:lint": "sphinx-build -nW -b linkcheck docs docs/_build/",
+    "docs:build": "sphinx-build -nW -b html docs docs/_build/",
     "docs:serve": "sphinx-autobuild docs docs/_build/",
     "docs:install": "pip install -r docs/requirements.txt",
-    "lint": "conventional-changelog-lint --from=master && coffeelint src",
-    "build": "coffee -b -c -o lib/ src/",
     "pretest": "npm run build",
     "test": "mocha \"test/**/*-test.coffee\"",
     "test:coverage": "scripts/coverage.sh",

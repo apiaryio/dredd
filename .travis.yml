@@ -18,6 +18,7 @@ before_install:
 install: "npm install --no-optional"
 script:
   - "npm run lint"
+  - "npm run docs:lint"
   - "npm run test:coverage"
 after_success:
   - "npm run coveralls || true"
