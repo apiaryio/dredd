@@ -99,12 +99,12 @@ describe 'CLI - Reporters', ->
           '/apis/public/tests/steps?testRunId=1234_id': 1
       it 'should send results from gavel', ->
         assert.isObject stepRequest.body
-        assert.deepProperty stepRequest.body, 'resultData.request'
-        assert.deepProperty stepRequest.body, 'resultData.realResponse'
-        assert.deepProperty stepRequest.body, 'resultData.expectedResponse'
-        assert.deepProperty stepRequest.body, 'resultData.result.body.validator'
-        assert.deepProperty stepRequest.body, 'resultData.result.headers.validator'
-        assert.deepProperty stepRequest.body, 'resultData.result.statusCode.validator'
+        assert.nestedProperty stepRequest.body, 'resultData.request'
+        assert.nestedProperty stepRequest.body, 'resultData.realResponse'
+        assert.nestedProperty stepRequest.body, 'resultData.expectedResponse'
+        assert.nestedProperty stepRequest.body, 'resultData.result.body.validator'
+        assert.nestedProperty stepRequest.body, 'resultData.result.headers.validator'
+        assert.nestedProperty stepRequest.body, 'resultData.result.statusCode.validator'
 
     describe 'When hooks file uses hooks.log function for logging', ->
       dreddCommandInfo = undefined
@@ -145,23 +145,23 @@ describe 'CLI - Reporters', ->
       context 'the update request', ->
         it 'should have result stats with logs', ->
           assert.isObject updateRequest.body
-          assert.deepPropertyVal updateRequest.body, 'status', 'passed'
-          assert.deepProperty updateRequest.body, 'endedAt'
-          assert.deepProperty updateRequest.body, 'logs'
+          assert.nestedPropertyVal updateRequest.body, 'status', 'passed'
+          assert.nestedProperty updateRequest.body, 'endedAt'
+          assert.nestedProperty updateRequest.body, 'logs'
           assert.isArray updateRequest.body.logs
           assert.lengthOf updateRequest.body.logs, 3
           assert.property updateRequest.body.logs[0], 'timestamp'
           assert.include updateRequest.body.logs[0].content, 'Error object!'
           assert.property updateRequest.body.logs[1], 'timestamp'
-          assert.deepPropertyVal updateRequest.body.logs[1], 'content', 'true'
+          assert.nestedPropertyVal updateRequest.body.logs[1], 'content', 'true'
           assert.property updateRequest.body.logs[2], 'timestamp'
-          assert.deepPropertyVal updateRequest.body.logs[2], 'content', 'using hooks.log to debug'
-          assert.deepProperty updateRequest.body, 'result.tests'
-          assert.deepProperty updateRequest.body, 'result.failures'
-          assert.deepProperty updateRequest.body, 'result.errors'
-          assert.deepProperty updateRequest.body, 'result.passes'
-          assert.deepProperty updateRequest.body, 'result.start'
-          assert.deepProperty updateRequest.body, 'result.end'
+          assert.nestedPropertyVal updateRequest.body.logs[2], 'content', 'using hooks.log to debug'
+          assert.nestedProperty updateRequest.body, 'result.tests'
+          assert.nestedProperty updateRequest.body, 'result.failures'
+          assert.nestedProperty updateRequest.body, 'result.errors'
+          assert.nestedProperty updateRequest.body, 'result.passes'
+          assert.nestedProperty updateRequest.body, 'result.start'
+          assert.nestedProperty updateRequest.body, 'result.end'
         it 'should have startedAt larger than \'before\' hook log timestamp', ->
           assert.isObject stepRequest.body
           assert.isNumber stepRequest.body.startedAt
@@ -212,15 +212,15 @@ describe 'CLI - Reporters', ->
       context 'the update request', ->
         it 'should have result stats with logs', ->
           assert.isObject updateRequest.body
-          assert.deepPropertyVal updateRequest.body, 'status', 'passed'
-          assert.deepProperty updateRequest.body, 'endedAt'
-          assert.deepProperty updateRequest.body, 'logs'
+          assert.nestedPropertyVal updateRequest.body, 'status', 'passed'
+          assert.nestedProperty updateRequest.body, 'endedAt'
+          assert.nestedProperty updateRequest.body, 'logs'
           assert.isArray updateRequest.body.logs
           assert.lengthOf updateRequest.body.logs, 2
           assert.property updateRequest.body.logs[0], 'timestamp'
-          assert.deepPropertyVal updateRequest.body.logs[0], 'content', 'shall not print, but be present in logs'
+          assert.nestedPropertyVal updateRequest.body.logs[0], 'content', 'shall not print, but be present in logs'
           assert.property updateRequest.body.logs[1], 'timestamp'
-          assert.deepPropertyVal updateRequest.body.logs[1], 'content', 'using sandboxed hooks.log'
+          assert.nestedPropertyVal updateRequest.body.logs[1], 'content', 'using sandboxed hooks.log'
         it 'should have startedAt larger than \'before\' hook log timestamp', ->
           assert.isObject stepRequest.body
           assert.isNumber stepRequest.body.startedAt

@@ -63,10 +63,10 @@ describe('configuration.applyConfiguration()', ->
         level: 'debug'
     )
 
-    assert.deepPropertyVal(config, 'options.color', true)
+    assert.nestedPropertyVal(config, 'options.color', true)
     assert.equal(logger.transports.console.colorize, true)
 
-    assert.deepPropertyVal(config, 'options.level', 'debug')
+    assert.nestedPropertyVal(config, 'options.level', 'debug')
     assert.equal(logger.transports.console.level, 'debug')
   )
 )

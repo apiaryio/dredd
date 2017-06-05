@@ -23,7 +23,7 @@ describe 'hooksLogSandboxed()', () ->
       assert.lengthOf data, 1
       assert.strictEqual data, originLogs
       assert.deepEqual data, originLogs
-      assert.deepPropertyVal data[0], 'content', 'one message'
+      assert.propertyVal data[0], 'content', 'one message'
 
     it 'should push message to undefined logs and return new array instead', ->
       originLogs = undefined
@@ -32,7 +32,7 @@ describe 'hooksLogSandboxed()', () ->
       assert.lengthOf data, 1
       assert.isUndefined originLogs
       assert.notDeepEqual data, originLogs
-      assert.deepPropertyVal data[0], 'content', 'another message'
+      assert.propertyVal data[0], 'content', 'another message'
 
     it 'should append message to an existing logs array', ->
       originLogs = clone exampleLog
@@ -41,7 +41,7 @@ describe 'hooksLogSandboxed()', () ->
       assert.lengthOf data, 2
       assert.deepEqual data, originLogs
       assert.deepEqual data[0], exampleLog[0]
-      assert.deepPropertyVal data[1], 'content', 'some other idea'
+      assert.propertyVal data[1], 'content', 'some other idea'
 
   describe 'passes arguments further to hooks-log', ->
     beforeEach ->

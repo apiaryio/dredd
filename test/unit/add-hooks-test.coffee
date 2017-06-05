@@ -52,7 +52,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
         assert.isDefined runner.hooks
         assert.instanceOf runner.hooks, hooksStub
         assert.strictEqual runner.hooks, runner.hooks
-        assert.deepProperty runner, 'hooks.transactions'
+        assert.nestedProperty runner, 'hooks.transactions'
         done()
 
 
@@ -61,7 +61,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
         return err if err
         assert.isDefined runner.hooks
         assert.instanceOf runner.hooks, hooksStub
-        assert.deepProperty runner, 'hooks.logs'
+        assert.nestedProperty runner, 'hooks.logs'
         assert.isDefined runner.hooks.logs
         assert.strictEqual runner.hooks.logs, runner.logs
         done()

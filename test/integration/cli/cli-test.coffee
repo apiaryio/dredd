@@ -309,7 +309,7 @@ describe 'CLI', ->
         )
 
       it 'should have an additional header in the request', ->
-        assert.deepPropertyVal runtimeInfo.server.requests['/machines'][0], 'headers.accept', 'application/json'
+        assert.nestedPropertyVal runtimeInfo.server.requests['/machines'][0], 'headers.accept', 'application/json'
 
 
     describe "when adding basic auth credentials with -u", ->
