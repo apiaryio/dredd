@@ -27,6 +27,8 @@ class BaseReporter
     emitter.on 'test pass', (test) =>
       @stats.passes += 1
       test['end'] = new Date()
+      if typeof test['start'] is 'string'
+        test['start'] = new Date(test['start'])
       test['duration'] = test.end - test.start
 
     emitter.on 'test skip', (test) =>
@@ -35,11 +37,15 @@ class BaseReporter
     emitter.on 'test fail', (test) =>
       @stats.failures += 1
       test['end'] = new Date()
+      if typeof test['start'] is 'string'
+        test['start'] = new Date(test['start'])
       test['duration'] = test.end - test.start
 
     emitter.on 'test error', (error, test) =>
       @stats.errors += 1
       test['end'] = new Date()
+      if typeof test['start'] is 'string'
+        test['start'] = new Date(test['start'])
       test['duration'] = test.end - test.start
 
 
