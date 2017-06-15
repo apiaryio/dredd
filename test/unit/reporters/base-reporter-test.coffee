@@ -118,3 +118,42 @@ describe 'BaseReporter', () ->
 
     it 'should set the end time', () ->
       assert.isOk tests[0].end
+
+  describe 'when passing test start is UTC string', () ->
+
+    beforeEach () ->
+      test =
+        status: 'pass'
+        title: 'Passing Test'
+      emitter.emit 'test start', test
+      test.start = '2017-06-15T09:29:50.588Z'
+      emitter.emit 'test pass', test
+
+    it 'should set the duration', () ->
+      assert.isNotNaN tests[0].duration
+
+  describe 'when failed test start is UTC string', () ->
+
+    beforeEach () ->
+      test =
+        status: 'pass'
+        title: 'Failed Test'
+      emitter.emit 'test start', test
+      test.start = '2017-06-15T09:29:50.588Z'
+      emitter.emit 'test fail', test
+
+    it 'should set the duration', () ->
+      assert.isNotNaN tests[0].duration
+
+  describe 'when errored test start is UTC string', () ->
+
+    beforeEach () ->
+      test =
+        status: 'pass'
+        title: 'Errored Test'
+      emitter.emit 'test start', test
+      test.start = '2017-06-15T09:29:50.588Z'
+      emitter.emit 'test error', new Error('Error'), test
+
+    it 'should set the duration', () ->
+      assert.isNotNaN tests[0].duration
