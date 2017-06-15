@@ -7,6 +7,7 @@ Documentation of various data structures in both [Gavel.js][] and Dredd. [MSON n
 
 Transaction object is passed as a first argument to [hook functions](hooks.md) and is one of the main public interfaces in Dredd.
 
+- id: `GET /greetings` - identifier for this transaction
 - name: `./api-description.apib > My API > Greetings > Hello, world! > Retrieve Message > Example 2` (string) - reference to the transaction definition in the original API description document (see also [Dredd Transactions][])
 - origin (object) - reference to the transaction definition in the original API description document (see also [Dredd Transactions][])
     - filename: `./api-description.apib` (string)
