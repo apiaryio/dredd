@@ -457,6 +457,7 @@ class TransactionRunner
     options.headers = transaction.request.headers
     options.body = transaction.request.body
     options.proxy = false
+    options.followRedirect = false
     return options
 
   # This is actually doing more some pre-flight and conditional skipping of
