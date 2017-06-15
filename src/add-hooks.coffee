@@ -12,6 +12,8 @@ sandboxHooksCode = require './sandbox-hooks-code'
 mergeSandboxedHooks = require './merge-sandboxed-hooks'
 HooksWorkerClient = require './hooks-worker-client'
 
+# Ensure platform agnostic path.basename function
+basename = if process.platform is 'win32' then path.win32.basename else path.basename
 
 addHooks = (runner, transactions, callback) ->
   # Note: runner.configuration.options must be defined
@@ -31,10 +33,7 @@ addHooks = (runner, transactions, callback) ->
 
           delete allHooks[hookType][transactionName]
 
-  loadHookFile = (filename, basePath) ->
-    basePath ?= customConfigCwd or process.cwd()
-    filePath = path.resolve(basePath, filename)
-
+  loadHookFile = (filePath) ->
     try
       proxyquire filePath, {
         'hooks': runner.hooks
@@ -55,15 +54,15 @@ addHooks = (runner, transactions, callback) ->
     if typeof(runner.configuration.hooksData) != 'object' or Array.isArray(runner.configuration.hooksData) != false
       return callback(new Error("hooksData option must be an object e.g. {'filename.js':'console.log(\"Hey!\")'}"))
 
-    # run code in sandbox
+    # Run code in sandbox
     async.eachSeries Object.keys(runner.configuration.hooksData), (key, nextHook) ->
       data = runner.configuration.hooksData[key]
 
-      # run code in sandbox
+      # Run code in sandbox
       sandboxHooksCode data, (sandboxError, result) ->
         return nextHook(sandboxError) if sandboxError
 
-        # merge stringified hooks
+        # Merge stringified hooks
         runner.hooks = mergeSandboxedHooks(runner.hooks, result)
 
         # Fixing #168 issue
@@ -95,23 +94,43 @@ addHooks = (runner, transactions, callback) ->
         callback(new Error(msg))
     else
 
-      # no data found, doing nothing
+      # No data found, doing nothing
       return callback()
 
   # Loading hookfiles from fs
   else
+    # Expand hookfiles - sort files alphabetically and resolve their paths
+    hookfiles = [].concat runner.configuration?.options?.hookfiles
+    files = hookfiles.reduce((result, item) ->
+      # glob.sync does not resolve paths, only glob patterns
+      input = if glob.hasMagic(item) then glob.sync(item) else [item]
+
+      # Gradually append sorted and resolved paths
+      result.concat input
+        # Create a filename / filepath map for easier sorting
+        # Example:
+        # [
+        #   { basename: 'filename1.coffee', path: './path/to/filename1.coffee' }
+        #   { basename: 'filename2.coffee', path: './path/to/filename2.coffee' }
+        # ]
+        .map((filepath) -> basename: basename(filepath), path: filepath)
+        # Sort 'em up
+        .sort((a, b) -> a.basename > b.basename)
+        # Resolve paths to absolute form. Take into account user defined current
+        # working directory, fallback to process.cwd() otherwise
+        .map((item) -> path.resolve(customConfigCwd or process.cwd(), item.path))
+    , [] # Start with empty result
+    )
+
+    logger.info('Found Hookfiles:', files)
 
     # Clone the configuration object to hooks.configuration to make it
     # accessible in the node.js hooks API
     runner.hooks.configuration = clone runner?.configuration
 
-    # Expand globs
-    files = []
-    globs = [].concat runner?.configuration?.options?.hookfiles
-    for globItem in globs
-      files = files.concat glob.sync(globItem)
-
-    logger.info('Found Hookfiles:', files)
+    # Override hookfiles option in configuration object with
+    # sorted and resolved files
+    runner.hooks.configuration.options.hookfiles = files
 
     # Loading files in non sandboxed nodejs
     if not runner.configuration.options.sandbox == true
@@ -121,7 +140,7 @@ addHooks = (runner, transactions, callback) ->
       runner?.configuration?.options?.language == undefined or
       runner?.configuration?.options?.language == "nodejs"
 
-        # load regular files from fs
+        # Load regular files from fs
         for file in files
           loadHookFile file
 
@@ -130,21 +149,20 @@ addHooks = (runner, transactions, callback) ->
       # If other language than nodejs, run hooks worker client
       # Worker client will start the worker server and pass the "hookfiles" options as CLI arguments to it
       else
-        # start hooks worker
+        # Start hooks worker
         hooksWorkerClient = new HooksWorkerClient(runner)
         hooksWorkerClient.start callback
 
     # Loading files in sandboxed mode
     else
 
-      # load sandbox files from fs
+      # Load sandbox files from fs
       logger.info('Loading hook files in sandboxed context:', files)
-      async.eachSeries files, (fileName, nextFile) ->
-        resolvedPath = path.resolve((customConfigCwd or process.cwd()), fileName)
-        # load hook file content
+      async.eachSeries files, (resolvedPath, nextFile) ->
+        # Load hook file content
         fs.readFile resolvedPath, 'utf8', (readingError, data) ->
           return nextFile(readingError) if readingError
-          # run code in sandbox
+          # Run code in sandbox
           sandboxHooksCode data, (sandboxError, result) ->
             return nextFile(sandboxError) if sandboxError
             runner.hooks = mergeSandboxedHooks(runner.hooks, result)
