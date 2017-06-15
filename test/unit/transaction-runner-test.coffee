@@ -596,6 +596,49 @@ describe 'TransactionRunner', ->
           assert.isOk server.isDone()
           done()
 
+    describe 'when backend responds a GET request with a redirection', ->
+      beforeEach ->
+        transaction.request.method = 'GET'
+        transaction.request.uri = '/machines/latest'
+        transaction.fullPath = '/machines/latest'
+        server = nock('http://127.0.0.1:3000').
+          get('/machines/latest').
+          reply(303, '', {'Location': '/machines/123'}).
+          get('/machines/123').
+          reply(transaction['expected']['status'],
+            transaction['expected']['body'],
+            {'Content-Type': 'application/json'})
+        runner = new Runner(configuration)
+
+      afterEach ->
+        nock.cleanAll()
+
+      it 'should not follow the redirect', (done) ->
+        runner.executeTransaction transaction, ->
+          assert.equal transaction.real.statusCode, 303
+          assert.notOk server.isDone()
+          done()
+
+    describe 'when backend responds a POST request with a redirection', ->
+      beforeEach ->
+        transaction.request.method = 'POST'
+        server = nock('http://127.0.0.1:3000').
+        post('/machines').
+        reply(303, '', {'Location': '/machines/123'}).
+        get('/machines/123').
+        reply(transaction['expected']['status'],
+          transaction['expected']['body'],
+          {'Content-Type': 'application/json'})
+        runner = new Runner(configuration)
+
+      afterEach ->
+        nock.cleanAll()
+
+      it 'should not follow the redirect', (done) ->
+        runner.executeTransaction transaction, ->
+          assert.equal transaction.real.statusCode, 303
+          assert.notOk server.isDone()
+          done()
 
     describe 'when server is not running', ->
       beforeEach ->
@@ -1652,7 +1695,7 @@ describe 'TransactionRunner', ->
             assert.include call.args[1].message, 'require'
             done(err)
 
-        it 'should not have aceess to current context', (done) ->
+        it 'should not have access to current context', (done) ->
           contextVar = "this"
           functionString = """
           function(transactions){
