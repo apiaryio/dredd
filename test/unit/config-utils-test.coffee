@@ -170,7 +170,7 @@ describe 'configUtils', () ->
     """
 
     beforeEach () ->
-      sinon.stub fsStub, 'readFileSync', (file) -> return yamlData
+      sinon.stub(fsStub, 'readFileSync').callsFake (file) -> return yamlData
 
     afterEach () ->
       fsStub.readFileSync.restore()

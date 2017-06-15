@@ -21,7 +21,7 @@ describe 'interactiveConfig', () ->
     describe 'when I call it ', () ->
 
       it 'should run inquirer', (done) ->
-        sinon.stub inquirerStub, 'prompt', (questions) -> {then: (cb) -> cb()}
+        sinon.stub(inquirerStub, 'prompt').callsFake (questions) -> {then: (cb) -> cb()}
 
         interactiveConfig.prompt {}, () ->
           assert.isTrue inquirerStub.prompt.called

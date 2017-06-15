@@ -25,9 +25,9 @@ describe 'XUnitReporter', () ->
 
     describe 'when file exists', () ->
       before () ->
-        sinon.stub fsStub, 'existsSync', (path) ->
+        sinon.stub(fsStub, 'existsSync').callsFake (path) ->
           return true
-        sinon.stub fsStub, 'unlinkSync', (path) ->
+        sinon.stub(fsStub, 'unlinkSync').callsFake (path) ->
           return true
         sinon.stub loggerStub, 'info'
 
@@ -44,7 +44,7 @@ describe 'XUnitReporter', () ->
     describe 'when file does not exist', () ->
 
       before () ->
-        sinon.stub fsStub, 'existsSync', (path) ->
+        sinon.stub(fsStub, 'existsSync').callsFake (path) ->
           return false
         sinon.stub fsStub, 'unlinkSync'
 

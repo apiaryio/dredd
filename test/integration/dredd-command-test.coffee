@@ -56,9 +56,9 @@ describe "DreddCommand class Integration", () ->
 
   before ->
     for method in ['warn', 'error'] then do (method) ->
-      sinon.stub loggerStub, method, (chunk) -> stderr += "\n#{method}: #{chunk}"
+      sinon.stub(loggerStub, method).callsFake (chunk) -> stderr += "\n#{method}: #{chunk}"
     for method in ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual'] then do (method) ->
-      sinon.stub loggerStub, method, (chunk) -> stdout += "\n#{method}: #{chunk}"
+      sinon.stub(loggerStub, method).callsFake (chunk) -> stdout += "\n#{method}: #{chunk}"
     return
 
   after ->
@@ -78,8 +78,8 @@ describe "DreddCommand class Integration", () ->
       configUtilsLoad = undefined
 
       before((done) ->
-        fsExistsSync = sinon.stub(fs, 'existsSync', -> true)
-        configUtilsLoad = sinon.stub(configUtils, 'load', -> options)
+        fsExistsSync = sinon.stub(fs, 'existsSync').callsFake( -> true)
+        configUtilsLoad = sinon.stub(configUtils, 'load').callsFake( -> options)
         execCommand(cmd, done)
       )
       after( ->
@@ -107,8 +107,8 @@ describe "DreddCommand class Integration", () ->
       configUtilsLoad = undefined
 
       before((done) ->
-        fsExistsSync = sinon.stub(fs, 'existsSync', -> true)
-        configUtilsLoad = sinon.stub(configUtils, 'load', -> options)
+        fsExistsSync = sinon.stub(fs, 'existsSync').callsFake( -> true)
+        configUtilsLoad = sinon.stub(configUtils, 'load').callsFake( -> options)
         execCommand(cmd, done)
       )
       after( ->
@@ -136,7 +136,7 @@ describe "DreddCommand class Integration", () ->
       configUtilsLoad = undefined
 
       before((done) ->
-        fsExistsSync = sinon.stub(fs, 'existsSync', -> false)
+        fsExistsSync = sinon.stub(fs, 'existsSync').callsFake( -> false)
         configUtilsLoad = sinon.spy(configUtils, 'load')
         execCommand(cmd, done)
       )

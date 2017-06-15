@@ -65,9 +65,9 @@ describe "DreddCommand class", () ->
 
   before ->
     for method in ['warn', 'error'] then do (method) ->
-      sinon.stub loggerStub, method, (chunk) -> stderr += "\n#{method}: #{chunk}"
+      sinon.stub(loggerStub, method).callsFake (chunk) -> stderr += "\n#{method}: #{chunk}"
     for method in ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual'] then do (method) ->
-      sinon.stub loggerStub, method, (chunk) -> stdout += "\n#{method}: #{chunk}"
+      sinon.stub(loggerStub, method).callsFake (chunk) -> stdout += "\n#{method}: #{chunk}"
     return
 
   after ->
@@ -143,7 +143,7 @@ describe "DreddCommand class", () ->
           env: {'NO_KEY': 'NO_VAL'}
       })
 
-      initDreddStub = sinon.stub dc, 'initDredd', (configuration) ->
+      initDreddStub = sinon.stub(dc, 'initDredd').callsFake (configuration) ->
         dredd = new dreddStub configuration
         sinon.stub dredd, 'run'
         return dredd
@@ -257,7 +257,7 @@ describe "DreddCommand class", () ->
 
     describe '"init" (nodejs)', ->
       before (done) ->
-        sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
+        sinon.stub(interactiveConfigStub, 'run').callsFake (argv, cb) ->
           cb({language: 'nodejs'})
         sinon.stub configUtilsStub, 'save'
         execCommand argv: ['init'], ->
@@ -275,7 +275,7 @@ describe "DreddCommand class", () ->
 
     describe '"init" (python)', ->
       before (done) ->
-        sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
+        sinon.stub(interactiveConfigStub, 'run').callsFake (argv, cb) ->
           cb({language: 'python'})
         sinon.stub configUtilsStub, 'save'
         execCommand argv: ['init'], ->
@@ -294,7 +294,7 @@ describe "DreddCommand class", () ->
 
     describe '"init" (php)', ->
       before (done) ->
-        sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
+        sinon.stub(interactiveConfigStub, 'run').callsFake (argv, cb) ->
           cb({language: 'php'})
         sinon.stub configUtilsStub, 'save'
         execCommand argv: ['init'], ->
@@ -312,7 +312,7 @@ describe "DreddCommand class", () ->
 
     describe '"init" (ruby)', ->
       before (done) ->
-        sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
+        sinon.stub(interactiveConfigStub, 'run').callsFake (argv, cb) ->
           cb({language: 'ruby'})
         sinon.stub configUtilsStub, 'save'
         execCommand argv: ['init'], ->
@@ -330,7 +330,7 @@ describe "DreddCommand class", () ->
 
     describe '"init" (perl)', ->
       before (done) ->
-        sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
+        sinon.stub(interactiveConfigStub, 'run').callsFake (argv, cb) ->
           cb({language: 'perl'})
         sinon.stub configUtilsStub, 'save'
         execCommand argv: ['init'], ->
@@ -348,7 +348,7 @@ describe "DreddCommand class", () ->
 
     describe '"init" (go)', ->
       before (done) ->
-        sinon.stub interactiveConfigStub, 'run', (argv, cb) ->
+        sinon.stub(interactiveConfigStub, 'run').callsFake (argv, cb) ->
           cb({language: 'go'})
         sinon.stub configUtilsStub, 'save'
         execCommand argv: ['init'], ->
@@ -376,7 +376,7 @@ describe "DreddCommand class", () ->
   describe 'when configuration was saved', () ->
     before (done) ->
       sinon.spy dreddStub.prototype, 'init'
-      sinon.stub dreddStub.prototype, 'run', (cb) ->
+      sinon.stub(dreddStub.prototype, 'run').callsFake (cb) ->
         stats =
           tests: 0
           failures: 0
@@ -388,12 +388,12 @@ describe "DreddCommand class", () ->
           duration: 0
         cb(null, stats)
 
-      sinon.stub interactiveConfigStub, 'run', (config, cb) ->
+      sinon.stub(interactiveConfigStub, 'run').callsFake (config, cb) ->
         cb()
 
-      sinon.stub fsStub, 'existsSync', () -> true
+      sinon.stub(fsStub, 'existsSync').callsFake () -> true
 
-      sinon.stub configUtilsStub, 'load', () ->
+      sinon.stub(configUtilsStub, 'load').callsFake () ->
         {
           "_": [ 'blueprint', 'endpoint' ]
           'dry-run': true
@@ -449,7 +449,7 @@ describe "DreddCommand class", () ->
 
     beforeEach (done) ->
       sinon.spy crossSpawnStub, 'spawn'
-      sinon.stub transactionRunner.prototype, 'executeAllTransactions', (transactions, hooks, cb) -> cb()
+      sinon.stub(transactionRunner.prototype, 'executeAllTransactions').callsFake (transactions, hooks, cb) -> cb()
       execCommand argv: [
         './test/fixtures/single-get.apib'
         "http://127.0.0.1:#{PORT}"

@@ -13,9 +13,9 @@ describe 'hooksLog()', () ->
   ]
 
   before ->
-   sinon.stub loggerStub, 'log', ->
-   sinon.stub loggerStub, 'debug', ->
-   sinon.stub loggerStub, 'hook', ->
+   sinon.stub(loggerStub, 'log').callsFake( -> )
+   sinon.stub(loggerStub, 'debug').callsFake( -> )
+   sinon.stub(loggerStub, 'hook').callsFake( -> )
 
   after ->
     loggerStub.log.restore()

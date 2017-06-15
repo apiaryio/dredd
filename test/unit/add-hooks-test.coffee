@@ -97,7 +97,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
             language: 'ruby'
             hookfiles: './some/ruby/file.rb'
 
-      sinon.stub hooksWorkerClientStub.prototype, 'start', (cb) -> cb()
+      sinon.stub(hooksWorkerClientStub.prototype, 'start').callsFake (cb) -> cb()
 
     afterEach ->
       hooksWorkerClientStub.prototype.start.restore()
@@ -132,9 +132,9 @@ describe 'addHooks(runner, transactions, callback)', () ->
           configuration:
             options:
               hookfiles: './**/*_hooks.*'
-        sinon.stub globStub, 'sync', (pattern) ->
+        sinon.stub(globStub, 'sync').callsFake (pattern) ->
           ['file1.js', 'file2.coffee']
-        sinon.stub pathStub, 'resolve', (path, rel) ->
+        sinon.stub(pathStub, 'resolve').callsFake (path, rel) ->
           '/Users/netmilk/projects/dredd/file2.coffee'
 
       after () ->
