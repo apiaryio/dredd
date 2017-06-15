@@ -33,7 +33,7 @@ Dredd doesn't speak your language? [**It's very easy to write support for your l
 ## Using Hook Files
 
 To use a hook file with Dredd, use the `--hookfiles` flag in the command line.
-You can use this flag multiple times or use a [glob](http://npmjs.com/package/glob) expression for loading multiple hook files.
+You can use this flag multiple times or use a [glob](http://npmjs.com/package/glob) expression for loading multiple hook files. Dredd executes hook files in alphabetical order.
 
 Example:
 
