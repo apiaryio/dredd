@@ -44,7 +44,7 @@ describe 'MarkdownReporter', () ->
 
     describe 'when file exists', () ->
       before () ->
-        sinon.stub fsStub, 'existsSync', (path) ->
+        sinon.stub(fsStub, 'existsSync').callsFake (path) ->
           return true
         sinon.stub loggerStub, 'info'
 
@@ -58,7 +58,7 @@ describe 'MarkdownReporter', () ->
     describe 'when file does not exist', () ->
 
       before () ->
-        sinon.stub fsStub, 'existsSync', (path) ->
+        sinon.stub(fsStub, 'existsSync').callsFake (path) ->
           return false
         sinon.stub fsStub, 'unlinkSync'
 

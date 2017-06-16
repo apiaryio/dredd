@@ -51,9 +51,9 @@ describe 'Dredd class Integration', ->
 
   before ->
     for method in ['warn', 'error'] then do (method) ->
-      sinon.stub loggerStub, method, (chunk) -> stderr += "\n#{method}: #{chunk}"
+      sinon.stub(loggerStub, method).callsFake (chunk) -> stderr += "\n#{method}: #{chunk}"
     for method in ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual'] then do (method) ->
-      sinon.stub loggerStub, method, (chunk) -> stdout += "\n#{method}: #{chunk}"
+      sinon.stub(loggerStub, method).callsFake (chunk) -> stdout += "\n#{method}: #{chunk}"
     return
 
   after ->

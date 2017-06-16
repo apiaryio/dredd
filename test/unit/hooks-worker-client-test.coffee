@@ -51,7 +51,7 @@ describe 'Hooks worker client', ->
     runner.hooks.configuration = {options: {}}
 
     for level in logLevels
-      sinon.stub loggerStub, level, (msg1, msg2) ->
+      sinon.stub(loggerStub, level).callsFake (msg1, msg2) ->
         text = msg1
         text += " " + msg2 if msg2
 
@@ -65,8 +65,8 @@ describe 'Hooks worker client', ->
 
   describe "when methods dealing with connection to the handler are stubbed", ->
     beforeEach ->
-      sinon.stub HooksWorkerClient.prototype, 'disconnectFromHandler', ->
-      sinon.stub HooksWorkerClient.prototype, 'connectToHandler', (cb) ->
+      sinon.stub(HooksWorkerClient.prototype, 'disconnectFromHandler').callsFake( -> )
+      sinon.stub(HooksWorkerClient.prototype, 'connectToHandler').callsFake (cb) ->
         cb()
 
     afterEach ->
@@ -153,20 +153,21 @@ describe 'Hooks worker client', ->
 
     describe 'when --language=ruby option is given and the worker is installed', ->
       beforeEach ->
-        sinon.stub crossSpawnStub, 'spawn', ->
+        sinon.stub(crossSpawnStub, 'spawn').callsFake( ->
           emitter = new EventEmitter
           emitter.stdout = new EventEmitter
           emitter.stderr = new EventEmitter
           emitter
+        )
 
         runner.hooks['configuration'] =
           options:
             language: 'ruby'
             hookfiles: "somefile.rb"
 
-        sinon.stub whichStub, 'which', (command) -> true
+        sinon.stub(whichStub, 'which').callsFake (command) -> true
 
-        sinon.stub HooksWorkerClient.prototype, 'terminateHandler', (callback) ->
+        sinon.stub(HooksWorkerClient.prototype, 'terminateHandler').callsFake (callback) ->
           callback()
 
       afterEach ->
@@ -198,7 +199,7 @@ describe 'Hooks worker client', ->
 
     describe 'when --language=ruby option is given and the worker is not installed', ->
       beforeEach ->
-        sinon.stub whichStub, 'which', (command) -> false
+        sinon.stub(whichStub, 'which').callsFake (command) -> false
 
         runner.hooks['configuration'] =
           options:
@@ -217,20 +218,21 @@ describe 'Hooks worker client', ->
 
     describe 'when --language=python option is given and the worker is installed', ->
       beforeEach ->
-        sinon.stub crossSpawnStub, 'spawn', ->
+        sinon.stub(crossSpawnStub, 'spawn').callsFake( ->
           emitter = new EventEmitter
           emitter.stdout = new EventEmitter
           emitter.stderr = new EventEmitter
           emitter
+        )
 
         runner.hooks['configuration'] =
           options:
             language: 'python'
             hookfiles: "somefile.py"
 
-        sinon.stub whichStub, 'which', (command) -> true
+        sinon.stub(whichStub, 'which').callsFake (command) -> true
 
-        sinon.stub HooksWorkerClient.prototype, 'terminateHandler', (callback) ->
+        sinon.stub(HooksWorkerClient.prototype, 'terminateHandler').callsFake (callback) ->
           callback()
 
       afterEach ->
@@ -262,7 +264,7 @@ describe 'Hooks worker client', ->
 
     describe 'when --language=python option is given and the worker is not installed', ->
       beforeEach ->
-        sinon.stub whichStub, 'which', (command) -> false
+        sinon.stub(whichStub, 'which').callsFake (command) -> false
 
         runner.hooks['configuration'] =
           options:
@@ -280,20 +282,21 @@ describe 'Hooks worker client', ->
 
     describe 'when --language=php option is given and the worker is installed', ->
       beforeEach ->
-        sinon.stub crossSpawnStub, 'spawn', ->
+        sinon.stub(crossSpawnStub, 'spawn').callsFake( ->
           emitter = new EventEmitter
           emitter.stdout = new EventEmitter
           emitter.stderr = new EventEmitter
           emitter
+        )
 
         runner.hooks['configuration'] =
           options:
             language: 'php'
             hookfiles: "somefile.py"
 
-        sinon.stub whichStub, 'which', (command) -> true
+        sinon.stub(whichStub, 'which').callsFake (command) -> true
 
-        sinon.stub HooksWorkerClient.prototype, 'terminateHandler', (callback) ->
+        sinon.stub(HooksWorkerClient.prototype, 'terminateHandler').callsFake (callback) ->
           callback()
 
       afterEach ->
@@ -325,7 +328,7 @@ describe 'Hooks worker client', ->
 
     describe 'when --language=php option is given and the worker is not installed', ->
       beforeEach ->
-        sinon.stub whichStub, 'which', (command) -> false
+        sinon.stub(whichStub, 'which').callsFake (command) -> false
 
         runner.hooks['configuration'] =
           options:
@@ -343,7 +346,7 @@ describe 'Hooks worker client', ->
 
     describe 'when --language=go option is given and the worker is not installed', ->
       beforeEach ->
-        sinon.stub whichStub, 'which', (command) -> false
+        sinon.stub(whichStub, 'which').callsFake (command) -> false
 
         runner.hooks['configuration'] =
           options:
@@ -360,20 +363,21 @@ describe 'Hooks worker client', ->
 
     describe 'when --language=go option is given and the worker is installed', ->
       beforeEach ->
-        sinon.stub crossSpawnStub, 'spawn', ->
+        sinon.stub(crossSpawnStub, 'spawn').callsFake( ->
           emitter = new EventEmitter
           emitter.stdout = new EventEmitter
           emitter.stderr = new EventEmitter
           emitter
+        )
 
         runner.hooks['configuration'] =
           options:
             language: 'go'
             hookfiles: "gobinary"
 
-        sinon.stub whichStub, 'which', (command) -> true
+        sinon.stub(whichStub, 'which').callsFake (command) -> true
 
-        sinon.stub HooksWorkerClient.prototype, 'terminateHandler', (callback) ->
+        sinon.stub(HooksWorkerClient.prototype, 'terminateHandler').callsFake (callback) ->
           callback()
 
       afterEach ->
@@ -406,20 +410,21 @@ describe 'Hooks worker client', ->
 
     describe 'when --language=perl option is given and the worker is installed', ->
       beforeEach ->
-        sinon.stub crossSpawnStub, 'spawn', ->
+        sinon.stub(crossSpawnStub, 'spawn').callsFake( ->
           emitter = new EventEmitter
           emitter.stdout = new EventEmitter
           emitter.stderr = new EventEmitter
           emitter
+        )
 
         runner.hooks['configuration'] =
           options:
             language: 'perl'
             hookfiles: "somefile.py"
 
-        sinon.stub whichStub, 'which', (command) -> true
+        sinon.stub(whichStub, 'which').callsFake (command) -> true
 
-        sinon.stub HooksWorkerClient.prototype, 'terminateHandler', (callback) ->
+        sinon.stub(HooksWorkerClient.prototype, 'terminateHandler').callsFake (callback) ->
           callback()
 
       afterEach ->
@@ -451,7 +456,7 @@ describe 'Hooks worker client', ->
 
     describe 'when --language=perl option is given and the worker is not installed', ->
       beforeEach ->
-        sinon.stub whichStub, 'which', (command) -> false
+        sinon.stub(whichStub, 'which').callsFake (command) -> false
 
         runner.hooks['configuration'] =
           options:
@@ -469,21 +474,22 @@ describe 'Hooks worker client', ->
 
     describe 'when --language=./any/other-command is given', ->
       beforeEach ->
-        sinon.stub crossSpawnStub, 'spawn', ->
+        sinon.stub(crossSpawnStub, 'spawn').callsFake( ->
           emitter = new EventEmitter
           emitter.stdout = new EventEmitter
           emitter.stderr = new EventEmitter
           emitter
+        )
 
         runner.hooks['configuration'] =
           options:
             language: './my-fancy-command'
             hookfiles: "someotherfile"
 
-        sinon.stub HooksWorkerClient.prototype, 'terminateHandler', (callback) ->
+        sinon.stub(HooksWorkerClient.prototype, 'terminateHandler').callsFake (callback) ->
           callback()
 
-        sinon.stub whichStub, 'which', -> true
+        sinon.stub(whichStub, 'which').callsFake( -> true)
 
       afterEach ->
         crossSpawnStub.spawn.restore()
@@ -520,12 +526,12 @@ describe 'Hooks worker client', ->
             language: 'ruby'
             hookfiles: "somefile.rb"
 
-        sinon.stub HooksWorkerClient.prototype, 'spawnHandler' , (callback) ->
+        sinon.stub(HooksWorkerClient.prototype, 'spawnHandler' ).callsFake (callback) ->
           callback()
 
-        sinon.stub whichStub, 'which', (command) -> true
+        sinon.stub(whichStub, 'which').callsFake (command) -> true
 
-        sinon.stub HooksWorkerClient.prototype, 'terminateHandler', (callback) ->
+        sinon.stub(HooksWorkerClient.prototype, 'terminateHandler').callsFake (callback) ->
           callback()
 
 

@@ -37,10 +37,10 @@ describe('handleRuntimeProblems()', ->
     warnOutput = ''
     errorOutput = ''
 
-    sinon.stub(logger, 'warn', (args...) ->
+    sinon.stub(logger, 'warn').callsFake((args...) ->
       warnOutput += args.join(' ').toLowerCase()
     )
-    sinon.stub(logger, 'error', (args...) ->
+    sinon.stub(logger, 'error').callsFake((args...) ->
       errorOutput += args.join(' ').toLowerCase()
     )
   )

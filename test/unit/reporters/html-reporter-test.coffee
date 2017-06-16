@@ -43,7 +43,7 @@ describe 'HtmlReporter', () ->
 
     describe 'when file exists', () ->
       before () ->
-        sinon.stub fsStub, 'existsSync', (path) ->
+        sinon.stub(fsStub, 'existsSync').callsFake (path) ->
           return true
         sinon.stub loggerStub, 'info'
 
@@ -57,7 +57,7 @@ describe 'HtmlReporter', () ->
     describe 'when file does not exist', () ->
 
       before () ->
-        sinon.stub fsStub, 'existsSync', (path) ->
+        sinon.stub(fsStub, 'existsSync').callsFake (path) ->
           return false
         sinon.stub fsStub, 'unlinkSync'
 
@@ -79,7 +79,7 @@ describe 'HtmlReporter', () ->
       stats.tests = 1
 
     beforeEach () ->
-      sinon.stub fsStub, 'writeFile', (path, data, callback) ->
+      sinon.stub(fsStub, 'writeFile').callsFake (path, data, callback) ->
         callback()
 
     afterEach () ->

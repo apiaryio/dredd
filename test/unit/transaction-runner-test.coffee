@@ -849,7 +849,7 @@ describe 'TransactionRunner', ->
       spies = {}
       for name in spyNames
         spies[name] = (data, hooksCallback) -> hooksCallback()
-        sinon.stub spies, name, (data, hooksCallback) -> hooksCallback()
+        sinon.stub(spies, name).callsFake (data, hooksCallback) -> hooksCallback()
 
       hooks.beforeAll spies.beforeAllSpy
       hooks.beforeEach spies.beforeEachSpy
@@ -1662,7 +1662,7 @@ describe 'TransactionRunner', ->
 
         beforeEach ->
           # coffeelint: disable=no_empty_functions
-          sinon.stub configuration.emitter, 'emit', ->
+          sinon.stub(configuration.emitter, 'emit').callsFake( -> )
           # coffeelint: enable=no_empty_functions
 
         afterEach ->
