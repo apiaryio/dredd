@@ -101,12 +101,12 @@ addHooks = (runner, transactions, callback) ->
   else
     # Expand hookfiles - sort files alphabetically and resolve their paths
     hookfiles = [].concat runner.configuration?.options?.hookfiles
-    files = hookfiles.reduce((result, item) ->
+    files = hookfiles.reduce((result, unresolvedPath) ->
       # glob.sync does not resolve paths, only glob patterns
-      input = if glob.hasMagic(item) then glob.sync(item) else [item]
+      unresolvedPaths = if glob.hasMagic(unresolvedPath) then glob.sync(unresolvedPath) else [unresolvedPath]
 
       # Gradually append sorted and resolved paths
-      result.concat input
+      result.concat unresolvedPaths
         # Create a filename / filepath map for easier sorting
         # Example:
         # [
