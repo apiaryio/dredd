@@ -102,8 +102,7 @@ Extra header to include in every request. This option can be used multiple times
 Show usage information.<br>
 
 ### --hookfiles, -f
-Specifies a pattern to match files with before/after hooks for running tests. Files are executed in
-alphabetical order.<br>
+Specifies a pattern to match files with before/after hooks for running tests<br>
 
 ### --hooks-worker-after-connect-wait
 How long to wait between connecting to hooks worker and start of testing. [ms]<br>
