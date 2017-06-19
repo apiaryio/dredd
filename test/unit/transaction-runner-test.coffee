@@ -1525,7 +1525,7 @@ describe 'TransactionRunner', ->
         runner.hooks.beforeHooks =
           'Group Machine > Machine > Delete Message > Bogus example name' : [
             (transaction) ->
-              loggerStub.info "first",
+              loggerStub.info "first"
             (transaction, cb) ->
               loggerStub.info "second"
               cb()
