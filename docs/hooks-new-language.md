@@ -28,9 +28,9 @@ If you want to write a hook handler for your language you will have to implement
     - after each transaction
     - after all transactions
 - When CLI command is executed
-    - it loads files specified as CLI server arguments
-        - it exposes API similar to those in [Ruby](hooks-ruby.md), [Python](hooks-python.md) and [Node.js](hooks-nodejs.md) to each loaded file
-        - it registers functions declared in files for later execution
+    - It loads files passed in alphabetical order with paths resolved to absolute form
+        - It exposes API similar to those in [Ruby](hooks-ruby.md), [Python](hooks-python.md) and [Node.js](hooks-nodejs.md) to each loaded file
+        - It registers functions declared in files for later execution
     - starts a TCP socket server and starts listening on `http://127.0.0.1:61321`.
 - When any data is received by the server
     - Adds every received character to a buffer

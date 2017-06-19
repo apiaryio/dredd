@@ -6,7 +6,8 @@ options =
 
   hookfiles:
     alias: 'f'
-    description: 'Specifies a pattern to match files with before/after hooks for running tests'
+    description: """Specifies a pattern to match files with before/after hooks for running tests. \
+      Files are executed in alphabetical order."""
     default: null
 
   language:

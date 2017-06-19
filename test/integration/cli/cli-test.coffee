@@ -1,5 +1,7 @@
-{assert} = require('chai')
 net = require('net')
+path = require('path')
+
+{assert} = require('chai')
 {exec} = require('child_process')
 
 {isProcessRunning, killAll, createServer, runDreddCommandWithServer, runDreddCommand, DEFAULT_SERVER_PORT} = require('../helpers')
@@ -194,7 +196,10 @@ describe 'CLI', ->
         before (done) ->
           app = createServer()
           app.get '/machines', (req, res) ->
-            killAll('endless-ignore-term.+[^=]foo/bar/hooks', (err) ->
+            # path.posix|win32.normalize and path.join do not do the job in this case,
+            # hence this ingenious hack
+            normalizedPath = path.normalize('foo/bar/hooks').replace(/\\/g, '\\\\')
+            killAll("endless-ignore-term.+[^=]#{normalizedPath}", (err) ->
               done err if err
               res.json([{type: 'bulldozer', name: 'willy'}])
             )

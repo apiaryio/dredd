@@ -125,6 +125,79 @@ describe 'addHooks(runner, transactions, callback)', () ->
         globStub.sync.restore()
         done()
 
+    it 'should return files alphabetically sorted', (done) ->
+      addHooks runner, transactions, (err) ->
+        return done err if err
+
+        expected = [
+          'multifile_hooks.coffee',
+          'test2_hooks.js',
+          'test_hooks.coffee'
+        ]
+
+        actual = runner.hooks.configuration.options.hookfiles
+
+        assert.notEqual actual.length, 0
+
+        actual.forEach (item, index) ->
+          assert.include item, expected[index]
+
+        done()
+
+    it 'should return files with resolved paths', (done) ->
+      addHooks runner, transactions, (err) ->
+        return done err if err
+
+        expected = [
+          pathStub.resolve(process.cwd(), './test/fixtures/multifile/multifile_hooks.coffee'),
+          pathStub.resolve(process.cwd(), './test/fixtures/test2_hooks.js'),
+          pathStub.resolve(process.cwd(), './test/fixtures/test_hooks.coffee')
+        ]
+
+        actual = runner.hooks.configuration.options.hookfiles
+
+        assert.deepEqual actual, expected
+
+        done()
+
+    it 'should return resolved path for non existing file', (done) ->
+      runner =
+        configuration:
+          options:
+            hookfiles: 'foo/bar/hooks'
+
+      addHooks runner, transactions, (err) ->
+        return done err if err
+
+        actual = runner.hooks.configuration.options.hookfiles
+        expected = [pathStub.resolve(process.cwd(), 'foo/bar/hooks')]
+
+        assert.deepEqual actual, expected
+
+        done()
+
+    it 'should handle mixed filepaths and globs', (done) ->
+      runner =
+        configuration:
+          options:
+            hookfiles: ['foo/bar/hooks', './**/*_hooks.*']
+
+      addHooks runner, transactions, (err) ->
+        return done err if err
+
+        actual = runner.hooks.configuration.options.hookfiles
+        expected = [
+          pathStub.resolve(process.cwd(), 'foo/bar/hooks')
+          pathStub.resolve(process.cwd(), './test/fixtures/multifile/multifile_hooks.coffee')
+          pathStub.resolve(process.cwd(), './test/fixtures/test2_hooks.js')
+          pathStub.resolve(process.cwd(), './test/fixtures/test_hooks.coffee')
+        ]
+
+        assert.deepEqual actual, expected
+
+        done()
+
+
     describe 'when files are valid js/coffeescript', () ->
       runner = null
       before () ->
