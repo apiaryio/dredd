@@ -137,6 +137,8 @@ describe 'addHooks(runner, transactions, callback)', () ->
 
         actual = runner.hooks.configuration.options.hookfiles
 
+        assert.notEqual actual.length, 0
+
         actual.forEach (item, index) ->
           assert.include item, expected[index]
 
