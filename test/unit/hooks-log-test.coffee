@@ -46,7 +46,7 @@ describe 'hooksLog()', () ->
       assert.lengthOf data, 1
       assert.strictEqual data, originLogs
       assert.deepEqual data, originLogs
-      assert.deepPropertyVal data[0], 'content', 'one message'
+      assert.propertyVal data[0], 'content', 'one message'
 
     it 'should push message to undefined logs and return new array instead', ->
       originLogs = undefined
@@ -55,7 +55,7 @@ describe 'hooksLog()', () ->
       assert.lengthOf data, 1
       assert.isUndefined originLogs
       assert.notDeepEqual data, originLogs
-      assert.deepPropertyVal data[0], 'content', 'another message'
+      assert.propertyVal data[0], 'content', 'another message'
 
     it 'should append message to an existing logs array', ->
       originLogs = clone exampleLogs
@@ -64,7 +64,7 @@ describe 'hooksLog()', () ->
       assert.lengthOf data, 2
       assert.deepEqual data, originLogs
       assert.deepEqual data[0], exampleLogs[0]
-      assert.deepPropertyVal data[1], 'content', 'some other idea'
+      assert.propertyVal data[1], 'content', 'some other idea'
 
     it 'should use "hook" logger level', ->
       hooksLog [], loggerStub, 'there is a log'

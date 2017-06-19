@@ -221,18 +221,18 @@ describe 'Dredd class', ->
         dredd.run (error) ->
           return done error if error
           assert.isObject dredd.configuration.data
-          assert.notDeepProperty dredd, 'configuration.data.testingDirectObject'
-          assert.deepPropertyVal dredd, 'configuration.data.testingDirectObjectFilename.filename', 'testingDirectObjectFilename'
-          assert.deepProperty    dredd, 'configuration.data.testingDirectObjectFilename.raw'
-          assert.deepPropertyVal dredd, 'configuration.data.testingDirectBlueprintString.filename', 'testingDirectBlueprintString'
-          assert.deepProperty    dredd, 'configuration.data.testingDirectBlueprintString.raw'
+          assert.notNestedProperty dredd, 'configuration.data.testingDirectObject'
+          assert.nestedPropertyVal dredd, 'configuration.data.testingDirectObjectFilename.filename', 'testingDirectObjectFilename'
+          assert.nestedProperty    dredd, 'configuration.data.testingDirectObjectFilename.raw'
+          assert.nestedPropertyVal dredd, 'configuration.data.testingDirectBlueprintString.filename', 'testingDirectBlueprintString'
+          assert.nestedProperty    dredd, 'configuration.data.testingDirectBlueprintString.raw'
           done()
 
       it 'should parse passed data contents', (done) ->
         dredd.run (error) ->
           return done error if error
-          assert.deepProperty dredd, 'configuration.data.testingDirectObjectFilename.annotations'
-          assert.deepProperty dredd, 'configuration.data.testingDirectBlueprintString.annotations'
+          assert.nestedProperty dredd, 'configuration.data.testingDirectObjectFilename.annotations'
+          assert.nestedProperty dredd, 'configuration.data.testingDirectBlueprintString.annotations'
           done()
 
       describe 'and I also set configuration.options.path to an existing file', ->
@@ -257,12 +257,12 @@ describe 'Dredd class', ->
             assert.propertyVal localdredd.configuration.data['./test/fixtures/apiary.apib'], 'filename', './test/fixtures/apiary.apib'
             assert.property    localdredd.configuration.data['./test/fixtures/apiary.apib'], 'raw'
             assert.property    localdredd.configuration.data['./test/fixtures/apiary.apib'], 'annotations'
-            assert.deepPropertyVal localdredd, 'configuration.data.testingDirectObjectFilename.filename', 'testingDirectObjectFilename'
-            assert.deepProperty    localdredd, 'configuration.data.testingDirectObjectFilename.raw'
-            assert.deepProperty    localdredd, 'configuration.data.testingDirectObjectFilename.annotations'
-            assert.deepPropertyVal localdredd, 'configuration.data.testingDirectBlueprintString.filename', 'testingDirectBlueprintString'
-            assert.deepProperty    localdredd, 'configuration.data.testingDirectBlueprintString.raw'
-            assert.deepProperty    localdredd, 'configuration.data.testingDirectBlueprintString.annotations'
+            assert.nestedPropertyVal localdredd, 'configuration.data.testingDirectObjectFilename.filename', 'testingDirectObjectFilename'
+            assert.nestedProperty    localdredd, 'configuration.data.testingDirectObjectFilename.raw'
+            assert.nestedProperty    localdredd, 'configuration.data.testingDirectObjectFilename.annotations'
+            assert.nestedPropertyVal localdredd, 'configuration.data.testingDirectBlueprintString.filename', 'testingDirectBlueprintString'
+            assert.nestedProperty    localdredd, 'configuration.data.testingDirectBlueprintString.raw'
+            assert.nestedProperty    localdredd, 'configuration.data.testingDirectBlueprintString.annotations'
             done()
 
 

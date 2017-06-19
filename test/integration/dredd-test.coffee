@@ -176,12 +176,12 @@ describe 'Dredd class Integration', ->
 
     it 'should send results from Gavel', ->
       assert.isObject receivedRequest
-      assert.deepProperty receivedRequest, 'resultData.request'
-      assert.deepProperty receivedRequest, 'resultData.realResponse'
-      assert.deepProperty receivedRequest, 'resultData.expectedResponse'
-      assert.deepProperty receivedRequest, 'resultData.result.body.validator'
-      assert.deepProperty receivedRequest, 'resultData.result.headers.validator'
-      assert.deepProperty receivedRequest, 'resultData.result.statusCode.validator'
+      assert.nestedProperty receivedRequest, 'resultData.request'
+      assert.nestedProperty receivedRequest, 'resultData.realResponse'
+      assert.nestedProperty receivedRequest, 'resultData.expectedResponse'
+      assert.nestedProperty receivedRequest, 'resultData.result.body.validator'
+      assert.nestedProperty receivedRequest, 'resultData.result.headers.validator'
+      assert.nestedProperty receivedRequest, 'resultData.result.statusCode.validator'
 
       it 'prints out an error message', ->
         assert.notEqual exitStatus, 0
@@ -255,9 +255,9 @@ describe 'Dredd class Integration', ->
 
       it 'should send results from gavel', () ->
         assert.isObject receivedRequest
-        assert.deepProperty receivedRequest, 'resultData.request'
-        assert.deepProperty receivedRequest, 'resultData.expectedResponse'
-        assert.deepProperty receivedRequest, 'resultData.result.general'
+        assert.nestedProperty receivedRequest, 'resultData.request'
+        assert.nestedProperty receivedRequest, 'resultData.expectedResponse'
+        assert.nestedProperty receivedRequest, 'resultData.result.general'
 
       it 'report should have message about server being down', () ->
         message = receivedRequest['resultData']['result']['general'][0]['message']
@@ -318,12 +318,12 @@ describe 'Dredd class Integration', ->
 
       it 'should send results from Gavel', ->
         assert.isObject receivedRequest
-        assert.deepProperty receivedRequest, 'resultData.request'
-        assert.deepProperty receivedRequest, 'resultData.realResponse'
-        assert.deepProperty receivedRequest, 'resultData.expectedResponse'
-        assert.deepProperty receivedRequest, 'resultData.result.body.validator'
-        assert.deepProperty receivedRequest, 'resultData.result.headers.validator'
-        assert.deepProperty receivedRequest, 'resultData.result.statusCode.validator'
+        assert.nestedProperty receivedRequest, 'resultData.request'
+        assert.nestedProperty receivedRequest, 'resultData.realResponse'
+        assert.nestedProperty receivedRequest, 'resultData.expectedResponse'
+        assert.nestedProperty receivedRequest, 'resultData.result.body.validator'
+        assert.nestedProperty receivedRequest, 'resultData.result.headers.validator'
+        assert.nestedProperty receivedRequest, 'resultData.result.statusCode.validator'
 
 
   describe "when API description document should be loaded from 'http(s)://...' url", ->

@@ -46,10 +46,10 @@ describe 'Hooks', () ->
       hooks.log 'messageX'
       assert.isTrue options.logger.hook.called
       assert.isFalse options.logger.error.called
-      assert.deepProperty hooks.logs[2], 'timestamp'
-      assert.deepPropertyVal hooks.logs[0], 'content', 'message1'
-      assert.deepPropertyVal hooks.logs[1], 'content', 'message2'
-      assert.deepPropertyVal hooks.logs[2], 'content', 'messageX'
+      assert.property hooks.logs[2], 'timestamp'
+      assert.propertyVal hooks.logs[0], 'content', 'message1'
+      assert.propertyVal hooks.logs[1], 'content', 'message2'
+      assert.propertyVal hooks.logs[2], 'content', 'messageX'
 
   describe '#before', () ->
     hooks = null
