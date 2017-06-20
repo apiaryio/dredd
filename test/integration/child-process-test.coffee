@@ -281,7 +281,7 @@ describe('Babysitting Child Processes', ->
 
       beforeEach((done) ->
         runChildProcess('test/fixtures/scripts/exit-0.coffee', (childProcess) ->
-          ; # do nothing
+          true
         , (err, info) ->
           processInfo = info
           done(err)
@@ -313,7 +313,7 @@ describe('Babysitting Child Processes', ->
 
       beforeEach((done) ->
         runChildProcess('test/fixtures/scripts/exit-3.coffee', (childProcess) ->
-          ; # do nothing
+          true
         , (err, info) ->
           processInfo = info
           done(err)

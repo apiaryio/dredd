@@ -26,7 +26,7 @@ class XUnitReporter extends EventEmitter
       fs.unlinkSync(filePath)
     filePath
 
-  configureEmitter: (emitter) =>
+  configureEmitter: (emitter) ->
     emitter.on 'start', (rawBlueprint, callback) =>
       appendLine @path, toTag('testsuite', {
         name: 'Dredd Tests'
@@ -89,7 +89,7 @@ class XUnitReporter extends EventEmitter
       appendLine @path, toTag('testcase', attrs, false, toTag('failure', null, false, cdata(errorMessage)))
 
   updateSuiteStats = (path, stats, callback) ->
-    fs.readFile path, (err, data) ->
+    fs.readFile path, (err, data) =>
       if !err
         data = data.toString()
         position = data.toString().indexOf('\n')
