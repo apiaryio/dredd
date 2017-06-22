@@ -88,7 +88,7 @@ import (
 
 func main() {
     h := hooks.NewHooks()
-	server := hooks.NewServer(hooks.NewHooksRunner(h))
+    server := hooks.NewServer(hooks.NewHooksRunner(h))
     h.BeforeAll(func(t []*trans.Transaction) {
         fmt.Println("before all modification")
     })
@@ -136,7 +136,7 @@ import (
 
 func main() {
     h := hooks.NewHooks()
-	server := hooks.NewServer(hooks.NewHooksRunner(h))
+    server := hooks.NewServer(hooks.NewHooksRunner(h))
     h.Before("Machines > Machines collection > Get Machines", func(t *trans.Transaction) {
         t.Skip = true
     })
@@ -161,7 +161,7 @@ import (
 
 func main() {
     h := hooks.NewHooks()
-	server := hooks.NewServer(hooks.NewHooksRunner(h))
+    server := hooks.NewServer(hooks.NewHooksRunner(h))
     h.Before("Machines > Machines collection > Get Machines", func(t *trans.Transaction) {
         t.Fail = true
     })
@@ -187,7 +187,7 @@ import (
 
 func main() {
     h := hooks.NewHooks()
-	server := hooks.NewServer(hooks.NewHooksRunner(h))
+    server := hooks.NewServer(hooks.NewHooksRunner(h))
     h.Before("Machines > Machines collection > Get Machines", func(t *trans.Transaction) {
         body := map[string]interface{}{}
         json.Unmarshal([]byte(t.Request.Body), &body)
