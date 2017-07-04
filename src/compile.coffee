@@ -73,7 +73,7 @@ findRelevantTransactions = (mediaType, parseResult) ->
         relevantTransactions.push(httpTransaction) unless httpTransaction.attributes.example is example
       else
         relevantTransactions.push(httpTransaction)
-      example = httpTransaction.attributes.example
+      example = httpTransaction.attributes?.example
 
   return relevantTransactions
 
@@ -84,7 +84,7 @@ compileRequest = (parseResult, httpRequest) ->
   {uri, annotations} = compileUri(parseResult, httpRequest)
   if uri
     request = {
-      method: content(httpRequest.attributes.method)
+      method: content(httpRequest.attributes?.method)
       uri
       headers: compileHeaders(child(httpRequest, {element: 'httpHeaders'}))
       body: content(messageBody) or ''
@@ -100,7 +100,7 @@ compileResponse = (httpResponse) ->
   messageBodySchema = child(httpResponse, {element: 'asset', 'meta.classes': 'messageBodySchema'})
 
   response =
-    status: content(httpResponse.attributes.statusCode)
+    status: content(httpResponse.attributes?.statusCode)
     headers: compileHeaders(child(httpResponse, {element: 'httpHeaders'}))
     body: content(messageBody) or ''
 
@@ -213,8 +213,8 @@ compilePathOrigin = (parseResult, filename, httpTransaction) ->
     apiName: content(api.meta?.title) or ''
     resourceGroupName: content(resourceGroup?.meta?.title) or ''
     resourceName: content(resource.meta?.title) or content(resource.attributes?.href) or ''
-    actionName: content(transition.meta?.title) or content(httpRequest.attributes.method) or ''
-    exampleName: "Example #{httpTransaction.attributes.example}"
+    actionName: content(transition.meta?.title) or content(httpRequest.attributes?.method) or ''
+    exampleName: "Example #{httpTransaction.attributes?.example}"
   }
 
 
