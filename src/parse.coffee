@@ -33,7 +33,7 @@ parse = (source, callback) ->
       err = new Error(err.message)
 
     if apiElements
-      apiElements = apiElements.toRefract()
+      apiElements = fury.minim.toRefract(apiElements)
       apiElements.content = apiElements.content.concat(annotations)
     else
       apiElements = null
