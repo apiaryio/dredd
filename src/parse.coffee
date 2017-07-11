@@ -1,11 +1,10 @@
-
 deckardcain = require('deckardcain')
 fury = require('fury')
 fury.use(require('fury-adapter-apib-parser'))
 fury.use(require('fury-adapter-swagger'))
 
-JSON06Serialiser = require('minim/lib/serialisers/json-0.6')
-serialiser =  new JSON06Serialiser(fury.minim)
+apiElementsToJson = require('./api-elements-to-json')
+
 
 createAnnotation = (message, type) ->
   {
@@ -35,7 +34,7 @@ parse = (source, callback) ->
       err = new Error(err.message)
 
     if apiElements
-      apiElements = serialiser.serialise(apiElements)
+      apiElements = apiElementsToJson(apiElements)
       apiElements.content = apiElements.content.concat(annotations)
     else
       apiElements = null
