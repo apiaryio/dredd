@@ -6,24 +6,22 @@ fury.use(require('fury-adapter-swagger'))
 apiElementsToJson = require('./api-elements-to-json')
 
 
-createAnnotation = (message, type) ->
-  {
-    element: 'annotation'
-    meta: {classes: [type]}
-    content: message
-  }
+createWarning = (message) ->
+  annotation = new fury.minim.elements.Annotation(message)
+  annotation.classes.push('warning')
+  return annotation
 
 
 parse = (source, callback) ->
-  annotations = []
+  warning = null
   mediaType = deckardcain.identify(source)
 
   unless mediaType
     mediaType = 'text/vnd.apiblueprint'
-    annotations.push(createAnnotation('''\
+    warning = createWarning('''\
       Could not recognize API description format. \
       Falling back to API Blueprint by default.\
-    ''', 'warning'))
+    ''')
 
   args = {source, mediaType, generateSourceMap: true}
   fury.parse(args, (err, apiElements) ->
@@ -34,8 +32,8 @@ parse = (source, callback) ->
       err = new Error(err.message)
 
     if apiElements
+      apiElements.unshift(warning) if warning
       apiElements = apiElementsToJson(apiElements)
-      apiElements.content = apiElements.content.concat(annotations)
     else
       apiElements = null
 
