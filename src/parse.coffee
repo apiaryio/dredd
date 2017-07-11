@@ -4,6 +4,8 @@ fury = require('fury')
 fury.use(require('fury-adapter-apib-parser'))
 fury.use(require('fury-adapter-swagger'))
 
+JSON06Serialiser = require('minim/lib/serialisers/json-0.6')
+serialiser =  new JSON06Serialiser(fury.minim)
 
 createAnnotation = (message, type) ->
   {
@@ -33,7 +35,7 @@ parse = (source, callback) ->
       err = new Error(err.message)
 
     if apiElements
-      apiElements = fury.minim.toRefract(apiElements)
+      apiElements = serialiser.serialise(apiElements)
       apiElements.content = apiElements.content.concat(annotations)
     else
       apiElements = null
