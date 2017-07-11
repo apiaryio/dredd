@@ -33,7 +33,6 @@ parse = (source, callback) ->
 
     if apiElements
       apiElements.unshift(warning) if warning
-      apiElements = apiElementsToJson(apiElements)
     else
       apiElements = null
 
