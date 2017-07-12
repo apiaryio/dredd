@@ -1,10 +1,10 @@
-
 sinon = require('sinon')
 fury = require('fury')
-{assert} = require('../utils')
 
+{assert} = require('../utils')
 fixtures = require('../fixtures')
 parse = require('../../src/parse')
+apiElementsToJson = require('../../src/api-elements-to-json')
 
 
 describe('Parsing API description document', ->
@@ -32,15 +32,14 @@ describe('Parsing API description document', ->
       it('produces media type', ->
         assert.match(mediaType, reMediaType)
       )
-      it('the parse result is in the API Elements format', ->
-        assert.equal(apiElements.element, 'parseResult')
-        assert.isArray(apiElements.content)
+      it('the parse result is API Elements represented by minim objects', ->
+        assert.instanceOf(apiElements, fury.minim.elements.ParseResult)
       )
       it('the parse result contains no annotation elements', ->
-        assert.notInclude(JSON.stringify(apiElements), '"annotation"')
+        assert.isTrue(apiElements.annotations?.isEmpty)
       )
       it('the parse result contains source map elements', ->
-        assert.include(JSON.stringify(apiElements), '"sourceMap"')
+        assert.include(JSON.stringify(apiElementsToJson(apiElements)), '"sourceMap"')
       )
     )
   )
@@ -67,11 +66,11 @@ describe('Parsing API description document', ->
       it('produces media type', ->
         assert.match(mediaType, reMediaType)
       )
-      it('the parse result contains annotation element', ->
-        assert.include(JSON.stringify(apiElements), '"annotation"')
+      it('the parse result contains annotation elements', ->
+        assert.isFalse(apiElements.annotations?.isEmpty)
       )
-      it('the annotation is an error', ->
-        assert.include(JSON.stringify(apiElements), '"error"')
+      it('the annotations are errors', ->
+        assert.equal(apiElements.errors?.length, apiElements.annotations.length)
       )
     )
   )
@@ -98,11 +97,11 @@ describe('Parsing API description document', ->
       it('produces media type', ->
         assert.match(mediaType, reMediaType)
       )
-      it('the parse result contains annotation element', ->
-        assert.include(JSON.stringify(apiElements), '"annotation"')
+      it('the parse result contains annotation elements', ->
+        assert.isFalse(apiElements.annotations?.isEmpty)
       )
-      it('the annotation is a warning', ->
-        assert.include(JSON.stringify(apiElements), '"warning"')
+      it('the annotations are warnings', ->
+        assert.equal(apiElements.warnings?.length, apiElements.annotations.length)
       )
     )
   )
@@ -157,14 +156,14 @@ describe('Parsing API description document', ->
     it('produces media type', ->
       assert.match(mediaType, reMediaType)
     )
-    it('the parse result contains annotation element', ->
-      assert.include(JSON.stringify(apiElements), '"annotation"')
+    it('the parse result contains annotation elements', ->
+      assert.isFalse(apiElements.annotations?.isEmpty)
     )
-    it('the annotation is a warning', ->
-      assert.include(JSON.stringify(apiElements), '"warning"')
+    it('the annotations are warnings', ->
+      assert.equal(apiElements.warnings?.length, apiElements.annotations.length)
     )
-    it('the warning is about falling back to API Blueprint', ->
-      assert.include(JSON.stringify(apiElements), 'to API Blueprint')
+    it('the first warning is about falling back to API Blueprint', ->
+      assert.include(apiElements.warnings.getValue(0), 'to API Blueprint')
     )
   )
 
@@ -189,14 +188,14 @@ describe('Parsing API description document', ->
     it('produces media type', ->
       assert.match(mediaType, reMediaType)
     )
-    it('the parse result contains annotation element', ->
-      assert.include(JSON.stringify(apiElements), '"annotation"')
+    it('the parse result contains annotation elements', ->
+      assert.isFalse(apiElements.annotations?.isEmpty)
     )
-    it('the annotation is a warning', ->
-      assert.include(JSON.stringify(apiElements), '"warning"')
+    it('the annotations are warnings', ->
+      assert.equal(apiElements.warnings?.length, apiElements.annotations.length)
     )
-    it('the warning is about falling back to API Blueprint', ->
-      assert.include(JSON.stringify(apiElements), 'to API Blueprint')
+    it('the first warning is about falling back to API Blueprint', ->
+      assert.include(apiElements.warnings.getValue(0), 'to API Blueprint')
     )
   )
 )
