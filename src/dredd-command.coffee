@@ -332,9 +332,11 @@ class DreddCommand
   exitWithStatus: (error, stats) ->
     if error
       logger.error(error.message) if error.message
+      process.exitCode = 1
       return @_processExit(1)
 
     if (stats.failures + stats.errors) > 0
+      process.exitCode = 1
       @_processExit(1)
     else
       @_processExit(0)
