@@ -1,4 +1,3 @@
-deckardcain = require('deckardcain')
 fury = require('fury')
 fury.use(require('fury-adapter-apib-parser'))
 fury.use(require('fury-adapter-swagger'))
@@ -14,9 +13,11 @@ createWarning = (message) ->
 
 parse = (source, callback) ->
   warning = null
-  mediaType = deckardcain.identify(source)
+  adapters = fury.detect(source)
 
-  unless mediaType
+  if adapters.length
+    mediaType = adapters[0].mediaTypes[0]
+  else
     mediaType = 'text/vnd.apiblueprint'
     warning = createWarning('''\
       Could not recognize API description format. \
