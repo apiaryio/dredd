@@ -4,7 +4,7 @@ fury = require('fury')
 {assert} = require('../utils')
 fixtures = require('../fixtures')
 parse = require('../../src/parse')
-apiElementsToJson = require('../../src/api-elements-to-json')
+apiElementsToRefract = require('../../src/api-elements-to-refract')
 
 
 describe('Parsing API description document', ->
@@ -39,7 +39,7 @@ describe('Parsing API description document', ->
         assert.isTrue(apiElements.annotations?.isEmpty)
       )
       it('the parse result contains source map elements', ->
-        assert.include(JSON.stringify(apiElementsToJson(apiElements)), '"sourceMap"')
+        assert.include(JSON.stringify(apiElementsToRefract(apiElements)), '"sourceMap"')
       )
     )
   )

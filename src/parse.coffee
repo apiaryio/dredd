@@ -2,8 +2,6 @@ fury = require('fury')
 fury.use(require('fury-adapter-apib-parser'))
 fury.use(require('fury-adapter-swagger'))
 
-apiElementsToJson = require('./api-elements-to-json')
-
 
 createWarning = (message) ->
   annotation = new fury.minim.elements.Annotation(message)

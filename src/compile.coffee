@@ -1,4 +1,3 @@
-
 clone = require('clone')
 caseless = require('caseless')
 
@@ -6,40 +5,46 @@ caseless = require('caseless')
 validateParameters = require('./validate-parameters')
 detectTransactionExamples = require('./detect-transaction-examples')
 expandUriTemplateWithParameters = require('./expand-uri-template-with-parameters')
-apiElementsToJson = require('./api-elements-to-json')
+apiElementsToRefract = require('./api-elements-to-refract')
 
 
 compile = (mediaType, apiElements, filename) ->
-  parseResult = apiElementsToJson(apiElements)
-
   transactions = []
   errors = []
   warnings = []
 
-  component = 'apiDescriptionParser'
-  for annotation in children(parseResult, {element: 'annotation'})
-    group = if annotation.meta.classes[0] is 'warning' then warnings else errors
+  apiElements.annotations.forEach((annotation) ->
+    group = if annotation.classes.contains('warning') then warnings else errors
     group.push({
-      component
-      code: content(annotation.attributes?.code)
-      message: content(annotation)
-      location: content(child(annotation.attributes?.sourceMap, {element: 'sourceMap'}))
+      component: 'apiDescriptionParser'
+      code: annotation.code?.toValue()
+      message: annotation.toValue()
+      location: annotation.sourceMapValue
     })
+  )
 
-  for httpTransaction in findRelevantTransactions(mediaType, parseResult)
-    resource = parent(httpTransaction, parseResult, {element: 'resource'})
-    httpRequest = child(httpTransaction, {element: 'httpRequest'})
-    httpResponse = child(httpTransaction, {element: 'httpResponse'})
+  # IRON CURTAIN OF THE MINIM SUPPORT
+  #
+  # Before this line, the code supports API Elements and minim. After this
+  # line, the code works with raw JS object representation of the API Elements.
+  refract = apiElementsToRefract(apiElements)
 
-    origin = compileOrigin(mediaType, parseResult, filename, httpTransaction)
-    {request, annotations} = compileRequest(parseResult, httpRequest)
+  for relevantTransaction in findRelevantTransactions(mediaType, refract, apiElements)
+    refractHttpTransaction = relevantTransaction.refract
+    exampleNo = relevantTransaction.exampleNo
+
+    refractHttpRequest = child(refractHttpTransaction, {element: 'httpRequest'})
+    refractHttpResponse = child(refractHttpTransaction, {element: 'httpResponse'})
+
+    origin = compileOrigin(mediaType, refract, filename, refractHttpTransaction, exampleNo)
+    {request, annotations} = compileRequest(refract, refractHttpRequest)
 
     if request
       transactions.push({
         origin
-        pathOrigin: compilePathOrigin(parseResult, filename, httpTransaction)
+        pathOrigin: compilePathOrigin(refract, filename, refractHttpTransaction, exampleNo)
         request
-        response: compileResponse(httpResponse)
+        response: compileResponse(refractHttpResponse)
       })
 
     for error in annotations.errors
@@ -52,33 +57,69 @@ compile = (mediaType, apiElements, filename) ->
   {transactions, errors, warnings}
 
 
-findRelevantTransactions = (mediaType, parseResult) ->
+findRelevantTransactions = (mediaType, refract, apiElements) ->
   relevantTransactions = []
 
-  if mediaType is 'text/vnd.apiblueprint'
+  # This gets deleted once we're fully on minim
+  refractTransitions = children(refract, {element: 'transition'})
+
+  apiElements.findRecursive('transition').forEach((transition, transitionNo) ->
+    transitionNo = transitionNo.toValue()
+    httpTransactions = transition.findRecursive('httpTransaction')
+
+    # This gets deleted once we're fully on minim
+    refractTransition = refractTransitions[transitionNo]
+    refractHttpTransactions = children(refractTransition, {element: 'httpTransaction'})
+
     # API Blueprint has a concept of transaction examples and
     # the API Blueprint AST used to expose it. The concept isn't present
     # in API Elements anymore, so we have to detect and backport them.
-    children(parseResult, {element: 'transition'}).map(detectTransactionExamples)
+    if mediaType is 'text/vnd.apiblueprint'
+      exampleNumbersPerTransaction = detectExampleNumbersPerTransaction(transition)
+    else
+      exampleNumbersPerTransaction = httpTransactions.map( -> 1)
+    hasMoreExamples = Math.max(exampleNumbersPerTransaction...) > 1
 
-  # Dredd supports only testing of the first request-response pair within
-  # each transaction example. So if we're dealing with API Blueprint, we
-  # iterate over available transactions and skip those, which are not first
-  # within a particular example.
-  #
-  # That's achieved by tracking example number within each transition
-  # and skipping transactions with example number we've already seen.
-  for transition in children(parseResult, {element: 'transition'})
-    example = 0
+    # Dredd supports only testing of the first request-response pair within
+    # each transaction example. So if we're dealing with API Blueprint, we
+    # iterate over available transactions and skip those, which are not first
+    # within a particular example.
+    exampleNo = 0
+    httpTransactions.forEach((httpTransaction, httpTransactionNo) ->
+      httpTransactionNo = httpTransactionNo.toValue()
+      httpTransactionExampleNo = exampleNumbersPerTransaction[httpTransactionNo]
 
-    for httpTransaction in children(transition, {element: 'httpTransaction'})
+      transactionInfo =
+        refract: refractHttpTransactions[httpTransactionNo]
+        apiElements: httpTransaction
+        exampleNo: if hasMoreExamples then httpTransactionExampleNo else null
+
       if mediaType is 'text/vnd.apiblueprint'
-        relevantTransactions.push(httpTransaction) unless httpTransaction.attributes.example is example
+        if httpTransactionExampleNo isnt exampleNo
+          relevantTransactions.push(transactionInfo)
       else
-        relevantTransactions.push(httpTransaction)
-      example = httpTransaction.attributes?.example
+        relevantTransactions.push(transactionInfo)
+
+      exampleNo = httpTransactionExampleNo
+    )
+  )
 
   return relevantTransactions
+
+
+# Detects transaction example numbers for given transition element
+#
+# Returns an array of numbers, where indexes correspond to HTTP transactions
+# within the transition and values represent the example numbers.
+detectExampleNumbersPerTransaction = (transition) ->
+  tempRefractTransition = apiElementsToRefract(transition)
+  tempRefractHttpTransactions = children(tempRefractTransition, {element: 'httpTransaction'})
+
+  detectTransactionExamples(tempRefractTransition)
+
+  return tempRefractHttpTransactions.map((tempRefractHttpTransaction) ->
+    return tempRefractHttpTransaction.attributes.example
+  )
 
 
 compileRequest = (parseResult, httpRequest) ->
@@ -188,7 +229,7 @@ compileHeaders = (httpHeaders) ->
   headers
 
 
-compileOrigin = (mediaType, parseResult, filename, httpTransaction) ->
+compileOrigin = (mediaType, parseResult, filename, httpTransaction, exampleNo) ->
   api = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'api'})
   resourceGroup = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'resourceGroup'})
   resource = parent(httpTransaction, parseResult, {element: 'resource'})
@@ -201,11 +242,11 @@ compileOrigin = (mediaType, parseResult, filename, httpTransaction) ->
     resourceGroupName: content(resourceGroup?.meta?.title) or ''
     resourceName: content(resource.meta?.title) or content(resource.attributes?.href) or ''
     actionName: content(transition.meta?.title) or content(httpRequest.attributes.method) or ''
-    exampleName: compileOriginExampleName(mediaType, parseResult, httpTransaction)
+    exampleName: compileOriginExampleName(mediaType, parseResult, httpTransaction, exampleNo)
   }
 
 
-compilePathOrigin = (parseResult, filename, httpTransaction) ->
+compilePathOrigin = (parseResult, filename, httpTransaction, exampleNo) ->
   api = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'api'})
   resourceGroup = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'resourceGroup'})
   resource = parent(httpTransaction, parseResult, {element: 'resource'})
@@ -217,19 +258,19 @@ compilePathOrigin = (parseResult, filename, httpTransaction) ->
     resourceGroupName: content(resourceGroup?.meta?.title) or ''
     resourceName: content(resource.meta?.title) or content(resource.attributes?.href) or ''
     actionName: content(transition.meta?.title) or content(httpRequest.attributes?.method) or ''
-    exampleName: "Example #{httpTransaction.attributes?.example}"
+    exampleName: "Example #{exampleNo or 1}"
   }
 
 
-compileOriginExampleName = (mediaType, parseResult, httpTransaction) ->
+compileOriginExampleName = (mediaType, parseResult, httpTransaction, exampleNo) ->
   transition = parent(httpTransaction, parseResult, {element: 'transition'})
   httpResponse = child(httpTransaction, {element: 'httpResponse'})
 
   exampleName = ''
 
   if mediaType is 'text/vnd.apiblueprint'
-    if content(transition.attributes.examples) > 1
-      exampleName = "Example #{httpTransaction.attributes.example}"
+    if exampleNo
+      exampleName = "Example #{exampleNo}"
   else
     statusCode = content(httpResponse.attributes.statusCode)
     headers = compileHeaders(child(httpResponse, {element: 'httpHeaders'}))
