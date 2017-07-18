@@ -65,7 +65,6 @@ findRelevantTransactions = (mediaType, refract, apiElements) ->
 
   apiElements.findRecursive('transition').forEach((transition, transitionNo) ->
     transitionNo = transitionNo.toValue()
-    httpTransactions = transition.findRecursive('httpTransaction')
 
     # This gets deleted once we're fully on minim
     refractTransition = refractTransitions[transitionNo]
@@ -77,7 +76,7 @@ findRelevantTransactions = (mediaType, refract, apiElements) ->
     if mediaType is 'text/vnd.apiblueprint'
       exampleNumbersPerTransaction = detectExampleNumbersPerTransaction(transition)
     else
-      exampleNumbersPerTransaction = httpTransactions.map( -> 1)
+      exampleNumbersPerTransaction = transition.transactions.map( -> 1)
     hasMoreExamples = Math.max(exampleNumbersPerTransaction...) > 1
 
     # Dredd supports only testing of the first request-response pair within
@@ -85,7 +84,7 @@ findRelevantTransactions = (mediaType, refract, apiElements) ->
     # iterate over available transactions and skip those, which are not first
     # within a particular example.
     exampleNo = 0
-    httpTransactions.forEach((httpTransaction, httpTransactionNo) ->
+    transition.transactions.forEach((httpTransaction, httpTransactionNo) ->
       httpTransactionNo = httpTransactionNo.toValue()
       httpTransactionExampleNo = exampleNumbersPerTransaction[httpTransactionNo]
 
