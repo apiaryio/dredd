@@ -169,7 +169,7 @@ Source of the documentation can be found in the [docs][] directory. To render Dr
 #### Installation and Development
 
 1.  Make sure `node` is an executable and `npm install` has been done for the Dredd directory. Extensions to the docs are written in Node.js and Sphinx needs to have a way to execute them.
-2.  [Get Python 3](https://www.python.org/downloads/). On macOS, run `brew install python3`.
+2.  [Get Python 3](https://www.python.org/downloads/). On macOS, run `brew install python3`. [ReadTheDocs][] build the docs with Python 3.5, so make sure you have that or higher.
 3.  Create a [virtual environment](https://docs.python.org/3/library/venv.html) and activate it:
 
     ```sh
