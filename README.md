@@ -83,4 +83,4 @@ $ npm install -g dredd
 
 [Travis CI]: https://travis-ci.org/
 [CircleCI]: https://circleci.com/
-[Jenkins]: http://jenkins-ci.org/
+[Jenkins]: https://jenkins.io/
