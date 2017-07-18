@@ -20,11 +20,13 @@ from recommonmark.transform import AutoStructify
 
 # -- Environment ----------------------------------------------------------
 
+IS_READTHEDOCS = os.environ.get('READTHEDOCS') == 'True'
+
 docs_dir = os.path.dirname(__file__)
 project_dir = os.path.join(docs_dir, '..')
 node_modules_bin_dir = os.path.join(project_dir, 'node_modules', '.bin')
 
-if os.environ.get('READTHEDOCS') == 'True':
+if IS_READTHEDOCS:
     installation_output = subprocess.getoutput('bash ' + os.path.join(docs_dir, 'install-node.sh'))
     node_bin = installation_output.splitlines()[-1].strip()
 else:
@@ -64,9 +66,13 @@ def get_release():
         # Is internet available? this is to be able to generate docs
         # e.g. in train without internet connection
         urllib.request.urlopen('https://www.npmjs.com/package/dredd', timeout=3)
-    except urllib.request.URLError:
-        # Offline, use dummy release number
-        return package_json['version']
+    except urllib.request.URLError as e:
+        if IS_READTHEDOCS:
+            # ReadTheDocs have problem to connect to npm, fail fast
+            raise SphinxError('Could not determine Dredd version: {}'.format(e))
+        else:
+            # Offline local development, use dummy release number
+            return package_json['version']
     else:
         # Online, ask Semantic Release what would be the next version
         sem_rel_bin = os.path.join(node_modules_bin_dir, 'semantic-release')
@@ -79,7 +85,7 @@ def get_release():
         # Semantic Release wasn't able to determine a new version number,
         # either because of some error or because there are no changes which
         # would bump the version number. Stick to the latest released version.
-        if os.environ.get('READTHEDOCS') == 'True':
+        if IS_READTHEDOCS:
             npm_bin = node_bin.replace('/bin/node', '/bin/npm')
             command = '{} {} view dredd version'.format(node_bin, npm_bin)
         else:
@@ -88,7 +94,8 @@ def get_release():
 
 # The full version, including alpha/beta/rc tags.
 release = get_release()
-assert re.match(r'\d+\.\d+\.\d+', release), "'{}' does not look like version number".format(release)
+if not re.match(r'\d+\.\d+\.\d+', release):
+    raise SphinxError("'{}' does not look like version number".format(release))
 
 # The short X.Y version.
 version = release
@@ -111,7 +118,7 @@ suppress_warnings = [
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-if os.environ.get('READTHEDOCS') == 'True':
+if IS_READTHEDOCS:
     # equals to default RTD theme
     html_theme = 'default'
 else:
