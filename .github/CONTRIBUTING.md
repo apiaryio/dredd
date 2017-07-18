@@ -173,7 +173,7 @@ Source of the documentation can be found in the [docs][] directory. To render Dr
 3.  Create a [virtual environment](https://docs.python.org/3/library/venv.html) and activate it:
 
     ```sh
-    python3 -m venv ./env
+    python3 -m venv ./venv
     . ./env/bin/activate
     ```
 
