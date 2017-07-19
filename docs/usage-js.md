@@ -80,6 +80,8 @@ It must be a valid URL (you can specify `port`, `path` and http or https `protoc
 Because `options.path` array is required, you must specify options. You'll end
 with errors otherwise.
 
+<a name="optionspath-object"></a><!-- legacy MkDocs anchor -->
+
 ##### options.path (object)
 
 **Required** Array of filepaths to API description documents. Or it can also be an URL to download the API description from internet via http(s) protocol.

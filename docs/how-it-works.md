@@ -87,6 +87,8 @@ This order [exactly follows the API Blueprint specification][body-schema-attribu
 1. [`response.schema`][response-schema] - provided JSON Schema will be used.
 2. [`response.examples`][response-examples] with sample JSON payload - [Gavel.js][], which is responsible for validation in Dredd, automatically infers some basic expectations described below.
 
+<a name="gavels-expectations"></a><!-- legacy MkDocs anchor -->
+
 #### Gavel's Expectations
 
 - All JSON keys on any level given in the sample must be present in the response's JSON.
@@ -97,7 +99,7 @@ This order [exactly follows the API Blueprint specification][body-schema-attribu
 
 ### Custom Expectations
 
-You can make your own custom expectations in [hooks](hooks.md). For instance, check out how to employ [Chai.js assertions](hooks.md#using-chai-assertions).
+You can make your own custom expectations in [hooks](hooks.md). For instance, check out how to employ [Chai.js assertions](hooks-nodejs.md#using-chai-assertions).
 
 ## Making Your API Description Ready for Testing
 
@@ -192,6 +194,8 @@ When using [Apiary Reporter and Apiary Tests](how-to-guides.md#using-apiary-repo
 
 See also [guidelines on how to develop Apiary Reporter](contributing.md#hacking-apiary-reporter).
 
+<a name="using-https-proxy"></a><!-- legacy MkDocs anchor -->
+
 ## Using HTTP(S) Proxy
 
 You can tell Dredd to use HTTP(S) proxy for:
@@ -206,16 +210,16 @@ Dredd intentionally **does not support HTTP(S) proxies for testing**. Proxy can 
 
 
 [path-argument]: usage-cli.md#api-description-document-string
-[path-option]: usage-cli.md#-path-p
+[path-option]: usage-cli.md#path-p
 [apiary-reporter]: how-to-guides.md#using-apiary-reporter-and-apiary-tests
-[request-proxies]: https://github.com/request/request#proxies
+[request-proxies]: https://github.com/request/request#user-content-proxies
 
 [Apiary]: https://apiary.io/
 [Semantic Versioning]: http://semver.org/
-[API Blueprint]: http://apiblueprint.org/
+[API Blueprint]: https://apiblueprint.org/
 [Swagger]: http://swagger.io/
 [Gavel.js]: https://github.com/apiaryio/gavel.js
-[Gavel]: https://www.relishapp.com/apiary/gavel/docs
+[Gavel]: https://relishapp.com/apiary/gavel/docs
 [MSON]: https://github.com/apiaryio/mson
 [JSON Schema]: http://json-schema.org/
 [Swagger Adapter]: https://github.com/apiaryio/fury-adapter-swagger/
@@ -224,7 +228,7 @@ Dredd intentionally **does not support HTTP(S) proxies for testing**. Proxy can 
 [Draft v3]: https://tools.ietf.org/html/draft-zyp-json-schema-03
 
 [CircleCI]: https://circleci.com/
-[Travis CI]: http://travis-ci.org/
+[Travis CI]: https://travis-ci.org/
 [Terms of Service]: https://apiary.io/tos
 [Privacy Policy]: https://apiary.io/privacy
 [hostname]: https://en.wikipedia.org/wiki/Hostname

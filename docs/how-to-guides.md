@@ -161,9 +161,9 @@ Often you want to test a sequence of steps, a scenario, rather than just one req
 > **Note:** [API Blueprint][] prepares direct support for testing and scenarios. Interested?
   Check out [apiaryio/api-blueprint#21](https://github.com/apiaryio/api-blueprint/issues/21)!
 
-To test various scenarios, you will want to write each of them into a separate API description document. To load them during a single test run, use the [--path](usage-cli.md#-path-p) option.
+To test various scenarios, you will want to write each of them into a separate API description document. To load them during a single test run, use the `--path` option ([docs](usage-cli.md#path-p)).
 
-For workflows to work properly, you'll also need to keep **shared context** between individual HTTP transactions. You can use [hooks](hooks.md) in order to achieve that. See tips on how to [pass data between transactions](hooks.md#sharing-data-between-steps-in-request-stash).
+For workflows to work properly, you'll also need to keep **shared context** between individual HTTP transactions. You can use [hooks](hooks.md) in order to achieve that. See tips on how to [pass data between transactions](hooks-nodejs.md#sharing-data-between-steps-in-request-stash).
 
 ### API Blueprint Example
 
@@ -457,6 +457,8 @@ Dredd's interactive configuration wizard, `dredd init`, can help you with settin
 
 If you prefer to add Dredd yourself or you look for inspiration on how to add Dredd to other continuous integration services, see examples below. When testing in CI, always pin your Dredd version to a specific number and upgrade to newer releases manually.
 
+<a name="circleyml-configuration-file-for-circleci"></a><!-- legacy MkDocs anchor -->
+
 ### `circle.yml` Configuration File for [CircleCI][]
 
 ```
@@ -467,6 +469,8 @@ test:
   pre:
     - dredd apiary.apib http://127.0.0.1:3000
 ```
+
+<a name="travisyml-configuration-file-for-travis-ci"></a><!-- legacy MkDocs anchor -->
 
 ### `.travis.yml` Configuration File for [Travis CI][]
 
@@ -574,7 +578,7 @@ info: Resource > Update Resource > Example 1
 info: Resource > Update Resource > Example 2
 ```
 
-In case you need to perform particular request with different URI parameters and standard inheritance of URI parameters isn't working for you, try [modifying transaction before its execution](hooks.md#modifying-transactions-prior-to-execution) in hooks.
+In case you need to perform particular request with different URI parameters and standard inheritance of URI parameters isn't working for you, try [modifying transaction before its execution](hooks-nodejs.md#modifying-transaction-request-body-prior-to-execution) in hooks.
 
 ## Testing non-2xx Responses with Swagger
 
@@ -666,88 +670,88 @@ Sometimes your API sends back sensitive information you don't want to get disclo
 
 ### Sanitation of the Entire Request Body
 
-- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/entire-request-body.apib)
-- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/entire-request-body.js)
+- [API Blueprint](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/entire-request-body.apib)
+- [Hooks](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/entire-request-body.js)
 
 ### Sanitation of the Entire Response Body
 
-- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/entire-response-body.apib)
-- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/entire-response-body.js)
+- [API Blueprint](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/entire-response-body.apib)
+- [Hooks](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/entire-response-body.js)
 
 ### Sanitation of a Request Body Attribute
 
-- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/request-body-attribute.apib)
-- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/request-body-attribute.js)
+- [API Blueprint](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/request-body-attribute.apib)
+- [Hooks](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/request-body-attribute.js)
 
 ### Sanitation of a Response Body Attribute
 
-- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/response-body-attribute.apib)
-- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/response-body-attribute.js)
+- [API Blueprint](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/response-body-attribute.apib)
+- [Hooks](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/response-body-attribute.js)
 
 ### Sanitation of Plain Text Response Body by Pattern Matching
 
-- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/plain-text-response-body.apib)
-- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/plain-text-response-body.js)
+- [API Blueprint](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/plain-text-response-body.apib)
+- [Hooks](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/plain-text-response-body.js)
 
 ### Sanitation of Request Headers
 
-- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/request-headers.apib)
-- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/request-headers.js)
+- [API Blueprint](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/request-headers.apib)
+- [Hooks](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/request-headers.js)
 
 ### Sanitation of Response Headers
 
-- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/response-headers.apib)
-- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/response-headers.js)
+- [API Blueprint](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/response-headers.apib)
+- [Hooks](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/response-headers.js)
 
 ### Sanitation of URI Parameters by Pattern Matching
 
-- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/uri-parameters.apib)
-- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/uri-parameters.js)
+- [API Blueprint](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/uri-parameters.apib)
+- [Hooks](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/uri-parameters.js)
 
 ### Sanitation of Any Content by Pattern Matching
 
-- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/any-content-pattern-matching.apib)
-- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/any-content-pattern-matching.js)
+- [API Blueprint](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/any-content-pattern-matching.apib)
+- [Hooks](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/any-content-pattern-matching.js)
 
 ### Sanitation of Test Data of Passing Transaction
 
-- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-passing.apib)
-- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-passing.js)
+- [API Blueprint](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/transaction-passing.apib)
+- [Hooks](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/transaction-passing.js)
 
 ### Sanitation of Test Data When Transaction Is Marked as Failed in \'before\' Hook
 
-- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-marked-failed-before.apib)
-- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-marked-failed-before.js)
+- [API Blueprint](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/transaction-marked-failed-before.apib)
+- [Hooks](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/transaction-marked-failed-before.js)
 
 ### Sanitation of Test Data When Transaction Is Marked as Failed in \'after\' Hook
 
-- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-marked-failed-after.apib)
-- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-marked-failed-after.js)
+- [API Blueprint](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/transaction-marked-failed-after.apib)
+- [Hooks](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/transaction-marked-failed-after.js)
 
 ### Sanitation of Test Data When Transaction Is Marked as Skipped
 
-- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-marked-skipped.apib)
-- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-marked-skipped.js)
+- [API Blueprint](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/transaction-marked-skipped.apib)
+- [Hooks](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/transaction-marked-skipped.js)
 
 <a name="sanitation-ultimate-guard"></a>
 ### Ultimate 'afterEach' Guard Using Pattern Matching
 
 You can use this guard to make sure you won't leak any sensitive data by mistake.
 
-- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/any-content-guard-pattern-matching.apib)
-- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/any-content-guard-pattern-matching.js)
+- [API Blueprint](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/any-content-guard-pattern-matching.apib)
+- [Hooks](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/any-content-guard-pattern-matching.js)
 
 <a name="sanitation-secured-erroring-hooks"></a>
 ### Sanitation of Test Data of Transaction With Secured Erroring Hooks
 
 If your hooks crash, Dredd will send an error to reporters, alongside with current contents of the [`transaction.test`](data-structures.md#transaction-test) object. If you want to prevent this, you need to add `try/catch` to your hooks, sanitize the test object, and gracefully fail the transaction.
 
-- [API Blueprint](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-secured-erroring-hooks.apib)
-- [Hooks](https://github.com/apiaryio/dredd/tree/master/test/fixtures/sanitation/transaction-secured-erroring-hooks.js)
+- [API Blueprint](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/transaction-secured-erroring-hooks.apib)
+- [Hooks](https://github.com/apiaryio/dredd/blob/master/test/fixtures/sanitation/transaction-secured-erroring-hooks.js)
 
 
 [Apiary]: https://apiary.io/
-[API Blueprint]: http://apiblueprint.org/
+[API Blueprint]: https://apiblueprint.org/
 [Swagger]: http://swagger.io/
 [Travis CI]: https://travis-ci.org/
 [CircleCI]: https://circleci.com/

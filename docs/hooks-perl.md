@@ -1,6 +1,6 @@
 # Writing Dredd Hooks In Perl
 
-[![Build Status](https://travis-ci.org/ungrim97/Dredd-Hooks.svg?branch=master)](https://travis-ci.org/ungrim97/Dredd-Hooks.svg?branch=master)
+[![Build Status](https://api.travis-ci.org/ungrim97/Dredd-Hooks.svg?branch=master)](https://api.travis-ci.org/ungrim97/Dredd-Hooks.svg?branch=master)
 
 [GitHub repository](https://github.com/ungrim97/Dredd-Hooks)
 

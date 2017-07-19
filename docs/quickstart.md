@@ -127,11 +127,11 @@ Dredd's [hooks](hooks.md) enable you to write some glue code in your favorite la
 
 For more complex example applications, please refer to:
 
-- [Express.js example application](http://github.com/apiaryio/dredd-example)
+- [Express.js example application](https://github.com/apiaryio/dredd-example)
 - [Ruby on Rails example application](https://github.com/theodorton/dredd-test-rails)
 - [Laravel example application](https://github.com/ddelnano/dredd-hooks-php/wiki/Laravel-Example)
 
 
-[API Blueprint]: http://apiblueprint.org/
+[API Blueprint]: https://apiblueprint.org/
 [Swagger]: http://swagger.io/
 [Express.js]: http://expressjs.com/starter/hello-world.html

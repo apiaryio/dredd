@@ -107,6 +107,15 @@ If you need the performance of the C++11 parser, but you are struggling to get i
 - **Your machine is missing a C++11 compiler.** See how to fix this on [Windows][Windows C++11] or [Travis CI][Travis CI C++11].
 - **npm was used with Python 3.** `node-gyp`, which performs the compilation, doesn't support Python 3. If your default Python is 3 (see `python --version`), [tell npm to use an older version][npm Python].
 
+### Supported Node.js Versions
+
+Given the [table with LTS schedule](https://github.com/nodejs/LTS), only versions marked as **Maintenance** or **Active** are supported, until their **Maintenance End**. The testing matrix of Dredd's CI builds must contain all currently supported versions and must not contain any unsupported versions. The same applies for the underlying libraries, such as [Dredd Transactions][] or [Gavel.js][].
+
+In following files the latest supported Node.js version should be used:
+
+- `appveyor.yml` - Windows CI builds
+- `docs/install-node.sh` - ReadTheDocs docs builds
+
 ### Versioning
 
 Dredd follows [Semantic Versioning][]. To ensure certain stability of Dredd installations (e.g. in CI builds), users can pin their version. They can also use release tags:
@@ -150,18 +159,73 @@ about how it works.
 
 ### Documentation
 
-The main documentation is written in [Markdown][] using [MkDocs][]. Dredd uses
-[ReadTheDocs][] to build and publish the documentation:
+Dredd's documentation is written in [Markdown][] using [Sphinx][]. [ReadTheDocs][] is used to build and publish the documentation:
 
 - [https://dredd.readthedocs.io](https://dredd.readthedocs.io) - preferred long URL
 - [http://dredd.rtfd.org](http://dredd.rtfd.org) - preferred short URL
 
-Source of the documentation can be found in the [docs][] directory. To contribute to Dredd's documentation, you will need to follow the [MkDocs installation instructions](http://www.mkdocs.org/#installation). Once installed, you may use following commands:
+Source of the documentation can be found in the [docs][] directory. To render Dredd's documentation on your computer, you need Python 3 and Node.js installed.
+
+#### Installation and Development
+
+1.  Make sure `node` is an executable and `npm install` has been done for the Dredd directory. Extensions to the docs are written in Node.js and Sphinx needs to have a way to execute them.
+2.  [Get Python 3](https://www.python.org/downloads/). On macOS, run `brew install python3`. [ReadTheDocs][] build the docs with Python 3.5, so make sure you have that or higher.
+3.  Create a [virtual environment](https://docs.python.org/3/library/venv.html) and activate it:
+
+    ```sh
+    python3 -m venv ./venv
+    . ./env/bin/activate
+    ```
+
+4.  Install dependencies for the docs: `pip install -r docs/requirements.txt`
+
+Once installed, you may use following commands:
 
 - `npm run docs:build` - Builds the documentation
-- `npm run docs:serve` - Runs live preview of the documentation
+- `npm run docs:serve` - Runs live preview of the documentation on `http://127.0.0.1:8000`
 
-#### Note
+#### Installation on ReadTheDocs
+
+The final documentation gets deployed on the [ReadTheDocs][]. The service, however, does not support Node.js. Therefore on ReadTheDocs, the `conf.py` configuration file for Sphinx runs `docs/install-node.sh`, which installs Node.js locally, using [nvm][].
+
+#### ToC and Markdown
+
+Traditionally, Sphinx only supported the [reStructuredText][] format. Thanks to the [recommonmark][] project it's possible to use also [Markdown][], _almost_ as a format native to Sphinx. Dredd's docs are using the [AutoStructify][] extension to be able to specify _toctree_ and other stuff specific to reStructuredText. The ToC is generated from the _Contents_ section in the `docs/index.md` file.
+
+[recommonmark]: https://github.com/rtfd/recommonmark
+[AutoStructify]: https://recommonmark.readthedocs.io/en/latest/auto_structify.html
+
+#### Node.js Extensions
+
+There are some extensions hooked into the build process of [Sphinx][], modifying how the documents are processed. They're written in Node.js, because:
+
+- It's better to have them in the same language as Dredd.
+- This way they're able to import source files (e.g. `src/options.coffee`).
+
+<!-- To display the Hercule syntax, escaping is needed, because this document itself gets processed by Hercule. But escaping by backslashes doesn't work inside Markdown code blocks, so manual <code> element is added. -->
+
+By default, [Hercule][] is attached as an extension, which means you can use the <code class="docutils literal"><span class="pre">:\[Title](link.md)</span></code> syntax for including other Markdown files. All other extensions are custom and are automatically loaded from the `docs/_extensions` directory.
+
+The extension is expected to be a `.js` or `.coffee` script file, which takes `docname` as an argument, reads the Markdown document from `stdin`, modifies it, and then prints it to `stdout`. When in need of templating, extensions are expected to use the bundled `ect` templating engine.
+
+[Hercule]: https://www.npmjs.com/package/hercule
+
+#### Local References
+
+Currently the [recommonmark][] project has still some limitations in how references to local files work. That's why Dredd's docs have a custom implementation, which also checks whether the destination exists and fails the build in case of broken link. You can use following syntax:
+
+- `[Title](link.md)` to link to other documents
+- `[Title](link.md#section)` to link to sections of other documents
+
+Any `id` HTML attributes generated for headings or manual `<a name="section"></a>` anchors are considered as valid targets. While this feels very natural for a seasoned writer of Markdown, mind that it is much more error prone then [reStructuredText][]'s references.
+
+#### Redirects
+
+Redirects are documented in the `docs/redirects.yml` file. They need to be manually set in the [ReadTheDocs administration](https://readthedocs.org/dashboard/dredd-docs-sphinx-test/redirects/). It's up to Dredd maintainers to keep the list in sync with reality.
+
+You can use the [rtd-redirects](https://github.com/honzajavorek/rtd-redirects) tool to programmatically upload the redirects from `docs/redirects.yml` to ReadTheDocs admin interface.
+
+#### Symlinked Contributing Docs
 
 The `docs/contributing.md` file is a [symbolic link][] to the
 `.github/CONTRIBUTING.md` file, where the actual content lives.
@@ -225,11 +289,13 @@ There is also one environment variable you could find useful:
 - When using long CLI options in tests or documentation, please always use the notation with `=`. For example,
   use `--path=/dev/null`, not `--path /dev/null`. While both should work, the version with `=` feels
   more like standard GNU-style long options and it makes arrays of arguments for `spawn` more readable.
-- Using `127.0.0.1` (in code, tests, documentation) is preferred over `localhost`.
+- Using `127.0.0.1` (in code, tests, documentation) is preferred over `localhost` (see [#586](https://github.com/apiaryio/dredd/issues/586)).
 - Prefer explicit `<br>` tags instead of [two spaces][md-two-spaces] at the end of the line when writing documentation in Markdown.
 
 
 [Apiary]: https://apiary.io/
+[Dredd Transactions]: https://github.com/apiaryio/dredd-transactions
+[Gavel.js]: https://github.com/apiaryio/gavel.js/
 
 [Semantic Versioning]: http://semver.org/
 [coffee-coverage]: https://github.com/benbria/coffee-coverage
@@ -239,15 +305,17 @@ There is also one environment variable you could find useful:
 [Coveralls]: https://coveralls.io/github/apiaryio/dredd
 [lcov-result-merger]: https://github.com/mweibel/lcov-result-merger
 [Markdown]: https://en.wikipedia.org/wiki/Markdown
-[MkDocs]: http://www.mkdocs.org/
+[Sphinx]: http://www.sphinx-doc.org/
 [ReadTheDocs]: https://readthedocs.org/
-[test coverage]: https://coveralls.io/r/apiaryio/dredd?branch=master
+[test coverage]: https://coveralls.io/github/apiaryio/dredd
 [Mocha]: http://mochajs.org/
 [Semantic Release]: https://github.com/semantic-release/semantic-release
-[Conventional Changelog]: https://github.com/conventional-changelog/conventional-changelog-angular/blob/master/convention.md
+[Conventional Changelog]: https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#user-content-commit-message-format
 [Commitizen CLI]: https://github.com/commitizen/cz-cli
 [md-two-spaces]: https://daringfireball.net/projects/markdown/syntax#p
-[AppVeyor]: http://appveyor.com/
+[AppVeyor]: https://www.appveyor.com/
+[nvm]: https://github.com/creationix/nvm
+[reStructuredText]: http://www.sphinx-doc.org/en/stable/rest.html
 
 [Drafter]: https://github.com/apiaryio/drafter
 [API Blueprint]: https://apiblueprint.org/
@@ -259,8 +327,9 @@ There is also one environment variable you could find useful:
 
 [existing commits]: https://github.com/apiaryio/dredd/commits/master
 [docs]: https://github.com/apiaryio/dredd/tree/master/docs
-[coffeelint.json]: https://github.com/apiaryio/dredd/tree/master/coffeelint.json
+[coffeelint.json]: https://github.com/apiaryio/dredd/blob/master/coffeelint.json
 [GitHub Releases]: https://github.com/apiaryio/dredd/releases
+[GitHub contributing guidelines]: https://github.com/blog/1184-contributing-guidelines
 
 [upstream repository]: https://github.com/apiaryio/dredd
 [issues]: https://github.com/apiaryio/dredd/issues
