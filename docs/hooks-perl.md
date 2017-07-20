@@ -23,14 +23,14 @@ $ dredd apiary.apib http://127.0.0.1:3000 --language=dredd-hooks-perl --hookfile
 Module `Dredd::Hooks::Methods` imports following decorators:
 
 1. `beforeEach`, `beforeEachValidation`, `afterEach`
-  - wraps a function and passes [Transaction object](data-structures.md#transaction) as a first argument to it
+   - wraps a function and passes [Transaction object](data-structures.md#transaction) as a first argument to it
 
 2. `before`, `beforeValidation`, `after`
-  - accepts [transaction name](hooks.md#getting-transaction-names) as a first argument
-  - wraps a function and sends a [Transaction object](data-structures.md#transaction) as a first argument to it
+   - accepts [transaction name](hooks.md#getting-transaction-names) as a first argument
+   - wraps a function and sends a [Transaction object](data-structures.md#transaction) as a first argument to it
 
 3. `beforeAll`, `afterAll`
-  - wraps a function and passes an Array of [Transaction objects](data-structures.md#transaction) as a first argument to it
+   - wraps a function and passes an Array of [Transaction objects](data-structures.md#transaction) as a first argument to it
 
 Refer to [Dredd execution life-cycle](how-it-works.md#execution-life-cycle) to find when is each hook function executed.
 
