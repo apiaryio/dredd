@@ -3,7 +3,7 @@ caseless = require('caseless')
 
 {child, children, parent, content} = require('./refract')
 detectTransactionExampleNumbers = require('./detect-transaction-example-numbers')
-apiElementsToRefract = require('./api-elements-to-refract')
+{serialize} = require('./refract-serialization')
 compileUri = require('./compile-uri')
 
 compile = (mediaType, apiElements, filename) ->
@@ -11,11 +11,7 @@ compile = (mediaType, apiElements, filename) ->
   errors = apiElements.errors.map(compileAnnotation)
   warnings = apiElements.warnings.map(compileAnnotation)
 
-  # IRON CURTAIN OF THE MINIM SUPPORT
-  #
-  # Before this line, the code supports API Elements and minim. After this
-  # line, the code works with raw JS object representation of the API Elements.
-  refract = apiElementsToRefract(apiElements)
+  refract = serialize(apiElements)
 
   for relevantTransaction in findRelevantTransactions(mediaType, refract, apiElements)
     refractHttpTransaction = relevantTransaction.refract
