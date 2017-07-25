@@ -1,11 +1,5 @@
 sudo: false
-dist: "trusty"  # otherwise 'python3-pip' won't be available
 language: "node_js"
-addons:
-  apt:
-    packages:
-      - "python3"
-      - "python3-pip"
 node_js:
   - "4"
   - "6"
@@ -21,11 +15,9 @@ before_install:
   # so 'conventional-changelog-lint' could compare commits and lint them: marionebl/conventional-changelog-lint#7
   - "git remote set-branches origin master && git fetch && git checkout master && git checkout -"
   - "npm -g install npm@latest"
-  - "pip3 install -r docs/requirements.txt"
 install: "npm install --no-optional"
 script:
   - "npm run lint"
-  - "npm run docs:build"
   - "npm run test:coverage"
 after_success:
   - "npm run coveralls || true"
