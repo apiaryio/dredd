@@ -236,10 +236,21 @@ def process_refs(app, doctree, docname):
         for node in doctree.traverse(nodes.reference):
             uri = node.get('refuri')
             if to_reference(uri, basedoc=docname) == reference:
-                fixed_uri = '/{}.html'.format(referenced_docname)
-                if anchor:
-                    fixed_uri += '#{}'.format(anchor)
-                node['refuri'] = fixed_uri
+                node['refuri'] = to_uri(app, referenced_docname, anchor)
+
+def to_uri(app, docname, anchor=None):
+    uri = ''
+
+    if IS_READTHEDOCS:
+        language = app.config.language or 'en'
+        version_name = os.environ.get('READTHEDOCS_VERSION')
+        uri = '/{}/{}'.format(language, version_name)
+
+    uri += '/{}.html'.format(docname)
+    if anchor:
+        uri += '#{}'.format(anchor)
+
+    return uri
 
 def to_reference(uri, basedoc=None):
     """
