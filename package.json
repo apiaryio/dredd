@@ -10,7 +10,7 @@
     "node": ">= 4"
   },
   "scripts": {
-    "lint": "conventional-changelog-lint --from=master && npm run docs:lint && coffeelint src",
+    "lint": "conventional-changelog-lint --from=master && coffeelint src",
     "build": "coffee -b -c -o lib/ src/",
     "docs:lint": "sphinx-build -nW -b linkcheck docs docs/_build/",
     "docs:build": "sphinx-build -nW -b html docs docs/_build/",
