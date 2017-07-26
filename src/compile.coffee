@@ -62,8 +62,8 @@ findRelevantTransactions = (mediaType, refract, apiElements) ->
   # This gets deleted once we're fully on minim
   refractTransitions = children(refract, {element: 'transition'})
 
-  apiElements.findRecursive('transition').forEach((transition, transitionNo) ->
-    transitionNo = transitionNo.toValue()
+  apiElements.findRecursive('transition').forEach((transitionElement, transitionNoElement) ->
+    transitionNo = transitionNoElement.toValue()
 
     # This gets deleted once we're fully on minim
     refractTransition = refractTransitions[transitionNo]
@@ -79,33 +79,33 @@ findRelevantTransactions = (mediaType, refract, apiElements) ->
       # of Dredd. There's a plan to migrate to so-called "transaction paths"
       # in the future (apiaryio/dredd#227), which won't use the concept
       # of transaction examples anymore.
-      exampleNumbersPerTransaction = detectExampleNumbersPerTransaction(transition)
+      exampleNumbersPerTransaction = detectExampleNumbersPerTransaction(transitionElement)
       hasMoreExamples = Math.max(exampleNumbersPerTransaction...) > 1
 
       # Dredd supports only testing of the first request-response pair within
       # each transaction example. We iterate over available transactions and
       # skip those, which are not first within a particular example.
       exampleNo = 0
-      transition.transactions.forEach((httpTransaction, httpTransactionNo) ->
-        httpTransactionNo = httpTransactionNo.toValue()
+      transitionElement.transactions.forEach((httpTransactionElement, httpTransactionNoElement) ->
+        httpTransactionNo = httpTransactionNoElement.toValue()
         httpTransactionExampleNo = exampleNumbersPerTransaction[httpTransactionNo]
 
-        transactionInfo =
+        relevantTransaction =
           refract: refractHttpTransactions[httpTransactionNo]
-          apiElements: httpTransaction
+          apiElements: httpTransactionElement
           exampleNo: if hasMoreExamples then httpTransactionExampleNo else null
 
         if httpTransactionExampleNo isnt exampleNo
-          relevantTransactions.push(transactionInfo)
+          relevantTransactions.push(relevantTransaction)
 
         exampleNo = httpTransactionExampleNo
       )
     else
       # All other formats then API Blueprint
-      transition.transactions.forEach((httpTransaction, httpTransactionNo) ->
+      transitionElement.transactions.forEach((httpTransactionElement, httpTransactionNoElement) ->
         relevantTransactions.push(
-          refract: refractHttpTransactions[httpTransactionNo.toValue()]
-          apiElements: httpTransaction
+          refract: refractHttpTransactions[httpTransactionNoElement.toValue()]
+          apiElements: httpTransactionElement
         )
       )
   )
@@ -117,8 +117,8 @@ findRelevantTransactions = (mediaType, refract, apiElements) ->
 #
 # Returns an array of numbers, where indexes correspond to HTTP transactions
 # within the transition and values represent the example numbers.
-detectExampleNumbersPerTransaction = (transition) ->
-  tempRefractTransition = apiElementsToRefract(transition)
+detectExampleNumbersPerTransaction = (transitionElement) ->
+  tempRefractTransition = apiElementsToRefract(transitionElement)
   tempRefractHttpTransactions = children(tempRefractTransition, {element: 'httpTransaction'})
 
   detectTransactionExamples(tempRefractTransition)
