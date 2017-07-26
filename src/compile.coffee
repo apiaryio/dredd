@@ -10,18 +10,8 @@ apiElementsToRefract = require('./api-elements-to-refract')
 
 compile = (mediaType, apiElements, filename) ->
   transactions = []
-  errors = []
-  warnings = []
-
-  apiElements.annotations.forEach((annotation) ->
-    group = if annotation.classes.contains('warning') then warnings else errors
-    group.push({
-      component: 'apiDescriptionParser'
-      code: annotation.code?.toValue()
-      message: annotation.toValue()
-      location: annotation.sourceMapValue
-    })
-  )
+  errors = apiElements.errors.map(compileAnnotation)
+  warnings = apiElements.warnings.map(compileAnnotation)
 
   # IRON CURTAIN OF THE MINIM SUPPORT
   #
@@ -55,6 +45,15 @@ compile = (mediaType, apiElements, filename) ->
       warnings.push(warning)
 
   {transactions, errors, warnings}
+
+
+compileAnnotation = (annotationElement) ->
+  {
+    component: 'apiDescriptionParser'
+    code: annotationElement.code?.toValue()
+    message: annotationElement.toValue()
+    location: annotationElement.sourceMapValue
+  }
 
 
 findRelevantTransactions = (mediaType, refract, apiElements) ->
