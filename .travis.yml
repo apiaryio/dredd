@@ -17,8 +17,7 @@ before_install:
   - "npm -g install npm@latest"
 install: "npm install --no-optional"
 script:
-  - "npm run lint"
-  - "npm run test:coverage"
+  - "npm run lint && npm run test:coverage"
 after_success:
   - "npm run coveralls || true"
   - "npm run semantic-release || true"
