@@ -69,37 +69,45 @@ findRelevantTransactions = (mediaType, refract, apiElements) ->
     refractTransition = refractTransitions[transitionNo]
     refractHttpTransactions = children(refractTransition, {element: 'httpTransaction'})
 
-    # API Blueprint has a concept of transaction examples and
-    # the API Blueprint AST used to expose it. The concept isn't present
-    # in API Elements anymore, so we have to detect and backport them.
     if mediaType is 'text/vnd.apiblueprint'
+      # API Blueprint has a concept of transaction examples and
+      # the API Blueprint AST used to expose it. The concept isn't present
+      # in API Elements anymore, so we have to detect and backport them, because
+      # the example numbers are used in the transaction names for hooks.
+      #
+      # This is very specific to API Blueprint and to backwards compatibility
+      # of Dredd. There's a plan to migrate to so-called "transaction paths"
+      # in the future (apiaryio/dredd#227), which won't use the concept
+      # of transaction examples anymore.
       exampleNumbersPerTransaction = detectExampleNumbersPerTransaction(transition)
-    else
-      exampleNumbersPerTransaction = transition.transactions.map( -> 1)
-    hasMoreExamples = Math.max(exampleNumbersPerTransaction...) > 1
+      hasMoreExamples = Math.max(exampleNumbersPerTransaction...) > 1
 
-    # Dredd supports only testing of the first request-response pair within
-    # each transaction example. So if we're dealing with API Blueprint, we
-    # iterate over available transactions and skip those, which are not first
-    # within a particular example.
-    exampleNo = 0
-    transition.transactions.forEach((httpTransaction, httpTransactionNo) ->
-      httpTransactionNo = httpTransactionNo.toValue()
-      httpTransactionExampleNo = exampleNumbersPerTransaction[httpTransactionNo]
+      # Dredd supports only testing of the first request-response pair within
+      # each transaction example. We iterate over available transactions and
+      # skip those, which are not first within a particular example.
+      exampleNo = 0
+      transition.transactions.forEach((httpTransaction, httpTransactionNo) ->
+        httpTransactionNo = httpTransactionNo.toValue()
+        httpTransactionExampleNo = exampleNumbersPerTransaction[httpTransactionNo]
 
-      transactionInfo =
-        refract: refractHttpTransactions[httpTransactionNo]
-        apiElements: httpTransaction
-        exampleNo: if hasMoreExamples then httpTransactionExampleNo else null
+        transactionInfo =
+          refract: refractHttpTransactions[httpTransactionNo]
+          apiElements: httpTransaction
+          exampleNo: if hasMoreExamples then httpTransactionExampleNo else null
 
-      if mediaType is 'text/vnd.apiblueprint'
         if httpTransactionExampleNo isnt exampleNo
           relevantTransactions.push(transactionInfo)
-      else
-        relevantTransactions.push(transactionInfo)
 
-      exampleNo = httpTransactionExampleNo
-    )
+        exampleNo = httpTransactionExampleNo
+      )
+    else
+      # All other formats then API Blueprint
+      transition.transactions.forEach((httpTransaction, httpTransactionNo) ->
+        relevantTransactions.push(
+          refract: refractHttpTransactions[httpTransactionNo.toValue()]
+          apiElements: httpTransaction
+        )
+      )
   )
 
   return relevantTransactions
