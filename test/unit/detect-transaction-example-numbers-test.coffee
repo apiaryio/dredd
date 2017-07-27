@@ -1,9 +1,9 @@
-
-{assert} = require('../utils')
+parse = require('../../src/parse')
 drafter = require('drafter')
 
-detectTransactionExamples = require('../../src/detect-transaction-examples')
+{assert} = require('../utils')
 
+detectTransactionExampleNumbers = require('../../src/detect-transaction-example-numbers')
 
 # Encapsulates a single test scenario.
 scenario = (description, {actionContent, examples, exampleNumbersPerTransaction}) ->
@@ -17,47 +17,21 @@ scenario = (description, {actionContent, examples, exampleNumbersPerTransaction}
       ### Catch a Smurf [POST]
       #{actionContent}
     """
-    action = undefined # API Blueprint AST
-    transition = undefined # API Elements (a.k.a. Refract)
+
+    transitionElements = undefined
+    transactionExampleNumbers = undefined
 
     beforeEach((done) ->
-      options = {type: 'ast', generateSourceMap: true}
-      drafter.parse(apiBlueprint, options, (err, parseResult) ->
-        return done(err) if err
-        action = parseResult.ast.resourceGroups[0].resources[0].actions[0]
+      parse(apiBlueprint, (args...) ->
+        [error, {mediaType, apiElements}] = args
+        transitionElements = apiElements.api.resourceGroups.first().resources.first().transitions.first()
+        transactionExampleNumbers = detectTransactionExampleNumbers(transitionElements)
         done()
       )
     )
-    beforeEach((done) ->
-      options = {type: 'refract', generateSourceMap: true}
-      drafter.parse(apiBlueprint, options, (err, parseResult) ->
-        return done(err) if err
-        transition = parseResult.content[0].content[0].content[0].content[0]
-        done()
-      )
-    )
-    beforeEach( ->
-      returnValue = detectTransactionExamples(transition)
-    )
 
-    it('worked \'in situ\' and returned no value', ->
-      assert.isUndefined(returnValue)
-    )
-    it('transition got expected total number of examples', ->
-      expected = Math.max.apply(null, [0].concat(exampleNumbersPerTransaction))
-      assert.equal(transition.attributes.examples, expected)
-    )
     it('transactions got expected example numbers', ->
-      expected = []
-      for example, exampleIndex in action.examples
-        for requestIndex in [0...(example.requests.length or 1)]
-          for responseIndex in [0...(example.responses.length or 1)]
-            expected.push(exampleIndex + 1)
-
-      assert.deepEqual(
-        expected,
-        (trans.attributes?.example for trans in transition.content)
-      )
+      assert.deepEqual(exampleNumbersPerTransaction, transactionExampleNumbers)
     )
   )
 

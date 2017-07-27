@@ -99,12 +99,12 @@ describe('compile() · Swagger', ->
   describe('with multiple responses', ->
     transactions = undefined
     filename = 'apiDescription.json'
-    detectTransactionExamples = sinon.spy(require('../../src/detect-transaction-examples'))
+    detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'))
 
     expectedStatusCodes = [200, 400, 500]
 
     beforeEach((done) ->
-      stubs = {'./detect-transaction-examples': detectTransactionExamples}
+      stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers}
 
       compileFixture(fixtures.multipleResponses.swagger, {filename, stubs}, (args...) ->
         [err, compilationResult] = args
@@ -114,7 +114,7 @@ describe('compile() · Swagger', ->
     )
 
     it('detection of transaction examples was not called', ->
-      assert.isFalse(detectTransactionExamples.called)
+      assert.isFalse(detectTransactionExampleNumbers.called)
     )
     it('expected number of transactions was returned', ->
       assert.equal(transactions.length, expectedStatusCodes.length)
