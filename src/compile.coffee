@@ -3,7 +3,7 @@ caseless = require('caseless')
 
 {child, children, parent, content} = require('./refract')
 validateParameters = require('./validate-parameters')
-detectTransactionExamples = require('./detect-transaction-examples')
+detectTransactionExampleNumbers = require('./detect-transaction-example-numbers')
 expandUriTemplateWithParameters = require('./expand-uri-template-with-parameters')
 apiElementsToRefract = require('./api-elements-to-refract')
 
@@ -79,7 +79,7 @@ findRelevantTransactions = (mediaType, refract, apiElements) ->
       # of Dredd. There's a plan to migrate to so-called "transaction paths"
       # in the future (apiaryio/dredd#227), which won't use the concept
       # of transaction examples anymore.
-      exampleNumbersPerTransaction = detectExampleNumbersPerTransaction(transitionElement)
+      exampleNumbersPerTransaction = detectTransactionExampleNumbers(transitionElement)
       hasMoreExamples = Math.max(exampleNumbersPerTransaction...) > 1
 
       # Dredd supports only testing of the first request-response pair within
@@ -111,21 +111,6 @@ findRelevantTransactions = (mediaType, refract, apiElements) ->
   )
 
   return relevantTransactions
-
-
-# Detects transaction example numbers for given transition element
-#
-# Returns an array of numbers, where indexes correspond to HTTP transactions
-# within the transition and values represent the example numbers.
-detectExampleNumbersPerTransaction = (transitionElement) ->
-  tempRefractTransition = apiElementsToRefract(transitionElement)
-  tempRefractHttpTransactions = children(tempRefractTransition, {element: 'httpTransaction'})
-
-  detectTransactionExamples(tempRefractTransition)
-
-  return tempRefractHttpTransactions.map((tempRefractHttpTransaction) ->
-    return tempRefractHttpTransaction.attributes.example
-  )
 
 
 compileRequest = (parseResult, httpRequest) ->
