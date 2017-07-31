@@ -1,8 +1,8 @@
 {assert} = require 'chai'
 
-validateParameters = require '../../src/validate-parameters'
+validateParams = require '../../../src/compile-uri/validate-params'
 
-describe 'validateParameters', ->
+describe 'validateParams', ->
 
   it 'should return an object', ->
     params =
@@ -14,7 +14,7 @@ describe 'validateParameters', ->
         default: ''
         values: []
 
-    result = validateParameters params
+    result = validateParams params
     assert.isObject result
 
   describe 'when type is string and example is a parseable float', ->
@@ -28,7 +28,7 @@ describe 'validateParameters', ->
           default: ''
           values: []
 
-      result = validateParameters params
+      result = validateParams params
       message = result['errors'][0]
       assert.equal result['errors'].length, 0
 
@@ -45,7 +45,7 @@ describe 'validateParameters', ->
           default: ''
           values: []
 
-      result = validateParameters params
+      result = validateParams params
 
   describe 'when type is string and example is a not a parseable float', ->
     it 'should set no error', ->
@@ -58,7 +58,7 @@ describe 'validateParameters', ->
           default: ''
           values: []
 
-      result = validateParameters params
+      result = validateParams params
       assert.equal result['errors'].length, 0
 
   describe 'when type is number and example is a string', ->
@@ -72,7 +72,7 @@ describe 'validateParameters', ->
           default: ''
           values: []
 
-      result = validateParameters params
+      result = validateParams params
       message = result['errors'][0]
       assert.include message, 'name'
       assert.include message, 'number'
@@ -88,7 +88,7 @@ describe 'validateParameters', ->
           default: ''
           values: []
 
-      result = validateParameters params
+      result = validateParams params
       assert.equal result['errors'].length, 0
 
   describe 'when enum values are defined and example value is not one of enum values', ->
@@ -106,7 +106,7 @@ describe 'validateParameters', ->
             { "value": "C" }
           ]
 
-      result = validateParameters params
+      result = validateParams params
       message = result['errors'][0]
       assert.include message, 'name'
       assert.include message, 'enum'
@@ -126,7 +126,7 @@ describe 'validateParameters', ->
             { "value": "C" }
           ]
 
-      result = validateParameters params
+      result = validateParams params
       assert.equal result['errors'].length, 0
 
   describe 'when type is boolean and example value is not parseable bool', ->
@@ -140,7 +140,7 @@ describe 'validateParameters', ->
           default: ''
           values: []
 
-      result = validateParameters params
+      result = validateParams params
       message = result['errors'][0]
       assert.include message, 'name'
       assert.include message, 'boolean'
@@ -156,7 +156,7 @@ describe 'validateParameters', ->
           default: ''
           values: []
 
-      result = validateParameters params
+      result = validateParams params
       assert.equal result['errors'].length, 0
 
   describe 'when parameter is required', () ->
@@ -171,7 +171,7 @@ describe 'validateParameters', ->
             default: ''
             values: []
 
-        result = validateParameters params
+        result = validateParams params
         message = result['errors'][0]
         assert.include message, 'name'
         assert.include message, 'Required'
@@ -187,7 +187,7 @@ describe 'validateParameters', ->
             default: 'bagaboo'
             values: []
 
-        result = validateParameters params
+        result = validateParams params
         assert.equal result['errors'].length, 0
 
     describe 'and example value is not empty and default value is empty', () ->
@@ -201,7 +201,7 @@ describe 'validateParameters', ->
             default: ''
             values: []
 
-        result = validateParameters params
+        result = validateParams params
         assert.equal result['errors'].length, 0
 
   describe 'when parameter is not required', () ->
@@ -216,7 +216,7 @@ describe 'validateParameters', ->
             default: ''
             values: []
 
-        result = validateParameters params
+        result = validateParams params
         assert.equal result['errors'].length, 0
 
 
@@ -231,7 +231,7 @@ describe 'validateParameters', ->
             default: 'bagaboo'
             values: []
 
-        result = validateParameters params
+        result = validateParams params
         assert.equal result['errors'].length, 0
 
     describe 'and example value is not empty and default value is empty', () ->
@@ -245,6 +245,6 @@ describe 'validateParameters', ->
             default: ''
             values: []
 
-        result = validateParameters params
+        result = validateParams params
         assert.equal result['errors'].length, 0
 

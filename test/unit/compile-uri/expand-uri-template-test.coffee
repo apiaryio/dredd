@@ -1,8 +1,8 @@
 {assert} = require 'chai'
 
-expandUriTemplateWithParameters = require '../../src/expand-uri-template-with-parameters'
+expandUriTemplate = require '../../../src/compile-uri/expand-uri-template'
 
-describe 'expandUriTemplateWithParameters', ->
+describe 'expandUriTemplate', ->
   data = null
   uriTemplate = ''
   parameters = ''
@@ -17,7 +17,7 @@ describe 'expandUriTemplateWithParameters', ->
         example: 'waldo'
         default: ''
 
-    data = expandUriTemplateWithParameters uriTemplate, parameters
+    data = expandUriTemplate uriTemplate, parameters
 
   it 'should return an object', ->
     assert.isObject data
@@ -42,7 +42,7 @@ describe 'expandUriTemplateWithParameters', ->
             example: 'waldo'
             default: ''
 
-        data = expandUriTemplateWithParameters uriTemplate, parameters
+        data = expandUriTemplate uriTemplate, parameters
 
       it 'it should return some errror', ->
         assert.notEqual data['errors'].length, 0
@@ -52,7 +52,7 @@ describe 'expandUriTemplateWithParameters', ->
       before ->
         uriTemplate = '/machines/waldo'
         parameters = {}
-        data = expandUriTemplateWithParameters uriTemplate, parameters
+        data = expandUriTemplate uriTemplate, parameters
 
       describe 'with no parameters given', ->
         it 'should return no error', ->
@@ -76,7 +76,7 @@ describe 'expandUriTemplateWithParameters', ->
               example: 'waldo'
               default: ''
 
-          data = expandUriTemplateWithParameters uriTemplate, parameters
+          data = expandUriTemplate uriTemplate, parameters
 
         it 'should return no error', ->
           assert.equal data['errors'].length, 0
@@ -95,7 +95,7 @@ describe 'expandUriTemplateWithParameters', ->
         before ->
           uriTemplate = '/machines/{name}'
           parameters = {}
-          data = expandUriTemplateWithParameters uriTemplate, parameters
+          data = expandUriTemplate uriTemplate, parameters
 
         it 'should return some warning', ->
           assert.notEqual data['warnings'].length, 0
@@ -133,7 +133,7 @@ describe 'expandUriTemplateWithParameters', ->
               example: 'wild'
               default: ''
 
-          data = expandUriTemplateWithParameters uriTemplate, parameters
+          data = expandUriTemplate uriTemplate, parameters
 
         it 'should return no error', ->
           assert.equal data['errors'].length, 0
@@ -158,7 +158,7 @@ describe 'expandUriTemplateWithParameters', ->
                 example: ''
                 default: ''
 
-            data = expandUriTemplateWithParameters uriTemplate, parameters
+            data = expandUriTemplate uriTemplate, parameters
 
           it 'should return no error', ->
             assert.equal data['errors'].length, 0
@@ -189,7 +189,7 @@ describe 'expandUriTemplateWithParameters', ->
                 example: 'example-one'
                 default: ''
 
-            data = expandUriTemplateWithParameters uriTemplate, parameters
+            data = expandUriTemplate uriTemplate, parameters
 
           it 'should return no error', ->
             assert.equal data['errors'].length, 0
@@ -214,7 +214,7 @@ describe 'expandUriTemplateWithParameters', ->
                 example: ''
                 default: 'example-one'
 
-            data = expandUriTemplateWithParameters uriTemplate, parameters
+            data = expandUriTemplate uriTemplate, parameters
 
           it 'should return no error', ->
             assert.equal data['errors'].length, 0
@@ -242,7 +242,7 @@ describe 'expandUriTemplateWithParameters', ->
                 example: 'example-one'
                 default: 'default-one'
 
-            data = expandUriTemplateWithParameters uriTemplate, parameters
+            data = expandUriTemplate uriTemplate, parameters
 
           it 'should return no error', ->
             assert.equal data['errors'].length, 0
@@ -270,7 +270,7 @@ describe 'expandUriTemplateWithParameters', ->
               example: 'example-one'
               default: ''
 
-          data = expandUriTemplateWithParameters uriTemplate, parameters
+          data = expandUriTemplate uriTemplate, parameters
 
         it 'should return no error', ->
           assert.equal data['errors'].length, 0
@@ -295,7 +295,7 @@ describe 'expandUriTemplateWithParameters', ->
                 default: 'default-one'
                 example: ''
 
-            data = expandUriTemplateWithParameters uriTemplate, parameters
+            data = expandUriTemplate uriTemplate, parameters
 
           it 'should return no error', ->
             assert.equal data['errors'].length, 0
@@ -320,7 +320,7 @@ describe 'expandUriTemplateWithParameters', ->
                 example: 'example-one'
                 default: 'default-one'
 
-            data = expandUriTemplateWithParameters uriTemplate, parameters
+            data = expandUriTemplate uriTemplate, parameters
 
           it 'should return no error', ->
             assert.equal data['errors'].length, 0
@@ -345,7 +345,7 @@ describe 'expandUriTemplateWithParameters', ->
                 default: ''
                 example: ''
 
-            data = expandUriTemplateWithParameters uriTemplate, parameters
+            data = expandUriTemplate uriTemplate, parameters
 
           it 'should return no error', ->
             assert.equal data['errors'].length, 0
