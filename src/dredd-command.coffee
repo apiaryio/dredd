@@ -145,6 +145,8 @@ class DreddCommand
           console.log "  $ cpanm Dredd::Hooks"
         else if config['language'] == 'go'
           console.log "  $ go get github.com/snikch/goodman/cmd/goodman"
+        else if config['language'] == 'rust'
+          console.log "  $ cargo install dredd-hooks"
 
         console.log "  $ dredd"
         console.log ""

@@ -74,6 +74,19 @@ class HooksWorkerClient
       else
         callback()
 
+    else if @language == 'rust'
+      @handlerCommand = 'dredd-hooks-rust'
+      @handlerCommandArgs = []
+      unless which.which @handlerCommand
+        msg = """\
+          Rust hooks handler command not found: #{@handlerCommand}
+          Install rust hooks handler by running:
+          $ cargo install dredd-hooks
+        """
+        return callback(new Error(msg))
+      else
+        callback()
+
     else if @language == 'python'
       @handlerCommand = 'dredd-hooks-python'
       @handlerCommandArgs = []

@@ -35,6 +35,7 @@ Dredd supports writing [hooks](hooks.md) — a glue code for each test setup and
 - [PHP](hooks-php.md)
 - [Python](hooks-python.md)
 - [Ruby](hooks-ruby.md)
+- [Rust](hooks-rust.md)
 - Didn't find your favorite language? _[Add a new one!](hooks-new-language.md)_
 
 ### Continuous Integration Support
@@ -60,6 +61,7 @@ Dredd supports writing [hooks](hooks.md) — a glue code for each test setup and
 - [Hooks: PHP](hooks-php.md)
 - [Hooks: Python](hooks-python.md)
 - [Hooks: Ruby](hooks-ruby.md)
+- [Hooks: Rust](hooks-rust.md)
 - [Hooks: Other Languages](hooks-new-language.md)
 - [Data Structures](data-structures.md)
 - [Contributing](contributing.md)

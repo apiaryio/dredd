@@ -12,7 +12,7 @@ options =
 
   language:
     alias: "a"
-    description: "Language of hookfiles. Possible options are: nodejs, ruby, python, php, perl, go"
+    description: "Language of hookfiles. Possible options are: nodejs, ruby, python, php, perl, go, rust"
     default: "nodejs"
 
   sandbox:
