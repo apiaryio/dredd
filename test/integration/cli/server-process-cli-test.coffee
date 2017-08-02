@@ -92,6 +92,11 @@ describe 'CLI - Server Process', ->
 
 
     for scenario in [
+        description: 'When it fails to start'
+        apiDescriptionDocument: './test/fixtures/single-get.apib'
+        server: "/foo/bar/baz"
+        expectServerBoot: false
+      ,
         description: 'When crashes before requests'
         apiDescriptionDocument: './test/fixtures/single-get.apib'
         server: "#{COFFEE_BIN} test/fixtures/scripts/exit-3.coffee"
