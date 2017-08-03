@@ -456,6 +456,7 @@ class TransactionRunner
     options.method = transaction.request.method
     options.headers = transaction.request.headers
     options.body = transaction.request.body
+    options.encoding = transaction.request.encoding
     options.proxy = false
     options.followRedirect = false
     return options

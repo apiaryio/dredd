@@ -27,6 +27,7 @@ Transaction object is passed as a first argument to [hook functions](hooks.md) a
     - headers (object) - keys are HTTP header names, values are HTTP header contents
     - uri: `/message` (string) - request URI as it was written in API description
     - method: `POST` (string)
+    - encoding: `utf8` (object) - response encoding
 - expected (object) - the HTTP response Dredd expects to get from the tested server
     - statusCode: `200` (string)
     - headers (object) - keys are HTTP header names, values are HTTP header contents
