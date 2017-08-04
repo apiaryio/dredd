@@ -90,6 +90,7 @@ getSSLCredentials = ->
 #     - *endpointUrl*: 0 (number, default) - number of requests to the endpoint
 createServer = (options = {}) ->
   protocol = options.protocol or 'http'
+  bodyParserInstance = options.bodyParser or bodyParser.json({size: '5mb'})
 
   serverRuntimeInfo =
     requestedOnce: false
@@ -99,10 +100,11 @@ createServer = (options = {}) ->
     requestCounts: {}
 
   app = express()
-  app.use(bodyParser.json({size: '5mb'}))
+  app.use(bodyParserInstance)
   app.use((req, res, next) ->
     recordServerRequest(serverRuntimeInfo, req)
-    res.type('json').status(200) # sensible defaults, can be overriden
+    res.type('json')
+    res.status(200) # sensible defaults, can be overriden
     next()
   )
   app = https.createServer(getSSLCredentials(), app) if protocol is 'https'
