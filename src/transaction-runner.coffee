@@ -553,6 +553,9 @@ class TransactionRunner
   # An actual HTTP request, before validation hooks triggering
   # and the response validation is invoked here
   performRequestAndValidate: (test, transaction, hooks, callback) ->
+    if transaction.request.body and @isMultipart(transaction.request.headers)
+      transaction.request.body = @fixApiBlueprintMultipartBody(transaction.request.body)
+
     @setContentLength(transaction)
     requestOptions = @getRequestOptionsFromTransaction(transaction)
 
@@ -585,10 +588,6 @@ class TransactionRunner
           return callback(@hookHandlerError) if @hookHandlerError
 
           @validateTransaction test, transaction, callback
-
-
-    if transaction.request['body'] and @isMultipart requestOptions
-      @replaceLineFeedInBody transaction, requestOptions
 
     try
       @performRequest(requestOptions, handleRequest)
@@ -674,17 +673,17 @@ class TransactionRunner
         transaction.test = test
         return callback()
 
-  isMultipart: (requestOptions) ->
-    caseInsensitiveRequestHeaders = {}
-    for key, value of requestOptions.headers
-      caseInsensitiveRequestHeaders[key.toLowerCase()] = value
-    caseInsensitiveRequestHeaders['content-type']?.indexOf("multipart") > -1
+  isMultipart: (headers) ->
+    contentType = caseless(headers).get('Content-Type')
+    return false unless contentType
+    return contentType.indexOf('multipart') > -1
 
-  replaceLineFeedInBody: (transaction, requestOptions) ->
-    if transaction.request['body'].indexOf('\r\n') == -1
-      transaction.request['body'] = transaction.request['body'].replace(/\n/g, '\r\n')
-      transaction.request['headers']['Content-Length'] = Buffer.byteLength(transaction.request['body'], 'utf8')
-      requestOptions.headers = transaction.request['headers']
+  # Finds newlines not preceeded by carriage returns and replaces them by
+  # newlines preceeded by carriage returns.
+  #
+  # See https://github.com/apiaryio/api-blueprint/issues/401
+  fixApiBlueprintMultipartBody: (body) ->
+    body.replace(/\r?\n/g, '\r\n')
 
 
 module.exports = TransactionRunner
