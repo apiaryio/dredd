@@ -19,13 +19,12 @@ var dreddCli = new DreddCommand({
   custom: {
     cwd: process.cwd(),
     argv: process.argv.slice(2)
-  },
-  exit: exit
+  }
 });
 
 
-function exit(exitStatus) {
-  if (process.env.COVERAGE_DIR) {
+if (process.env.COVERAGE_DIR) {
+  process.on('exit', function () {
     // Before Dredd exits, we need to collect coverage stats and save them to
     // a file. We abuse 'mocha-lcov-reporter' to do this.
     var LCov = require('mocha-lcov-reporter');
@@ -52,9 +51,7 @@ function exit(exitStatus) {
     // Save stats as lcov file
     var file = path.join(process.env.COVERAGE_DIR, 'dredd-bin.info');
     fs.appendFileSync(file, content);
-  }
-
-  process.exit(exitStatus);
+  })
 }
 
 
