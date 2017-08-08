@@ -1,0 +1,17 @@
+FORMAT: 1A
+
+# Testing 'application/x-www-form-urlencoded' Request API
+
+# POST /data
+
++ Request (application/x-www-form-urlencoded)
+
+    + Body
+
+            test=42
+
++ Response 200 (application/json; charset=utf-8)
+
+    + Body
+
+            {"test": "OK"}

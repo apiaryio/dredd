@@ -1,0 +1,27 @@
+FORMAT: 1A
+
+# Testing 'multipart/form-data' Request API
+
+# POST /data
+
++ Request (multipart/form-data;boundary=---BOUNDARY)
+
+    + Body
+
+            ---BOUNDARY
+            Content-Disposition: form-data; name="text"
+            Content-Type: text/plain
+
+            test equals to 42
+            ---BOUNDARY
+            Content-Disposition: form-data; name="json"; filename="filename.json"
+            Content-Type: application/json
+
+            {"test": 42}
+            ---BOUNDARY--
+
++ Response 200 (application/json; charset=utf-8)
+
+    + Body
+
+            {"test": "OK"}
