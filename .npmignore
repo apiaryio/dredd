@@ -13,7 +13,6 @@ cov.*
 .travis.yml
 .npmignore
 docs/
-img/
 test/
 mkdocs.yml
 provisioning.sh

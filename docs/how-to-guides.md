@@ -607,7 +607,7 @@ complete: Tests took 1631ms
 complete: See results in Apiary at: https://app.apiary.io/public/tests/run/74d20a82-55c5-49bb-aac9-a3a5a7450f06
 ```
 
-![Apiary Tests](https://raw.github.com/apiaryio/dredd/master/img/apiary-tests.png?raw=true)
+![Apiary Tests](https://raw.github.com/apiaryio/dredd/master/docs/_images/apiary-tests.png?raw=true)
 
 ### Saving Test Reports under Your Account in Apiary
 
@@ -615,7 +615,7 @@ As you can see on the screenshot, the test reports are anonymous by default and 
 
 To get and setup credentials, just follow the tutorial in Apiary:
 
-![Apiary Tests Tutorial](https://raw.github.com/apiaryio/dredd/master/img/apiary-tests-tutorial.png?raw=true)
+![Apiary Tests Tutorial](https://raw.github.com/apiaryio/dredd/master/docs/_images/apiary-tests-tutorial.png?raw=true)
 
 As you can see, the parameters go like this:
 
