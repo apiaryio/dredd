@@ -675,8 +675,10 @@ class TransactionRunner
 
   isMultipart: (headers) ->
     contentType = caseless(headers).get('Content-Type')
-    return false unless contentType
-    return contentType.indexOf('multipart') > -1
+    if contentType
+      contentType.indexOf('multipart') > -1
+    else
+      false
 
   # Finds newlines not preceeded by carriage returns and replaces them by
   # newlines preceeded by carriage returns.
