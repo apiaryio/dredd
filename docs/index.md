@@ -37,12 +37,10 @@ Dredd supports writing [hooks](hooks.md) — a glue code for each test setup and
 - [Ruby](hooks-ruby.md)
 - Didn't find your favorite language? _[Add a new one!](hooks-new-language.md)_
 
-### Continuous Integration Support
+### Supported Systems
 
-- [Travis CI][]
-- [CircleCI][]
-- [Jenkins][]
-- _...and any other \*nix based CI!_
+- Linux, macOS, Windows, ...
+- [Travis CI][], [CircleCI][], [Jenkins][], [AppVeyor][], ...
 
 ## Contents
 
@@ -86,3 +84,4 @@ Dredd supports writing [hooks](hooks.md) — a glue code for each test setup and
 [Travis CI]: https://travis-ci.org/
 [CircleCI]: https://circleci.com/
 [Jenkins]: https://jenkins.io/
+[AppVeyor]: https://www.appveyor.com/

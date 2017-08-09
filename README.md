@@ -40,12 +40,10 @@ Dredd supports writing [hooks](https://dredd.readthedocs.io/en/latest/hooks/)
 - [Ruby](https://dredd.readthedocs.io/en/latest/hooks-ruby/)
 - Didn't find your favorite language? _[Add a new one!](https://dredd.readthedocs.io/en/latest/hooks-new-language/)_
 
-### Continuous Integration Support
+### Supported Systems
 
-- [Travis CI][]
-- [CircleCI][]
-- [Jenkins][]
-- _...and any other *nix based CI!_
+- Linux, macOS, Windows, ...
+- [Travis CI][], [CircleCI][], [Jenkins][], [AppVeyor][], ...
 
 ## Installation
 
@@ -84,3 +82,4 @@ $ npm install -g dredd
 [Travis CI]: https://travis-ci.org/
 [CircleCI]: https://circleci.com/
 [Jenkins]: https://jenkins.io/
+[AppVeyor]: https://www.appveyor.com/
