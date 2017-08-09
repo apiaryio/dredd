@@ -90,6 +90,26 @@ describe 'CLI - Server Process', ->
       it 'should exit with status 0', ->
         assert.equal dreddCommandInfo.exitStatus, 0
 
+    describe 'When it fails to start', ->
+      dreddCommandInfo = undefined
+      args = [
+        './test/fixtures/single-get.apib'
+        "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+        "--server=/foo/bar/baz"
+        '--server-wait=1'
+      ]
+
+      beforeEach (done) ->
+        runDreddCommand args, (err, info) ->
+          dreddCommandInfo = info
+          done(err)
+
+      it 'should inform about starting server with custom command', ->
+        assert.include dreddCommandInfo.stdout, 'Starting backend server process with command'
+      it 'should report problem with server process spawn', ->
+        assert.include dreddCommandInfo.stderr, 'Command to start backend server process failed, exiting Dredd'
+      it 'should exit with status 1', ->
+        assert.equal dreddCommandInfo.exitStatus, 1
 
     for scenario in [
         description: 'When crashes before requests'
