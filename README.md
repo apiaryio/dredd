@@ -73,7 +73,7 @@ $ npm install -g dredd
 [API Blueprint]: https://apiblueprint.org/
 [API Blueprint tutorial]: https://apiblueprint.org/documentation/tutorial.html
 [API Blueprint examples]: https://github.com/apiaryio/api-blueprint/tree/master/examples
-[Swagger]: http://swagger.io/
+[Swagger]: https://swagger.io/
 
 [Documentation]: https://dredd.readthedocs.io/en/latest/
 [Changelog]: https://github.com/apiaryio/dredd/releases

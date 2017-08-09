@@ -217,7 +217,7 @@ Dredd intentionally **does not support HTTP(S) proxies for testing**. Proxy can 
 [Apiary]: https://apiary.io/
 [Semantic Versioning]: http://semver.org/
 [API Blueprint]: https://apiblueprint.org/
-[Swagger]: http://swagger.io/
+[Swagger]: https://swagger.io/
 [Gavel.js]: https://github.com/apiaryio/gavel.js
 [Gavel]: https://relishapp.com/apiary/gavel/docs
 [MSON]: https://github.com/apiaryio/mson
@@ -244,15 +244,15 @@ Dredd intentionally **does not support HTTP(S) proxies for testing**. Proxy can 
 [action-section]: https://apiblueprint.org/documentation/specification.html#def-action-section
 [body-schema-attributes]: https://apiblueprint.org/documentation/specification.html#relation-of-body-schema-and-attributes-sections
 
-[produces]: http://swagger.io/specification/#swaggerProduces
-[consumes]: http://swagger.io/specification/#swaggerConsumes
-[response-headers]: http://swagger.io/specification/#responseHeaders
-[schema]: http://swagger.io/specification/#parameterSchema
-[response-schema]: http://swagger.io/specification/#responseSchema
-[response-examples]: http://swagger.io/specification/#responseExamples
-[parameters]: http://swagger.io/specification/#parameterObject
-[operation-parameters]: http://swagger.io/specification/#operationParameters
-[paths-parameters]: http://swagger.io/specification/#pathItemParameters
-[swagger-parameters]: http://swagger.io/specification/#swaggerParameters
-[default-responses]: http://swagger.io/specification/#responsesDefault
-[schema-example]: http://swagger.io/specification/#schemaExample
+[produces]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-swaggerProduces
+[consumes]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-swaggerConsumes
+[response-headers]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-responseHeaders
+[schema]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-parameterSchema
+[response-schema]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-responseSchema
+[response-examples]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-responseExamples
+[parameters]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-parameterObject
+[operation-parameters]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-operationParameters
+[paths-parameters]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-pathItemParameters
+[swagger-parameters]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-swaggerParameters
+[default-responses]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-responsesDefault
+[schema-example]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-schemaExample

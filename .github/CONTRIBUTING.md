@@ -221,7 +221,7 @@ Any `id` HTML attributes generated for headings or manual `<a name="section"></a
 
 #### Redirects
 
-Redirects are documented in the `docs/redirects.yml` file. They need to be manually set in the [ReadTheDocs administration](https://readthedocs.org/dashboard/dredd-docs-sphinx-test/redirects/). It's up to Dredd maintainers to keep the list in sync with reality.
+Redirects are documented in the `docs/redirects.yml` file. They need to be manually set in the [ReadTheDocs administration](https://readthedocs.org/dashboard/dredd/redirects/). It's up to Dredd maintainers to keep the list in sync with reality.
 
 You can use the [rtd-redirects](https://github.com/honzajavorek/rtd-redirects) tool to programmatically upload the redirects from `docs/redirects.yml` to ReadTheDocs admin interface.
 

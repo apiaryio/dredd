@@ -752,10 +752,10 @@ If your hooks crash, Dredd will send an error to reporters, alongside with curre
 
 [Apiary]: https://apiary.io/
 [API Blueprint]: https://apiblueprint.org/
-[Swagger]: http://swagger.io/
+[Swagger]: https://swagger.io/
 [Travis CI]: https://travis-ci.org/
 [CircleCI]: https://circleci.com/
-[vendor extension property]: http://swagger.io/specification/#vendorExtensions
+[vendor extension property]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-vendorExtensions
 
 [MSON]: https://apiblueprint.org/documentation/mson/specification.html
 [JSON Schema]: http://json-schema.org/
