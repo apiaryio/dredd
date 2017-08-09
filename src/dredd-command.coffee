@@ -53,7 +53,7 @@ class DreddCommand
 
   # Gracefully terminate server
   stopServer: (callback) ->
-    unless @serverProcess?
+    if not @serverProcess or not @serverProcess.spawned
       logger.verbose('No backend server process to terminate.')
       return callback()
     if @serverProcess.terminated
@@ -219,9 +219,9 @@ class DreddCommand
       @serverProcess.on 'exit', =>
         logger.info('Backend server process exited')
 
-      @serverProcess.on 'error', (error) =>
-        logger.error('Command to start backend server process failed, exiting Dredd', error)
-        @_processExit(2)
+      @serverProcess.on 'error', (err) =>
+        logger.error('Command to start backend server process failed, exiting Dredd', err)
+        @_processExit(1)
 
       # Ensure server is not running when dredd exits prematurely somewhere
       process.on 'beforeExit', =>
@@ -332,11 +332,9 @@ class DreddCommand
   exitWithStatus: (error, stats) ->
     if error
       logger.error(error.message) if error.message
-      process.exitCode = 1
       return @_processExit(1)
 
     if (stats.failures + stats.errors) > 0
-      process.exitCode = 1
       @_processExit(1)
     else
       @_processExit(0)
