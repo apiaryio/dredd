@@ -9,7 +9,7 @@
 [![Known Vulnerabilities](https://snyk.io/test/npm/dredd/badge.svg)](https://snyk.io/test/npm/dredd)
 [![Join the chat at https://gitter.im/apiaryio/dredd](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/apiaryio/dredd?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-![Dredd - HTTP API Testing Framework](https://raw.github.com/apiaryio/dredd/master/img/dredd.png?v=3&raw=true)
+![Dredd - HTTP API Testing Framework](_images/dredd.png)
 
 > **Dredd is a language-agnostic command-line tool for validating
 API description document against backend implementation of the API.**
