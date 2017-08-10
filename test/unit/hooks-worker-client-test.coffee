@@ -408,6 +408,69 @@ describe 'Hooks worker client', ->
             assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'gobinary'
             done()
 
+    describe 'when --language=rust option is given and the worker is not installed', ->
+      beforeEach ->
+        sinon.stub(whichStub, 'which').callsFake (command) -> false
+
+        runner.hooks['configuration'] =
+          options:
+            language: 'rust'
+            hookfiles: 'rustbinary'
+      afterEach ->
+        whichStub.which.restore()
+
+      it 'should write a hint how to install', (done) ->
+        loadWorkerClient (err) ->
+          assert.isOk err
+          assert.include err.message, "cargo install dredd-hooks"
+          done()
+
+    describe 'when --language=rust option is given and the worker is installed', ->
+      beforeEach ->
+        sinon.stub(crossSpawnStub, 'spawn').callsFake( ->
+          emitter = new EventEmitter
+          emitter.stdout = new EventEmitter
+          emitter.stderr = new EventEmitter
+          emitter
+        )
+
+        runner.hooks['configuration'] =
+          options:
+            language: 'rust'
+            hookfiles: "rustbinary"
+
+        sinon.stub(whichStub, 'which').callsFake (command) -> true
+
+        sinon.stub(HooksWorkerClient.prototype, 'terminateHandler').callsFake (callback) ->
+          callback()
+
+      afterEach ->
+        crossSpawnStub.spawn.restore()
+
+        runner.hooks['configuration'] = undefined
+
+        whichStub.which.restore()
+        HooksWorkerClient.prototype.terminateHandler.restore()
+
+      it 'should spawn the server process with command "dredd-hooks-rust"', (done) ->
+        loadWorkerClient (err) ->
+          assert.isUndefined err
+
+          hooksWorkerClient.stop (err) ->
+            assert.isUndefined err
+            assert.isTrue crossSpawnStub.spawn.called
+            assert.equal crossSpawnStub.spawn.getCall(0).args[0], 'dredd-hooks-rust'
+            done()
+
+      it 'should pass --hookfiles option as an array of arguments', (done) ->
+        loadWorkerClient (err) ->
+          assert.isUndefined err
+
+          hooksWorkerClient.stop (err) ->
+            assert.isUndefined err
+            assert.equal crossSpawnStub.spawn.getCall(0).args[1][0], 'rustbinary'
+            done()
+
     describe 'when --language=perl option is given and the worker is installed', ->
       beforeEach ->
         sinon.stub(crossSpawnStub, 'spawn').callsFake( ->

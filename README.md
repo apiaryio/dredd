@@ -38,6 +38,7 @@ Dredd supports writing [hooks](https://dredd.readthedocs.io/en/latest/hooks/)
 - [PHP](https://dredd.readthedocs.io/en/latest/hooks-php/)
 - [Python](https://dredd.readthedocs.io/en/latest/hooks-python/)
 - [Ruby](https://dredd.readthedocs.io/en/latest/hooks-ruby/)
+- [Rust](https://dredd.readthedocs.io/en/latest/hooks-rust/)
 - Didn't find your favorite language? _[Add a new one!](https://dredd.readthedocs.io/en/latest/hooks-new-language/)_
 
 ### Supported Systems

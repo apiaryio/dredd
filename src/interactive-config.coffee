@@ -43,6 +43,7 @@ interactiveConfig.prompt = (config = {}, callback) ->
       "php"
       "perl"
       "go"
+      "rust"
     ]
   }
 
