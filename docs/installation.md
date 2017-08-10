@@ -98,7 +98,7 @@ There are still [several known limitations][Windows Issues] when using Dredd on 
 
 
 [API Blueprint]: https://apiblueprint.org/
-[Swagger]: http://swagger.io/
+[Swagger]: https://swagger.io/
 
 [CoffeeScript]: http://coffeescript.org/
 [CI]: how-to-guides.md#continuous-integration

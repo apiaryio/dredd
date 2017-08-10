@@ -75,7 +75,7 @@ Dredd supports writing [hooks](hooks.md) — a glue code for each test setup and
 
 
 [API Blueprint]: https://apiblueprint.org/
-[Swagger]: http://swagger.io/
+[Swagger]: https://swagger.io/
 
 [GitHub Repository]: https://github.com/apiaryio/dredd
 [Bug Tracker]: https://github.com/apiaryio/dredd/issues?q=is%3Aopen

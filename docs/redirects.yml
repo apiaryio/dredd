@@ -1,6 +1,6 @@
 # This file is a documentation of which redirects need to be manually set
-# on the https://readthedocs.org/dashboard/dredd-docs-sphinx-test/redirects/
-# page. It's up to Dredd maintainers to keep this list in sync with reality.
+# on the https://readthedocs.org/dashboard/dredd/redirects/ page. It's up
+# to Dredd maintainers to keep this list in sync with reality.
 #
 # You can use https://github.com/honzajavorek/rtd-redirects to programmatically
 # upload the redirects to ReadTheDocs admin interface.

@@ -133,5 +133,5 @@ For more complex example applications, please refer to:
 
 
 [API Blueprint]: https://apiblueprint.org/
-[Swagger]: http://swagger.io/
+[Swagger]: https://swagger.io/
 [Express.js]: http://expressjs.com/starter/hello-world.html
