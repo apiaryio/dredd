@@ -26,4 +26,5 @@ jobs:
       script: "npm run test:coverage && npm run coveralls"
     - stage: "semantic release"
       node_js: "6"
-      script: "npm run semantic-release || true"
+      # https://github.com/semantic-release/semantic-release/issues/390
+      script: "TRAVIS_JOB_NUMBER=WORKAROUND.1 npm run semantic-release || true"
