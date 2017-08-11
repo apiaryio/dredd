@@ -20,7 +20,9 @@ add_stable_dist_tag() {
 # workaround makes Semantic Release unusable, so we need to trick it.
 #
 # Tracked as https://github.com/semantic-release/semantic-release/issues/390
+# Related https://github.com/travis-ci/travis-ci/issues/8239
 export TRAVIS_JOB_NUMBER="WORKAROUND.1"
+export TRAVIS_TEST_RESULT="0"
 
 
 $SEMANTIC_RELEASE pre && \
