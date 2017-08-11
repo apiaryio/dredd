@@ -59,17 +59,14 @@ On Linux or macOS, Dredd uses the `SIGTERM` signal to tell the hook handler proc
 - transaction (object)
     - uuid: `234567-asdfghjkl` (string) - Id used for event unique identification on both server and client sides
     - event: `event` (enum) - Event type
-        - beforeAll (string)
-        - beforeEach (string)
-        - before (string)
-        - beforeEachValidation (string)
-        - beforeValidation (string)
-        - after (string)
-        - afterEach (string)
-        - afterAll (string)
+        - beforeAll (string) - Signals the hook handler to run the `beforeAll` hooks
+        - beforeEach (string) - Signals the hook handler to run the `beforeEach` and `before` hooks
+        - beforeEachValidation (string) - Signals the hook handler to run the `beforeEachValidation` and `beforeValidation` hooks
+        - afterEach (string) - Signals the hook handler to run the `after` and `afterValidation` hooks
+        - afterAll (string) - Signals the hook handler to run the `afterAll` hooks
     - data (enum) - Data passed as a argument to the function
-        - (object)
-        - (array)
+        - (object) - Single Transaction object
+        - (array) - An array of Transaction objects, containing all transactions in the API description. Sent for `beforeAll` and `afterAll` events
 
 ## Configuration Options
 
