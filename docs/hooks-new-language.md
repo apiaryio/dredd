@@ -62,7 +62,7 @@ On Linux or macOS, Dredd uses the `SIGTERM` signal to tell the hook handler proc
         - beforeAll (string) - Signals the hook handler to run the `beforeAll` hooks
         - beforeEach (string) - Signals the hook handler to run the `beforeEach` and `before` hooks
         - beforeEachValidation (string) - Signals the hook handler to run the `beforeEachValidation` and `beforeValidation` hooks
-        - afterEach (string) - Signals the hook handler to run the `after` and `afterValidation` hooks
+        - afterEach (string) - Signals the hook handler to run the `after` and `afterEach` hooks
         - afterAll (string) - Signals the hook handler to run the `afterAll` hooks
     - data (enum) - Data passed as a argument to the function
         - (object) - Single Transaction object
