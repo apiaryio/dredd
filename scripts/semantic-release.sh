@@ -14,6 +14,17 @@ add_stable_dist_tag() {
 }
 
 
+# Semantic Release has built-in workaround for waiting until all parallel
+# builds finish on Travis CI. However, Travis CI introduced "build stages"
+# to tackle exactly this problem. When using the build stages, the built-in
+# workaround makes Semantic Release unusable, so we need to trick it.
+#
+# Tracked as https://github.com/semantic-release/semantic-release/issues/390
+# Related https://github.com/travis-ci/travis-ci/issues/8239
+export TRAVIS_JOB_NUMBER="WORKAROUND.1"
+export TRAVIS_TEST_RESULT="0"
+
+
 $SEMANTIC_RELEASE pre && \
   npm publish && \
   add_stable_dist_tag && \
