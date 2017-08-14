@@ -479,5 +479,5 @@ describe "DreddCommand class", () ->
     afterEach ->
       crossSpawnStub.spawn.restore()
 
-    it 'stdout shoud run child process', ->
+    it 'should run child process', ->
       assert.isTrue crossSpawnStub.spawn.called
