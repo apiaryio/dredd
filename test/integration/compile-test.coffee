@@ -42,9 +42,10 @@ describe('compile() · all API description formats', ->
       transactions = undefined
 
       beforeEach((done) ->
-        compileFixture(source, (args...) ->
-          [err, {errors, transactions}] = args
-          done(err)
+        compileFixture(source, (err, compilationResult) ->
+          return done(err) if err
+          {errors, transactions} = compilationResult
+          done()
         )
       )
 
@@ -86,9 +87,10 @@ describe('compile() · all API description formats', ->
 
     fixtures.uriExpansionAnnotation.forEachDescribe(({source}) ->
       beforeEach((done) ->
-        compileFixture(source, (args...) ->
-          [err, {errors, transactions}] = args
-          done(err)
+        compileFixture(source, (err, compilationResult) ->
+          return done(err) if err
+          {errors, transactions} = compilationResult
+          done()
         )
       )
 
@@ -124,9 +126,10 @@ describe('compile() · all API description formats', ->
 
     fixtures.uriValidationAnnotation.forEachDescribe(({source}) ->
       beforeEach((done) ->
-        compileFixture(source, (args...) ->
-          [err, {errors, transactions}] = args
-          done(err)
+        compileFixture(source, (err, compilationResult) ->
+          return done(err) if err
+          {errors, transactions} = compilationResult
+          done()
         )
       )
 
@@ -162,9 +165,10 @@ describe('compile() · all API description formats', ->
       transactions = undefined
 
       beforeEach((done) ->
-        compileFixture(source, (args...) ->
-          [err, {warnings, transactions}] = args
-          done(err)
+        compileFixture(source, (err, compilationResult) ->
+          return done(err) if err
+          {warnings, transactions} = compilationResult
+          done()
         )
       )
 
@@ -254,9 +258,10 @@ describe('compile() · all API description formats', ->
 
     fixtures.ambiguousParametersAnnotation.forEachDescribe(({source}) ->
       beforeEach((done) ->
-        compileFixture(source, (args...) ->
-          [err, {warnings, transactions}] = args
-          done(err)
+        compileFixture(source, (err, compilationResult) ->
+          return done(err) if err
+          {warnings, transactions} = compilationResult
+          done()
         )
       )
 
