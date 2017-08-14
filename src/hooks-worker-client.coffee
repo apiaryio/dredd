@@ -126,21 +126,28 @@ class HooksWorkerClient
       # If the GOBIN environment variable is set, commands are installed to the
       # directory it names instead of DIR/bin. GOBIN must be an absolute path."
       # Use the gobin if provided, otherwise fall back to gopath
-      gobin = process.env.GOBIN
-      if !gobin
-        gobin = "#{process.env.GOPATH}/bin"
-
-      @handlerCommand = "#{gobin}/goodman"
-      @handlerCommandArgs = []
-      unless which.which @handlerCommand
-        msg = '''\
-          Go hooks handler command not found in $GOBIN or $GOPATH/bin
-          Install go hooks handler by running:
-          $ go get github.com/snikch/goodman/cmd/goodman
-        '''
-        return callback(new Error(msg))
-      else
-        callback()
+      {exec} = require 'child_process'
+      getGobin = (callback) ->
+        gobin = process.env.GOBIN
+        if !gobin
+          if process.env.GOPATH
+            gobin = "#{process.env.GOPATH}/bin"
+          else
+            exec "go env GOPATH", (error, stdout, stderr) -> callback "#{stdout.trim()}/bin"
+            return
+        callback gobin
+      getGobin (gobin) => 
+        @handlerCommand = "#{gobin}/goodman"
+        @handlerCommandArgs = []
+        unless which.which @handlerCommand
+          msg = '''\
+            Go hooks handler command not found in $GOBIN or $GOPATH/bin
+            Install go hooks handler by running:
+            $ go get github.com/snikch/goodman/cmd/goodman
+          '''
+          return callback(new Error(msg))
+        else
+          callback()
     else
       parsedArgs = spawnArgs(@language)
       @handlerCommand = parsedArgs.shift()
