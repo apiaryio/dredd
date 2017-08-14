@@ -32,6 +32,7 @@ parse = (source, callback) ->
 
     if apiElements
       apiElements.unshift(warning) if warning
+      apiElements.freeze() # Adds 'parent' properties, prevents mutation
     else
       apiElements = null
 
