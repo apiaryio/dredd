@@ -61,9 +61,7 @@ findRelevantTransactions = (mediaType, refract, apiElements) ->
   # This gets deleted once we're fully on minim
   refractTransitions = children(refract, {element: 'transition'})
 
-  apiElements.findRecursive('transition').forEach((transitionElement, transitionNoElement) ->
-    transitionNo = transitionNoElement.toValue()
-
+  apiElements.findRecursive('transition').forEach((transitionElement, transitionNo) ->
     # This gets deleted once we're fully on minim
     refractTransition = refractTransitions[transitionNo]
     refractHttpTransactions = children(refractTransition, {element: 'httpTransaction'})
@@ -85,8 +83,7 @@ findRelevantTransactions = (mediaType, refract, apiElements) ->
       # each transaction example. We iterate over available transactions and
       # skip those, which are not first within a particular example.
       exampleNo = 0
-      transitionElement.transactions.forEach((httpTransactionElement, httpTransactionNoElement) ->
-        httpTransactionNo = httpTransactionNoElement.toValue()
+      transitionElement.transactions.forEach((httpTransactionElement, httpTransactionNo) ->
         httpTransactionExampleNo = exampleNumbersPerTransaction[httpTransactionNo]
 
         relevantTransaction =
@@ -101,9 +98,9 @@ findRelevantTransactions = (mediaType, refract, apiElements) ->
       )
     else
       # All other formats then API Blueprint
-      transitionElement.transactions.forEach((httpTransactionElement, httpTransactionNoElement) ->
+      transitionElement.transactions.forEach((httpTransactionElement, httpTransactionNo) ->
         relevantTransactions.push(
-          refract: refractHttpTransactions[httpTransactionNoElement.toValue()]
+          refract: refractHttpTransactions[httpTransactionNo]
           apiElements: httpTransactionElement
         )
       )
