@@ -118,6 +118,7 @@ terminate = (childProcess, options = {}, callback) ->
 spawn = (args...) ->
   childProcess = crossSpawn.spawn.apply(null, args)
 
+  childProcess.spawned = true
   childProcess.terminated = false
   killedIntentionally = false
   terminatedIntentionally = false
@@ -139,6 +140,10 @@ spawn = (args...) ->
     terminate(childProcess, options, (err) ->
       childProcess.emit('error', err) if err
     )
+
+  childProcess.on('error', (err) ->
+    if err.syscall and err.syscall.indexOf('spawn') >= 0 then childProcess.spawned = false
+  )
 
   childProcess.on('exit', (exitStatus, signal) ->
     childProcess.terminated = true
