@@ -461,10 +461,10 @@ describe 'Dredd class Integration', ->
       it 'exit status should be 1', () ->
         assert.equal exitStatus, 1
 
-      it 'stdout shoud contain fail message', () ->
+      it 'stdout should contain fail message', () ->
         assert.include stdout, 'failed in sandboxed hook'
 
-      it 'stdout shoud contain sandbox messagae', () ->
+      it 'stdout should contain sandbox messagae', () ->
         assert.include stdout, 'Loading hook files in sandboxed context'
 
       it 'should perform the request', () ->
@@ -500,10 +500,10 @@ describe 'Dredd class Integration', ->
       it 'exit status should be 1', () ->
         assert.equal exitStatus, 1
 
-      it 'stdout shoud contain fail message', () ->
+      it 'stdout should contain fail message', () ->
         assert.include stdout, 'failed in sandboxed hook from string'
 
-      it 'stdout shoud not sandbox messagae', () ->
+      it 'stdout should not sandbox messagae', () ->
         assert.notInclude stdout, 'Loading hook files in sandboxed context'
 
       it 'should perform the request', () ->

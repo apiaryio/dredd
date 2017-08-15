@@ -820,8 +820,8 @@ describe 'CLI', ->
     it 'exit status should be 1', ->
       assert.equal runtimeInfo.dredd.exitStatus, 1
 
-    it 'stdout shoud contain fail message', ->
+    it 'stdout should contain fail message', ->
       assert.include runtimeInfo.dredd.stdout, 'failed in sandboxed hook'
 
-    it 'stdout shoud contain sandbox messagae', ->
+    it 'stdout should contain sandbox messagae', ->
       assert.include runtimeInfo.dredd.stdout, 'Loading hook files in sandboxed context'
