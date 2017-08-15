@@ -2,7 +2,7 @@ FORMAT: 1A
 
 # Beehive API
 
-## Honey [/honey{?beekeeper}]
+## Honey [/honey{?beekeeper,flavour*}]
 
 + Parameters
     + beekeeper: Honza (enum[string])
@@ -14,6 +14,12 @@ FORMAT: 1A
             + Honza
             + Dredd
         + Default: `Dredd`
+
+    + flavour: sweet (array[string])
+
+        + Members
+            + sweet
+            + spicy
 
 ### Remove [DELETE]
 

@@ -372,7 +372,7 @@ describe('compile() · all API description formats', ->
       )
 
       it('expands the request URI with the example value', ->
-        assert.equal(transaction.request.uri, '/honey?beekeeper=Honza')
+        assert.equal(transaction.request.uri, '/honey?beekeeper=Honza&flavour=sweet')
       )
     )
   )
