@@ -42,7 +42,7 @@ createIndex = (transition) ->
 # Returns an array of numbers, where indexes correspond to HTTP transactions
 # within the transition and values represent the example numbers.
 detectTransactionExampleNumbers = (transition) ->
-  exampleNumbers = createIndex(transition).reduce((state, element, idx, array) ->
+  exampleNumbers = createIndex(transition).reduce((state, element) ->
     switch element.type
       when 'httpRequest'
         state.previousType is 'httpResponse' and state.currentNumber += 1
