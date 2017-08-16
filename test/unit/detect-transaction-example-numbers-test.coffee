@@ -24,7 +24,7 @@ scenario = (description, {actionContent, examples, exampleNumbersPerTransaction}
     beforeEach((done) ->
       parse(apiBlueprint, (args...) ->
         [error, {mediaType, apiElements}] = args
-        transitionElements = apiElements.api.resourceGroups.first().resources.first().transitions.first()
+        transitionElements = apiElements.api.resourceGroups.get(0).resources.get(0).transitions.get(0)
         transactionExampleNumbers = detectTransactionExampleNumbers(transitionElements)
         done()
       )
