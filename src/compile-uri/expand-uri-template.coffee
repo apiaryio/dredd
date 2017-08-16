@@ -1,8 +1,7 @@
-
 ut = require 'uri-template'
 
 
-expandUriTemplateWithParameters = (uriTemplate, parameters) ->
+module.exports = (uriTemplate, parameters) ->
   result =
     errors: []
     warnings: []
@@ -65,6 +64,3 @@ expandUriTemplateWithParameters = (uriTemplate, parameters) ->
       result.uri = parsed.expand(toExpand)
 
   return result
-
-
-module.exports = expandUriTemplateWithParameters

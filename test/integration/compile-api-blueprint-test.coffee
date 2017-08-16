@@ -17,9 +17,10 @@ describe('compile() · API Blueprint', ->
     transactions = undefined
 
     beforeEach((done) ->
-      compileFixture(fixtures.missingTitleAnnotation.apiBlueprint, (args...) ->
-        [err, {warnings, transactions}] = args
-        done(err)
+      compileFixture(fixtures.missingTitleAnnotation.apiBlueprint, (err, compilationResult) ->
+        return done(err) if err
+        {warnings, transactions} = compilationResult
+        done()
       )
     )
 
@@ -56,9 +57,10 @@ describe('compile() · API Blueprint', ->
     transactions = undefined
 
     beforeEach((done) ->
-      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.apiBlueprint, (args...) ->
-        [err, {warnings, transactions}] = args
-        done(err)
+      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.apiBlueprint, (err, compilationResult) ->
+        return done(err) if err
+        {warnings, transactions} = compilationResult
+        done()
       )
     )
 

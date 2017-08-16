@@ -14,9 +14,10 @@ describe('compile() · Swagger', ->
     transactions = undefined
 
     beforeEach((done) ->
-      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.swagger, (args...) ->
-        [err, {errors, transactions}] = args
-        done(err)
+      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.swagger, (err, compilationResult) ->
+        return done(err) if err
+        {errors, transactions} = compilationResult
+        done()
       )
     )
 
@@ -51,10 +52,10 @@ describe('compile() · Swagger', ->
     response = undefined
 
     beforeEach((done) ->
-      compileFixture(fixtures.produces.swagger, (args...) ->
-        [err, {transactions}] = args
-        {request, response} = transactions[0]
-        done(err)
+      compileFixture(fixtures.produces.swagger, (err, compilationResult) ->
+        return done(err) if err
+        {request, response} = compilationResult.transactions[0]
+        done()
       )
     )
 
@@ -77,10 +78,10 @@ describe('compile() · Swagger', ->
     response = undefined
 
     beforeEach((done) ->
-      compileFixture(fixtures.consumes.swagger, (args...) ->
-        [err, {transactions}] = args
-        {request, response} = transactions[0]
-        done(err)
+      compileFixture(fixtures.consumes.swagger, (err, compilationResult) ->
+        return done(err) if err
+        {request, response} = compilationResult.transactions[0]
+        done()
       )
     )
 

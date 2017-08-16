@@ -1,3 +1,4 @@
+proxyquire = require('proxyquire').noPreserveCache()
 
 fixtures = require('../fixtures')
 createCompilationResultSchema = require('../schemas/compilation-result')
@@ -41,9 +42,10 @@ describe('compile() · all API description formats', ->
       transactions = undefined
 
       beforeEach((done) ->
-        compileFixture(source, (args...) ->
-          [err, {errors, transactions}] = args
-          done(err)
+        compileFixture(source, (err, compilationResult) ->
+          return done(err) if err
+          {errors, transactions} = compilationResult
+          done()
         )
       )
 
@@ -85,9 +87,10 @@ describe('compile() · all API description formats', ->
 
     fixtures.uriExpansionAnnotation.forEachDescribe(({source}) ->
       beforeEach((done) ->
-        compileFixture(source, (args...) ->
-          [err, {errors, transactions}] = args
-          done(err)
+        compileFixture(source, (err, compilationResult) ->
+          return done(err) if err
+          {errors, transactions} = compilationResult
+          done()
         )
       )
 
@@ -123,9 +126,10 @@ describe('compile() · all API description formats', ->
 
     fixtures.uriValidationAnnotation.forEachDescribe(({source}) ->
       beforeEach((done) ->
-        compileFixture(source, (args...) ->
-          [err, {errors, transactions}] = args
-          done(err)
+        compileFixture(source, (err, compilationResult) ->
+          return done(err) if err
+          {errors, transactions} = compilationResult
+          done()
         )
       )
 
@@ -161,9 +165,10 @@ describe('compile() · all API description formats', ->
       transactions = undefined
 
       beforeEach((done) ->
-        compileFixture(source, (args...) ->
-          [err, {warnings, transactions}] = args
-          done(err)
+        compileFixture(source, (err, compilationResult) ->
+          return done(err) if err
+          {warnings, transactions} = compilationResult
+          done()
         )
       )
 
@@ -204,8 +209,10 @@ describe('compile() · all API description formats', ->
     message = '... dummy warning message ...'
 
     stubs =
-      './expand-uri-template-with-parameters': (args...) ->
-        {uri: '/honey?beekeeper=Honza', errors: [], warnings: [message]}
+      './compile-uri': proxyquire('../../src/compile-uri',
+        './expand-uri-template': (args...) ->
+          {uri: '/honey?beekeeper=Honza', errors: [], warnings: [message]}
+      )
 
     fixtures.ordinary.forEachDescribe(({source}) ->
       beforeEach((done) ->
@@ -251,9 +258,10 @@ describe('compile() · all API description formats', ->
 
     fixtures.ambiguousParametersAnnotation.forEachDescribe(({source}) ->
       beforeEach((done) ->
-        compileFixture(source, (args...) ->
-          [err, {warnings, transactions}] = args
-          done(err)
+        compileFixture(source, (err, compilationResult) ->
+          return done(err) if err
+          {warnings, transactions} = compilationResult
+          done()
         )
       )
 
@@ -284,7 +292,7 @@ describe('compile() · all API description formats', ->
   )
 
   describe('causing a warning in URI validation', ->
-    # Since 'validateParameters' doesn't actually return any warnings
+    # Since 'validateParams' doesn't actually return any warnings
     # (but could in the future), we need to pretend it's possible for this
     # test.
 
@@ -293,8 +301,10 @@ describe('compile() · all API description formats', ->
     message = '... dummy warning message ...'
 
     stubs =
-      './validate-parameters': (args...) ->
-        {errors: [], warnings: [message]}
+      './compile-uri': proxyquire('../../src/compile-uri',
+        './validate-params': (args...) ->
+          {errors: [], warnings: [message]}
+      )
 
     fixtures.ordinary.forEachDescribe(({source}) ->
       beforeEach((done) ->

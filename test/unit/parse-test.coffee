@@ -17,8 +17,9 @@ describe('Parsing API description document', ->
       apiElements = undefined
 
       beforeEach((done) ->
-        parse(source, (args...) ->
-          [error, {mediaType, apiElements}] = args
+        parse(source, (err, parseResult) ->
+          error = err
+          {mediaType, apiElements} = parseResult if parseResult
           done()
         )
       )
@@ -51,8 +52,9 @@ describe('Parsing API description document', ->
       apiElements = undefined
 
       beforeEach((done) ->
-        parse(source, (args...) ->
-          [error, {mediaType, apiElements}] = args
+        parse(source, (err, parseResult) ->
+          error = err
+          {mediaType, apiElements} = parseResult if parseResult
           done()
         )
       )
@@ -82,8 +84,9 @@ describe('Parsing API description document', ->
       apiElements = undefined
 
       beforeEach((done) ->
-        parse(source, (args...) ->
-          [error, {mediaType, apiElements}] = args
+        parse(source, (err, parseResult) ->
+          error = err
+          {mediaType, apiElements} = parseResult if parseResult
           done()
         )
       )
@@ -115,8 +118,9 @@ describe('Parsing API description document', ->
       sinon.stub(fury, 'parse').callsFake((args...) ->
         args.pop()() # calling the callback with neither error or parse result
       )
-      parse('... dummy API description document ...', (args...) ->
-        [error, {mediaType, apiElements}] = args
+      parse('... dummy API description document ...', (err, parseResult) ->
+        error = err
+        {mediaType, apiElements} = parseResult if parseResult
         done()
       )
     )
@@ -141,8 +145,9 @@ describe('Parsing API description document', ->
     apiElements = undefined
 
     beforeEach((done) ->
-      parse('... dummy API description document ...', (args...) ->
-        [error, {mediaType, apiElements}] = args
+      parse('... dummy API description document ...', (err, parseResult) ->
+        error = err
+        {mediaType, apiElements} = parseResult if parseResult
         done()
       )
     )
@@ -173,8 +178,9 @@ describe('Parsing API description document', ->
     apiElements = undefined
 
     beforeEach((done) ->
-      parse(fixtures.unrecognizable.apiBlueprint, (args...) ->
-        [error, {mediaType, apiElements}] = args
+      parse(fixtures.unrecognizable.apiBlueprint, (err, parseResult) ->
+        error = err
+        {mediaType, apiElements} = parseResult if parseResult
         done()
       )
     )

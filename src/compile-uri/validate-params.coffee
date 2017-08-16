@@ -1,5 +1,5 @@
 
-validateParameters = (params) ->
+module.exports = (params) ->
   result = {warnings: [], errors: []}
 
   for paramName, param of params
@@ -24,6 +24,3 @@ validateParameters = (params) ->
         result.errors.push(text)
 
   return result
-
-
-module.exports = validateParameters

@@ -2,11 +2,9 @@ clone = require('clone')
 caseless = require('caseless')
 
 {child, children, parent, content} = require('./refract')
-validateParameters = require('./validate-parameters')
 detectTransactionExampleNumbers = require('./detect-transaction-example-numbers')
-expandUriTemplateWithParameters = require('./expand-uri-template-with-parameters')
 apiElementsToRefract = require('./api-elements-to-refract')
-
+compileUri = require('./compile-uri')
 
 compile = (mediaType, apiElements, filename) ->
   transactions = []
@@ -143,72 +141,6 @@ compileResponse = (httpResponse) ->
   response.schema = schema if schema
 
   response
-
-
-compileUri = (parseResult, httpRequest) ->
-  resource = parent(httpRequest, parseResult, {element: 'resource'})
-  transition = parent(httpRequest, parseResult, {element: 'transition'})
-
-  cascade = [
-    resource.attributes
-    transition.attributes
-    httpRequest.attributes
-  ]
-
-  parameters = {}
-  annotations = {errors: [], warnings: []}
-  href = undefined
-
-  for attributes in cascade
-    href = content(attributes.href) if attributes?.href
-    for own name, parameter of compileParameters(attributes?.hrefVariables)
-      parameters[name] = parameter
-
-  result = validateParameters(parameters)
-  component = 'parametersValidation'
-  for error in result.errors
-    annotations.errors.push({component, message: error})
-  for warning in result.warnings
-    annotations.warnings.push({component, message: warning})
-
-  result = expandUriTemplateWithParameters(href, parameters)
-  component = 'uriTemplateExpansion'
-  for error in result.errors
-    annotations.errors.push({component, message: error})
-  for warning in result.warnings
-    annotations.warnings.push({component, message: warning})
-
-  {uri: result.uri, annotations}
-
-
-compileParameters = (hrefVariables) ->
-  parameters = {}
-
-  for member in content(hrefVariables) or []
-    {key, value} = content(member)
-
-    name = content(key)
-    types = (content(member.attributes?.typeAttributes) or [])
-
-    if value?.element is 'enum'
-      if value.attributes?.samples?.length and value.attributes?.samples[0].length
-        exampleValue = content(value.attributes.samples[0][0])
-      else
-        exampleValue = content(content(value)[0])
-      if value.attributes?.default?.length
-        defaultValue = content(value.attributes.default[0])
-    else
-      exampleValue = content(value)
-      if value.attributes?.default
-        defaultValue = content(value.attributes?.default)
-
-    parameters[name] =
-      required: 'required' in types
-      default: defaultValue
-      example: exampleValue
-      values: if value?.element is 'enum' then ({value: content(v)} for v in content(value)) else []
-
-  parameters
 
 
 compileHeaders = (httpHeaders) ->
