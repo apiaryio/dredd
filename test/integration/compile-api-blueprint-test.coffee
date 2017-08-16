@@ -91,7 +91,7 @@ describe('compile() · API Blueprint', ->
   )
 
   describe('with multiple transaction examples', ->
-    detectTransactionExamples = sinon.spy(require('../../src/detect-transaction-examples'))
+    detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'))
     transactions = undefined
     expected = [
       {exampleName: '', requestContentType: 'application/json', responseStatusCode: 200}
@@ -100,7 +100,7 @@ describe('compile() · API Blueprint', ->
     ]
 
     beforeEach((done) ->
-      stubs = {'./detect-transaction-examples': detectTransactionExamples}
+      stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers}
 
       compileFixture(fixtures.multipleTransactionExamples.apiBlueprint, {stubs}, (args...) ->
         [err, compilationResult] = args
@@ -110,7 +110,7 @@ describe('compile() · API Blueprint', ->
     )
 
     it('detection of transaction examples was called', ->
-      assert.isTrue(detectTransactionExamples.called)
+      assert.isTrue(detectTransactionExampleNumbers.called)
     )
     it('is compiled into expected number of transactions', ->
       assert.equal(transactions.length, expected.length)
@@ -142,12 +142,12 @@ describe('compile() · API Blueprint', ->
   )
 
   describe('without multiple transaction examples', ->
-    detectTransactionExamples = sinon.spy(require('../../src/detect-transaction-examples'))
+    detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'))
     compilationResult = undefined
     transaction = undefined
 
     beforeEach((done) ->
-      stubs = {'./detect-transaction-examples': detectTransactionExamples}
+      stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers}
 
       compileFixture(fixtures.oneTransactionExample.apiBlueprint, {stubs}, (args...) ->
         [err, compilationResult] = args
@@ -157,7 +157,7 @@ describe('compile() · API Blueprint', ->
     )
 
     it('detection of transaction examples was called', ->
-      assert.isTrue(detectTransactionExamples.called)
+      assert.isTrue(detectTransactionExampleNumbers.called)
     )
     it('is compiled into one transaction', ->
       assert.equal(compilationResult.transactions.length, 1)
