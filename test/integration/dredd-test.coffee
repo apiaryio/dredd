@@ -548,7 +548,7 @@ describe 'Dredd class Integration', ->
         assert.include stderr, 'Fixed transaction name'
 
   describe('when Swagger document has multiple responses', ->
-    reTransaction = /(\w+): (\w+) \/honey/g
+    reTransaction = /(\w+): (\w+) \(\d+\) \/honey/g
     matches = undefined
 
     beforeEach((done) ->
@@ -577,7 +577,7 @@ describe 'Dredd class Integration', ->
   )
 
   describe('when Swagger document has multiple responses and hooks unskip some of them', ->
-    reTransaction = /(\w+): (\w+) \/honey/g
+    reTransaction = /(\w+): (\w+) \(\d+\) \/honey/g
     matches = undefined
 
     beforeEach((done) ->

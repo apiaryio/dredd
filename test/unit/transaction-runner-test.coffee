@@ -322,7 +322,7 @@ describe 'TransactionRunner', ->
       it 'should callback with a properly configured transaction', (done) ->
         runner.configureTransaction transaction, (err, configuredTransaction) ->
           assert.equal configuredTransaction.name, 'Group Machine > Machine > Delete Message > Bogus example name'
-          assert.equal configuredTransaction.id, 'POST /machines'
+          assert.equal configuredTransaction.id, 'POST (202) /machines'
           assert.isOk configuredTransaction.host
           assert.isOk configuredTransaction.request
           assert.isOk configuredTransaction.expected
@@ -337,7 +337,7 @@ describe 'TransactionRunner', ->
 
       it 'should join the endpoint path with transaction uriTemplate together', (done) ->
         runner.configureTransaction transaction, (err, configuredTransaction) ->
-          assert.equal configuredTransaction.id, 'POST /machines'
+          assert.equal configuredTransaction.id, 'POST (202) /machines'
           assert.strictEqual configuredTransaction.host, 'hostname.tld'
           assert.equal configuredTransaction.port, 9876
           assert.strictEqual configuredTransaction.protocol, 'https:'
@@ -347,7 +347,7 @@ describe 'TransactionRunner', ->
        it 'should keep trailing slash in url if present', (done) ->
          transaction.request.uri = '/machines/'
          runner.configureTransaction transaction, (err, configuredTransaction) ->
-           assert.equal configuredTransaction.id, 'POST /machines/'
+           assert.equal configuredTransaction.id, 'POST (202) /machines/'
            assert.strictEqual configuredTransaction.fullPath, '/my/path/to/api' + '/machines/'
            done()
 
@@ -356,7 +356,7 @@ describe 'TransactionRunner', ->
     beforeEach ->
       transaction =
         name: 'Group Machine > Machine > Delete Message > Bogus example name'
-        id: 'POST /machines'
+        id: 'POST (202) /machines'
         host: '127.0.0.1'
         port: '3000'
         request:
