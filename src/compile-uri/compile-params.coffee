@@ -7,22 +7,18 @@
 # Convert a Href Variables element to a Dredd Representation
 # Accepts both hrefVariables minim element, and 0.6 serialised Refract hrefVariables
 module.exports = (hrefVariables) ->
-  parameters = {}
+  params = {}
+  return params unless hrefVariables
 
-  if hrefVariables
-    if not (hrefVariables instanceof Element)
-      hrefVariables = deserialize(hrefVariables)
+  hrefVariables.forEach((value, key, member) ->
+    name = key.toValue()
+    typeAttributesElement = member.attributes.get('typeAttributes')?.toValue() or []
+    values = value.attributes.get('enumerations')?.toValue() or []
 
-    hrefVariables.forEach((value, key, member) ->
-      name = key.toValue()
-      typeAttributes = member.attributes.get('typeAttributes')?.toValue() or []
-      values = value.attributes.get('enumerations')?.toValue() or []
-
-      parameters[name] =
-        required: 'required' in typeAttributes
-        default: value.attributes.get('default')?.toValue()
-        example: value.toValue() or values[0]
-        values: values
-    )
-
-  parameters
+    params[name] =
+      required: 'required' in typeAttributesElement
+      default: value.attributes.get('default')?.toValue()
+      example: value.toValue() or values[0]
+      values: values
+  )
+  return params
