@@ -12,6 +12,7 @@
   "scripts": {
     "lint": "conventional-changelog-lint --from=master && coffeelint src",
     "build": "coffee -b -c -o lib/ src/",
+    "build:watch": "coffee -b -w -o lib/ src/",
     "docs:lint": "sphinx-build -nW -b linkcheck docs docs/_build/",
     "docs:build": "sphinx-build -nW -b html docs docs/_build/",
     "docs:serve": "sphinx-autobuild docs docs/_build/",
