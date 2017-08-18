@@ -1,33 +1,30 @@
 fury = require('fury')
+{Element} = require('minim')
+JSON06Serialiser = require('minim/lib/serialisers/json-0.6')
 
 {content} = require('../refract')
 
 
+# Convert a Href Variables element to a Dredd Representation
+# Accepts both hrefVariables minim element, and 0.6 serialised Refract hrefVariables
 module.exports = (hrefVariables) ->
   parameters = {}
 
-  for member in content(hrefVariables) or []
-    {key, value} = content(member)
+  if hrefVariables
+    if not (hrefVariables instanceof Element)
+      serialiser = new JSON06Serialiser(fury.minim)
+      hrefVariables = serialiser.deserialise(hrefVariables)
 
-    name = content(key)
-    types = (content(member.attributes?.typeAttributes) or [])
+    hrefVariables.forEach((value, key, member) ->
+      name = key.toValue()
+      typeAttributes = member.attributes.get('typeAttributes')?.toValue() or []
+      values = value.attributes.get('enumerations')?.toValue() or []
 
-    if value?.element is 'enum'
-      if value.attributes?.samples?.length and value.attributes?.samples[0].length
-        exampleValue = content(value.attributes.samples[0][0])
-      else
-        exampleValue = content(content(value)[0])
-      if value.attributes?.default?.length
-        defaultValue = content(value.attributes.default[0])
-    else
-      exampleValue = content(value)
-      if value.attributes?.default
-        defaultValue = content(value.attributes?.default)
-
-    parameters[name] =
-      required: 'required' in types
-      default: defaultValue
-      example: exampleValue
-      values: if value?.element is 'enum' then ({value: content(v)} for v in content(value)) else []
+      parameters[name] =
+        required: 'required' in typeAttributes
+        default: value.attributes.get('default')?.toValue()
+        example: value.toValue() or values[0]
+        values: values
+    )
 
   parameters
