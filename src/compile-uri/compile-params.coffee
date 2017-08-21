@@ -1,6 +1,5 @@
-fury = require('fury')
 {Element} = require('minim')
-JSON06Serialiser = require('minim/lib/serialisers/json-0.6')
+{deserialize} = require('../refract-serialization')
 
 {content} = require('../refract')
 
@@ -12,8 +11,7 @@ module.exports = (hrefVariables) ->
 
   if hrefVariables
     if not (hrefVariables instanceof Element)
-      serialiser = new JSON06Serialiser(fury.minim)
-      hrefVariables = serialiser.deserialise(hrefVariables)
+      hrefVariables = deserialize(hrefVariables)
 
     hrefVariables.forEach((value, key, member) ->
       name = key.toValue()

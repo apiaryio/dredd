@@ -1,4 +1,4 @@
-{expect} = require 'chai'
+{assert} = require 'chai'
 fury = new require 'fury'
 
 compileParams = require '../../../src/compile-uri/compile-params'
@@ -10,7 +10,7 @@ describe 'compileParams', ->
 
     parameters = compileParams(hrefVariables)
 
-    expect(parameters).to.deep.equal({
+    assert.deepEqual(parameters, {
       name: {
         default: undefined,
         example: undefined,
@@ -26,7 +26,7 @@ describe 'compileParams', ->
 
     parameters = compileParams(hrefVariables)
 
-    expect(parameters).to.deep.equal({
+    assert.deepEqual(parameters, {
       name: {
         default: undefined,
         example: 'Doe',
@@ -41,7 +41,7 @@ describe 'compileParams', ->
 
     parameters = compileParams(hrefVariables)
 
-    expect(parameters).to.deep.equal({
+    assert.deepEqual(parameters, {
       name: {
         default: undefined,
         example: 'Doe',
@@ -57,7 +57,7 @@ describe 'compileParams', ->
 
     parameters = compileParams(hrefVariables)
 
-    expect(parameters).to.deep.equal({
+    assert.deepEqual(parameters, {
       name: {
         default: 'Unknown',
         example: undefined,
@@ -72,7 +72,7 @@ describe 'compileParams', ->
 
     parameters = compileParams(hrefVariables)
 
-    expect(parameters).to.deep.equal({
+    assert.deepEqual(parameters, {
       names: {
         default: undefined,
         example: [],
@@ -87,7 +87,7 @@ describe 'compileParams', ->
 
     parameters = compileParams(hrefVariables)
 
-    expect(parameters).to.deep.equal({
+    assert.deepEqual(parameters, {
       names: {
         default: undefined,
         example: ['One', 'Two'],
@@ -103,7 +103,7 @@ describe 'compileParams', ->
 
     parameters = compileParams(hrefVariables)
 
-    expect(parameters).to.deep.equal({
+    assert.deepEqual(parameters, {
       names: {
         default: ['Unknown'],
         example: [],
@@ -118,7 +118,7 @@ describe 'compileParams', ->
 
     parameters = compileParams(hrefVariables)
 
-    expect(parameters).to.deep.equal({
+    assert.deepEqual(parameters, {
       names: {
         default: undefined,
         example: ['One', 'Two'],
@@ -134,7 +134,7 @@ describe 'compileParams', ->
 
     parameters = compileParams(hrefVariables)
 
-    expect(parameters).to.deep.equal({
+    assert.deepEqual(parameters, {
       names: {
         default: ['Unknown'],
         example: [],
@@ -152,7 +152,7 @@ describe 'compileParams', ->
 
     parameters = compileParams(hrefVariables)
 
-    expect(parameters).to.deep.equal({
+    assert.deepEqual(parameters, {
       order: {
         default: undefined,
         example: 'ascending',
@@ -170,7 +170,7 @@ describe 'compileParams', ->
 
     parameters = compileParams(hrefVariables)
 
-    expect(parameters).to.deep.equal({
+    assert.deepEqual(parameters, {
       order: {
         default: undefined,
         example: 'decending',
@@ -189,7 +189,7 @@ describe 'compileParams', ->
 
     parameters = compileParams(hrefVariables)
 
-    expect(parameters).to.deep.equal({
+    assert.deepEqual(parameters, {
       order: {
         default: 'decending',
         example: 'ascending',
