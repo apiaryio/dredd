@@ -161,8 +161,8 @@ fixtures =
   multipleResponses: fixture(
     swagger: fromFile('./swagger/multiple-responses.yml')
   )
-  securityDefinitions: fixture(
-    swagger: fromFile('./swagger/security-definitions.yml')
+  securityDefinitionsMultipleResponses: fixture(
+    swagger: fromFile('./swagger/security-definitions-multiple-responses.yml')
   )
 
 
