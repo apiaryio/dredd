@@ -31,7 +31,7 @@ Transaction object is passed as a first argument to [hook functions](hooks.md) a
     - statusCode: `200` (string)
     - headers (object) - keys are HTTP header names, values are HTTP header contents
     - body (string)
-    - schema (object) - JSON Schema of the response body
+    - bodySchema (object) - JSON Schema of the response body
 - real (object) - the HTTP response Dredd gets from the tested server (present only in `after` hooks)
     - statusCode: `200` (string)
     - headers (object) - keys are HTTP header names, values are HTTP header contents
