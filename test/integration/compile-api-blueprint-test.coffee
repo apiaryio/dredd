@@ -13,39 +13,40 @@ describe('compile() · API Blueprint', ->
   originSchema = createOriginSchema()
 
   describe('causing a \'missing title\' warning', ->
-    warnings = undefined
-    transactions = undefined
+    compilationResult = undefined
 
     beforeEach((done) ->
-      compileFixture(fixtures.missingTitleAnnotation.apiBlueprint, (err, compilationResult) ->
-        return done(err) if err
-        {warnings, transactions} = compilationResult
-        done()
+      compileFixture(fixtures.missingTitleAnnotation.apiBlueprint, (args...) ->
+        [err, compilationResult] = args
+        done(err)
       )
     )
 
     it('is compiled into zero transactions', ->
-      assert.equal(transactions.length, 0)
+      assert.equal(compilationResult.transactions.length, 0)
     )
     it('is compiled with one warning', ->
-      assert.equal(warnings.length, 1)
+      assert.equal(compilationResult.warnings.length, 1)
     )
     context('the warning', ->
       it('comes from parser', ->
-        assert.equal(warnings[0].component, 'apiDescriptionParser')
+        assert.equal(compilationResult.warnings[0].component, 'apiDescriptionParser')
       )
       it('has code', ->
-        assert.isNumber(warnings[0].code)
+        assert.isNumber(compilationResult.warnings[0].code)
       )
       it('has message', ->
-        assert.include(warnings[0].message.toLowerCase(), 'expected api name')
+        assert.include(compilationResult.warnings[0].message.toLowerCase(), 'expected api name')
       )
       it('has location', ->
-        assert.jsonSchema(warnings[0].location, locationSchema)
+        assert.jsonSchema(compilationResult.warnings[0].location, locationSchema)
       )
       it('has no origin', ->
-        assert.isUndefined(warnings[0].origin)
+        assert.isUndefined(compilationResult.warnings[0].origin)
       )
+    )
+    it('is compiled with no errors', ->
+      assert.deepEqual(compilationResult.errors, [])
     )
   )
 
@@ -53,46 +54,47 @@ describe('compile() · API Blueprint', ->
     # The warning was previously handled by compiler, but now parser should
     # already provide the same kind of warning.
 
-    warnings = undefined
-    transactions = undefined
+    compilationResult = undefined
 
     beforeEach((done) ->
-      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.apiBlueprint, (err, compilationResult) ->
-        return done(err) if err
-        {warnings, transactions} = compilationResult
-        done()
+      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.apiBlueprint, (args...) ->
+        [err, compilationResult] = args
+        done(err)
       )
     )
 
     it('is compiled into expected number of transactions', ->
-      assert.equal(transactions.length, 1)
+      assert.equal(compilationResult.transactions.length, 1)
     )
     it('is compiled with a single warning', ->
-      assert.equal(warnings.length, 1)
+      assert.equal(compilationResult.warnings.length, 1)
     )
     context('the warning', ->
       it('comes from parser', ->
-        assert.equal(warnings[0].component, 'apiDescriptionParser')
+        assert.equal(compilationResult.warnings[0].component, 'apiDescriptionParser')
       )
       it('has code', ->
-        assert.isNumber(warnings[0].code)
+        assert.isNumber(compilationResult.warnings[0].code)
       )
       it('has message', ->
-        assert.include(warnings[0].message.toLowerCase(), 'not found within')
-        assert.include(warnings[0].message.toLowerCase(), 'uri template')
+        assert.include(compilationResult.warnings[0].message.toLowerCase(), 'not found within')
+        assert.include(compilationResult.warnings[0].message.toLowerCase(), 'uri template')
       )
       it('has location', ->
-        assert.jsonSchema(warnings[0].location, locationSchema)
+        assert.jsonSchema(compilationResult.warnings[0].location, locationSchema)
       )
       it('has no origin', ->
-        assert.isUndefined(warnings[0].origin)
+        assert.isUndefined(compilationResult.warnings[0].origin)
       )
+    )
+    it('is compiled with no errors', ->
+      assert.deepEqual(compilationResult.errors, [])
     )
   )
 
   describe('with multiple transaction examples', ->
     detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'))
-    transactions = undefined
+    compilationResult = undefined
     expected = [
       {exampleName: '', requestContentType: 'application/json', responseStatusCode: 200}
       {exampleName: 'Example 1', requestContentType: 'application/json', responseStatusCode: 200}
@@ -101,10 +103,8 @@ describe('compile() · API Blueprint', ->
 
     beforeEach((done) ->
       stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers}
-
       compileFixture(fixtures.multipleTransactionExamples.apiBlueprint, {stubs}, (args...) ->
         [err, compilationResult] = args
-        transactions = compilationResult.transactions
         done(err)
       )
     )
@@ -113,7 +113,7 @@ describe('compile() · API Blueprint', ->
       assert.isTrue(detectTransactionExampleNumbers.called)
     )
     it('is compiled into expected number of transactions', ->
-      assert.equal(transactions.length, expected.length)
+      assert.equal(compilationResult.transactions.length, expected.length)
     )
     for expectations, i in expected
       do (expectations, i) ->
@@ -122,36 +122,39 @@ describe('compile() · API Blueprint', ->
 
           it("is identified as part of #{JSON.stringify(exampleName)}", ->
             assert.equal(
-              transactions[i].origin.exampleName,
+              compilationResult.transactions[i].origin.exampleName,
               exampleName
             )
           )
           it("has request with Content-Type: #{requestContentType}", ->
             assert.equal(
-              transactions[i].request.headers['Content-Type'].value,
+              compilationResult.transactions[i].request.headers['Content-Type'].value,
               requestContentType
             )
           )
           it("has response with status code #{responseStatusCode}", ->
             assert.equal(
-              transactions[i].response.status,
+              compilationResult.transactions[i].response.status,
               responseStatusCode
             )
           )
         )
+    it('is compiled with no warnings', ->
+      assert.deepEqual(compilationResult.warnings, [])
+    )
+    it('is compiled with no errors', ->
+      assert.deepEqual(compilationResult.errors, [])
+    )
   )
 
   describe('without multiple transaction examples', ->
     detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'))
     compilationResult = undefined
-    transaction = undefined
 
     beforeEach((done) ->
       stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers}
-
       compileFixture(fixtures.oneTransactionExample.apiBlueprint, {stubs}, (args...) ->
         [err, compilationResult] = args
-        transaction = compilationResult.transactions[0]
         done(err)
       )
     )
@@ -164,102 +167,120 @@ describe('compile() · API Blueprint', ->
     )
     context('the transaction', ->
       it("is identified as part of no example in \'origin\'", ->
-        assert.equal(transaction.origin.exampleName, '')
+        assert.equal(compilationResult.transactions[0].origin.exampleName, '')
       )
       it("is identified as part of Example 1 in \'pathOrigin\'", ->
-        assert.equal(transaction.pathOrigin.exampleName, 'Example 1')
+        assert.equal(compilationResult.transactions[0].pathOrigin.exampleName, 'Example 1')
       )
+    )
+    it('is compiled with no warnings', ->
+      assert.deepEqual(compilationResult.warnings, [])
+    )
+    it('is compiled with no errors', ->
+      assert.deepEqual(compilationResult.errors, [])
     )
   )
 
   describe('with arbitrary action', ->
-    transaction0 = undefined
-    transaction1 = undefined
+    compilationResult = undefined
     filename = 'apiDescription.apib'
 
     beforeEach((done) ->
       compileFixture(fixtures.arbitraryAction.apiBlueprint, {filename}, (args...) ->
         [err, compilationResult] = args
-        [transaction0, transaction1] = compilationResult.transactions
         done(err)
       )
     )
 
+    it('is compiled with no warnings', ->
+      assert.deepEqual(compilationResult.warnings, [])
+    )
+    it('is compiled with no errors', ->
+      assert.deepEqual(compilationResult.errors, [])
+    )
     context('action within a resource', ->
       it('has URI inherited from the resource', ->
-        assert.equal(transaction0.request.uri, '/resource/1')
+        assert.equal(compilationResult.transactions[0].request.uri, '/resource/1')
       )
       it('has its method', ->
-        assert.equal(transaction0.request.method, 'GET')
+        assert.equal(compilationResult.transactions[0].request.method, 'GET')
       )
     )
-
     context('arbitrary action', ->
       it('has its own URI', ->
-        assert.equal(transaction1.request.uri, '/arbitrary/sample')
+        assert.equal(compilationResult.transactions[1].request.uri, '/arbitrary/sample')
       )
       it('has its method', ->
-        assert.equal(transaction1.request.method, 'POST')
+        assert.equal(compilationResult.transactions[1].request.method, 'POST')
       )
     )
   )
 
   describe('without sections', ->
-    transaction = undefined
+    compilationResult = undefined
     filename = 'apiDescription.apib'
 
     beforeEach((done) ->
       compileFixture(fixtures.withoutSections.apiBlueprint, {filename}, (args...) ->
         [err, compilationResult] = args
-        transaction = compilationResult.transactions[0]
         done(err)
       )
     )
 
+    it('is compiled with no warnings', ->
+      assert.deepEqual(compilationResult.warnings, [])
+    )
+    it('is compiled with no errors', ->
+      assert.deepEqual(compilationResult.errors, [])
+    )
     context('\'origin\'', ->
       it('uses filename as API name', ->
-        assert.equal(transaction.origin.apiName, filename)
+        assert.equal(compilationResult.transactions[0].origin.apiName, filename)
       )
       it('uses empty string as resource group name', ->
-        assert.equal(transaction.origin.resourceGroupName, '')
+        assert.equal(compilationResult.transactions[0].origin.resourceGroupName, '')
       )
       it('uses URI as resource name', ->
-        assert.equal(transaction.origin.resourceName, '/message')
+        assert.equal(compilationResult.transactions[0].origin.resourceName, '/message')
       )
       it('uses method as action name', ->
-        assert.equal(transaction.origin.actionName, 'GET')
+        assert.equal(compilationResult.transactions[0].origin.actionName, 'GET')
       )
     )
-
     context('\'pathOrigin\'', ->
       it('uses empty string as API name', ->
-        assert.equal(transaction.pathOrigin.apiName, '')
+        assert.equal(compilationResult.transactions[0].pathOrigin.apiName, '')
       )
       it('uses empty string as resource group name', ->
-        assert.equal(transaction.pathOrigin.resourceGroupName, '')
+        assert.equal(compilationResult.transactions[0].pathOrigin.resourceGroupName, '')
       )
       it('uses URI as resource name', ->
-        assert.equal(transaction.pathOrigin.resourceName, '/message')
+        assert.equal(compilationResult.transactions[0].pathOrigin.resourceName, '/message')
       )
       it('uses method as action name', ->
-        assert.equal(transaction.pathOrigin.actionName, 'GET')
+        assert.equal(compilationResult.transactions[0].pathOrigin.actionName, 'GET')
       )
     )
   )
 
   describe('with different sample and default value of URI parameter', ->
-    transaction = undefined
+    compilationResult = undefined
 
     beforeEach((done) ->
       compileFixture(fixtures.preferSample.apiBlueprint, (args...) ->
         [err, compilationResult] = args
-        transaction = compilationResult.transactions[0]
         done(err)
       )
     )
 
+    it('is compiled with no warnings', ->
+      assert.deepEqual(compilationResult.warnings, [])
+    )
+    it.skip('is compiled with no errors', ->
+      assert.deepEqual(compilationResult.errors, [])
+    )
     it('expands the request URI using the sample value', ->
-      assert.equal(transaction.request.uri, '/honey?beekeeper=Pavan')
+      assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Pavan')
     )
   )
 )
