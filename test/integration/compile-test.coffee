@@ -366,7 +366,7 @@ describe('compile() · all API description formats', ->
       it('is compiled with no warnings', ->
         assert.deepEqual(compilationResult.warnings, [])
       )
-      it.skip('is compiled with no errors', ->
+      it('is compiled with no errors', ->
         assert.deepEqual(compilationResult.errors, [])
       )
       it('expands the request URI with the first enum value', ->
@@ -389,7 +389,7 @@ describe('compile() · all API description formats', ->
       it('is compiled with no warnings', ->
         assert.deepEqual(compilationResult.warnings, [])
       )
-      it.skip('is compiled with no errors', ->
+      it('is compiled with no errors', ->
         assert.deepEqual(compilationResult.errors, [])
       )
       it('expands the request URI with the example value', ->
@@ -415,8 +415,8 @@ describe('compile() · all API description formats', ->
         )
       )
 
-      it.skip('is compiled into zero transactions', ->
-        assert.deepEqual(compilationResult.transactions, [])
+      it('is compiled into one transaction', ->
+        assert.equal(compilationResult.transactions.length, 1)
       )
       it('is compiled with one error', ->
         assert.equal(compilationResult.errors.length, 1)
@@ -438,10 +438,13 @@ describe('compile() · all API description formats', ->
           assert.jsonSchema(compilationResult.errors[0].origin, originSchema)
         )
       )
+      it('expands the request URI with the example value', ->
+        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Pavan')
+      )
     )
   )
 
-  describe('with parameters having example values', ->
+  describe.skip('with parameters having example values', ->
     fixtures.exampleParameters.forEachDescribe(({source}) ->
       compilationResult = undefined
 
@@ -456,10 +459,10 @@ describe('compile() · all API description formats', ->
         # https://github.com/apiaryio/drafter/issues/500
         assert.deepEqual(compilationResult.warnings, [])
       )
-      it.skip('is compiled with no errors', ->
+      it('is compiled with no errors', ->
         assert.deepEqual(compilationResult.errors, [])
       )
-      it.skip('expands the request URI with the example value', ->
+      it('expands the request URI with the example value', ->
         assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&flavour=sweet,spicy')
       )
     )
@@ -530,7 +533,7 @@ describe('compile() · all API description formats', ->
       it('is compiled with no warnings', ->
         assert.deepEqual(compilationResult.warnings, [])
       )
-      it.skip('is compiled with no errors', ->
+      it('is compiled with no errors', ->
         assert.deepEqual(compilationResult.errors, [])
       )
       it('expands the request URI using the default value', ->

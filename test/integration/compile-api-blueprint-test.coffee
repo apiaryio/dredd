@@ -276,7 +276,7 @@ describe('compile() · API Blueprint', ->
     it('is compiled with no warnings', ->
       assert.deepEqual(compilationResult.warnings, [])
     )
-    it.skip('is compiled with no errors', ->
+    it('is compiled with no errors', ->
       assert.deepEqual(compilationResult.errors, [])
     )
     it('expands the request URI using the sample value', ->
