@@ -26,13 +26,11 @@ paths:
           default: Dredd
         - name: flavour
           in: query
-          type: array
-          items:
-            type: string
-          collectionFormat: multi
-          x-example:
+          type: string
+          enum:
             - sweet
             - spicy
+          x-example: spicy
       responses:
         200:
           description: pet response

@@ -444,7 +444,7 @@ describe('compile() · all API description formats', ->
     )
   )
 
-  describe.skip('with parameters having example values', ->
+  describe('with parameters having example values', ->
     fixtures.exampleParameters.forEachDescribe(({source}) ->
       compilationResult = undefined
 
@@ -455,15 +455,14 @@ describe('compile() · all API description formats', ->
         )
       )
 
-      it.skip('is compiled with no warnings', ->
-        # https://github.com/apiaryio/drafter/issues/500
+      it('is compiled with no warnings', ->
         assert.deepEqual(compilationResult.warnings, [])
       )
       it('is compiled with no errors', ->
         assert.deepEqual(compilationResult.errors, [])
       )
       it('expands the request URI with the example value', ->
-        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&flavour=sweet,spicy')
+        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&flavour=spicy')
       )
     )
   )
