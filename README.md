@@ -5,6 +5,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/hh8l50ssai3p4d3f/branch/master?svg=true)](https://ci.appveyor.com/project/Apiary/dredd-transactions/branch/master)
 [![Dependencies Status](https://david-dm.org/apiaryio/dredd-transactions.svg)](https://david-dm.org/apiaryio/dredd-transactions)
 [![devDependencies Status](https://david-dm.org/apiaryio/dredd-transactions/dev-status.svg)](https://david-dm.org/apiaryio/dredd-transactions?type=dev)
+[![Greenkeeper badge](https://badges.greenkeeper.io/apiaryio/dredd-transactions.svg)](https://greenkeeper.io/)
 [![Coverage Status](https://coveralls.io/repos/github/apiaryio/dredd-transactions/badge.svg?branch=master)](https://coveralls.io/github/apiaryio/dredd-transactions?branch=master)
 [![Known Vulnerabilities](https://snyk.io/test/npm/dredd-transactions/badge.svg)](https://snyk.io/test/npm/dredd-transactions)
 
