@@ -324,7 +324,7 @@ class TransactionRunner
 
     configuredTransaction =
       name: transaction.name
-      id: request.method + ' ' + request.uri
+      id: request.method + ' (' + expected.statusCode + ') ' + request.uri
       host: @parsedUrl.hostname
       port: @parsedUrl.port
       request: request

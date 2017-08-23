@@ -237,7 +237,7 @@ describe 'Regression: Issues #319 and #354', ->
 
     describe 'Attributes defined in resource are referenced from payload [GET /bricks/XYZ42]', ->
       it 'fails on missing required property and invalid type', ->
-        assert.include results.failures[0], 'GET /bricks/XYZ42'
+        assert.include results.failures[0], 'GET (200) /bricks/XYZ42'
         assert.include results.failures[1], 'Missing required property: name'
         assert.include results.failures[1], 'Invalid type: number'
       it 'has no request body', ->
@@ -251,7 +251,7 @@ describe 'Regression: Issues #319 and #354', ->
 
     describe 'Attributes defined in resource are referenced from action [POST /bricks]', ->
       it 'fails on missing required property and invalid type', ->
-        assert.include results.failures[2], 'POST /bricks'
+        assert.include results.failures[2], 'POST (200) /bricks'
         assert.include results.failures[3], 'Missing required property: name'
         assert.include results.failures[3], 'Invalid type: number'
       it 'has correct request body', ->
@@ -265,7 +265,7 @@ describe 'Regression: Issues #319 and #354', ->
 
     describe 'Attributes defined as data structure are referenced from payload [GET /customers]', ->
       it 'fails on invalid type', ->
-        assert.include results.failures[4], 'GET /customers'
+        assert.include results.failures[4], 'GET (200) /customers'
         assert.include results.failures[5], 'Invalid type: object'
       it 'has no request body', ->
         assert.isUndefined results.bodies[6]
@@ -278,7 +278,7 @@ describe 'Regression: Issues #319 and #354', ->
 
     describe 'Attributes defined as data structure are referenced from action [POST /customers]', ->
       it 'fails on invalid types', ->
-        assert.include results.failures[6], 'POST /customers'
+        assert.include results.failures[6], 'POST (200) /customers'
         assert.include results.failures[7], 'Invalid type: null'
         assert.include results.failures[7], 'Invalid type: string'
       it 'has correct request body', ->
