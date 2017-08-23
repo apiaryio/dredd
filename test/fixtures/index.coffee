@@ -161,6 +161,9 @@ fixtures =
   multipleResponses: fixture(
     swagger: fromFile('./swagger/multiple-responses.yml')
   )
+  securityDefinitionsMultipleResponses: fixture(
+    swagger: fromFile('./swagger/security-definitions-multiple-responses.yml')
+  )
 
 
 module.exports = fixtures
