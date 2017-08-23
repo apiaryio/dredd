@@ -19,8 +19,8 @@ describe('compile() · Swagger', ->
       )
     )
 
-    it('is compiled into expected number of transactions', ->
-      assert.equal(compilationResult.transactions.length, 0)
+    it('is compiled into zero transactions', ->
+      assert.deepEqual(compilationResult.transactions, [])
     )
     it('is compiled with no warnings', ->
       assert.deepEqual(compilationResult.warnings, [])

@@ -54,7 +54,7 @@ describe('compile() · all API description formats', ->
         assert.deepEqual(compilationResult.warnings, [])
       )
       it('is compiled with an error', ->
-        assert.ok(compilationResult.errors.length)
+        assert.equal(compilationResult.errors.length, 1)
       )
       context('the error', ->
         it('comes from parser', ->
@@ -95,6 +95,9 @@ describe('compile() · all API description formats', ->
 
       it('is compiled into zero transactions', ->
         assert.deepEqual(compilationResult.transactions, [])
+      )
+      it('is compiled with maximum one warning', ->
+        assert.isAtMost(compilationResult.warnings.length, 1)
       )
       it('is compiled with one error', ->
         assert.equal(compilationResult.errors.length, 1)
@@ -140,6 +143,21 @@ describe('compile() · all API description formats', ->
       it('is compiled into zero transactions', ->
         assert.deepEqual(compilationResult.transactions, [])
       )
+      it('is compiled with maximum two warnings', ->
+        assert.isAtMost(compilationResult.warnings.length, 2)
+      )
+      it('there is maximum one warning from parser', ->
+        warnings = compilationResult.warnings.filter((warning) ->
+          warning.component is 'apiDescriptionParser'
+        )
+        assert.isAtMost(warnings.length, 1)
+      )
+      it('there is one warning from URI expansion', ->
+        warnings = compilationResult.warnings.filter((warning) ->
+          warning.component is 'uriTemplateExpansion'
+        )
+        assert.equal(warnings.length, 1)
+      )
       it('is compiled with one error', ->
         assert.equal(compilationResult.errors.length, 1)
       )
@@ -177,24 +195,29 @@ describe('compile() · all API description formats', ->
       it('is compiled into expected number of transactions', ->
         assert.equal(compilationResult.transactions.length, 1)
       )
-      it('is compiled with warnings', ->
+      it('is compiled with some warnings', ->
         assert.ok(compilationResult.warnings.length)
       )
-      context('the warning', ->
+      context('the warnings', ->
         it('comes from parser', ->
-          assert.equal(compilationResult.warnings[0].component, 'apiDescriptionParser')
+          for warning in compilationResult.warnings
+            assert.equal(warning.component, 'apiDescriptionParser')
         )
-        it('has code', ->
-          assert.isNumber(compilationResult.warnings[0].code)
+        it('have code', ->
+          for warning in compilationResult.warnings
+            assert.isNumber(warning.code)
         )
-        it('has message', ->
-          assert.isString(compilationResult.warnings[0].message)
+        it('have message', ->
+          for warning in compilationResult.warnings
+            assert.isString(warning.message)
         )
-        it('has location', ->
-          assert.jsonSchema(compilationResult.warnings[0].location, locationSchema)
+        it('have location', ->
+          for warning in compilationResult.warnings
+            assert.jsonSchema(warning.location, locationSchema)
         )
-        it('has no origin', ->
-          assert.isUndefined(compilationResult.warnings[0].origin)
+        it('have no origin', ->
+          for warning in compilationResult.warnings
+            assert.isUndefined(warning.origin)
         )
       )
       it('is compiled with no errors', ->
@@ -232,24 +255,29 @@ describe('compile() · all API description formats', ->
       it('is compiled into some transactions', ->
         assert.ok(compilationResult.transactions.length)
       )
-      it('is compiled with warnings', ->
+      it('is compiled with some warnings', ->
         assert.ok(compilationResult.warnings.length)
       )
-      context('the warning', ->
-        it('comes from compiler', ->
-          assert.equal(compilationResult.warnings[0].component, 'uriTemplateExpansion')
+      context('the warnings', ->
+        it('come from compiler', ->
+          for warning in compilationResult.warnings
+            assert.equal(warning.component, 'uriTemplateExpansion')
         )
-        it('has no code', ->
-          assert.isUndefined(compilationResult.warnings[0].code)
+        it('have no code', ->
+          for warning in compilationResult.warnings
+            assert.isUndefined(warning.code)
         )
-        it('has message', ->
-          assert.include(compilationResult.warnings[0].message, message)
+        it('have message', ->
+          for warning in compilationResult.warnings
+            assert.include(warning.message, message)
         )
-        it('has no location', ->
-          assert.isUndefined(compilationResult.warnings[0].location)
+        it('have no location', ->
+          for warning in compilationResult.warnings
+            assert.isUndefined(warning.location)
         )
-        it('has origin', ->
-          assert.jsonSchema(compilationResult.warnings[0].origin, originSchema)
+        it('have origin', ->
+          for warning in compilationResult.warnings
+            assert.jsonSchema(warning.origin, originSchema)
         )
       )
       it('is compiled with no errors', ->
@@ -259,11 +287,14 @@ describe('compile() · all API description formats', ->
   )
 
   describe('causing an \'ambiguous parameters\' warning in URI expansion', ->
+    # Parsers may provide error in similar situations, however, we do not
+    # want to rely on them (implementations differ). This warning is returned
+    # in case parameters do not have any kind of value Dredd could use. Mind
+    # that situations when parser gives the error and when this warning is
+    # returned can differ and also the severity is different.
+    #
     # Special side effect of the warning is that affected transactions
     # should be skipped (shouldn't appear in output of the compilation).
-    #
-    # The API description documents used as fixtures to test this situation
-    # can also cause errors. We do not care about those in this test.
 
     fixtures.ambiguousParametersAnnotation.forEachDescribe(({source}) ->
       compilationResult = undefined
@@ -298,6 +329,9 @@ describe('compile() · all API description formats', ->
           assert.jsonSchema(compilationResult.warnings[0].origin, originSchema)
         )
       )
+      it('is compiled with maximum one error', ->
+        assert.isAtMost(compilationResult.errors.length, 1)
+      )
     )
   )
 
@@ -326,24 +360,29 @@ describe('compile() · all API description formats', ->
       it('is compiled into some transactions', ->
         assert.ok(compilationResult.transactions.length)
       )
-      it('is compiled with warnings', ->
+      it('is compiled with some warnings', ->
         assert.ok(compilationResult.warnings.length)
       )
-      context('the warning', ->
-        it('comes from compiler', ->
-          assert.equal(compilationResult.warnings[0].component, 'parametersValidation')
+      context('the warnings', ->
+        it('come from compiler', ->
+          for warning in compilationResult.warnings
+            assert.equal(warning.component, 'parametersValidation')
         )
-        it('has no code', ->
-          assert.isUndefined(compilationResult.warnings[0].code)
+        it('have no code', ->
+          for warning in compilationResult.warnings
+            assert.isUndefined(warning.code)
         )
-        it('has message', ->
-          assert.include(compilationResult.warnings[0].message, message)
+        it('have message', ->
+          for warning in compilationResult.warnings
+            assert.include(warning.message, message)
         )
-        it('has no location', ->
-          assert.isUndefined(compilationResult.warnings[0].location)
+        it('have no location', ->
+          for warning in compilationResult.warnings
+            assert.isUndefined(warning.location)
         )
-        it('has origin', ->
-          assert.jsonSchema(compilationResult.warnings[0].origin, originSchema)
+        it('have origin', ->
+          for warning in compilationResult.warnings
+            assert.jsonSchema(warning.origin, originSchema)
         )
       )
       it('is compiled with no errors', ->
@@ -417,6 +456,9 @@ describe('compile() · all API description formats', ->
 
       it('is compiled into one transaction', ->
         assert.equal(compilationResult.transactions.length, 1)
+      )
+      it('is compiled with maximum one warning', ->
+        assert.isAtMost(compilationResult.warnings.length, 1)
       )
       it('is compiled with one error', ->
         assert.equal(compilationResult.errors.length, 1)
@@ -558,30 +600,41 @@ describe('compile() · all API description formats', ->
       it('is compiled with no errors', ->
         assert.deepEqual(compilationResult.errors, [])
       )
-      it('is compiled with warnings', ->
-        assert.ok(compilationResult.warnings.length)
+      it('is compiled with maximum two warnings', ->
+        assert.isAtMost(compilationResult.warnings.length, 2)
       )
-      it('there are no other warnings than from parser or URI expansion', ->
-        assert.equal(compilationResult.warnings.filter((w) ->
-          w.component isnt 'uriTemplateExpansion' and
-          w.component isnt 'apiDescriptionParser'
-        ).length, 0)
+      it('there is maximum one warning from parser', ->
+        warnings = compilationResult.warnings.filter((warning) ->
+          warning.component is 'apiDescriptionParser'
+        )
+        assert.isAtMost(warnings.length, 1)
+      )
+      it('there is one warning from URI expansion', ->
+        warnings = compilationResult.warnings.filter((warning) ->
+          warning.component is 'uriTemplateExpansion'
+        )
+        assert.equal(warnings.length, 1)
       )
       context('the last warning', ->
         it('comes from URI expansion', ->
-          assert.equal(compilationResult.warnings[-1..][0].component, 'uriTemplateExpansion')
+          lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
+          assert.equal(lastWarning.component, 'uriTemplateExpansion')
         )
         it('has no code', ->
-          assert.isUndefined(compilationResult.warnings[-1..][0].code)
+          lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
+          assert.isUndefined(lastWarning.code)
         )
         it('has message', ->
-          assert.include(compilationResult.warnings[-1..][0].message.toLowerCase(), 'default value for a required parameter')
+          lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
+          assert.include(lastWarning.message.toLowerCase(), 'default value for a required parameter')
         )
         it('has no location', ->
-          assert.isUndefined(compilationResult.warnings[-1..][0].location)
+          lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
+          assert.isUndefined(lastWarning.location)
         )
         it('has origin', ->
-          assert.jsonSchema(compilationResult.warnings[-1..][0].origin, originSchema)
+          lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
+          assert.jsonSchema(lastWarning.origin, originSchema)
         )
       )
     )

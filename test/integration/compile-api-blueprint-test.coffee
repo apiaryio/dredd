@@ -23,7 +23,7 @@ describe('compile() · API Blueprint', ->
     )
 
     it('is compiled into zero transactions', ->
-      assert.equal(compilationResult.transactions.length, 0)
+      assert.deepEqual(compilationResult.transactions, [])
     )
     it('is compiled with one warning', ->
       assert.equal(compilationResult.warnings.length, 1)
