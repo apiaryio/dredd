@@ -96,14 +96,16 @@ describe('compile() · all API description formats', ->
       it('is compiled into zero transactions', ->
         assert.deepEqual(compilationResult.transactions, [])
       )
-      it('is compiled with maximum one warning', ->
+      it('is compiled with maximum one warning from parser', ->
         assert.isAtMost(compilationResult.warnings.length, 1)
+        if compilationResult.warnings.length
+          assert.equal(compilationResult.warnings[0].component, 'apiDescriptionParser')
       )
       it('is compiled with one error', ->
         assert.equal(compilationResult.errors.length, 1)
       )
       context('the error', ->
-        it('comes from compiler', ->
+        it('comes from URI expansion', ->
           assert.equal(compilationResult.errors[0].component, 'uriTemplateExpansion')
         )
         it('has no code', ->
@@ -122,7 +124,7 @@ describe('compile() · all API description formats', ->
     )
   )
 
-  describe('causing an error in URI validation', ->
+  describe('causing an error in URI parameters validation', ->
     # Parsers may provide warning in similar situations, however, we do not
     # want to rely on them (implementations differ). This error is returned
     # in case Dredd Transactions are not satisfied with the input for
@@ -162,7 +164,7 @@ describe('compile() · all API description formats', ->
         assert.equal(compilationResult.errors.length, 1)
       )
       context('the error', ->
-        it('comes from compiler', ->
+        it('comes from URI parameters validation', ->
           assert.equal(compilationResult.errors[0].component, 'parametersValidation')
         )
         it('has no code', ->
@@ -259,7 +261,7 @@ describe('compile() · all API description formats', ->
         assert.ok(compilationResult.warnings.length)
       )
       context('the warnings', ->
-        it('come from compiler', ->
+        it('come from URI expansion', ->
           for warning in compilationResult.warnings
             assert.equal(warning.component, 'uriTemplateExpansion')
         )
@@ -313,7 +315,7 @@ describe('compile() · all API description formats', ->
         assert.equal(compilationResult.warnings.length, 1)
       )
       context('the warning', ->
-        it('comes from compiler', ->
+        it('comes from URI expansion', ->
           assert.equal(compilationResult.warnings[0].component, 'uriTemplateExpansion')
         )
         it('has no code', ->
@@ -329,13 +331,14 @@ describe('compile() · all API description formats', ->
           assert.jsonSchema(compilationResult.warnings[0].origin, originSchema)
         )
       )
-      it('is compiled with maximum one error', ->
-        assert.isAtMost(compilationResult.errors.length, 1)
+      it('is compiled with one error from URI parameters validation', ->
+        assert.equal(compilationResult.errors.length, 1)
+        assert.equal(compilationResult.errors[0].component, 'parametersValidation')
       )
     )
   )
 
-  describe('causing a warning in URI validation', ->
+  describe('causing a warning in URI parameters validation', ->
     # Since 'validateParams' doesn't actually return any warnings
     # (but could in the future), we need to pretend it's possible for this
     # test.
@@ -364,7 +367,7 @@ describe('compile() · all API description formats', ->
         assert.ok(compilationResult.warnings.length)
       )
       context('the warnings', ->
-        it('come from compiler', ->
+        it('come from URI parameters validation', ->
           for warning in compilationResult.warnings
             assert.equal(warning.component, 'parametersValidation')
         )
@@ -457,14 +460,15 @@ describe('compile() · all API description formats', ->
       it('is compiled into one transaction', ->
         assert.equal(compilationResult.transactions.length, 1)
       )
-      it('is compiled with maximum one warning', ->
-        assert.isAtMost(compilationResult.warnings.length, 1)
+      it('is compiled with maximum one warning from parser', ->
+        if compilationResult.warnings.length
+          assert.equal(compilationResult.warnings[0].component, 'apiDescriptionParser')
       )
       it('is compiled with one error', ->
         assert.equal(compilationResult.errors.length, 1)
       )
       context('the error', ->
-        it('comes from compiler', ->
+        it('comes from URI parameters validation', ->
           assert.equal(compilationResult.errors[0].component, 'parametersValidation')
         )
         it('has no code', ->
