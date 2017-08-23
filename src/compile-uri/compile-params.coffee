@@ -1,11 +1,9 @@
 {Element} = require('minim')
-{deserialize} = require('../refract-serialization')
 
+{deserialize} = require('../refract-serialization')
 {content} = require('../refract')
 
 
-# Convert a Href Variables element to a Dredd Representation
-# Accepts both hrefVariables minim element, and 0.6 serialised Refract hrefVariables
 module.exports = (hrefVariables) ->
   params = {}
   return params unless hrefVariables

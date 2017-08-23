@@ -21,16 +21,7 @@ paths:
           enum:
             - Adam
             - Honza
-            - Dredd
           x-example: Honza
-          default: Dredd
-        - name: flavour
-          in: query
-          type: string
-          enum:
-            - sweet
-            - spicy
-          x-example: spicy
       responses:
         200:
           description: pet response

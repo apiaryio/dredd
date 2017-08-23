@@ -2,10 +2,10 @@ FORMAT: 1A
 
 # Beehive API
 
-## Honey [/honey{?beekeeper,flavour*}]
+## Honey [/honey{?beekeeper,flavour}]
 
 + Parameters
-    + beekeeper: Honza (enum[string])
+    + beekeeper: Honza (enum[string], optional)
 
         Description...
 
@@ -13,10 +13,9 @@ FORMAT: 1A
             + Adam
             + Honza
             + Dredd
-        + Default: `Dredd`
+        + Default: Dredd
 
-    + flavour: sweet (array[string])
-
+    + flavour: spicy (enum[string])
         + Members
             + sweet
             + spicy

@@ -12,9 +12,7 @@ describe('compile() · all API description formats', ->
   originSchema = createOriginSchema()
 
   describe('ordinary, valid API description', ->
-    compilationResult = undefined
     filename = 'apiDescription.ext'
-
     compilationResultSchema = createCompilationResultSchema({
       filename
       transactions: true
@@ -23,6 +21,8 @@ describe('compile() · all API description formats', ->
     })
 
     fixtures.ordinary.forEachDescribe(({source}) ->
+      compilationResult = undefined
+
       beforeEach((done) ->
         compileFixture(source, {filename}, (args...) ->
           [err, compilationResult] = args
@@ -38,38 +38,39 @@ describe('compile() · all API description formats', ->
 
   describe('causing an error in the parser', ->
     fixtures.parserError.forEachDescribe(({source}) ->
-      errors = undefined
-      transactions = undefined
+      compilationResult = undefined
 
       beforeEach((done) ->
-        compileFixture(source, (err, compilationResult) ->
-          return done(err) if err
-          {errors, transactions} = compilationResult
-          done()
+        compileFixture(source, (args...) ->
+          [err, compilationResult] = args
+          done(err)
         )
       )
 
       it('is compiled into zero transactions', ->
-        assert.equal(transactions.length, 0)
+        assert.deepEqual(compilationResult.transactions, [])
+      )
+      it('is compiled with no warnings', ->
+        assert.deepEqual(compilationResult.warnings, [])
       )
       it('is compiled with an error', ->
-        assert.ok(errors.length)
+        assert.equal(compilationResult.errors.length, 1)
       )
       context('the error', ->
         it('comes from parser', ->
-          assert.equal(errors[0].component, 'apiDescriptionParser')
+          assert.equal(compilationResult.errors[0].component, 'apiDescriptionParser')
         )
         it('has code', ->
-          assert.isNumber(errors[0].code)
+          assert.isNumber(compilationResult.errors[0].code)
         )
         it('has message', ->
-          assert.isString(errors[0].message)
+          assert.isString(compilationResult.errors[0].message)
         )
         it('has location', ->
-          assert.jsonSchema(errors[0].location, locationSchema)
+          assert.jsonSchema(compilationResult.errors[0].location, locationSchema)
         )
         it('has no origin', ->
-          assert.isUndefined(errors[0].origin)
+          assert.isUndefined(compilationResult.errors[0].origin)
         )
       )
     )
@@ -77,83 +78,106 @@ describe('compile() · all API description formats', ->
 
   describe('causing an error in URI expansion', ->
     # Parsers may provide warning in similar situations, however, we do not
-    # rely on it in any way in behaviour tested here. This error is thrown
+    # want to rely on them (implementations differ). This error is returned
     # in case Dredd Transactions are not able to parse the URI template.
     # Mind that situations when parser gives the warning and when this error
     # is thrown can differ and also the severity is different.
 
-    errors = undefined
-    transactions = undefined
-
     fixtures.uriExpansionAnnotation.forEachDescribe(({source}) ->
+      compilationResult = undefined
+
       beforeEach((done) ->
-        compileFixture(source, (err, compilationResult) ->
-          return done(err) if err
-          {errors, transactions} = compilationResult
-          done()
+        compileFixture(source, (args...) ->
+          [err, compilationResult] = args
+          done(err)
         )
       )
 
       it('is compiled into zero transactions', ->
-        assert.equal(transactions.length, 0)
+        assert.deepEqual(compilationResult.transactions, [])
+      )
+      it('is compiled with maximum one warning from parser', ->
+        assert.isAtMost(compilationResult.warnings.length, 1)
+        if compilationResult.warnings.length
+          assert.equal(compilationResult.warnings[0].component, 'apiDescriptionParser')
       )
       it('is compiled with one error', ->
-        assert.equal(errors.length, 1)
+        assert.equal(compilationResult.errors.length, 1)
       )
       context('the error', ->
-        it('comes from compiler', ->
-          assert.equal(errors[0].component, 'uriTemplateExpansion')
+        it('comes from URI expansion', ->
+          assert.equal(compilationResult.errors[0].component, 'uriTemplateExpansion')
         )
         it('has no code', ->
-          assert.isUndefined(errors[0].code)
+          assert.isUndefined(compilationResult.errors[0].code)
         )
         it('has message', ->
-          assert.include(errors[0].message.toLowerCase(), 'failed to parse uri template')
+          assert.include(compilationResult.errors[0].message.toLowerCase(), 'failed to parse uri template')
         )
         it('has no location', ->
-          assert.isUndefined(errors[0].location)
+          assert.isUndefined(compilationResult.errors[0].location)
         )
         it('has origin', ->
-          assert.jsonSchema(errors[0].origin, originSchema)
+          assert.jsonSchema(compilationResult.errors[0].origin, originSchema)
         )
       )
     )
   )
 
-  describe('causing an error in URI validation', ->
-    errors = undefined
-    transactions = undefined
+  describe('causing an error in URI parameters validation', ->
+    # Parsers may provide warning in similar situations, however, we do not
+    # want to rely on them (implementations differ). This error is returned
+    # in case Dredd Transactions are not satisfied with the input for
+    # expanding the URI template. Mind that situations when parser gives
+    # the warning and when this error is returned can differ and also
+    # the severity is different.
 
     fixtures.uriValidationAnnotation.forEachDescribe(({source}) ->
+      compilationResult = undefined
+
       beforeEach((done) ->
-        compileFixture(source, (err, compilationResult) ->
-          return done(err) if err
-          {errors, transactions} = compilationResult
-          done()
+        compileFixture(source, (args...) ->
+          [err, compilationResult] = args
+          done(err)
         )
       )
 
       it('is compiled into zero transactions', ->
-        assert.equal(transactions.length, 0)
+        assert.deepEqual(compilationResult.transactions, [])
+      )
+      it('is compiled with maximum two warnings', ->
+        assert.isAtMost(compilationResult.warnings.length, 2)
+      )
+      it('there is maximum one warning from parser', ->
+        warnings = compilationResult.warnings.filter((warning) ->
+          warning.component is 'apiDescriptionParser'
+        )
+        assert.isAtMost(warnings.length, 1)
+      )
+      it('there is one warning from URI expansion', ->
+        warnings = compilationResult.warnings.filter((warning) ->
+          warning.component is 'uriTemplateExpansion'
+        )
+        assert.equal(warnings.length, 1)
       )
       it('is compiled with one error', ->
-        assert.equal(errors.length, 1)
+        assert.equal(compilationResult.errors.length, 1)
       )
       context('the error', ->
-        it('comes from compiler', ->
-          assert.equal(errors[0].component, 'parametersValidation')
+        it('comes from URI parameters validation', ->
+          assert.equal(compilationResult.errors[0].component, 'parametersValidation')
         )
         it('has no code', ->
-          assert.isUndefined(errors[0].code)
+          assert.isUndefined(compilationResult.errors[0].code)
         )
         it('has message', ->
-          assert.include(errors[0].message.toLowerCase(), 'no example')
+          assert.include(compilationResult.errors[0].message.toLowerCase(), 'no example')
         )
         it('has no location', ->
-          assert.isUndefined(errors[0].location)
+          assert.isUndefined(compilationResult.errors[0].location)
         )
         it('has origin', ->
-          assert.jsonSchema(errors[0].origin, originSchema)
+          assert.jsonSchema(compilationResult.errors[0].origin, originSchema)
         )
       )
     )
@@ -161,39 +185,45 @@ describe('compile() · all API description formats', ->
 
   describe('causing a warning in the parser', ->
     fixtures.parserWarning.forEachDescribe(({source}) ->
-      warnings = undefined
-      transactions = undefined
+      compilationResult = undefined
 
       beforeEach((done) ->
-        compileFixture(source, (err, compilationResult) ->
-          return done(err) if err
-          {warnings, transactions} = compilationResult
-          done()
+        compileFixture(source, (args...) ->
+          [err, compilationResult] = args
+          done(err)
         )
       )
 
       it('is compiled into expected number of transactions', ->
-        assert.equal(transactions.length, 1)
+        assert.equal(compilationResult.transactions.length, 1)
       )
-      it('is compiled with a warning', ->
-        assert.ok(warnings.length)
+      it('is compiled with some warnings', ->
+        assert.ok(compilationResult.warnings.length)
       )
-      context('the warning', ->
+      context('the warnings', ->
         it('comes from parser', ->
-          assert.equal(warnings[0].component, 'apiDescriptionParser')
+          for warning in compilationResult.warnings
+            assert.equal(warning.component, 'apiDescriptionParser')
         )
-        it('has code', ->
-          assert.isNumber(warnings[0].code)
+        it('have code', ->
+          for warning in compilationResult.warnings
+            assert.isNumber(warning.code)
         )
-        it('has message', ->
-          assert.isString(warnings[0].message)
+        it('have message', ->
+          for warning in compilationResult.warnings
+            assert.isString(warning.message)
         )
-        it('has location', ->
-          assert.jsonSchema(warnings[0].location, locationSchema)
+        it('have location', ->
+          for warning in compilationResult.warnings
+            assert.jsonSchema(warning.location, locationSchema)
         )
-        it('has no origin', ->
-          assert.isUndefined(warnings[0].origin)
+        it('have no origin', ->
+          for warning in compilationResult.warnings
+            assert.isUndefined(warning.origin)
         )
+      )
+      it('is compiled with no errors', ->
+        assert.deepEqual(compilationResult.errors, [])
       )
     )
   )
@@ -215,91 +245,105 @@ describe('compile() · all API description formats', ->
       )
 
     fixtures.ordinary.forEachDescribe(({source}) ->
+      compilationResult = undefined
+
       beforeEach((done) ->
-        compileFixture(source, {stubs}, (err, compilationResult) ->
-          return done(err) if err
-          {warnings, transactions} = compilationResult
-          done()
+        compileFixture(source, {stubs}, (args...) ->
+          [err, compilationResult] = args
+          done(err)
         )
       )
 
       it('is compiled into some transactions', ->
-        assert.ok(transactions.length)
+        assert.ok(compilationResult.transactions.length)
       )
-      it('is compiled with warnings', ->
-        assert.ok(warnings.length)
+      it('is compiled with some warnings', ->
+        assert.ok(compilationResult.warnings.length)
       )
-      context('the warning', ->
-        it('comes from compiler', ->
-          assert.equal(warnings[0].component, 'uriTemplateExpansion')
+      context('the warnings', ->
+        it('come from URI expansion', ->
+          for warning in compilationResult.warnings
+            assert.equal(warning.component, 'uriTemplateExpansion')
         )
-        it('has no code', ->
-          assert.isUndefined(warnings[0].code)
+        it('have no code', ->
+          for warning in compilationResult.warnings
+            assert.isUndefined(warning.code)
         )
-        it('has message', ->
-          assert.include(warnings[0].message, message)
+        it('have message', ->
+          for warning in compilationResult.warnings
+            assert.include(warning.message, message)
         )
-        it('has no location', ->
-          assert.isUndefined(warnings[0].location)
+        it('have no location', ->
+          for warning in compilationResult.warnings
+            assert.isUndefined(warning.location)
         )
-        it('has origin', ->
-          assert.jsonSchema(warnings[0].origin, originSchema)
+        it('have origin', ->
+          for warning in compilationResult.warnings
+            assert.jsonSchema(warning.origin, originSchema)
         )
+      )
+      it('is compiled with no errors', ->
+        assert.deepEqual(compilationResult.errors, [])
       )
     )
   )
 
   describe('causing an \'ambiguous parameters\' warning in URI expansion', ->
+    # Parsers may provide error in similar situations, however, we do not
+    # want to rely on them (implementations differ). This warning is returned
+    # in case parameters do not have any kind of value Dredd could use. Mind
+    # that situations when parser gives the error and when this warning is
+    # returned can differ and also the severity is different.
+    #
     # Special side effect of the warning is that affected transactions
     # should be skipped (shouldn't appear in output of the compilation).
 
-    warnings = undefined
-    transactions = undefined
-
     fixtures.ambiguousParametersAnnotation.forEachDescribe(({source}) ->
+      compilationResult = undefined
+
       beforeEach((done) ->
-        compileFixture(source, (err, compilationResult) ->
-          return done(err) if err
-          {warnings, transactions} = compilationResult
-          done()
+        compileFixture(source, (args...) ->
+          [err, compilationResult] = args
+          done(err)
         )
       )
 
       it('is compiled into zero transactions', ->
-        assert.equal(transactions.length, 0)
+        assert.deepEqual(compilationResult.transactions, [])
       )
       it('is compiled with one warning', ->
-        assert.equal(warnings.length, 1)
+        assert.equal(compilationResult.warnings.length, 1)
       )
       context('the warning', ->
-        it('comes from compiler', ->
-          assert.equal(warnings[0].component, 'uriTemplateExpansion')
+        it('comes from URI expansion', ->
+          assert.equal(compilationResult.warnings[0].component, 'uriTemplateExpansion')
         )
         it('has no code', ->
-          assert.isUndefined(warnings[0].code)
+          assert.isUndefined(compilationResult.warnings[0].code)
         )
         it('has message', ->
-          assert.include(warnings[0].message.toLowerCase(), 'ambiguous')
+          assert.include(compilationResult.warnings[0].message.toLowerCase(), 'ambiguous')
         )
         it('has no location', ->
-          assert.isUndefined(warnings[0].location)
+          assert.isUndefined(compilationResult.warnings[0].location)
         )
         it('has origin', ->
-          assert.jsonSchema(warnings[0].origin, originSchema)
+          assert.jsonSchema(compilationResult.warnings[0].origin, originSchema)
         )
+      )
+      it('is compiled with one error from URI parameters validation', ->
+        assert.equal(compilationResult.errors.length, 1)
+        assert.equal(compilationResult.errors[0].component, 'parametersValidation')
       )
     )
   )
 
-  describe('causing a warning in URI validation', ->
+  describe('causing a warning in URI parameters validation', ->
     # Since 'validateParams' doesn't actually return any warnings
     # (but could in the future), we need to pretend it's possible for this
     # test.
 
-    warnings = undefined
-    transactions = undefined
     message = '... dummy warning message ...'
-
     stubs =
       './compile-uri': proxyquire('../../src/compile-uri',
         './validate-params': (args...) ->
@@ -307,207 +351,325 @@ describe('compile() · all API description formats', ->
       )
 
     fixtures.ordinary.forEachDescribe(({source}) ->
+      compilationResult = undefined
+
       beforeEach((done) ->
-        compileFixture(source, {stubs}, (err, compilationResult) ->
-          return done(err) if err
-          {warnings, transactions} = compilationResult
-          done()
+        compileFixture(source, {stubs}, (args...) ->
+          [err, compilationResult] = args
+          done(err)
         )
       )
 
       it('is compiled into some transactions', ->
-        assert.ok(transactions.length)
+        assert.ok(compilationResult.transactions.length)
       )
-      it('is compiled with warnings', ->
-        assert.ok(warnings.length)
+      it('is compiled with some warnings', ->
+        assert.ok(compilationResult.warnings.length)
       )
-      context('the warning', ->
-        it('comes from compiler', ->
-          assert.equal(warnings[0].component, 'parametersValidation')
+      context('the warnings', ->
+        it('come from URI parameters validation', ->
+          for warning in compilationResult.warnings
+            assert.equal(warning.component, 'parametersValidation')
         )
-        it('has no code', ->
-          assert.isUndefined(warnings[0].code)
+        it('have no code', ->
+          for warning in compilationResult.warnings
+            assert.isUndefined(warning.code)
         )
-        it('has message', ->
-          assert.include(warnings[0].message, message)
+        it('have message', ->
+          for warning in compilationResult.warnings
+            assert.include(warning.message, message)
         )
-        it('has no location', ->
-          assert.isUndefined(warnings[0].location)
+        it('have no location', ->
+          for warning in compilationResult.warnings
+            assert.isUndefined(warning.location)
         )
-        it('has origin', ->
-          assert.jsonSchema(warnings[0].origin, originSchema)
+        it('have origin', ->
+          for warning in compilationResult.warnings
+            assert.jsonSchema(warning.origin, originSchema)
         )
+      )
+      it('is compiled with no errors', ->
+        assert.deepEqual(compilationResult.errors, [])
       )
     )
   )
 
   describe('with enum parameter', ->
-    transaction = undefined
-
     fixtures.enumParameter.forEachDescribe(({source}) ->
+      compilationResult = undefined
+
       beforeEach((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
-          transaction = compilationResult.transactions[0]
           done(err)
         )
       )
 
+      it('is compiled with no warnings', ->
+        assert.deepEqual(compilationResult.warnings, [])
+      )
+      it('is compiled with no errors', ->
+        assert.deepEqual(compilationResult.errors, [])
+      )
       it('expands the request URI with the first enum value', ->
-        assert.equal(transaction.request.uri, '/honey?beekeeper=Adam')
+        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Adam')
+      )
+    )
+  )
+
+  describe('with enum parameter having example value', ->
+    fixtures.enumParameterExample.forEachDescribe(({source}) ->
+      compilationResult = undefined
+
+      beforeEach((done) ->
+        compileFixture(source, (args...) ->
+          [err, compilationResult] = args
+          done(err)
+        )
+      )
+
+      it('is compiled with no warnings', ->
+        assert.deepEqual(compilationResult.warnings, [])
+      )
+      it('is compiled with no errors', ->
+        assert.deepEqual(compilationResult.errors, [])
+      )
+      it('expands the request URI with the example value', ->
+        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza')
+      )
+    )
+  )
+
+  describe('with enum parameter having unlisted example value', ->
+    # Parsers may provide warning in similar situations, however, we do not
+    # want to rely on them (implementations differ). This error is returned
+    # in case enum parameters have an example value, which is not allowed
+    # by the enum. Mind that situations when parser gives the warning and
+    # when this error is returned can differ and also the severity is different.
+
+    fixtures.enumParameterUnlistedExample.forEachDescribe(({source}) ->
+      compilationResult = undefined
+
+      beforeEach((done) ->
+        compileFixture(source, (args...) ->
+          [err, compilationResult] = args
+          done(err)
+        )
+      )
+
+      it('is compiled into one transaction', ->
+        assert.equal(compilationResult.transactions.length, 1)
+      )
+      it('is compiled with maximum one warning from parser', ->
+        if compilationResult.warnings.length
+          assert.equal(compilationResult.warnings[0].component, 'apiDescriptionParser')
+      )
+      it('is compiled with one error', ->
+        assert.equal(compilationResult.errors.length, 1)
+      )
+      context('the error', ->
+        it('comes from URI parameters validation', ->
+          assert.equal(compilationResult.errors[0].component, 'parametersValidation')
+        )
+        it('has no code', ->
+          assert.isUndefined(compilationResult.errors[0].code)
+        )
+        it('has message', ->
+          assert.include(compilationResult.errors[0].message.toLowerCase(), 'example value is not one of enum values')
+        )
+        it('has no location', ->
+          assert.isUndefined(compilationResult.errors[0].location)
+        )
+        it('has origin', ->
+          assert.jsonSchema(compilationResult.errors[0].origin, originSchema)
+        )
+      )
+      it('expands the request URI with the example value', ->
+        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Pavan')
       )
     )
   )
 
   describe('with parameters having example values', ->
-    transaction = undefined
-
     fixtures.exampleParameters.forEachDescribe(({source}) ->
+      compilationResult = undefined
+
       beforeEach((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
-          transaction = compilationResult.transactions[0]
           done(err)
         )
       )
 
+      it('is compiled with no warnings', ->
+        assert.deepEqual(compilationResult.warnings, [])
+      )
+      it('is compiled with no errors', ->
+        assert.deepEqual(compilationResult.errors, [])
+      )
       it('expands the request URI with the example value', ->
-        assert.equal(transaction.request.uri, '/honey?beekeeper=Honza&flavour=sweet')
+        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&flavour=spicy')
       )
     )
   )
 
   describe('with response schema', ->
-    transaction = undefined
-
     fixtures.responseSchema.forEachDescribe(({source}) ->
+      compilationResult = undefined
+
       beforeEach((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
-          transaction = compilationResult.transactions[0]
           done(err)
         )
       )
 
+      it('is compiled with no warnings', ->
+        assert.deepEqual(compilationResult.warnings, [])
+      )
+      it('is compiled with no errors', ->
+        assert.deepEqual(compilationResult.errors, [])
+      )
       it('provides the body in response data', ->
-        assert.ok(transaction.response.body)
-        assert.doesNotThrow( -> JSON.parse(transaction.response.body))
+        assert.ok(compilationResult.transactions[0].response.body)
+        assert.doesNotThrow( -> JSON.parse(compilationResult.transactions[0].response.body))
       )
       it('provides the schema in response data', ->
-        assert.ok(transaction.response.schema)
-        assert.doesNotThrow( -> JSON.parse(transaction.response.schema))
+        assert.ok(compilationResult.transactions[0].response.schema)
+        assert.doesNotThrow( -> JSON.parse(compilationResult.transactions[0].response.schema))
       )
     )
   )
 
   describe('with inheritance of URI parameters', ->
-    transaction = undefined
-
     fixtures.parametersInheritance.forEachDescribe(({source}) ->
+      compilationResult = undefined
+
       beforeEach((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
-          transaction = compilationResult.transactions[0]
           done(err)
         )
       )
 
+      it('is compiled with no warnings', ->
+        assert.deepEqual(compilationResult.warnings, [])
+      )
+      it('is compiled with no errors', ->
+        assert.deepEqual(compilationResult.errors, [])
+      )
       it('expands the request URI using correct inheritance cascade', ->
-        assert.equal(transaction.request.uri, '/honey?beekeeper=Honza&amount=42')
+        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&amount=42')
       )
     )
   )
 
   describe('with different default value and first enum value of URI parameter', ->
-    transaction = undefined
-
     fixtures.preferDefault.forEachDescribe(({source}) ->
+      compilationResult = undefined
+
       beforeEach((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
-          transaction = compilationResult.transactions[0]
           done(err)
         )
       )
 
+      it('is compiled with no warnings', ->
+        assert.deepEqual(compilationResult.warnings, [])
+      )
+      it('is compiled with no errors', ->
+        assert.deepEqual(compilationResult.errors, [])
+      )
       it('expands the request URI using the default value', ->
-        assert.equal(transaction.request.uri, '/honey?beekeeper=Adam')
+        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Adam')
       )
     )
   )
 
   describe('with default value for a required URI parameter', ->
-    errors = undefined
-    warnings = undefined
-    warning = undefined
-    transactions = undefined
-
     fixtures.defaultRequired.forEachDescribe(({source}) ->
+      compilationResult = undefined
+
       beforeEach((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
-          {errors, warnings, transactions} = compilationResult
-          [warning] = warnings[-1..] # the last warning
           done(err)
         )
       )
 
       it('expands the request URI using the default value', ->
-        assert.equal(transactions[0].request.uri, '/honey?beekeeper=Honza')
+        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza')
       )
       it('is compiled with no errors', ->
-        assert.equal(errors.length, 0)
+        assert.deepEqual(compilationResult.errors, [])
       )
-      it('is compiled with warnings', ->
-        assert.ok(warnings.length)
+      it('is compiled with maximum two warnings', ->
+        assert.isAtMost(compilationResult.warnings.length, 2)
       )
-      it('there are no other warnings than from parser or URI expansion', ->
-        assert.equal(warnings.filter((w) ->
-          w.component isnt 'uriTemplateExpansion' and
-          w.component isnt 'apiDescriptionParser'
-        ).length, 0)
+      it('there is maximum one warning from parser', ->
+        warnings = compilationResult.warnings.filter((warning) ->
+          warning.component is 'apiDescriptionParser'
+        )
+        assert.isAtMost(warnings.length, 1)
+      )
+      it('there is one warning from URI expansion', ->
+        warnings = compilationResult.warnings.filter((warning) ->
+          warning.component is 'uriTemplateExpansion'
+        )
+        assert.equal(warnings.length, 1)
       )
       context('the last warning', ->
         it('comes from URI expansion', ->
-          assert.equal(warning.component, 'uriTemplateExpansion')
+          lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
+          assert.equal(lastWarning.component, 'uriTemplateExpansion')
         )
         it('has no code', ->
-          assert.isUndefined(warning.code)
+          lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
+          assert.isUndefined(lastWarning.code)
         )
         it('has message', ->
-          assert.include(warning.message.toLowerCase(), 'default value for a required parameter')
+          lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
+          assert.include(lastWarning.message.toLowerCase(), 'default value for a required parameter')
         )
         it('has no location', ->
-          assert.isUndefined(warning.location)
+          lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
+          assert.isUndefined(lastWarning.location)
         )
         it('has origin', ->
-          assert.jsonSchema(warning.origin, originSchema)
+          lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
+          assert.jsonSchema(lastWarning.origin, originSchema)
         )
       )
     )
   )
 
   describe('with HTTP headers', ->
-    transaction = undefined
-
     fixtures.httpHeaders.forEachDescribe(({source}) ->
+      compilationResult = undefined
+
       beforeEach((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
-          transaction = compilationResult.transactions[0]
           done(err)
         )
       )
 
+      it('is compiled with no warnings', ->
+        assert.deepEqual(compilationResult.warnings, [])
+      )
+      it('is compiled with no errors', ->
+        assert.deepEqual(compilationResult.errors, [])
+      )
       context('compiles a transaction', ->
         it('with expected request headers', ->
-          assert.deepEqual(transaction.request.headers, {
+          assert.deepEqual(compilationResult.transactions[0].request.headers, {
             'Content-Type': {value: 'application/json'}
             'Accept': {value: 'application/json'}
           })
         )
         it('with expected response headers', ->
-          assert.deepEqual(transaction.response.headers, {
+          assert.deepEqual(compilationResult.transactions[0].response.headers, {
             'Content-Type': {value: 'application/json'}
             'X-Test': {value: 'Adam'}
           })

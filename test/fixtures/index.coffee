@@ -95,6 +95,14 @@ fixtures =
     apiBlueprint: fromFile('./api-blueprint/enum-parameter.apib')
     swagger: fromFile('./swagger/enum-parameter.yml')
   )
+  enumParameterExample: fixture(
+    apiBlueprint: fromFile('./api-blueprint/enum-parameter-example.apib')
+    swagger: fromFile('./swagger/enum-parameter-example.yml')
+  )
+  enumParameterUnlistedExample: fixture(
+    apiBlueprint: fromFile('./api-blueprint/enum-parameter-unlisted-example.apib')
+    swagger: fromFile('./swagger/enum-parameter-unlisted-example.yml')
+  )
   responseSchema: fixture(
     apiBlueprint: fromFile('./api-blueprint/response-schema.apib')
     swagger: fromSwaggerZoo('schema-reference')

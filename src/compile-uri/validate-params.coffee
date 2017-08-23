@@ -18,8 +18,7 @@ module.exports = (params) ->
           result.errors.push(text)
 
     if param.values.length > 0
-      values = param.values.map((value) -> value.value)
-      unless values.indexOf(param.example) > -1
+      unless param.values.indexOf(param.example) > -1
         text = "URI parameter '#{paramName}' example value is not one of enum values."
         result.errors.push(text)
 

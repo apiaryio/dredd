@@ -1,7 +1,7 @@
 ut = require 'uri-template'
 
 
-module.exports = (uriTemplate, parameters) ->
+module.exports = (uriTemplate, params) ->
   result =
     errors: []
     warnings: []
@@ -28,7 +28,7 @@ module.exports = (uriTemplate, parameters) ->
     ambiguous = false
 
     for uriParameter in uriParameters
-      if Object.keys(parameters).indexOf(uriParameter) is -1
+      if Object.keys(params).indexOf(uriParameter) is -1
         ambiguous = true
         result.warnings.push("""\
           Ambiguous URI parameter in template: #{uriTemplate}
@@ -38,7 +38,7 @@ module.exports = (uriTemplate, parameters) ->
     unless ambiguous
       toExpand = {}
       for uriParameter in uriParameters
-        param = parameters[uriParameter]
+        param = params[uriParameter]
 
         if param.example
           toExpand[uriParameter] = param.example

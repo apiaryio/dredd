@@ -100,11 +100,7 @@ describe 'validateParams', ->
           required: true
           example: 'D'
           default: ''
-          values: [
-            { "value": "A" },
-            { "value": "B" },
-            { "value": "C" }
-          ]
+          values: ['A', 'B', 'C']
 
       result = validateParams params
       message = result['errors'][0]
@@ -120,11 +116,7 @@ describe 'validateParams', ->
           required: true
           example: 'A'
           default: ''
-          values: [
-            { "value": "A" },
-            { "value": "B" },
-            { "value": "C" }
-          ]
+          values: ['A', 'B', 'C']
 
       result = validateParams params
       assert.equal result['errors'].length, 0
