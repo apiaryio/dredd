@@ -2,14 +2,16 @@ compileParams = require('./compile-params')
 validateParams = require('./validate-params')
 expandUriTemplate = require('./expand-uri-template')
 
-{parent} = require('../refract')
-{deserialize} = require('../refract-serialization')
 
-
-module.exports = (refract, refractHttpRequest) ->
+module.exports = (httpRequestElement) ->
   annotations = {errors: [], warnings: []}
-  cascade = getCascade(refract, refractHttpRequest)
+  cascade = [
+    httpRequestElement.closest('resource')
+    httpRequestElement.closest('transition')
+    httpRequestElement
+  ]
 
+  # The last non-empty href overrides any previous hrefs
   href = cascade
     .map((element) -> element.href?.toValue())
     .filter((href) -> !!href)
@@ -43,14 +45,3 @@ module.exports = (refract, refractHttpRequest) ->
 overrideParams = (params, paramsToOverride) ->
   params[name] = param for own name, param of paramsToOverride
   return params
-
-
-# Temporary helper, until the interface of 'compileUri' changes to API Elements
-getCascade = (refract, refractHttpRequest) ->
-  refractResource = parent(refractHttpRequest, refract, {element: 'resource'})
-  refractTransition = parent(refractHttpRequest, refract, {element: 'transition'})
-  return [
-    deserialize(refractResource)
-    deserialize(refractTransition)
-    deserialize(refractHttpRequest)
-  ]

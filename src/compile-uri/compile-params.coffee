@@ -1,8 +1,5 @@
 {Element} = require('minim')
 
-{deserialize} = require('../refract-serialization')
-{content} = require('../refract')
-
 
 module.exports = (hrefVariables) ->
   params = {}
