@@ -1,6 +1,3 @@
-{Element} = require('minim')
-
-
 module.exports = (hrefVariables) ->
   params = {}
   return params unless hrefVariables
