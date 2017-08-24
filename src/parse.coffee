@@ -3,10 +3,21 @@ fury.use(require('fury-adapter-apib-parser'))
 fury.use(require('fury-adapter-swagger'))
 
 
-createWarning = (message) ->
-  annotation = new fury.minim.elements.Annotation(message)
-  annotation.classes.push('warning')
-  return annotation
+# Gets the first element that matches the element name by testing the element
+# itself and traversing up through its ancestors in the tree. Works properly
+# only after the element was made immutable by the 'freeze()' method.
+#
+# The name of the method is inspired by https://api.jquery.com/closest/
+fury.minim.Element::closest = (elementName, className = null) ->
+  element = @
+  while element
+    if element.element is elementName
+      if className
+        return element if element.classes.contains(className)
+      else
+        return element
+    element = element.parent
+  return null
 
 
 parse = (source, callback) ->
@@ -38,6 +49,12 @@ parse = (source, callback) ->
 
     callback(err, {mediaType, apiElements})
   )
+
+
+createWarning = (message) ->
+  annotation = new fury.minim.elements.Annotation(message)
+  annotation.classes.push('warning')
+  return annotation
 
 
 module.exports = parse

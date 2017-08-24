@@ -4,7 +4,6 @@ fury = require('fury')
 {assert} = require('../utils')
 fixtures = require('../fixtures')
 parse = require('../../src/parse')
-{serialize} = require('../../src/refract-serialization')
 
 
 describe('Parsing API description document', ->
@@ -40,7 +39,11 @@ describe('Parsing API description document', ->
         assert.isTrue(apiElements.annotations?.isEmpty)
       )
       it('the parse result contains source map elements', ->
-        assert.include(JSON.stringify(serialize(apiElements)), '"sourceMap"')
+        sourceMaps = apiElements
+          .recursiveChildren
+          .map((element) -> element.sourceMapValue)
+          .filter((sourceMap) -> !!sourceMap)
+        assert.ok(sourceMaps.length)
       )
     )
   )
@@ -202,6 +205,56 @@ describe('Parsing API description document', ->
     )
     it('the first warning is about falling back to API Blueprint', ->
       assert.include(apiElements.warnings.getValue(0), 'to API Blueprint')
+    )
+  )
+)
+
+
+describe('minim element extensions', ->
+  describe('closest()', ->
+    describe('when there is no parent property', ->
+      arrayElement = fury.minim.toElement([1, 2, 3])
+      itemElement = arrayElement.get(0)
+
+      it('returns the element itself if the element names match', ->
+        assert.equal(itemElement.closest('number'), itemElement)
+      )
+      it('returns null if the element itself does not match', ->
+        assert.isNull(itemElement.closest('array'))
+      )
+    )
+    describe('when elements are made immutable by freeze()', ->
+      objectElement = fury.minim.toElement({'numbers': [1, 2, 3]})
+      objectElement.classes.push('foo')
+      arrayElement = objectElement.get('numbers')
+      arrayElement.classes.push('foo')
+      itemElement = arrayElement.get(0)
+      itemElement.classes.push('foo')
+      objectElement.freeze()
+
+      it('returns the element itself if the element names match', ->
+        assert.equal(itemElement.closest('number'), itemElement)
+      )
+      it('returns direct parent element if the element names match', ->
+        assert.equal(itemElement.closest('array'), arrayElement)
+      )
+      it('returns distant ancestor element if the element names match', ->
+        assert.equal(itemElement.closest('object'), objectElement)
+      )
+      it('returns nothing if the element names match, but not the class names', ->
+        assert.isNull(itemElement.closest('number', 'bar'))
+        assert.isNull(itemElement.closest('array', 'bar'))
+        assert.isNull(itemElement.closest('object', 'bar'))
+      )
+      it('returns the element itself if both the element and class names match', ->
+        assert.equal(itemElement.closest('number', 'foo'), itemElement)
+      )
+      it('returns direct parent element if both the element and class names match', ->
+        assert.equal(itemElement.closest('array', 'foo'), arrayElement)
+      )
+      it('returns distant ancestor element if both the element and class names match', ->
+        assert.equal(itemElement.closest('object', 'foo'), objectElement)
+      )
     )
   )
 )
