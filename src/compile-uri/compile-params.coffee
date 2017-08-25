@@ -1,16 +1,16 @@
-module.exports = (hrefVariables) ->
+module.exports = (hrefVariablesElement) ->
   params = {}
-  return params unless hrefVariables
+  return params unless hrefVariablesElement
 
-  hrefVariables.forEach((value, key, member) ->
-    name = key.toValue()
-    typeAttributesElement = member.attributes.get('typeAttributes')?.toValue() or []
-    values = value.attributes.get('enumerations')?.toValue() or []
+  hrefVariablesElement.forEach((valueElement, keyElement, memberElement) ->
+    name = keyElement.toValue()
+    typeAttributes = memberElement.attributes.getValue('typeAttributes') or []
+    values = valueElement.attributes.getValue('enumerations') or []
 
     params[name] =
-      required: 'required' in typeAttributesElement
-      default: value.attributes.get('default')?.toValue()
-      example: value.toValue() or values[0]
+      required: 'required' in typeAttributes
+      default: valueElement.attributes.getValue('default')
+      example: valueElement.toValue() or values[0]
       values: values
   )
   return params

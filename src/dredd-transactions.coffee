@@ -5,12 +5,12 @@ getTransactionName = require('./transaction-name/get-transaction-name')
 getTransactionPath = require('./transaction-path/get-transaction-path')
 
 
-compile = (input, filename, callback) ->
+compile = (source, filename, callback) ->
   # All regular parser-related or compilation-related errors and warnings
   # should be returned in the "compilation result". Callback should get
   # an error only in case of unexpected crash.
 
-  parse(input, (err, parseResult) ->
+  parse(source, (err, parseResult) ->
     # If 'apiElements' isn't empty, then we don't need to care about 'err'
     # as it should be represented by annotation inside 'apiElements'
     # and compilation should be able to deal with it and propagate it.
@@ -27,16 +27,16 @@ compile = (input, filename, callback) ->
     # in any case.
     try
       {mediaType, apiElements} = parseResult
-      result = compileFromApiElements(mediaType, apiElements, filename)
+      compilationResult = compileFromApiElements(mediaType, apiElements, filename)
     catch err
       return callback(err)
 
-    for transaction in result.transactions
+    for transaction in compilationResult.transactions
       transaction['name'] = getTransactionName(transaction)
       transaction['path'] = getTransactionPath(transaction)
 
-    result.mediaType = mediaType
-    callback(null, result)
+    compilationResult.mediaType = mediaType
+    callback(null, compilationResult)
   )
 
 

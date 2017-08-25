@@ -56,15 +56,15 @@ findRelevantTransactions = (mediaType, apiElements) ->
       # of Dredd. There's a plan to migrate to so-called "transaction paths"
       # in the future (apiaryio/dredd#227), which won't use the concept
       # of transaction examples anymore.
-      exampleNumbersPerTransaction = detectTransactionExampleNumbers(transitionElement)
-      hasMoreExamples = Math.max(exampleNumbersPerTransaction...) > 1
+      transactionExampleNumbers = detectTransactionExampleNumbers(transitionElement)
+      hasMoreExamples = Math.max(transactionExampleNumbers...) > 1
 
       # Dredd supports only testing of the first request-response pair within
       # each transaction example. We iterate over available transactions and
       # skip those, which are not first within a particular example.
       exampleNo = 0
       transitionElement.transactions.forEach((httpTransactionElement, httpTransactionNo) ->
-        httpTransactionExampleNo = exampleNumbersPerTransaction[httpTransactionNo]
+        httpTransactionExampleNo = transactionExampleNumbers[httpTransactionNo]
 
         relevantTransaction =
           apiElements: httpTransactionElement
@@ -120,10 +120,10 @@ compileOrigin = (mediaType, filename, httpTransactionElement, exampleNo) ->
   httpResponseElement = httpTransactionElement.response
   {
     filename: filename or ''
-    apiName: apiElement.meta.get('title')?.toValue() or filename or ''
-    resourceGroupName: resourceGroupElement?.meta.get('title')?.toValue() or ''
-    resourceName: resourceElement.meta.get('title')?.toValue() or resourceElement.attributes.get('href')?.toValue() or ''
-    actionName: transitionElement.meta.get('title')?.toValue() or httpRequestElement.attributes.get('method')?.toValue() or ''
+    apiName: apiElement.meta.getValue('title') or filename or ''
+    resourceGroupName: resourceGroupElement?.meta.getValue('title') or ''
+    resourceName: resourceElement.meta.getValue('title') or resourceElement.attributes.getValue('href') or ''
+    actionName: transitionElement.meta.getValue('title') or httpRequestElement.attributes.getValue('method') or ''
     exampleName: compileOriginExampleName(mediaType, httpResponseElement, exampleNo)
   }
 
@@ -154,10 +154,10 @@ compilePathOrigin = (filename, httpTransactionElement, exampleNo) ->
   transitionElement = httpTransactionElement.closest('transition')
   httpRequestElement = httpTransactionElement.request
   {
-    apiName: apiElement.meta.get('title')?.toValue() or ''
-    resourceGroupName: resourceGroupElement?.meta.get('title')?.toValue() or ''
-    resourceName: resourceElement.meta.get('title')?.toValue() or resourceElement.attributes.get('href')?.toValue() or ''
-    actionName: transitionElement.meta.get('title')?.toValue() or httpRequestElement.attributes.get('method')?.toValue() or ''
+    apiName: apiElement.meta.getValue('title') or ''
+    resourceGroupName: resourceGroupElement?.meta.getValue('title') or ''
+    resourceName: resourceElement.meta.getValue('title') or resourceElement.attributes.getValue('href') or ''
+    actionName: transitionElement.meta.getValue('title') or httpRequestElement.attributes.getValue('method') or ''
     exampleName: "Example #{exampleNo or 1}"
   }
 

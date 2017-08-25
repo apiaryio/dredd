@@ -4,7 +4,7 @@
 #     [
 #         {
 #             'type': 'httpResponse',
-#             'transaction': {'element': 'httpTransaction', ...},
+#             'transaction': fury.minim.elements.HttpTransaction()
 #             'position': 85,
 #         },
 #         ...
@@ -13,51 +13,54 @@
 # ## Index Entry (object)
 #
 # - type: httpRequest, httpResponse (enum)
-# - transaction (object) - Parent transaction element.
 # - position (number) - Position of the first character relevant to
 #   the request (or response) within the original API Blueprint document.
-createIndex = (transition) ->
-  transition.transactions.map((transaction) ->
-    [transaction.request, transaction.response].reduce((elements, element) ->
-      elements.push({
-        position: Math.max.apply(
-          null,
-          element.sourceMapValue.reduce((positions, current) ->
-            positions.concat(current)
-          , [])
-        ),
-        transaction: transaction,
-        type: element.element
-      }) if element.sourceMapValue
-      elements
+createRequestsResponsesIndex = (transitionElement) ->
+  transitionElement.transactions.map((transactionElement) ->
+    elements = [transactionElement.request, transactionElement.response]
+    elements.reduce((indexEntries, element) ->
+      if element.sourceMapValue
+        indexEntries.push({
+          position: Math.max.apply(
+            null,
+            element.sourceMapValue.reduce((positions, current) ->
+              positions.concat(current)
+            , [])
+          ),
+          transactionElement: transactionElement,
+          type: element.element
+        })
+      return indexEntries
     , [])
   )
-  .reduce((index, elements) ->
-    index.concat(elements)
+  .reduce((index, indexEntries) ->
+    index.concat(indexEntries)
   , [])
   .sort((a, b) -> a.position - b.position)
+
 
 # Detects transaction example numbers for given transition element
 #
 # Returns an array of numbers, where indexes correspond to HTTP transactions
 # within the transition and values represent the example numbers.
-detectTransactionExampleNumbers = (transition) ->
-  exampleNumbers = createIndex(transition).reduce((state, element) ->
-    switch element.type
+detectTransactionExampleNumbers = (transitionElement) ->
+  requestsResponsesIndex = createRequestsResponsesIndex(transitionElement)
+  finalState = requestsResponsesIndex.reduce((state, indexEntry) ->
+    switch indexEntry.type
       when 'httpRequest'
-        state.previousType is 'httpResponse' and state.currentNumber += 1
+        state.previousType is 'httpResponse' and state.currentNo += 1
         state.previousType = 'httpRequest'
       when 'httpResponse'
         state.previousType = 'httpResponse'
 
-    state.transactionIndex.set(element.transaction, state.currentNumber)
+    state.transactionIndex.set(indexEntry.transactionElement, state.currentNo)
     return state
   , {
-    currentNumber: 1,
+    currentNo: 1,
     transactionIndex: new Map(),
     previousType: 'httpRequest'
   })
+  return Array.from(finalState.transactionIndex.values())
 
-  Array.from(exampleNumbers.transactionIndex.values())
 
 module.exports = detectTransactionExampleNumbers

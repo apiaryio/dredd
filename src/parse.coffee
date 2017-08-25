@@ -21,14 +21,14 @@ fury.minim.Element::closest = (elementName, className = null) ->
 
 
 parse = (source, callback) ->
-  warning = null
+  warningElement = null
   adapters = fury.detect(source)
 
   if adapters.length
     mediaType = adapters[0].mediaTypes[0]
   else
     mediaType = 'text/vnd.apiblueprint'
-    warning = createWarning('''\
+    warningElement = createWarning('''\
       Could not recognize API description format. \
       Falling back to API Blueprint by default.\
     ''')
@@ -42,7 +42,7 @@ parse = (source, callback) ->
       err = new Error(err.message)
 
     if apiElements
-      apiElements.unshift(warning) if warning
+      apiElements.unshift(warningElement) if warningElement
       apiElements.freeze() # Adds 'parent' properties, prevents mutation
     else
       apiElements = null
@@ -52,9 +52,9 @@ parse = (source, callback) ->
 
 
 createWarning = (message) ->
-  annotation = new fury.minim.elements.Annotation(message)
-  annotation.classes.push('warning')
-  return annotation
+  annotationElement = new fury.minim.elements.Annotation(message)
+  annotationElement.classes.push('warning')
+  return annotationElement
 
 
 module.exports = parse
