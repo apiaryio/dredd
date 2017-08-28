@@ -1,3 +1,27 @@
+# Detects transaction example numbers for given transition element
+#
+# Returns an array of numbers, where indexes correspond to HTTP transactions
+# within the transition and values represent the example numbers.
+detectTransactionExampleNumbers = (transitionElement) ->
+  requestsResponsesIndex = createRequestsResponsesIndex(transitionElement)
+  finalState = requestsResponsesIndex.reduce((state, indexEntry) ->
+    switch indexEntry.type
+      when 'httpRequest'
+        state.previousType is 'httpResponse' and state.currentNo += 1
+        state.previousType = 'httpRequest'
+      when 'httpResponse'
+        state.previousType = 'httpResponse'
+
+    state.transactionIndex.set(indexEntry.transactionElement, state.currentNo)
+    return state
+  , {
+    currentNo: 1,
+    transactionIndex: new Map(),
+    previousType: 'httpRequest'
+  })
+  return Array.from(finalState.transactionIndex.values())
+
+
 # Provides index of requests and responses within given *transition*, sorted by
 # their position in the original API Blueprint document (from first to last).
 #
@@ -37,30 +61,6 @@ createRequestsResponsesIndex = (transitionElement) ->
     index.concat(indexEntries)
   , [])
   .sort((a, b) -> a.position - b.position)
-
-
-# Detects transaction example numbers for given transition element
-#
-# Returns an array of numbers, where indexes correspond to HTTP transactions
-# within the transition and values represent the example numbers.
-detectTransactionExampleNumbers = (transitionElement) ->
-  requestsResponsesIndex = createRequestsResponsesIndex(transitionElement)
-  finalState = requestsResponsesIndex.reduce((state, indexEntry) ->
-    switch indexEntry.type
-      when 'httpRequest'
-        state.previousType is 'httpResponse' and state.currentNo += 1
-        state.previousType = 'httpRequest'
-      when 'httpResponse'
-        state.previousType = 'httpResponse'
-
-    state.transactionIndex.set(indexEntry.transactionElement, state.currentNo)
-    return state
-  , {
-    currentNo: 1,
-    transactionIndex: new Map(),
-    previousType: 'httpRequest'
-  })
-  return Array.from(finalState.transactionIndex.values())
 
 
 module.exports = detectTransactionExampleNumbers
