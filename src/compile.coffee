@@ -14,10 +14,7 @@ compile = (mediaType, apiElements, filename) ->
   errors = apiElements.errors.map(compileAnnotation)
   warnings = apiElements.warnings.map(compileAnnotation)
 
-  for relevantTransaction in findRelevantTransactions(mediaType, apiElements)
-    exampleNo = relevantTransaction.exampleNo
-    httpTransactionElement = relevantTransaction.apiElements
-
+  for {httpTransactionElement, exampleNo} in findRelevantTransactions(mediaType, apiElements)
     {transaction, annotations} = compileTransaction(mediaType, filename, httpTransactionElement, exampleNo)
     transactions.push(transaction) if transaction
     errors = errors.concat(annotations.errors)
@@ -57,22 +54,15 @@ findRelevantTransactions = (mediaType, apiElements) ->
       exampleNo = 0
       transitionElement.transactions.forEach((httpTransactionElement, httpTransactionNo) ->
         httpTransactionExampleNo = transactionExampleNumbers[httpTransactionNo]
-
-        relevantTransaction =
-          apiElements: httpTransactionElement
-          exampleNo: if hasMoreExamples then httpTransactionExampleNo else null
-
         if httpTransactionExampleNo isnt exampleNo
-          relevantTransactions.push(relevantTransaction)
-
+          relevantTransaction = {httpTransactionElement}
+          relevantTransaction.exampleNo = httpTransactionExampleNo if hasMoreExamples
         exampleNo = httpTransactionExampleNo
       )
     else
       # All other formats then API Blueprint
-      transitionElement.transactions.forEach((httpTransactionElement, httpTransactionNo) ->
-        relevantTransactions.push(
-          apiElements: httpTransactionElement
-        )
+      transitionElement.transactions.forEach((httpTransactionElement) ->
+        relevantTransactions.push({httpTransactionElement})
       )
   )
   return relevantTransactions
