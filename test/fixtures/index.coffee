@@ -164,6 +164,9 @@ fixtures =
   securityDefinitionsMultipleResponses: fixture(
     swagger: fromFile('./swagger/security-definitions-multiple-responses.yml')
   )
+  securityDefinitionsTransitions: fixture(
+    swagger: fromSwaggerZoo('auth-oauth2-implicit')
+  )
 
 
 module.exports = fixtures

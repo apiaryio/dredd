@@ -170,4 +170,25 @@ describe('compile() · Swagger', ->
       assert.deepEqual(compilationResult.transactions.length, 2)
     )
   )
+
+  describe('with \'securityDefinitions\' containing transitions', ->
+    compilationResult = undefined
+
+    beforeEach((done) ->
+      compileFixture(fixtures.securityDefinitionsTransitions.swagger, (args...) ->
+        [err, compilationResult] = args
+        done(err)
+      )
+    )
+
+    it('is compiled with no warnings', ->
+      assert.deepEqual(compilationResult.warnings, [])
+    )
+    it('is compiled with no errors', ->
+      assert.deepEqual(compilationResult.errors, [])
+    )
+    it('returns expected number of transactions', ->
+      assert.deepEqual(compilationResult.transactions.length, 1)
+    )
+  )
 )

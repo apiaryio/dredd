@@ -34,7 +34,7 @@ compileAnnotation = (annotationElement) ->
 
 findRelevantTransactions = (mediaType, apiElements) ->
   relevantTransactions = []
-  apiElements.findRecursive('transition').forEach((transitionElement, transitionNo) ->
+  apiElements.findRecursive('resource', 'transition').forEach((transitionElement, transitionNo) ->
     if mediaType is 'text/vnd.apiblueprint'
       # API Blueprint has a concept of transaction examples and
       # the API Blueprint AST used to expose it. The concept isn't present
@@ -57,6 +57,7 @@ findRelevantTransactions = (mediaType, apiElements) ->
         if httpTransactionExampleNo isnt exampleNo
           relevantTransaction = {httpTransactionElement}
           relevantTransaction.exampleNo = httpTransactionExampleNo if hasMoreExamples
+          relevantTransactions.push(relevantTransaction)
         exampleNo = httpTransactionExampleNo
       )
     else
