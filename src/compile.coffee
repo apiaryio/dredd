@@ -3,35 +3,27 @@ caseless = require('caseless')
 
 detectTransactionExampleNumbers = require('./detect-transaction-example-numbers')
 compileUri = require('./compile-uri')
+getTransactionName = require('./transaction-name')
+getTransactionPath = require('./transaction-path')
 
 
 compile = (mediaType, apiElements, filename) ->
+  apiElements.freeze()
+
   transactions = []
   errors = apiElements.errors.map(compileAnnotation)
   warnings = apiElements.warnings.map(compileAnnotation)
 
   for relevantTransaction in findRelevantTransactions(mediaType, apiElements)
     exampleNo = relevantTransaction.exampleNo
+    httpTransactionElement = relevantTransaction.apiElements
 
-    origin = compileOrigin(mediaType, filename, relevantTransaction.apiElements, exampleNo)
-    {request, annotations} = compileRequest(relevantTransaction.apiElements.request)
+    {transaction, annotations} = compileTransaction(mediaType, filename, httpTransactionElement, exampleNo)
+    transactions.push(transaction) if transaction
+    errors = errors.concat(annotations.errors)
+    warnings = warnings.concat(annotations.warnings)
 
-    if request
-      transactions.push({
-        origin
-        pathOrigin: compilePathOrigin(filename, relevantTransaction.apiElements, exampleNo)
-        request
-        response: compileResponse(relevantTransaction.apiElements.response)
-      })
-
-    for error in annotations.errors
-      error.origin = clone(origin)
-      errors.push(error)
-    for warning in annotations.warnings
-      warning.origin = clone(origin)
-      warnings.push(warning)
-
-  {transactions, errors, warnings}
+  {mediaType, transactions, errors, warnings}
 
 
 compileAnnotation = (annotationElement) ->
@@ -84,6 +76,24 @@ findRelevantTransactions = (mediaType, apiElements) ->
       )
   )
   return relevantTransactions
+
+
+compileTransaction = (mediaType, filename, httpTransactionElement, exampleNo) ->
+  origin = compileOrigin(mediaType, filename, httpTransactionElement, exampleNo)
+  {request, annotations} = compileRequest(httpTransactionElement.request)
+
+  annotations.errors.forEach((error) -> error.origin = clone(origin))
+  annotations.warnings.forEach((warning) -> warning.origin = clone(origin))
+
+  return {transaction: null, annotations} unless request
+
+  name = getTransactionName(origin)
+  pathOrigin = compilePathOrigin(filename, httpTransactionElement, exampleNo)
+  path = getTransactionPath(pathOrigin)
+  response = compileResponse(httpTransactionElement.response)
+
+  transaction = {request, response, origin, name, pathOrigin, path}
+  return {transaction, annotations}
 
 
 compileRequest = (httpRequestElement) ->

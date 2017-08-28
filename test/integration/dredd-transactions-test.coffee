@@ -5,7 +5,7 @@ proxyquire = require('proxyquire').noPreserveCache()
 fixtures = require('../fixtures')
 {assert} = require('../utils')
 createCompilationResultSchema = require('../schemas/compilation-result')
-dreddTransactions = require('../../src/dredd-transactions')
+dreddTransactions = require('../../src')
 
 
 describe('Dredd Transactions', ->
@@ -20,7 +20,7 @@ describe('Dredd Transactions', ->
     )
 
     beforeEach((done) ->
-      dt = proxyquire('../../src/dredd-transactions',
+      dt = proxyquire('../../src',
         './compile': (args...) -> throw error
       )
       dt.compile('... dummy API description document ...', null, (args...) ->
@@ -198,7 +198,7 @@ describe('Dredd Transactions', ->
     message = '... dummy error message ...'
 
     beforeEach((done) ->
-      dt = proxyquire('../../src/dredd-transactions',
+      dt = proxyquire('../../src',
         './parse': (input, callback) ->
           callback(new Error(message))
       )

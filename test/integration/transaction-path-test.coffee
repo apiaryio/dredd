@@ -1,7 +1,7 @@
 
 {assert} = require 'chai'
 
-dreddTransactions = require '../../src/dredd-transactions'
+dreddTransactions = require '../../src'
 
 
 describe "compiled transaction paths", ->
@@ -27,13 +27,12 @@ describe "compiled transaction paths", ->
       expected = "Some API Name:Some Group Name:Some Resource Name:Some Action Name:Example 2"
 
       paths = []
-      dreddTransactions.compile(code, null, (err, {transactions}) ->
+      dreddTransactions.compile(code, null, (err, compilationResult) ->
         return done(err) if err
 
-        # console.log JSON.stringify transactions, null, 2
-        for transaction in transactions
+        for transaction in compilationResult.transactions
           paths.push transaction.path
-        assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
+        assert.include paths, expected
         done()
       )
 
@@ -55,11 +54,11 @@ describe "compiled transaction paths", ->
       expected = "Some API Name::Some Resource Name:Some Action Name:Example 1"
 
       paths = []
-      dreddTransactions.compile(code, null, (err, {transactions}) ->
+      dreddTransactions.compile(code, null, (err, compilationResult) ->
         return done(err) if err
-        for transaction in transactions
+        for transaction in compilationResult.transactions
           paths.push transaction.path
-        assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
+        assert.include paths, expected
         done()
       )
 
@@ -77,11 +76,11 @@ describe "compiled transaction paths", ->
       expected = "::Some Resource Name:Some Action Name:Example 1"
 
       paths = []
-      dreddTransactions.compile(code, null, (err, {transactions}) ->
+      dreddTransactions.compile(code, null, (err, compilationResult) ->
         return done(err) if err
-        for transaction in transactions
+        for transaction in compilationResult.transactions
           paths.push transaction.path
-        assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
+        assert.include paths, expected
         done()
       )
 
@@ -101,11 +100,11 @@ describe "compiled transaction paths", ->
       expected = "My API\\: Revamp::Some Resource Name:Some Action Name:Example 1"
 
       paths = []
-      dreddTransactions.compile(code, null, (err, {transactions}) ->
+      dreddTransactions.compile(code, null, (err, compilationResult) ->
         return done(err) if err
-        for transaction in transactions
+        for transaction in compilationResult.transactions
           paths.push transaction.path
-        assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
+        assert.include paths, expected
         done()
       )
 
@@ -122,10 +121,10 @@ describe "compiled transaction paths", ->
       expected = "::/message:GET:Example 1"
 
       paths = []
-      dreddTransactions.compile(code, null, (err, {transactions}) ->
+      dreddTransactions.compile(code, null, (err, compilationResult) ->
         return done(err) if err
-        for transaction in transactions
+        for transaction in compilationResult.transactions
           paths.push transaction.path
-        assert.include paths, expected, "Array:\n#{JSON.stringify(paths)}\ndoesn't contain string:\n '#{expected}'\n"
+        assert.include paths, expected
         done()
       )

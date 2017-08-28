@@ -1,8 +1,6 @@
 
 parse = require('./parse')
 compileFromApiElements = require('./compile')
-getTransactionName = require('./transaction-name/get-transaction-name')
-getTransactionPath = require('./transaction-path/get-transaction-path')
 
 
 compile = (source, filename, callback) ->
@@ -31,11 +29,6 @@ compile = (source, filename, callback) ->
     catch err
       return callback(err)
 
-    for transaction in compilationResult.transactions
-      transaction['name'] = getTransactionName(transaction)
-      transaction['path'] = getTransactionPath(transaction)
-
-    compilationResult.mediaType = mediaType
     callback(null, compilationResult)
   )
 
