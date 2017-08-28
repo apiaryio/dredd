@@ -1,4 +1,3 @@
-
 parse = require('./parse')
 compileFromApiElements = require('./compile')
 
@@ -11,14 +10,12 @@ compile = (source, filename, callback) ->
   parse(source, (err, parseResult) ->
     # If 'apiElements' isn't empty, then we don't need to care about 'err'
     # as it should be represented by annotation inside 'apiElements'
-    # and compilation should be able to deal with it and propagate it.
-    if err and not parseResult
-      return callback(null,
-        mediaType: null
-        transactions: []
-        warnings: []
-        errors: [{component: 'apiDescriptionParser', message: err.message}]
-      )
+    # and compilation should be able to deal with it and to propagate it.
+    if not parseResult?.apiElements
+      return callback(null, createParserErrorCompilationResult(err.message)) if err
+
+      message = 'The API description parser was unable to provide a valid parse result'
+      return callback(null, createParserErrorCompilationResult(message))
 
     # The try/catch is just to deal with unexpected crash. Compilation passes
     # all errors as part of the 'result' and it should not throw anything
@@ -31,6 +28,15 @@ compile = (source, filename, callback) ->
 
     callback(null, compilationResult)
   )
+
+
+createParserErrorCompilationResult = (message) ->
+  return {
+    mediaType: null
+    transactions: []
+    warnings: []
+    errors: [{component: 'apiDescriptionParser', message}]
+  }
 
 
 module.exports = {compile}

@@ -37,7 +37,7 @@ describe('Dredd Transactions', ->
     )
   )
 
-  describe('When given no input', ->
+  describe('When given empty API description document', ->
     compilationResult = undefined
     schema = createCompilationResultSchema(
       errors: 0
@@ -215,6 +215,69 @@ describe('Dredd Transactions', ->
       assert.include(
         JSON.stringify(compilationResult.errors),
         message
+      )
+    )
+  )
+
+  describe('When parser unexpectedly provides error and malformed API Elements', ->
+    compilationResult = undefined
+    schema = createCompilationResultSchema(
+      errors: 1
+      warnings: 0
+      transactions: 0
+    )
+    source = '... dummy API description document ...'
+    message = '... dummy error message ...'
+
+    beforeEach((done) ->
+      dt = proxyquire('../../src',
+        './parse': (input, callback) ->
+          callback(new Error(message), {dummy: true})
+      )
+      dt.compile(source, null, (args...) ->
+        [err, compilationResult] = args
+        done(err)
+      )
+    )
+
+    it('produces one error, no warnings, no transactions', ->
+      assert.jsonSchema(compilationResult, schema)
+    )
+    it('turns the parser error into a valid annotation', ->
+      assert.include(
+        JSON.stringify(compilationResult.errors),
+        message
+      )
+    )
+  )
+
+  describe('When parser unexpectedly provides malformed API Elements only', ->
+    compilationResult = undefined
+    schema = createCompilationResultSchema(
+      errors: 1
+      warnings: 0
+      transactions: 0
+    )
+    source = '... dummy API description document ...'
+
+    beforeEach((done) ->
+      dt = proxyquire('../../src',
+        './parse': (input, callback) ->
+          callback(null, {dummy: true})
+      )
+      dt.compile(source, null, (args...) ->
+        [err, compilationResult] = args
+        done(err)
+      )
+    )
+
+    it('produces one error, no warnings, no transactions', ->
+      assert.jsonSchema(compilationResult, schema)
+    )
+    it('the error is a valid annotation', ->
+      assert.include(
+        JSON.stringify(compilationResult.errors),
+        'The API description parser was unable to provide a valid parse result'
       )
     )
   )
