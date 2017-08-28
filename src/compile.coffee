@@ -112,10 +112,10 @@ compileResponse = (httpResponseElement) ->
 
 
 compileOrigin = (mediaType, filename, httpTransactionElement, exampleNo) ->
-  apiElement = httpTransactionElement.closest('category', 'api')
-  resourceGroupElement = httpTransactionElement.closest('category', 'resourceGroup')
-  resourceElement = httpTransactionElement.closest('resource')
-  transitionElement = httpTransactionElement.closest('transition')
+  apiElement = httpTransactionElement.parents.find((element) -> element.classes.contains('api'))
+  resourceGroupElement = httpTransactionElement.parents.find((element) -> element.classes.contains('resourceGroup'))
+  resourceElement = httpTransactionElement.parents.find('resource')
+  transitionElement = httpTransactionElement.parents.find('transition')
   httpRequestElement = httpTransactionElement.request
   httpResponseElement = httpTransactionElement.response
   {
@@ -148,10 +148,10 @@ compileOriginExampleName = (mediaType, httpResponseElement, exampleNo) ->
 
 
 compilePathOrigin = (filename, httpTransactionElement, exampleNo) ->
-  apiElement = httpTransactionElement.closest('category', 'api')
-  resourceGroupElement = httpTransactionElement.closest('category', 'resourceGroup')
-  resourceElement = httpTransactionElement.closest('resource')
-  transitionElement = httpTransactionElement.closest('transition')
+  apiElement = httpTransactionElement.parents.find((element) -> element.classes.contains('api'))
+  resourceGroupElement = httpTransactionElement.parents.find((element) -> element.classes.contains('resourceGroup'))
+  resourceElement = httpTransactionElement.parents.find('resource')
+  transitionElement = httpTransactionElement.parents.find('transition')
   httpRequestElement = httpTransactionElement.request
   {
     apiName: apiElement.meta.getValue('title') or ''

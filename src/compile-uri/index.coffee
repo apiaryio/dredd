@@ -6,8 +6,9 @@ expandUriTemplate = require('./expand-uri-template')
 module.exports = (httpRequestElement) ->
   annotations = {errors: [], warnings: []}
   cascade = [
-    httpRequestElement.closest('resource')
-    httpRequestElement.closest('transition')
+    httpRequestElement.parents.find('resource')
+    httpRequestElement.parents.find('resource')
+    httpRequestElement.parents.find('transition')
     httpRequestElement
   ]
 
