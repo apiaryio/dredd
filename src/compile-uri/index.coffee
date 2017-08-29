@@ -7,7 +7,6 @@ module.exports = (httpRequestElement) ->
   annotations = {errors: [], warnings: []}
   cascade = [
     httpRequestElement.parents.find('resource')
-    httpRequestElement.parents.find('resource')
     httpRequestElement.parents.find('transition')
     httpRequestElement
   ]
