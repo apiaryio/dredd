@@ -100,11 +100,17 @@ Represents a single *HTTP Transaction* (Request-Response pair) and its location 
 - request (object) - HTTP Request as described in API description document.
     - method
     - uri: `/message` (string) - Informative URI of the Request.
-    - headers (object)
+    - headers (array) - List of HTTP headers in their original order, with the original casing of the header name, including multiple headers of the same name.
+        - (object)
+            - name: `Content-Type` (string)
+            - value: `text/plain` (string)
     - body: `Hello world!\n` (string)
 - response (object) - Expected HTTP Response as described in API description document.
     - status: `200` (string)
-    - headers (object)
+    - headers (array) - List of HTTP headers in their original order, with the original casing of the header name, including multiple headers of the same name.
+        - (object)
+            - name: `Content-Type` (string)
+            - value: `text/plain` (string)
     - body (string, optional)
     - schema (string, optional)
 

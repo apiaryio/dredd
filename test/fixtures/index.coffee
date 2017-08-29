@@ -161,6 +161,9 @@ fixtures =
   noStatus: fixture(
     apiBlueprint: fromFile('./api-blueprint/no-status.apib')
   )
+  httpHeadersMultiple: fixture(
+    apiBlueprint: fromFile('./api-blueprint/http-headers-multiple.apib')
+  )
 
   # Specific to Swagger
   produces: fixture(

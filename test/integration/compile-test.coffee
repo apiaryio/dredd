@@ -661,16 +661,16 @@ describe('compile() · all API description formats', ->
       )
       context('compiles a transaction', ->
         it('with expected request headers', ->
-          assert.deepEqual(compilationResult.transactions[0].request.headers, {
-            'Content-Type': {value: 'application/json'}
-            'Accept': {value: 'application/json'}
-          })
+          assert.deepEqual(compilationResult.transactions[0].request.headers, [
+            {name: 'Content-Type', value: 'application/json'}
+            {name: 'Accept', value: 'application/json'}
+          ])
         )
         it('with expected response headers', ->
-          assert.deepEqual(compilationResult.transactions[0].response.headers, {
-            'Content-Type': {value: 'application/json'}
-            'X-Test': {value: 'Adam'}
-          })
+          assert.deepEqual(compilationResult.transactions[0].response.headers, [
+            {name: 'Content-Type', value: 'application/json'}
+            {name: 'X-Test', value: 'Adam'}
+          ])
         )
       )
     )

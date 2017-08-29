@@ -29,18 +29,20 @@ module.exports = (options = {}) ->
   # will default to true (= structure must contain transaction names and paths)
   paths = if options.paths is false then false else true
 
+  headersSchema =
+    type: 'array'
+    items:
+      type: 'object'
+      properties:
+        name: {type: 'string'}
+        value: {type: 'string'}
+
   requestSchema =
     type: 'object'
     properties:
       uri: {type: 'string', pattern: '^/'}
       method: {type: 'string'}
-      headers:
-        type: 'object'
-        patternProperties:
-          '': # property of any name
-            type: 'object'
-            properties:
-              value: {type: 'string'}
+      headers: headersSchema
       body: {type: 'string'}
     required: ['uri', 'method', 'headers']
     additionalProperties: false
@@ -49,13 +51,7 @@ module.exports = (options = {}) ->
     type: 'object'
     properties:
       status: {type: 'string'}
-      headers:
-        type: 'object'
-        patternProperties:
-          '': # property of any name
-            type: 'object'
-            properties:
-              value: {type: 'string'}
+      headers: headersSchema
       body: {type: 'string'}
       schema: {type: 'string'}
     required: ['status', 'headers']

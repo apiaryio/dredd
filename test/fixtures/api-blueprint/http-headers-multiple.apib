@@ -1,0 +1,25 @@
+FORMAT: 1A
+
+# Beehive API
+
+# Honey [/honey]
+
+## Retrieve Honey [GET]
+
++ Request (application/json)
+
+    + Headers
+
+            X-Multiple: foo
+            X-Multiple: bar
+
++ Response 200 (application/json)
+
+    + Headers
+
+            Set-Cookie: session-id=123
+            Set-Cookie: likes-honey=true
+
+    + Body
+
+            {}

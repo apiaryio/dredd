@@ -1,5 +1,4 @@
 clone = require('clone')
-caseless = require('caseless')
 
 detectTransactionExampleNumbers = require('./detect-transaction-example-numbers')
 compileUri = require('./compile-uri')
@@ -150,7 +149,11 @@ compileOriginExampleName = (mediaType, httpResponseElement, exampleNo) ->
   else
     statusCode = httpResponseElement.statusCode?.toValue() or '200'
     headers = compileHeaders(httpResponseElement.headers)
-    contentType = caseless(headers).get('content-type')?.value
+
+    contentType = headers
+      .filter((header) -> header.name.toLowerCase() is 'content-type')
+      .map((header) -> header.value)
+      .join(', ')
 
     segments = []
     segments.push(statusCode) if statusCode
@@ -176,11 +179,10 @@ compilePathOrigin = (filename, httpTransactionElement, exampleNo) ->
 
 
 compileHeaders = (httpHeadersElement) ->
-  return {} unless httpHeadersElement
-  httpHeadersElement.toValue().reduce((headers, {key, value}) ->
-    headers[key] = {value}
-    return headers
-  , {})
+  return [] unless httpHeadersElement
+  return httpHeadersElement.toValue().map(({key, value}) ->
+    return {name: key, value}
+  )
 
 
 module.exports = compile

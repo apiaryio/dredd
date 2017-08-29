@@ -63,14 +63,14 @@ describe('compile() · Swagger', ->
     )
     context('compiles a transaction', ->
       it('with expected request headers', ->
-        assert.deepEqual(compilationResult.transactions[0].request.headers, {
-          'Accept': {value: 'application/json'}
-        })
+        assert.deepEqual(compilationResult.transactions[0].request.headers, [
+          {name: 'Accept', value: 'application/json'}
+        ])
       )
       it('with expected response headers', ->
-        assert.deepEqual(compilationResult.transactions[0].response.headers, {
-          'Content-Type': {value: 'application/json'}
-        })
+        assert.deepEqual(compilationResult.transactions[0].response.headers, [
+          {name: 'Content-Type', value: 'application/json'}
+        ])
       )
     )
   )
@@ -123,12 +123,12 @@ describe('compile() · Swagger', ->
     )
     context('compiles a transaction', ->
       it('with expected request headers', ->
-        assert.deepEqual(compilationResult.transactions[0].request.headers, {
-          'Content-Type': {value: 'application/json'}
-        })
+        assert.deepEqual(compilationResult.transactions[0].request.headers, [
+          {name: 'Content-Type', value: 'application/json'}
+        ])
       )
       it('with expected response headers', ->
-        assert.deepEqual(compilationResult.transactions[0].response.headers, {})
+        assert.deepEqual(compilationResult.transactions[0].response.headers, [])
       )
     )
   )

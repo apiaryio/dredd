@@ -126,10 +126,12 @@ describe('compile() · API Blueprint', ->
             )
           )
           it("has request with Content-Type: #{requestContentType}", ->
-            assert.equal(
-              compilationResult.transactions[i].request.headers['Content-Type'].value,
-              requestContentType
-            )
+            headers = compilationResult.transactions[i].request.headers
+            contentType = headers
+              .filter((header) -> header.name is 'Content-Type')
+              .map((header) -> header.value)
+              .join(', ')
+            assert.equal(contentType, requestContentType)
           )
           it("has response with status code #{responseStatusCode}", ->
             assert.equal(
@@ -302,6 +304,58 @@ describe('compile() · API Blueprint', ->
     )
     it('assumes HTTP 200', ->
       assert.equal(compilationResult.transactions[0].response.status, '200')
+    )
+  )
+
+  describe('with multiple HTTP headers of the same name', ->
+    compilationResult = undefined
+
+    beforeEach((done) ->
+      compileFixture(fixtures.httpHeadersMultiple.apiBlueprint, (args...) ->
+        [err, compilationResult] = args
+        done(err)
+      )
+    )
+
+    it('is compiled with a single warning', ->
+      assert.equal(compilationResult.warnings.length, 1)
+    )
+    context('the warning', ->
+      it('comes from parser', ->
+        assert.equal(compilationResult.warnings[0].component, 'apiDescriptionParser')
+      )
+      it('has code', ->
+        assert.isNumber(compilationResult.warnings[0].code)
+      )
+      it('has message', ->
+        assert.include(compilationResult.warnings[0].message.toLowerCase(), 'duplicate definition')
+        assert.include(compilationResult.warnings[0].message.toLowerCase(), 'header')
+      )
+      it('has location', ->
+        assert.jsonSchema(compilationResult.warnings[0].location, locationSchema)
+      )
+      it('has no origin', ->
+        assert.isUndefined(compilationResult.warnings[0].origin)
+      )
+    )
+    it('is compiled with no errors', ->
+      assert.deepEqual(compilationResult.errors, [])
+    )
+    context('compiles a transaction', ->
+      it('with expected request headers', ->
+        assert.deepEqual(compilationResult.transactions[0].request.headers, [
+          {name: 'Content-Type', value: 'application/json'}
+          {name: 'X-Multiple', value: 'foo'}
+          {name: 'X-Multiple', value: 'bar'}
+        ])
+      )
+      it('with expected response headers', ->
+        assert.deepEqual(compilationResult.transactions[0].response.headers, [
+          {name: 'Content-Type', value: 'application/json'}
+          {name: 'Set-Cookie', value: 'session-id=123'}
+          {name: 'Set-Cookie', value: 'likes-honey=true'}
+        ])
+      )
     )
   )
 )
