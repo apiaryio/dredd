@@ -1,4 +1,5 @@
 
+createLocationSchema = require('./location')
 createOriginSchema = require('./origin')
 createPathOriginSchema = require('./path-origin')
 
@@ -17,17 +18,26 @@ module.exports = (options = {}) ->
   filename = options.filename
 
   # Either exact number or true (= more than one)
-  errors = options.errors or 0
-  warnings = options.warnings or 0
+  annotations = options.annotations or 0
   transactions = options.transactions or 0
 
-  # Either false (= no media type property should be present) or it
-  # will default to true (= structure must contain media type property)
-  mediaType = if options.mediaType is false then false else true
-
-  # Either false (= no transaction names and paths should be present) or it
-  # will default to true (= structure must contain transaction names and paths)
-  paths = if options.paths is false then false else true
+  annotationSchema =
+    type: 'object'
+    properties:
+      type:
+        type: 'string'
+        enum: ['error', 'warning']
+      component:
+        type: 'string'
+        enum: [
+          'apiDescriptionParser'
+          'parametersValidation'
+          'uriTemplateExpansion'
+        ]
+      message: {type: 'string'}
+      location: createLocationSchema()
+    required: ['type', 'component', 'message', 'location']
+    additionalProperties: false
 
   headersSchema =
     type: 'array'
@@ -57,38 +67,24 @@ module.exports = (options = {}) ->
     required: ['status', 'headers']
     additionalProperties: false
 
-  originSchema = createOriginSchema({filename})
-  pathOriginSchema = createPathOriginSchema()
-
   transactionSchema =
     type: 'object'
     properties:
       request: requestSchema
       response: responseSchema
-      origin: originSchema
-      pathOrigin: pathOriginSchema
-    required: ['request', 'response', 'origin', 'pathOrigin']
+      origin: createOriginSchema({filename})
+      name: {type: 'string'}
+      pathOrigin: createPathOriginSchema()
+      path: {type: 'string'}
+    required: ['request', 'response', 'origin', 'name', 'pathOrigin', 'path']
     additionalProperties: false
-
-  if paths
-    transactionSchema.properties.name = {type: 'string'}
-    transactionSchema.required.push('name')
-    transactionSchema.properties.path = {type: 'string'}
-    transactionSchema.required.push('path')
-
-  properties =
-    transactions: addMinMax({type: 'array', items: transactionSchema}, transactions)
-    errors: addMinMax({type: 'array'}, errors)
-    warnings: addMinMax({type: 'array'}, warnings)
-  required = ['transactions', 'errors', 'warnings']
-
-  if mediaType
-    properties.mediaType = {anyOf: [{type: 'string'}, {type: 'null'}]}
-    required.push('mediaType')
 
   {
     type: 'object'
-    properties
-    required
+    properties:
+      mediaType: {anyOf: [{type: 'string'}, {type: 'null'}]}
+      transactions: addMinMax({type: 'array', items: transactionSchema}, transactions)
+      annotations: addMinMax({type: 'array', items: annotationSchema}, annotations)
+    required: ['mediaType', 'transactions', 'annotations']
     additionalProperties: false
   }
