@@ -81,8 +81,7 @@ Result of compilation. Alongside compiled [Transaction][transaction-object-spec]
 
 - `mediaType`: `text/vnd.apiblueprint` (string, default, nullable) - Media type of the input format, defaults to API Blueprint format. Can be empty in case of some fatal errors.
 - `transactions` (array[[Transaction][transaction-object-spec]]) - Compiled _HTTP Transactions_.
-- `errors` (array[[Annotation][annotation-object-spec]]) - Errors which occurred during parsing of the API description or during compilation of transactions.
-- `warnings` (array[[Annotation][annotation-object-spec]]) - Warnings which occurred during parsing of the API description or during compilation of transactions.
+- `annotations` (array[[Annotation][annotation-object-spec]]) - Errors and warnings which occurred during parsing of the API description or during compilation of transactions.
 
 <a name="transaction-object"></a>
 ### Transaction (object)
@@ -136,11 +135,13 @@ Description of an error or warning which occurred during parsing of the API desc
 
 #### Properties
 
+- type (enum[string])
+    - `error`
+    - `warning`
 - component (enum[string]) - In which component of the compilation process the annotation occurred.
     - `apiDescriptionParser`
     - `parametersValidation`
     - `uriTemplateExpansion`
-- code (number) - Parser-specific code of the annotation.
 - message (string) - Textual annotation. This is – in most cases – a human-readable message to be displayed to user.
 - location (array) - Locations of the annotation in the source file. A series of character-blocks, which may be non-continuous. For further details refer to API Elements' [Source Map](source-map) element.
     - (array, fixed) - Continuous characters block. A pair of character index and character count.
