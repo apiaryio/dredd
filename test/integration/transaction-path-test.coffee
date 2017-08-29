@@ -1,7 +1,7 @@
 
 {assert} = require 'chai'
 
-dreddTransactions = require '../../src'
+dreddTransactions = require '../../src/index'
 
 
 describe "compiled transaction paths", ->
