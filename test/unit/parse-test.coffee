@@ -4,7 +4,6 @@ fury = require('fury')
 {assert} = require('../utils')
 fixtures = require('../fixtures')
 parse = require('../../src/parse')
-{serialize} = require('../../src/refract-serialization')
 
 
 describe('Parsing API description document', ->
@@ -40,7 +39,10 @@ describe('Parsing API description document', ->
         assert.isTrue(apiElements.annotations?.isEmpty)
       )
       it('the parse result contains source map elements', ->
-        assert.include(JSON.stringify(serialize(apiElements)), '"sourceMap"')
+        sourceMaps = apiElements
+          .recursiveChildren
+          .flatMap((element) -> element.sourceMapValue)
+        assert.ok(sourceMaps.length)
       )
     )
   )

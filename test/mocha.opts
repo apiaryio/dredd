@@ -1,4 +1,3 @@
 --compilers=coffee:coffee-script/register
 --reporter=test/reporter.js
---timeout=15000
 --recursive

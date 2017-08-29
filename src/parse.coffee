@@ -3,21 +3,15 @@ fury.use(require('fury-adapter-apib-parser'))
 fury.use(require('fury-adapter-swagger'))
 
 
-createWarning = (message) ->
-  annotation = new fury.minim.elements.Annotation(message)
-  annotation.classes.push('warning')
-  return annotation
-
-
 parse = (source, callback) ->
-  warning = null
+  warningElement = null
   adapters = fury.detect(source)
 
   if adapters.length
     mediaType = adapters[0].mediaTypes[0]
   else
     mediaType = 'text/vnd.apiblueprint'
-    warning = createWarning('''\
+    warningElement = createWarning('''\
       Could not recognize API description format. \
       Falling back to API Blueprint by default.\
     ''')
@@ -31,13 +25,18 @@ parse = (source, callback) ->
       err = new Error(err.message)
 
     if apiElements
-      apiElements.unshift(warning) if warning
-      apiElements.freeze() # Adds 'parent' properties, prevents mutation
+      apiElements.unshift(warningElement) if warningElement
     else
       apiElements = null
 
     callback(err, {mediaType, apiElements})
   )
+
+
+createWarning = (message) ->
+  annotationElement = new fury.minim.elements.Annotation(message)
+  annotationElement.classes.push('warning')
+  return annotationElement
 
 
 module.exports = parse

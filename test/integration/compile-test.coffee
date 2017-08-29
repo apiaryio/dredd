@@ -16,8 +16,6 @@ describe('compile() · all API description formats', ->
     compilationResultSchema = createCompilationResultSchema({
       filename
       transactions: true
-      paths: false
-      mediaType: false
     })
 
     fixtures.ordinary.forEachDescribe(({source}) ->

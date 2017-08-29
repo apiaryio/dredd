@@ -1,6 +1,5 @@
 
-module.exports = (transaction) ->
-  origin = transaction.origin
+module.exports = (origin) ->
   segments = []
   segments.push(origin.apiName) if origin.apiName
   segments.push(origin.resourceGroupName) if origin.resourceGroupName

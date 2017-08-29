@@ -1,44 +1,26 @@
 clone = require('clone')
 caseless = require('caseless')
 
-{child, children, parent, content} = require('./refract')
 detectTransactionExampleNumbers = require('./detect-transaction-example-numbers')
-{serialize} = require('./refract-serialization')
 compileUri = require('./compile-uri')
+getTransactionName = require('./transaction-name')
+getTransactionPath = require('./transaction-path')
+
 
 compile = (mediaType, apiElements, filename) ->
+  apiElements.freeze()
+
   transactions = []
   errors = apiElements.errors.map(compileAnnotation)
   warnings = apiElements.warnings.map(compileAnnotation)
 
-  refract = serialize(apiElements)
+  for {httpTransactionElement, exampleNo} in findRelevantTransactions(mediaType, apiElements)
+    {transaction, annotations} = compileTransaction(mediaType, filename, httpTransactionElement, exampleNo)
+    transactions.push(transaction) if transaction
+    errors = errors.concat(annotations.errors)
+    warnings = warnings.concat(annotations.warnings)
 
-  for relevantTransaction in findRelevantTransactions(mediaType, refract, apiElements)
-    refractHttpTransaction = relevantTransaction.refract
-    exampleNo = relevantTransaction.exampleNo
-
-    refractHttpRequest = child(refractHttpTransaction, {element: 'httpRequest'})
-    refractHttpResponse = child(refractHttpTransaction, {element: 'httpResponse'})
-
-    origin = compileOrigin(mediaType, refract, filename, refractHttpTransaction, exampleNo)
-    {request, annotations} = compileRequest(refract, refractHttpRequest)
-
-    if request
-      transactions.push({
-        origin
-        pathOrigin: compilePathOrigin(refract, filename, refractHttpTransaction, exampleNo)
-        request
-        response: compileResponse(refractHttpResponse)
-      })
-
-    for error in annotations.errors
-      error.origin = clone(origin)
-      errors.push(error)
-    for warning in annotations.warnings
-      warning.origin = clone(origin)
-      warnings.push(warning)
-
-  {transactions, errors, warnings}
+  {mediaType, transactions, errors, warnings}
 
 
 compileAnnotation = (annotationElement) ->
@@ -50,17 +32,9 @@ compileAnnotation = (annotationElement) ->
   }
 
 
-findRelevantTransactions = (mediaType, refract, apiElements) ->
+findRelevantTransactions = (mediaType, apiElements) ->
   relevantTransactions = []
-
-  # This gets deleted once we're fully on minim
-  refractTransitions = children(refract, {element: 'transition'})
-
-  apiElements.findRecursive('transition').forEach((transitionElement, transitionNo) ->
-    # This gets deleted once we're fully on minim
-    refractTransition = refractTransitions[transitionNo]
-    refractHttpTransactions = children(refractTransition, {element: 'httpTransaction'})
-
+  apiElements.findRecursive('resource', 'transition').forEach((transitionElement, transitionNo) ->
     if mediaType is 'text/vnd.apiblueprint'
       # API Blueprint has a concept of transaction examples and
       # the API Blueprint AST used to expose it. The concept isn't present
@@ -71,125 +45,99 @@ findRelevantTransactions = (mediaType, refract, apiElements) ->
       # of Dredd. There's a plan to migrate to so-called "transaction paths"
       # in the future (apiaryio/dredd#227), which won't use the concept
       # of transaction examples anymore.
-      exampleNumbersPerTransaction = detectTransactionExampleNumbers(transitionElement)
-      hasMoreExamples = Math.max(exampleNumbersPerTransaction...) > 1
+      transactionExampleNumbers = detectTransactionExampleNumbers(transitionElement)
+      hasMoreExamples = Math.max(transactionExampleNumbers...) > 1
 
       # Dredd supports only testing of the first request-response pair within
       # each transaction example. We iterate over available transactions and
       # skip those, which are not first within a particular example.
       exampleNo = 0
       transitionElement.transactions.forEach((httpTransactionElement, httpTransactionNo) ->
-        httpTransactionExampleNo = exampleNumbersPerTransaction[httpTransactionNo]
-
-        relevantTransaction =
-          refract: refractHttpTransactions[httpTransactionNo]
-          apiElements: httpTransactionElement
-          exampleNo: if hasMoreExamples then httpTransactionExampleNo else null
-
+        httpTransactionExampleNo = transactionExampleNumbers[httpTransactionNo]
         if httpTransactionExampleNo isnt exampleNo
+          relevantTransaction = {httpTransactionElement}
+          relevantTransaction.exampleNo = httpTransactionExampleNo if hasMoreExamples
           relevantTransactions.push(relevantTransaction)
-
         exampleNo = httpTransactionExampleNo
       )
     else
       # All other formats then API Blueprint
-      transitionElement.transactions.forEach((httpTransactionElement, httpTransactionNo) ->
-        relevantTransactions.push(
-          refract: refractHttpTransactions[httpTransactionNo]
-          apiElements: httpTransactionElement
-        )
+      transitionElement.transactions.forEach((httpTransactionElement) ->
+        relevantTransactions.push({httpTransactionElement})
       )
   )
-
   return relevantTransactions
 
 
-compileRequest = (parseResult, httpRequest) ->
-  messageBody = child(httpRequest, {element: 'asset', 'meta.classes': 'messageBody'})
+compileTransaction = (mediaType, filename, httpTransactionElement, exampleNo) ->
+  origin = compileOrigin(mediaType, filename, httpTransactionElement, exampleNo)
+  {request, annotations} = compileRequest(httpTransactionElement.request)
 
-  {uri, annotations} = compileUri(parseResult, httpRequest)
+  annotations.errors.forEach((error) -> error.origin = clone(origin))
+  annotations.warnings.forEach((warning) -> warning.origin = clone(origin))
+
+  return {transaction: null, annotations} unless request
+
+  name = getTransactionName(origin)
+  pathOrigin = compilePathOrigin(filename, httpTransactionElement, exampleNo)
+  path = getTransactionPath(pathOrigin)
+  response = compileResponse(httpTransactionElement.response)
+
+  transaction = {request, response, origin, name, pathOrigin, path}
+  return {transaction, annotations}
+
+
+compileRequest = (httpRequestElement) ->
+  {uri, annotations} = compileUri(httpRequestElement)
   if uri
-    request = {
-      method: content(httpRequest.attributes?.method)
-      uri
-      headers: compileHeaders(child(httpRequest, {element: 'httpHeaders'}))
-      body: content(messageBody) or ''
-    }
+    request =
+      method: httpRequestElement.method.toValue()
+      uri: uri
+      headers: compileHeaders(httpRequestElement.headers)
+      body: httpRequestElement.messageBody?.toValue() or ''
   else
     request = null
+  return {request, annotations}
 
-  {request, annotations}
 
-
-compileResponse = (httpResponse) ->
-  messageBody = child(httpResponse, {element: 'asset', 'meta.classes': 'messageBody'})
-  messageBodySchema = child(httpResponse, {element: 'asset', 'meta.classes': 'messageBodySchema'})
-
+compileResponse = (httpResponseElement) ->
   response =
-    status: content(httpResponse.attributes?.statusCode)
-    headers: compileHeaders(child(httpResponse, {element: 'httpHeaders'}))
-    body: content(messageBody) or ''
+    status: httpResponseElement.statusCode.toValue()
+    headers: compileHeaders(httpResponseElement.headers)
+    body: httpResponseElement.messageBody?.toValue() or ''
 
-  schema = content(messageBodySchema)
+  schema = httpResponseElement.messageBodySchema?.toValue()
   response.schema = schema if schema
 
-  response
+  return response
 
 
-compileHeaders = (httpHeaders) ->
-  headers = {}
-  for member in children(httpHeaders, {element: 'member'})
-    name = content(content(member).key)
-    value = content(content(member).value)
-    headers[name] = {value}
-  headers
-
-
-compileOrigin = (mediaType, parseResult, filename, httpTransaction, exampleNo) ->
-  api = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'api'})
-  resourceGroup = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'resourceGroup'})
-  resource = parent(httpTransaction, parseResult, {element: 'resource'})
-  transition = parent(httpTransaction, parseResult, {element: 'transition'})
-  httpRequest = child(httpTransaction, {element: 'httpRequest'})
-
+compileOrigin = (mediaType, filename, httpTransactionElement, exampleNo) ->
+  apiElement = httpTransactionElement.parents.find((element) -> element.classes.contains('api'))
+  resourceGroupElement = httpTransactionElement.parents.find((element) -> element.classes.contains('resourceGroup'))
+  resourceElement = httpTransactionElement.parents.find('resource')
+  transitionElement = httpTransactionElement.parents.find('transition')
+  httpRequestElement = httpTransactionElement.request
+  httpResponseElement = httpTransactionElement.response
   {
     filename: filename or ''
-    apiName: content(api.meta?.title) or filename or ''
-    resourceGroupName: content(resourceGroup?.meta?.title) or ''
-    resourceName: content(resource.meta?.title) or content(resource.attributes?.href) or ''
-    actionName: content(transition.meta?.title) or content(httpRequest.attributes.method) or ''
-    exampleName: compileOriginExampleName(mediaType, parseResult, httpTransaction, exampleNo)
+    apiName: apiElement.meta.getValue('title') or filename or ''
+    resourceGroupName: resourceGroupElement?.meta.getValue('title') or ''
+    resourceName: resourceElement.meta.getValue('title') or resourceElement.attributes.getValue('href') or ''
+    actionName: transitionElement.meta.getValue('title') or httpRequestElement.attributes.getValue('method') or ''
+    exampleName: compileOriginExampleName(mediaType, httpResponseElement, exampleNo)
   }
 
 
-compilePathOrigin = (parseResult, filename, httpTransaction, exampleNo) ->
-  api = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'api'})
-  resourceGroup = parent(httpTransaction, parseResult, {element: 'category', 'meta.classes': 'resourceGroup'})
-  resource = parent(httpTransaction, parseResult, {element: 'resource'})
-  transition = parent(httpTransaction, parseResult, {element: 'transition'})
-  httpRequest = child(httpTransaction, {element: 'httpRequest'})
-
-  {
-    apiName: content(api.meta?.title) or ''
-    resourceGroupName: content(resourceGroup?.meta?.title) or ''
-    resourceName: content(resource.meta?.title) or content(resource.attributes?.href) or ''
-    actionName: content(transition.meta?.title) or content(httpRequest.attributes?.method) or ''
-    exampleName: "Example #{exampleNo or 1}"
-  }
-
-
-compileOriginExampleName = (mediaType, parseResult, httpTransaction, exampleNo) ->
-  transition = parent(httpTransaction, parseResult, {element: 'transition'})
-  httpResponse = child(httpTransaction, {element: 'httpResponse'})
-
+compileOriginExampleName = (mediaType, httpResponseElement, exampleNo) ->
   exampleName = ''
 
   if mediaType is 'text/vnd.apiblueprint'
     if exampleNo
       exampleName = "Example #{exampleNo}"
   else
-    statusCode = content(httpResponse.attributes.statusCode)
-    headers = compileHeaders(child(httpResponse, {element: 'httpHeaders'}))
+    statusCode = httpResponseElement.statusCode.toValue()
+    headers = compileHeaders(httpResponseElement.headers)
     contentType = caseless(headers).get('content-type')?.value
 
     segments = []
@@ -198,6 +146,29 @@ compileOriginExampleName = (mediaType, parseResult, httpTransaction, exampleNo) 
     exampleName = segments.join(' > ')
 
   return exampleName
+
+
+compilePathOrigin = (filename, httpTransactionElement, exampleNo) ->
+  apiElement = httpTransactionElement.parents.find((element) -> element.classes.contains('api'))
+  resourceGroupElement = httpTransactionElement.parents.find((element) -> element.classes.contains('resourceGroup'))
+  resourceElement = httpTransactionElement.parents.find('resource')
+  transitionElement = httpTransactionElement.parents.find('transition')
+  httpRequestElement = httpTransactionElement.request
+  {
+    apiName: apiElement.meta.getValue('title') or ''
+    resourceGroupName: resourceGroupElement?.meta.getValue('title') or ''
+    resourceName: resourceElement.meta.getValue('title') or resourceElement.attributes.getValue('href') or ''
+    actionName: transitionElement.meta.getValue('title') or httpRequestElement.attributes.getValue('method') or ''
+    exampleName: "Example #{exampleNo or 1}"
+  }
+
+
+compileHeaders = (httpHeadersElement) ->
+  return {} unless httpHeadersElement
+  httpHeadersElement.toValue().reduce((headers, {key, value}) ->
+    headers[key] = {value}
+    return headers
+  , {})
 
 
 module.exports = compile
