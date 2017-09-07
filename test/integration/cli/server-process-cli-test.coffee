@@ -131,6 +131,11 @@ describe 'CLI - Server Process', ->
         apiDescriptionDocument: './test/fixtures/apiary.apib'
         server: "#{COFFEE_BIN} test/fixtures/scripts/dummy-server-kill.coffee #{DEFAULT_SERVER_PORT}"
         expectServerBoot: true
+      ,
+        description: 'When is not able to communicate over HTTP'
+        apiDescriptionDocument: './test/fixtures/single-get.apib'
+        server: "#{COFFEE_BIN} test/fixtures/scripts/dummy-server-connection-error.coffee #{DEFAULT_SERVER_PORT}"
+        expectServerBoot: true
     ]
       do (scenario) ->
         describe scenario.description, ->
