@@ -110,7 +110,7 @@ describe('compile() · Swagger', ->
     compilationResult = undefined
     filename = 'apiDescription.json'
     detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'))
-    expectedStatusCodes = [200, 400, 500]
+    expectedStatusCodes = [200, 200, 400, 400, 500, 500]
 
     beforeEach((done) ->
       stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers}
@@ -132,19 +132,23 @@ describe('compile() · Swagger', ->
     it('is compiled with no errors', ->
       assert.deepEqual(compilationResult.errors, [])
     )
+
     for statusCode, i in expectedStatusCodes
       do (statusCode, i) ->
         context("origin of transaction ##{i + 1}", ->
           it('uses URI as resource name', ->
             assert.equal(compilationResult.transactions[i].origin.resourceName, '/honey')
           )
+
           it('uses method as action name', ->
             assert.equal(compilationResult.transactions[i].origin.actionName, 'GET')
           )
+
           it('uses status code and response\'s Content-Type as example name', ->
+            contentType = if i % 2 then 'application/json' else 'application/xml'
             assert.equal(
               compilationResult.transactions[i].origin.exampleName,
-              "#{statusCode} > application/json"
+              "#{statusCode} > #{contentType}"
             )
           )
         )
