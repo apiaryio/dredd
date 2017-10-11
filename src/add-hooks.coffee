@@ -115,7 +115,11 @@ addHooks = (runner, transactions, callback) ->
         # ]
         .map((filepath) -> basename: basename(filepath), path: filepath)
         # Sort 'em up
-        .sort((a, b) -> a.basename > b.basename)
+        .sort((a, b) -> switch
+          when a.basename < b.basename then -1
+          when a.basename > b.basename then 1
+          else 0
+        )
         # Resolve paths to absolute form. Take into account user defined current
         # working directory, fallback to process.cwd() otherwise
         .map((item) -> path.resolve(customConfigCwd or process.cwd(), item.path))
