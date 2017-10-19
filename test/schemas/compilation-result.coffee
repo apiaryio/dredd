@@ -36,7 +36,13 @@ module.exports = (options = {}) ->
         ]
       message: {type: 'string'}
       location: createLocationSchema()
+      origin: createOriginSchema({filename})
     required: ['type', 'component', 'message', 'location']
+    dependencies:
+      origin:
+        properties:
+          component:
+            enum: ['parametersValidation', 'uriTemplateExpansion']
     additionalProperties: false
 
   headersSchema =
@@ -79,12 +85,22 @@ module.exports = (options = {}) ->
     required: ['request', 'response', 'origin', 'name', 'pathOrigin', 'path']
     additionalProperties: false
 
+  transactionsSchema = addMinMax(
+    type: 'array'
+    items: transactionSchema
+  , transactions)
+
+  annotationsSchema = addMinMax(
+    type: 'array'
+    items: annotationSchema
+  , annotations)
+
   {
     type: 'object'
     properties:
       mediaType: {anyOf: [{type: 'string'}, {type: 'null'}]}
-      transactions: addMinMax({type: 'array', items: transactionSchema}, transactions)
-      annotations: addMinMax({type: 'array', items: annotationSchema}, annotations)
+      transactions: transactionsSchema
+      annotations: annotationsSchema
     required: ['mediaType', 'transactions', 'annotations']
     additionalProperties: false
   }

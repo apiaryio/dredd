@@ -72,9 +72,9 @@ describe('Dredd Transactions', ->
       )
     )
 
-    it('produces one annotation, no transactions', ->
+    it('produces two annotations, no transactions', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 1
+        annotations: 2
         transactions: 0
       ))
     )
@@ -83,6 +83,13 @@ describe('Dredd Transactions', ->
       assert.include(
         compilationResult.annotations[0].message,
         'to API Blueprint'
+      )
+    )
+    it('produces a warning about the API Blueprint not being valid', ->
+      assert.equal(compilationResult.annotations[1].type, 'warning')
+      assert.include(
+        compilationResult.annotations[1].message,
+        'expected'
       )
     )
   )
@@ -162,10 +169,10 @@ describe('Dredd Transactions', ->
         )
       )
 
-      it('produces some annotations, no transactions', ->
+      it('produces some annotations, some transactions', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
           annotations: true
-          transactions: 0
+          transactions: true
         ))
       )
       it('produces no errors', ->

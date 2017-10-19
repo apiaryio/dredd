@@ -4,15 +4,24 @@ FORMAT: 1A
 
 ## Honey [/honey]
 
-### Remove [DELETE]
+### With Body [POST]
 
 + Request (application/json)
 
-+ Response 200
++ Response 201
     + Body
 
             []
 
+    + Schema
+
+            {"type": "array"}
+
+### Without Body [DELETE]
+
++ Request (application/json)
+
++ Response 200
     + Schema
 
             {"type": "array"}

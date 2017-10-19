@@ -172,6 +172,9 @@ fixtures =
   producesCharset: fixture(
     swagger: fromFile('./swagger/produces-charset.yml')
   )
+  producesNonJSONExample: fixture(
+    swagger: fromFile('./swagger/produces-non-json-example.yml')
+  )
   consumes: fixture(
     swagger: fromFile('./swagger/consumes.yml')
   )
