@@ -562,8 +562,8 @@ describe 'Dredd class Integration', ->
       )
     )
 
-    it('recognizes all 3 transactions', ->
-      assert.equal(matches.length, 3)
+    it('recognizes all 6 transactions', ->
+      assert.equal(matches.length, 6)
     )
     it('the transaction #1 is skipped', ->
       assert.equal(matches[0][1], 'skip')
@@ -571,8 +571,17 @@ describe 'Dredd class Integration', ->
     it('the transaction #2 is skipped', ->
       assert.equal(matches[1][1], 'skip')
     )
-    it('the transaction #3 is not skipped (status 200)', ->
-      assert.notEqual(matches[2][1], 'skip')
+    it('the transaction #3 is skipped', ->
+      assert.equal(matches[2][1], 'skip')
+    )
+    it('the transaction #4 is skipped', ->
+      assert.equal(matches[3][1], 'skip')
+    )
+    it('the transaction #5 is not skipped (status 200)', ->
+      assert.notEqual(matches[4][1], 'skip')
+    )
+    it('the transaction #6 is not skipped (status 200)', ->
+      assert.notEqual(matches[5][1], 'skip')
     )
   )
 
@@ -592,17 +601,26 @@ describe 'Dredd class Integration', ->
       )
     )
 
-    it('recognizes all 3 transactions', ->
-      assert.equal(matches.length, 3)
+    it('recognizes all 6 transactions', ->
+      assert.equal(matches.length, 6)
     )
     it('the transaction #1 is skipped', ->
       assert.equal(matches[0][1], 'skip')
     )
-    it('the transaction #2 is not skipped (unskipped in hooks)', ->
-      assert.notEqual(matches[1][1], 'skip')
+    it('the transaction #2 is skipped', ->
+      assert.equal(matches[1][1], 'skip')
     )
-    it('the transaction #3 is not skipped (status 200)', ->
+    it('the transaction #3 is not skipped (unskiped in hooks)', ->
       assert.notEqual(matches[2][1], 'skip')
+    )
+    it('the transaction #4 is not skipped (status 200)', ->
+      assert.notEqual(matches[3][1], 'skip')
+    )
+    it('the transaction #5 is not skipped (status 200)', ->
+      assert.notEqual(matches[4][1], 'skip')
+    )
+    it('the transaction #6 is not skipped (unskiped in hooks)', ->
+      assert.notEqual(matches[5][1], 'skip')
     )
   )
 
