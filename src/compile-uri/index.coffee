@@ -4,7 +4,7 @@ expandUriTemplate = require('./expand-uri-template')
 
 
 module.exports = (httpRequestElement) ->
-  annotations = {errors: [], warnings: []}
+  annotations = []
   cascade = [
     httpRequestElement.parents.find('resource')
     httpRequestElement.parents.find('transition')
@@ -28,16 +28,16 @@ module.exports = (httpRequestElement) ->
   result = validateParams(params)
   component = 'parametersValidation'
   for error in result.errors
-    annotations.errors.push({component, message: error})
+    annotations.push({type: 'error', component, message: error})
   for warning in result.warnings
-    annotations.warnings.push({component, message: warning})
+    annotations.push({type: 'warning', component, message: warning})
 
   result = expandUriTemplate(href, params)
   component = 'uriTemplateExpansion'
   for error in result.errors
-    annotations.errors.push({component, message: error})
+    annotations.push({type: 'error', component, message: error})
   for warning in result.warnings
-    annotations.warnings.push({component, message: warning})
+    annotations.push({type: 'warning', component, message: warning})
 
   {uri: result.uri, annotations}
 

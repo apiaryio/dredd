@@ -36,6 +36,9 @@ parse = (source, callback) ->
 createWarning = (message) ->
   annotationElement = new fury.minim.elements.Annotation(message)
   annotationElement.classes.push('warning')
+  annotationElement.attributes.set('sourceMap', [
+    new fury.minim.elements.SourceMap([[0, 1]]),
+  ])
   return annotationElement
 
 
