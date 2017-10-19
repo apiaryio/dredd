@@ -2,6 +2,10 @@ swagger: '2.0'
 info:
   title: Machines API
   version: '1.0'
+host: api.example.com
+schemes:
+- https
+- http
 paths:
   '/machines':
     x-summary: Machines Collection
