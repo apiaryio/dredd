@@ -1,9 +1,6 @@
-
 chai = require('chai')
 chai.use(require('chai-json-schema'))
-
 proxyquire = require('proxyquire').noPreserveCache()
-tv4 = require('tv4')
 
 parse = require('../src/parse')
 
