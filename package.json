@@ -36,7 +36,7 @@
     "coffee-script": "^1.12.5",
     "colors": "^1.1.2",
     "cross-spawn": "^5.0.1",
-    "dredd-transactions": "^4.3.4",
+    "dredd-transactions": "4.3.4",
     "file": "^0.2.2",
     "gavel": "^1.1.1",
     "glob": "^7.0.5",
