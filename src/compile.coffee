@@ -73,9 +73,9 @@ compileTransaction = (mediaType, filename, httpTransactionElement, exampleNo) ->
   origin = compileOrigin(mediaType, filename, httpTransactionElement, exampleNo)
   {request, annotations} = compileRequest(httpTransactionElement.request)
 
-  annotations.errors.forEach((error) -> error.origin = clone(origin))
-  annotations.warnings.forEach((warning) -> warning.origin = clone(origin))
-
+  [].concat(annotations.errors, annotations.warnings).forEach((annotation) ->
+    annotation.origin = clone(origin)
+  )
   return {transaction: null, annotations} unless request
 
   name = getTransactionName(origin)
@@ -89,6 +89,15 @@ compileTransaction = (mediaType, filename, httpTransactionElement, exampleNo) ->
 
 compileRequest = (httpRequestElement) ->
   {uri, annotations} = compileUri(httpRequestElement)
+
+  [].concat(annotations.errors, annotations.warnings).forEach((annotation) ->
+    annotation.location = (
+      httpRequestElement.href?.sourceMapValue or
+      httpRequestElement.parents.find('transition').href?.sourceMapValue or
+      httpRequestElement.parents.find('resource').href?.sourceMapValue
+    )
+  )
+
   if uri
     request =
       method: httpRequestElement.method.toValue()
@@ -97,6 +106,7 @@ compileRequest = (httpRequestElement) ->
       body: httpRequestElement.messageBody?.toValue() or ''
   else
     request = null
+
   return {request, annotations}
 
 

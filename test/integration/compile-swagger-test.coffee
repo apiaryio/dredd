@@ -40,7 +40,7 @@ describe('compile() · Swagger', ->
         assert.include(compilationResult.errors[0].message.toLowerCase(), 'in the path string')
       )
       it('has no location', ->
-        assert.notOk(compilationResult.errors[0].location)
+        assert.isUndefined(compilationResult.errors[0].location)
       )
       it('has no origin', ->
         assert.isUndefined(compilationResult.errors[0].origin)

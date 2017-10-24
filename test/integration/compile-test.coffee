@@ -112,8 +112,8 @@ describe('compile() · all API description formats', ->
         it('has message', ->
           assert.include(compilationResult.errors[0].message.toLowerCase(), 'failed to parse uri template')
         )
-        it('has no location', ->
-          assert.isUndefined(compilationResult.errors[0].location)
+        it('has location', ->
+          assert.jsonSchema(compilationResult.errors[0].location, locationSchema)
         )
         it('has origin', ->
           assert.jsonSchema(compilationResult.errors[0].origin, originSchema)
@@ -171,8 +171,8 @@ describe('compile() · all API description formats', ->
         it('has message', ->
           assert.include(compilationResult.errors[0].message.toLowerCase(), 'no example')
         )
-        it('has no location', ->
-          assert.isUndefined(compilationResult.errors[0].location)
+        it('has location', ->
+          assert.jsonSchema(compilationResult.errors[0].location, locationSchema)
         )
         it('has origin', ->
           assert.jsonSchema(compilationResult.errors[0].origin, originSchema)
@@ -271,9 +271,9 @@ describe('compile() · all API description formats', ->
           for warning in compilationResult.warnings
             assert.include(warning.message, message)
         )
-        it('have no location', ->
+        it('have location', ->
           for warning in compilationResult.warnings
-            assert.isUndefined(warning.location)
+            assert.jsonSchema(warning.location, locationSchema)
         )
         it('have origin', ->
           for warning in compilationResult.warnings
@@ -322,8 +322,8 @@ describe('compile() · all API description formats', ->
         it('has message', ->
           assert.include(compilationResult.warnings[0].message.toLowerCase(), 'ambiguous')
         )
-        it('has no location', ->
-          assert.isUndefined(compilationResult.warnings[0].location)
+        it('has location', ->
+          assert.jsonSchema(compilationResult.warnings[0].location, locationSchema)
         )
         it('has origin', ->
           assert.jsonSchema(compilationResult.warnings[0].origin, originSchema)
@@ -377,9 +377,9 @@ describe('compile() · all API description formats', ->
           for warning in compilationResult.warnings
             assert.include(warning.message, message)
         )
-        it('have no location', ->
+        it('have location', ->
           for warning in compilationResult.warnings
-            assert.isUndefined(warning.location)
+            assert.jsonSchema(warning.location, locationSchema)
         )
         it('have origin', ->
           for warning in compilationResult.warnings
@@ -475,8 +475,8 @@ describe('compile() · all API description formats', ->
         it('has message', ->
           assert.include(compilationResult.errors[0].message.toLowerCase(), 'example value is not one of enum values')
         )
-        it('has no location', ->
-          assert.isUndefined(compilationResult.errors[0].location)
+        it('has location', ->
+          assert.jsonSchema(compilationResult.errors[0].location, locationSchema)
         )
         it('has origin', ->
           assert.jsonSchema(compilationResult.errors[0].origin, originSchema)
@@ -630,9 +630,9 @@ describe('compile() · all API description formats', ->
           lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
           assert.include(lastWarning.message.toLowerCase(), 'default value for a required parameter')
         )
-        it('has no location', ->
+        it('has location', ->
           lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
-          assert.isUndefined(lastWarning.location)
+          assert.jsonSchema(lastWarning.location, locationSchema)
         )
         it('has origin', ->
           lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
