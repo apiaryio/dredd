@@ -1,4 +1,5 @@
---compilers=coffee:coffee-script/register
+--require=coffee-script/register
 --reporter=test/reporter.js
+--watch-extensions=coffee,js
 --timeout=120000
 --recursive
