@@ -57,7 +57,8 @@ module.exports = (options = {}) ->
             properties:
               value: {type: 'string'}
       body: {type: 'string'}
-    required: ['status', 'headers', 'body']
+      schema: {type: 'string'}
+    required: ['status', 'headers', 'body', 'schema']
     additionalProperties: false
 
   originSchema = createOriginSchema({filename})

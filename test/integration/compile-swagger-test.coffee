@@ -1,14 +1,11 @@
-
 sinon = require('sinon')
 
 fixtures = require('../fixtures')
 {assert, compileFixture} = require('../utils')
-createLocationSchema = require('../schemas/location')
+createCompilationResultSchema = require('../schemas/compilation-result')
 
 
 describe('compile() · Swagger', ->
-  locationSchema = createLocationSchema()
-
   describe('causing a \'not specified in URI Template\' error', ->
     compilationResult = undefined
 
@@ -193,6 +190,39 @@ describe('compile() · Swagger', ->
     )
     it('returns expected number of transactions', ->
       assert.deepEqual(compilationResult.transactions.length, 1)
+    )
+  )
+
+  describe('without response schema', ->
+    compilationResult = undefined
+
+    beforeEach((done) ->
+      compileFixture(fixtures.missingSchema.swagger, (args...) ->
+        [err, compilationResult] = args
+        done(err)
+      )
+    )
+
+    it('produces no annotations and 1 transaction', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        annotations: 0
+        transactions: 1
+      ))
+    )
+    it('produces response with schema', ->
+      assert.ok(compilationResult.transactions[0].response.schema)
+    )
+    context('the schema', ->
+      it('is JSON', ->
+        schemaAsString = compilationResult.transactions[0].response.schema
+        assert.doesNotThrow( -> JSON.parse(schemaAsString))
+      )
+      ['string', 42, ['array'], {name: 'object'}].forEach((value) ->
+        it("considers anything as valid, e.g. #{JSON.stringify(value)}", ->
+          schema = JSON.parse(compilationResult.transactions[0].response.schema)
+          assert.jsonSchema(value, schema)
+        )
+      )
     )
   )
 )

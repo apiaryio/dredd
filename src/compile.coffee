@@ -117,7 +117,7 @@ compileResponse = (httpResponseElement) ->
     body: httpResponseElement.messageBody?.toValue() or ''
 
   schema = httpResponseElement.messageBodySchema?.toValue()
-  response.schema = schema if schema
+  response.schema = schema or '{}'
 
   return response
 

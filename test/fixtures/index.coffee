@@ -167,6 +167,9 @@ fixtures =
   securityDefinitionsTransitions: fixture(
     swagger: fromSwaggerZoo('auth-oauth2-implicit')
   )
+  missingSchema: fixture(
+    swagger: fromFile('./swagger/missing-schema.yml')
+  )
 
 
 module.exports = fixtures
