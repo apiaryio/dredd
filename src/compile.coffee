@@ -152,8 +152,7 @@ compileOriginExampleName = (mediaType, httpResponseElement, exampleNo) ->
 
     contentType = headers
       .filter((header) -> header.name.toLowerCase() is 'content-type')
-      .map((header) -> header.value)
-      .join(', ')
+      .map((header) -> header.value)[0]
 
     segments = []
     segments.push(statusCode) if statusCode

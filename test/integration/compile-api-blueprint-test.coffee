@@ -129,8 +129,7 @@ describe('compile() · API Blueprint', ->
             headers = compilationResult.transactions[i].request.headers
             contentType = headers
               .filter((header) -> header.name is 'Content-Type')
-              .map((header) -> header.value)
-              .join(', ')
+              .map((header) -> header.value)[0]
             assert.equal(contentType, requestContentType)
           )
           it("has response with status code #{responseStatusCode}", ->
