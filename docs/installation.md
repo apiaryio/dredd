@@ -76,9 +76,9 @@ When using `git config`, make sure you have the port specified even
 when it's the standard `:80`. Also check out
 [how to set up Dredd to correctly work with proxies][Dredd Proxy].
 
-### Why I'm Seeing `node-gyp` Errors?
+### Why I'm Seeing `node-gyp` or `python` Errors?
 
-The installation process features compilation of some C++ components, which may not be successful. In that case, errors related to `node-gyp` are printed. However, if `dredd --version` works for you when the installation is done, feel free to ignore the errors.
+The installation process features compilation of some C++ components, which may not be successful. In that case, errors related to `node-gyp` or `python` are printed. However, if `dredd --version` works for you when the installation is done, feel free to ignore the errors.
 
 In case of compilation errors, Dredd automatically uses a less performant solution written in pure JavaScript. Next time when installing Dredd, you can use `npm install -g dredd --no-optional` to skip the compilation step ([learn more about this][C++11 vs JS]).
 
