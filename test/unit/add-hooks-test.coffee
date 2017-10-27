@@ -126,13 +126,27 @@ describe 'addHooks(runner, transactions, callback)', () ->
         done()
 
     it 'should return files alphabetically sorted', (done) ->
+      runner =
+        configuration:
+          options:
+            hookfiles: ['./**/*_hooks.*', '/baz/x.js', '/foo/y.js', '/bar/z.js', '/foo/a.js', '/bar/b.js', '/baz/c.js', '/foo/o.js', '/bar/p.js']
+
       addHooks runner, transactions, (err) ->
         return done err if err
 
+        # We need >10 files to prove that sorting is ok
         expected = [
+          'a.js',
+          'b.js',
+          'c.js',
           'multifile_hooks.coffee',
+          'o.js',
+          'p.js',
           'test2_hooks.js',
-          'test_hooks.coffee'
+          'test_hooks.coffee',
+          'x.js',
+          'y.js',
+          'z.js',
         ]
 
         actual = runner.hooks.configuration.options.hookfiles
