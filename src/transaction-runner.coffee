@@ -148,7 +148,7 @@ class TransactionRunner
           runHookCallback()
 
       async.timesSeries hooks.length, runHookWithData, ->
-        callback()
+        process.nextTick(() -> callback())
 
     else
       callback()
@@ -334,7 +334,7 @@ class TransactionRunner
       protocol: @parsedUrl.protocol
       skip: skip
 
-    return callback(null, configuredTransaction)
+    return process.nextTick(() -> callback(null, configuredTransaction))
 
   parseServerUrl: (serverUrl) ->
     unless serverUrl.match(/^https?:\/\//i)
