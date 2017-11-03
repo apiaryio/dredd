@@ -42,7 +42,7 @@
     "glob": "^7.0.5",
     "html": "^1.0.0",
     "htmlencode": "0.0.4",
-    "inquirer": "^1.1.0",
+    "inquirer": "^3.3.0",
     "js-yaml": "^3.8.3",
     "markdown-it": "^8.3.1",
     "optimist": "^0.6.1",
