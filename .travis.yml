@@ -22,7 +22,6 @@ cache:
   directories:
     - "node_modules"
 before_install:
-  - "git fetch --unshallow"  # for commitlint to work
   - "npm -g install npm@latest"
 install: "if [[ $DRAFTER = JS ]]; then npm install --no-optional; else npm install; fi"
 script:
