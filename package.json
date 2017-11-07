@@ -35,7 +35,6 @@
     "coffee-coverage": "^2.0.1",
     "coffee-script": "^1.12.6",
     "coffeelint": "^1.15.7",
-    "conventional-changelog-lint": "^1.1.9",
     "coveralls": "^2.13.1",
     "drafter": "^1.0.0",
     "mocha": "^4.0.1",
