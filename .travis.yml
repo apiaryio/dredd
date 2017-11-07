@@ -25,8 +25,7 @@ before_install:
   - "npm -g install npm@latest"
 install: "if [[ $DRAFTER = JS ]]; then npm install --no-optional; else npm install; fi"
 script:
-  - "npm run lint"
-  - "npm run test:coverage"
+  - "npm run lint && npm run test:coverage"
 after_success:
   - "npm run coveralls || true"
   - "npm run semantic-release || true"
