@@ -303,11 +303,10 @@ class TransactionRunner
 
     # The data models as used here must conform to Gavel.js
     # as defined in `http-response.coffee`
-    expected =
-      headers: flattenHeaders response['headers']
-      body: response['body']
-      statusCode: response['status']
-    expected['bodySchema'] = response['schema'] if response['schema']
+    expected = {headers: flattenHeaders(response['headers'])}
+    expected.body = response.body if response.body
+    expected.statusCode = response.status if response.status
+    expected.bodySchema = response.schema if response.schema
 
     # Backward compatible transaction name hack. Transaction names will be
     # replaced by Canonical Transaction Paths: https://github.com/apiaryio/dredd/issues/227
