@@ -107,7 +107,7 @@ describe('compile() · Swagger', ->
     compilationResult = undefined
     filename = 'apiDescription.json'
     detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'))
-    expectedStatusCodes = [200, 200, 400, 400, 500, 500]
+    expectedStatusCodes = [200, 400, 500]
 
     beforeEach((done) ->
       stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers}
@@ -122,6 +122,11 @@ describe('compile() · Swagger', ->
     )
     it('returns expected number of transactions', ->
       assert.equal(compilationResult.transactions.length, expectedStatusCodes.length)
+    )
+    it('skips non-JSON media types in \'produces\'', ->
+      compilationResult.transactions.forEach((transaction) ->
+        assert.equal(transaction.response.headers['Content-Type'].value, 'application/json')
+      )
     )
     it('is compiled with no warnings', ->
       assert.deepEqual(compilationResult.warnings, [])
@@ -142,10 +147,9 @@ describe('compile() · Swagger', ->
           )
 
           it('uses status code and response\'s Content-Type as example name', ->
-            contentType = if i % 2 then 'application/json' else 'application/xml'
             assert.equal(
               compilationResult.transactions[i].origin.exampleName,
-              "#{statusCode} > #{contentType}"
+              "#{statusCode} > application/json"
             )
           )
         )
