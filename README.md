@@ -105,8 +105,8 @@ Represents a single *HTTP Transaction* (Request-Response pair) and its location 
 - response (object) - Expected HTTP Response as described in API description document.
     - status: `200` (string)
     - headers (object)
-    - body (string)
-    - schema (string)
+    - body (string, optional)
+    - schema (string, optional)
 
 
 ### Deprecated Properties

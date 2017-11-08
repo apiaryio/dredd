@@ -127,6 +127,14 @@ fixtures =
     apiBlueprint: fromFile('./api-blueprint/example-parameters.apib')
     swagger: fromFile('./swagger/example-parameters.yml')
   )
+  noBody: fixture(
+    apiBlueprint: fromFile('./api-blueprint/no-body.apib')
+    swagger: fromFile('./swagger/no-body.yml')
+  )
+  noSchema: fixture(
+    apiBlueprint: fromFile('./api-blueprint/no-schema.apib')
+    swagger: fromFile('./swagger/no-schema.yml')
+  )
 
   # Specific to API Blueprint
   unrecognizable: fixture(
@@ -150,10 +158,16 @@ fixtures =
   preferSample: fixture(
     apiBlueprint: fromFile('./api-blueprint/prefer-sample.apib')
   )
+  noStatus: fixture(
+    apiBlueprint: fromFile('./api-blueprint/no-status.apib')
+  )
 
   # Specific to Swagger
   produces: fixture(
     swagger: fromSwaggerZoo('produces-header')
+  )
+  producesCharset: fixture(
+    swagger: fromFile('./swagger/produces-charset.yml')
   )
   consumes: fixture(
     swagger: fromFile('./swagger/consumes.yml')
@@ -167,8 +181,8 @@ fixtures =
   securityDefinitionsTransitions: fixture(
     swagger: fromSwaggerZoo('auth-oauth2-implicit')
   )
-  missingSchema: fixture(
-    swagger: fromFile('./swagger/missing-schema.yml')
+  defaultResponse: fixture(
+    swagger: fromFile('./swagger/default-response.yml')
   )
 
 

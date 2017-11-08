@@ -112,12 +112,14 @@ compileRequest = (httpRequestElement) ->
 
 compileResponse = (httpResponseElement) ->
   response =
-    status: httpResponseElement.statusCode.toValue()
+    status: httpResponseElement.statusCode?.toValue() or '200'
     headers: compileHeaders(httpResponseElement.headers)
-    body: httpResponseElement.messageBody?.toValue() or ''
+
+  body = httpResponseElement.messageBody?.toValue()
+  response.body = body if body
 
   schema = httpResponseElement.messageBodySchema?.toValue()
-  response.schema = schema or '{}'
+  response.schema = schema if schema
 
   return response
 
@@ -146,7 +148,7 @@ compileOriginExampleName = (mediaType, httpResponseElement, exampleNo) ->
     if exampleNo
       exampleName = "Example #{exampleNo}"
   else
-    statusCode = httpResponseElement.statusCode.toValue()
+    statusCode = httpResponseElement.statusCode?.toValue() or '200'
     headers = compileHeaders(httpResponseElement.headers)
     contentType = caseless(headers).get('content-type')?.value
 

@@ -45,7 +45,7 @@ describe('compile() · Swagger', ->
     )
   )
 
-  describe('with \'produces\'', ->
+  describe('with \'produces\' containing JSON media type', ->
     compilationResult = undefined
 
     beforeEach((done) ->
@@ -75,7 +75,37 @@ describe('compile() · Swagger', ->
     )
   )
 
-  describe('with \'consumes\'', ->
+  describe('with \'produces\' containing JSON media type with parameters', ->
+    compilationResult = undefined
+
+    beforeEach((done) ->
+      compileFixture(fixtures.producesCharset.swagger, (args...) ->
+        [err, compilationResult] = args
+        done(err)
+      )
+    )
+
+    it('is compiled with no warnings', ->
+      assert.deepEqual(compilationResult.warnings, [])
+    )
+    it('is compiled with no errors', ->
+      assert.deepEqual(compilationResult.errors, [])
+    )
+    context('compiles a transaction', ->
+      it('with expected request headers', ->
+        assert.deepEqual(compilationResult.transactions[0].request.headers, {
+          'Accept': {value: 'application/json; charset=utf-8'}
+        })
+      )
+      it('with expected response headers', ->
+        assert.deepEqual(compilationResult.transactions[0].response.headers, {
+          'Content-Type': {value: 'application/json; charset=utf-8'}
+        })
+      )
+    )
+  )
+
+  describe('with \'consumes\' containing JSON media type', ->
     compilationResult = undefined
 
     beforeEach((done) ->
@@ -197,36 +227,28 @@ describe('compile() · Swagger', ->
     )
   )
 
-  describe('without response schema', ->
+  describe('with default response (without explicit status code)', ->
     compilationResult = undefined
 
     beforeEach((done) ->
-      compileFixture(fixtures.missingSchema.swagger, (args...) ->
+      compileFixture(fixtures.defaultResponse.swagger, (args...) ->
         [err, compilationResult] = args
         done(err)
       )
     )
 
-    it('produces no annotations and 1 transaction', ->
+    it('produces 2 warnings and 2 transactions', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 0
-        transactions: 1
+        errors: 0
+        warnings: 2
+        transactions: 2
       ))
     )
-    it('produces response with schema', ->
-      assert.ok(compilationResult.transactions[0].response.schema)
+    it('assumes the solitary default response to be HTTP 200', ->
+      assert.equal(compilationResult.transactions[0].response.status, '200')
     )
-    context('the schema', ->
-      it('is JSON', ->
-        schemaAsString = compilationResult.transactions[0].response.schema
-        assert.doesNotThrow( -> JSON.parse(schemaAsString))
-      )
-      ['string', 42, ['array'], {name: 'object'}].forEach((value) ->
-        it("considers anything as valid, e.g. #{JSON.stringify(value)}", ->
-          schema = JSON.parse(compilationResult.transactions[0].response.schema)
-          assert.jsonSchema(value, schema)
-        )
-      )
+    it('ignores non-solitary default response, propagates only HTTP 204', ->
+      assert.equal(compilationResult.transactions[1].response.status, '204')
     )
   )
 )

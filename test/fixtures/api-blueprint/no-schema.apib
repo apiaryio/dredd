@@ -1,0 +1,35 @@
+FORMAT: 1A
+
+# My API
+
+## Resource [/resource]
+
+### Retrieve Representation [GET]
+
++ Response 200 (application/json)
+
+## Resource [/resource.json]
+
+### Retrieve Representation [GET]
+
++ Response 200 (application/json)
+
+        {"name": "Honza", "color": "green"}
+
+## Resource [/resource.csv]
+
+### Retrieve Representation [GET]
+
++ Response 200 (text/csv)
+
+        name,color
+        Honza,green
+
+## Resource [/resource.yaml]
+
+### Retrieve Representation [GET]
+
++ Response 200 (text/yaml)
+
+        name: Honza
+        color: green

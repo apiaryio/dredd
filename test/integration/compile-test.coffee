@@ -675,4 +675,70 @@ describe('compile() · all API description formats', ->
       )
     )
   )
+
+  describe('without explicit body', ->
+    fixtures.noBody.forEachDescribe(({source}) ->
+      compilationResult = undefined
+
+      beforeEach((done) ->
+        compileFixture(source, (args...) ->
+          [err, compilationResult] = args
+          done(err)
+        )
+      )
+
+      it('produces no annotations and 2 transactions', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          errors: 0
+          warnings: 0
+          transactions: 2
+        ))
+      )
+      it('produces transactions #1 with no body', ->
+        assert.isUndefined(compilationResult.transactions[0].response.body)
+      )
+      it('produces transaction #2 with no body', ->
+        assert.isUndefined(compilationResult.transactions[0].response.body)
+      )
+    )
+  )
+
+  describe('without explicit schema', ->
+    fixtures.noSchema.forEachDescribe(({source}) ->
+      compilationResult = undefined
+      expectedMediaTypes = [
+        'application/json'
+        'application/json'
+        'text/csv'
+        'text/yaml'
+      ]
+
+      beforeEach((done) ->
+        compileFixture(source, (args...) ->
+          [err, compilationResult] = args
+          done(err)
+        )
+      )
+
+      it("produces no annotations and #{expectedMediaTypes.length} transactions", ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          errors: 0
+          warnings: 0
+          transactions: expectedMediaTypes.length
+        ))
+      )
+      expectedMediaTypes.forEach((mediaType, i) ->
+        context("transaction ##{i + 1}", ->
+          it("has '#{mediaType}' response", ->
+            assert.deepEqual(compilationResult.transactions[i].response.headers, {
+              'Content-Type': {value: mediaType}
+            })
+          )
+          it("has no schema", ->
+            assert.isUndefined(compilationResult.transactions[i].response.schema)
+          )
+        )
+      )
+    )
+  )
 )
