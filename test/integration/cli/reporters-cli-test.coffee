@@ -235,7 +235,7 @@ describe 'CLI - Reporters', ->
     args = [
       './test/fixtures/single-get.apib'
       "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-      '--reporter=junit'
+      '--reporter=xunit'
       '--output=__test_file_output__.xml'
     ]
 
@@ -256,9 +256,9 @@ describe 'CLI - Reporters', ->
     args = [
       './test/fixtures/single-get.apib'
       "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-      '--reporter=junit'
+      '--reporter=xunit'
       '--output=__test_file_output1__.xml'
-      '--reporter=junit'
+      '--reporter=xunit'
       '--output=__test_file_output2__.xml'
     ]
 

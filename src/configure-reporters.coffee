@@ -9,7 +9,13 @@ ApiaryReporter = require './reporters/apiary-reporter'
 
 logger = require('./logger')
 
-fileReporters = ['junit', 'html', 'markdown', 'apiary']
+fileReporters = [
+  'xunit',
+  'html',
+  'markdown',
+  'apiary',
+  'junit' # deprecated
+]
 cliReporters = ['dot', 'nyan']
 
 intersection = (a, b) ->
@@ -35,7 +41,10 @@ configureReporters = (config, stats, tests, runner) ->
 
   addReporter = (reporter, emitter, stats, tests, path) ->
     switch reporter
-      when 'junit'
+      when 'xunit'
+        xUnitReporter = new XUnitReporter(emitter, stats, tests, path, config.options.details)
+      when 'junit' # deprecated
+        logger.warn('junit will be deprecated in the future. Please use `xunit` instead.')
         xUnitReporter = new XUnitReporter(emitter, stats, tests, path, config.options.details)
       when 'dot'
         dotReporter = new DotReporter(emitter, stats, tests)
