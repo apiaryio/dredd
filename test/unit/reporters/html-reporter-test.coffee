@@ -5,10 +5,12 @@ proxyquire = require('proxyquire').noCallThru()
 {EventEmitter} = require 'events'
 loggerStub = require '../../../src/logger'
 fsStub = require 'fs'
+mkdirpStub = sinon.spy((path, cb) -> cb())
 
 HtmlReporter = proxyquire '../../../src/reporters/html-reporter', {
   './../logger' : loggerStub
   'fs' : fsStub
+  'mkdirp' : mkdirpStub
 }
 
 describe 'HtmlReporter', () ->
@@ -87,6 +89,7 @@ describe 'HtmlReporter', () ->
 
     it 'should write the file', (done) ->
       emitter.emit 'end', () ->
+        assert.isOk mkdirpStub.called
         assert.isOk fsStub.writeFile.called
         done()
 

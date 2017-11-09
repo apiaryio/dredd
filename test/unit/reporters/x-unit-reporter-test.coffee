@@ -5,10 +5,11 @@ proxyquire = require('proxyquire').noCallThru()
 
 loggerStub = require '../../../src/logger'
 fsStub = require 'fs'
-
+mkdirpStub = sinon.spy((path, cb) => cb())
 XUnitReporter = proxyquire '../../../src/reporters/x-unit-reporter', {
   './../logger' : loggerStub,
   'fs' : fsStub
+  'mkdirp' : mkdirpStub
 }
 
 describe 'XUnitReporter', () ->
@@ -67,8 +68,9 @@ describe 'XUnitReporter', () ->
 
     it 'should write opening to file', (done) ->
       emitter = new EventEmitter()
-      xUnitReporter = new XUnitReporter(emitter, {}, {})
+      xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
       emitter.emit 'start', '', () ->
+        assert.isOk mkdirpStub.called
         assert.isOk fsStub.appendFileSync.called
         done()
 
