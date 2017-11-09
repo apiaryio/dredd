@@ -5,10 +5,12 @@ proxyquire = require('proxyquire').noCallThru()
 
 {EventEmitter} = require 'events'
 fsStub = require 'fs'
+mkdirpStub = sinon.spy((path, cb) -> cb())
 loggerStub = require '../../../src/logger'
 MarkdownReporter = proxyquire '../../../src/reporters/markdown-reporter', {
   './../logger' : loggerStub
   'fs': fsStub
+  'mkdirp': mkdirpStub
 }
 
 describe 'MarkdownReporter', () ->
@@ -87,6 +89,7 @@ describe 'MarkdownReporter', () ->
 
     it 'should write buffer to file', (done) ->
       emitter.emit 'end'
+      assert.isOk mkdirpStub.called
       assert.isOk fsStub.writeFile.called
       done()
 

@@ -250,7 +250,6 @@ describe 'CLI - Reporters', ->
     it 'should create given file', ->
       assert.isOk fs.existsSync "#{process.cwd()}/__test_file_output__.xml"
 
-
   describe 'When -o/--output is used multiple times to specify output files', ->
     dreddCommandInfo = undefined
     args = [
@@ -274,3 +273,23 @@ describe 'CLI - Reporters', ->
     it 'should create given files', ->
       assert.isOk fs.existsSync "#{process.cwd()}/__test_file_output1__.xml"
       assert.isOk fs.existsSync "#{process.cwd()}/__test_file_output2__.xml"
+
+  describe 'When -o/--output is used to specify output file but directory is not existent', ->
+    dreddCommandInfo = undefined
+    args = [
+      './test/fixtures/single-get.apib'
+      "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+      '--reporter=junit'
+      '--output=./__test_directory/__test_file_output__.xml'
+    ]
+
+    beforeEach (done) ->
+      runDreddCommand args, (err, info) ->
+        dreddCommandInfo = info
+        done(err)
+
+    afterEach ->
+      fs.unlinkSync "#{process.cwd()}/__test_directory/__test_file_output__.xml"
+
+    it 'should create given file', ->
+      assert.isOk fs.existsSync "#{process.cwd()}/__test_directory/__test_file_output__.xml"

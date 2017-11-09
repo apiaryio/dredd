@@ -3,6 +3,8 @@ fs = require 'fs'
 
 md = require('markdown-it')()
 file = require 'file'
+mkdirp = require 'mkdirp'
+pathmodule = require 'path'
 
 logger = require('./../logger')
 prettifyResponse = require './../prettify-response'
@@ -41,9 +43,14 @@ class HtmlReporter extends EventEmitter
 
     emitter.on 'end', (callback) =>
       html = md.render @buf
-      fs.writeFile @path, html, (err) ->
-        logger.error err if err
-        callback()
+      mkdirp pathmodule.dirname(@path), (err) ->
+        if !err
+          fs.writeFile @path, html, (err) ->
+            logger.error err if err
+            callback()
+        else
+          logger.error err if err
+          callback()
 
     emitter.on 'test start', (test) =>
       @level++

@@ -3,6 +3,8 @@ fs = require 'fs'
 
 htmlencode = require 'htmlencode'
 file = require 'file'
+pathmodule = require 'path'
+mkdirp = require 'mkdirp'
 
 logger = require('./../logger')
 prettifyResponse = require './../prettify-response'
@@ -28,16 +30,21 @@ class XUnitReporter extends EventEmitter
 
   configureEmitter: (emitter) ->
     emitter.on 'start', (rawBlueprint, callback) =>
-      appendLine @path, toTag('testsuite', {
-        name: 'Dredd Tests'
-        tests: @stats.tests
-        failures: @stats.failures
-        errors: @stats.errors
-        skip: @stats.skipped
-        timestamp: (new Date()).toUTCString()
-        time: @stats.duration / 1000
-      }, false)
-      callback()
+      mkdirp pathmodule.dirname(@path), (err) =>
+        if !err
+          appendLine @path, toTag('testsuite', {
+            name: 'Dredd Tests'
+            tests: @stats.tests
+            failures: @stats.failures
+            errors: @stats.errors
+            skip: @stats.skipped
+            timestamp: (new Date()).toUTCString()
+            time: @stats.duration / 1000
+          }, false)
+          callback()
+        else
+          logger.error err
+          callback()
 
     emitter.on 'end', (callback) =>
       updateSuiteStats @path, @stats, callback
