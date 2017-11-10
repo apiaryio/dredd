@@ -36,16 +36,15 @@ class TransactionRunner
     transactions = if @configuration.options['sorted'] then sortTransactions(transactions) else transactions
 
     logger.verbose('Configuring HTTP transactions')
-    async.mapSeries transactions, @configureTransaction.bind(@), (err, results) =>
-      transactions = results
+    transactions = transactions.map(@configureTransaction.bind(@))
 
-      # Remainings of functional approach, probs to be eradicated
-      logger.verbose('Reading hook files and registering hooks')
-      addHooks @, transactions, (addHooksError) =>
-        return callback addHooksError if addHooksError
+    # Remainings of functional approach, probs to be eradicated
+    logger.verbose('Reading hook files and registering hooks')
+    addHooks @, transactions, (addHooksError) =>
+      return callback addHooksError if addHooksError
 
-        logger.verbose('Executing HTTP transactions')
-        @executeAllTransactions(transactions, @hooks, callback)
+      logger.verbose('Executing HTTP transactions')
+      @executeAllTransactions(transactions, @hooks, callback)
 
   executeAllTransactions: (transactions, hooks, callback) ->
     # Warning: Following lines is "differently" performed by 'addHooks'
@@ -274,7 +273,7 @@ class TransactionRunner
     if typeof(hook) == 'string'
       @runSandboxedHookFromString hook, data, callback
 
-  configureTransaction: (transaction, callback) =>
+  configureTransaction: (transaction) =>
     configuration = @configuration
 
     {origin, request, response} = transaction
@@ -333,7 +332,7 @@ class TransactionRunner
       protocol: @parsedUrl.protocol
       skip: skip
 
-    return process.nextTick(() -> callback(null, configuredTransaction))
+    return configuredTransaction
 
   parseServerUrl: (serverUrl) ->
     unless serverUrl.match(/^https?:\/\//i)
