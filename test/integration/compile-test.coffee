@@ -694,7 +694,7 @@ describe('compile() · all API description formats', ->
           transactions: 2
         ))
       )
-      it('produces transactions #1 with no body', ->
+      it('produces transaction #1 with no body', ->
         assert.isUndefined(compilationResult.transactions[0].response.body)
       )
       it('produces transaction #2 with no body', ->
