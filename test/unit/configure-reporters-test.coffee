@@ -107,7 +107,7 @@ describe 'configureReporters(config, stats, tests, onSaveCallback)', () ->
   describe 'when there are only file-based reporters', () ->
 
     before () ->
-      configuration.options.reporter = ['junit', 'markdown']
+      configuration.options.reporter = ['xunit', 'markdown']
 
     after () ->
       configuration.options.reporter = []
