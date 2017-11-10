@@ -568,16 +568,13 @@ describe 'Dredd class Integration', ->
       )
     )
 
-    it('recognizes all 6 transactions', ->
-      assert.equal(actual.length, 6)
+    it('recognizes all 3 transactions', ->
+      assert.equal(actual.length, 3)
     )
 
     [
       {action: 'skip', statusCode: '400'}
-      {action: 'skip', statusCode: '400'}
       {action: 'skip', statusCode: '500'}
-      {action: 'skip', statusCode: '500'}
-      {action: 'fail', statusCode: '200'}
       {action: 'fail', statusCode: '200'}
     ].forEach((expected, i) ->
       context("the transaction ##{i + 1}", ->
@@ -613,16 +610,13 @@ describe 'Dredd class Integration', ->
       )
     )
 
-    it('recognizes all 6 transactions', ->
-      assert.equal(actual.length, 6)
+    it('recognizes all 3 transactions', ->
+      assert.equal(actual.length, 3)
     )
 
     [
       {action: 'skip', statusCode: '400'}
-      {action: 'skip', statusCode: '400'}
       {action: 'fail', statusCode: '200'}
-      {action: 'fail', statusCode: '200'}
-      {action: 'fail', statusCode: '500'} # Unskipped in hooks
       {action: 'fail', statusCode: '500'} # Unskipped in hooks
     ].forEach((expected, i) ->
       context("the transaction ##{i + 1}", ->
