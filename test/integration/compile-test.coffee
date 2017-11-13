@@ -21,7 +21,7 @@ describe('compile() · all API description formats', ->
     fixtures.ordinary.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, {filename}, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -38,7 +38,7 @@ describe('compile() · all API description formats', ->
     fixtures.parserError.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -72,7 +72,7 @@ describe('compile() · all API description formats', ->
     fixtures.uriExpansionAnnotation.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -110,7 +110,7 @@ describe('compile() · all API description formats', ->
     fixtures.uriValidationAnnotation.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -152,7 +152,7 @@ describe('compile() · all API description formats', ->
     fixtures.parserWarning.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -197,7 +197,7 @@ describe('compile() · all API description formats', ->
     fixtures.ordinary.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, {stubs}, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -240,7 +240,7 @@ describe('compile() · all API description formats', ->
     fixtures.ambiguousParametersAnnotation.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -281,7 +281,7 @@ describe('compile() · all API description formats', ->
     fixtures.ordinary.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, {stubs}, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -315,7 +315,7 @@ describe('compile() · all API description formats', ->
     fixtures.enumParameter.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -338,7 +338,7 @@ describe('compile() · all API description formats', ->
     fixtures.enumParameterExample.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -367,7 +367,7 @@ describe('compile() · all API description formats', ->
     fixtures.enumParameterUnlistedExample.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -402,7 +402,7 @@ describe('compile() · all API description formats', ->
     fixtures.exampleParameters.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -425,7 +425,7 @@ describe('compile() · all API description formats', ->
     fixtures.responseSchema.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -464,7 +464,7 @@ describe('compile() · all API description formats', ->
     fixtures.parametersInheritance.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -487,7 +487,7 @@ describe('compile() · all API description formats', ->
     fixtures.preferDefault.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -510,7 +510,7 @@ describe('compile() · all API description formats', ->
     fixtures.defaultRequired.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -549,7 +549,7 @@ describe('compile() · all API description formats', ->
     fixtures.httpHeaders.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -581,7 +581,7 @@ describe('compile() · all API description formats', ->
     fixtures.noBody.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -609,7 +609,7 @@ describe('compile() · all API description formats', ->
       compilationResult = undefined
       expectedMediaTypes = ['application/json', 'application/json', 'text/csv', 'text/yaml']
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)

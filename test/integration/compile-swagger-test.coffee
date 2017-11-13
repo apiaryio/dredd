@@ -9,7 +9,7 @@ describe('compile() · Swagger', ->
   describe('causing a \'not specified in URI Template\' error', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.swagger, (args...) ->
         [err, compilationResult] = args
         done(err)
@@ -39,7 +39,7 @@ describe('compile() · Swagger', ->
   describe('with \'produces\' containing JSON media type', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.produces.swagger, (args...) ->
         [err, compilationResult] = args
         done(err)
@@ -74,7 +74,7 @@ describe('compile() · Swagger', ->
   describe('with \'produces\' containing JSON media type with parameters', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.producesCharset.swagger, (args...) ->
         [err, compilationResult] = args
         done(err)
@@ -109,7 +109,7 @@ describe('compile() · Swagger', ->
   describe('with \'produces\' containing a non-JSON media type with an example', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.producesNonJSONExample.swagger, (args...) ->
         [err, compilationResult] = args
         done(err)
@@ -144,7 +144,7 @@ describe('compile() · Swagger', ->
   describe('with \'consumes\'', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.consumes.swagger, (args...) ->
         [err, compilationResult] = args
         done(err)
@@ -177,7 +177,7 @@ describe('compile() · Swagger', ->
     detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'))
     expectedStatusCodes = [200, 400, 500]
 
-    beforeEach((done) ->
+    before((done) ->
       stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers}
       compileFixture(fixtures.multipleResponses.swagger, {filename, stubs}, (args...) ->
         [err, compilationResult] = args
@@ -225,7 +225,7 @@ describe('compile() · Swagger', ->
   describe('with \'securityDefinitions\' and multiple responses', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.securityDefinitionsMultipleResponses.swagger, (args...) ->
         [err, compilationResult] = args
         done(err)
@@ -243,7 +243,7 @@ describe('compile() · Swagger', ->
   describe('with \'securityDefinitions\' containing transitions', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.securityDefinitionsTransitions.swagger, (args...) ->
         [err, compilationResult] = args
         done(err)
@@ -261,7 +261,7 @@ describe('compile() · Swagger', ->
   describe('with default response (without explicit status code)', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.defaultResponse.swagger, (args...) ->
         [err, compilationResult] = args
         done(err)

@@ -11,7 +11,7 @@ describe('compile() · API Blueprint', ->
   describe('causing a \'missing title\' warning', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.missingTitleAnnotation.apiBlueprint, (args...) ->
         [err, compilationResult] = args
         done(err)
@@ -43,7 +43,7 @@ describe('compile() · API Blueprint', ->
 
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.apiBlueprint, (args...) ->
         [err, compilationResult] = args
         done(err)
@@ -79,7 +79,7 @@ describe('compile() · API Blueprint', ->
       {exampleName: 'Example 2', requestContentType: 'text/plain', responseStatusCode: 415}
     ]
 
-    beforeEach((done) ->
+    before((done) ->
       stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers}
       compileFixture(fixtures.multipleTransactionExamples.apiBlueprint, {stubs}, (args...) ->
         [err, compilationResult] = args
@@ -127,7 +127,7 @@ describe('compile() · API Blueprint', ->
     detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'))
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers}
       compileFixture(fixtures.oneTransactionExample.apiBlueprint, {stubs}, (args...) ->
         [err, compilationResult] = args
@@ -158,7 +158,7 @@ describe('compile() · API Blueprint', ->
     compilationResult = undefined
     filename = 'apiDescription.apib'
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.arbitraryAction.apiBlueprint, {filename}, (args...) ->
         [err, compilationResult] = args
         done(err)
@@ -193,7 +193,7 @@ describe('compile() · API Blueprint', ->
     compilationResult = undefined
     filename = 'apiDescription.apib'
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.withoutSections.apiBlueprint, {filename}, (args...) ->
         [err, compilationResult] = args
         done(err)
@@ -239,7 +239,7 @@ describe('compile() · API Blueprint', ->
   describe('with different sample and default value of URI parameter', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.preferSample.apiBlueprint, (args...) ->
         [err, compilationResult] = args
         done(err)
@@ -260,7 +260,7 @@ describe('compile() · API Blueprint', ->
   describe('with response without explicit status code', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.noStatus.apiBlueprint, (args...) ->
         [err, compilationResult] = args
         done(err)
@@ -292,7 +292,7 @@ describe('compile() · API Blueprint', ->
   describe('with multiple HTTP headers of the same name', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.httpHeadersMultiple.apiBlueprint, (args...) ->
         [err, compilationResult] = args
         done(err)
