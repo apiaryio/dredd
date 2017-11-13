@@ -126,6 +126,12 @@ class Dredd
       glob globToExpand, (err, match) =>
         return globCallback(err) if err
         @configuration.files = @configuration.files.concat match
+        if match.length == 0
+          err = new Error("""\
+            API description document(s) not found on path: \
+            '#{globToExpand}'\
+          """)
+          return globCallback(err)
         globCallback()
 
     , (err) =>
