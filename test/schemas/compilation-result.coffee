@@ -1,13 +1,14 @@
-
-createLocationSchema = require('./location')
 createOriginSchema = require('./origin')
 createPathOriginSchema = require('./path-origin')
+createAnnotationSchema = require('./annotation')
 
 
 addMinMax = (schema, n) ->
-  if n is true
-    schema.minItems = 1
-  else
+  if n.length is 1 # [min]
+    schema.minItems = n[0]
+  else if n.length is 2 # [min, max]
+    [schema.minItems, schema.maxItems] = n
+  else # exact number
     schema.minItems = n
     schema.maxItems = n
   schema
@@ -17,33 +18,9 @@ module.exports = (options = {}) ->
   # Either filename string or undefined (= doesn't matter)
   filename = options.filename
 
-  # Either exact number or true (= more than one)
+  # Either exact number or interval ([1, 4] means 1 min, 4 max)
   annotations = options.annotations or 0
-  transactions = options.transactions or 0
-
-  annotationSchema =
-    type: 'object'
-    properties:
-      type:
-        type: 'string'
-        enum: ['error', 'warning']
-      component:
-        type: 'string'
-        enum: [
-          'apiDescriptionParser'
-          'parametersValidation'
-          'uriTemplateExpansion'
-        ]
-      message: {type: 'string'}
-      location: createLocationSchema()
-      origin: createOriginSchema({filename})
-    required: ['type', 'component', 'message', 'location']
-    dependencies:
-      origin:
-        properties:
-          component:
-            enum: ['parametersValidation', 'uriTemplateExpansion']
-    additionalProperties: false
+  transactions = if options.transactions? then options.transactions else [1]
 
   headersSchema =
     type: 'array'
@@ -92,7 +69,7 @@ module.exports = (options = {}) ->
 
   annotationsSchema = addMinMax(
     type: 'array'
-    items: annotationSchema
+    items: createAnnotationSchema({filename})
   , annotations)
 
   {

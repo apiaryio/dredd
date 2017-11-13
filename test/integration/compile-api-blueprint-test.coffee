@@ -3,8 +3,9 @@ proxyquire = require('proxyquire').noPreserveCache()
 sinon = require('sinon')
 
 fixtures = require('../fixtures')
-createCompilationResultSchema = require('../schemas/compilation-result')
 {assert, compileFixture} = require('../utils')
+createCompilationResultSchema = require('../schemas/compilation-result')
+createAnnotationSchema = require('../schemas/annotation')
 
 
 describe('compile() · API Blueprint', ->
@@ -18,22 +19,18 @@ describe('compile() · API Blueprint', ->
       )
     )
 
-    it('produces one annotation and no transaction', ->
+    it('produces one annotation and no transactions', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
         annotations: 1
         transactions: 0
       ))
     )
-    context('the annotation', ->
-      it('is warning', ->
-        assert.equal(compilationResult.annotations[0].type, 'warning')
-      )
-      it('comes from the parser', ->
-        assert.equal(compilationResult.annotations[0].component, 'apiDescriptionParser')
-      )
-      it('has message', ->
-        assert.include(compilationResult.annotations[0].message.toLowerCase(), 'expected api name')
-      )
+    it('produces warning about missing title', ->
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'warning'
+        component: 'apiDescriptionParser'
+        message: 'expected API name'
+      ))
     )
   )
 
@@ -56,17 +53,12 @@ describe('compile() · API Blueprint', ->
         transactions: 1
       ))
     )
-    context('the annotation', ->
-      it('is warning', ->
-        assert.equal(compilationResult.annotations[0].type, 'warning')
-      )
-      it('comes from the parser', ->
-        assert.equal(compilationResult.annotations[0].component, 'apiDescriptionParser')
-      )
-      it('has message', ->
-        assert.include(compilationResult.annotations[0].message.toLowerCase(), 'not found within')
-        assert.include(compilationResult.annotations[0].message.toLowerCase(), 'uri template')
-      )
+    it('produces warning about parameter not being in the URI Template', ->
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'warning'
+        component: 'apiDescriptionParser'
+        message: /not found within.+uri template/i
+      ))
     )
   )
 
@@ -90,9 +82,8 @@ describe('compile() · API Blueprint', ->
     it('calls the detection of transaction examples', ->
       assert.isTrue(detectTransactionExampleNumbers.called)
     )
-    it("produces no annotations and #{expected.length} transactions", ->
+    it("produces #{expected.length} transactions", ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 0
         transactions: expected.length
       ))
     )
@@ -138,9 +129,8 @@ describe('compile() · API Blueprint', ->
     it('calls the detection of transaction examples', ->
       assert.isTrue(detectTransactionExampleNumbers.called)
     )
-    it('produces no annotations and one transaction', ->
+    it('produces one transaction', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 0
         transactions: 1
       ))
     )
@@ -165,13 +155,12 @@ describe('compile() · API Blueprint', ->
       )
     )
 
-    it('produces no annotations and two transactions', ->
+    it('produces two transactions', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 0
         transactions: 2
       ))
     )
-    context('action within a resource', ->
+    context('the action within a resource', ->
       it('has URI inherited from the resource', ->
         assert.equal(compilationResult.transactions[0].request.uri, '/resource/1')
       )
@@ -179,7 +168,7 @@ describe('compile() · API Blueprint', ->
         assert.equal(compilationResult.transactions[0].request.method, 'GET')
       )
     )
-    context('arbitrary action', ->
+    context('the arbitrary action', ->
       it('has its own URI', ->
         assert.equal(compilationResult.transactions[1].request.uri, '/arbitrary/sample')
       )
@@ -200,9 +189,8 @@ describe('compile() · API Blueprint', ->
       )
     )
 
-    it('produces no annotations and one transaction', ->
+    it('produces one transaction', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 0
         transactions: 1
       ))
     )
@@ -246,9 +234,8 @@ describe('compile() · API Blueprint', ->
       )
     )
 
-    it('produces no annotations and one transaction', ->
+    it('produces one transaction', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 0
         transactions: 1
       ))
     )
@@ -267,22 +254,18 @@ describe('compile() · API Blueprint', ->
       )
     )
 
-    it('produces 1 warning and 1 transaction', ->
+    it('produces 1 annotation and 1 transaction', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
         annotations: 1
         transactions: 1
       ))
     )
-    context('the annotation', ->
-      it('is a warning', ->
-        assert.equal(compilationResult.annotations[0].type, 'warning')
-      )
-      it('comes from the parser', ->
-        assert.equal(compilationResult.annotations[0].component, 'apiDescriptionParser')
-      )
-      it('has message about assuming the status code', ->
-        assert.include(compilationResult.annotations[0].message.toLowerCase(), 'missing response http status code, assuming')
-      )
+    it('produces warning about the response status code being assumed', ->
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'warning'
+        component: 'apiDescriptionParser'
+        message: 'missing response HTTP status code, assuming'
+      ))
     )
     it('assumes HTTP 200', ->
       assert.equal(compilationResult.transactions[0].response.status, '200')
@@ -299,33 +282,28 @@ describe('compile() · API Blueprint', ->
       )
     )
 
-    it('produces 1 warning and 1 transaction', ->
+    it('produces 1 annotation and 1 transaction', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
         annotations: 1
         transactions: 1
       ))
     )
-    context('the annotation', ->
-      it('is a warning', ->
-        assert.equal(compilationResult.annotations[0].type, 'warning')
-      )
-      it('comes from the parser', ->
-        assert.equal(compilationResult.annotations[0].component, 'apiDescriptionParser')
-      )
-      it('has message about duplicate header names', ->
-        assert.include(compilationResult.annotations[0].message.toLowerCase(), 'duplicate definition')
-        assert.include(compilationResult.annotations[0].message.toLowerCase(), 'header')
-      )
+    it('produces warning about duplicate header names', ->
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'warning'
+        component: 'apiDescriptionParser'
+        message: /duplicate definition.+header/
+      ))
     )
-    context('compiles a transaction', ->
-      it('with expected request headers', ->
+    context('the transaction', ->
+      it('has the expected request headers', ->
         assert.deepEqual(compilationResult.transactions[0].request.headers, [
           {name: 'Content-Type', value: 'application/json'}
           {name: 'X-Multiple', value: 'foo'}
           {name: 'X-Multiple', value: 'bar'}
         ])
       )
-      it('with expected response headers', ->
+      it('has the expected response headers', ->
         assert.deepEqual(compilationResult.transactions[0].response.headers, [
           {name: 'Content-Type', value: 'application/json'}
           {name: 'Set-Cookie', value: 'session-id=123'}

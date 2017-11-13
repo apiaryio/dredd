@@ -1,10 +1,10 @@
-
 sinon = require('sinon')
 proxyquire = require('proxyquire').noPreserveCache()
 
 fixtures = require('../fixtures')
 {assert} = require('../utils')
 createCompilationResultSchema = require('../schemas/compilation-result')
+createAnnotationSchema = require('../schemas/annotation')
 dreddTransactions = require('../../src/index')
 
 
@@ -50,11 +50,11 @@ describe('Dredd Transactions', ->
         ))
       )
       it('produces warning about falling back to API Blueprint', ->
-        assert.equal(compilationResult.annotations[0].type, 'warning')
-        assert.include(
-          compilationResult.annotations[0].message,
-          'to API Blueprint'
-        )
+        assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+          type: 'warning'
+          component: 'apiDescriptionParser'
+          message: 'to API Blueprint'
+        ))
       )
     )
   )
@@ -79,18 +79,18 @@ describe('Dredd Transactions', ->
       ))
     )
     it('produces warning about falling back to API Blueprint', ->
-      assert.equal(compilationResult.annotations[0].type, 'warning')
-      assert.include(
-        compilationResult.annotations[0].message,
-        'to API Blueprint'
-      )
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'warning'
+        component: 'apiDescriptionParser'
+        message: 'to API Blueprint'
+      ))
     )
     it('produces a warning about the API Blueprint not being valid', ->
-      assert.equal(compilationResult.annotations[1].type, 'warning')
-      assert.include(
-        compilationResult.annotations[1].message,
-        'expected'
-      )
+      assert.jsonSchema(compilationResult.annotations[1], createAnnotationSchema(
+        type: 'warning'
+        component: 'apiDescriptionParser'
+        message: 'expected'
+      ))
     )
   )
 
@@ -105,10 +105,9 @@ describe('Dredd Transactions', ->
       )
     )
 
-    it('produces some annotations, some transactions', ->
+    it('produces two annotations', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: true
-        transactions: true
+        annotations: 2
       ))
     )
     it('produces no errors', ->
@@ -118,11 +117,20 @@ describe('Dredd Transactions', ->
       assert.deepEqual(errors, [])
     )
     it('produces a warning about falling back to API Blueprint', ->
-      warnings = compilationResult.annotations.filter((annotation) ->
-        annotation.type is 'warning' and
-        annotation.message.indexOf('to API Blueprint') isnt -1
-      )
-      assert.equal(warnings.length, 1)
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'warning'
+        component: 'apiDescriptionParser'
+        message: 'to API Blueprint'
+      ))
+    )
+    it('produces a warning about missing HTTP status code', ->
+      # "+ Response XXX" would be a match in the API Blueprint detection,
+      # so the fixture omits the HTTP status code to prevent that
+      assert.jsonSchema(compilationResult.annotations[1], createAnnotationSchema(
+        type: 'warning'
+        component: 'apiDescriptionParser'
+        message: 'missing response HTTP status code'
+      ))
     )
   )
 
@@ -139,21 +147,15 @@ describe('Dredd Transactions', ->
 
       it('produces some annotations, no transactions', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          annotations: true
+          annotations: [1]
           transactions: 0
         ))
       )
-      it('produces some errors', ->
-        errors = compilationResult.annotations.filter((annotation) ->
-          annotation.type is 'error'
+      it('produces errors', ->
+        assert.jsonSchema(compilationResult.annotations,
+          type: 'array'
+          items: createAnnotationSchema({type: 'error'})
         )
-        assert.ok(errors.length)
-      )
-      it('produces no warnings', ->
-        warnings = compilationResult.annotations.filter((annotation) ->
-          annotation.type is 'warning'
-        )
-        assert.deepEqual(warnings, [])
       )
     )
   )
@@ -169,23 +171,16 @@ describe('Dredd Transactions', ->
         )
       )
 
-      it('produces some annotations, some transactions', ->
+      it('produces some annotations', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          annotations: true
-          transactions: true
+          annotations: [1]
         ))
       )
-      it('produces no errors', ->
-        errors = compilationResult.annotations.filter((annotation) ->
-          annotation.type is 'error'
+      it('produces warnings', ->
+        assert.jsonSchema(compilationResult.annotations,
+          type: 'array'
+          items: createAnnotationSchema({type: 'warning'})
         )
-        assert.deepEqual(errors, [])
-      )
-      it('produces some warnings', ->
-        warnings = compilationResult.annotations.filter((annotation) ->
-          annotation.type is 'warning'
-        )
-        assert.ok(warnings.length)
       )
     )
   )
@@ -201,11 +196,8 @@ describe('Dredd Transactions', ->
         )
       )
 
-      it('produces no annotations, some transactions', ->
-        assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          annotations: 0
-          transactions: true
-        ))
+      it('produces no annotations and some transactions', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema())
       )
     )
   )
@@ -233,7 +225,10 @@ describe('Dredd Transactions', ->
       ))
     )
     it('turns the parser error into a valid annotation', ->
-      assert.equal(compilationResult.annotations[0].message, message)
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'error'
+        message: message
+      ))
     )
   )
 
@@ -260,7 +255,10 @@ describe('Dredd Transactions', ->
       ))
     )
     it('turns the parser error into a valid annotation', ->
-      assert.equal(compilationResult.annotations[0].message, message)
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'error'
+        message: message
+      ))
     )
   )
 
@@ -285,14 +283,11 @@ describe('Dredd Transactions', ->
         transactions: 0
       ))
     )
-    it('the annotation is an error', ->
-      assert.equal(compilationResult.annotations[0].type, 'error')
-    )
-    it('the annotation is about parser failure', ->
-      assert.include(
-        compilationResult.annotations[0].message,
-        'parser was unable to provide a valid parse result'
-      )
+    it('produces an error about parser failure', ->
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'error'
+        message: 'parser was unable to provide a valid parse result'
+      ))
     )
   )
 )

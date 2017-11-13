@@ -2,6 +2,7 @@ proxyquire = require('proxyquire').noPreserveCache()
 
 fixtures = require('../fixtures')
 createCompilationResultSchema = require('../schemas/compilation-result')
+createAnnotationSchema = require('../schemas/annotation')
 createLocationSchema = require('../schemas/location')
 createOriginSchema = require('../schemas/origin')
 {assert, compileFixture} = require('../utils')
@@ -13,10 +14,6 @@ describe('compile() · all API description formats', ->
 
   describe('ordinary, valid API description', ->
     filename = 'apiDescription.ext'
-    compilationResultSchema = createCompilationResultSchema({
-      filename
-      transactions: true
-    })
 
     fixtures.ordinary.forEachDescribe(({source}) ->
       compilationResult = undefined
@@ -29,7 +26,7 @@ describe('compile() · all API description formats', ->
       )
 
       it('is compiled into a compilation result of expected structure', ->
-        assert.jsonSchema(compilationResult, compilationResultSchema)
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({filename}))
       )
     )
   )
@@ -51,13 +48,11 @@ describe('compile() · all API description formats', ->
           transactions: 0
         ))
       )
-      context('the annotation', ->
-        it('is error', ->
-          assert.equal(compilationResult.annotations[0].type, 'error')
-        )
-        it('comes from the parser', ->
-          assert.equal(compilationResult.annotations[0].component, 'apiDescriptionParser')
-        )
+      it('produces error from parser', ->
+        assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+          type: 'error'
+          component: 'apiDescriptionParser'
+        ))
       )
     )
   )
@@ -81,20 +76,26 @@ describe('compile() · all API description formats', ->
 
       it('produces some annotations and no transactions', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          annotations: true
+          annotations: [1, 2]
           transactions: 0
         ))
       )
-      it('is compiled with maximum one warning from parser', ->
-        warnings = compilationResult.annotations.filter((ann) -> ann.type is 'warning')
-        assert.isAtMost(warnings.length, 1)
-        assert.equal(warnings[0].component, 'apiDescriptionParser') if warnings.length
-      )
-      it('is compiled with one error from URI expansion', ->
-        errors = compilationResult.annotations.filter((ann) -> ann.type is 'error')
-        assert.equal(errors.length, 1)
-        assert.equal(errors[0].component, 'uriTemplateExpansion') if errors.length
-        assert.include(errors[0].message.toLowerCase(), 'failed to parse uri template')
+      it('produces maximum one warning from parser and exactly one error from URI expansion', ->
+        warning = createAnnotationSchema(
+          type: 'warning',
+          component: 'apiDescriptionParser'
+        )
+        error = createAnnotationSchema(
+          type: 'error',
+          component: 'uriTemplateExpansion'
+          message: /failed to parse uri template/i
+        )
+        assert.jsonSchema(compilationResult.annotations,
+          oneOf: [
+            {type: 'array', items: [warning, error]}
+            {type: 'array', items: [error]}
+          ]
+        )
       )
     )
   )
@@ -119,31 +120,30 @@ describe('compile() · all API description formats', ->
 
       it('produces some annotations and no transactions', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          annotations: true
+          annotations: [2, 3]
           transactions: 0
         ))
       )
-      it('is compiled with maximum two warnings', ->
-        warnings = compilationResult.annotations.filter((ann) -> ann.type is 'warning')
-        assert.isAtMost(warnings.length, 2)
-      )
-      it('is compiled with maximum one warning from parser', ->
-        warnings = compilationResult.annotations.filter((ann) ->
-          ann.type is 'warning' and ann.component is 'apiDescriptionParser'
+      it('produces maximum one warning from parser, exactly one warning from URI expansion, and exactly one error from URI parameters validation', ->
+        parserWarning = createAnnotationSchema(
+          type: 'warning'
+          component: 'apiDescriptionParser'
         )
-        assert.isAtMost(warnings.length, 1)
-      )
-      it('is compiled with one warning from URI expansion', ->
-        warnings = compilationResult.annotations.filter((ann) ->
-          ann.type is 'warning' and ann.component is 'uriTemplateExpansion'
+        uriExpansionWarning = createAnnotationSchema(
+          type: 'warning'
+          component: 'uriTemplateExpansion'
         )
-        assert.equal(warnings.length, 1)
-      )
-      it('is compiled with one error from URI parameters validation', ->
-        errors = compilationResult.annotations.filter((ann) -> ann.type is 'error')
-        assert.equal(errors.length, 1)
-        assert.equal(errors[0].component, 'parametersValidation')
-        assert.include(errors[0].message.toLowerCase(), 'no example')
+        uriValidationError = createAnnotationSchema(
+          type: 'error'
+          component: 'parametersValidation'
+          message: 'no example'
+        )
+        assert.jsonSchema(compilationResult.annotations,
+          oneOf: [
+            {type: 'array', items: [parserWarning, uriValidationError, uriExpansionWarning]}
+            {type: 'array', items: [uriValidationError, uriExpansionWarning]}
+          ]
+        )
       )
     )
   )
@@ -161,7 +161,7 @@ describe('compile() · all API description formats', ->
 
       it('produces some annotations and one transaction', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          annotations: true
+          annotations: [1]
           transactions: 1
         ))
       )
@@ -204,24 +204,19 @@ describe('compile() · all API description formats', ->
         )
       )
 
-      it('produces some annotations and some transactions', ->
+      it('produces some annotations', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          annotations: true
-          transactions: true
+          annotations: [1]
         ))
       )
-      context('the annotations', ->
-        it('are warnings', ->
-          for ann in compilationResult.annotations
-            assert.equal(ann.type, 'warning')
-        )
-        it('come from URI expansion', ->
-          for ann in compilationResult.annotations
-            assert.equal(ann.component, 'uriTemplateExpansion')
-        )
-        it('have the expected message', ->
-          for ann in compilationResult.annotations
-            assert.include(ann.message, message)
+      it('produces warnings from URI expansion', ->
+        assert.jsonSchema(compilationResult.annotations,
+          type: 'array'
+          items: createAnnotationSchema(
+            type: 'warning'
+            component: 'uriTemplateExpansion'
+            message: message
+          )
         )
       )
     )
@@ -247,21 +242,20 @@ describe('compile() · all API description formats', ->
         )
       )
 
-      it('produces one annotation and no transactions', ->
+      it('produces two annotations and no transactions', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
           annotations: 2
           transactions: 0
         ))
       )
-      it('is compiled with one warning from URI expansion', ->
-        warnings = compilationResult.annotations.filter((ann) -> ann.type is 'warning')
-        assert.equal(warnings.length, 1)
-        assert.equal(warnings[0].component, 'uriTemplateExpansion')
-      )
-      it('is compiled with one error from URI parameters validation', ->
-        errors = compilationResult.annotations.filter((ann) -> ann.type is 'error')
-        assert.equal(errors.length, 1)
-        assert.equal(errors[0].component, 'parametersValidation')
+      it('produces one warning from URI expansion and one error from URI parameters validation', ->
+        assert.jsonSchema(compilationResult.annotations,
+          type: 'array'
+          items: [
+            createAnnotationSchema({type: 'error', component: 'parametersValidation'})
+            createAnnotationSchema({type: 'warning', component: 'uriTemplateExpansion'})
+          ]
+        )
       )
     )
   )
@@ -288,24 +282,19 @@ describe('compile() · all API description formats', ->
         )
       )
 
-      it('produces some annotations and some transactions', ->
+      it('produces some annotations', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          annotations: true
-          transactions: true
+          annotations: [1]
         ))
       )
-      context('the annotations', ->
-        it('are warnings', ->
-          for ann in compilationResult.annotations
-            assert.equal(ann.type, 'warning')
-        )
-        it('come from URI parameters validation', ->
-          for ann in compilationResult.annotations
-            assert.equal(ann.component, 'parametersValidation')
-        )
-        it('have the expected message', ->
-          for ann in compilationResult.annotations
-            assert.include(ann.message, message)
+      it('produces warnings from URI parameters validation', ->
+        assert.jsonSchema(compilationResult.annotations,
+          type: 'array'
+          items: createAnnotationSchema(
+            type: 'warning'
+            component: 'parametersValidation'
+            message: message
+          )
         )
       )
     )
@@ -322,9 +311,8 @@ describe('compile() · all API description formats', ->
         )
       )
 
-      it('produces no annotations and one transaction', ->
+      it('produces one transaction', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          annotations: 0
           transactions: 1
         ))
       )
@@ -345,9 +333,8 @@ describe('compile() · all API description formats', ->
         )
       )
 
-      it('produces no annotations and one transaction', ->
+      it('produces one transaction', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          annotations: 0
           transactions: 1
         ))
       )
@@ -376,21 +363,26 @@ describe('compile() · all API description formats', ->
 
       it('produces some annotations and one transaction', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          annotations: true
+          annotations: [1, 2]
           transactions: 1
         ))
       )
-      it('is compiled with maximum one warning from parser', ->
-        warnings = compilationResult.annotations.filter((ann) ->
-          ann.type is 'warning' and ann.component is 'apiDescriptionParser'
+      it('produces maximum one warning from parser, and exactly one error from URI parameters validation', ->
+        warning = createAnnotationSchema(
+          type: 'warning'
+          component: 'apiDescriptionParser'
         )
-        assert.isAtMost(warnings.length, 1)
-      )
-      it('is compiled with one error from URI parameters validation', ->
-        errors = compilationResult.annotations.filter((ann) -> ann.type is 'error')
-        assert.equal(errors.length, 1)
-        assert.equal(errors[0].component, 'parametersValidation')
-        assert.include(errors[0].message.toLowerCase(), 'example value is not one of enum values')
+        error = createAnnotationSchema(
+          type: 'error'
+          component: 'parametersValidation'
+          message: 'example value is not one of enum values'
+        )
+        assert.jsonSchema(compilationResult.annotations,
+          oneOf: [
+            {type: 'array', items: [warning, error]}
+            {type: 'array', items: [error]}
+          ]
+        )
       )
       it('expands the request URI with the example value', ->
         assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Pavan')
@@ -409,9 +401,8 @@ describe('compile() · all API description formats', ->
         )
       )
 
-      it('produces no annotations and one transaction', ->
+      it('produces one transaction', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          annotations: 0
           transactions: 1
         ))
       )
@@ -432,9 +423,8 @@ describe('compile() · all API description formats', ->
         )
       )
 
-      it('produces no annotations and one transaction', ->
+      it('produces one transaction', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          annotations: 0
           transactions: 2
         ))
       )
@@ -471,9 +461,8 @@ describe('compile() · all API description formats', ->
         )
       )
 
-      it('produces no annotations and one transaction', ->
+      it('produces one transaction', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          annotations: 0
           transactions: 1
         ))
       )
@@ -494,9 +483,8 @@ describe('compile() · all API description formats', ->
         )
       )
 
-      it('produces no annotations and one transaction', ->
+      it('produces one transaction', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          annotations: 0
           transactions: 1
         ))
       )
@@ -519,25 +507,26 @@ describe('compile() · all API description formats', ->
 
       it('produces some annotations and one transaction', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          annotations: true
+          annotations: [1, 2]
           transactions: 1
         ))
       )
-      it('is compiled with maximum three annotations', ->
-        assert.isAtMost(compilationResult.annotations.length, 3)
-      )
-      it('is compiled with maximum one warning from parser', ->
-        warnings = compilationResult.annotations.filter((ann) ->
-          ann.type is 'warning' and ann.component is 'apiDescriptionParser'
+      it('produces maximum one warning from parser, and exactly one warning from URI expansion', ->
+        parserWarning = createAnnotationSchema(
+          type: 'warning'
+          component: 'apiDescriptionParser'
         )
-        assert.isAtMost(warnings.length, 1)
-      )
-      it('is compiled with one warning from URI expansion', ->
-        warnings = compilationResult.annotations.filter((ann) ->
-          ann.type is 'warning' and ann.component is 'uriTemplateExpansion'
+        uriExpansionWarning = createAnnotationSchema(
+          type: 'warning'
+          component: 'uriTemplateExpansion'
+          message: /default value for a required parameter/i
         )
-        assert.equal(warnings.length, 1)
-        assert.include(warnings[0].message.toLowerCase(), 'default value for a required parameter')
+        assert.jsonSchema(compilationResult.annotations,
+          oneOf: [
+            {type: 'array', items: [parserWarning, uriExpansionWarning]}
+            {type: 'array', items: [uriExpansionWarning]}
+          ]
+        )
       )
       it('expands the request URI using the default value', ->
         assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza')
@@ -556,9 +545,8 @@ describe('compile() · all API description formats', ->
         )
       )
 
-      it('produces no annotations and one transaction', ->
+      it('produces one transaction', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          annotations: 0
           transactions: 1
         ))
       )
@@ -588,10 +576,8 @@ describe('compile() · all API description formats', ->
         )
       )
 
-      it('produces no annotations and 2 transactions', ->
+      it('produces 2 transactions', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          errors: 0
-          warnings: 0
           transactions: 2
         ))
       )
@@ -616,10 +602,8 @@ describe('compile() · all API description formats', ->
         )
       )
 
-      it("produces no annotations and #{expectedMediaTypes.length} transactions", ->
+      it("produces #{expectedMediaTypes.length} transactions", ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          errors: 0
-          warnings: 0
           transactions: expectedMediaTypes.length
         ))
       )

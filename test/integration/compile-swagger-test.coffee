@@ -3,6 +3,7 @@ sinon = require('sinon')
 fixtures = require('../fixtures')
 {assert, compileFixture} = require('../utils')
 createCompilationResultSchema = require('../schemas/compilation-result')
+createAnnotationSchema = require('../schemas/annotation')
 
 
 describe('compile() · Swagger', ->
@@ -16,23 +17,18 @@ describe('compile() · Swagger', ->
       )
     )
 
-    it('produces one annotation and no transaction', ->
+    it('produces one annotation and no transactions', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
         annotations: 1
         transactions: 0
       ))
     )
-    context('the annotation', ->
-      it('is error', ->
-        assert.equal(compilationResult.annotations[0].type, 'error')
-      )
-      it('comes from the parser', ->
-        assert.equal(compilationResult.annotations[0].component, 'apiDescriptionParser')
-      )
-      it('has message', ->
-        assert.include(compilationResult.annotations[0].message.toLowerCase(), 'no corresponding')
-        assert.include(compilationResult.annotations[0].message.toLowerCase(), 'in the path string')
-      )
+    it('produces error about parameter not being in the URI Template', ->
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'error'
+        component: 'apiDescriptionParser'
+        message: /no corresponding.+in the path string/
+      ))
     )
   )
 
@@ -46,9 +42,8 @@ describe('compile() · Swagger', ->
       )
     )
 
-    it('produces no annotations and two transactions', ->
+    it('produces two transactions', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 0
         transactions: 2
       ))
     )
@@ -81,9 +76,8 @@ describe('compile() · Swagger', ->
       )
     )
 
-    it('produces no annotations and two transactions', ->
+    it('produces two transactions', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 0
         transactions: 2
       ))
     )
@@ -116,9 +110,8 @@ describe('compile() · Swagger', ->
       )
     )
 
-    it('produces no annotations and two transactions', ->
+    it('produces two transactions', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 0
         transactions: 2
       ))
     )
@@ -151,9 +144,8 @@ describe('compile() · Swagger', ->
       )
     )
 
-    it('produces no annotations and two transactions', ->
+    it('produces two transactions', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 0
         transactions: 3
       ))
     )
@@ -188,9 +180,8 @@ describe('compile() · Swagger', ->
     it('does not call the detection of transaction examples', ->
       assert.isFalse(detectTransactionExampleNumbers.called)
     )
-    it("produces no annotations and #{expectedStatusCodes.length} transactions", ->
+    it("produces #{expectedStatusCodes.length} transactions", ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 0
         transactions: expectedStatusCodes.length
       ))
     )
@@ -232,9 +223,8 @@ describe('compile() · Swagger', ->
       )
     )
 
-    it('produces no annotations and 2 transactions', ->
+    it('produces two transactions', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 0
         transactions: 2
       ))
     )
@@ -250,9 +240,8 @@ describe('compile() · Swagger', ->
       )
     )
 
-    it('produces no annotations and 1 transaction', ->
+    it('produces one transaction', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 0
         transactions: 1
       ))
     )
@@ -268,26 +257,19 @@ describe('compile() · Swagger', ->
       )
     )
 
-    it('produces 2 annotations and 2 transactions', ->
+    it('produces two annotations and two transactions', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
         annotations: 2
         transactions: 2
       ))
     )
-    context('the annotations', ->
-      it('are warnings', ->
-        compilationResult.annotations.forEach((annotation) ->
-          assert.equal(annotation.type, 'warning')
-        )
-      )
-      it('are from parser', ->
-        compilationResult.annotations.forEach((annotation) ->
-          assert.equal(annotation.component, 'apiDescriptionParser')
-        )
-      )
-      it('are about the default response being unsupported', ->
-        compilationResult.annotations.forEach((annotation) ->
-          assert.equal(annotation.message.toLowerCase(), 'default response is not yet supported')
+    it('produces warnings about the default response being unsupported', ->
+      assert.jsonSchema(compilationResult.annotations,
+        type: 'array'
+        items: createAnnotationSchema(
+          type: 'warning'
+          component: 'apiDescriptionParser'
+          message: 'Default response is not yet supported'
         )
       )
     )
