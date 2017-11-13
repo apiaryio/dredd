@@ -535,6 +535,9 @@ API Blueprint format supports `multipart/form-data` media type and so does Dredd
 
 > **Note:** For details on this topic see also [How Dredd Works With HTTP Transactions](how-it-works.md#how-dredd-works-with-http-transactions).
 
+> **Note:** For details multiple requests in swagger format see [Testing Non-2xx Responses with swagger](how-to-guides.md#testing-non-2xx-responses-with-swagger).
+
+
 To test multiple requests and responses within one action in Dredd, you need to cluster them into pairs:
 
 ```apiblueprint
