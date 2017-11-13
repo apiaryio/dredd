@@ -1,0 +1,32 @@
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: Colors API
+schemes:
+  - http
+produces:
+  - application/json
+paths:
+  /foo:
+    get:
+      responses:
+        default:
+          description: Default Representation
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+          examples:
+            application/json:
+              name: Honza
+  /bar:
+    get:
+      responses:
+        204:
+          description: Representation
+        default:
+          description: Default Representation
+          examples:
+            application/json:
+              message: Error

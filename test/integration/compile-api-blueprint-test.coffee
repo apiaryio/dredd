@@ -4,13 +4,12 @@ sinon = require('sinon')
 
 fixtures = require('../fixtures')
 createLocationSchema = require('../schemas/location')
-createOriginSchema = require('../schemas/origin')
+createCompilationResultSchema = require('../schemas/compilation-result')
 {assert, compileFixture} = require('../utils')
 
 
 describe('compile() · API Blueprint', ->
   locationSchema = createLocationSchema()
-  originSchema = createOriginSchema()
 
   describe('causing a \'missing title\' warning', ->
     compilationResult = undefined
@@ -281,6 +280,28 @@ describe('compile() · API Blueprint', ->
     )
     it('expands the request URI using the sample value', ->
       assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Pavan')
+    )
+  )
+
+  describe('with response without explicit status code', ->
+    compilationResult = undefined
+
+    beforeEach((done) ->
+      compileFixture(fixtures.noStatus.apiBlueprint, (args...) ->
+        [err, compilationResult] = args
+        done(err)
+      )
+    )
+
+    it('produces 1 warning and 1 transaction', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        errors: 0
+        warnings: 1
+        transactions: 1
+      ))
+    )
+    it('assumes HTTP 200', ->
+      assert.equal(compilationResult.transactions[0].response.status, '200')
     )
   )
 )
