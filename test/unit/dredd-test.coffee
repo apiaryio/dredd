@@ -113,7 +113,7 @@ describe 'Dredd class', ->
           server: 'http://127.0.0.1:3000/'
           options:
             silent: true
-            path: ['./test/fixtures/multifile/*.apib', './test/fixtures/multifile/*.apib' ,'./test/fixtures/multifile/*.balony']
+            path: ['./test/fixtures/multifile/*.apib', './test/fixtures/multifile/*.apib']
         dredd = new Dredd(configuration)
 
       beforeEach ->
@@ -134,7 +134,6 @@ describe 'Dredd class', ->
         dredd.run (error) ->
           return done error if error
           assert.notInclude dredd.configuration.files, './test/fixtures/multifile/*.apib'
-          assert.notInclude dredd.configuration.files, './test/fixtures/multifile/*.balony'
           done()
 
       it 'should load file contents on paths to config', (done) ->
@@ -154,6 +153,28 @@ describe 'Dredd class', ->
           assert.property dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'annotations'
           assert.property dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'filename'
           assert.property dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'raw'
+          done()
+
+
+    describe 'when a glob pattern does not match any files and another does', ->
+      before ->
+        configuration =
+          server: 'http://127.0.0.1:3000/'
+          options:
+            silent: true
+            path: ['./test/fixtures/multifile/*.balony', './test/fixtures/multifile/*.apib']
+        dredd = new Dredd(configuration)
+
+      beforeEach ->
+        sinon.stub(dredd.runner, 'executeTransaction').callsFake (transaction, hooks, callback) ->
+          callback()
+
+      afterEach ->
+        dredd.runner.executeTransaction.restore()
+
+      it 'should return error', (done) ->
+        dredd.run (error) ->
+          assert.isOk error
           done()
 
 
