@@ -93,14 +93,14 @@ describe('compile() · Swagger', ->
     )
     context('compiles a transaction', ->
       it('with expected request headers', ->
-        assert.deepEqual(compilationResult.transactions[0].request.headers, {
-          'Accept': {value: 'application/json; charset=utf-8'}
-        })
+        assert.deepEqual(compilationResult.transactions[0].request.headers, [
+          {name: 'Accept', value: 'application/json; charset=utf-8'}
+        ])
       )
       it('with expected response headers', ->
-        assert.deepEqual(compilationResult.transactions[0].response.headers, {
-          'Content-Type': {value: 'application/json; charset=utf-8'}
-        })
+        assert.deepEqual(compilationResult.transactions[0].response.headers, [
+          {name: 'Content-Type', value: 'application/json; charset=utf-8'}
+        ])
       )
     )
   )
@@ -155,7 +155,10 @@ describe('compile() · Swagger', ->
     )
     it('skips non-JSON media types in \'produces\'', ->
       compilationResult.transactions.forEach((transaction) ->
-        assert.equal(transaction.response.headers['Content-Type'].value, 'application/json')
+        contentType = transaction.response.headers
+          .filter((header) -> header.name.toLowerCase() is 'content-type')
+          .map((header) -> header.value)[0]
+        assert.equal(contentType, 'application/json')
       )
     )
     it('is compiled with no warnings', ->

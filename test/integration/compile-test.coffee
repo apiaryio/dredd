@@ -706,12 +706,7 @@ describe('compile() · all API description formats', ->
   describe('without explicit schema', ->
     fixtures.noSchema.forEachDescribe(({source}) ->
       compilationResult = undefined
-      expectedMediaTypes = [
-        'application/json'
-        'application/json'
-        'text/csv'
-        'text/yaml'
-      ]
+      expectedMediaTypes = ['application/json', 'application/json', 'text/csv', 'text/yaml']
 
       beforeEach((done) ->
         compileFixture(source, (args...) ->
@@ -730,9 +725,9 @@ describe('compile() · all API description formats', ->
       expectedMediaTypes.forEach((mediaType, i) ->
         context("transaction ##{i + 1}", ->
           it("has '#{mediaType}' response", ->
-            assert.deepEqual(compilationResult.transactions[i].response.headers, {
-              'Content-Type': {value: mediaType}
-            })
+            assert.deepEqual(compilationResult.transactions[i].response.headers, [
+              {name: 'Content-Type', value: mediaType}
+            ])
           )
           it("has no schema", ->
             assert.isUndefined(compilationResult.transactions[i].response.schema)
