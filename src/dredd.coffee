@@ -137,13 +137,6 @@ class Dredd
     , (err) =>
       return callback(err, @stats) if err
 
-      if @configDataIsEmpty and @configuration.files.length == 0
-        err = new Error("""\
-          API description document (or documents) not found on path: \
-          '#{@configuration.options.path}'\
-        """)
-        return callback(err, @stats)
-
       # remove duplicate filenames
       @configuration.files = removeDuplicates @configuration.files
       callback(null, @stats)

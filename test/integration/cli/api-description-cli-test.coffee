@@ -268,7 +268,9 @@ describe 'CLI - API Description Document', ->
           runtimeInfo = info
           done(err)
 
-      it 'should request /machines', ->
-        assert.deepEqual runtimeInfo.server.requestCounts, {'/machines': 1}
-      it 'should exit with status 0', ->
-        assert.equal runtimeInfo.dredd.exitStatus, 0
+      it 'should not request server', ->
+        assert.isFalse runtimeInfo.server.requested
+      it 'should exit with status 1', ->
+        assert.equal runtimeInfo.dredd.exitStatus, 1
+      it 'should print error message to stderr', ->
+        assert.include runtimeInfo.dredd.stderr, 'not found'
