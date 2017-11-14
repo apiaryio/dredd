@@ -161,6 +161,9 @@ fixtures =
   noStatus: fixture(
     apiBlueprint: fromFile('./api-blueprint/no-status.apib')
   )
+  httpHeadersMultiple: fixture(
+    apiBlueprint: fromFile('./api-blueprint/http-headers-multiple.apib')
+  )
 
   # Specific to Swagger
   produces: fixture(
@@ -168,6 +171,9 @@ fixtures =
   )
   producesCharset: fixture(
     swagger: fromFile('./swagger/produces-charset.yml')
+  )
+  producesNonJSONExample: fixture(
+    swagger: fromFile('./swagger/produces-non-json-example.yml')
   )
   consumes: fixture(
     swagger: fromFile('./swagger/consumes.yml')

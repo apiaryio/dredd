@@ -3,74 +3,65 @@ sinon = require('sinon')
 fixtures = require('../fixtures')
 {assert, compileFixture} = require('../utils')
 createCompilationResultSchema = require('../schemas/compilation-result')
+createAnnotationSchema = require('../schemas/annotation')
 
 
 describe('compile() · Swagger', ->
   describe('causing a \'not specified in URI Template\' error', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.swagger, (args...) ->
         [err, compilationResult] = args
         done(err)
       )
     )
 
-    it('is compiled into zero transactions', ->
-      assert.deepEqual(compilationResult.transactions, [])
+    it('produces one annotation and no transactions', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        annotations: 1
+        transactions: 0
+      ))
     )
-    it('is compiled with no warnings', ->
-      assert.deepEqual(compilationResult.warnings, [])
-    )
-    it('is compiled with a single error', ->
-      assert.equal(compilationResult.errors.length, 1)
-    )
-    context('the error', ->
-      it('comes from parser', ->
-        assert.equal(compilationResult.errors[0].component, 'apiDescriptionParser')
-      )
-      it('has code', ->
-        assert.isNumber(compilationResult.errors[0].code)
-      )
-      it('has message', ->
-        assert.include(compilationResult.errors[0].message.toLowerCase(), 'no corresponding')
-        assert.include(compilationResult.errors[0].message.toLowerCase(), 'in the path string')
-      )
-      it('has no location', ->
-        assert.isUndefined(compilationResult.errors[0].location)
-      )
-      it('has no origin', ->
-        assert.isUndefined(compilationResult.errors[0].origin)
-      )
+    it('produces error about parameter not being in the URI Template', ->
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'error'
+        component: 'apiDescriptionParser'
+        message: /no corresponding.+in the path string/
+      ))
     )
   )
 
   describe('with \'produces\' containing JSON media type', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.produces.swagger, (args...) ->
         [err, compilationResult] = args
         done(err)
       )
     )
 
-    it('is compiled with no warnings', ->
-      assert.deepEqual(compilationResult.warnings, [])
+    it('produces two transactions', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        transactions: 2
+      ))
     )
-    it('is compiled with no errors', ->
-      assert.deepEqual(compilationResult.errors, [])
-    )
-    context('compiles a transaction', ->
-      it('with expected request headers', ->
-        assert.deepEqual(compilationResult.transactions[0].request.headers, {
-          'Accept': {value: 'application/json'}
-        })
-      )
-      it('with expected response headers', ->
-        assert.deepEqual(compilationResult.transactions[0].response.headers, {
-          'Content-Type': {value: 'application/json'}
-        })
+    [
+      {accept: 'application/json', contentType: 'application/json'}
+      {accept: 'application/json', contentType: 'text/plain'}
+    ].forEach(({accept, contentType}, i) ->
+      context("compiles a transaction for the '#{contentType}' media type", ->
+        it('with expected request headers', ->
+          assert.deepEqual(compilationResult.transactions[i].request.headers, [
+            {name: 'Accept', value: accept}
+          ])
+        )
+        it('with expected response headers', ->
+          assert.deepEqual(compilationResult.transactions[i].response.headers, [
+            {name: 'Content-Type', value: contentType}
+          ])
+        )
       )
     )
   )
@@ -78,57 +69,96 @@ describe('compile() · Swagger', ->
   describe('with \'produces\' containing JSON media type with parameters', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.producesCharset.swagger, (args...) ->
         [err, compilationResult] = args
         done(err)
       )
     )
 
-    it('is compiled with no warnings', ->
-      assert.deepEqual(compilationResult.warnings, [])
+    it('produces two transactions', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        transactions: 2
+      ))
     )
-    it('is compiled with no errors', ->
-      assert.deepEqual(compilationResult.errors, [])
-    )
-    context('compiles a transaction', ->
-      it('with expected request headers', ->
-        assert.deepEqual(compilationResult.transactions[0].request.headers, {
-          'Accept': {value: 'application/json; charset=utf-8'}
-        })
-      )
-      it('with expected response headers', ->
-        assert.deepEqual(compilationResult.transactions[0].response.headers, {
-          'Content-Type': {value: 'application/json; charset=utf-8'}
-        })
+    [
+      {accept: 'application/json; charset=utf-8', contentType: 'application/json; charset=utf-8'}
+      {accept: 'application/json; charset=utf-8', contentType: 'text/plain'}
+    ].forEach((mediaTypes, i) ->
+      context("compiles transaction ##{i}", ->
+        it('with expected request headers', ->
+          assert.deepEqual(compilationResult.transactions[i].request.headers, [
+            {name: 'Accept', value: mediaTypes.accept}
+          ])
+        )
+        it('with expected response headers', ->
+          assert.deepEqual(compilationResult.transactions[i].response.headers, [
+            {name: 'Content-Type', value: mediaTypes.contentType}
+          ])
+        )
       )
     )
   )
 
-  describe('with \'consumes\' containing JSON media type', ->
+  describe('with \'produces\' containing a non-JSON media type with an example', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
+      compileFixture(fixtures.producesNonJSONExample.swagger, (args...) ->
+        [err, compilationResult] = args
+        done(err)
+      )
+    )
+
+    it('produces two transactions', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        transactions: 2
+      ))
+    )
+    [
+      {accept: 'application/json', contentType: 'application/json'}
+      {accept: 'text/plain', contentType: 'text/plain'}
+    ].forEach((mediaTypes, i) ->
+      context("compiles transaction ##{i}", ->
+        it('with expected request headers', ->
+          assert.deepEqual(compilationResult.transactions[i].request.headers, [
+            {name: 'Accept', value: mediaTypes.accept}
+          ])
+        )
+        it('with expected response headers', ->
+          assert.deepEqual(compilationResult.transactions[i].response.headers, [
+            {name: 'Content-Type', value: mediaTypes.contentType}
+          ])
+        )
+      )
+    )
+  )
+
+  describe('with \'consumes\'', ->
+    compilationResult = undefined
+
+    before((done) ->
       compileFixture(fixtures.consumes.swagger, (args...) ->
         [err, compilationResult] = args
         done(err)
       )
     )
 
-    it('is compiled with no warnings', ->
-      assert.deepEqual(compilationResult.warnings, [])
+    it('produces two transactions', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        transactions: 3
+      ))
     )
-    it('is compiled with no errors', ->
-      assert.deepEqual(compilationResult.errors, [])
-    )
-    context('compiles a transaction', ->
-      it('with expected request headers', ->
-        assert.deepEqual(compilationResult.transactions[0].request.headers, {
-          'Content-Type': {value: 'application/json'}
-        })
-      )
-      it('with expected response headers', ->
-        assert.deepEqual(compilationResult.transactions[0].response.headers, {})
+    ['application/json', 'application/xml', 'application/json'].forEach((mediaType, i) ->
+      context("compiles a transaction for the '#{mediaType}' media type", ->
+        it('with expected request headers', ->
+          assert.deepEqual(compilationResult.transactions[i].request.headers, [
+            {name: 'Content-Type', value: mediaType}
+          ])
+        )
+        it('with expected response headers', ->
+          assert.deepEqual(compilationResult.transactions[i].response.headers, [])
+        )
       )
     )
   )
@@ -139,7 +169,7 @@ describe('compile() · Swagger', ->
     detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'))
     expectedStatusCodes = [200, 400, 500]
 
-    beforeEach((done) ->
+    before((done) ->
       stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers}
       compileFixture(fixtures.multipleResponses.swagger, {filename, stubs}, (args...) ->
         [err, compilationResult] = args
@@ -147,24 +177,22 @@ describe('compile() · Swagger', ->
       )
     )
 
-    it('does not call detection of transaction examples', ->
+    it('does not call the detection of transaction examples', ->
       assert.isFalse(detectTransactionExampleNumbers.called)
     )
-    it('returns expected number of transactions', ->
-      assert.equal(compilationResult.transactions.length, expectedStatusCodes.length)
+    it("produces #{expectedStatusCodes.length} transactions", ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        transactions: expectedStatusCodes.length
+      ))
     )
     it('skips non-JSON media types in \'produces\'', ->
       compilationResult.transactions.forEach((transaction) ->
-        assert.equal(transaction.response.headers['Content-Type'].value, 'application/json')
+        contentType = transaction.response.headers
+          .filter((header) -> header.name.toLowerCase() is 'content-type')
+          .map((header) -> header.value)[0]
+        assert.equal(contentType, 'application/json')
       )
     )
-    it('is compiled with no warnings', ->
-      assert.deepEqual(compilationResult.warnings, [])
-    )
-    it('is compiled with no errors', ->
-      assert.deepEqual(compilationResult.errors, [])
-    )
-
     for statusCode, i in expectedStatusCodes
       do (statusCode, i) ->
         context("origin of transaction ##{i + 1}", ->
@@ -188,61 +216,62 @@ describe('compile() · Swagger', ->
   describe('with \'securityDefinitions\' and multiple responses', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.securityDefinitionsMultipleResponses.swagger, (args...) ->
         [err, compilationResult] = args
         done(err)
       )
     )
 
-    it('is compiled with no warnings', ->
-      assert.deepEqual(compilationResult.warnings, [])
-    )
-    it('is compiled with no errors', ->
-      assert.deepEqual(compilationResult.errors, [])
-    )
-    it('returns expected number of transactions', ->
-      assert.deepEqual(compilationResult.transactions.length, 2)
+    it('produces two transactions', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        transactions: 2
+      ))
     )
   )
 
   describe('with \'securityDefinitions\' containing transitions', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.securityDefinitionsTransitions.swagger, (args...) ->
         [err, compilationResult] = args
         done(err)
       )
     )
 
-    it('is compiled with no warnings', ->
-      assert.deepEqual(compilationResult.warnings, [])
-    )
-    it('is compiled with no errors', ->
-      assert.deepEqual(compilationResult.errors, [])
-    )
-    it('returns expected number of transactions', ->
-      assert.deepEqual(compilationResult.transactions.length, 1)
+    it('produces one transaction', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        transactions: 1
+      ))
     )
   )
 
   describe('with default response (without explicit status code)', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.defaultResponse.swagger, (args...) ->
         [err, compilationResult] = args
         done(err)
       )
     )
 
-    it('produces 2 warnings and 2 transactions', ->
+    it('produces two annotations and two transactions', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        errors: 0
-        warnings: 2
+        annotations: 2
         transactions: 2
       ))
+    )
+    it('produces warnings about the default response being unsupported', ->
+      assert.jsonSchema(compilationResult.annotations,
+        type: 'array'
+        items: createAnnotationSchema(
+          type: 'warning'
+          component: 'apiDescriptionParser'
+          message: 'Default response is not yet supported'
+        )
+      )
     )
     it('assumes the solitary default response to be HTTP 200', ->
       assert.equal(compilationResult.transactions[0].response.status, '200')

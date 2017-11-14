@@ -2,6 +2,7 @@ proxyquire = require('proxyquire').noPreserveCache()
 
 fixtures = require('../fixtures')
 createCompilationResultSchema = require('../schemas/compilation-result')
+createAnnotationSchema = require('../schemas/annotation')
 createLocationSchema = require('../schemas/location')
 createOriginSchema = require('../schemas/origin')
 {assert, compileFixture} = require('../utils')
@@ -13,15 +14,11 @@ describe('compile() · all API description formats', ->
 
   describe('ordinary, valid API description', ->
     filename = 'apiDescription.ext'
-    compilationResultSchema = createCompilationResultSchema({
-      filename
-      transactions: true
-    })
 
     fixtures.ordinary.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, {filename}, (args...) ->
           [err, compilationResult] = args
           done(err)
@@ -29,7 +26,7 @@ describe('compile() · all API description formats', ->
       )
 
       it('is compiled into a compilation result of expected structure', ->
-        assert.jsonSchema(compilationResult, compilationResultSchema)
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({filename}))
       )
     )
   )
@@ -38,38 +35,24 @@ describe('compile() · all API description formats', ->
     fixtures.parserError.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
-      it('is compiled into zero transactions', ->
-        assert.deepEqual(compilationResult.transactions, [])
+      it('produces one annotation and no transactions', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          annotations: 1
+          transactions: 0
+        ))
       )
-      it('is compiled with no warnings', ->
-        assert.deepEqual(compilationResult.warnings, [])
-      )
-      it('is compiled with an error', ->
-        assert.equal(compilationResult.errors.length, 1)
-      )
-      context('the error', ->
-        it('comes from parser', ->
-          assert.equal(compilationResult.errors[0].component, 'apiDescriptionParser')
-        )
-        it('has code', ->
-          assert.isNumber(compilationResult.errors[0].code)
-        )
-        it('has message', ->
-          assert.isString(compilationResult.errors[0].message)
-        )
-        it('has location', ->
-          assert.jsonSchema(compilationResult.errors[0].location, locationSchema)
-        )
-        it('has no origin', ->
-          assert.isUndefined(compilationResult.errors[0].origin)
-        )
+      it('produces error from parser', ->
+        assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+          type: 'error'
+          component: 'apiDescriptionParser'
+        ))
       )
     )
   )
@@ -84,39 +67,34 @@ describe('compile() · all API description formats', ->
     fixtures.uriExpansionAnnotation.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
-      it('is compiled into zero transactions', ->
-        assert.deepEqual(compilationResult.transactions, [])
+      it('produces some annotations and no transactions', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          annotations: [1, 2]
+          transactions: 0
+        ))
       )
-      it('is compiled with maximum one warning from parser', ->
-        assert.isAtMost(compilationResult.warnings.length, 1)
-        if compilationResult.warnings.length
-          assert.equal(compilationResult.warnings[0].component, 'apiDescriptionParser')
-      )
-      it('is compiled with one error', ->
-        assert.equal(compilationResult.errors.length, 1)
-      )
-      context('the error', ->
-        it('comes from URI expansion', ->
-          assert.equal(compilationResult.errors[0].component, 'uriTemplateExpansion')
+      it('produces maximum one warning from parser and exactly one error from URI expansion', ->
+        warning = createAnnotationSchema(
+          type: 'warning',
+          component: 'apiDescriptionParser'
         )
-        it('has no code', ->
-          assert.isUndefined(compilationResult.errors[0].code)
+        error = createAnnotationSchema(
+          type: 'error',
+          component: 'uriTemplateExpansion'
+          message: /failed to parse uri template/i
         )
-        it('has message', ->
-          assert.include(compilationResult.errors[0].message.toLowerCase(), 'failed to parse uri template')
-        )
-        it('has location', ->
-          assert.jsonSchema(compilationResult.errors[0].location, locationSchema)
-        )
-        it('has origin', ->
-          assert.jsonSchema(compilationResult.errors[0].origin, originSchema)
+        assert.jsonSchema(compilationResult.annotations,
+          oneOf: [
+            {type: 'array', items: [warning, error]}
+            {type: 'array', items: [error]}
+          ]
         )
       )
     )
@@ -133,49 +111,38 @@ describe('compile() · all API description formats', ->
     fixtures.uriValidationAnnotation.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
-      it('is compiled into zero transactions', ->
-        assert.deepEqual(compilationResult.transactions, [])
+      it('produces some annotations and no transactions', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          annotations: [2, 3]
+          transactions: 0
+        ))
       )
-      it('is compiled with maximum two warnings', ->
-        assert.isAtMost(compilationResult.warnings.length, 2)
-      )
-      it('there is maximum one warning from parser', ->
-        warnings = compilationResult.warnings.filter((warning) ->
-          warning.component is 'apiDescriptionParser'
+      it('produces maximum one warning from parser, exactly one warning from URI expansion, and exactly one error from URI parameters validation', ->
+        parserWarning = createAnnotationSchema(
+          type: 'warning'
+          component: 'apiDescriptionParser'
         )
-        assert.isAtMost(warnings.length, 1)
-      )
-      it('there is one warning from URI expansion', ->
-        warnings = compilationResult.warnings.filter((warning) ->
-          warning.component is 'uriTemplateExpansion'
+        uriExpansionWarning = createAnnotationSchema(
+          type: 'warning'
+          component: 'uriTemplateExpansion'
         )
-        assert.equal(warnings.length, 1)
-      )
-      it('is compiled with one error', ->
-        assert.equal(compilationResult.errors.length, 1)
-      )
-      context('the error', ->
-        it('comes from URI parameters validation', ->
-          assert.equal(compilationResult.errors[0].component, 'parametersValidation')
+        uriValidationError = createAnnotationSchema(
+          type: 'error'
+          component: 'parametersValidation'
+          message: 'no example'
         )
-        it('has no code', ->
-          assert.isUndefined(compilationResult.errors[0].code)
-        )
-        it('has message', ->
-          assert.include(compilationResult.errors[0].message.toLowerCase(), 'no example')
-        )
-        it('has location', ->
-          assert.jsonSchema(compilationResult.errors[0].location, locationSchema)
-        )
-        it('has origin', ->
-          assert.jsonSchema(compilationResult.errors[0].origin, originSchema)
+        assert.jsonSchema(compilationResult.annotations,
+          oneOf: [
+            {type: 'array', items: [parserWarning, uriValidationError, uriExpansionWarning]}
+            {type: 'array', items: [uriValidationError, uriExpansionWarning]}
+          ]
         )
       )
     )
@@ -185,43 +152,28 @@ describe('compile() · all API description formats', ->
     fixtures.parserWarning.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
-      it('is compiled into expected number of transactions', ->
-        assert.equal(compilationResult.transactions.length, 1)
+      it('produces some annotations and one transaction', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          annotations: [1]
+          transactions: 1
+        ))
       )
-      it('is compiled with some warnings', ->
-        assert.ok(compilationResult.warnings.length)
-      )
-      context('the warnings', ->
-        it('comes from parser', ->
-          for warning in compilationResult.warnings
-            assert.equal(warning.component, 'apiDescriptionParser')
+      context('the annotations', ->
+        it('are warnings', ->
+          for ann in compilationResult.annotations
+            assert.equal(ann.type, 'warning')
         )
-        it('have code', ->
-          for warning in compilationResult.warnings
-            assert.isNumber(warning.code)
+        it('come from parser', ->
+          for ann in compilationResult.annotations
+            assert.equal(ann.component, 'apiDescriptionParser')
         )
-        it('have message', ->
-          for warning in compilationResult.warnings
-            assert.isString(warning.message)
-        )
-        it('have location', ->
-          for warning in compilationResult.warnings
-            assert.jsonSchema(warning.location, locationSchema)
-        )
-        it('have no origin', ->
-          for warning in compilationResult.warnings
-            assert.isUndefined(warning.origin)
-        )
-      )
-      it('is compiled with no errors', ->
-        assert.deepEqual(compilationResult.errors, [])
       )
     )
   )
@@ -245,43 +197,27 @@ describe('compile() · all API description formats', ->
     fixtures.ordinary.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, {stubs}, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
-      it('is compiled into some transactions', ->
-        assert.ok(compilationResult.transactions.length)
+      it('produces some annotations', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          annotations: [1]
+        ))
       )
-      it('is compiled with some warnings', ->
-        assert.ok(compilationResult.warnings.length)
-      )
-      context('the warnings', ->
-        it('come from URI expansion', ->
-          for warning in compilationResult.warnings
-            assert.equal(warning.component, 'uriTemplateExpansion')
+      it('produces warnings from URI expansion', ->
+        assert.jsonSchema(compilationResult.annotations,
+          type: 'array'
+          items: createAnnotationSchema(
+            type: 'warning'
+            component: 'uriTemplateExpansion'
+            message: message
+          )
         )
-        it('have no code', ->
-          for warning in compilationResult.warnings
-            assert.isUndefined(warning.code)
-        )
-        it('have message', ->
-          for warning in compilationResult.warnings
-            assert.include(warning.message, message)
-        )
-        it('have location', ->
-          for warning in compilationResult.warnings
-            assert.jsonSchema(warning.location, locationSchema)
-        )
-        it('have origin', ->
-          for warning in compilationResult.warnings
-            assert.jsonSchema(warning.origin, originSchema)
-        )
-      )
-      it('is compiled with no errors', ->
-        assert.deepEqual(compilationResult.errors, [])
       )
     )
   )
@@ -299,39 +235,27 @@ describe('compile() · all API description formats', ->
     fixtures.ambiguousParametersAnnotation.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
-      it('is compiled into zero transactions', ->
-        assert.deepEqual(compilationResult.transactions, [])
+      it('produces two annotations and no transactions', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          annotations: 2
+          transactions: 0
+        ))
       )
-      it('is compiled with one warning', ->
-        assert.equal(compilationResult.warnings.length, 1)
-      )
-      context('the warning', ->
-        it('comes from URI expansion', ->
-          assert.equal(compilationResult.warnings[0].component, 'uriTemplateExpansion')
+      it('produces one warning from URI expansion and one error from URI parameters validation', ->
+        assert.jsonSchema(compilationResult.annotations,
+          type: 'array'
+          items: [
+            createAnnotationSchema({type: 'error', component: 'parametersValidation'})
+            createAnnotationSchema({type: 'warning', component: 'uriTemplateExpansion'})
+          ]
         )
-        it('has no code', ->
-          assert.isUndefined(compilationResult.warnings[0].code)
-        )
-        it('has message', ->
-          assert.include(compilationResult.warnings[0].message.toLowerCase(), 'ambiguous')
-        )
-        it('has location', ->
-          assert.jsonSchema(compilationResult.warnings[0].location, locationSchema)
-        )
-        it('has origin', ->
-          assert.jsonSchema(compilationResult.warnings[0].origin, originSchema)
-        )
-      )
-      it('is compiled with one error from URI parameters validation', ->
-        assert.equal(compilationResult.errors.length, 1)
-        assert.equal(compilationResult.errors[0].component, 'parametersValidation')
       )
     )
   )
@@ -351,43 +275,27 @@ describe('compile() · all API description formats', ->
     fixtures.ordinary.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, {stubs}, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
-      it('is compiled into some transactions', ->
-        assert.ok(compilationResult.transactions.length)
+      it('produces some annotations', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          annotations: [1]
+        ))
       )
-      it('is compiled with some warnings', ->
-        assert.ok(compilationResult.warnings.length)
-      )
-      context('the warnings', ->
-        it('come from URI parameters validation', ->
-          for warning in compilationResult.warnings
-            assert.equal(warning.component, 'parametersValidation')
+      it('produces warnings from URI parameters validation', ->
+        assert.jsonSchema(compilationResult.annotations,
+          type: 'array'
+          items: createAnnotationSchema(
+            type: 'warning'
+            component: 'parametersValidation'
+            message: message
+          )
         )
-        it('have no code', ->
-          for warning in compilationResult.warnings
-            assert.isUndefined(warning.code)
-        )
-        it('have message', ->
-          for warning in compilationResult.warnings
-            assert.include(warning.message, message)
-        )
-        it('have location', ->
-          for warning in compilationResult.warnings
-            assert.jsonSchema(warning.location, locationSchema)
-        )
-        it('have origin', ->
-          for warning in compilationResult.warnings
-            assert.jsonSchema(warning.origin, originSchema)
-        )
-      )
-      it('is compiled with no errors', ->
-        assert.deepEqual(compilationResult.errors, [])
       )
     )
   )
@@ -396,18 +304,17 @@ describe('compile() · all API description formats', ->
     fixtures.enumParameter.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
-      it('is compiled with no warnings', ->
-        assert.deepEqual(compilationResult.warnings, [])
-      )
-      it('is compiled with no errors', ->
-        assert.deepEqual(compilationResult.errors, [])
+      it('produces one transaction', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          transactions: 1
+        ))
       )
       it('expands the request URI with the first enum value', ->
         assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Adam')
@@ -419,18 +326,17 @@ describe('compile() · all API description formats', ->
     fixtures.enumParameterExample.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
-      it('is compiled with no warnings', ->
-        assert.deepEqual(compilationResult.warnings, [])
-      )
-      it('is compiled with no errors', ->
-        assert.deepEqual(compilationResult.errors, [])
+      it('produces one transaction', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          transactions: 1
+        ))
       )
       it('expands the request URI with the example value', ->
         assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza')
@@ -448,38 +354,34 @@ describe('compile() · all API description formats', ->
     fixtures.enumParameterUnlistedExample.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
-      it('is compiled into one transaction', ->
-        assert.equal(compilationResult.transactions.length, 1)
+      it('produces some annotations and one transaction', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          annotations: [1, 2]
+          transactions: 1
+        ))
       )
-      it('is compiled with maximum one warning from parser', ->
-        if compilationResult.warnings.length
-          assert.equal(compilationResult.warnings[0].component, 'apiDescriptionParser')
-      )
-      it('is compiled with one error', ->
-        assert.equal(compilationResult.errors.length, 1)
-      )
-      context('the error', ->
-        it('comes from URI parameters validation', ->
-          assert.equal(compilationResult.errors[0].component, 'parametersValidation')
+      it('produces maximum one warning from parser, and exactly one error from URI parameters validation', ->
+        warning = createAnnotationSchema(
+          type: 'warning'
+          component: 'apiDescriptionParser'
         )
-        it('has no code', ->
-          assert.isUndefined(compilationResult.errors[0].code)
+        error = createAnnotationSchema(
+          type: 'error'
+          component: 'parametersValidation'
+          message: 'example value is not one of enum values'
         )
-        it('has message', ->
-          assert.include(compilationResult.errors[0].message.toLowerCase(), 'example value is not one of enum values')
-        )
-        it('has location', ->
-          assert.jsonSchema(compilationResult.errors[0].location, locationSchema)
-        )
-        it('has origin', ->
-          assert.jsonSchema(compilationResult.errors[0].origin, originSchema)
+        assert.jsonSchema(compilationResult.annotations,
+          oneOf: [
+            {type: 'array', items: [warning, error]}
+            {type: 'array', items: [error]}
+          ]
         )
       )
       it('expands the request URI with the example value', ->
@@ -492,18 +394,17 @@ describe('compile() · all API description formats', ->
     fixtures.exampleParameters.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
-      it('is compiled with no warnings', ->
-        assert.deepEqual(compilationResult.warnings, [])
-      )
-      it('is compiled with no errors', ->
-        assert.deepEqual(compilationResult.errors, [])
+      it('produces one transaction', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          transactions: 1
+        ))
       )
       it('expands the request URI with the example value', ->
         assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&flavour=spicy')
@@ -515,26 +416,36 @@ describe('compile() · all API description formats', ->
     fixtures.responseSchema.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
-      it('is compiled with no warnings', ->
-        assert.deepEqual(compilationResult.warnings, [])
+      it('produces one transaction', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          transactions: 2
+        ))
       )
-      it('is compiled with no errors', ->
-        assert.deepEqual(compilationResult.errors, [])
+      context('the first transaction', ->
+        it('has the body in response data', ->
+          assert.ok(compilationResult.transactions[0].response.body)
+          assert.doesNotThrow( -> JSON.parse(compilationResult.transactions[0].response.body))
+        )
+        it('has the schema in response data', ->
+          assert.ok(compilationResult.transactions[0].response.schema)
+          assert.doesNotThrow( -> JSON.parse(compilationResult.transactions[0].response.schema))
+        )
       )
-      it('provides the body in response data', ->
-        assert.ok(compilationResult.transactions[0].response.body)
-        assert.doesNotThrow( -> JSON.parse(compilationResult.transactions[0].response.body))
-      )
-      it('provides the schema in response data', ->
-        assert.ok(compilationResult.transactions[0].response.schema)
-        assert.doesNotThrow( -> JSON.parse(compilationResult.transactions[0].response.schema))
+      context('the second transaction', ->
+        it('has no body in response data', ->
+          assert.notOk(compilationResult.transactions[1].response.body)
+        )
+        it('has the schema in response data', ->
+          assert.ok(compilationResult.transactions[1].response.schema)
+          assert.doesNotThrow( -> JSON.parse(compilationResult.transactions[1].response.schema))
+        )
       )
     )
   )
@@ -543,18 +454,17 @@ describe('compile() · all API description formats', ->
     fixtures.parametersInheritance.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
-      it('is compiled with no warnings', ->
-        assert.deepEqual(compilationResult.warnings, [])
-      )
-      it('is compiled with no errors', ->
-        assert.deepEqual(compilationResult.errors, [])
+      it('produces one transaction', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          transactions: 1
+        ))
       )
       it('expands the request URI using correct inheritance cascade', ->
         assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&amount=42')
@@ -566,18 +476,17 @@ describe('compile() · all API description formats', ->
     fixtures.preferDefault.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
-      it('is compiled with no warnings', ->
-        assert.deepEqual(compilationResult.warnings, [])
-      )
-      it('is compiled with no errors', ->
-        assert.deepEqual(compilationResult.errors, [])
+      it('produces one transaction', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          transactions: 1
+        ))
       )
       it('expands the request URI using the default value', ->
         assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Adam')
@@ -589,55 +498,38 @@ describe('compile() · all API description formats', ->
     fixtures.defaultRequired.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
+      it('produces some annotations and one transaction', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          annotations: [1, 2]
+          transactions: 1
+        ))
+      )
+      it('produces maximum one warning from parser, and exactly one warning from URI expansion', ->
+        parserWarning = createAnnotationSchema(
+          type: 'warning'
+          component: 'apiDescriptionParser'
+        )
+        uriExpansionWarning = createAnnotationSchema(
+          type: 'warning'
+          component: 'uriTemplateExpansion'
+          message: /default value for a required parameter/i
+        )
+        assert.jsonSchema(compilationResult.annotations,
+          oneOf: [
+            {type: 'array', items: [parserWarning, uriExpansionWarning]}
+            {type: 'array', items: [uriExpansionWarning]}
+          ]
+        )
+      )
       it('expands the request URI using the default value', ->
         assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza')
-      )
-      it('is compiled with no errors', ->
-        assert.deepEqual(compilationResult.errors, [])
-      )
-      it('is compiled with maximum two warnings', ->
-        assert.isAtMost(compilationResult.warnings.length, 2)
-      )
-      it('there is maximum one warning from parser', ->
-        warnings = compilationResult.warnings.filter((warning) ->
-          warning.component is 'apiDescriptionParser'
-        )
-        assert.isAtMost(warnings.length, 1)
-      )
-      it('there is one warning from URI expansion', ->
-        warnings = compilationResult.warnings.filter((warning) ->
-          warning.component is 'uriTemplateExpansion'
-        )
-        assert.equal(warnings.length, 1)
-      )
-      context('the last warning', ->
-        it('comes from URI expansion', ->
-          lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
-          assert.equal(lastWarning.component, 'uriTemplateExpansion')
-        )
-        it('has no code', ->
-          lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
-          assert.isUndefined(lastWarning.code)
-        )
-        it('has message', ->
-          lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
-          assert.include(lastWarning.message.toLowerCase(), 'default value for a required parameter')
-        )
-        it('has location', ->
-          lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
-          assert.jsonSchema(lastWarning.location, locationSchema)
-        )
-        it('has origin', ->
-          lastWarning = compilationResult.warnings[compilationResult.warnings.length - 1]
-          assert.jsonSchema(lastWarning.origin, originSchema)
-        )
       )
     )
   )
@@ -646,32 +538,29 @@ describe('compile() · all API description formats', ->
     fixtures.httpHeaders.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
-      it('is compiled with no warnings', ->
-        assert.deepEqual(compilationResult.warnings, [])
+      it('produces one transaction', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          transactions: 1
+        ))
       )
-      it('is compiled with no errors', ->
-        assert.deepEqual(compilationResult.errors, [])
+      it('produces expected request headers', ->
+        assert.deepEqual(compilationResult.transactions[0].request.headers, [
+          {name: 'Content-Type', value: 'application/json'}
+          {name: 'Accept', value: 'application/json'}
+        ])
       )
-      context('compiles a transaction', ->
-        it('with expected request headers', ->
-          assert.deepEqual(compilationResult.transactions[0].request.headers, {
-            'Content-Type': {value: 'application/json'}
-            'Accept': {value: 'application/json'}
-          })
-        )
-        it('with expected response headers', ->
-          assert.deepEqual(compilationResult.transactions[0].response.headers, {
-            'Content-Type': {value: 'application/json'}
-            'X-Test': {value: 'Adam'}
-          })
-        )
+      it('produces expected response headers', ->
+        assert.deepEqual(compilationResult.transactions[0].response.headers, [
+          {name: 'Content-Type', value: 'application/json'}
+          {name: 'X-Test', value: 'Adam'}
+        ])
       )
     )
   )
@@ -680,17 +569,15 @@ describe('compile() · all API description formats', ->
     fixtures.noBody.forEachDescribe(({source}) ->
       compilationResult = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
-      it('produces no annotations and 2 transactions', ->
+      it('produces 2 transactions', ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          errors: 0
-          warnings: 0
           transactions: 2
         ))
       )
@@ -706,35 +593,28 @@ describe('compile() · all API description formats', ->
   describe('without explicit schema', ->
     fixtures.noSchema.forEachDescribe(({source}) ->
       compilationResult = undefined
-      expectedMediaTypes = [
-        'application/json'
-        'application/json'
-        'text/csv'
-        'text/yaml'
-      ]
+      expectedMediaTypes = ['application/json', 'application/json', 'text/csv', 'text/yaml']
 
-      beforeEach((done) ->
+      before((done) ->
         compileFixture(source, (args...) ->
           [err, compilationResult] = args
           done(err)
         )
       )
 
-      it("produces no annotations and #{expectedMediaTypes.length} transactions", ->
+      it("produces #{expectedMediaTypes.length} transactions", ->
         assert.jsonSchema(compilationResult, createCompilationResultSchema(
-          errors: 0
-          warnings: 0
           transactions: expectedMediaTypes.length
         ))
       )
       expectedMediaTypes.forEach((mediaType, i) ->
         context("transaction ##{i + 1}", ->
           it("has '#{mediaType}' response", ->
-            assert.deepEqual(compilationResult.transactions[i].response.headers, {
-              'Content-Type': {value: mediaType}
-            })
+            assert.deepEqual(compilationResult.transactions[i].response.headers, [
+              {name: 'Content-Type', value: mediaType}
+            ])
           )
-          it("has no schema", ->
+          it('has no schema', ->
             assert.isUndefined(compilationResult.transactions[i].response.schema)
           )
         )

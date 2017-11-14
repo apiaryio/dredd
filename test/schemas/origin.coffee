@@ -1,4 +1,3 @@
-
 module.exports = (options = {}) ->
   if options.filename
     filenameSchema = {type: 'string', enum: [options.filename]}

@@ -3,49 +3,34 @@ proxyquire = require('proxyquire').noPreserveCache()
 sinon = require('sinon')
 
 fixtures = require('../fixtures')
-createLocationSchema = require('../schemas/location')
-createCompilationResultSchema = require('../schemas/compilation-result')
 {assert, compileFixture} = require('../utils')
+createCompilationResultSchema = require('../schemas/compilation-result')
+createAnnotationSchema = require('../schemas/annotation')
 
 
 describe('compile() · API Blueprint', ->
-  locationSchema = createLocationSchema()
-
   describe('causing a \'missing title\' warning', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.missingTitleAnnotation.apiBlueprint, (args...) ->
         [err, compilationResult] = args
         done(err)
       )
     )
 
-    it('is compiled into zero transactions', ->
-      assert.deepEqual(compilationResult.transactions, [])
+    it('produces one annotation and no transactions', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        annotations: 1
+        transactions: 0
+      ))
     )
-    it('is compiled with one warning', ->
-      assert.equal(compilationResult.warnings.length, 1)
-    )
-    context('the warning', ->
-      it('comes from parser', ->
-        assert.equal(compilationResult.warnings[0].component, 'apiDescriptionParser')
-      )
-      it('has code', ->
-        assert.isNumber(compilationResult.warnings[0].code)
-      )
-      it('has message', ->
-        assert.include(compilationResult.warnings[0].message.toLowerCase(), 'expected api name')
-      )
-      it('has location', ->
-        assert.jsonSchema(compilationResult.warnings[0].location, locationSchema)
-      )
-      it('has no origin', ->
-        assert.isUndefined(compilationResult.warnings[0].origin)
-      )
-    )
-    it('is compiled with no errors', ->
-      assert.deepEqual(compilationResult.errors, [])
+    it('produces warning about missing title', ->
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'warning'
+        component: 'apiDescriptionParser'
+        message: 'expected API name'
+      ))
     )
   )
 
@@ -55,39 +40,25 @@ describe('compile() · API Blueprint', ->
 
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.apiBlueprint, (args...) ->
         [err, compilationResult] = args
         done(err)
       )
     )
 
-    it('is compiled into expected number of transactions', ->
-      assert.equal(compilationResult.transactions.length, 1)
+    it('produces one annotation and one transaction', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        annotations: 1
+        transactions: 1
+      ))
     )
-    it('is compiled with a single warning', ->
-      assert.equal(compilationResult.warnings.length, 1)
-    )
-    context('the warning', ->
-      it('comes from parser', ->
-        assert.equal(compilationResult.warnings[0].component, 'apiDescriptionParser')
-      )
-      it('has code', ->
-        assert.isNumber(compilationResult.warnings[0].code)
-      )
-      it('has message', ->
-        assert.include(compilationResult.warnings[0].message.toLowerCase(), 'not found within')
-        assert.include(compilationResult.warnings[0].message.toLowerCase(), 'uri template')
-      )
-      it('has location', ->
-        assert.jsonSchema(compilationResult.warnings[0].location, locationSchema)
-      )
-      it('has no origin', ->
-        assert.isUndefined(compilationResult.warnings[0].origin)
-      )
-    )
-    it('is compiled with no errors', ->
-      assert.deepEqual(compilationResult.errors, [])
+    it('produces warning about parameter not being in the URI Template', ->
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'warning'
+        component: 'apiDescriptionParser'
+        message: /not found within.+uri template/i
+      ))
     )
   )
 
@@ -100,7 +71,7 @@ describe('compile() · API Blueprint', ->
       {exampleName: 'Example 2', requestContentType: 'text/plain', responseStatusCode: 415}
     ]
 
-    beforeEach((done) ->
+    before((done) ->
       stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers}
       compileFixture(fixtures.multipleTransactionExamples.apiBlueprint, {stubs}, (args...) ->
         [err, compilationResult] = args
@@ -108,11 +79,13 @@ describe('compile() · API Blueprint', ->
       )
     )
 
-    it('detection of transaction examples was called', ->
+    it('calls the detection of transaction examples', ->
       assert.isTrue(detectTransactionExampleNumbers.called)
     )
-    it('is compiled into expected number of transactions', ->
-      assert.equal(compilationResult.transactions.length, expected.length)
+    it("produces #{expected.length} transactions", ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        transactions: expected.length
+      ))
     )
     for expectations, i in expected
       do (expectations, i) ->
@@ -126,10 +99,11 @@ describe('compile() · API Blueprint', ->
             )
           )
           it("has request with Content-Type: #{requestContentType}", ->
-            assert.equal(
-              compilationResult.transactions[i].request.headers['Content-Type'].value,
-              requestContentType
-            )
+            headers = compilationResult.transactions[i].request.headers
+            contentType = headers
+              .filter((header) -> header.name is 'Content-Type')
+              .map((header) -> header.value)[0]
+            assert.equal(contentType, requestContentType)
           )
           it("has response with status code #{responseStatusCode}", ->
             assert.equal(
@@ -138,19 +112,13 @@ describe('compile() · API Blueprint', ->
             )
           )
         )
-    it('is compiled with no warnings', ->
-      assert.deepEqual(compilationResult.warnings, [])
-    )
-    it('is compiled with no errors', ->
-      assert.deepEqual(compilationResult.errors, [])
-    )
   )
 
   describe('without multiple transaction examples', ->
     detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'))
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers}
       compileFixture(fixtures.oneTransactionExample.apiBlueprint, {stubs}, (args...) ->
         [err, compilationResult] = args
@@ -158,11 +126,13 @@ describe('compile() · API Blueprint', ->
       )
     )
 
-    it('detection of transaction examples was called', ->
+    it('calls the detection of transaction examples', ->
       assert.isTrue(detectTransactionExampleNumbers.called)
     )
-    it('is compiled into one transaction', ->
-      assert.equal(compilationResult.transactions.length, 1)
+    it('produces one transaction', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        transactions: 1
+      ))
     )
     context('the transaction', ->
       it("is identified as part of no example in \'origin\'", ->
@@ -172,32 +142,25 @@ describe('compile() · API Blueprint', ->
         assert.equal(compilationResult.transactions[0].pathOrigin.exampleName, 'Example 1')
       )
     )
-    it('is compiled with no warnings', ->
-      assert.deepEqual(compilationResult.warnings, [])
-    )
-    it('is compiled with no errors', ->
-      assert.deepEqual(compilationResult.errors, [])
-    )
   )
 
   describe('with arbitrary action', ->
     compilationResult = undefined
     filename = 'apiDescription.apib'
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.arbitraryAction.apiBlueprint, {filename}, (args...) ->
         [err, compilationResult] = args
         done(err)
       )
     )
 
-    it('is compiled with no warnings', ->
-      assert.deepEqual(compilationResult.warnings, [])
+    it('produces two transactions', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        transactions: 2
+      ))
     )
-    it('is compiled with no errors', ->
-      assert.deepEqual(compilationResult.errors, [])
-    )
-    context('action within a resource', ->
+    context('the action within a resource', ->
       it('has URI inherited from the resource', ->
         assert.equal(compilationResult.transactions[0].request.uri, '/resource/1')
       )
@@ -205,7 +168,7 @@ describe('compile() · API Blueprint', ->
         assert.equal(compilationResult.transactions[0].request.method, 'GET')
       )
     )
-    context('arbitrary action', ->
+    context('the arbitrary action', ->
       it('has its own URI', ->
         assert.equal(compilationResult.transactions[1].request.uri, '/arbitrary/sample')
       )
@@ -219,18 +182,17 @@ describe('compile() · API Blueprint', ->
     compilationResult = undefined
     filename = 'apiDescription.apib'
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.withoutSections.apiBlueprint, {filename}, (args...) ->
         [err, compilationResult] = args
         done(err)
       )
     )
 
-    it('is compiled with no warnings', ->
-      assert.deepEqual(compilationResult.warnings, [])
-    )
-    it('is compiled with no errors', ->
-      assert.deepEqual(compilationResult.errors, [])
+    it('produces one transaction', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        transactions: 1
+      ))
     )
     context('\'origin\'', ->
       it('uses filename as API name', ->
@@ -265,18 +227,17 @@ describe('compile() · API Blueprint', ->
   describe('with different sample and default value of URI parameter', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.preferSample.apiBlueprint, (args...) ->
         [err, compilationResult] = args
         done(err)
       )
     )
 
-    it('is compiled with no warnings', ->
-      assert.deepEqual(compilationResult.warnings, [])
-    )
-    it('is compiled with no errors', ->
-      assert.deepEqual(compilationResult.errors, [])
+    it('produces one transaction', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        transactions: 1
+      ))
     )
     it('expands the request URI using the sample value', ->
       assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Pavan')
@@ -286,22 +247,69 @@ describe('compile() · API Blueprint', ->
   describe('with response without explicit status code', ->
     compilationResult = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       compileFixture(fixtures.noStatus.apiBlueprint, (args...) ->
         [err, compilationResult] = args
         done(err)
       )
     )
 
-    it('produces 1 warning and 1 transaction', ->
+    it('produces 1 annotation and 1 transaction', ->
       assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        errors: 0
-        warnings: 1
+        annotations: 1
         transactions: 1
+      ))
+    )
+    it('produces warning about the response status code being assumed', ->
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'warning'
+        component: 'apiDescriptionParser'
+        message: 'missing response HTTP status code, assuming'
       ))
     )
     it('assumes HTTP 200', ->
       assert.equal(compilationResult.transactions[0].response.status, '200')
+    )
+  )
+
+  describe('with multiple HTTP headers of the same name', ->
+    compilationResult = undefined
+
+    before((done) ->
+      compileFixture(fixtures.httpHeadersMultiple.apiBlueprint, (args...) ->
+        [err, compilationResult] = args
+        done(err)
+      )
+    )
+
+    it('produces 1 annotation and 1 transaction', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        annotations: 1
+        transactions: 1
+      ))
+    )
+    it('produces warning about duplicate header names', ->
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'warning'
+        component: 'apiDescriptionParser'
+        message: /duplicate definition.+header/
+      ))
+    )
+    context('the transaction', ->
+      it('has the expected request headers', ->
+        assert.deepEqual(compilationResult.transactions[0].request.headers, [
+          {name: 'Content-Type', value: 'application/json'}
+          {name: 'X-Multiple', value: 'foo'}
+          {name: 'X-Multiple', value: 'bar'}
+        ])
+      )
+      it('has the expected response headers', ->
+        assert.deepEqual(compilationResult.transactions[0].response.headers, [
+          {name: 'Content-Type', value: 'application/json'}
+          {name: 'Set-Cookie', value: 'session-id=123'}
+          {name: 'Set-Cookie', value: 'likes-honey=true'}
+        ])
+      )
     )
   )
 )

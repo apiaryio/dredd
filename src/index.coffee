@@ -3,7 +3,7 @@ compileFromApiElements = require('./compile')
 
 
 compile = (source, filename, callback) ->
-  # All regular parser-related or compilation-related errors and warnings
+  # All regular parser-related or compilation-related annotations
   # should be returned in the "compilation result". Callback should get
   # an error only in case of unexpected crash.
 
@@ -34,8 +34,7 @@ createParserErrorCompilationResult = (message) ->
   return {
     mediaType: null
     transactions: []
-    warnings: []
-    errors: [{component: 'apiDescriptionParser', message}]
+    annotations: [{type: 'error', component: 'apiDescriptionParser', message, location: [[0, 1]]}]
   }
 
 

@@ -4,9 +4,19 @@ info:
   title: Beehive API
 consumes:
   - application/json
+  - application/xml
 paths:
   /honey:
-    get:
+    post:
+      responses:
+        200:
+          description: pet response
+          schema:
+            $ref: '#/definitions/Bee'
+  /honey-with-override:
+    post:
+      consumes:
+        - application/json
       responses:
         200:
           description: pet response

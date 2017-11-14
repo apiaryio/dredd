@@ -1,10 +1,10 @@
-
 sinon = require('sinon')
 proxyquire = require('proxyquire').noPreserveCache()
 
 fixtures = require('../fixtures')
 {assert} = require('../utils')
 createCompilationResultSchema = require('../schemas/compilation-result')
+createAnnotationSchema = require('../schemas/annotation')
 dreddTransactions = require('../../src/index')
 
 
@@ -13,11 +13,6 @@ describe('Dredd Transactions', ->
     err = undefined
     error = new Error('... dummy message ...')
     compilationResult = undefined
-    schema = createCompilationResultSchema(
-      errors: 1
-      warnings: 0
-      transactions: 0
-    )
 
     beforeEach((done) ->
       dt = proxyquire('../../src/index',
@@ -39,11 +34,6 @@ describe('Dredd Transactions', ->
 
   describe('When given empty API description document', ->
     compilationResult = undefined
-    schema = createCompilationResultSchema(
-      errors: 0
-      warnings: 1
-      transactions: 0
-    )
 
     fixtures.empty.forEachDescribe(({source}) ->
       beforeEach((done) ->
@@ -53,25 +43,24 @@ describe('Dredd Transactions', ->
         )
       )
 
-      it('produces no errors, one warning, no transactions', ->
-        assert.jsonSchema(compilationResult, schema)
+      it('produces one annotation, no transactions', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          annotations: 1
+          transactions: 0
+        ))
       )
       it('produces warning about falling back to API Blueprint', ->
-        assert.include(
-          JSON.stringify(compilationResult.warnings),
-          'to API Blueprint'
-        )
+        assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+          type: 'warning'
+          component: 'apiDescriptionParser'
+          message: 'to API Blueprint'
+        ))
       )
     )
   )
 
   describe('When given unknown API description format', ->
     compilationResult = undefined
-    schema = createCompilationResultSchema(
-      errors: 0
-      warnings: true
-      transactions: 0
-    )
     source = '''
       ... unknown API description format ...
     '''
@@ -83,24 +72,30 @@ describe('Dredd Transactions', ->
       )
     )
 
-    it('produces no errors, one warning, no transactions', ->
-      assert.jsonSchema(compilationResult, schema)
+    it('produces two annotations, no transactions', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        annotations: 2
+        transactions: 0
+      ))
     )
     it('produces warning about falling back to API Blueprint', ->
-      assert.include(
-        JSON.stringify(compilationResult.warnings),
-        'to API Blueprint'
-      )
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'warning'
+        component: 'apiDescriptionParser'
+        message: 'to API Blueprint'
+      ))
+    )
+    it('produces a warning about the API Blueprint not being valid', ->
+      assert.jsonSchema(compilationResult.annotations[1], createAnnotationSchema(
+        type: 'warning'
+        component: 'apiDescriptionParser'
+        message: 'expected'
+      ))
     )
   )
 
   describe('When given unrecognizable API Blueprint format', ->
     compilationResult = undefined
-    schema = createCompilationResultSchema(
-      errors: 0
-      warnings: true
-      transactions: true
-    )
     source = fixtures.unrecognizable.apiBlueprint
 
     beforeEach((done) ->
@@ -110,24 +105,37 @@ describe('Dredd Transactions', ->
       )
     )
 
-    it('produces no errors, some warnings, some transactions', ->
-      assert.jsonSchema(compilationResult, schema)
+    it('produces two annotations', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        annotations: 2
+      ))
     )
-    it('produces warning about falling back to API Blueprint', ->
-      assert.include(
-        JSON.stringify(compilationResult.warnings),
-        'to API Blueprint'
+    it('produces no errors', ->
+      errors = compilationResult.annotations.filter((annotation) ->
+        annotation.type is 'error'
       )
+      assert.deepEqual(errors, [])
+    )
+    it('produces a warning about falling back to API Blueprint', ->
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'warning'
+        component: 'apiDescriptionParser'
+        message: 'to API Blueprint'
+      ))
+    )
+    it('produces a warning about missing HTTP status code', ->
+      # "+ Response XXX" would be a match in the API Blueprint detection,
+      # so the fixture omits the HTTP status code to prevent that
+      assert.jsonSchema(compilationResult.annotations[1], createAnnotationSchema(
+        type: 'warning'
+        component: 'apiDescriptionParser'
+        message: 'missing response HTTP status code'
+      ))
     )
   )
 
   describe('When given API description with errors', ->
     compilationResult = undefined
-    schema = createCompilationResultSchema(
-      errors: true
-      warnings: 0
-      transactions: 0
-    )
 
     fixtures.parserError.forEachDescribe(({source}) ->
       beforeEach((done) ->
@@ -137,19 +145,23 @@ describe('Dredd Transactions', ->
         )
       )
 
-      it('produces some errors, no warnings, no transactions', ->
-        assert.jsonSchema(compilationResult, schema)
+      it('produces some annotations, no transactions', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          annotations: [1]
+          transactions: 0
+        ))
+      )
+      it('produces errors', ->
+        assert.jsonSchema(compilationResult.annotations,
+          type: 'array'
+          items: createAnnotationSchema({type: 'error'})
+        )
       )
     )
   )
 
   describe('When given API description with warnings', ->
     compilationResult = undefined
-    schema = createCompilationResultSchema(
-      errors: 0
-      warnings: true
-      transactions: true
-    )
 
     fixtures.parserWarning.forEachDescribe(({source}) ->
       beforeEach((done) ->
@@ -159,19 +171,22 @@ describe('Dredd Transactions', ->
         )
       )
 
-      it('produces no errors, some warnings, some transactions', ->
-        assert.jsonSchema(compilationResult, schema)
+      it('produces some annotations', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema(
+          annotations: [1]
+        ))
+      )
+      it('produces warnings', ->
+        assert.jsonSchema(compilationResult.annotations,
+          type: 'array'
+          items: createAnnotationSchema({type: 'warning'})
+        )
       )
     )
   )
 
   describe('When given valid API description', ->
     compilationResult = undefined
-    schema = createCompilationResultSchema(
-      errors: 0
-      warnings: 0
-      transactions: true
-    )
 
     fixtures.ordinary.forEachDescribe(({source}) ->
       beforeEach((done) ->
@@ -181,19 +196,14 @@ describe('Dredd Transactions', ->
         )
       )
 
-      it('produces no errors, no warnings, some transactions', ->
-        assert.jsonSchema(compilationResult, schema)
+      it('produces no annotations and some transactions', ->
+        assert.jsonSchema(compilationResult, createCompilationResultSchema())
       )
     )
   )
 
   describe('When parser unexpectedly provides just error and no API Elements', ->
     compilationResult = undefined
-    schema = createCompilationResultSchema(
-      errors: 1
-      warnings: 0
-      transactions: 0
-    )
     source = '... dummy API description document ...'
     message = '... dummy error message ...'
 
@@ -208,24 +218,22 @@ describe('Dredd Transactions', ->
       )
     )
 
-    it('produces one error, no warnings, no transactions', ->
-      assert.jsonSchema(compilationResult, schema)
+    it('produces one annotation, no transactions', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        annotations: 1
+        transactions: 0
+      ))
     )
     it('turns the parser error into a valid annotation', ->
-      assert.include(
-        JSON.stringify(compilationResult.errors),
-        message
-      )
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'error'
+        message: message
+      ))
     )
   )
 
   describe('When parser unexpectedly provides error and malformed API Elements', ->
     compilationResult = undefined
-    schema = createCompilationResultSchema(
-      errors: 1
-      warnings: 0
-      transactions: 0
-    )
     source = '... dummy API description document ...'
     message = '... dummy error message ...'
 
@@ -240,24 +248,22 @@ describe('Dredd Transactions', ->
       )
     )
 
-    it('produces one error, no warnings, no transactions', ->
-      assert.jsonSchema(compilationResult, schema)
+    it('produces one annotation, no transactions', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        annotations: 1
+        transactions: 0
+      ))
     )
     it('turns the parser error into a valid annotation', ->
-      assert.include(
-        JSON.stringify(compilationResult.errors),
-        message
-      )
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'error'
+        message: message
+      ))
     )
   )
 
   describe('When parser unexpectedly provides malformed API Elements only', ->
     compilationResult = undefined
-    schema = createCompilationResultSchema(
-      errors: 1
-      warnings: 0
-      transactions: 0
-    )
     source = '... dummy API description document ...'
 
     beforeEach((done) ->
@@ -271,14 +277,17 @@ describe('Dredd Transactions', ->
       )
     )
 
-    it('produces one error, no warnings, no transactions', ->
-      assert.jsonSchema(compilationResult, schema)
+    it('produces one annotation, no transactions', ->
+      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+        annotations: 1
+        transactions: 0
+      ))
     )
-    it('the error is a valid annotation', ->
-      assert.include(
-        JSON.stringify(compilationResult.errors),
-        'The API description parser was unable to provide a valid parse result'
-      )
+    it('produces an error about parser failure', ->
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
+        type: 'error'
+        message: 'parser was unable to provide a valid parse result'
+      ))
     )
   )
 )

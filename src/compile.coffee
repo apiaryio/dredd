@@ -1,5 +1,4 @@
 clone = require('clone')
-caseless = require('caseless')
 
 detectTransactionExampleNumbers = require('./detect-transaction-example-numbers')
 compileUri = require('./compile-uri')
@@ -11,24 +10,22 @@ compile = (mediaType, apiElements, filename) ->
   apiElements.freeze()
 
   transactions = []
-  errors = apiElements.errors.map(compileAnnotation)
-  warnings = apiElements.warnings.map(compileAnnotation)
+  annotations = apiElements.annotations.map(compileAnnotation)
 
   for {httpTransactionElement, exampleNo} in findRelevantTransactions(mediaType, apiElements)
-    {transaction, annotations} = compileTransaction(mediaType, filename, httpTransactionElement, exampleNo)
-    transactions.push(transaction) if transaction
-    errors = errors.concat(annotations.errors)
-    warnings = warnings.concat(annotations.warnings)
+    result = compileTransaction(mediaType, filename, httpTransactionElement, exampleNo)
+    transactions.push(result.transaction) if result.transaction
+    annotations = annotations.concat(result.annotations)
 
-  {mediaType, transactions, errors, warnings}
+  {mediaType, transactions, annotations}
 
 
 compileAnnotation = (annotationElement) ->
   {
+    type: annotationElement.classes.getValue(0)
     component: 'apiDescriptionParser'
-    code: annotationElement.code?.toValue()
     message: annotationElement.toValue()
-    location: annotationElement.sourceMapValue
+    location: annotationElement.sourceMapValue or [[0, 1]]
   }
 
 
@@ -73,7 +70,7 @@ compileTransaction = (mediaType, filename, httpTransactionElement, exampleNo) ->
   origin = compileOrigin(mediaType, filename, httpTransactionElement, exampleNo)
   {request, annotations} = compileRequest(httpTransactionElement.request)
 
-  [].concat(annotations.errors, annotations.warnings).forEach((annotation) ->
+  annotations.forEach((annotation) ->
     annotation.origin = clone(origin)
   )
   return {transaction: null, annotations} unless request
@@ -90,7 +87,7 @@ compileTransaction = (mediaType, filename, httpTransactionElement, exampleNo) ->
 compileRequest = (httpRequestElement) ->
   {uri, annotations} = compileUri(httpRequestElement)
 
-  [].concat(annotations.errors, annotations.warnings).forEach((annotation) ->
+  annotations.forEach((annotation) ->
     annotation.location = (
       httpRequestElement.href?.sourceMapValue or
       httpRequestElement.parents.find('transition').href?.sourceMapValue or
@@ -150,7 +147,10 @@ compileOriginExampleName = (mediaType, httpResponseElement, exampleNo) ->
   else
     statusCode = httpResponseElement.statusCode?.toValue() or '200'
     headers = compileHeaders(httpResponseElement.headers)
-    contentType = caseless(headers).get('content-type')?.value
+
+    contentType = headers
+      .filter((header) -> header.name.toLowerCase() is 'content-type')
+      .map((header) -> header.value)[0]
 
     segments = []
     segments.push(statusCode) if statusCode
@@ -176,11 +176,10 @@ compilePathOrigin = (filename, httpTransactionElement, exampleNo) ->
 
 
 compileHeaders = (httpHeadersElement) ->
-  return {} unless httpHeadersElement
-  httpHeadersElement.toValue().reduce((headers, {key, value}) ->
-    headers[key] = {value}
-    return headers
-  , {})
+  return [] unless httpHeadersElement
+  return httpHeadersElement.toValue().map(({key, value}) ->
+    return {name: key, value}
+  )
 
 
 module.exports = compile
