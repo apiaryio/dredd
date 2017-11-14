@@ -1,16 +1,19 @@
 
-{ESCAPE_CHAR, DELIMITER} = require('./constants')
+const {ESCAPE_CHAR, DELIMITER} = require('./constants');
 
 
-escapeOriginPart = (part) ->
-  clonedPart = new String(part)
-  clonedPart.replace(new RegExp(DELIMITER, 'g'), "#{ESCAPE_CHAR}#{DELIMITER}")
+const escapeOriginPart = function(part) {
+  const clonedPart = new String(part);
+  return clonedPart.replace(new RegExp(DELIMITER, 'g'), `${ESCAPE_CHAR}${DELIMITER}`);
+};
 
 
-module.exports = (pathOrigin) ->
-  path =
+module.exports = function(pathOrigin) {
+  let path;
+  return path =
     escapeOriginPart(pathOrigin.apiName) + DELIMITER +
     escapeOriginPart(pathOrigin.resourceGroupName) + DELIMITER +
     escapeOriginPart(pathOrigin.resourceName) + DELIMITER +
     escapeOriginPart(pathOrigin.actionName) + DELIMITER +
-    escapeOriginPart(pathOrigin.exampleName)
+    escapeOriginPart(pathOrigin.exampleName);
+};

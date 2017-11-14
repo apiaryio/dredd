@@ -1,16 +1,18 @@
-module.exports = (hrefVariablesElement) ->
-  params = {}
-  return params unless hrefVariablesElement
+module.exports = function(hrefVariablesElement) {
+  const params = {};
+  if (!hrefVariablesElement) { return params; }
 
-  hrefVariablesElement.forEach((valueElement, keyElement, memberElement) ->
-    name = keyElement.toValue()
-    typeAttributes = memberElement.attributes.getValue('typeAttributes') or []
-    values = valueElement.attributes.getValue('enumerations') or []
+  hrefVariablesElement.forEach(function(valueElement, keyElement, memberElement) {
+    const name = keyElement.toValue();
+    const typeAttributes = memberElement.attributes.getValue('typeAttributes') || [];
+    const values = valueElement.attributes.getValue('enumerations') || [];
 
-    params[name] =
-      required: 'required' in typeAttributes
-      default: valueElement.attributes.getValue('default')
-      example: valueElement.toValue() or values[0]
-      values: values
-  )
-  return params
+    return params[name] = {
+      required: Array.from(typeAttributes).includes('required'),
+      default: valueElement.attributes.getValue('default'),
+      example: valueElement.toValue() || values[0],
+      values
+    };
+  });
+  return params;
+};

@@ -1,55 +1,60 @@
-{ESCAPE_CHAR, DELIMITER, MAX_PARTS} = require './constants'
+const {ESCAPE_CHAR, DELIMITER, MAX_PARTS} = require('./constants');
 
-# Stupid JavaScript doesn't support regexp's lookbehind
-# This hack is for simulating regexp positive and negative lookbehind
-# If the negative lookbehind worked regex[] would be pretty simple:
-#
-#   new RegExp(DELIMTIER + "(?<!\" + ESCAPE_CHAR + DELIMITER+")")
-#
-#   e.g: /:(?<!\\:)/g
-#
-# Taken from:
-#   http://blog.stevenlevithan.com/archives/javascript-regex-lookbehind
-#
-# Reference:
-#   http://stackoverflow.com/questions/13993793/error-using-both-lookahead-and-look-behind-regex
-#
-# Gist:
-#   https://gist.github.com/slevithan/2387872
-#
+// Stupid JavaScript doesn't support regexp's lookbehind
+// This hack is for simulating regexp positive and negative lookbehind
+// If the negative lookbehind worked regex[] would be pretty simple:
+//
+//   new RegExp(DELIMTIER + "(?<!\" + ESCAPE_CHAR + DELIMITER+")")
+//
+//   e.g: /:(?<!\\:)/g
+//
+// Taken from:
+//   http://blog.stevenlevithan.com/archives/javascript-regex-lookbehind
+//
+// Reference:
+//   http://stackoverflow.com/questions/13993793/error-using-both-lookahead-and-look-behind-regex
+//
+// Gist:
+//   https://gist.github.com/slevithan/2387872
+//
 
-parsePath = (path) ->
-  parsed = []
+const parsePath = function(path) {
+  const parsed = [];
 
-  length = path.length
-  position = 0
-  previousCharacter = ''
-  buffer = ''
+  const { length } = path;
+  let position = 0;
+  let previousCharacter = '';
+  let buffer = '';
 
-  # split by unescaped delimiter
-  while position < length
-    currentCharacter = path[position]
-    if currentCharacter is DELIMITER and previousCharacter isnt ESCAPE_CHAR
-      parsed.push buffer
-      buffer = ''
-    else
-      buffer += currentCharacter
+  // split by unescaped delimiter
+  while (position < length) {
+    const currentCharacter = path[position];
+    if ((currentCharacter === DELIMITER) && (previousCharacter !== ESCAPE_CHAR)) {
+      parsed.push(buffer);
+      buffer = '';
+    } else {
+      buffer += currentCharacter;
+    }
 
-    previousCharacter = currentCharacter
-    position++
+    previousCharacter = currentCharacter;
+    position++;
+  }
 
-  # last part is not ended by DELIMITER, so adding buffer
-  parsed.push buffer
+  // last part is not ended by DELIMITER, so adding buffer
+  parsed.push(buffer);
 
-  # watch max length
-  if parsed.length > MAX_PARTS
-    throw new Error "Path is longer than #{MAX_PARTS} parts."
+  // watch max length
+  if (parsed.length > MAX_PARTS) {
+    throw new Error(`Path is longer than ${MAX_PARTS} parts.`);
+  }
 
-  # remove escape character from delimiter character
-  parsedWithRemovedEscapeChar = []
-  for part in parsed
-    parsedWithRemovedEscapeChar.push part.replace(new RegExp('\\\\:', 'g'), ':')
+  // remove escape character from delimiter character
+  const parsedWithRemovedEscapeChar = [];
+  for (let part of parsed) {
+    parsedWithRemovedEscapeChar.push(part.replace(new RegExp('\\\\:', 'g'), ':'));
+  }
 
-  parsedWithRemovedEscapeChar
+  return parsedWithRemovedEscapeChar;
+};
 
-module.exports = parsePath
+module.exports = parsePath;
