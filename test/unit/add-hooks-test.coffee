@@ -211,6 +211,37 @@ describe 'addHooks(runner, transactions, callback)', () ->
 
         done()
 
+    describe 'when the hook file(s) doesn\'t exist', () ->
+      describe 'for all hook files', () ->
+        it 'should return an error', (done) ->
+          runner =
+            configuration:
+              options:
+                hookfiles: './**/*_hooks.balony'
+          addHooks runner, transactions, (error) ->
+            assert.isOk error
+            done()
+          
+      describe 'for some hook files', () ->
+        it 'should return an error', (done) ->
+          runner =
+            configuration:
+              options:
+                hookfiles: ['./**/*_hooks.coffee', './**/*_hooks.balony']
+          addHooks runner, transactions, (error) ->
+            assert.isOk error
+            done()
+          
+      describe 'for a single hook file', () ->
+        it 'should return an error', (done) ->
+          runner =
+            configuration:
+              options:
+                hookfiles: './test/fixtures/balony_hooks.balony'
+          addHooks runner, transactions, (error) ->
+            assert.isOk error
+            done()
+          
 
     describe 'when files are valid js/coffeescript', () ->
       runner = null

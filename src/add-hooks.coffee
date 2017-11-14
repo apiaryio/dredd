@@ -101,30 +101,38 @@ addHooks = (runner, transactions, callback) ->
   else
     # Expand hookfiles - sort files alphabetically and resolve their paths
     hookfiles = [].concat runner.configuration?.options?.hookfiles
-    files = hookfiles.reduce((result, unresolvedPath) ->
-      # glob.sync does not resolve paths, only glob patterns
-      unresolvedPaths = if glob.hasMagic(unresolvedPath) then glob.sync(unresolvedPath) else [unresolvedPath]
+    try
+      files = hookfiles.reduce((result, unresolvedPath) ->
+        # glob.sync does not resolve paths, only glob patterns
 
-      # Gradually append sorted and resolved paths
-      result.concat unresolvedPaths
-        # Create a filename / filepath map for easier sorting
-        # Example:
-        # [
-        #   { basename: 'filename1.coffee', path: './path/to/filename1.coffee' }
-        #   { basename: 'filename2.coffee', path: './path/to/filename2.coffee' }
-        # ]
-        .map((filepath) -> basename: basename(filepath), path: filepath)
-        # Sort 'em up
-        .sort((a, b) -> switch
-          when a.basename < b.basename then -1
-          when a.basename > b.basename then 1
-          else 0
-        )
-        # Resolve paths to absolute form. Take into account user defined current
-        # working directory, fallback to process.cwd() otherwise
-        .map((item) -> path.resolve(customConfigCwd or process.cwd(), item.path))
-    , [] # Start with empty result
-    )
+        unresolvedPaths = if glob.hasMagic(unresolvedPath) then glob.sync(unresolvedPath) else
+          if fs.existsSync(unresolvedPath) then [unresolvedPath] else []
+
+        if unresolvedPaths.length == 0
+          throw new Error("Hook file(s) not found on path: #{unresolvedPath}")
+
+        # Gradually append sorted and resolved paths
+        result.concat unresolvedPaths
+          # Create a filename / filepath map for easier sorting
+          # Example:
+          # [
+          #   { basename: 'filename1.coffee', path: './path/to/filename1.coffee' }
+          #   { basename: 'filename2.coffee', path: './path/to/filename2.coffee' }
+          # ]
+          .map((filepath) -> basename: basename(filepath), path: filepath)
+          # Sort 'em up
+          .sort((a, b) -> switch
+            when a.basename < b.basename then -1
+            when a.basename > b.basename then 1
+            else 0
+          )
+          # Resolve paths to absolute form. Take into account user defined current
+          # working directory, fallback to process.cwd() otherwise
+          .map((item) -> path.resolve(customConfigCwd or process.cwd(), item.path))
+      , [] # Start with empty result
+      )
+    catch err
+      return callback(err)
 
     logger.info('Found Hookfiles:', files)
 
