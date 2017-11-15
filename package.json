@@ -9,7 +9,7 @@
   "scripts": {
     "lint": "scripts/commitlint.sh && eslint src",
     "build": "coffee -b -c -o lib/ src/",
-    "test": "mocha \"test/**/*-test.coffee\"",
+    "test": "mocha \"test/**/*-test.coffee\" --opts \"./mocha.opts\"",
     "test:coverage": "scripts/coverage.sh",
     "prepublish": "npm run build",
     "coveralls": "scripts/coveralls.sh",
@@ -39,6 +39,7 @@
     "eslint": "^4.4.1",
     "eslint-config-airbnb": "^15.1.0",
     "eslint-plugin-import": "^2.7.0",
+    "istanbul": "^0.4.5",
     "mocha": "^4.0.1",
     "mocha-lcov-reporter": "^1.3.0",
     "proxyquire": "^1.8.0",
