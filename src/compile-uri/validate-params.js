@@ -1,10 +1,10 @@
+module.exports = function validateParams(params) {
+  const result = { warnings: [], errors: [] };
 
-module.exports = function(params) {
-  const result = {warnings: [], errors: []};
-
-  for (let paramName in params) {
-    var text;
+  Object.keys(params).forEach((paramName) => {
+    let text;
     const param = params[paramName];
+
     if (param.required && !param.example && !param.default) {
       text = `Required URI parameter '${paramName}' has no example or default value.`;
       result.errors.push(text);
@@ -23,6 +23,8 @@ module.exports = function(params) {
           result.errors.push(text);
         }
         break;
+      default:
+        break;
     }
 
     if (param.values.length > 0) {
@@ -31,7 +33,7 @@ module.exports = function(params) {
         result.errors.push(text);
       }
     }
-  }
+  });
 
   return result;
 };

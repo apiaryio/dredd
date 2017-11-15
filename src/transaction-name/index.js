@@ -1,5 +1,4 @@
-
-module.exports = function(origin) {
+module.exports = function index(origin) {
   const segments = [];
   if (origin.apiName) { segments.push(origin.apiName); }
   if (origin.resourceGroupName) { segments.push(origin.resourceGroupName); }

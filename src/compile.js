@@ -5,36 +5,9 @@ const compileUri = require('./compile-uri');
 const getTransactionName = require('./transaction-name');
 const getTransactionPath = require('./transaction-path');
 
-
-const compile = function(mediaType, apiElements, filename) {
-  apiElements.freeze();
-
-  const transactions = [];
-  let annotations = apiElements.annotations.map(compileAnnotation);
-
-  for (let {httpTransactionElement, exampleNo} of findRelevantTransactions(mediaType, apiElements)) {
-    const result = compileTransaction(mediaType, filename, httpTransactionElement, exampleNo);
-    if (result.transaction) { transactions.push(result.transaction); }
-    annotations = annotations.concat(result.annotations);
-  }
-
-  return {mediaType, transactions, annotations};
-};
-
-
-var compileAnnotation = annotationElement =>
-  ({
-    type: annotationElement.classes.getValue(0),
-    component: 'apiDescriptionParser',
-    message: annotationElement.toValue(),
-    location: annotationElement.sourceMapValue || [[0, 1]]
-  })
-;
-
-
-var findRelevantTransactions = function(mediaType, apiElements) {
+function findRelevantTransactions(mediaType, apiElements) {
   const relevantTransactions = [];
-  apiElements.findRecursive('resource', 'transition').forEach(function(transitionElement, transitionNo) {
+  apiElements.findRecursive('resource', 'transition').forEach((transitionElement) => {
     if (mediaType === 'text/vnd.apiblueprint') {
       // API Blueprint has a concept of transaction examples and
       // the API Blueprint AST used to expose it. The concept isn't present
@@ -52,103 +25,32 @@ var findRelevantTransactions = function(mediaType, apiElements) {
       // each transaction example. We iterate over available transactions and
       // skip those, which are not first within a particular example.
       let exampleNo = 0;
-      return transitionElement.transactions.forEach(function(httpTransactionElement, httpTransactionNo) {
+      transitionElement.transactions.forEach((httpTransactionElement, httpTransactionNo) => {
         const httpTransactionExampleNo = transactionExampleNumbers[httpTransactionNo];
         if (httpTransactionExampleNo !== exampleNo) {
-          const relevantTransaction = {httpTransactionElement};
+          const relevantTransaction = { httpTransactionElement };
           if (hasMoreExamples) { relevantTransaction.exampleNo = httpTransactionExampleNo; }
           relevantTransactions.push(relevantTransaction);
         }
-        return exampleNo = httpTransactionExampleNo;
+        exampleNo = httpTransactionExampleNo;
+        return exampleNo;
       });
     } else {
       // All other formats then API Blueprint
-      return transitionElement.transactions.forEach(httpTransactionElement => relevantTransactions.push({httpTransactionElement}));
+      transitionElement.transactions.forEach(httpTransactionElement =>
+        relevantTransactions.push({ httpTransactionElement })
+      );
     }
   });
   return relevantTransactions;
-};
+}
 
+function compileHeaders(httpHeadersElement) {
+  if (!httpHeadersElement) { return []; }
+  return httpHeadersElement.toValue().map(({ key, value }) => ({ name: key, value }));
+}
 
-var compileTransaction = function(mediaType, filename, httpTransactionElement, exampleNo) {
-  const origin = compileOrigin(mediaType, filename, httpTransactionElement, exampleNo);
-  const {request, annotations} = compileRequest(httpTransactionElement.request);
-
-  annotations.forEach(annotation => annotation.origin = clone(origin));
-  if (!request) { return {transaction: null, annotations}; }
-
-  const name = getTransactionName(origin);
-  const pathOrigin = compilePathOrigin(filename, httpTransactionElement, exampleNo);
-  const path = getTransactionPath(pathOrigin);
-  const response = compileResponse(httpTransactionElement.response);
-
-  const transaction = {request, response, origin, name, pathOrigin, path};
-  return {transaction, annotations};
-};
-
-
-var compileRequest = function(httpRequestElement) {
-  let request;
-  const {uri, annotations} = compileUri(httpRequestElement);
-
-  annotations.forEach(annotation =>
-    annotation.location = (
-      (httpRequestElement.href != null ? httpRequestElement.href.sourceMapValue : undefined) ||
-      __guard__(httpRequestElement.parents.find('transition').href, x => x.sourceMapValue) ||
-      __guard__(httpRequestElement.parents.find('resource').href, x1 => x1.sourceMapValue)
-    )
-  );
-
-  if (uri) {
-    request = {
-      method: httpRequestElement.method.toValue(),
-      uri,
-      headers: compileHeaders(httpRequestElement.headers),
-      body: (httpRequestElement.messageBody != null ? httpRequestElement.messageBody.toValue() : undefined) || ''
-    };
-  } else {
-    request = null;
-  }
-
-  return {request, annotations};
-};
-
-
-var compileResponse = function(httpResponseElement) {
-  const response = {
-    status: (httpResponseElement.statusCode != null ? httpResponseElement.statusCode.toValue() : undefined) || '200',
-    headers: compileHeaders(httpResponseElement.headers)
-  };
-
-  const body = httpResponseElement.messageBody != null ? httpResponseElement.messageBody.toValue() : undefined;
-  if (body) { response.body = body; }
-
-  const schema = httpResponseElement.messageBodySchema != null ? httpResponseElement.messageBodySchema.toValue() : undefined;
-  if (schema) { response.schema = schema; }
-
-  return response;
-};
-
-
-var compileOrigin = function(mediaType, filename, httpTransactionElement, exampleNo) {
-  const apiElement = httpTransactionElement.parents.find(element => element.classes.contains('api'));
-  const resourceGroupElement = httpTransactionElement.parents.find(element => element.classes.contains('resourceGroup'));
-  const resourceElement = httpTransactionElement.parents.find('resource');
-  const transitionElement = httpTransactionElement.parents.find('transition');
-  const httpRequestElement = httpTransactionElement.request;
-  const httpResponseElement = httpTransactionElement.response;
-  return {
-    filename: filename || '',
-    apiName: apiElement.meta.getValue('title') || filename || '',
-    resourceGroupName: (resourceGroupElement != null ? resourceGroupElement.meta.getValue('title') : undefined) || '',
-    resourceName: resourceElement.meta.getValue('title') || resourceElement.attributes.getValue('href') || '',
-    actionName: transitionElement.meta.getValue('title') || httpRequestElement.attributes.getValue('method') || '',
-    exampleName: compileOriginExampleName(mediaType, httpResponseElement, exampleNo)
-  };
-};
-
-
-var compileOriginExampleName = function(mediaType, httpResponseElement, exampleNo) {
+function compileOriginExampleName(mediaType, httpResponseElement, exampleNo) {
   let exampleName = '';
 
   if (mediaType === 'text/vnd.apiblueprint') {
@@ -170,10 +72,71 @@ var compileOriginExampleName = function(mediaType, httpResponseElement, exampleN
   }
 
   return exampleName;
-};
+}
 
+function compileOrigin(mediaType, filename, httpTransactionElement, exampleNo) {
+  const apiElement = httpTransactionElement.parents.find(element => element.classes.contains('api'));
+  const resourceGroupElement = httpTransactionElement.parents.find(element => element.classes.contains('resourceGroup'));
+  const resourceElement = httpTransactionElement.parents.find('resource');
+  const transitionElement = httpTransactionElement.parents.find('transition');
+  const httpRequestElement = httpTransactionElement.request;
+  const httpResponseElement = httpTransactionElement.response;
+  return {
+    filename: filename || '',
+    apiName: apiElement.meta.getValue('title') || filename || '',
+    resourceGroupName: (resourceGroupElement != null ? resourceGroupElement.meta.getValue('title') : undefined) || '',
+    resourceName: resourceElement.meta.getValue('title') || resourceElement.attributes.getValue('href') || '',
+    actionName: transitionElement.meta.getValue('title') || httpRequestElement.attributes.getValue('method') || '',
+    exampleName: compileOriginExampleName(mediaType, httpResponseElement, exampleNo)
+  };
+}
 
-var compilePathOrigin = function(filename, httpTransactionElement, exampleNo) {
+function compileRequest(httpRequestElement) {
+  let request;
+  const { uri, annotations } = compileUri(httpRequestElement);
+
+  annotations.forEach((annotation) => {
+    /* eslint-disable no-param-reassign */
+    annotation.location = (
+      (httpRequestElement.href ? httpRequestElement.href.sourceMapValue : undefined) ||
+      (httpRequestElement.parents.find('transition').href ? httpRequestElement.parents.find('transition').href.sourceMapValue : undefined) ||
+      (httpRequestElement.parents.find('resource').href ? httpRequestElement.parents.find('resource').href.sourceMapValue : undefined)
+    );
+    /* eslint-enable */
+  });
+
+  if (uri) {
+    request = {
+      method: httpRequestElement.method.toValue(),
+      uri,
+      headers: compileHeaders(httpRequestElement.headers),
+      body: (httpRequestElement.messageBody != null ? httpRequestElement.messageBody.toValue() : undefined) || ''
+    };
+  } else {
+    request = null;
+  }
+
+  return { request, annotations };
+}
+
+function compileResponse(httpResponseElement) {
+  const response = {
+    status: (httpResponseElement.statusCode ? httpResponseElement.statusCode.toValue() : undefined) || '200',
+    headers: compileHeaders(httpResponseElement.headers)
+  };
+
+  const body = httpResponseElement.messageBody ?
+    httpResponseElement.messageBody.toValue() : undefined;
+  if (body) { response.body = body; }
+
+  const schema = httpResponseElement.messageBodySchema ?
+    httpResponseElement.messageBodySchema.toValue() : undefined;
+  if (schema) { response.schema = schema; }
+
+  return response;
+}
+
+function compilePathOrigin(filename, httpTransactionElement, exampleNo) {
   const apiElement = httpTransactionElement.parents.find(element => element.classes.contains('api'));
   const resourceGroupElement = httpTransactionElement.parents.find(element => element.classes.contains('resourceGroup'));
   const resourceElement = httpTransactionElement.parents.find('resource');
@@ -186,17 +149,48 @@ var compilePathOrigin = function(filename, httpTransactionElement, exampleNo) {
     actionName: transitionElement.meta.getValue('title') || httpRequestElement.attributes.getValue('method') || '',
     exampleName: `Example ${exampleNo || 1}`
   };
-};
+}
 
+function compileTransaction(mediaType, filename, httpTransactionElement, exampleNo) {
+  const origin = compileOrigin(mediaType, filename, httpTransactionElement, exampleNo);
+  const { request, annotations } = compileRequest(httpTransactionElement.request);
 
-var compileHeaders = function(httpHeadersElement) {
-  if (!httpHeadersElement) { return []; }
-  return httpHeadersElement.toValue().map(({key, value}) => ({name: key, value}));
-};
+  annotations.forEach((annotation) => { annotation.origin = clone(origin); }); // eslint-disable-line
 
+  if (!request) { return { transaction: null, annotations }; }
+
+  const name = getTransactionName(origin);
+  const pathOrigin = compilePathOrigin(filename, httpTransactionElement, exampleNo);
+  const path = getTransactionPath(pathOrigin);
+  const response = compileResponse(httpTransactionElement.response);
+
+  const transaction = { request, response, origin, name, pathOrigin, path };
+  return { transaction, annotations };
+}
+
+function compileAnnotation(annotationElement) {
+  return {
+    type: annotationElement.classes.getValue(0),
+    component: 'apiDescriptionParser',
+    message: annotationElement.toValue(),
+    location: annotationElement.sourceMapValue || [[0, 1]]
+  };
+}
+
+function compile(mediaType, apiElements, filename) {
+  apiElements.freeze();
+
+  const transactions = [];
+  let annotations = apiElements.annotations.map(compileAnnotation);
+
+  findRelevantTransactions(mediaType, apiElements)
+    .forEach(({ httpTransactionElement, exampleNo }) => {
+      const result = compileTransaction(mediaType, filename, httpTransactionElement, exampleNo);
+      if (result.transaction) { transactions.push(result.transaction); }
+      annotations = annotations.concat(result.annotations);
+    });
+
+  return { mediaType, transactions, annotations };
+}
 
 module.exports = compile;
-
-function __guard__(value, transform) {
-  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-}

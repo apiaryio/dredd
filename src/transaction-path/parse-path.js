@@ -1,4 +1,4 @@
-const {ESCAPE_CHAR, DELIMITER, MAX_PARTS} = require('./constants');
+const { ESCAPE_CHAR, DELIMITER, MAX_PARTS } = require('./constants');
 
 // Stupid JavaScript doesn't support regexp's lookbehind
 // This hack is for simulating regexp positive and negative lookbehind
@@ -17,8 +17,7 @@ const {ESCAPE_CHAR, DELIMITER, MAX_PARTS} = require('./constants');
 // Gist:
 //   https://gist.github.com/slevithan/2387872
 //
-
-const parsePath = function(path) {
+function parsePath(path) {
   const parsed = [];
 
   const { length } = path;
@@ -26,7 +25,7 @@ const parsePath = function(path) {
   let previousCharacter = '';
   let buffer = '';
 
-  // split by unescaped delimiter
+  // Split by unescaped delimiter
   while (position < length) {
     const currentCharacter = path[position];
     if ((currentCharacter === DELIMITER) && (previousCharacter !== ESCAPE_CHAR)) {
@@ -37,24 +36,19 @@ const parsePath = function(path) {
     }
 
     previousCharacter = currentCharacter;
-    position++;
+    position += 1;
   }
 
-  // last part is not ended by DELIMITER, so adding buffer
+  // Last part is not ended by DELIMITER, so adding buffer
   parsed.push(buffer);
 
-  // watch max length
+  // Watch max length
   if (parsed.length > MAX_PARTS) {
     throw new Error(`Path is longer than ${MAX_PARTS} parts.`);
   }
 
-  // remove escape character from delimiter character
-  const parsedWithRemovedEscapeChar = [];
-  for (let part of parsed) {
-    parsedWithRemovedEscapeChar.push(part.replace(new RegExp('\\\\:', 'g'), ':'));
-  }
-
-  return parsedWithRemovedEscapeChar;
-};
+  // Remove escape character from delimiter character and return the result
+  return parsed.map(part => part.replace(new RegExp('\\\\:', 'g'), ':'));
+}
 
 module.exports = parsePath;

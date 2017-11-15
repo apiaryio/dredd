@@ -1,8 +1,7 @@
 const ut = require('uri-template');
 
-
-module.exports = function(uriTemplate, params) {
-  let param, parsed;
+module.exports = function expandURITemplate(uriTemplate, params) {
+  let parsed;
   const result = {
     errors: [],
     warnings: [],
@@ -19,21 +18,17 @@ Error: ${e}\
     return result;
   }
 
-  // get parameters from expression object
-  const uriParameters = [];
-  for (let expression of parsed.expressions) {
-    for (param of expression.params) {
-      uriParameters.push(param.name);
-    }
-  }
+  // Get parameters from expression object
+  const uriParameters = parsed.expressions.map(expression =>
+    expression.params.map(param => param.name)
+  ).reduce((accumulator, current) => accumulator.concat(current), []);
 
   if (parsed.expressions.length === 0) {
     result.uri = uriTemplate;
   } else {
-    let toExpand;
     let ambiguous = false;
 
-    for (var uriParameter of uriParameters) {
+    uriParameters.forEach((uriParameter) => {
       if (Object.keys(params).indexOf(uriParameter) === -1) {
         ambiguous = true;
         result.warnings.push(`\
@@ -41,26 +36,26 @@ Ambiguous URI parameter in template: ${uriTemplate}
 Parameter not defined in API description document: ${uriParameter}\
 `);
       }
-    }
+    });
+
+    let param;
+    const toExpand = {};
 
     if (!ambiguous) {
-      toExpand = {};
-      for (uriParameter of uriParameters) {
+      uriParameters.forEach((uriParameter) => {
         param = params[uriParameter];
 
         if (param.example) {
           toExpand[uriParameter] = param.example;
         } else if (param.default) {
           toExpand[uriParameter] = param.default;
-        } else {
-          if (param.required) {
-            ambiguous = true;
-            result.warnings.push(`\
+        } else if (param.required) {
+          ambiguous = true;
+          result.warnings.push(`\
 Ambiguous URI parameter in template: ${uriTemplate}
 No example value for required parameter in API description \
 document: ${uriParameter}\
 `);
-          }
         }
 
         if (param.required && param.default) {
@@ -70,7 +65,7 @@ Default value for a required parameter doesn't make sense from \
 API description perspective. Use example value instead.\
 `);
         }
-      }
+      });
     }
 
     if (!ambiguous) {

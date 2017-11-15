@@ -1,9 +1,18 @@
 const fury = require('fury');
+
 fury.use(require('fury-adapter-apib-parser'));
 fury.use(require('fury-adapter-swagger'));
 
+function createWarning(message) {
+  const annotationElement = new fury.minim.elements.Annotation(message);
+  annotationElement.classes.push('warning');
+  annotationElement.attributes.set('sourceMap', [
+    new fury.minim.elements.SourceMap([[0, 1]])
+  ]);
+  return annotationElement;
+}
 
-const parse = function(source, callback) {
+function parse(source, callback) {
   let mediaType;
   let warningElement = null;
   const adapters = fury.detect(source);
@@ -12,40 +21,33 @@ const parse = function(source, callback) {
     mediaType = adapters[0].mediaTypes[0];
   } else {
     mediaType = 'text/vnd.apiblueprint';
-    warningElement = createWarning(`\
-Could not recognize API description format. \
-Falling back to API Blueprint by default.\
+    warningElement = createWarning(`
+Could not recognize API description format.
+Falling back to API Blueprint by default.
 `);
   }
 
-  const args = {source, mediaType, generateSourceMap: true};
-  return fury.parse(args, function(err, apiElements) {
+  const args = { source, mediaType, generateSourceMap: true };
+
+  return fury.parse(args, (err, apiElements) => {
+    let modifiedApiElements = apiElements;
+    let nativeError = null;
+
     if (!(err || apiElements)) {
-      err = new Error('Unexpected parser error occurred.');
+      nativeError = new Error('Unexpected parser error occurred.');
     } else if (err) {
       // Turning Fury error object into standard JavaScript error
-      err = new Error(err.message);
+      nativeError = new Error(err.message);
     }
 
-    if (apiElements) {
-      if (warningElement) { apiElements.unshift(warningElement); }
+    if (modifiedApiElements) {
+      if (warningElement) { modifiedApiElements.unshift(warningElement); }
     } else {
-      apiElements = null;
+      modifiedApiElements = null;
     }
 
-    return callback(err, {mediaType, apiElements});
+    return callback(nativeError, { mediaType, apiElements: modifiedApiElements });
   });
-};
-
-
-var createWarning = function(message) {
-  const annotationElement = new fury.minim.elements.Annotation(message);
-  annotationElement.classes.push('warning');
-  annotationElement.attributes.set('sourceMap', [
-    new fury.minim.elements.SourceMap([[0, 1]]),
-  ]);
-  return annotationElement;
-};
-
+}
 
 module.exports = parse;

@@ -1,13 +1,20 @@
 const parse = require('./parse');
 const compileFromApiElements = require('./compile');
 
+function createParserErrorCompilationResult(message) {
+  return {
+    mediaType: null,
+    transactions: [],
+    annotations: [{ type: 'error', component: 'apiDescriptionParser', message, location: [[0, 1]] }]
+  };
+}
 
-const compile = (source, filename, callback) =>
+function compile(source, filename, callback) {
   // All regular parser-related or compilation-related annotations
   // should be returned in the "compilation result". Callback should get
   // an error only in case of unexpected crash.
 
-  parse(source, function(err, parseResult) {
+  parse(source, (err, parseResult) => {
     // If 'apiElements' isn't empty, then we don't need to care about 'err'
     // as it should be represented by annotation inside 'apiElements'
     // and compilation should be able to deal with it and to propagate it.
@@ -23,25 +30,14 @@ const compile = (source, filename, callback) =>
     // all errors as part of the 'result' and it should not throw anything
     // in any case.
     try {
-      const {mediaType, apiElements} = parseResult;
+      const { mediaType, apiElements } = parseResult;
       compilationResult = compileFromApiElements(mediaType, apiElements, filename);
     } catch (error) {
-      err = error;
-      return callback(err);
+      return callback(error);
     }
 
     return callback(null, compilationResult);
-  })
-;
+  });
+}
 
-
-var createParserErrorCompilationResult = message =>
-  ({
-    mediaType: null,
-    transactions: [],
-    annotations: [{type: 'error', component: 'apiDescriptionParser', message, location: [[0, 1]]}]
-  })
-;
-
-
-module.exports = {compile};
+module.exports = { compile };
