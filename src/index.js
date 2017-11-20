@@ -1,3 +1,5 @@
+require('babel-polyfill');
+
 const parse = require('./parse');
 const compileFromApiElements = require('./compile');
 
