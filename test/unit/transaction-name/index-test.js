@@ -1,50 +1,48 @@
-{assert} = require('chai')
+const {assert} = require('chai');
 
-getTransactionName = require('../../../src/transaction-name')
+const getTransactionName = require('../../../src/transaction-name');
 
 
-describe('getTransactionName', ->
-  it('is a function', ->
-    assert.isFunction(getTransactionName)
-  )
-  it('joins all parts of the origin object', ->
-    name = getTransactionName(
-      apiName: 'a'
-      resourceGroupName: 'b'
-      resourceName: 'c'
-      actionName: 'd'
+describe('getTransactionName', function() {
+  it('is a function', () => assert.isFunction(getTransactionName));
+  it('joins all parts of the origin object', function() {
+    const name = getTransactionName({
+      apiName: 'a',
+      resourceGroupName: 'b',
+      resourceName: 'c',
+      actionName: 'd',
       exampleName: 'e'
-    )
-    assert.equal(name, 'a > b > c > d > e')
-  )
-  it('joins just the parts of the origin object, which are available', ->
-    name = getTransactionName(
-      apiName: null
-      resourceGroupName: 'a'
-      resourceName: undefined
-      actionName: 'b'
+    });
+    return assert.equal(name, 'a > b > c > d > e');
+  });
+  it('joins just the parts of the origin object, which are available', function() {
+    const name = getTransactionName({
+      apiName: null,
+      resourceGroupName: 'a',
+      resourceName: undefined,
+      actionName: 'b',
       exampleName: ''
-    )
-    assert.equal(name, 'a > b')
-  )
-  it('returns no separators if the origin object contains just one part', ->
-    name = getTransactionName(
-      apiName: null
-      resourceGroupName: 'a'
-      resourceName: undefined
-      actionName: ''
+    });
+    return assert.equal(name, 'a > b');
+  });
+  it('returns no separators if the origin object contains just one part', function() {
+    const name = getTransactionName({
+      apiName: null,
+      resourceGroupName: 'a',
+      resourceName: undefined,
+      actionName: '',
       exampleName: ''
-    )
-    assert.equal(name, 'a')
-  )
-  it('does not mind if any part of the origin object already contains the separator', ->
-    name = getTransactionName(
-      apiName: 'a'
-      resourceGroupName: 'b'
-      resourceName: 'c'
-      actionName: 'd'
+    });
+    return assert.equal(name, 'a');
+  });
+  return it('does not mind if any part of the origin object already contains the separator', function() {
+    const name = getTransactionName({
+      apiName: 'a',
+      resourceGroupName: 'b',
+      resourceName: 'c',
+      actionName: 'd',
       exampleName: 'e > f'
-    )
-    assert.equal(name, 'a > b > c > d > e > f')
-  )
-)
+    });
+    return assert.equal(name, 'a > b > c > d > e > f');
+  });
+});

@@ -1,357 +1,374 @@
-{assert} = require 'chai'
+const {assert} = require('chai');
 
-expandUriTemplate = require '../../../src/compile-uri/expand-uri-template'
+const expandUriTemplate = require('../../../src/compile-uri/expand-uri-template');
 
-describe 'expandUriTemplate', ->
-  data = null
-  uriTemplate = ''
-  parameters = ''
+describe('expandUriTemplate', function() {
+  let data = null;
+  let uriTemplate = '';
+  let parameters = '';
 
-  before ->
-    uriTemplate = '/machines{/name}'
-    parameters =
-      name:
-        description: 'Machine name'
-        type: 'string'
-        required: true
-        example: 'waldo'
+  before(function() {
+    uriTemplate = '/machines{/name}';
+    parameters = {
+      name: {
+        description: 'Machine name',
+        type: 'string',
+        required: true,
+        example: 'waldo',
         default: ''
+      }
+    };
 
-    data = expandUriTemplate uriTemplate, parameters
+    return data = expandUriTemplate(uriTemplate, parameters);
+  });
 
-  it 'should return an object', ->
-    assert.isObject data
+  it('should return an object', () => assert.isObject(data));
 
-  describe 'returned obejct', ->
+  return describe('returned obejct', function() {
     [
-      'errors'
-      'warnings'
+      'errors',
+      'warnings',
       'uri'
-    ].forEach (key) ->
-      it 'should have key "' + key + '"', ->
-        assert.include Object.keys(data), key
+    ].forEach(key =>
+      it(`should have key "${key}"`, () => assert.include(Object.keys(data), key))
+    );
 
-    describe 'when not parseable uri templeate privided', ->
-      before ->
-        uriTemplate = '/machines{{/name}'
-        parameters =
-          name:
-            description: 'Machine name'
-            type: 'string'
-            required: true
-            example: 'waldo'
+    describe('when not parseable uri templeate privided', function() {
+      before(function() {
+        uriTemplate = '/machines{{/name}';
+        parameters = {
+          name: {
+            description: 'Machine name',
+            type: 'string',
+            required: true,
+            example: 'waldo',
             default: ''
+          }
+        };
 
-        data = expandUriTemplate uriTemplate, parameters
+        return data = expandUriTemplate(uriTemplate, parameters);
+      });
 
-      it 'it should return some errror', ->
-        assert.notEqual data['errors'].length, 0
-
-
-    describe 'when URI with no URI template expression given', ->
-      before ->
-        uriTemplate = '/machines/waldo'
-        parameters = {}
-        data = expandUriTemplate uriTemplate, parameters
-
-      describe 'with no parameters given', ->
-        it 'should return no error', ->
-          assert.equal data['errors'].length, 0
-
-        it 'should return no warning', ->
-          assert.equal data['warnings'].length, 0
-
-        it 'should return URI as it is', ->
-          assert.equal data['uri'], uriTemplate
+      return it('it should return some errror', () => assert.notEqual(data['errors'].length, 0));
+    });
 
 
-      describe 'with some parameters given', ->
-        before ->
-          uriTemplate = '/machines/waldo'
-          parameters =
-            name:
-              description: 'Machine name'
-              type: 'string'
-              required: true
-              example: 'waldo'
+    describe('when URI with no URI template expression given', function() {
+      before(function() {
+        uriTemplate = '/machines/waldo';
+        parameters = {};
+        return data = expandUriTemplate(uriTemplate, parameters);
+      });
+
+      describe('with no parameters given', function() {
+        it('should return no error', () => assert.equal(data['errors'].length, 0));
+
+        it('should return no warning', () => assert.equal(data['warnings'].length, 0));
+
+        return it('should return URI as it is', () => assert.equal(data['uri'], uriTemplate));
+      });
+
+
+      return describe('with some parameters given', function() {
+        before(function() {
+          uriTemplate = '/machines/waldo';
+          parameters = {
+            name: {
+              description: 'Machine name',
+              type: 'string',
+              required: true,
+              example: 'waldo',
               default: ''
+            }
+          };
 
-          data = expandUriTemplate uriTemplate, parameters
+          return data = expandUriTemplate(uriTemplate, parameters);
+        });
 
-        it 'should return no error', ->
-          assert.equal data['errors'].length, 0
+        it('should return no error', () => assert.equal(data['errors'].length, 0));
 
-        it 'should return no warning', ->
-          # The warning was removed as parser started to provide its own
-          # warning for the very same thing.
-          assert.equal data['warnings'].length, 0
+        it('should return no warning', () =>
+          // The warning was removed as parser started to provide its own
+          // warning for the very same thing.
+          assert.equal(data['warnings'].length, 0)
+        );
 
-        it 'should return URI as it is', ->
-          assert.equal data['uri'], uriTemplate
+        return it('should return URI as it is', () => assert.equal(data['uri'], uriTemplate));
+      });
+    });
 
 
-    describe 'when UriTemplate with some URI template expression given', ->
-      describe 'when no matching parameters provided', ->
-        before ->
-          uriTemplate = '/machines/{name}'
-          parameters = {}
-          data = expandUriTemplate uriTemplate, parameters
+    return describe('when UriTemplate with some URI template expression given', function() {
+      describe('when no matching parameters provided', function() {
+        before(function() {
+          uriTemplate = '/machines/{name}';
+          parameters = {};
+          return data = expandUriTemplate(uriTemplate, parameters);
+        });
 
-        it 'should return some warning', ->
-          assert.notEqual data['warnings'].length, 0
+        it('should return some warning', () => assert.notEqual(data['warnings'].length, 0));
 
-        describe 'returned warning', ->
-          warning = ''
-          before ->
-            warning = data['warnings'][data['warnings'].length - 1]
+        describe('returned warning', function() {
+          let warning = '';
+          before(() => warning = data['warnings'][data['warnings'].length - 1]);
 
-          it 'should contain proper text', ->
-            text =  "Parameter not defined"
-            assert.include warning, text
+          return it('should contain proper text', function() {
+            const text =  "Parameter not defined";
+            return assert.include(warning, text);
+          });
+        });
 
-        it 'should return no error', ->
-          assert.equal data['errors'].length, 0
+        it('should return no error', () => assert.equal(data['errors'].length, 0));
 
-        it 'should return no URI', ->
-          assert.equal data['uri'], null
+        return it('should return no URI', () => assert.equal(data['uri'], null));
+      });
 
-      describe 'with defined some parameters not matching any expression', ->
-        before ->
-          uriTemplate = '/machines/{name}'
-          parameters =
-            name:
-              description: 'Machine name'
-              type: 'string'
-              required: true
-              example: 'waldo'
+      describe('with defined some parameters not matching any expression', function() {
+        before(function() {
+          uriTemplate = '/machines/{name}';
+          parameters = {
+            name: {
+              description: 'Machine name',
+              type: 'string',
+              required: true,
+              example: 'waldo',
               default: ''
-            fanny:
-              required: false
-              description: 'Machine fanny'
-              type: 'string'
-              required: true
-              example: 'wild'
+            },
+            fanny: {
+              required: false,
+              description: 'Machine fanny',
+              type: 'string',
+              required: true,
+              example: 'wild',
               default: ''
+            }
+          };
 
-          data = expandUriTemplate uriTemplate, parameters
+          return data = expandUriTemplate(uriTemplate, parameters);
+        });
 
-        it 'should return no error', ->
-          assert.equal data['errors'].length, 0
+        it('should return no error', () => assert.equal(data['errors'].length, 0));
 
-        it 'should return no warning', ->
-          # The warning was removed as parser started to provide its own
-          # warning for the very same thing.
-          assert.equal data['warnings'].length, 0
+        it('should return no warning', () =>
+          // The warning was removed as parser started to provide its own
+          // warning for the very same thing.
+          assert.equal(data['warnings'].length, 0)
+        );
 
-        it 'should return expandend URI', ->
-          assert.equal data['uri'], '/machines/waldo'
+        return it('should return expandend URI', () => assert.equal(data['uri'], '/machines/waldo'));
+      });
 
-      describe 'when expression parameter is required', ->
-        describe 'when example is not given', ->
-          before ->
-            uriTemplate = '/machines/{name}'
-            parameters =
-              name:
-                description: 'Machine name'
-                type: 'string'
-                required: true
-                example: ''
+      describe('when expression parameter is required', function() {
+        describe('when example is not given', function() {
+          before(function() {
+            uriTemplate = '/machines/{name}';
+            parameters = {
+              name: {
+                description: 'Machine name',
+                type: 'string',
+                required: true,
+                example: '',
                 default: ''
+              }
+            };
 
-            data = expandUriTemplate uriTemplate, parameters
+            return data = expandUriTemplate(uriTemplate, parameters);
+          });
 
-          it 'should return no error', ->
-            assert.equal data['errors'].length, 0
+          it('should return no error', () => assert.equal(data['errors'].length, 0));
 
-          it 'should return some warning', ->
-            assert.equal data['warnings'].length, 1
+          it('should return some warning', () => assert.equal(data['warnings'].length, 1));
 
-          it 'should return no URI', ->
-            assert.isNull data['uri']
+          it('should return no URI', () => assert.isNull(data['uri']));
 
-          describe 'returned warning', ->
-            warning = ''
-            before ->
-              warning = data['warnings'][data['warnings'].length - 1]
+          return describe('returned warning', function() {
+            let warning = '';
+            before(() => warning = data['warnings'][data['warnings'].length - 1]);
 
-            it 'should contain proper text', ->
-              text = "No example value for required parameter"
-              assert.include warning, text
+            return it('should contain proper text', function() {
+              const text = "No example value for required parameter";
+              return assert.include(warning, text);
+            });
+          });
+        });
 
-        describe 'when example value is given', ->
-          before ->
-            uriTemplate = '/machines/{name}'
-            parameters =
-              name:
-                description: 'Machine name'
-                type: 'string'
-                required: true
-                example: 'example-one'
+        describe('when example value is given', function() {
+          before(function() {
+            uriTemplate = '/machines/{name}';
+            parameters = {
+              name: {
+                description: 'Machine name',
+                type: 'string',
+                required: true,
+                example: 'example-one',
                 default: ''
+              }
+            };
 
-            data = expandUriTemplate uriTemplate, parameters
+            return data = expandUriTemplate(uriTemplate, parameters);
+          });
 
-          it 'should return no error', ->
-            assert.equal data['errors'].length, 0
+          it('should return no error', () => assert.equal(data['errors'].length, 0));
 
-          it 'should return no warning', ->
-            assert.equal data['warnings'].length, 0
+          it('should return no warning', () => assert.equal(data['warnings'].length, 0));
 
-          it 'should use example value to URI parameter expansion', ->
-            assert.include data['uri'], parameters['name']['example']
+          it('should use example value to URI parameter expansion', () => assert.include(data['uri'], parameters['name']['example']));
 
-          it 'should return URI', ->
-            assert.isNotNull data['uri']
+          return it('should return URI', () => assert.isNotNull(data['uri']));
+      });
 
-        describe 'when default value is given', ->
-          before ->
-            uriTemplate = '/machines/{name}'
-            parameters =
-              name:
-                description: 'Machine name'
-                type: 'string'
-                required: true
-                example: ''
+        describe('when default value is given', function() {
+          before(function() {
+            uriTemplate = '/machines/{name}';
+            parameters = {
+              name: {
+                description: 'Machine name',
+                type: 'string',
+                required: true,
+                example: '',
                 default: 'example-one'
+              }
+            };
 
-            data = expandUriTemplate uriTemplate, parameters
+            return data = expandUriTemplate(uriTemplate, parameters);
+          });
 
-          it 'should return no error', ->
-            assert.equal data['errors'].length, 0
+          it('should return no error', () => assert.equal(data['errors'].length, 0));
 
-          it 'should return one warning', ->
-            assert.equal data['warnings'].length, 1
+          it('should return one warning', () => assert.equal(data['warnings'].length, 1));
 
-          it 'should return warning about pointlessness of default value of a required parameter', ->
-            assert.include data.warnings[0], 'Default value for a required parameter'
+          it('should return warning about pointlessness of default value of a required parameter', () => assert.include(data.warnings[0], 'Default value for a required parameter'));
 
-          it 'should use default value to URI parameter expansion', ->
-            assert.include data['uri'], parameters['name']['default']
+          it('should use default value to URI parameter expansion', () => assert.include(data['uri'], parameters['name']['default']));
 
-          it 'should return URI', ->
-            assert.isNotNull data['uri']
+          return it('should return URI', () => assert.isNotNull(data['uri']));
+      });
 
-        describe 'when example and default values are given', ->
-          before ->
-            uriTemplate = '/machines/{name}'
-            parameters =
-              name:
-                description: 'Machine name'
-                type: 'string'
-                required: true
-                example: 'example-one'
+        return describe('when example and default values are given', function() {
+          before(function() {
+            uriTemplate = '/machines/{name}';
+            parameters = {
+              name: {
+                description: 'Machine name',
+                type: 'string',
+                required: true,
+                example: 'example-one',
                 default: 'default-one'
+              }
+            };
 
-            data = expandUriTemplate uriTemplate, parameters
+            return data = expandUriTemplate(uriTemplate, parameters);
+          });
 
-          it 'should return no error', ->
-            assert.equal data['errors'].length, 0
+          it('should return no error', () => assert.equal(data['errors'].length, 0));
 
-          it 'should return one warning', ->
-            assert.equal data['warnings'].length, 1
+          it('should return one warning', () => assert.equal(data['warnings'].length, 1));
 
-          it 'should return warning about pointlessness of default value of a required parameter', ->
-            assert.include data.warnings[0], 'Default value for a required parameter'
+          it('should return warning about pointlessness of default value of a required parameter', () => assert.include(data.warnings[0], 'Default value for a required parameter'));
 
-          it 'should use example value to URI parameter expansion', ->
-            assert.include data['uri'], parameters['name']['example']
+          it('should use example value to URI parameter expansion', () => assert.include(data['uri'], parameters['name']['example']));
 
-          it 'should return URI', ->
-            assert.isNotNull data['uri']
+          return it('should return URI', () => assert.isNotNull(data['uri']));
+      });
+    });
 
-      describe 'when expression parameter is optional', ->
-        before ->
-          uriTemplate = '/machines/{name}'
-          parameters =
-            name:
-              description: 'Machine name'
-              type: 'string'
-              required: false
-              example: 'example-one'
+      return describe('when expression parameter is optional', function() {
+        before(function() {
+          uriTemplate = '/machines/{name}';
+          parameters = {
+            name: {
+              description: 'Machine name',
+              type: 'string',
+              required: false,
+              example: 'example-one',
               default: ''
+            }
+          };
 
-          data = expandUriTemplate uriTemplate, parameters
+          return data = expandUriTemplate(uriTemplate, parameters);
+        });
 
-        it 'should return no error', ->
-          assert.equal data['errors'].length, 0
+        it('should return no error', () => assert.equal(data['errors'].length, 0));
 
-        it 'should return no warning', ->
-          assert.equal data['warnings'].length, 0
+        it('should return no warning', () => assert.equal(data['warnings'].length, 0));
 
-        it 'should use example value to URI parameter expansion', ->
-          assert.include data['uri'], parameters['name']['example']
+        it('should use example value to URI parameter expansion', () => assert.include(data['uri'], parameters['name']['example']));
 
-        it 'should return URI', ->
-          assert.isNotNull data['uri']
+        it('should return URI', () => assert.isNotNull(data['uri']));
 
-        describe 'when default value is given and example is empty', ->
-          before ->
-            uriTemplate = '/machines/{name}'
-            parameters =
-              name:
-                description: 'Machine name'
-                type: 'string'
-                required: false
-                default: 'default-one'
+        describe('when default value is given and example is empty', function() {
+          before(function() {
+            uriTemplate = '/machines/{name}';
+            parameters = {
+              name: {
+                description: 'Machine name',
+                type: 'string',
+                required: false,
+                default: 'default-one',
                 example: ''
+              }
+            };
 
-            data = expandUriTemplate uriTemplate, parameters
+            return data = expandUriTemplate(uriTemplate, parameters);
+          });
 
-          it 'should return no error', ->
-            assert.equal data['errors'].length, 0
+          it('should return no error', () => assert.equal(data['errors'].length, 0));
 
-          it 'should return no warning', ->
-            assert.equal data['warnings'].length, 0
+          it('should return no warning', () => assert.equal(data['warnings'].length, 0));
 
-          it 'should use default value to URI parameter expansion', ->
-            assert.include data['uri'], parameters['name']['default']
+          it('should use default value to URI parameter expansion', () => assert.include(data['uri'], parameters['name']['default']));
 
-          it 'should return URI', ->
-            assert.isNotNull data['uri']
+          return it('should return URI', () => assert.isNotNull(data['uri']));
+      });
 
-        describe 'when example and default values are given', ->
-          before ->
-            uriTemplate = '/machines/{name}'
-            parameters =
-              name:
-                description: 'Machine name'
-                type: 'string'
-                required: false
-                example: 'example-one'
+        describe('when example and default values are given', function() {
+          before(function() {
+            uriTemplate = '/machines/{name}';
+            parameters = {
+              name: {
+                description: 'Machine name',
+                type: 'string',
+                required: false,
+                example: 'example-one',
                 default: 'default-one'
+              }
+            };
 
-            data = expandUriTemplate uriTemplate, parameters
+            return data = expandUriTemplate(uriTemplate, parameters);
+          });
 
-          it 'should return no error', ->
-            assert.equal data['errors'].length, 0
+          it('should return no error', () => assert.equal(data['errors'].length, 0));
 
-          it 'should return no warning', ->
-            assert.equal data['warnings'].length, 0
+          it('should return no warning', () => assert.equal(data['warnings'].length, 0));
 
-          it 'should use example value to URI parameter expansion', ->
-            assert.include data['uri'], parameters['name']['example']
+          it('should use example value to URI parameter expansion', () => assert.include(data['uri'], parameters['name']['example']));
 
-          it 'should return some URI', ->
-            assert.isNotNull data['uri']
+          return it('should return some URI', () => assert.isNotNull(data['uri']));
+      });
 
-        describe 'when example and default values are not given', ->
-          before ->
-            uriTemplate = '/machines/{name}'
-            parameters =
-              name:
-                description: 'Machine name'
-                type: 'string'
-                required: false
-                default: ''
+        return describe('when example and default values are not given', function() {
+          before(function() {
+            uriTemplate = '/machines/{name}';
+            parameters = {
+              name: {
+                description: 'Machine name',
+                type: 'string',
+                required: false,
+                default: '',
                 example: ''
+              }
+            };
 
-            data = expandUriTemplate uriTemplate, parameters
+            return data = expandUriTemplate(uriTemplate, parameters);
+          });
 
-          it 'should return no error', ->
-            assert.equal data['errors'].length, 0
+          it('should return no error', () => assert.equal(data['errors'].length, 0));
 
-          it 'should return no warning', ->
-            assert.equal data['warnings'].length, 0
+          it('should return no warning', () => assert.equal(data['warnings'].length, 0));
 
-          it 'should return some URI', ->
-            assert.isNotNull data['uri']
+          return it('should return some URI', () => assert.isNotNull(data['uri']));
+      });
+    });
+  });
+});
+});

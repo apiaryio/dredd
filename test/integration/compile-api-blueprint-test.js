@@ -1,315 +1,289 @@
 
-proxyquire = require('proxyquire').noPreserveCache()
-sinon = require('sinon')
+const proxyquire = require('proxyquire').noPreserveCache();
+const sinon = require('sinon');
 
-fixtures = require('../fixtures')
-{assert, compileFixture} = require('../utils')
-createCompilationResultSchema = require('../schemas/compilation-result')
-createAnnotationSchema = require('../schemas/annotation')
+const fixtures = require('../fixtures');
+const {assert, compileFixture} = require('../utils');
+const createCompilationResultSchema = require('../schemas/compilation-result');
+const createAnnotationSchema = require('../schemas/annotation');
 
 
-describe('compile() · API Blueprint', ->
-  describe('causing a \'missing title\' warning', ->
-    compilationResult = undefined
+describe('compile() · API Blueprint', function() {
+  describe('causing a \'missing title\' warning', function() {
+    let compilationResult = undefined;
 
-    before((done) ->
-      compileFixture(fixtures.missingTitleAnnotation.apiBlueprint, (args...) ->
-        [err, compilationResult] = args
-        done(err)
-      )
-    )
+    before(done =>
+      compileFixture(fixtures.missingTitleAnnotation.apiBlueprint, function(...args) {
+        let err;
+        [err, compilationResult] = Array.from(args);
+        return done(err);
+      })
+    );
 
-    it('produces one annotation and no transactions', ->
-      assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 1
+    it('produces one annotation and no transactions', () =>
+      assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        annotations: 1,
         transactions: 0
-      ))
-    )
-    it('produces warning about missing title', ->
-      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
-        type: 'warning'
-        component: 'apiDescriptionParser'
+      }))
+    );
+    return it('produces warning about missing title', () =>
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
+        type: 'warning',
+        component: 'apiDescriptionParser',
         message: 'expected API name'
-      ))
-    )
-  )
+      }))
+    );
+  });
 
-  describe('causing a \'not found within URI Template\' warning', ->
-    # The warning was previously handled by compiler, but now parser should
-    # already provide the same kind of warning.
+  describe('causing a \'not found within URI Template\' warning', function() {
+    // The warning was previously handled by compiler, but now parser should
+    // already provide the same kind of warning.
 
-    compilationResult = undefined
+    let compilationResult = undefined;
 
-    before((done) ->
-      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.apiBlueprint, (args...) ->
-        [err, compilationResult] = args
-        done(err)
-      )
-    )
+    before(done =>
+      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.apiBlueprint, function(...args) {
+        let err;
+        [err, compilationResult] = Array.from(args);
+        return done(err);
+      })
+    );
 
-    it('produces one annotation and one transaction', ->
-      assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 1
+    it('produces one annotation and one transaction', () =>
+      assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        annotations: 1,
         transactions: 1
-      ))
-    )
-    it('produces warning about parameter not being in the URI Template', ->
-      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
-        type: 'warning'
-        component: 'apiDescriptionParser'
+      }))
+    );
+    return it('produces warning about parameter not being in the URI Template', () =>
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
+        type: 'warning',
+        component: 'apiDescriptionParser',
         message: /not found within.+uri template/i
-      ))
-    )
-  )
+      }))
+    );
+  });
 
-  describe('with multiple transaction examples', ->
-    detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'))
-    compilationResult = undefined
-    expected = [
-      {exampleName: '', requestContentType: 'application/json', responseStatusCode: 200}
-      {exampleName: 'Example 1', requestContentType: 'application/json', responseStatusCode: 200}
+  describe('with multiple transaction examples', function() {
+    const detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'));
+    let compilationResult = undefined;
+    const expected = [
+      {exampleName: '', requestContentType: 'application/json', responseStatusCode: 200},
+      {exampleName: 'Example 1', requestContentType: 'application/json', responseStatusCode: 200},
       {exampleName: 'Example 2', requestContentType: 'text/plain', responseStatusCode: 415}
-    ]
+    ];
 
-    before((done) ->
-      stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers}
-      compileFixture(fixtures.multipleTransactionExamples.apiBlueprint, {stubs}, (args...) ->
-        [err, compilationResult] = args
-        done(err)
-      )
-    )
+    before(function(done) {
+      const stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers};
+      return compileFixture(fixtures.multipleTransactionExamples.apiBlueprint, {stubs}, function(...args) {
+        let err;
+        [err, compilationResult] = Array.from(args);
+        return done(err);
+      });
+    });
 
-    it('calls the detection of transaction examples', ->
-      assert.isTrue(detectTransactionExampleNumbers.called)
-    )
-    it("produces #{expected.length} transactions", ->
-      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+    it('calls the detection of transaction examples', () => assert.isTrue(detectTransactionExampleNumbers.called));
+    it(`produces ${expected.length} transactions`, () =>
+      assert.jsonSchema(compilationResult, createCompilationResultSchema({
         transactions: expected.length
-      ))
-    )
-    for expectations, i in expected
-      do (expectations, i) ->
-        context("transaction ##{i + 1}", ->
-          {exampleName, requestContentType, responseStatusCode} = expectations
+      }))
+    );
+    return Array.from(expected).map((expectations, i) =>
+      ((expectations, i) =>
+        context(`transaction #${i + 1}`, function() {
+          const {exampleName, requestContentType, responseStatusCode} = expectations;
 
-          it("is identified as part of #{JSON.stringify(exampleName)}", ->
+          it(`is identified as part of ${JSON.stringify(exampleName)}`, () =>
             assert.equal(
               compilationResult.transactions[i].origin.exampleName,
               exampleName
             )
-          )
-          it("has request with Content-Type: #{requestContentType}", ->
-            headers = compilationResult.transactions[i].request.headers
-            contentType = headers
-              .filter((header) -> header.name is 'Content-Type')
-              .map((header) -> header.value)[0]
-            assert.equal(contentType, requestContentType)
-          )
-          it("has response with status code #{responseStatusCode}", ->
+          );
+          it(`has request with Content-Type: ${requestContentType}`, function() {
+            const { headers } = compilationResult.transactions[i].request;
+            const contentType = headers
+              .filter(header => header.name === 'Content-Type')
+              .map(header => header.value)[0];
+            return assert.equal(contentType, requestContentType);
+          });
+          return it(`has response with status code ${responseStatusCode}`, () =>
             assert.equal(
               compilationResult.transactions[i].response.status,
               responseStatusCode
             )
-          )
-        )
-  )
+          );
+        })
+      )(expectations, i));
+  });
 
-  describe('without multiple transaction examples', ->
-    detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'))
-    compilationResult = undefined
+  describe('without multiple transaction examples', function() {
+    const detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'));
+    let compilationResult = undefined;
 
-    before((done) ->
-      stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers}
-      compileFixture(fixtures.oneTransactionExample.apiBlueprint, {stubs}, (args...) ->
-        [err, compilationResult] = args
-        done(err)
-      )
-    )
+    before(function(done) {
+      const stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers};
+      return compileFixture(fixtures.oneTransactionExample.apiBlueprint, {stubs}, function(...args) {
+        let err;
+        [err, compilationResult] = Array.from(args);
+        return done(err);
+      });
+    });
 
-    it('calls the detection of transaction examples', ->
-      assert.isTrue(detectTransactionExampleNumbers.called)
-    )
-    it('produces one transaction', ->
-      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+    it('calls the detection of transaction examples', () => assert.isTrue(detectTransactionExampleNumbers.called));
+    it('produces one transaction', () =>
+      assert.jsonSchema(compilationResult, createCompilationResultSchema({
         transactions: 1
-      ))
-    )
-    context('the transaction', ->
-      it("is identified as part of no example in \'origin\'", ->
-        assert.equal(compilationResult.transactions[0].origin.exampleName, '')
-      )
-      it("is identified as part of Example 1 in \'pathOrigin\'", ->
-        assert.equal(compilationResult.transactions[0].pathOrigin.exampleName, 'Example 1')
-      )
-    )
-  )
+      }))
+    );
+    return context('the transaction', function() {
+      it("is identified as part of no example in \'origin\'", () => assert.equal(compilationResult.transactions[0].origin.exampleName, ''));
+      return it("is identified as part of Example 1 in \'pathOrigin\'", () => assert.equal(compilationResult.transactions[0].pathOrigin.exampleName, 'Example 1'));
+    });
+  });
 
-  describe('with arbitrary action', ->
-    compilationResult = undefined
-    filename = 'apiDescription.apib'
+  describe('with arbitrary action', function() {
+    let compilationResult = undefined;
+    const filename = 'apiDescription.apib';
 
-    before((done) ->
-      compileFixture(fixtures.arbitraryAction.apiBlueprint, {filename}, (args...) ->
-        [err, compilationResult] = args
-        done(err)
-      )
-    )
+    before(done =>
+      compileFixture(fixtures.arbitraryAction.apiBlueprint, {filename}, function(...args) {
+        let err;
+        [err, compilationResult] = Array.from(args);
+        return done(err);
+      })
+    );
 
-    it('produces two transactions', ->
-      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+    it('produces two transactions', () =>
+      assert.jsonSchema(compilationResult, createCompilationResultSchema({
         transactions: 2
-      ))
-    )
-    context('the action within a resource', ->
-      it('has URI inherited from the resource', ->
-        assert.equal(compilationResult.transactions[0].request.uri, '/resource/1')
-      )
-      it('has its method', ->
-        assert.equal(compilationResult.transactions[0].request.method, 'GET')
-      )
-    )
-    context('the arbitrary action', ->
-      it('has its own URI', ->
-        assert.equal(compilationResult.transactions[1].request.uri, '/arbitrary/sample')
-      )
-      it('has its method', ->
-        assert.equal(compilationResult.transactions[1].request.method, 'POST')
-      )
-    )
-  )
+      }))
+    );
+    context('the action within a resource', function() {
+      it('has URI inherited from the resource', () => assert.equal(compilationResult.transactions[0].request.uri, '/resource/1'));
+      return it('has its method', () => assert.equal(compilationResult.transactions[0].request.method, 'GET'));
+    });
+    return context('the arbitrary action', function() {
+      it('has its own URI', () => assert.equal(compilationResult.transactions[1].request.uri, '/arbitrary/sample'));
+      return it('has its method', () => assert.equal(compilationResult.transactions[1].request.method, 'POST'));
+    });
+  });
 
-  describe('without sections', ->
-    compilationResult = undefined
-    filename = 'apiDescription.apib'
+  describe('without sections', function() {
+    let compilationResult = undefined;
+    const filename = 'apiDescription.apib';
 
-    before((done) ->
-      compileFixture(fixtures.withoutSections.apiBlueprint, {filename}, (args...) ->
-        [err, compilationResult] = args
-        done(err)
-      )
-    )
+    before(done =>
+      compileFixture(fixtures.withoutSections.apiBlueprint, {filename}, function(...args) {
+        let err;
+        [err, compilationResult] = Array.from(args);
+        return done(err);
+      })
+    );
 
-    it('produces one transaction', ->
-      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+    it('produces one transaction', () =>
+      assert.jsonSchema(compilationResult, createCompilationResultSchema({
         transactions: 1
-      ))
-    )
-    context('\'origin\'', ->
-      it('uses filename as API name', ->
-        assert.equal(compilationResult.transactions[0].origin.apiName, filename)
-      )
-      it('uses empty string as resource group name', ->
-        assert.equal(compilationResult.transactions[0].origin.resourceGroupName, '')
-      )
-      it('uses URI as resource name', ->
-        assert.equal(compilationResult.transactions[0].origin.resourceName, '/message')
-      )
-      it('uses method as action name', ->
-        assert.equal(compilationResult.transactions[0].origin.actionName, 'GET')
-      )
-    )
-    context('\'pathOrigin\'', ->
-      it('uses empty string as API name', ->
-        assert.equal(compilationResult.transactions[0].pathOrigin.apiName, '')
-      )
-      it('uses empty string as resource group name', ->
-        assert.equal(compilationResult.transactions[0].pathOrigin.resourceGroupName, '')
-      )
-      it('uses URI as resource name', ->
-        assert.equal(compilationResult.transactions[0].pathOrigin.resourceName, '/message')
-      )
-      it('uses method as action name', ->
-        assert.equal(compilationResult.transactions[0].pathOrigin.actionName, 'GET')
-      )
-    )
-  )
+      }))
+    );
+    context('\'origin\'', function() {
+      it('uses filename as API name', () => assert.equal(compilationResult.transactions[0].origin.apiName, filename));
+      it('uses empty string as resource group name', () => assert.equal(compilationResult.transactions[0].origin.resourceGroupName, ''));
+      it('uses URI as resource name', () => assert.equal(compilationResult.transactions[0].origin.resourceName, '/message'));
+      return it('uses method as action name', () => assert.equal(compilationResult.transactions[0].origin.actionName, 'GET'));
+    });
+    return context('\'pathOrigin\'', function() {
+      it('uses empty string as API name', () => assert.equal(compilationResult.transactions[0].pathOrigin.apiName, ''));
+      it('uses empty string as resource group name', () => assert.equal(compilationResult.transactions[0].pathOrigin.resourceGroupName, ''));
+      it('uses URI as resource name', () => assert.equal(compilationResult.transactions[0].pathOrigin.resourceName, '/message'));
+      return it('uses method as action name', () => assert.equal(compilationResult.transactions[0].pathOrigin.actionName, 'GET'));
+    });
+  });
 
-  describe('with different sample and default value of URI parameter', ->
-    compilationResult = undefined
+  describe('with different sample and default value of URI parameter', function() {
+    let compilationResult = undefined;
 
-    before((done) ->
-      compileFixture(fixtures.preferSample.apiBlueprint, (args...) ->
-        [err, compilationResult] = args
-        done(err)
-      )
-    )
+    before(done =>
+      compileFixture(fixtures.preferSample.apiBlueprint, function(...args) {
+        let err;
+        [err, compilationResult] = Array.from(args);
+        return done(err);
+      })
+    );
 
-    it('produces one transaction', ->
-      assert.jsonSchema(compilationResult, createCompilationResultSchema(
+    it('produces one transaction', () =>
+      assert.jsonSchema(compilationResult, createCompilationResultSchema({
         transactions: 1
-      ))
-    )
-    it('expands the request URI using the sample value', ->
-      assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Pavan')
-    )
-  )
+      }))
+    );
+    return it('expands the request URI using the sample value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Pavan'));
+  });
 
-  describe('with response without explicit status code', ->
-    compilationResult = undefined
+  describe('with response without explicit status code', function() {
+    let compilationResult = undefined;
 
-    before((done) ->
-      compileFixture(fixtures.noStatus.apiBlueprint, (args...) ->
-        [err, compilationResult] = args
-        done(err)
-      )
-    )
+    before(done =>
+      compileFixture(fixtures.noStatus.apiBlueprint, function(...args) {
+        let err;
+        [err, compilationResult] = Array.from(args);
+        return done(err);
+      })
+    );
 
-    it('produces 1 annotation and 1 transaction', ->
-      assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 1
+    it('produces 1 annotation and 1 transaction', () =>
+      assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        annotations: 1,
         transactions: 1
-      ))
-    )
-    it('produces warning about the response status code being assumed', ->
-      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
-        type: 'warning'
-        component: 'apiDescriptionParser'
+      }))
+    );
+    it('produces warning about the response status code being assumed', () =>
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
+        type: 'warning',
+        component: 'apiDescriptionParser',
         message: 'missing response HTTP status code, assuming'
-      ))
-    )
-    it('assumes HTTP 200', ->
-      assert.equal(compilationResult.transactions[0].response.status, '200')
-    )
-  )
+      }))
+    );
+    return it('assumes HTTP 200', () => assert.equal(compilationResult.transactions[0].response.status, '200'));
+  });
 
-  describe('with multiple HTTP headers of the same name', ->
-    compilationResult = undefined
+  return describe('with multiple HTTP headers of the same name', function() {
+    let compilationResult = undefined;
 
-    before((done) ->
-      compileFixture(fixtures.httpHeadersMultiple.apiBlueprint, (args...) ->
-        [err, compilationResult] = args
-        done(err)
-      )
-    )
+    before(done =>
+      compileFixture(fixtures.httpHeadersMultiple.apiBlueprint, function(...args) {
+        let err;
+        [err, compilationResult] = Array.from(args);
+        return done(err);
+      })
+    );
 
-    it('produces 1 annotation and 1 transaction', ->
-      assert.jsonSchema(compilationResult, createCompilationResultSchema(
-        annotations: 1
+    it('produces 1 annotation and 1 transaction', () =>
+      assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        annotations: 1,
         transactions: 1
-      ))
-    )
-    it('produces warning about duplicate header names', ->
-      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema(
-        type: 'warning'
-        component: 'apiDescriptionParser'
+      }))
+    );
+    it('produces warning about duplicate header names', () =>
+      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
+        type: 'warning',
+        component: 'apiDescriptionParser',
         message: /duplicate definition.+header/
-      ))
-    )
-    context('the transaction', ->
-      it('has the expected request headers', ->
+      }))
+    );
+    return context('the transaction', function() {
+      it('has the expected request headers', () =>
         assert.deepEqual(compilationResult.transactions[0].request.headers, [
-          {name: 'Content-Type', value: 'application/json'}
-          {name: 'X-Multiple', value: 'foo'}
+          {name: 'Content-Type', value: 'application/json'},
+          {name: 'X-Multiple', value: 'foo'},
           {name: 'X-Multiple', value: 'bar'}
         ])
-      )
-      it('has the expected response headers', ->
+      );
+      return it('has the expected response headers', () =>
         assert.deepEqual(compilationResult.transactions[0].response.headers, [
-          {name: 'Content-Type', value: 'application/json'}
-          {name: 'Set-Cookie', value: 'session-id=123'}
+          {name: 'Content-Type', value: 'application/json'},
+          {name: 'Set-Cookie', value: 'session-id=123'},
           {name: 'Set-Cookie', value: 'likes-honey=true'}
         ])
-      )
-    )
-  )
-)
+      );
+    });
+  });
+});

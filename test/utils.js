@@ -1,30 +1,35 @@
-chai = require('chai')
-chai.use(require('chai-json-schema'))
-proxyquire = require('proxyquire').noPreserveCache()
+const chai = require('chai');
+chai.use(require('chai-json-schema'));
+const proxyquire = require('proxyquire').noPreserveCache();
 
-parse = require('../src/parse')
-
-
-# Takes a fixture and parses it so we can test the compilation process.
-compileFixture = (source, options, done) ->
-  [done, options] = [options, {}] if typeof options is 'function'
-
-  if options.stubs
-    compile = proxyquire('../src/compile', options.stubs)
-  else
-    compile = require('../src/compile')
-
-  parse(source, (err, parseResult) ->
-    # Intentionally not passing any parse errors to `done()` here. They'll
-    # appear in the `parseResult` too in form of annotations and we're testing
-    # whether the compilation is able to deal with them.
-    try
-      {mediaType, apiElements} = parseResult
-      result = compile(mediaType, apiElements, options.filename)
-      done(null, result)
-    catch err
-      done(err)
-  )
+const parse = require('../src/parse');
 
 
-module.exports = {compileFixture, assert: chai.assert}
+// Takes a fixture and parses it so we can test the compilation process.
+const compileFixture = function(source, options, done) {
+  let compile;
+  if (typeof options === 'function') { [done, options] = Array.from([options, {}]); }
+
+  if (options.stubs) {
+    compile = proxyquire('../src/compile', options.stubs);
+  } else {
+    compile = require('../src/compile');
+  }
+
+  return parse(source, function(err, parseResult) {
+    // Intentionally not passing any parse errors to `done()` here. They'll
+    // appear in the `parseResult` too in form of annotations and we're testing
+    // whether the compilation is able to deal with them.
+    try {
+      const {mediaType, apiElements} = parseResult;
+      const result = compile(mediaType, apiElements, options.filename);
+      return done(null, result);
+    } catch (error) {
+      err = error;
+      return done(err);
+    }
+  });
+};
+
+
+module.exports = {compileFixture, assert: chai.assert};

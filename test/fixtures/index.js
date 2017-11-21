@@ -1,195 +1,206 @@
 
-fs = require('fs')
-path = require('path')
-zoo = require('swagger-zoo')
+const fs = require('fs');
+const path = require('path');
+const zoo = require('swagger-zoo');
 
 
-fromSwaggerZoo = (name) ->
-  for feature in zoo.features()
-    return feature.swagger if feature.name is name
+const fromSwaggerZoo = function(name) {
+  for (let feature of zoo.features()) {
+    if (feature.name === name) { return feature.swagger; }
+  }
+};
 
 
-fromFile = (filename) ->
-  return fs.readFileSync(path.join(__dirname, filename)).toString()
+const fromFile = filename => fs.readFileSync(path.join(__dirname, filename)).toString();
 
 
-FORMAT_NAMES =
-  apiBlueprint: 'API Blueprint'
+const FORMAT_NAMES = {
+  apiBlueprint: 'API Blueprint',
   swagger: 'Swagger'
+};
 
 
-# Fixture factory. Makes sure the fixtures are available both as an iterable
-# array as well as name/source mapping.
-fixture = (apiDescriptions) ->
-  # The fixture is an array
-  fix = (
-    {format: FORMAT_NAMES[name], source} for own name, source of apiDescriptions
-  )
+// Fixture factory. Makes sure the fixtures are available both as an iterable
+// array as well as name/source mapping.
+const fixture = function(apiDescriptions) {
+  // The fixture is an array
+  let name, source;
+  const fix = ((() => {
+    const result = [];
+    
+    for (name of Object.keys(apiDescriptions || {})) {
+      source = apiDescriptions[name];
+      result.push({format: FORMAT_NAMES[name], source});
+    }
+  
+    return result;
+  })());
 
-  # At the same time, it is an object so we can access specific format as
-  # an object property
-  fix[name] = source for own name, source of apiDescriptions
+  // At the same time, it is an object so we can access specific format as
+  // an object property
+  for (name of Object.keys(apiDescriptions || {})) { source = apiDescriptions[name]; fix[name] = source; }
 
-  # And this is handy helper for tests
-  fix.forEachDescribe = (fn) ->
-    @forEach(({format, source}) ->
-      describe(format, ->
-        fn({format, source})
-      ))
+  // And this is handy helper for tests
+  fix.forEachDescribe = function(fn) {
+    return this.forEach(({format, source}) =>
+      describe(format, () => fn({format, source})));
+  };
 
-  return fix
+  return fix;
+};
 
 
-# Collection of API description fixtures. To iterate over all available formats
-# of specific fixture (e.g. `parserError`), use:
-#
-#     fixtures.parserError.forEach(({format, source}) ->
-#       ...
-#     )
-#
-# To do the same in tests:
-#
-#     fixtures.parserError.forEachDescribe(({format, source}) ->
-#       ...
-#     )
-#
-# To get source of specific format of a specific fixture directly, use:
-#
-#     source = fixtures.parserError.apiBlueprint
-#
-fixtures =
-  # Supported by both API description formats
-  empty: fixture(
-    apiBlueprint: ''
+// Collection of API description fixtures. To iterate over all available formats
+// of specific fixture (e.g. `parserError`), use:
+//
+//     fixtures.parserError.forEach(({format, source}) ->
+//       ...
+//     )
+//
+// To do the same in tests:
+//
+//     fixtures.parserError.forEachDescribe(({format, source}) ->
+//       ...
+//     )
+//
+// To get source of specific format of a specific fixture directly, use:
+//
+//     source = fixtures.parserError.apiBlueprint
+//
+const fixtures = {
+  // Supported by both API description formats
+  empty: fixture({
+    apiBlueprint: '',
     swagger: ''
-  )
-  ordinary: fixture(
-    apiBlueprint: fromFile('./api-blueprint/ordinary.apib')
+  }),
+  ordinary: fixture({
+    apiBlueprint: fromFile('./api-blueprint/ordinary.apib'),
     swagger: fromSwaggerZoo('action')
-  )
-  parserError: fixture(
-    apiBlueprint: fromFile('./api-blueprint/parser-error.apib')
+  }),
+  parserError: fixture({
+    apiBlueprint: fromFile('./api-blueprint/parser-error.apib'),
     swagger: fromFile('./swagger/parser-error.yml')
-  )
-  parserWarning: fixture(
-    apiBlueprint: fromFile('./api-blueprint/parser-warning.apib')
+  }),
+  parserWarning: fixture({
+    apiBlueprint: fromFile('./api-blueprint/parser-warning.apib'),
     swagger: fromSwaggerZoo('warnings')
-  )
-  uriExpansionAnnotation: fixture(
-    apiBlueprint: fromFile('./api-blueprint/uri-expansion-annotation.apib')
+  }),
+  uriExpansionAnnotation: fixture({
+    apiBlueprint: fromFile('./api-blueprint/uri-expansion-annotation.apib'),
     swagger: fromFile('./swagger/uri-expansion-annotation.yml')
-  )
-  uriValidationAnnotation: fixture(
-    apiBlueprint: fromFile('./api-blueprint/uri-validation-annotation.apib')
+  }),
+  uriValidationAnnotation: fixture({
+    apiBlueprint: fromFile('./api-blueprint/uri-validation-annotation.apib'),
     swagger: fromFile('./swagger/uri-validation-annotation.yml')
-  )
-  ambiguousParametersAnnotation: fixture(
-    apiBlueprint: fromFile('./api-blueprint/ambiguous-parameters-annotation.apib')
+  }),
+  ambiguousParametersAnnotation: fixture({
+    apiBlueprint: fromFile('./api-blueprint/ambiguous-parameters-annotation.apib'),
     swagger: fromFile('./swagger/ambiguous-parameters-annotation.yml')
-  )
-  notSpecifiedInUriTemplateAnnotation: fixture(
-    apiBlueprint: fromFile('./api-blueprint/not-specified-in-uri-template-annotation.apib')
+  }),
+  notSpecifiedInUriTemplateAnnotation: fixture({
+    apiBlueprint: fromFile('./api-blueprint/not-specified-in-uri-template-annotation.apib'),
     swagger: fromFile('./swagger/not-specified-in-uri-template-annotation.yml')
-  )
-  enumParameter: fixture(
-    apiBlueprint: fromFile('./api-blueprint/enum-parameter.apib')
+  }),
+  enumParameter: fixture({
+    apiBlueprint: fromFile('./api-blueprint/enum-parameter.apib'),
     swagger: fromFile('./swagger/enum-parameter.yml')
-  )
-  enumParameterExample: fixture(
-    apiBlueprint: fromFile('./api-blueprint/enum-parameter-example.apib')
+  }),
+  enumParameterExample: fixture({
+    apiBlueprint: fromFile('./api-blueprint/enum-parameter-example.apib'),
     swagger: fromFile('./swagger/enum-parameter-example.yml')
-  )
-  enumParameterUnlistedExample: fixture(
-    apiBlueprint: fromFile('./api-blueprint/enum-parameter-unlisted-example.apib')
+  }),
+  enumParameterUnlistedExample: fixture({
+    apiBlueprint: fromFile('./api-blueprint/enum-parameter-unlisted-example.apib'),
     swagger: fromFile('./swagger/enum-parameter-unlisted-example.yml')
-  )
-  responseSchema: fixture(
-    apiBlueprint: fromFile('./api-blueprint/response-schema.apib')
+  }),
+  responseSchema: fixture({
+    apiBlueprint: fromFile('./api-blueprint/response-schema.apib'),
     swagger: fromSwaggerZoo('schema-reference')
-  )
-  parametersInheritance: fixture(
-    apiBlueprint: fromFile('./api-blueprint/parameters-inheritance.apib')
+  }),
+  parametersInheritance: fixture({
+    apiBlueprint: fromFile('./api-blueprint/parameters-inheritance.apib'),
     swagger: fromFile('./swagger/parameters-inheritance.yml')
-  )
-  preferDefault: fixture(
-    apiBlueprint: fromFile('./api-blueprint/prefer-default.apib')
+  }),
+  preferDefault: fixture({
+    apiBlueprint: fromFile('./api-blueprint/prefer-default.apib'),
     swagger: fromFile('./swagger/prefer-default.yml')
-  )
-  httpHeaders: fixture(
-    apiBlueprint: fromFile('./api-blueprint/http-headers.apib')
+  }),
+  httpHeaders: fixture({
+    apiBlueprint: fromFile('./api-blueprint/http-headers.apib'),
     swagger: fromFile('./swagger/http-headers.yml')
-  )
-  defaultRequired: fixture(
-    apiBlueprint: fromFile('./api-blueprint/default-required.apib')
+  }),
+  defaultRequired: fixture({
+    apiBlueprint: fromFile('./api-blueprint/default-required.apib'),
     swagger: fromFile('./swagger/default-required.yml')
-  )
-  exampleParameters: fixture(
-    apiBlueprint: fromFile('./api-blueprint/example-parameters.apib')
+  }),
+  exampleParameters: fixture({
+    apiBlueprint: fromFile('./api-blueprint/example-parameters.apib'),
     swagger: fromFile('./swagger/example-parameters.yml')
-  )
-  noBody: fixture(
-    apiBlueprint: fromFile('./api-blueprint/no-body.apib')
+  }),
+  noBody: fixture({
+    apiBlueprint: fromFile('./api-blueprint/no-body.apib'),
     swagger: fromFile('./swagger/no-body.yml')
-  )
-  noSchema: fixture(
-    apiBlueprint: fromFile('./api-blueprint/no-schema.apib')
+  }),
+  noSchema: fixture({
+    apiBlueprint: fromFile('./api-blueprint/no-schema.apib'),
     swagger: fromFile('./swagger/no-schema.yml')
-  )
+  }),
 
-  # Specific to API Blueprint
-  unrecognizable: fixture(
+  // Specific to API Blueprint
+  unrecognizable: fixture({
     apiBlueprint: fromFile('./api-blueprint/unrecognizable.apib')
-  )
-  missingTitleAnnotation: fixture(
+  }),
+  missingTitleAnnotation: fixture({
     apiBlueprint: fromFile('./api-blueprint/missing-title-annotation.apib')
-  )
-  multipleTransactionExamples: fixture(
+  }),
+  multipleTransactionExamples: fixture({
     apiBlueprint: fromFile('./api-blueprint/multiple-transaction-examples.apib')
-  )
-  oneTransactionExample: fixture(
+  }),
+  oneTransactionExample: fixture({
     apiBlueprint: fromFile('./api-blueprint/one-transaction-example.apib')
-  )
-  arbitraryAction: fixture(
+  }),
+  arbitraryAction: fixture({
     apiBlueprint: fromFile('./api-blueprint/arbitrary-action.apib')
-  )
-  withoutSections: fixture(
+  }),
+  withoutSections: fixture({
     apiBlueprint: fromFile('./api-blueprint/without-sections.apib')
-  )
-  preferSample: fixture(
+  }),
+  preferSample: fixture({
     apiBlueprint: fromFile('./api-blueprint/prefer-sample.apib')
-  )
-  noStatus: fixture(
+  }),
+  noStatus: fixture({
     apiBlueprint: fromFile('./api-blueprint/no-status.apib')
-  )
-  httpHeadersMultiple: fixture(
+  }),
+  httpHeadersMultiple: fixture({
     apiBlueprint: fromFile('./api-blueprint/http-headers-multiple.apib')
-  )
+  }),
 
-  # Specific to Swagger
-  produces: fixture(
+  // Specific to Swagger
+  produces: fixture({
     swagger: fromSwaggerZoo('produces-header')
-  )
-  producesCharset: fixture(
+  }),
+  producesCharset: fixture({
     swagger: fromFile('./swagger/produces-charset.yml')
-  )
-  producesNonJSONExample: fixture(
+  }),
+  producesNonJSONExample: fixture({
     swagger: fromFile('./swagger/produces-non-json-example.yml')
-  )
-  consumes: fixture(
+  }),
+  consumes: fixture({
     swagger: fromFile('./swagger/consumes.yml')
-  )
-  multipleResponses: fixture(
+  }),
+  multipleResponses: fixture({
     swagger: fromFile('./swagger/multiple-responses.yml')
-  )
-  securityDefinitionsMultipleResponses: fixture(
+  }),
+  securityDefinitionsMultipleResponses: fixture({
     swagger: fromFile('./swagger/security-definitions-multiple-responses.yml')
-  )
-  securityDefinitionsTransitions: fixture(
+  }),
+  securityDefinitionsTransitions: fixture({
     swagger: fromSwaggerZoo('auth-oauth2-implicit')
-  )
-  defaultResponse: fixture(
+  }),
+  defaultResponse: fixture({
     swagger: fromFile('./swagger/default-response.yml')
-  )
+  })
+};
 
 
-module.exports = fixtures
+module.exports = fixtures;

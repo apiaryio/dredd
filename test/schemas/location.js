@@ -1,11 +1,13 @@
-module.exports = ->
-  {
-    type: 'array'
-    items:
-      type: 'array'
+module.exports = () =>
+  ({
+    type: 'array',
+    items: {
+      type: 'array',
       items: [
+        {type: 'number'},
         {type: 'number'}
-        {type: 'number'}
-      ]
+      ],
       additionalItems: false
-  }
+    }
+  })
+;
