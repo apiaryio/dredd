@@ -27,5 +27,5 @@ install: "if [[ $DRAFTER = JS ]]; then npm install --no-optional; else npm insta
 script:
   - "npm run lint && npm run test:coverage"
 after_success:
-  - "npm run coveralls || true"
+  - "npm run coveralls"
   - "npm run semantic-release || true"
