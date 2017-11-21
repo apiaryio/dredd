@@ -21,7 +21,7 @@ npm run build
 
 # Testing
 export COVERAGE_FILE
-istanbul cover ./node_modules/.bin/_mocha -- \
+istanbul cover ./node_modules/.bin/mocha -- \
     "$TEST_GLOB" \
     --compilers=coffee:coffee-script/register \
     --recursive
