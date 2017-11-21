@@ -1,19 +1,29 @@
+/* eslint-disable
+    global-require,
+    max-len,
+    no-shadow,
+    no-unused-vars,
+    no-useless-escape,
+    prefer-const,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 
 const proxyquire = require('proxyquire').noPreserveCache();
 const sinon = require('sinon');
 
 const fixtures = require('../fixtures');
-const {assert, compileFixture} = require('../utils');
+const { assert, compileFixture } = require('../utils');
 const createCompilationResultSchema = require('../schemas/compilation-result');
 const createAnnotationSchema = require('../schemas/annotation');
 
 
-describe('compile() · API Blueprint', function() {
-  describe('causing a \'missing title\' warning', function() {
-    let compilationResult = undefined;
+describe('compile() · API Blueprint', () => {
+  describe('causing a \'missing title\' warning', () => {
+    let compilationResult;
 
     before(done =>
-      compileFixture(fixtures.missingTitleAnnotation.apiBlueprint, function(...args) {
+      compileFixture(fixtures.missingTitleAnnotation.apiBlueprint, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -35,14 +45,14 @@ describe('compile() · API Blueprint', function() {
     );
   });
 
-  describe('causing a \'not found within URI Template\' warning', function() {
+  describe('causing a \'not found within URI Template\' warning', () => {
     // The warning was previously handled by compiler, but now parser should
     // already provide the same kind of warning.
 
-    let compilationResult = undefined;
+    let compilationResult;
 
     before(done =>
-      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.apiBlueprint, function(...args) {
+      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.apiBlueprint, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -64,18 +74,18 @@ describe('compile() · API Blueprint', function() {
     );
   });
 
-  describe('with multiple transaction examples', function() {
+  describe('with multiple transaction examples', () => {
     const detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'));
-    let compilationResult = undefined;
+    let compilationResult;
     const expected = [
-      {exampleName: '', requestContentType: 'application/json', responseStatusCode: 200},
-      {exampleName: 'Example 1', requestContentType: 'application/json', responseStatusCode: 200},
-      {exampleName: 'Example 2', requestContentType: 'text/plain', responseStatusCode: 415}
+      { exampleName: '', requestContentType: 'application/json', responseStatusCode: 200 },
+      { exampleName: 'Example 1', requestContentType: 'application/json', responseStatusCode: 200 },
+      { exampleName: 'Example 2', requestContentType: 'text/plain', responseStatusCode: 415 }
     ];
 
-    before(function(done) {
-      const stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers};
-      return compileFixture(fixtures.multipleTransactionExamples.apiBlueprint, {stubs}, function(...args) {
+    before((done) => {
+      const stubs = { './detect-transaction-example-numbers': detectTransactionExampleNumbers };
+      return compileFixture(fixtures.multipleTransactionExamples.apiBlueprint, { stubs }, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -90,8 +100,8 @@ describe('compile() · API Blueprint', function() {
     );
     return Array.from(expected).map((expectations, i) =>
       ((expectations, i) =>
-        context(`transaction #${i + 1}`, function() {
-          const {exampleName, requestContentType, responseStatusCode} = expectations;
+        context(`transaction #${i + 1}`, () => {
+          const { exampleName, requestContentType, responseStatusCode } = expectations;
 
           it(`is identified as part of ${JSON.stringify(exampleName)}`, () =>
             assert.equal(
@@ -99,7 +109,7 @@ describe('compile() · API Blueprint', function() {
               exampleName
             )
           );
-          it(`has request with Content-Type: ${requestContentType}`, function() {
+          it(`has request with Content-Type: ${requestContentType}`, () => {
             const { headers } = compilationResult.transactions[i].request;
             const contentType = headers
               .filter(header => header.name === 'Content-Type')
@@ -116,13 +126,13 @@ describe('compile() · API Blueprint', function() {
       )(expectations, i));
   });
 
-  describe('without multiple transaction examples', function() {
+  describe('without multiple transaction examples', () => {
     const detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'));
-    let compilationResult = undefined;
+    let compilationResult;
 
-    before(function(done) {
-      const stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers};
-      return compileFixture(fixtures.oneTransactionExample.apiBlueprint, {stubs}, function(...args) {
+    before((done) => {
+      const stubs = { './detect-transaction-example-numbers': detectTransactionExampleNumbers };
+      return compileFixture(fixtures.oneTransactionExample.apiBlueprint, { stubs }, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -135,18 +145,18 @@ describe('compile() · API Blueprint', function() {
         transactions: 1
       }))
     );
-    return context('the transaction', function() {
+    return context('the transaction', () => {
       it("is identified as part of no example in \'origin\'", () => assert.equal(compilationResult.transactions[0].origin.exampleName, ''));
       return it("is identified as part of Example 1 in \'pathOrigin\'", () => assert.equal(compilationResult.transactions[0].pathOrigin.exampleName, 'Example 1'));
     });
   });
 
-  describe('with arbitrary action', function() {
-    let compilationResult = undefined;
+  describe('with arbitrary action', () => {
+    let compilationResult;
     const filename = 'apiDescription.apib';
 
     before(done =>
-      compileFixture(fixtures.arbitraryAction.apiBlueprint, {filename}, function(...args) {
+      compileFixture(fixtures.arbitraryAction.apiBlueprint, { filename }, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -158,22 +168,22 @@ describe('compile() · API Blueprint', function() {
         transactions: 2
       }))
     );
-    context('the action within a resource', function() {
+    context('the action within a resource', () => {
       it('has URI inherited from the resource', () => assert.equal(compilationResult.transactions[0].request.uri, '/resource/1'));
       return it('has its method', () => assert.equal(compilationResult.transactions[0].request.method, 'GET'));
     });
-    return context('the arbitrary action', function() {
+    return context('the arbitrary action', () => {
       it('has its own URI', () => assert.equal(compilationResult.transactions[1].request.uri, '/arbitrary/sample'));
       return it('has its method', () => assert.equal(compilationResult.transactions[1].request.method, 'POST'));
     });
   });
 
-  describe('without sections', function() {
-    let compilationResult = undefined;
+  describe('without sections', () => {
+    let compilationResult;
     const filename = 'apiDescription.apib';
 
     before(done =>
-      compileFixture(fixtures.withoutSections.apiBlueprint, {filename}, function(...args) {
+      compileFixture(fixtures.withoutSections.apiBlueprint, { filename }, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -185,13 +195,13 @@ describe('compile() · API Blueprint', function() {
         transactions: 1
       }))
     );
-    context('\'origin\'', function() {
+    context('\'origin\'', () => {
       it('uses filename as API name', () => assert.equal(compilationResult.transactions[0].origin.apiName, filename));
       it('uses empty string as resource group name', () => assert.equal(compilationResult.transactions[0].origin.resourceGroupName, ''));
       it('uses URI as resource name', () => assert.equal(compilationResult.transactions[0].origin.resourceName, '/message'));
       return it('uses method as action name', () => assert.equal(compilationResult.transactions[0].origin.actionName, 'GET'));
     });
-    return context('\'pathOrigin\'', function() {
+    return context('\'pathOrigin\'', () => {
       it('uses empty string as API name', () => assert.equal(compilationResult.transactions[0].pathOrigin.apiName, ''));
       it('uses empty string as resource group name', () => assert.equal(compilationResult.transactions[0].pathOrigin.resourceGroupName, ''));
       it('uses URI as resource name', () => assert.equal(compilationResult.transactions[0].pathOrigin.resourceName, '/message'));
@@ -199,11 +209,11 @@ describe('compile() · API Blueprint', function() {
     });
   });
 
-  describe('with different sample and default value of URI parameter', function() {
-    let compilationResult = undefined;
+  describe('with different sample and default value of URI parameter', () => {
+    let compilationResult;
 
     before(done =>
-      compileFixture(fixtures.preferSample.apiBlueprint, function(...args) {
+      compileFixture(fixtures.preferSample.apiBlueprint, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -218,11 +228,11 @@ describe('compile() · API Blueprint', function() {
     return it('expands the request URI using the sample value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Pavan'));
   });
 
-  describe('with response without explicit status code', function() {
-    let compilationResult = undefined;
+  describe('with response without explicit status code', () => {
+    let compilationResult;
 
     before(done =>
-      compileFixture(fixtures.noStatus.apiBlueprint, function(...args) {
+      compileFixture(fixtures.noStatus.apiBlueprint, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -245,11 +255,11 @@ describe('compile() · API Blueprint', function() {
     return it('assumes HTTP 200', () => assert.equal(compilationResult.transactions[0].response.status, '200'));
   });
 
-  return describe('with multiple HTTP headers of the same name', function() {
-    let compilationResult = undefined;
+  return describe('with multiple HTTP headers of the same name', () => {
+    let compilationResult;
 
     before(done =>
-      compileFixture(fixtures.httpHeadersMultiple.apiBlueprint, function(...args) {
+      compileFixture(fixtures.httpHeadersMultiple.apiBlueprint, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -269,19 +279,19 @@ describe('compile() · API Blueprint', function() {
         message: /duplicate definition.+header/
       }))
     );
-    return context('the transaction', function() {
+    return context('the transaction', () => {
       it('has the expected request headers', () =>
         assert.deepEqual(compilationResult.transactions[0].request.headers, [
-          {name: 'Content-Type', value: 'application/json'},
-          {name: 'X-Multiple', value: 'foo'},
-          {name: 'X-Multiple', value: 'bar'}
+          { name: 'Content-Type', value: 'application/json' },
+          { name: 'X-Multiple', value: 'foo' },
+          { name: 'X-Multiple', value: 'bar' }
         ])
       );
       return it('has the expected response headers', () =>
         assert.deepEqual(compilationResult.transactions[0].response.headers, [
-          {name: 'Content-Type', value: 'application/json'},
-          {name: 'Set-Cookie', value: 'session-id=123'},
-          {name: 'Set-Cookie', value: 'likes-honey=true'}
+          { name: 'Content-Type', value: 'application/json' },
+          { name: 'Set-Cookie', value: 'session-id=123' },
+          { name: 'Set-Cookie', value: 'likes-honey=true' }
         ])
       );
     });

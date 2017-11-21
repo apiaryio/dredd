@@ -1,13 +1,18 @@
+/* eslint-disable
+    no-restricted-syntax,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 
-const {assert} = require('chai');
+const { assert } = require('chai');
 
 const dreddTransactions = require('../../src/index');
 
 
-describe("compiled transaction paths", function() {
-  describe("Full notation with multiple request-response pairs", () =>
+describe('compiled transaction paths', () => {
+  describe('Full notation with multiple request-response pairs', () =>
 
-    it('should have expected path', function(done) {
+    it('should have expected path', (done) => {
       const code = `\
 # Some API Name
 
@@ -24,13 +29,13 @@ describe("compiled transaction paths", function() {
 + Response 200 (application/xml)\
 `;
 
-      const expected = "Some API Name:Some Group Name:Some Resource Name:Some Action Name:Example 2";
+      const expected = 'Some API Name:Some Group Name:Some Resource Name:Some Action Name:Example 2';
 
       const paths = [];
-      return dreddTransactions.compile(code, null, function(err, compilationResult) {
+      return dreddTransactions.compile(code, null, (err, compilationResult) => {
         if (err) { return done(err); }
 
-        for (let transaction of compilationResult.transactions) {
+        for (const transaction of compilationResult.transactions) {
           paths.push(transaction.path);
         }
         assert.include(paths, expected);
@@ -40,9 +45,8 @@ describe("compiled transaction paths", function() {
   );
 
 
-
-  describe("Full notation without group", () =>
-    it('should have expected path', function(done) {
+  describe('Full notation without group', () =>
+    it('should have expected path', (done) => {
       const code = `\
 # Some API Name
 
@@ -54,12 +58,12 @@ describe("compiled transaction paths", function() {
 + Response 200 (application/json)\
 `;
 
-      const expected = "Some API Name::Some Resource Name:Some Action Name:Example 1";
+      const expected = 'Some API Name::Some Resource Name:Some Action Name:Example 1';
 
       const paths = [];
-      return dreddTransactions.compile(code, null, function(err, compilationResult) {
+      return dreddTransactions.compile(code, null, (err, compilationResult) => {
         if (err) { return done(err); }
-        for (let transaction of compilationResult.transactions) {
+        for (const transaction of compilationResult.transactions) {
           paths.push(transaction.path);
         }
         assert.include(paths, expected);
@@ -68,8 +72,8 @@ describe("compiled transaction paths", function() {
     })
   );
 
-  describe("Full notation without group and API name", () =>
-    it('should have expected path', function(done) {
+  describe('Full notation without group and API name', () =>
+    it('should have expected path', (done) => {
       const code = `\
 ### Some Resource Name [/resource]
 
@@ -79,12 +83,12 @@ describe("compiled transaction paths", function() {
 + Response 200 (application/json)\
 `;
 
-      const expected = "::Some Resource Name:Some Action Name:Example 1";
+      const expected = '::Some Resource Name:Some Action Name:Example 1';
 
       const paths = [];
-      return dreddTransactions.compile(code, null, function(err, compilationResult) {
+      return dreddTransactions.compile(code, null, (err, compilationResult) => {
         if (err) { return done(err); }
-        for (let transaction of compilationResult.transactions) {
+        for (const transaction of compilationResult.transactions) {
           paths.push(transaction.path);
         }
         assert.include(paths, expected);
@@ -93,8 +97,8 @@ describe("compiled transaction paths", function() {
     })
   );
 
-  describe("Full notation without group and API name with a colon", () =>
-    it('should have expected path', function(done) {
+  describe('Full notation without group and API name with a colon', () =>
+    it('should have expected path', (done) => {
       const code = `\
 # My API: Revamp
 
@@ -106,12 +110,12 @@ describe("compiled transaction paths", function() {
 + Response 200 (application/json)\
 `;
 
-      const expected = "My API\\: Revamp::Some Resource Name:Some Action Name:Example 1";
+      const expected = 'My API\\: Revamp::Some Resource Name:Some Action Name:Example 1';
 
       const paths = [];
-      return dreddTransactions.compile(code, null, function(err, compilationResult) {
+      return dreddTransactions.compile(code, null, (err, compilationResult) => {
         if (err) { return done(err); }
-        for (let transaction of compilationResult.transactions) {
+        for (const transaction of compilationResult.transactions) {
           paths.push(transaction.path);
         }
         assert.include(paths, expected);
@@ -121,8 +125,8 @@ describe("compiled transaction paths", function() {
   );
 
 
-  return describe("simplified notation", () =>
-    it('should have expected path', function(done) {
+  return describe('simplified notation', () =>
+    it('should have expected path', (done) => {
       const code = `\
 # GET /message
 + Response 200 (text/plain)
@@ -130,12 +134,12 @@ describe("compiled transaction paths", function() {
       Hello World\
 `;
 
-      const expected = "::/message:GET:Example 1";
+      const expected = '::/message:GET:Example 1';
 
       const paths = [];
-      return dreddTransactions.compile(code, null, function(err, compilationResult) {
+      return dreddTransactions.compile(code, null, (err, compilationResult) => {
         if (err) { return done(err); }
-        for (let transaction of compilationResult.transactions) {
+        for (const transaction of compilationResult.transactions) {
           paths.push(transaction.path);
         }
         assert.include(paths, expected);

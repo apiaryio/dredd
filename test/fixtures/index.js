@@ -1,11 +1,21 @@
+/* eslint-disable
+    consistent-return,
+    func-names,
+    max-len,
+    no-restricted-syntax,
+    no-shadow,
+    one-var,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 
 const fs = require('fs');
 const path = require('path');
 const zoo = require('swagger-zoo');
 
 
-const fromSwaggerZoo = function(name) {
-  for (let feature of zoo.features()) {
+const fromSwaggerZoo = function (name) {
+  for (const feature of zoo.features()) {
     if (feature.name === name) { return feature.swagger; }
   }
 };
@@ -22,17 +32,18 @@ const FORMAT_NAMES = {
 
 // Fixture factory. Makes sure the fixtures are available both as an iterable
 // array as well as name/source mapping.
-const fixture = function(apiDescriptions) {
+const fixture = function (apiDescriptions) {
   // The fixture is an array
-  let name, source;
+  let name,
+    source;
   const fix = ((() => {
     const result = [];
-    
+
     for (name of Object.keys(apiDescriptions || {})) {
       source = apiDescriptions[name];
-      result.push({format: FORMAT_NAMES[name], source});
+      result.push({ format: FORMAT_NAMES[name], source });
     }
-  
+
     return result;
   })());
 
@@ -41,9 +52,9 @@ const fixture = function(apiDescriptions) {
   for (name of Object.keys(apiDescriptions || {})) { source = apiDescriptions[name]; fix[name] = source; }
 
   // And this is handy helper for tests
-  fix.forEachDescribe = function(fn) {
-    return this.forEach(({format, source}) =>
-      describe(format, () => fn({format, source})));
+  fix.forEachDescribe = function (fn) {
+    return this.forEach(({ format, source }) =>
+      describe(format, () => fn({ format, source })));
   };
 
   return fix;

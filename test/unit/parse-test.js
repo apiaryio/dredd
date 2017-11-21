@@ -1,24 +1,30 @@
+/* eslint-disable
+    no-unused-vars,
+    no-useless-escape,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 const sinon = require('sinon');
 const fury = require('fury');
 
-const {assert} = require('../utils');
+const { assert } = require('../utils');
 const fixtures = require('../fixtures');
 const parse = require('../../src/parse');
 
 
-describe('Parsing API description document', function() {
+describe('Parsing API description document', () => {
   const reMediaType = /\w+\/[\w\.\+]+/;
 
   describe('Valid document gets correctly parsed', () =>
-    fixtures.ordinary.forEachDescribe(function({source}) {
-      let error = undefined;
-      let mediaType = undefined;
-      let apiElements = undefined;
+    fixtures.ordinary.forEachDescribe(({ source }) => {
+      let error;
+      let mediaType;
+      let apiElements;
 
       beforeEach(done =>
-        parse(source, function(err, parseResult) {
+        parse(source, (err, parseResult) => {
           error = err;
-          if (parseResult) { ({mediaType, apiElements} = parseResult); }
+          if (parseResult) { ({ mediaType, apiElements } = parseResult); }
           return done();
         })
       );
@@ -28,7 +34,7 @@ describe('Parsing API description document', function() {
       it('produces media type', () => assert.match(mediaType, reMediaType));
       it('the parse result is API Elements represented by minim objects', () => assert.instanceOf(apiElements, fury.minim.elements.ParseResult));
       it('the parse result contains no annotation elements', () => assert.isTrue(apiElements.annotations != null ? apiElements.annotations.isEmpty : undefined));
-      return it('the parse result contains source map elements', function() {
+      return it('the parse result contains source map elements', () => {
         const sourceMaps = apiElements
           .recursiveChildren
           .flatMap(element => element.sourceMapValue);
@@ -38,15 +44,15 @@ describe('Parsing API description document', function() {
   );
 
   describe('Invalid document causes error', () =>
-    fixtures.parserError.forEachDescribe(function({source}) {
-      let error = undefined;
-      let mediaType = undefined;
-      let apiElements = undefined;
+    fixtures.parserError.forEachDescribe(({ source }) => {
+      let error;
+      let mediaType;
+      let apiElements;
 
       beforeEach(done =>
-        parse(source, function(err, parseResult) {
+        parse(source, (err, parseResult) => {
           error = err;
-          if (parseResult) { ({mediaType, apiElements} = parseResult); }
+          if (parseResult) { ({ mediaType, apiElements } = parseResult); }
           return done();
         })
       );
@@ -60,15 +66,15 @@ describe('Parsing API description document', function() {
   );
 
   describe('Defective document causes warning', () =>
-    fixtures.parserWarning.forEachDescribe(function({source}) {
-      let error = undefined;
-      let mediaType = undefined;
-      let apiElements = undefined;
+    fixtures.parserWarning.forEachDescribe(({ source }) => {
+      let error;
+      let mediaType;
+      let apiElements;
 
       beforeEach(done =>
-        parse(source, function(err, parseResult) {
+        parse(source, (err, parseResult) => {
           error = err;
-          if (parseResult) { ({mediaType, apiElements} = parseResult); }
+          if (parseResult) { ({ mediaType, apiElements } = parseResult); }
           return done();
         })
       );
@@ -81,35 +87,35 @@ describe('Parsing API description document', function() {
     })
   );
 
-  describe('Unexpected parser behavior causes \'unexpected parser error\'', function() {
-    let error = undefined;
-    let mediaType = undefined;
-    let apiElements = undefined;
+  describe('Unexpected parser behavior causes \'unexpected parser error\'', () => {
+    let error;
+    let mediaType;
+    let apiElements;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       sinon.stub(fury, 'parse').callsFake((...args) => args.pop()());
-      return parse('... dummy API description document ...', function(err, parseResult) {
+      return parse('... dummy API description document ...', (err, parseResult) => {
         error = err;
-        if (parseResult) { ({mediaType, apiElements} = parseResult); }
+        if (parseResult) { ({ mediaType, apiElements } = parseResult); }
         return done();
       });
     });
-    afterEach( () => fury.parse.restore());
+    afterEach(() => fury.parse.restore());
 
     it('produces error', () => assert.instanceOf(error, Error));
     it('the error is the \'unexpected parser error\' error', () => assert.include(error.message.toLowerCase(), 'unexpected parser error'));
     return it('produces no parse result', () => assert.isNull(apiElements));
   });
 
-  describe('Completely unknown document format is treated as API Blueprint', function() {
-    let error = undefined;
-    let mediaType = undefined;
-    let apiElements = undefined;
+  describe('Completely unknown document format is treated as API Blueprint', () => {
+    let error;
+    let mediaType;
+    let apiElements;
 
     beforeEach(done =>
-      parse('... dummy API description document ...', function(err, parseResult) {
+      parse('... dummy API description document ...', (err, parseResult) => {
         error = err;
-        if (parseResult) { ({mediaType, apiElements} = parseResult); }
+        if (parseResult) { ({ mediaType, apiElements } = parseResult); }
         return done();
       })
     );
@@ -122,15 +128,15 @@ describe('Parsing API description document', function() {
     return it('the first warning is about falling back to API Blueprint', () => assert.include(apiElements.warnings.getValue(0), 'to API Blueprint'));
   });
 
-  return describe('Unrecognizable API Blueprint is treated as API Blueprint', function() {
-    let error = undefined;
-    let mediaType = undefined;
-    let apiElements = undefined;
+  return describe('Unrecognizable API Blueprint is treated as API Blueprint', () => {
+    let error;
+    let mediaType;
+    let apiElements;
 
     beforeEach(done =>
-      parse(fixtures.unrecognizable.apiBlueprint, function(err, parseResult) {
+      parse(fixtures.unrecognizable.apiBlueprint, (err, parseResult) => {
         error = err;
-        if (parseResult) { ({mediaType, apiElements} = parseResult); }
+        if (parseResult) { ({ mediaType, apiElements } = parseResult); }
         return done();
       })
     );

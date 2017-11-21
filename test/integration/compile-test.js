@@ -1,3 +1,11 @@
+/* eslint-disable
+    func-names,
+    max-len,
+    no-unused-vars,
+    prefer-const,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 const proxyquire = require('proxyquire').noPreserveCache();
 
 const fixtures = require('../fixtures');
@@ -5,37 +13,37 @@ const createCompilationResultSchema = require('../schemas/compilation-result');
 const createAnnotationSchema = require('../schemas/annotation');
 const createLocationSchema = require('../schemas/location');
 const createOriginSchema = require('../schemas/origin');
-const {assert, compileFixture} = require('../utils');
+const { assert, compileFixture } = require('../utils');
 
 
-describe('compile() · all API description formats', function() {
+describe('compile() · all API description formats', () => {
   const locationSchema = createLocationSchema();
   const originSchema = createOriginSchema();
 
-  describe('ordinary, valid API description', function() {
+  describe('ordinary, valid API description', () => {
     const filename = 'apiDescription.ext';
 
-    return fixtures.ordinary.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    return fixtures.ordinary.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, {filename}, function(...args) {
+        compileFixture(source, { filename }, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
         })
       );
 
-      return it('is compiled into a compilation result of expected structure', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({filename})));
+      return it('is compiled into a compilation result of expected structure', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({ filename })));
     });
   });
 
   describe('causing an error in the parser', () =>
-    fixtures.parserError.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    fixtures.parserError.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, function(...args) {
+        compileFixture(source, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -64,11 +72,11 @@ describe('compile() · all API description formats', function() {
     // Mind that situations when parser gives the warning and when this error
     // is thrown can differ and also the severity is different.
 
-    fixtures.uriExpansionAnnotation.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    fixtures.uriExpansionAnnotation.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, function(...args) {
+        compileFixture(source, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -81,7 +89,7 @@ describe('compile() · all API description formats', function() {
           transactions: 0
         }))
       );
-      return it('produces maximum one warning from parser and exactly one error from URI expansion', function() {
+      return it('produces maximum one warning from parser and exactly one error from URI expansion', () => {
         const warning = createAnnotationSchema({
           type: 'warning',
           component: 'apiDescriptionParser'
@@ -93,8 +101,8 @@ describe('compile() · all API description formats', function() {
         });
         return assert.jsonSchema(compilationResult.annotations, {
           oneOf: [
-            {type: 'array', items: [warning, error]},
-            {type: 'array', items: [error]}
+            { type: 'array', items: [warning, error] },
+            { type: 'array', items: [error] }
           ]
         }
         );
@@ -110,11 +118,11 @@ describe('compile() · all API description formats', function() {
     // the warning and when this error is returned can differ and also
     // the severity is different.
 
-    fixtures.uriValidationAnnotation.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    fixtures.uriValidationAnnotation.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, function(...args) {
+        compileFixture(source, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -127,7 +135,7 @@ describe('compile() · all API description formats', function() {
           transactions: 0
         }))
       );
-      return it('produces maximum one warning from parser, exactly one warning from URI expansion, and exactly one error from URI parameters validation', function() {
+      return it('produces maximum one warning from parser, exactly one warning from URI expansion, and exactly one error from URI parameters validation', () => {
         const parserWarning = createAnnotationSchema({
           type: 'warning',
           component: 'apiDescriptionParser'
@@ -143,8 +151,8 @@ describe('compile() · all API description formats', function() {
         });
         return assert.jsonSchema(compilationResult.annotations, {
           oneOf: [
-            {type: 'array', items: [parserWarning, uriValidationError, uriExpansionWarning]},
-            {type: 'array', items: [uriValidationError, uriExpansionWarning]}
+            { type: 'array', items: [parserWarning, uriValidationError, uriExpansionWarning] },
+            { type: 'array', items: [uriValidationError, uriExpansionWarning] }
           ]
         }
         );
@@ -153,11 +161,11 @@ describe('compile() · all API description formats', function() {
   );
 
   describe('causing a warning in the parser', () =>
-    fixtures.parserWarning.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    fixtures.parserWarning.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, function(...args) {
+        compileFixture(source, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -170,20 +178,20 @@ describe('compile() · all API description formats', function() {
           transactions: 1
         }))
       );
-      return context('the annotations', function() {
+      return context('the annotations', () => {
         it('are warnings', () =>
-          Array.from(compilationResult.annotations).map((ann) =>
+          Array.from(compilationResult.annotations).map(ann =>
             assert.equal(ann.type, 'warning'))
         );
         return it('come from parser', () =>
-          Array.from(compilationResult.annotations).map((ann) =>
+          Array.from(compilationResult.annotations).map(ann =>
             assert.equal(ann.component, 'apiDescriptionParser'))
         );
       });
     })
   );
 
-  describe('causing a warning in URI expansion', function() {
+  describe('causing a warning in URI expansion', () => {
     // This is a test for an arbitrary warning coming from URI expansion, which
     // doesn't have any other special side effect. Since there are no such
     // warnings as of now (but were in the past and could be in the future),
@@ -195,18 +203,18 @@ describe('compile() · all API description formats', function() {
 
     const stubs = {
       './compile-uri': proxyquire('../../src/compile-uri', {
-        './expand-uri-template'(...args) {
-          return {uri: '/honey?beekeeper=Honza', errors: [], warnings: [message]};
+        './expand-uri-template': function (...args) {
+          return { uri: '/honey?beekeeper=Honza', errors: [], warnings: [message] };
         }
       }
       )
     };
 
-    return fixtures.ordinary.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    return fixtures.ordinary.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, {stubs}, function(...args) {
+        compileFixture(source, { stubs }, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -242,11 +250,11 @@ describe('compile() · all API description formats', function() {
     // Special side effect of the warning is that affected transactions
     // should be skipped (shouldn't appear in output of the compilation).
 
-    fixtures.ambiguousParametersAnnotation.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    fixtures.ambiguousParametersAnnotation.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, function(...args) {
+        compileFixture(source, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -263,8 +271,8 @@ describe('compile() · all API description formats', function() {
         assert.jsonSchema(compilationResult.annotations, {
           type: 'array',
           items: [
-            createAnnotationSchema({type: 'error', component: 'parametersValidation'}),
-            createAnnotationSchema({type: 'warning', component: 'uriTemplateExpansion'})
+            createAnnotationSchema({ type: 'error', component: 'parametersValidation' }),
+            createAnnotationSchema({ type: 'warning', component: 'uriTemplateExpansion' })
           ]
         }
         )
@@ -272,7 +280,7 @@ describe('compile() · all API description formats', function() {
     })
   );
 
-  describe('causing a warning in URI parameters validation', function() {
+  describe('causing a warning in URI parameters validation', () => {
     // Since 'validateParams' doesn't actually return any warnings
     // (but could in the future), we need to pretend it's possible for this
     // test.
@@ -280,18 +288,18 @@ describe('compile() · all API description formats', function() {
     const message = '... dummy warning message ...';
     const stubs = {
       './compile-uri': proxyquire('../../src/compile-uri', {
-        './validate-params'(...args) {
-          return {errors: [], warnings: [message]};
+        './validate-params': function (...args) {
+          return { errors: [], warnings: [message] };
         }
       }
       )
     };
 
-    return fixtures.ordinary.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    return fixtures.ordinary.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, {stubs}, function(...args) {
+        compileFixture(source, { stubs }, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -318,11 +326,11 @@ describe('compile() · all API description formats', function() {
   });
 
   describe('with enum parameter', () =>
-    fixtures.enumParameter.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    fixtures.enumParameter.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, function(...args) {
+        compileFixture(source, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -339,11 +347,11 @@ describe('compile() · all API description formats', function() {
   );
 
   describe('with enum parameter having example value', () =>
-    fixtures.enumParameterExample.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    fixtures.enumParameterExample.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, function(...args) {
+        compileFixture(source, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -366,11 +374,11 @@ describe('compile() · all API description formats', function() {
     // by the enum. Mind that situations when parser gives the warning and
     // when this error is returned can differ and also the severity is different.
 
-    fixtures.enumParameterUnlistedExample.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    fixtures.enumParameterUnlistedExample.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, function(...args) {
+        compileFixture(source, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -383,7 +391,7 @@ describe('compile() · all API description formats', function() {
           transactions: 1
         }))
       );
-      it('produces maximum one warning from parser, and exactly one error from URI parameters validation', function() {
+      it('produces maximum one warning from parser, and exactly one error from URI parameters validation', () => {
         const warning = createAnnotationSchema({
           type: 'warning',
           component: 'apiDescriptionParser'
@@ -395,8 +403,8 @@ describe('compile() · all API description formats', function() {
         });
         return assert.jsonSchema(compilationResult.annotations, {
           oneOf: [
-            {type: 'array', items: [warning, error]},
-            {type: 'array', items: [error]}
+            { type: 'array', items: [warning, error] },
+            { type: 'array', items: [error] }
           ]
         }
         );
@@ -406,11 +414,11 @@ describe('compile() · all API description formats', function() {
   );
 
   describe('with parameters having example values', () =>
-    fixtures.exampleParameters.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    fixtures.exampleParameters.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, function(...args) {
+        compileFixture(source, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -427,11 +435,11 @@ describe('compile() · all API description formats', function() {
   );
 
   describe('with response schema', () =>
-    fixtures.responseSchema.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    fixtures.responseSchema.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, function(...args) {
+        compileFixture(source, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -443,32 +451,32 @@ describe('compile() · all API description formats', function() {
           transactions: 2
         }))
       );
-      context('the first transaction', function() {
-        it('has the body in response data', function() {
+      context('the first transaction', () => {
+        it('has the body in response data', () => {
           assert.ok(compilationResult.transactions[0].response.body);
-          return assert.doesNotThrow( () => JSON.parse(compilationResult.transactions[0].response.body));
+          return assert.doesNotThrow(() => JSON.parse(compilationResult.transactions[0].response.body));
         });
-        return it('has the schema in response data', function() {
+        return it('has the schema in response data', () => {
           assert.ok(compilationResult.transactions[0].response.schema);
-          return assert.doesNotThrow( () => JSON.parse(compilationResult.transactions[0].response.schema));
+          return assert.doesNotThrow(() => JSON.parse(compilationResult.transactions[0].response.schema));
         });
       });
-      return context('the second transaction', function() {
+      return context('the second transaction', () => {
         it('has no body in response data', () => assert.notOk(compilationResult.transactions[1].response.body));
-        return it('has the schema in response data', function() {
+        return it('has the schema in response data', () => {
           assert.ok(compilationResult.transactions[1].response.schema);
-          return assert.doesNotThrow( () => JSON.parse(compilationResult.transactions[1].response.schema));
+          return assert.doesNotThrow(() => JSON.parse(compilationResult.transactions[1].response.schema));
         });
       });
     })
   );
 
   describe('with inheritance of URI parameters', () =>
-    fixtures.parametersInheritance.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    fixtures.parametersInheritance.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, function(...args) {
+        compileFixture(source, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -485,11 +493,11 @@ describe('compile() · all API description formats', function() {
   );
 
   describe('with different default value and first enum value of URI parameter', () =>
-    fixtures.preferDefault.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    fixtures.preferDefault.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, function(...args) {
+        compileFixture(source, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -506,11 +514,11 @@ describe('compile() · all API description formats', function() {
   );
 
   describe('with default value for a required URI parameter', () =>
-    fixtures.defaultRequired.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    fixtures.defaultRequired.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, function(...args) {
+        compileFixture(source, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -523,7 +531,7 @@ describe('compile() · all API description formats', function() {
           transactions: 1
         }))
       );
-      it('produces maximum one warning from parser, and exactly one warning from URI expansion', function() {
+      it('produces maximum one warning from parser, and exactly one warning from URI expansion', () => {
         const parserWarning = createAnnotationSchema({
           type: 'warning',
           component: 'apiDescriptionParser'
@@ -535,8 +543,8 @@ describe('compile() · all API description formats', function() {
         });
         return assert.jsonSchema(compilationResult.annotations, {
           oneOf: [
-            {type: 'array', items: [parserWarning, uriExpansionWarning]},
-            {type: 'array', items: [uriExpansionWarning]}
+            { type: 'array', items: [parserWarning, uriExpansionWarning] },
+            { type: 'array', items: [uriExpansionWarning] }
           ]
         }
         );
@@ -546,11 +554,11 @@ describe('compile() · all API description formats', function() {
   );
 
   describe('with HTTP headers', () =>
-    fixtures.httpHeaders.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    fixtures.httpHeaders.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, function(...args) {
+        compileFixture(source, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -564,25 +572,25 @@ describe('compile() · all API description formats', function() {
       );
       it('produces expected request headers', () =>
         assert.deepEqual(compilationResult.transactions[0].request.headers, [
-          {name: 'Content-Type', value: 'application/json'},
-          {name: 'Accept', value: 'application/json'}
+          { name: 'Content-Type', value: 'application/json' },
+          { name: 'Accept', value: 'application/json' }
         ])
       );
       return it('produces expected response headers', () =>
         assert.deepEqual(compilationResult.transactions[0].response.headers, [
-          {name: 'Content-Type', value: 'application/json'},
-          {name: 'X-Test', value: 'Adam'}
+          { name: 'Content-Type', value: 'application/json' },
+          { name: 'X-Test', value: 'Adam' }
         ])
       );
     })
   );
 
   describe('without explicit body', () =>
-    fixtures.noBody.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    fixtures.noBody.forEachDescribe(({ source }) => {
+      let compilationResult;
 
       before(done =>
-        compileFixture(source, function(...args) {
+        compileFixture(source, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -600,12 +608,12 @@ describe('compile() · all API description formats', function() {
   );
 
   return describe('without explicit schema', () =>
-    fixtures.noSchema.forEachDescribe(function({source}) {
-      let compilationResult = undefined;
+    fixtures.noSchema.forEachDescribe(({ source }) => {
+      let compilationResult;
       const expectedMediaTypes = ['application/json', 'application/json', 'text/csv', 'text/yaml'];
 
       before(done =>
-        compileFixture(source, function(...args) {
+        compileFixture(source, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -618,10 +626,10 @@ describe('compile() · all API description formats', function() {
         }))
       );
       return expectedMediaTypes.forEach((mediaType, i) =>
-        context(`transaction #${i + 1}`, function() {
+        context(`transaction #${i + 1}`, () => {
           it(`has '${mediaType}' response`, () =>
             assert.deepEqual(compilationResult.transactions[i].response.headers, [
-              {name: 'Content-Type', value: mediaType}
+              { name: 'Content-Type', value: mediaType }
             ])
           );
           return it('has no schema', () => assert.isUndefined(compilationResult.transactions[i].response.schema));

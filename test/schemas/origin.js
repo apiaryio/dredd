@@ -1,20 +1,25 @@
-module.exports = function(options = {}) {
+/* eslint-disable
+    func-names,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+module.exports = function (options = {}) {
   let filenameSchema;
   if (options.filename) {
-    filenameSchema = {type: 'string', enum: [options.filename]};
+    filenameSchema = { type: 'string', enum: [options.filename] };
   } else {
-    filenameSchema = {type: 'string'};
+    filenameSchema = { type: 'string' };
   }
 
   return {
     type: 'object',
     properties: {
       filename: filenameSchema,
-      apiName: {type: 'string'},
-      resourceGroupName: {type: 'string'},
-      resourceName: {type: 'string'},
-      actionName: {type: 'string'},
-      exampleName: {type: 'string'}
+      apiName: { type: 'string' },
+      resourceGroupName: { type: 'string' },
+      resourceName: { type: 'string' },
+      actionName: { type: 'string' },
+      exampleName: { type: 'string' }
     },
     required: ['filename', 'apiName', 'resourceGroupName', 'resourceName', 'actionName', 'exampleName'],
     additionalProperties: false

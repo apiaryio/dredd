@@ -1,9 +1,10 @@
-const {assert} = require('chai');
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
+const { assert } = require('chai');
 const parsePath = require('../../../src/transaction-path/parse-path');
-const {ESCAPE_CHAR, DELIMITER} = require('../../../src/transaction-path/constants');
+const { ESCAPE_CHAR, DELIMITER } = require('../../../src/transaction-path/constants');
 
-describe('parsePath', function() {
-
+describe('parsePath', () => {
   it('should be a function', () => assert.isFunction(parsePath));
 
   it('should return an array', () => assert.isArray(parsePath(`${DELIMITER}${DELIMITER}${DELIMITER}${DELIMITER}`)));
@@ -19,14 +20,14 @@ describe('parsePath', function() {
   );
 
   describe('when path contains more than 4 unescaped delimiters 4', () =>
-    it('should throw', function() {
+    it('should throw', () => {
       const fn = () => parsePath(`${DELIMITER}${DELIMITER}${DELIMITER}${DELIMITER}${DELIMITER}`);
       return assert.throws(fn);
     })
   );
 
   describe('when path contains escaped delimiter with a backslash', () =>
-    it('should be in the string in one of the parsed parts', function() {
+    it('should be in the string in one of the parsed parts', () => {
       const path =
         ESCAPE_CHAR + DELIMITER +
         DELIMITER +
@@ -41,15 +42,14 @@ describe('parsePath', function() {
       const parsed = parsePath(path);
 
       return Array.from(parsed).map((part, index) =>
-        assert.equal(part, ":", `on index ${index}`));
+        assert.equal(part, ':', `on index ${index}`));
     })
   );
 
   return describe('with a complex example', () =>
 
-    it('should have proper parsed parts', function() {
-
-      const path = "a:b\\b:c\\:C:ddd\\::eeee\\:";
+    it('should have proper parsed parts', () => {
+      const path = 'a:b\\b:c\\:C:ddd\\::eeee\\:';
 
       const parsed = parsePath(path);
 

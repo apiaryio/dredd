@@ -1,24 +1,32 @@
+/* eslint-disable
+    func-names,
+    no-multi-str,
+    no-unused-vars,
+    prefer-const,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 const sinon = require('sinon');
 const proxyquire = require('proxyquire').noPreserveCache();
 
 const fixtures = require('../fixtures');
-const {assert} = require('../utils');
+const { assert } = require('../utils');
 const createCompilationResultSchema = require('../schemas/compilation-result');
 const createAnnotationSchema = require('../schemas/annotation');
 const dreddTransactions = require('../../src/index');
 
 
-describe('Dredd Transactions', function() {
-  describe('When compilation throws an exception', function() {
-    let err = undefined;
+describe('Dredd Transactions', () => {
+  describe('When compilation throws an exception', () => {
+    let err;
     const error = new Error('... dummy message ...');
-    let compilationResult = undefined;
+    let compilationResult;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dt = proxyquire('../../src/index',
-        {'./compile'(...args) { throw error; }}
+        { './compile': function (...args) { throw error; } }
       );
-      return dt.compile('... dummy API description document ...', null, function(...args) {
+      return dt.compile('... dummy API description document ...', null, (...args) => {
         [err, compilationResult] = Array.from(args);
         return done();
       });
@@ -28,12 +36,12 @@ describe('Dredd Transactions', function() {
     return it('passes no compilation result to callback', () => assert.isUndefined(compilationResult));
   });
 
-  describe('When given empty API description document', function() {
-    let compilationResult = undefined;
+  describe('When given empty API description document', () => {
+    let compilationResult;
 
-    return fixtures.empty.forEachDescribe(function({source}) {
+    return fixtures.empty.forEachDescribe(({ source }) => {
       beforeEach(done =>
-        dreddTransactions.compile(source, null, function(...args) {
+        dreddTransactions.compile(source, null, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -56,14 +64,14 @@ describe('Dredd Transactions', function() {
     });
   });
 
-  describe('When given unknown API description format', function() {
-    let compilationResult = undefined;
-    const source = `\
+  describe('When given unknown API description format', () => {
+    let compilationResult;
+    const source = '\
 ... unknown API description format ...\
-`;
+';
 
     beforeEach(done =>
-      dreddTransactions.compile(source, null, function(...args) {
+      dreddTransactions.compile(source, null, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -92,12 +100,12 @@ describe('Dredd Transactions', function() {
     );
   });
 
-  describe('When given unrecognizable API Blueprint format', function() {
-    let compilationResult = undefined;
+  describe('When given unrecognizable API Blueprint format', () => {
+    let compilationResult;
     const source = fixtures.unrecognizable.apiBlueprint;
 
     beforeEach(done =>
-      dreddTransactions.compile(source, null, function(...args) {
+      dreddTransactions.compile(source, null, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -109,7 +117,7 @@ describe('Dredd Transactions', function() {
         annotations: 2
       }))
     );
-    it('produces no errors', function() {
+    it('produces no errors', () => {
       const errors = compilationResult.annotations.filter(annotation => annotation.type === 'error');
       return assert.deepEqual(errors, []);
     });
@@ -131,12 +139,12 @@ describe('Dredd Transactions', function() {
     );
   });
 
-  describe('When given API description with errors', function() {
-    let compilationResult = undefined;
+  describe('When given API description with errors', () => {
+    let compilationResult;
 
-    return fixtures.parserError.forEachDescribe(function({source}) {
+    return fixtures.parserError.forEachDescribe(({ source }) => {
       beforeEach(done =>
-        dreddTransactions.compile(source, null, function(...args) {
+        dreddTransactions.compile(source, null, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -152,19 +160,19 @@ describe('Dredd Transactions', function() {
       return it('produces errors', () =>
         assert.jsonSchema(compilationResult.annotations, {
           type: 'array',
-          items: createAnnotationSchema({type: 'error'})
+          items: createAnnotationSchema({ type: 'error' })
         }
         )
       );
     });
   });
 
-  describe('When given API description with warnings', function() {
-    let compilationResult = undefined;
+  describe('When given API description with warnings', () => {
+    let compilationResult;
 
-    return fixtures.parserWarning.forEachDescribe(function({source}) {
+    return fixtures.parserWarning.forEachDescribe(({ source }) => {
       beforeEach(done =>
-        dreddTransactions.compile(source, null, function(...args) {
+        dreddTransactions.compile(source, null, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -179,19 +187,19 @@ describe('Dredd Transactions', function() {
       return it('produces warnings', () =>
         assert.jsonSchema(compilationResult.annotations, {
           type: 'array',
-          items: createAnnotationSchema({type: 'warning'})
+          items: createAnnotationSchema({ type: 'warning' })
         }
         )
       );
     });
   });
 
-  describe('When given valid API description', function() {
-    let compilationResult = undefined;
+  describe('When given valid API description', () => {
+    let compilationResult;
 
-    return fixtures.ordinary.forEachDescribe(function({source}) {
+    return fixtures.ordinary.forEachDescribe(({ source }) => {
       beforeEach(done =>
-        dreddTransactions.compile(source, null, function(...args) {
+        dreddTransactions.compile(source, null, (...args) => {
           let err;
           [err, compilationResult] = Array.from(args);
           return done(err);
@@ -202,19 +210,19 @@ describe('Dredd Transactions', function() {
     });
   });
 
-  describe('When parser unexpectedly provides just error and no API Elements', function() {
-    let compilationResult = undefined;
+  describe('When parser unexpectedly provides just error and no API Elements', () => {
+    let compilationResult;
     const source = '... dummy API description document ...';
     const message = '... dummy error message ...';
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dt = proxyquire('../../src/index', {
-        './parse'(input, callback) {
+        './parse': function (input, callback) {
           return callback(new Error(message));
         }
       }
       );
-      return dt.compile(source, null, function(...args) {
+      return dt.compile(source, null, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -235,19 +243,19 @@ describe('Dredd Transactions', function() {
     );
   });
 
-  describe('When parser unexpectedly provides error and malformed API Elements', function() {
-    let compilationResult = undefined;
+  describe('When parser unexpectedly provides error and malformed API Elements', () => {
+    let compilationResult;
     const source = '... dummy API description document ...';
     const message = '... dummy error message ...';
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dt = proxyquire('../../src/index', {
-        './parse'(input, callback) {
-          return callback(new Error(message), {dummy: true});
+        './parse': function (input, callback) {
+          return callback(new Error(message), { dummy: true });
         }
       }
       );
-      return dt.compile(source, null, function(...args) {
+      return dt.compile(source, null, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -268,18 +276,18 @@ describe('Dredd Transactions', function() {
     );
   });
 
-  return describe('When parser unexpectedly provides malformed API Elements only', function() {
-    let compilationResult = undefined;
+  return describe('When parser unexpectedly provides malformed API Elements only', () => {
+    let compilationResult;
     const source = '... dummy API description document ...';
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dt = proxyquire('../../src/index', {
-        './parse'(input, callback) {
-          return callback(null, {dummy: true});
+        './parse': function (input, callback) {
+          return callback(null, { dummy: true });
         }
       }
       );
-      return dt.compile(source, null, function(...args) {
+      return dt.compile(source, null, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);

@@ -1,10 +1,15 @@
-const {assert} = require('chai');
+/* eslint-disable
+    no-return-assign,
+    no-unused-vars,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 
 const validateParams = require('../../../src/compile-uri/validate-params');
 
-describe('validateParams', function() {
-
-  it('should return an object', function() {
+describe('validateParams', () => {
+  it('should return an object', () => {
     const params = {
       name: {
         description: 'Machine name',
@@ -21,7 +26,7 @@ describe('validateParams', function() {
   });
 
   describe('when type is string and example is a parseable float', () =>
-    it('should set no error', function() {
+    it('should set no error', () => {
       const params = {
         name: {
           description: 'Machine name',
@@ -34,15 +39,15 @@ describe('validateParams', function() {
       };
 
       const result = validateParams(params);
-      const message = result['errors'][0];
-      return assert.equal(result['errors'].length, 0);
+      const message = result.errors[0];
+      return assert.equal(result.errors.length, 0);
     })
   );
 
   // Based on bug report:
   // https://github.com/apiaryio/dredd/issues/106
   describe('when type is string and example is a string but starting with a number', () =>
-    it('should set no error', function() {
+    it('should set no error', () => {
       let result;
       const params = {
         name: {
@@ -60,7 +65,7 @@ describe('validateParams', function() {
   );
 
   describe('when type is string and example is a not a parseable float', () =>
-    it('should set no error', function() {
+    it('should set no error', () => {
       const params = {
         name: {
           description: 'Machine name',
@@ -73,12 +78,12 @@ describe('validateParams', function() {
       };
 
       const result = validateParams(params);
-      return assert.equal(result['errors'].length, 0);
+      return assert.equal(result.errors.length, 0);
     })
   );
 
   describe('when type is number and example is a string', () =>
-    it('should set descriptive error', function() {
+    it('should set descriptive error', () => {
       const params = {
         name: {
           description: 'Machine name',
@@ -91,14 +96,14 @@ describe('validateParams', function() {
       };
 
       const result = validateParams(params);
-      const message = result['errors'][0];
+      const message = result.errors[0];
       assert.include(message, 'name');
       return assert.include(message, 'number');
     })
   );
 
   describe('when type is number and example is a parseable float', () =>
-    it('should set no error', function() {
+    it('should set no error', () => {
       const params = {
         name: {
           description: 'Machine name',
@@ -111,12 +116,12 @@ describe('validateParams', function() {
       };
 
       const result = validateParams(params);
-      return assert.equal(result['errors'].length, 0);
+      return assert.equal(result.errors.length, 0);
     })
   );
 
   describe('when enum values are defined and example value is not one of enum values', () =>
-    it('should set descirptive error', function() {
+    it('should set descirptive error', () => {
       const params = {
         name: {
           description: 'Machine name',
@@ -129,14 +134,14 @@ describe('validateParams', function() {
       };
 
       const result = validateParams(params);
-      const message = result['errors'][0];
+      const message = result.errors[0];
       assert.include(message, 'name');
       return assert.include(message, 'enum');
     })
   );
 
   describe('when enum values are defined and example value is one of enum values', () =>
-    it('should set no errors', function() {
+    it('should set no errors', () => {
       const params = {
         name: {
           description: 'Machine name',
@@ -149,12 +154,12 @@ describe('validateParams', function() {
       };
 
       const result = validateParams(params);
-      return assert.equal(result['errors'].length, 0);
+      return assert.equal(result.errors.length, 0);
     })
   );
 
   describe('when type is boolean and example value is not parseable bool', () =>
-    it('should set descirptive error', function() {
+    it('should set descirptive error', () => {
       const params = {
         name: {
           description: 'Machine name',
@@ -167,14 +172,14 @@ describe('validateParams', function() {
       };
 
       const result = validateParams(params);
-      const message = result['errors'][0];
+      const message = result.errors[0];
       assert.include(message, 'name');
       return assert.include(message, 'boolean');
     })
   );
 
   describe('when type is boolean and example value is a parseable bool', () =>
-    it('should set no error', function() {
+    it('should set no error', () => {
       const params = {
         name: {
           description: 'Machine name',
@@ -187,13 +192,13 @@ describe('validateParams', function() {
       };
 
       const result = validateParams(params);
-      return assert.equal(result['errors'].length, 0);
+      return assert.equal(result.errors.length, 0);
     })
   );
 
-  describe('when parameter is required', function() {
+  describe('when parameter is required', () => {
     describe('and example and default value are empty', () =>
-      it('should set descirptive error', function() {
+      it('should set descirptive error', () => {
         const params = {
           name: {
             description: 'Machine name',
@@ -206,14 +211,14 @@ describe('validateParams', function() {
         };
 
         const result = validateParams(params);
-        const message = result['errors'][0];
+        const message = result.errors[0];
         assert.include(message, 'name');
         return assert.include(message, 'Required');
       })
     );
 
     describe('and default value is not empty and example value is empty', () =>
-      it('should not set the error', function() {
+      it('should not set the error', () => {
         const params = {
           name: {
             description: 'Machine name',
@@ -226,12 +231,12 @@ describe('validateParams', function() {
         };
 
         const result = validateParams(params);
-        return assert.equal(result['errors'].length, 0);
+        return assert.equal(result.errors.length, 0);
       })
     );
 
     return describe('and example value is not empty and default value is empty', () =>
-      it('should not set the error', function() {
+      it('should not set the error', () => {
         const params = {
           name: {
             description: 'Machine name',
@@ -244,14 +249,14 @@ describe('validateParams', function() {
         };
 
         const result = validateParams(params);
-        return assert.equal(result['errors'].length, 0);
+        return assert.equal(result.errors.length, 0);
       })
     );
   });
 
-  return describe('when parameter is not required', function() {
+  return describe('when parameter is not required', () => {
     describe('and example and default value are empty', () =>
-      it('should not set descirptive error', function() {
+      it('should not set descirptive error', () => {
         const params = {
           name: {
             description: 'Machine name',
@@ -264,13 +269,13 @@ describe('validateParams', function() {
         };
 
         const result = validateParams(params);
-        return assert.equal(result['errors'].length, 0);
+        return assert.equal(result.errors.length, 0);
       })
     );
 
 
     describe('and default value is not empty and example value is empty', () =>
-      it('should not set the error', function() {
+      it('should not set the error', () => {
         const params = {
           name: {
             description: 'Machine name',
@@ -283,12 +288,12 @@ describe('validateParams', function() {
         };
 
         const result = validateParams(params);
-        return assert.equal(result['errors'].length, 0);
+        return assert.equal(result.errors.length, 0);
       })
     );
 
     return describe('and example value is not empty and default value is empty', () =>
-      it('should not set the error', function() {
+      it('should not set the error', () => {
         const params = {
           name: {
             description: 'Machine name',
@@ -301,7 +306,7 @@ describe('validateParams', function() {
         };
 
         const result = validateParams(params);
-        return assert.equal(result['errors'].length, 0);
+        return assert.equal(result.errors.length, 0);
       })
     );
   });

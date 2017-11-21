@@ -1,10 +1,17 @@
-const {assert} = require('chai');
+/* eslint-disable
+    new-cap,
+    no-new-require,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
+
 const fury = new require('fury');
 
 const compileParams = require('../../../src/compile-uri/compile-params');
 
-describe('compileParams', function() {
-  it('should compile a primitive href variable', function() {
+describe('compileParams', () => {
+  it('should compile a primitive href variable', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
     hrefVariables.set('name', new fury.minim.elements.String());
 
@@ -20,7 +27,7 @@ describe('compileParams', function() {
     });
   });
 
-  it('should compile a required href variable', function() {
+  it('should compile a required href variable', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
     hrefVariables.set('name', 'Doe');
     hrefVariables.getMember('name').attributes.set('typeAttributes', ['required']);
@@ -37,7 +44,7 @@ describe('compileParams', function() {
     });
   });
 
-  it('should compile a primitive href variable with value', function() {
+  it('should compile a primitive href variable with value', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
     hrefVariables.set('name', 'Doe');
 
@@ -53,7 +60,7 @@ describe('compileParams', function() {
     });
   });
 
-  it('should compile a primitive href variable with default', function() {
+  it('should compile a primitive href variable with default', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
     hrefVariables.set('name', new fury.minim.elements.String());
     hrefVariables.get('name').attributes.set('default', 'Unknown');
@@ -70,7 +77,7 @@ describe('compileParams', function() {
     });
   });
 
-  it('should compile an array href variable', function() {
+  it('should compile an array href variable', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
     hrefVariables.set('names', []);
 
@@ -86,7 +93,7 @@ describe('compileParams', function() {
     });
   });
 
-  it('should compile an array href variable with values', function() {
+  it('should compile an array href variable with values', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
     hrefVariables.set('names', ['One', 'Two']);
 
@@ -102,7 +109,7 @@ describe('compileParams', function() {
     });
   });
 
-  it('should compile an array href variable with default', function() {
+  it('should compile an array href variable with default', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
     hrefVariables.set('names', []);
     hrefVariables.get('names').attributes.set('default', ['Unknown']);
@@ -119,7 +126,7 @@ describe('compileParams', function() {
     });
   });
 
-  it('should compile an array href variable with values', function() {
+  it('should compile an array href variable with values', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
     hrefVariables.set('names', ['One', 'Two']);
 
@@ -135,7 +142,7 @@ describe('compileParams', function() {
     });
   });
 
-  it('should compile an array href variable with default', function() {
+  it('should compile an array href variable with default', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
     hrefVariables.set('names', []);
     hrefVariables.get('names').attributes.set('default', ['Unknown']);
@@ -152,7 +159,7 @@ describe('compileParams', function() {
     });
   });
 
-  it('should compile an enum href variable', function() {
+  it('should compile an enum href variable', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
     const value = new fury.minim.elements.Element();
     value.element = 'enum';
@@ -171,7 +178,7 @@ describe('compileParams', function() {
     });
   });
 
-  it('should compile an enum href variable with values', function() {
+  it('should compile an enum href variable with values', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
     const value = new fury.minim.elements.Element('decending');
     value.element = 'enum';
@@ -190,7 +197,7 @@ describe('compileParams', function() {
     });
   });
 
-  return it('should compile an enum href variable with default', function() {
+  return it('should compile an enum href variable with default', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
     const value = new fury.minim.elements.Element();
     value.element = 'enum';

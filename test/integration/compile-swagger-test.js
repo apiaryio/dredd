@@ -1,17 +1,24 @@
+/* eslint-disable
+    global-require,
+    no-shadow,
+    prefer-const,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 const sinon = require('sinon');
 
 const fixtures = require('../fixtures');
-const {assert, compileFixture} = require('../utils');
+const { assert, compileFixture } = require('../utils');
 const createCompilationResultSchema = require('../schemas/compilation-result');
 const createAnnotationSchema = require('../schemas/annotation');
 
 
-describe('compile() · Swagger', function() {
-  describe('causing a \'not specified in URI Template\' error', function() {
-    let compilationResult = undefined;
+describe('compile() · Swagger', () => {
+  describe('causing a \'not specified in URI Template\' error', () => {
+    let compilationResult;
 
     before(done =>
-      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.swagger, function(...args) {
+      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.swagger, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -33,11 +40,11 @@ describe('compile() · Swagger', function() {
     );
   });
 
-  describe('with \'produces\' containing JSON media type', function() {
-    let compilationResult = undefined;
+  describe('with \'produces\' containing JSON media type', () => {
+    let compilationResult;
 
     before(done =>
-      compileFixture(fixtures.produces.swagger, function(...args) {
+      compileFixture(fixtures.produces.swagger, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -50,29 +57,29 @@ describe('compile() · Swagger', function() {
       }))
     );
     return [
-      {accept: 'application/json', contentType: 'application/json'},
-      {accept: 'application/json', contentType: 'text/plain'}
-    ].forEach(({accept, contentType}, i) =>
-      context(`compiles a transaction for the '${contentType}' media type`, function() {
+      { accept: 'application/json', contentType: 'application/json' },
+      { accept: 'application/json', contentType: 'text/plain' }
+    ].forEach(({ accept, contentType }, i) =>
+      context(`compiles a transaction for the '${contentType}' media type`, () => {
         it('with expected request headers', () =>
           assert.deepEqual(compilationResult.transactions[i].request.headers, [
-            {name: 'Accept', value: accept}
+            { name: 'Accept', value: accept }
           ])
         );
         return it('with expected response headers', () =>
           assert.deepEqual(compilationResult.transactions[i].response.headers, [
-            {name: 'Content-Type', value: contentType}
+            { name: 'Content-Type', value: contentType }
           ])
         );
       })
     );
   });
 
-  describe('with \'produces\' containing JSON media type with parameters', function() {
-    let compilationResult = undefined;
+  describe('with \'produces\' containing JSON media type with parameters', () => {
+    let compilationResult;
 
     before(done =>
-      compileFixture(fixtures.producesCharset.swagger, function(...args) {
+      compileFixture(fixtures.producesCharset.swagger, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -85,29 +92,29 @@ describe('compile() · Swagger', function() {
       }))
     );
     return [
-      {accept: 'application/json; charset=utf-8', contentType: 'application/json; charset=utf-8'},
-      {accept: 'application/json; charset=utf-8', contentType: 'text/plain'}
+      { accept: 'application/json; charset=utf-8', contentType: 'application/json; charset=utf-8' },
+      { accept: 'application/json; charset=utf-8', contentType: 'text/plain' }
     ].forEach((mediaTypes, i) =>
-      context(`compiles transaction #${i}`, function() {
+      context(`compiles transaction #${i}`, () => {
         it('with expected request headers', () =>
           assert.deepEqual(compilationResult.transactions[i].request.headers, [
-            {name: 'Accept', value: mediaTypes.accept}
+            { name: 'Accept', value: mediaTypes.accept }
           ])
         );
         return it('with expected response headers', () =>
           assert.deepEqual(compilationResult.transactions[i].response.headers, [
-            {name: 'Content-Type', value: mediaTypes.contentType}
+            { name: 'Content-Type', value: mediaTypes.contentType }
           ])
         );
       })
     );
   });
 
-  describe('with \'produces\' containing a non-JSON media type with an example', function() {
-    let compilationResult = undefined;
+  describe('with \'produces\' containing a non-JSON media type with an example', () => {
+    let compilationResult;
 
     before(done =>
-      compileFixture(fixtures.producesNonJSONExample.swagger, function(...args) {
+      compileFixture(fixtures.producesNonJSONExample.swagger, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -120,29 +127,29 @@ describe('compile() · Swagger', function() {
       }))
     );
     return [
-      {accept: 'application/json', contentType: 'application/json'},
-      {accept: 'text/plain', contentType: 'text/plain'}
+      { accept: 'application/json', contentType: 'application/json' },
+      { accept: 'text/plain', contentType: 'text/plain' }
     ].forEach((mediaTypes, i) =>
-      context(`compiles transaction #${i}`, function() {
+      context(`compiles transaction #${i}`, () => {
         it('with expected request headers', () =>
           assert.deepEqual(compilationResult.transactions[i].request.headers, [
-            {name: 'Accept', value: mediaTypes.accept}
+            { name: 'Accept', value: mediaTypes.accept }
           ])
         );
         return it('with expected response headers', () =>
           assert.deepEqual(compilationResult.transactions[i].response.headers, [
-            {name: 'Content-Type', value: mediaTypes.contentType}
+            { name: 'Content-Type', value: mediaTypes.contentType }
           ])
         );
       })
     );
   });
 
-  describe('with \'consumes\'', function() {
-    let compilationResult = undefined;
+  describe('with \'consumes\'', () => {
+    let compilationResult;
 
     before(done =>
-      compileFixture(fixtures.consumes.swagger, function(...args) {
+      compileFixture(fixtures.consumes.swagger, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -155,10 +162,10 @@ describe('compile() · Swagger', function() {
       }))
     );
     return ['application/json', 'application/xml', 'application/json'].forEach((mediaType, i) =>
-      context(`compiles a transaction for the '${mediaType}' media type`, function() {
+      context(`compiles a transaction for the '${mediaType}' media type`, () => {
         it('with expected request headers', () =>
           assert.deepEqual(compilationResult.transactions[i].request.headers, [
-            {name: 'Content-Type', value: mediaType}
+            { name: 'Content-Type', value: mediaType }
           ])
         );
         return it('with expected response headers', () => assert.deepEqual(compilationResult.transactions[i].response.headers, []));
@@ -166,15 +173,15 @@ describe('compile() · Swagger', function() {
     );
   });
 
-  describe('with multiple responses', function() {
-    let compilationResult = undefined;
+  describe('with multiple responses', () => {
+    let compilationResult;
     const filename = 'apiDescription.json';
     const detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'));
     const expectedStatusCodes = [200, 400, 500];
 
-    before(function(done) {
-      const stubs = {'./detect-transaction-example-numbers': detectTransactionExampleNumbers};
-      return compileFixture(fixtures.multipleResponses.swagger, {filename, stubs}, function(...args) {
+    before((done) => {
+      const stubs = { './detect-transaction-example-numbers': detectTransactionExampleNumbers };
+      return compileFixture(fixtures.multipleResponses.swagger, { filename, stubs }, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -188,7 +195,7 @@ describe('compile() · Swagger', function() {
       }))
     );
     it('skips non-JSON media types in \'produces\'', () =>
-      compilationResult.transactions.forEach(function(transaction) {
+      compilationResult.transactions.forEach((transaction) => {
         const contentType = transaction.response.headers
           .filter(header => header.name.toLowerCase() === 'content-type')
           .map(header => header.value)[0];
@@ -197,7 +204,7 @@ describe('compile() · Swagger', function() {
     );
     return Array.from(expectedStatusCodes).map((statusCode, i) =>
       ((statusCode, i) =>
-        context(`origin of transaction #${i + 1}`, function() {
+        context(`origin of transaction #${i + 1}`, () => {
           it('uses URI as resource name', () => assert.equal(compilationResult.transactions[i].origin.resourceName, '/honey'));
 
           it('uses method as action name', () => assert.equal(compilationResult.transactions[i].origin.actionName, 'GET'));
@@ -212,11 +219,11 @@ describe('compile() · Swagger', function() {
       )(statusCode, i));
   });
 
-  describe('with \'securityDefinitions\' and multiple responses', function() {
-    let compilationResult = undefined;
+  describe('with \'securityDefinitions\' and multiple responses', () => {
+    let compilationResult;
 
     before(done =>
-      compileFixture(fixtures.securityDefinitionsMultipleResponses.swagger, function(...args) {
+      compileFixture(fixtures.securityDefinitionsMultipleResponses.swagger, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -230,11 +237,11 @@ describe('compile() · Swagger', function() {
     );
   });
 
-  describe('with \'securityDefinitions\' containing transitions', function() {
-    let compilationResult = undefined;
+  describe('with \'securityDefinitions\' containing transitions', () => {
+    let compilationResult;
 
     before(done =>
-      compileFixture(fixtures.securityDefinitionsTransitions.swagger, function(...args) {
+      compileFixture(fixtures.securityDefinitionsTransitions.swagger, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);
@@ -248,11 +255,11 @@ describe('compile() · Swagger', function() {
     );
   });
 
-  return describe('with default response (without explicit status code)', function() {
-    let compilationResult = undefined;
+  return describe('with default response (without explicit status code)', () => {
+    let compilationResult;
 
     before(done =>
-      compileFixture(fixtures.defaultResponse.swagger, function(...args) {
+      compileFixture(fixtures.defaultResponse.swagger, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args);
         return done(err);

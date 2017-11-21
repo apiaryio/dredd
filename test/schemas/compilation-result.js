@@ -1,9 +1,15 @@
+/* eslint-disable
+    func-names,
+    no-param-reassign,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 const createOriginSchema = require('./origin');
 const createPathOriginSchema = require('./path-origin');
 const createAnnotationSchema = require('./annotation');
 
 
-const addMinMax = function(schema, n) {
+const addMinMax = function (schema, n) {
   if (n.length === 1) { // [min]
     schema.minItems = n[0];
   } else if (n.length === 2) { // [min, max]
@@ -16,7 +22,7 @@ const addMinMax = function(schema, n) {
 };
 
 
-module.exports = function(options = {}) {
+module.exports = function (options = {}) {
   // Either filename string or undefined (= doesn't matter)
   const { filename } = options;
 
@@ -29,8 +35,8 @@ module.exports = function(options = {}) {
     items: {
       type: 'object',
       properties: {
-        name: {type: 'string'},
-        value: {type: 'string'}
+        name: { type: 'string' },
+        value: { type: 'string' }
       }
     }
   };
@@ -38,10 +44,10 @@ module.exports = function(options = {}) {
   const requestSchema = {
     type: 'object',
     properties: {
-      uri: {type: 'string', pattern: '^/'},
-      method: {type: 'string'},
+      uri: { type: 'string', pattern: '^/' },
+      method: { type: 'string' },
       headers: headersSchema,
-      body: {type: 'string'}
+      body: { type: 'string' }
     },
     required: ['uri', 'method', 'headers'],
     additionalProperties: false
@@ -50,10 +56,10 @@ module.exports = function(options = {}) {
   const responseSchema = {
     type: 'object',
     properties: {
-      status: {type: 'string'},
+      status: { type: 'string' },
       headers: headersSchema,
-      body: {type: 'string'},
-      schema: {type: 'string'}
+      body: { type: 'string' },
+      schema: { type: 'string' }
     },
     required: ['status', 'headers'],
     additionalProperties: false
@@ -64,10 +70,10 @@ module.exports = function(options = {}) {
     properties: {
       request: requestSchema,
       response: responseSchema,
-      origin: createOriginSchema({filename}),
-      name: {type: 'string'},
+      origin: createOriginSchema({ filename }),
+      name: { type: 'string' },
       pathOrigin: createPathOriginSchema(),
-      path: {type: 'string'}
+      path: { type: 'string' }
     },
     required: ['request', 'response', 'origin', 'name', 'pathOrigin', 'path'],
     additionalProperties: false
@@ -77,18 +83,18 @@ module.exports = function(options = {}) {
     type: 'array',
     items: transactionSchema
   }
-  , transactions);
+    , transactions);
 
   const annotationsSchema = addMinMax({
     type: 'array',
-    items: createAnnotationSchema({filename})
+    items: createAnnotationSchema({ filename })
   }
-  , annotations);
+    , annotations);
 
   return {
     type: 'object',
     properties: {
-      mediaType: {anyOf: [{type: 'string'}, {type: 'null'}]},
+      mediaType: { anyOf: [{ type: 'string' }, { type: 'null' }] },
       transactions: transactionsSchema,
       annotations: annotationsSchema
     },

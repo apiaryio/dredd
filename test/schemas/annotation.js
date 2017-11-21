@@ -1,3 +1,8 @@
+/* eslint-disable
+    func-names,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 const createLocationSchema = require('./location');
 const createOriginSchema = require('./origin');
 
@@ -6,12 +11,12 @@ const TYPES = ['error', 'warning'];
 const COMPONENTS = ['apiDescriptionParser', 'parametersValidation', 'uriTemplateExpansion'];
 
 
-module.exports = function(options = {}) {
+module.exports = function (options = {}) {
   // Either filename string or undefined (= doesn't matter)
   const { filename } = options;
 
   // options.message should be substring or RegExp
-  const messageSchema = {type: 'string'};
+  const messageSchema = { type: 'string' };
   if (options.message) { messageSchema.pattern = options.message; }
 
   return {
@@ -27,7 +32,7 @@ module.exports = function(options = {}) {
       },
       message: messageSchema,
       location: createLocationSchema(),
-      origin: createOriginSchema({filename})
+      origin: createOriginSchema({ filename })
     },
     required: ['type', 'component', 'message', 'location'],
     dependencies: {

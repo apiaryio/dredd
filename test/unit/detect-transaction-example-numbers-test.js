@@ -1,13 +1,20 @@
+/* eslint-disable
+    max-len,
+    no-multi-str,
+    no-unused-vars,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 const parse = require('../../src/parse');
 const drafter = require('drafter');
 
-const {assert} = require('../utils');
+const { assert } = require('../utils');
 
 const detectTransactionExampleNumbers = require('../../src/detect-transaction-example-numbers');
 
 // Encapsulates a single test scenario.
-const scenario = (description, {actionContent, examples, exampleNumbersPerTransaction}) =>
-  describe(`${description}`, function() {
+const scenario = (description, { actionContent, examples, exampleNumbersPerTransaction }) =>
+  describe(`${description}`, () => {
     const returnValue = undefined;
     const apiBlueprint = `\
 FORMAT: 1A
@@ -18,12 +25,12 @@ FORMAT: 1A
 ${actionContent}\
 `;
 
-    let transitionElements = undefined;
-    let transactionExampleNumbers = undefined;
+    let transitionElements;
+    let transactionExampleNumbers;
 
     beforeEach(done =>
-      parse(apiBlueprint, function(...args) {
-        const [error, {mediaType, apiElements}] = Array.from(args);
+      parse(apiBlueprint, (...args) => {
+        const [error, { mediaType, apiElements }] = Array.from(args);
         transitionElements = apiElements.api.resourceGroups.get(0).resources.get(0).transitions.get(0);
         transactionExampleNumbers = detectTransactionExampleNumbers(transitionElements);
         return done();
@@ -35,8 +42,8 @@ ${actionContent}\
 ;
 
 
-describe('detectTransactionExamples()', function() {
-  describe('various combinations of requests and responses', function() {
+describe('detectTransactionExamples()', () => {
+  describe('various combinations of requests and responses', () => {
     scenario('empty action', {
       actionContent: '',
       exampleNumbersPerTransaction: []
@@ -44,17 +51,17 @@ describe('detectTransactionExamples()', function() {
     );
 
     scenario('single request', {
-      actionContent: `\
+      actionContent: '\
 + Request (application/json)\
-`,
+',
       exampleNumbersPerTransaction: [1]
     }
     );
 
     scenario('single response', {
-      actionContent: `\
+      actionContent: '\
 + Response 200\
-`,
+',
       exampleNumbersPerTransaction: [1]
     }
     );
@@ -249,7 +256,7 @@ describe('detectTransactionExamples()', function() {
   });
 
 
-  describe('various ways of specifying requests', function() {
+  describe('various ways of specifying requests', () => {
     scenario('bare', {
       actionContent: `\
 + Request
@@ -460,7 +467,7 @@ describe('detectTransactionExamples()', function() {
   });
 
 
-  return describe('various ways of specifying responses', function() {
+  return describe('various ways of specifying responses', () => {
     scenario('bare', {
       actionContent: `\
 + Request (application/json)
