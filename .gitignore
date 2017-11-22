@@ -1,7 +1,7 @@
 node_modules
-src-cov
+/coverage
 CHANGELOG-generated.md
-/lib
+/dist
 cov.html
 *.DS_Store
 /.idea

@@ -43,7 +43,7 @@ npm install dredd-transactions
 
 ## Development
 
-Dredd Transactions library is written in [CoffeeScript](http://coffeescript.org/) language which compiles to JavaScript (ECMAScript 5).
+Dredd Transactions library is written in JavaScript (ES2015+).
 
 
 ## Usage
