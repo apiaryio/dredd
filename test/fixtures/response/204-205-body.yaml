@@ -1,0 +1,33 @@
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: Colors API
+schemes:
+  - http
+produces:
+  - text/plain; charset=utf-8
+paths:
+  /204-without-body:
+    get:
+      responses:
+        204:
+          description: Representation
+  /205-without-body:
+    get:
+      responses:
+        205:
+          description: Representation
+  /204-with-body:
+    get:
+      responses:
+        204:
+          description: Representation
+          examples:
+            "text/plain; charset=utf-8": "test\n"
+  /205-with-body:
+    get:
+      responses:
+        205:
+          description: Representation
+          examples:
+            "text/plain; charset=utf-8": "test\n"
