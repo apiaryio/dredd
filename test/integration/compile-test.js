@@ -1,40 +1,27 @@
-/* eslint-disable
-    func-names,
-    max-len,
-    no-unused-vars,
-    prefer-const,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
 const proxyquire = require('proxyquire').noPreserveCache();
 
-const fixtures = require('../fixtures');
-const createCompilationResultSchema = require('../schemas/compilation-result');
 const createAnnotationSchema = require('../schemas/annotation');
-const createLocationSchema = require('../schemas/location');
-const createOriginSchema = require('../schemas/origin');
+const createCompilationResultSchema = require('../schemas/compilation-result');
+const fixtures = require('../fixtures');
+
 const { assert, compileFixture } = require('../utils');
 
-
 describe('compile() · all API description formats', () => {
-  const locationSchema = createLocationSchema();
-  const originSchema = createOriginSchema();
-
   describe('ordinary, valid API description', () => {
     const filename = 'apiDescription.ext';
 
-    return fixtures.ordinary.forEachDescribe(({ source }) => {
+    fixtures.ordinary.forEachDescribe(({ source }) => {
       let compilationResult;
 
       before(done =>
         compileFixture(source, { filename }, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
-      return it('is compiled into a compilation result of expected structure', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({ filename })));
+      it('is compiled into a compilation result of expected structure', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({ filename })));
     });
   });
 
@@ -45,8 +32,8 @@ describe('compile() · all API description formats', () => {
       before(done =>
         compileFixture(source, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -56,7 +43,8 @@ describe('compile() · all API description formats', () => {
           transactions: 0
         }))
       );
-      return it('produces error from parser', () =>
+
+      it('produces error from parser', () =>
         assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
           type: 'error',
           component: 'apiDescriptionParser'
@@ -78,8 +66,8 @@ describe('compile() · all API description formats', () => {
       before(done =>
         compileFixture(source, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -89,7 +77,8 @@ describe('compile() · all API description formats', () => {
           transactions: 0
         }))
       );
-      return it('produces maximum one warning from parser and exactly one error from URI expansion', () => {
+
+      it('produces maximum one warning from parser and exactly one error from URI expansion', () => {
         const warning = createAnnotationSchema({
           type: 'warning',
           component: 'apiDescriptionParser'
@@ -99,13 +88,13 @@ describe('compile() · all API description formats', () => {
           component: 'uriTemplateExpansion',
           message: /failed to parse uri template/i
         });
-        return assert.jsonSchema(compilationResult.annotations, {
+
+        assert.jsonSchema(compilationResult.annotations, {
           oneOf: [
             { type: 'array', items: [warning, error] },
             { type: 'array', items: [error] }
           ]
-        }
-        );
+        });
       });
     })
   );
@@ -124,8 +113,8 @@ describe('compile() · all API description formats', () => {
       before(done =>
         compileFixture(source, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -135,7 +124,8 @@ describe('compile() · all API description formats', () => {
           transactions: 0
         }))
       );
-      return it('produces maximum one warning from parser, exactly one warning from URI expansion, and exactly one error from URI parameters validation', () => {
+
+      it('produces maximum one warning from parser, exactly one warning from URI expansion, and exactly one error from URI parameters validation', () => {
         const parserWarning = createAnnotationSchema({
           type: 'warning',
           component: 'apiDescriptionParser'
@@ -149,13 +139,13 @@ describe('compile() · all API description formats', () => {
           component: 'parametersValidation',
           message: 'no example'
         });
-        return assert.jsonSchema(compilationResult.annotations, {
+
+        assert.jsonSchema(compilationResult.annotations, {
           oneOf: [
             { type: 'array', items: [parserWarning, uriValidationError, uriExpansionWarning] },
             { type: 'array', items: [uriValidationError, uriExpansionWarning] }
           ]
-        }
-        );
+        });
       });
     })
   );
@@ -167,8 +157,8 @@ describe('compile() · all API description formats', () => {
       before(done =>
         compileFixture(source, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -178,14 +168,18 @@ describe('compile() · all API description formats', () => {
           transactions: 1
         }))
       );
-      return context('the annotations', () => {
+
+      context('the annotations', () => {
         it('are warnings', () =>
           Array.from(compilationResult.annotations).map(ann =>
-            assert.equal(ann.type, 'warning'))
+            assert.equal(ann.type, 'warning')
+          )
         );
-        return it('come from parser', () =>
+
+        it('come from parser', () =>
           Array.from(compilationResult.annotations).map(ann =>
-            assert.equal(ann.component, 'apiDescriptionParser'))
+            assert.equal(ann.component, 'apiDescriptionParser')
+          )
         );
       });
     })
@@ -197,27 +191,22 @@ describe('compile() · all API description formats', () => {
     // warnings as of now (but were in the past and could be in the future),
     // we need to pretend it's possible in this test.
 
-    const warnings = undefined;
-    const transactions = undefined;
     const message = '... dummy warning message ...';
 
     const stubs = {
       './compile-uri': proxyquire('../../src/compile-uri', {
-        './expand-uri-template': function (...args) {
-          return { uri: '/honey?beekeeper=Honza', errors: [], warnings: [message] };
-        }
-      }
-      )
+        './expand-uri-template': () => ({ uri: '/honey?beekeeper=Honza', errors: [], warnings: [message] })
+      })
     };
 
-    return fixtures.ordinary.forEachDescribe(({ source }) => {
+    fixtures.ordinary.forEachDescribe(({ source }) => {
       let compilationResult;
 
       before(done =>
         compileFixture(source, { stubs }, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -226,7 +215,8 @@ describe('compile() · all API description formats', () => {
           annotations: [1]
         }))
       );
-      return it('produces warnings from URI expansion', () =>
+
+      it('produces warnings from URI expansion', () =>
         assert.jsonSchema(compilationResult.annotations, {
           type: 'array',
           items: createAnnotationSchema({
@@ -234,8 +224,7 @@ describe('compile() · all API description formats', () => {
             component: 'uriTemplateExpansion',
             message
           })
-        }
-        )
+        })
       );
     });
   });
@@ -256,8 +245,8 @@ describe('compile() · all API description formats', () => {
       before(done =>
         compileFixture(source, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -267,15 +256,15 @@ describe('compile() · all API description formats', () => {
           transactions: 0
         }))
       );
-      return it('produces one warning from URI expansion and one error from URI parameters validation', () =>
+
+      it('produces one warning from URI expansion and one error from URI parameters validation', () =>
         assert.jsonSchema(compilationResult.annotations, {
           type: 'array',
           items: [
             createAnnotationSchema({ type: 'error', component: 'parametersValidation' }),
             createAnnotationSchema({ type: 'warning', component: 'uriTemplateExpansion' })
           ]
-        }
-        )
+        })
       );
     })
   );
@@ -288,21 +277,18 @@ describe('compile() · all API description formats', () => {
     const message = '... dummy warning message ...';
     const stubs = {
       './compile-uri': proxyquire('../../src/compile-uri', {
-        './validate-params': function (...args) {
-          return { errors: [], warnings: [message] };
-        }
-      }
-      )
+        './validate-params': () => ({ errors: [], warnings: [message] })
+      })
     };
 
-    return fixtures.ordinary.forEachDescribe(({ source }) => {
+    fixtures.ordinary.forEachDescribe(({ source }) => {
       let compilationResult;
 
       before(done =>
         compileFixture(source, { stubs }, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -311,7 +297,8 @@ describe('compile() · all API description formats', () => {
           annotations: [1]
         }))
       );
-      return it('produces warnings from URI parameters validation', () =>
+
+      it('produces warnings from URI parameters validation', () =>
         assert.jsonSchema(compilationResult.annotations, {
           type: 'array',
           items: createAnnotationSchema({
@@ -319,8 +306,7 @@ describe('compile() · all API description formats', () => {
             component: 'parametersValidation',
             message
           })
-        }
-        )
+        })
       );
     });
   });
@@ -332,8 +318,8 @@ describe('compile() · all API description formats', () => {
       before(done =>
         compileFixture(source, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -342,7 +328,8 @@ describe('compile() · all API description formats', () => {
           transactions: 1
         }))
       );
-      return it('expands the request URI with the first enum value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Adam'));
+
+      it('expands the request URI with the first enum value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Adam'));
     })
   );
 
@@ -353,8 +340,8 @@ describe('compile() · all API description formats', () => {
       before(done =>
         compileFixture(source, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -363,7 +350,8 @@ describe('compile() · all API description formats', () => {
           transactions: 1
         }))
       );
-      return it('expands the request URI with the example value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza'));
+
+      it('expands the request URI with the example value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza'));
     })
   );
 
@@ -380,8 +368,8 @@ describe('compile() · all API description formats', () => {
       before(done =>
         compileFixture(source, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -391,6 +379,7 @@ describe('compile() · all API description formats', () => {
           transactions: 1
         }))
       );
+
       it('produces maximum one warning from parser, and exactly one error from URI parameters validation', () => {
         const warning = createAnnotationSchema({
           type: 'warning',
@@ -401,15 +390,16 @@ describe('compile() · all API description formats', () => {
           component: 'parametersValidation',
           message: 'example value is not one of enum values'
         });
-        return assert.jsonSchema(compilationResult.annotations, {
+
+        assert.jsonSchema(compilationResult.annotations, {
           oneOf: [
             { type: 'array', items: [warning, error] },
             { type: 'array', items: [error] }
           ]
-        }
-        );
+        });
       });
-      return it('expands the request URI with the example value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Pavan'));
+
+      it('expands the request URI with the example value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Pavan'));
     })
   );
 
@@ -420,8 +410,8 @@ describe('compile() · all API description formats', () => {
       before(done =>
         compileFixture(source, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -430,7 +420,8 @@ describe('compile() · all API description formats', () => {
           transactions: 1
         }))
       );
-      return it('expands the request URI with the example value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&flavour=spicy'));
+
+      it('expands the request URI with the example value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&flavour=spicy'));
     })
   );
 
@@ -441,8 +432,8 @@ describe('compile() · all API description formats', () => {
       before(done =>
         compileFixture(source, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -451,21 +442,25 @@ describe('compile() · all API description formats', () => {
           transactions: 2
         }))
       );
+
       context('the first transaction', () => {
         it('has the body in response data', () => {
           assert.ok(compilationResult.transactions[0].response.body);
-          return assert.doesNotThrow(() => JSON.parse(compilationResult.transactions[0].response.body));
+          assert.doesNotThrow(() => JSON.parse(compilationResult.transactions[0].response.body));
         });
-        return it('has the schema in response data', () => {
+
+        it('has the schema in response data', () => {
           assert.ok(compilationResult.transactions[0].response.schema);
-          return assert.doesNotThrow(() => JSON.parse(compilationResult.transactions[0].response.schema));
+          assert.doesNotThrow(() => JSON.parse(compilationResult.transactions[0].response.schema));
         });
       });
-      return context('the second transaction', () => {
+
+      context('the second transaction', () => {
         it('has no body in response data', () => assert.notOk(compilationResult.transactions[1].response.body));
-        return it('has the schema in response data', () => {
+
+        it('has the schema in response data', () => {
           assert.ok(compilationResult.transactions[1].response.schema);
-          return assert.doesNotThrow(() => JSON.parse(compilationResult.transactions[1].response.schema));
+          assert.doesNotThrow(() => JSON.parse(compilationResult.transactions[1].response.schema));
         });
       });
     })
@@ -478,8 +473,8 @@ describe('compile() · all API description formats', () => {
       before(done =>
         compileFixture(source, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -488,7 +483,8 @@ describe('compile() · all API description formats', () => {
           transactions: 1
         }))
       );
-      return it('expands the request URI using correct inheritance cascade', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&amount=42'));
+
+      it('expands the request URI using correct inheritance cascade', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&amount=42'));
     })
   );
 
@@ -499,8 +495,8 @@ describe('compile() · all API description formats', () => {
       before(done =>
         compileFixture(source, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -509,7 +505,8 @@ describe('compile() · all API description formats', () => {
           transactions: 1
         }))
       );
-      return it('expands the request URI using the default value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Adam'));
+
+      it('expands the request URI using the default value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Adam'));
     })
   );
 
@@ -520,8 +517,8 @@ describe('compile() · all API description formats', () => {
       before(done =>
         compileFixture(source, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -531,6 +528,7 @@ describe('compile() · all API description formats', () => {
           transactions: 1
         }))
       );
+
       it('produces maximum one warning from parser, and exactly one warning from URI expansion', () => {
         const parserWarning = createAnnotationSchema({
           type: 'warning',
@@ -541,15 +539,16 @@ describe('compile() · all API description formats', () => {
           component: 'uriTemplateExpansion',
           message: /default value for a required parameter/i
         });
-        return assert.jsonSchema(compilationResult.annotations, {
+
+        assert.jsonSchema(compilationResult.annotations, {
           oneOf: [
             { type: 'array', items: [parserWarning, uriExpansionWarning] },
             { type: 'array', items: [uriExpansionWarning] }
           ]
-        }
-        );
+        });
       });
-      return it('expands the request URI using the default value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza'));
+
+      it('expands the request URI using the default value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza'));
     })
   );
 
@@ -560,8 +559,8 @@ describe('compile() · all API description formats', () => {
       before(done =>
         compileFixture(source, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -570,13 +569,15 @@ describe('compile() · all API description formats', () => {
           transactions: 1
         }))
       );
+
       it('produces expected request headers', () =>
         assert.deepEqual(compilationResult.transactions[0].request.headers, [
           { name: 'Content-Type', value: 'application/json' },
           { name: 'Accept', value: 'application/json' }
         ])
       );
-      return it('produces expected response headers', () =>
+
+      it('produces expected response headers', () =>
         assert.deepEqual(compilationResult.transactions[0].response.headers, [
           { name: 'Content-Type', value: 'application/json' },
           { name: 'X-Test', value: 'Adam' }
@@ -592,8 +593,8 @@ describe('compile() · all API description formats', () => {
       before(done =>
         compileFixture(source, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -602,12 +603,13 @@ describe('compile() · all API description formats', () => {
           transactions: 2
         }))
       );
+
       it('produces transaction #1 with no body', () => assert.isUndefined(compilationResult.transactions[0].response.body));
-      return it('produces transaction #2 with no body', () => assert.isUndefined(compilationResult.transactions[0].response.body));
+      it('produces transaction #2 with no body', () => assert.isUndefined(compilationResult.transactions[0].response.body));
     })
   );
 
-  return describe('without explicit schema', () =>
+  describe('without explicit schema', () =>
     fixtures.noSchema.forEachDescribe(({ source }) => {
       let compilationResult;
       const expectedMediaTypes = ['application/json', 'application/json', 'text/csv', 'text/yaml'];
@@ -615,8 +617,8 @@ describe('compile() · all API description formats', () => {
       before(done =>
         compileFixture(source, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -625,14 +627,16 @@ describe('compile() · all API description formats', () => {
           transactions: expectedMediaTypes.length
         }))
       );
-      return expectedMediaTypes.forEach((mediaType, i) =>
+
+      expectedMediaTypes.forEach((mediaType, i) =>
         context(`transaction #${i + 1}`, () => {
           it(`has '${mediaType}' response`, () =>
             assert.deepEqual(compilationResult.transactions[i].response.headers, [
               { name: 'Content-Type', value: mediaType }
             ])
           );
-          return it('has no schema', () => assert.isUndefined(compilationResult.transactions[i].response.schema));
+
+          it('has no schema', () => assert.isUndefined(compilationResult.transactions[i].response.schema));
         })
       );
     })

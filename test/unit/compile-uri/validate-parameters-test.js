@@ -1,9 +1,3 @@
-/* eslint-disable
-    no-return-assign,
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
 const { assert } = require('chai');
 
 const validateParams = require('../../../src/compile-uri/validate-params');
@@ -22,7 +16,7 @@ describe('validateParams', () => {
     };
 
     const result = validateParams(params);
-    return assert.isObject(result);
+    assert.isObject(result);
   });
 
   describe('when type is string and example is a parseable float', () =>
@@ -39,8 +33,7 @@ describe('validateParams', () => {
       };
 
       const result = validateParams(params);
-      const message = result.errors[0];
-      return assert.equal(result.errors.length, 0);
+      assert.equal(result.errors.length, 0);
     })
   );
 
@@ -48,7 +41,6 @@ describe('validateParams', () => {
   // https://github.com/apiaryio/dredd/issues/106
   describe('when type is string and example is a string but starting with a number', () =>
     it('should set no error', () => {
-      let result;
       const params = {
         name: {
           description: 'Machine name',
@@ -60,7 +52,7 @@ describe('validateParams', () => {
         }
       };
 
-      return result = validateParams(params);
+      validateParams(params);
     })
   );
 
@@ -78,7 +70,7 @@ describe('validateParams', () => {
       };
 
       const result = validateParams(params);
-      return assert.equal(result.errors.length, 0);
+      assert.equal(result.errors.length, 0);
     })
   );
 
@@ -98,7 +90,7 @@ describe('validateParams', () => {
       const result = validateParams(params);
       const message = result.errors[0];
       assert.include(message, 'name');
-      return assert.include(message, 'number');
+      assert.include(message, 'number');
     })
   );
 
@@ -116,7 +108,7 @@ describe('validateParams', () => {
       };
 
       const result = validateParams(params);
-      return assert.equal(result.errors.length, 0);
+      assert.equal(result.errors.length, 0);
     })
   );
 
@@ -136,7 +128,7 @@ describe('validateParams', () => {
       const result = validateParams(params);
       const message = result.errors[0];
       assert.include(message, 'name');
-      return assert.include(message, 'enum');
+      assert.include(message, 'enum');
     })
   );
 
@@ -154,7 +146,7 @@ describe('validateParams', () => {
       };
 
       const result = validateParams(params);
-      return assert.equal(result.errors.length, 0);
+      assert.equal(result.errors.length, 0);
     })
   );
 
@@ -174,7 +166,7 @@ describe('validateParams', () => {
       const result = validateParams(params);
       const message = result.errors[0];
       assert.include(message, 'name');
-      return assert.include(message, 'boolean');
+      assert.include(message, 'boolean');
     })
   );
 
@@ -192,7 +184,7 @@ describe('validateParams', () => {
       };
 
       const result = validateParams(params);
-      return assert.equal(result.errors.length, 0);
+      assert.equal(result.errors.length, 0);
     })
   );
 
@@ -213,7 +205,7 @@ describe('validateParams', () => {
         const result = validateParams(params);
         const message = result.errors[0];
         assert.include(message, 'name');
-        return assert.include(message, 'Required');
+        assert.include(message, 'Required');
       })
     );
 
@@ -231,7 +223,7 @@ describe('validateParams', () => {
         };
 
         const result = validateParams(params);
-        return assert.equal(result.errors.length, 0);
+        assert.equal(result.errors.length, 0);
       })
     );
 
@@ -249,7 +241,7 @@ describe('validateParams', () => {
         };
 
         const result = validateParams(params);
-        return assert.equal(result.errors.length, 0);
+        assert.equal(result.errors.length, 0);
       })
     );
   });
@@ -269,7 +261,7 @@ describe('validateParams', () => {
         };
 
         const result = validateParams(params);
-        return assert.equal(result.errors.length, 0);
+        assert.equal(result.errors.length, 0);
       })
     );
 
@@ -288,7 +280,7 @@ describe('validateParams', () => {
         };
 
         const result = validateParams(params);
-        return assert.equal(result.errors.length, 0);
+        assert.equal(result.errors.length, 0);
       })
     );
 
@@ -306,7 +298,7 @@ describe('validateParams', () => {
         };
 
         const result = validateParams(params);
-        return assert.equal(result.errors.length, 0);
+        assert.equal(result.errors.length, 0);
       })
     );
   });

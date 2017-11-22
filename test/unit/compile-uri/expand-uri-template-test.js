@@ -1,9 +1,3 @@
-/* eslint-disable
-    no-dupe-keys,
-    no-return-assign,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
 const { assert } = require('chai');
 
 const expandUriTemplate = require('../../../src/compile-uri/expand-uri-template');
@@ -25,12 +19,12 @@ describe('expandUriTemplate', () => {
       }
     };
 
-    return data = expandUriTemplate(uriTemplate, parameters);
+    data = expandUriTemplate(uriTemplate, parameters);
   });
 
   it('should return an object', () => assert.isObject(data));
 
-  return describe('returned obejct', () => {
+  describe('returned obejct', () => {
     [
       'errors',
       'warnings',
@@ -52,10 +46,10 @@ describe('expandUriTemplate', () => {
           }
         };
 
-        return data = expandUriTemplate(uriTemplate, parameters);
+        data = expandUriTemplate(uriTemplate, parameters);
       });
 
-      return it('it should return some errror', () => assert.notEqual(data.errors.length, 0));
+      it('it should return some errror', () => assert.notEqual(data.errors.length, 0));
     });
 
 
@@ -63,7 +57,7 @@ describe('expandUriTemplate', () => {
       before(() => {
         uriTemplate = '/machines/waldo';
         parameters = {};
-        return data = expandUriTemplate(uriTemplate, parameters);
+        data = expandUriTemplate(uriTemplate, parameters);
       });
 
       describe('with no parameters given', () => {
@@ -71,11 +65,11 @@ describe('expandUriTemplate', () => {
 
         it('should return no warning', () => assert.equal(data.warnings.length, 0));
 
-        return it('should return URI as it is', () => assert.equal(data.uri, uriTemplate));
+        it('should return URI as it is', () => assert.equal(data.uri, uriTemplate));
       });
 
 
-      return describe('with some parameters given', () => {
+      describe('with some parameters given', () => {
         before(() => {
           uriTemplate = '/machines/waldo';
           parameters = {
@@ -88,7 +82,7 @@ describe('expandUriTemplate', () => {
             }
           };
 
-          return data = expandUriTemplate(uriTemplate, parameters);
+          data = expandUriTemplate(uriTemplate, parameters);
         });
 
         it('should return no error', () => assert.equal(data.errors.length, 0));
@@ -99,34 +93,34 @@ describe('expandUriTemplate', () => {
           assert.equal(data.warnings.length, 0)
         );
 
-        return it('should return URI as it is', () => assert.equal(data.uri, uriTemplate));
+        it('should return URI as it is', () => assert.equal(data.uri, uriTemplate));
       });
     });
 
 
-    return describe('when UriTemplate with some URI template expression given', () => {
+    describe('when UriTemplate with some URI template expression given', () => {
       describe('when no matching parameters provided', () => {
         before(() => {
           uriTemplate = '/machines/{name}';
           parameters = {};
-          return data = expandUriTemplate(uriTemplate, parameters);
+          data = expandUriTemplate(uriTemplate, parameters);
         });
 
         it('should return some warning', () => assert.notEqual(data.warnings.length, 0));
 
         describe('returned warning', () => {
           let warning = '';
-          before(() => warning = data.warnings[data.warnings.length - 1]);
+          before(() => { warning = data.warnings[data.warnings.length - 1]; });
 
-          return it('should contain proper text', () => {
+          it('should contain proper text', () => {
             const text = 'Parameter not defined';
-            return assert.include(warning, text);
+            assert.include(warning, text);
           });
         });
 
         it('should return no error', () => assert.equal(data.errors.length, 0));
 
-        return it('should return no URI', () => assert.equal(data.uri, null));
+        it('should return no URI', () => assert.equal(data.uri, null));
       });
 
       describe('with defined some parameters not matching any expression', () => {
@@ -141,7 +135,6 @@ describe('expandUriTemplate', () => {
               default: ''
             },
             fanny: {
-              required: false,
               description: 'Machine fanny',
               type: 'string',
               required: true,
@@ -150,7 +143,7 @@ describe('expandUriTemplate', () => {
             }
           };
 
-          return data = expandUriTemplate(uriTemplate, parameters);
+          data = expandUriTemplate(uriTemplate, parameters);
         });
 
         it('should return no error', () => assert.equal(data.errors.length, 0));
@@ -161,7 +154,7 @@ describe('expandUriTemplate', () => {
           assert.equal(data.warnings.length, 0)
         );
 
-        return it('should return expandend URI', () => assert.equal(data.uri, '/machines/waldo'));
+        it('should return expandend URI', () => assert.equal(data.uri, '/machines/waldo'));
       });
 
       describe('when expression parameter is required', () => {
@@ -178,7 +171,7 @@ describe('expandUriTemplate', () => {
               }
             };
 
-            return data = expandUriTemplate(uriTemplate, parameters);
+            data = expandUriTemplate(uriTemplate, parameters);
           });
 
           it('should return no error', () => assert.equal(data.errors.length, 0));
@@ -187,13 +180,13 @@ describe('expandUriTemplate', () => {
 
           it('should return no URI', () => assert.isNull(data.uri));
 
-          return describe('returned warning', () => {
+          describe('returned warning', () => {
             let warning = '';
-            before(() => warning = data.warnings[data.warnings.length - 1]);
+            before(() => { warning = data.warnings[data.warnings.length - 1]; });
 
-            return it('should contain proper text', () => {
+            it('should contain proper text', () => {
               const text = 'No example value for required parameter';
-              return assert.include(warning, text);
+              assert.include(warning, text);
             });
           });
         });
@@ -211,7 +204,7 @@ describe('expandUriTemplate', () => {
               }
             };
 
-            return data = expandUriTemplate(uriTemplate, parameters);
+            data = expandUriTemplate(uriTemplate, parameters);
           });
 
           it('should return no error', () => assert.equal(data.errors.length, 0));
@@ -220,7 +213,7 @@ describe('expandUriTemplate', () => {
 
           it('should use example value to URI parameter expansion', () => assert.include(data.uri, parameters.name.example));
 
-          return it('should return URI', () => assert.isNotNull(data.uri));
+          it('should return URI', () => assert.isNotNull(data.uri));
         });
 
         describe('when default value is given', () => {
@@ -236,7 +229,7 @@ describe('expandUriTemplate', () => {
               }
             };
 
-            return data = expandUriTemplate(uriTemplate, parameters);
+            data = expandUriTemplate(uriTemplate, parameters);
           });
 
           it('should return no error', () => assert.equal(data.errors.length, 0));
@@ -247,10 +240,10 @@ describe('expandUriTemplate', () => {
 
           it('should use default value to URI parameter expansion', () => assert.include(data.uri, parameters.name.default));
 
-          return it('should return URI', () => assert.isNotNull(data.uri));
+          it('should return URI', () => assert.isNotNull(data.uri));
         });
 
-        return describe('when example and default values are given', () => {
+        describe('when example and default values are given', () => {
           before(() => {
             uriTemplate = '/machines/{name}';
             parameters = {
@@ -263,7 +256,7 @@ describe('expandUriTemplate', () => {
               }
             };
 
-            return data = expandUriTemplate(uriTemplate, parameters);
+            data = expandUriTemplate(uriTemplate, parameters);
           });
 
           it('should return no error', () => assert.equal(data.errors.length, 0));
@@ -274,11 +267,11 @@ describe('expandUriTemplate', () => {
 
           it('should use example value to URI parameter expansion', () => assert.include(data.uri, parameters.name.example));
 
-          return it('should return URI', () => assert.isNotNull(data.uri));
+          it('should return URI', () => assert.isNotNull(data.uri));
         });
       });
 
-      return describe('when expression parameter is optional', () => {
+      describe('when expression parameter is optional', () => {
         before(() => {
           uriTemplate = '/machines/{name}';
           parameters = {
@@ -291,7 +284,7 @@ describe('expandUriTemplate', () => {
             }
           };
 
-          return data = expandUriTemplate(uriTemplate, parameters);
+          data = expandUriTemplate(uriTemplate, parameters);
         });
 
         it('should return no error', () => assert.equal(data.errors.length, 0));
@@ -315,7 +308,7 @@ describe('expandUriTemplate', () => {
               }
             };
 
-            return data = expandUriTemplate(uriTemplate, parameters);
+            data = expandUriTemplate(uriTemplate, parameters);
           });
 
           it('should return no error', () => assert.equal(data.errors.length, 0));
@@ -324,7 +317,7 @@ describe('expandUriTemplate', () => {
 
           it('should use default value to URI parameter expansion', () => assert.include(data.uri, parameters.name.default));
 
-          return it('should return URI', () => assert.isNotNull(data.uri));
+          it('should return URI', () => assert.isNotNull(data.uri));
         });
 
         describe('when example and default values are given', () => {
@@ -340,7 +333,7 @@ describe('expandUriTemplate', () => {
               }
             };
 
-            return data = expandUriTemplate(uriTemplate, parameters);
+            data = expandUriTemplate(uriTemplate, parameters);
           });
 
           it('should return no error', () => assert.equal(data.errors.length, 0));
@@ -349,10 +342,10 @@ describe('expandUriTemplate', () => {
 
           it('should use example value to URI parameter expansion', () => assert.include(data.uri, parameters.name.example));
 
-          return it('should return some URI', () => assert.isNotNull(data.uri));
+          it('should return some URI', () => assert.isNotNull(data.uri));
         });
 
-        return describe('when example and default values are not given', () => {
+        describe('when example and default values are not given', () => {
           before(() => {
             uriTemplate = '/machines/{name}';
             parameters = {
@@ -365,14 +358,14 @@ describe('expandUriTemplate', () => {
               }
             };
 
-            return data = expandUriTemplate(uriTemplate, parameters);
+            data = expandUriTemplate(uriTemplate, parameters);
           });
 
           it('should return no error', () => assert.equal(data.errors.length, 0));
 
           it('should return no warning', () => assert.equal(data.warnings.length, 0));
 
-          return it('should return some URI', () => assert.isNotNull(data.uri));
+          it('should return some URI', () => assert.isNotNull(data.uri));
         });
       });
     });

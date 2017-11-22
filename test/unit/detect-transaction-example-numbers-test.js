@@ -1,28 +1,18 @@
-/* eslint-disable
-    max-len,
-    no-multi-str,
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
+const detectTransactionExampleNumbers = require('../../src/detect-transaction-example-numbers');
 const parse = require('../../src/parse');
-const drafter = require('drafter');
 
 const { assert } = require('../utils');
 
-const detectTransactionExampleNumbers = require('../../src/detect-transaction-example-numbers');
-
 // Encapsulates a single test scenario.
-const scenario = (description, { actionContent, examples, exampleNumbersPerTransaction }) =>
+const scenario = (description, { actionContent, exampleNumbersPerTransaction }) =>
   describe(`${description}`, () => {
-    const returnValue = undefined;
-    const apiBlueprint = `\
+    const apiBlueprint = `
 FORMAT: 1A
 # Gargamel API
 # Group Smurfs
 ## Smurfs [/smurfs]
 ### Catch a Smurf [POST]
-${actionContent}\
+${actionContent}
 `;
 
     let transitionElements;
@@ -30,87 +20,76 @@ ${actionContent}\
 
     beforeEach(done =>
       parse(apiBlueprint, (...args) => {
-        const [error, { mediaType, apiElements }] = Array.from(args);
-        transitionElements = apiElements.api.resourceGroups.get(0).resources.get(0).transitions.get(0);
+        const [error, { apiElements }] = Array.from(args); // eslint-disable-line
+        transitionElements = apiElements.api.resourceGroups
+          .get(0).resources.get(0).transitions.get(0);
         transactionExampleNumbers = detectTransactionExampleNumbers(transitionElements);
-        return done();
+        done();
       })
     );
 
-    return it('transactions got expected example numbers', () => assert.deepEqual(exampleNumbersPerTransaction, transactionExampleNumbers));
+    it('transactions got expected example numbers', () => assert.deepEqual(exampleNumbersPerTransaction, transactionExampleNumbers));
   })
 ;
-
 
 describe('detectTransactionExamples()', () => {
   describe('various combinations of requests and responses', () => {
     scenario('empty action', {
       actionContent: '',
       exampleNumbersPerTransaction: []
-    }
-    );
+    });
 
     scenario('single request', {
-      actionContent: '\
-+ Request (application/json)\
-',
+      actionContent: '+ Request (application/json)',
       exampleNumbersPerTransaction: [1]
-    }
-    );
+    });
 
     scenario('single response', {
-      actionContent: '\
-+ Response 200\
-',
+      actionContent: '+ Response 200',
       exampleNumbersPerTransaction: [1]
-    }
-    );
+    });
 
     scenario('single response followed by another example', {
-      actionContent: `\
+      actionContent: `
 + Response 200
 
 + Request (application/json)
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 2]
-    }
-    );
+    });
 
     scenario('single response followed by a single request-response pair', {
-      actionContent: `\
+      actionContent: `
 + Response 200
 
 + Request (application/json)
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 2]
-    }
-    );
+    });
 
     scenario('single request-response pair', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1]
-    }
-    );
+    });
 
     scenario('two request-response pairs', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Response 200
 
 + Request (application/json)
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 2]
-    }
-    );
+    });
 
     scenario('three request-response pairs', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Response 200
 
@@ -118,110 +97,101 @@ describe('detectTransactionExamples()', () => {
 + Response 200
 
 + Request (application/json)
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 2, 3]
-    }
-    );
+    });
 
     scenario('multiple requests with no response', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Request (application/json)
-+ Request (application/json)\
++ Request (application/json)
 `,
       exampleNumbersPerTransaction: [1, 1, 1]
-    }
-    );
+    });
 
     scenario('no request with multiple responses', {
-      actionContent: `\
+      actionContent: `
 + Response 200
 + Response 200
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 1, 1]
-    }
-    );
+    });
 
     scenario('no request with multiple responses followed by another example', {
-      actionContent: `\
+      actionContent: `
 + Response 200
 + Response 200
 + Response 200
 
 + Request (application/json)
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 1, 1, 2]
-    }
-    );
+    });
 
     scenario('multiple requests with single response', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Request (application/json)
 + Request (application/json)
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 1, 1]
-    }
-    );
+    });
 
     scenario('multiple requests with single response followed by another example', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Request (application/json)
 + Request (application/json)
 + Response 200
 
 + Request (application/json)
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 1, 1, 2]
-    }
-    );
+    });
 
     scenario('single request with multiple responses', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Response 200
 + Response 200
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 1, 1]
-    }
-    );
+    });
 
     scenario('single request with multiple responses followed by another example', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Response 200
 + Response 200
 + Response 200
 
 + Request (application/json)
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 1, 1, 2]
-    }
-    );
+    });
 
     scenario('multiple requests with multiple responses', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Request (application/json)
 + Request (application/json)
 + Response 200
 + Response 200
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 1, 1, 1, 1, 1, 1, 1, 1]
-    }
-    );
+    });
 
     scenario('multiple requests with multiple responses followed by another example', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Request (application/json)
 + Request (application/json)
@@ -230,14 +200,13 @@ describe('detectTransactionExamples()', () => {
 + Response 200
 
 + Request (application/json)
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 1, 1, 1, 1, 1, 1, 1, 1, 2]
-    }
-    );
+    });
 
-    return scenario('multiple requests with multiple responses followed by another multiple requests with multiple responses', {
-      actionContent: `\
+    scenario('multiple requests with multiple responses followed by another multiple requests with multiple responses', {
+      actionContent: `
 + Request (application/json)
 + Request (application/json)
 + Request (application/json)
@@ -248,17 +217,16 @@ describe('detectTransactionExamples()', () => {
 + Request (application/json)
 + Request (application/json)
 + Response 200
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2]
-    }
-    );
+    });
   });
 
 
   describe('various ways of specifying requests', () => {
     scenario('bare', {
-      actionContent: `\
+      actionContent: `
 + Request
 + Response 200
 
@@ -267,14 +235,13 @@ describe('detectTransactionExamples()', () => {
 + Response 200
 
 + Request
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
     scenario('with Content-Type headers', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Response 200
 
@@ -283,14 +250,13 @@ describe('detectTransactionExamples()', () => {
 + Response 200
 
 + Request (application/json)
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
     scenario('with Headers section', {
-      actionContent: `\
+      actionContent: `
 + Request
     + Headers
         X-Smurf: Papa Smurf
@@ -307,14 +273,13 @@ describe('detectTransactionExamples()', () => {
 + Request
     + Headers
         X-Smurf: Brainy Smurf
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
     scenario('with bare Headers section', {
-      actionContent: `\
+      actionContent: `
 + Request
     + Headers
 + Response 200
@@ -327,14 +292,13 @@ describe('detectTransactionExamples()', () => {
 
 + Request
     + Headers
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
     scenario('with Attributes section', {
-      actionContent: `\
+      actionContent: `
 + Request
     + Attributes
         + smurfColor: blue
@@ -351,14 +315,13 @@ describe('detectTransactionExamples()', () => {
 + Request
     + Attributes
         + smurfColor: blue
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
     scenario('with bare Attributes section', {
-      actionContent: `\
+      actionContent: `
 + Request
     + Attributes
 + Response 200
@@ -371,14 +334,13 @@ describe('detectTransactionExamples()', () => {
 
 + Request
     + Attributes
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
     scenario('with Body section', {
-      actionContent: `\
+      actionContent: `
 + Request
     + Body
         {}
@@ -395,14 +357,13 @@ describe('detectTransactionExamples()', () => {
 + Request
     + Body
         {}
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
     scenario('with bare Body section', {
-      actionContent: `\
+      actionContent: `
 + Request
     + Body
 + Response 200
@@ -415,14 +376,13 @@ describe('detectTransactionExamples()', () => {
 
 + Request
     + Body
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
     scenario('with Schema section', {
-      actionContent: `\
+      actionContent: `
 + Request
     + Schema
         {}
@@ -439,37 +399,35 @@ describe('detectTransactionExamples()', () => {
 + Request
     + Schema
         {}
++ Response 200
+`,
+      exampleNumbersPerTransaction: [1, 2, 2, 3]
+    });
+
+    scenario('with bare Schema section', {
+      actionContent: `
++ Request
+    + Schema
++ Response 200
+
++ Request
+    + Schema
++ Request
+    + Schema
++ Response 200
+
++ Request
+    + Schema
 + Response 200\
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
-
-    return scenario('with bare Schema section', {
-      actionContent: `\
-+ Request
-    + Schema
-+ Response 200
-
-+ Request
-    + Schema
-+ Request
-    + Schema
-+ Response 200
-
-+ Request
-    + Schema
-+ Response 200\
-`,
-      exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
   });
 
 
-  return describe('various ways of specifying responses', () => {
+  describe('various ways of specifying responses', () => {
     scenario('bare', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Response
 
@@ -478,14 +436,13 @@ describe('detectTransactionExamples()', () => {
 + Response
 
 + Request (application/json)
-+ Response\
++ Response
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
     scenario('with satus codes', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Response 200
 
@@ -494,14 +451,13 @@ describe('detectTransactionExamples()', () => {
 + Response 200
 
 + Request (application/json)
-+ Response 200\
++ Response 200
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
     scenario('with Content-Type headers', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Response (application/json)
 
@@ -510,14 +466,13 @@ describe('detectTransactionExamples()', () => {
 + Response (application/json)
 
 + Request (application/json)
-+ Response (application/json)\
++ Response (application/json)
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
     scenario('with Headers section', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Response
     + Headers
@@ -534,14 +489,13 @@ describe('detectTransactionExamples()', () => {
 + Request (application/json)
 + Response
     + Headers
-        X-Smurf: Greedy Smurf\
+        X-Smurf: Greedy Smurf
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
     scenario('with bare Headers section', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Response
     + Headers
@@ -554,14 +508,13 @@ describe('detectTransactionExamples()', () => {
 
 + Request (application/json)
 + Response
-    + Headers\
+    + Headers
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
     scenario('with Attributes section', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Response
     + Attributes
@@ -578,14 +531,13 @@ describe('detectTransactionExamples()', () => {
 + Request (application/json)
 + Response
     + Attributes
-        + smurfColor: blue\
+        + smurfColor: blue
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
     scenario('with bare Attributes section', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Response
     + Attributes
@@ -598,14 +550,13 @@ describe('detectTransactionExamples()', () => {
 
 + Request (application/json)
 + Response
-    + Attributes\
+    + Attributes
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
     scenario('with Body section', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Response
     + Body
@@ -622,14 +573,13 @@ describe('detectTransactionExamples()', () => {
 + Request (application/json)
 + Response
     + Body
-        {}\
+        {}
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
     scenario('with bare Body section', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Response
     + Body
@@ -642,14 +592,13 @@ describe('detectTransactionExamples()', () => {
 
 + Request (application/json)
 + Response
-    + Body\
+    + Body
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
     scenario('with Schema section', {
-      actionContent: `\
+      actionContent: `
 + Request (application/json)
 + Response
     + Schema
@@ -666,14 +615,13 @@ describe('detectTransactionExamples()', () => {
 + Request (application/json)
 + Response
     + Schema
-        {}\
+        {}
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
 
-    return scenario('with bare Schema section', {
-      actionContent: `\
+    scenario('with bare Schema section', {
+      actionContent: `
 + Request (application/json)
 + Response
     + Schema
@@ -687,10 +635,9 @@ describe('detectTransactionExamples()', () => {
 
 + Request (application/json)
 + Response
-    + Schema\
+    + Schema
 `,
       exampleNumbersPerTransaction: [1, 2, 2, 3]
-    }
-    );
+    });
   });
 });

@@ -1,17 +1,11 @@
-/* eslint-disable
-    global-require,
-    no-shadow,
-    prefer-const,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
 const sinon = require('sinon');
 
-const fixtures = require('../fixtures');
-const { assert, compileFixture } = require('../utils');
-const createCompilationResultSchema = require('../schemas/compilation-result');
 const createAnnotationSchema = require('../schemas/annotation');
+const createCompilationResultSchema = require('../schemas/compilation-result');
+const detectTransactionExampleNumbers = require('../../src/detect-transaction-example-numbers');
+const fixtures = require('../fixtures');
 
+const { assert, compileFixture } = require('../utils');
 
 describe('compile() · Swagger', () => {
   describe('causing a \'not specified in URI Template\' error', () => {
@@ -20,8 +14,8 @@ describe('compile() · Swagger', () => {
     before(done =>
       compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.swagger, (...args) => {
         let err;
-        [err, compilationResult] = Array.from(args);
-        return done(err);
+        [err, compilationResult] = Array.from(args); // eslint-disable-line
+        done(err);
       })
     );
 
@@ -31,7 +25,8 @@ describe('compile() · Swagger', () => {
         transactions: 0
       }))
     );
-    return it('produces error about parameter not being in the URI Template', () =>
+
+    it('produces error about parameter not being in the URI Template', () =>
       assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
         type: 'error',
         component: 'apiDescriptionParser',
@@ -46,8 +41,8 @@ describe('compile() · Swagger', () => {
     before(done =>
       compileFixture(fixtures.produces.swagger, (...args) => {
         let err;
-        [err, compilationResult] = Array.from(args);
-        return done(err);
+        [err, compilationResult] = Array.from(args); // eslint-disable-line
+        done(err);
       })
     );
 
@@ -56,7 +51,8 @@ describe('compile() · Swagger', () => {
         transactions: 2
       }))
     );
-    return [
+
+    [
       { accept: 'application/json', contentType: 'application/json' },
       { accept: 'application/json', contentType: 'text/plain' }
     ].forEach(({ accept, contentType }, i) =>
@@ -66,7 +62,8 @@ describe('compile() · Swagger', () => {
             { name: 'Accept', value: accept }
           ])
         );
-        return it('with expected response headers', () =>
+
+        it('with expected response headers', () =>
           assert.deepEqual(compilationResult.transactions[i].response.headers, [
             { name: 'Content-Type', value: contentType }
           ])
@@ -81,8 +78,8 @@ describe('compile() · Swagger', () => {
     before(done =>
       compileFixture(fixtures.producesCharset.swagger, (...args) => {
         let err;
-        [err, compilationResult] = Array.from(args);
-        return done(err);
+        [err, compilationResult] = Array.from(args); // eslint-disable-line
+        done(err);
       })
     );
 
@@ -91,7 +88,8 @@ describe('compile() · Swagger', () => {
         transactions: 2
       }))
     );
-    return [
+
+    [
       { accept: 'application/json; charset=utf-8', contentType: 'application/json; charset=utf-8' },
       { accept: 'application/json; charset=utf-8', contentType: 'text/plain' }
     ].forEach((mediaTypes, i) =>
@@ -101,7 +99,8 @@ describe('compile() · Swagger', () => {
             { name: 'Accept', value: mediaTypes.accept }
           ])
         );
-        return it('with expected response headers', () =>
+
+        it('with expected response headers', () =>
           assert.deepEqual(compilationResult.transactions[i].response.headers, [
             { name: 'Content-Type', value: mediaTypes.contentType }
           ])
@@ -116,8 +115,8 @@ describe('compile() · Swagger', () => {
     before(done =>
       compileFixture(fixtures.producesNonJSONExample.swagger, (...args) => {
         let err;
-        [err, compilationResult] = Array.from(args);
-        return done(err);
+        [err, compilationResult] = Array.from(args); // eslint-disable-line
+        done(err);
       })
     );
 
@@ -126,7 +125,8 @@ describe('compile() · Swagger', () => {
         transactions: 2
       }))
     );
-    return [
+
+    [
       { accept: 'application/json', contentType: 'application/json' },
       { accept: 'text/plain', contentType: 'text/plain' }
     ].forEach((mediaTypes, i) =>
@@ -136,7 +136,8 @@ describe('compile() · Swagger', () => {
             { name: 'Accept', value: mediaTypes.accept }
           ])
         );
-        return it('with expected response headers', () =>
+
+        it('with expected response headers', () =>
           assert.deepEqual(compilationResult.transactions[i].response.headers, [
             { name: 'Content-Type', value: mediaTypes.contentType }
           ])
@@ -151,8 +152,8 @@ describe('compile() · Swagger', () => {
     before(done =>
       compileFixture(fixtures.consumes.swagger, (...args) => {
         let err;
-        [err, compilationResult] = Array.from(args);
-        return done(err);
+        [err, compilationResult] = Array.from(args); // eslint-disable-line
+        done(err);
       })
     );
 
@@ -161,14 +162,16 @@ describe('compile() · Swagger', () => {
         transactions: 3
       }))
     );
-    return ['application/json', 'application/xml', 'application/json'].forEach((mediaType, i) =>
+
+    ['application/json', 'application/xml', 'application/json'].forEach((mediaType, i) =>
       context(`compiles a transaction for the '${mediaType}' media type`, () => {
         it('with expected request headers', () =>
           assert.deepEqual(compilationResult.transactions[i].request.headers, [
             { name: 'Content-Type', value: mediaType }
           ])
         );
-        return it('with expected response headers', () => assert.deepEqual(compilationResult.transactions[i].response.headers, []));
+
+        it('with expected response headers', () => assert.deepEqual(compilationResult.transactions[i].response.headers, []));
       })
     );
   });
@@ -176,47 +179,48 @@ describe('compile() · Swagger', () => {
   describe('with multiple responses', () => {
     let compilationResult;
     const filename = 'apiDescription.json';
-    const detectTransactionExampleNumbers = sinon.spy(require('../../src/detect-transaction-example-numbers'));
+    const detectTransactionExampleNumbersStub = sinon.spy(detectTransactionExampleNumbers);
     const expectedStatusCodes = [200, 400, 500];
 
     before((done) => {
-      const stubs = { './detect-transaction-example-numbers': detectTransactionExampleNumbers };
-      return compileFixture(fixtures.multipleResponses.swagger, { filename, stubs }, (...args) => {
+      const stubs = { './detect-transaction-example-numbers': detectTransactionExampleNumbersStub };
+      compileFixture(fixtures.multipleResponses.swagger, { filename, stubs }, (...args) => {
         let err;
-        [err, compilationResult] = Array.from(args);
-        return done(err);
+        [err, compilationResult] = Array.from(args); // eslint-disable-line
+        done(err);
       });
     });
 
-    it('does not call the detection of transaction examples', () => assert.isFalse(detectTransactionExampleNumbers.called));
+    it('does not call the detection of transaction examples', () => assert.isFalse(detectTransactionExampleNumbersStub.called));
+
     it(`produces ${expectedStatusCodes.length} transactions`, () =>
       assert.jsonSchema(compilationResult, createCompilationResultSchema({
         transactions: expectedStatusCodes.length
       }))
     );
+
     it('skips non-JSON media types in \'produces\'', () =>
       compilationResult.transactions.forEach((transaction) => {
         const contentType = transaction.response.headers
           .filter(header => header.name.toLowerCase() === 'content-type')
           .map(header => header.value)[0];
-        return assert.equal(contentType, 'application/json');
+        assert.equal(contentType, 'application/json');
       })
     );
-    return Array.from(expectedStatusCodes).map((statusCode, i) =>
-      ((statusCode, i) =>
-        context(`origin of transaction #${i + 1}`, () => {
-          it('uses URI as resource name', () => assert.equal(compilationResult.transactions[i].origin.resourceName, '/honey'));
 
-          it('uses method as action name', () => assert.equal(compilationResult.transactions[i].origin.actionName, 'GET'));
+    Array.from(expectedStatusCodes).map((statusCode, i) =>
+      context(`origin of transaction #${i + 1}`, () => {
+        it('uses URI as resource name', () => assert.equal(compilationResult.transactions[i].origin.resourceName, '/honey'));
 
-          return it('uses status code and response\'s Content-Type as example name', () =>
-            assert.equal(
-              compilationResult.transactions[i].origin.exampleName,
-              `${statusCode} > application/json`
-            )
-          );
-        })
-      )(statusCode, i));
+        it('uses method as action name', () => assert.equal(compilationResult.transactions[i].origin.actionName, 'GET'));
+
+        it('uses status code and response\'s Content-Type as example name', () =>
+          assert.equal(
+            compilationResult.transactions[i].origin.exampleName,
+            `${statusCode} > application/json`
+          )
+        );
+      }));
   });
 
   describe('with \'securityDefinitions\' and multiple responses', () => {
@@ -225,12 +229,12 @@ describe('compile() · Swagger', () => {
     before(done =>
       compileFixture(fixtures.securityDefinitionsMultipleResponses.swagger, (...args) => {
         let err;
-        [err, compilationResult] = Array.from(args);
-        return done(err);
+        [err, compilationResult] = Array.from(args); // eslint-disable-line
+        done(err);
       })
     );
 
-    return it('produces two transactions', () =>
+    it('produces two transactions', () =>
       assert.jsonSchema(compilationResult, createCompilationResultSchema({
         transactions: 2
       }))
@@ -243,26 +247,26 @@ describe('compile() · Swagger', () => {
     before(done =>
       compileFixture(fixtures.securityDefinitionsTransitions.swagger, (...args) => {
         let err;
-        [err, compilationResult] = Array.from(args);
-        return done(err);
+        [err, compilationResult] = Array.from(args); // eslint-disable-line
+        done(err);
       })
     );
 
-    return it('produces one transaction', () =>
+    it('produces one transaction', () =>
       assert.jsonSchema(compilationResult, createCompilationResultSchema({
         transactions: 1
       }))
     );
   });
 
-  return describe('with default response (without explicit status code)', () => {
+  describe('with default response (without explicit status code)', () => {
     let compilationResult;
 
     before(done =>
       compileFixture(fixtures.defaultResponse.swagger, (...args) => {
         let err;
-        [err, compilationResult] = Array.from(args);
-        return done(err);
+        [err, compilationResult] = Array.from(args); // eslint-disable-line
+        done(err);
       })
     );
 
@@ -272,6 +276,7 @@ describe('compile() · Swagger', () => {
         transactions: 2
       }))
     );
+
     it('produces warnings about the default response being unsupported', () =>
       assert.jsonSchema(compilationResult.annotations, {
         type: 'array',
@@ -280,10 +285,10 @@ describe('compile() · Swagger', () => {
           component: 'apiDescriptionParser',
           message: 'Default response is not yet supported'
         })
-      }
-      )
+      })
     );
+
     it('assumes the solitary default response to be HTTP 200', () => assert.equal(compilationResult.transactions[0].response.status, '200'));
-    return it('ignores non-solitary default response, propagates only HTTP 204', () => assert.equal(compilationResult.transactions[1].response.status, '204'));
+    it('ignores non-solitary default response, propagates only HTTP 204', () => assert.equal(compilationResult.transactions[1].response.status, '204'));
   });
 });

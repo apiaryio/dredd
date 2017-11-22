@@ -1,28 +1,22 @@
-/* eslint-disable
-    func-names,
-    no-param-reassign,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
 const createOriginSchema = require('./origin');
 const createPathOriginSchema = require('./path-origin');
 const createAnnotationSchema = require('./annotation');
 
+function addMinMax(schema, n) {
+  const modifiedSchema = Object.assign({}, schema);
 
-const addMinMax = function (schema, n) {
   if (n.length === 1) { // [min]
-    schema.minItems = n[0];
+    modifiedSchema.minItems = n[0];
   } else if (n.length === 2) { // [min, max]
-    [schema.minItems, schema.maxItems] = Array.from(n);
+    [modifiedSchema.minItems, modifiedSchema.maxItems] = Array.from(n);
   } else { // exact number
-    schema.minItems = n;
-    schema.maxItems = n;
+    modifiedSchema.minItems = n;
+    modifiedSchema.maxItems = n;
   }
-  return schema;
-};
+  return modifiedSchema;
+}
 
-
-module.exports = function (options = {}) {
+module.exports = function createCompilationResultSchema(options = {}) {
   // Either filename string or undefined (= doesn't matter)
   const { filename } = options;
 
@@ -82,14 +76,12 @@ module.exports = function (options = {}) {
   const transactionsSchema = addMinMax({
     type: 'array',
     items: transactionSchema
-  }
-    , transactions);
+  }, transactions);
 
   const annotationsSchema = addMinMax({
     type: 'array',
     items: createAnnotationSchema({ filename })
-  }
-    , annotations);
+  }, annotations);
 
   return {
     type: 'object',

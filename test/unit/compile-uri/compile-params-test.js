@@ -1,12 +1,6 @@
-/* eslint-disable
-    new-cap,
-    no-new-require,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
 const { assert } = require('chai');
 
-const fury = new require('fury');
+const fury = require('fury');
 
 const compileParams = require('../../../src/compile-uri/compile-params');
 
@@ -17,7 +11,7 @@ describe('compileParams', () => {
 
     const parameters = compileParams(hrefVariables);
 
-    return assert.deepEqual(parameters, {
+    assert.deepEqual(parameters, {
       name: {
         default: undefined,
         example: undefined,
@@ -34,7 +28,7 @@ describe('compileParams', () => {
 
     const parameters = compileParams(hrefVariables);
 
-    return assert.deepEqual(parameters, {
+    assert.deepEqual(parameters, {
       name: {
         default: undefined,
         example: 'Doe',
@@ -50,7 +44,7 @@ describe('compileParams', () => {
 
     const parameters = compileParams(hrefVariables);
 
-    return assert.deepEqual(parameters, {
+    assert.deepEqual(parameters, {
       name: {
         default: undefined,
         example: 'Doe',
@@ -67,7 +61,7 @@ describe('compileParams', () => {
 
     const parameters = compileParams(hrefVariables);
 
-    return assert.deepEqual(parameters, {
+    assert.deepEqual(parameters, {
       name: {
         default: 'Unknown',
         example: undefined,
@@ -83,7 +77,7 @@ describe('compileParams', () => {
 
     const parameters = compileParams(hrefVariables);
 
-    return assert.deepEqual(parameters, {
+    assert.deepEqual(parameters, {
       names: {
         default: undefined,
         example: [],
@@ -99,7 +93,7 @@ describe('compileParams', () => {
 
     const parameters = compileParams(hrefVariables);
 
-    return assert.deepEqual(parameters, {
+    assert.deepEqual(parameters, {
       names: {
         default: undefined,
         example: ['One', 'Two'],
@@ -116,7 +110,7 @@ describe('compileParams', () => {
 
     const parameters = compileParams(hrefVariables);
 
-    return assert.deepEqual(parameters, {
+    assert.deepEqual(parameters, {
       names: {
         default: ['Unknown'],
         example: [],
@@ -132,7 +126,7 @@ describe('compileParams', () => {
 
     const parameters = compileParams(hrefVariables);
 
-    return assert.deepEqual(parameters, {
+    assert.deepEqual(parameters, {
       names: {
         default: undefined,
         example: ['One', 'Two'],
@@ -149,7 +143,7 @@ describe('compileParams', () => {
 
     const parameters = compileParams(hrefVariables);
 
-    return assert.deepEqual(parameters, {
+    assert.deepEqual(parameters, {
       names: {
         default: ['Unknown'],
         example: [],
@@ -168,7 +162,7 @@ describe('compileParams', () => {
 
     const parameters = compileParams(hrefVariables);
 
-    return assert.deepEqual(parameters, {
+    assert.deepEqual(parameters, {
       order: {
         default: undefined,
         example: 'ascending',
@@ -187,7 +181,7 @@ describe('compileParams', () => {
 
     const parameters = compileParams(hrefVariables);
 
-    return assert.deepEqual(parameters, {
+    assert.deepEqual(parameters, {
       order: {
         default: undefined,
         example: 'decending',
@@ -197,7 +191,7 @@ describe('compileParams', () => {
     });
   });
 
-  return it('should compile an enum href variable with default', () => {
+  it('should compile an enum href variable with default', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
     const value = new fury.minim.elements.Element();
     value.element = 'enum';
@@ -207,7 +201,7 @@ describe('compileParams', () => {
 
     const parameters = compileParams(hrefVariables);
 
-    return assert.deepEqual(parameters, {
+    assert.deepEqual(parameters, {
       order: {
         default: 'decending',
         example: 'ascending',

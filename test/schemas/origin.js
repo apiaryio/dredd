@@ -1,9 +1,4 @@
-/* eslint-disable
-    func-names,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-module.exports = function (options = {}) {
+module.exports = function createOriginSchema(options = {}) {
   let filenameSchema;
   if (options.filename) {
     filenameSchema = { type: 'string', enum: [options.filename] };

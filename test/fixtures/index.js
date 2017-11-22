@@ -1,65 +1,45 @@
-/* eslint-disable
-    consistent-return,
-    func-names,
-    max-len,
-    no-restricted-syntax,
-    no-shadow,
-    one-var,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-
 const fs = require('fs');
 const path = require('path');
+
 const zoo = require('swagger-zoo');
 
-
-const fromSwaggerZoo = function (name) {
-  for (const feature of zoo.features()) {
-    if (feature.name === name) { return feature.swagger; }
-  }
-};
-
+function fromSwaggerZoo(name) {
+  return zoo.features().reduce((result, feature) => {
+    if (feature.name === name) return Object.assign({}, { value: feature.swagger });
+    return result;
+  }, {}).value; // Actual result (feature.swagger)
+}
 
 const fromFile = filename => fs.readFileSync(path.join(__dirname, filename)).toString();
-
 
 const FORMAT_NAMES = {
   apiBlueprint: 'API Blueprint',
   swagger: 'Swagger'
 };
 
-
 // Fixture factory. Makes sure the fixtures are available both as an iterable
 // array as well as name/source mapping.
-const fixture = function (apiDescriptions) {
+function fixture(apiDescriptions = {}) {
   // The fixture is an array
-  let name,
-    source;
-  const fix = ((() => {
-    const result = [];
-
-    for (name of Object.keys(apiDescriptions || {})) {
-      source = apiDescriptions[name];
-      result.push({ format: FORMAT_NAMES[name], source });
-    }
-
-    return result;
-  })());
+  const fix = Object.keys(apiDescriptions).map(apiDescription => ({
+    format: FORMAT_NAMES[apiDescription],
+    source: apiDescriptions[apiDescription]
+  }));
 
   // At the same time, it is an object so we can access specific format as
   // an object property
-  for (name of Object.keys(apiDescriptions || {})) { source = apiDescriptions[name]; fix[name] = source; }
+  Object.keys(apiDescriptions).forEach((apiDescription) => {
+    fix[apiDescription] = apiDescriptions[apiDescription];
+  });
 
   // And this is handy helper for tests
-  fix.forEachDescribe = function (fn) {
+  fix.forEachDescribe = function forEachDescribe(fn) {
     return this.forEach(({ format, source }) =>
       describe(format, () => fn({ format, source })));
   };
 
   return fix;
-};
-
+}
 
 // Collection of API description fixtures. To iterate over all available formats
 // of specific fixture (e.g. `parserError`), use:
@@ -212,6 +192,5 @@ const fixtures = {
     swagger: fromFile('./swagger/default-response.yml')
   })
 };
-
 
 module.exports = fixtures;

@@ -1,20 +1,11 @@
-/* eslint-disable
-    func-names,
-    no-multi-str,
-    no-unused-vars,
-    prefer-const,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const sinon = require('sinon');
 const proxyquire = require('proxyquire').noPreserveCache();
 
-const fixtures = require('../fixtures');
-const { assert } = require('../utils');
 const createCompilationResultSchema = require('../schemas/compilation-result');
 const createAnnotationSchema = require('../schemas/annotation');
 const dreddTransactions = require('../../src/index');
+const fixtures = require('../fixtures');
 
+const { assert } = require('../utils');
 
 describe('Dredd Transactions', () => {
   describe('When compilation throws an exception', () => {
@@ -24,27 +15,27 @@ describe('Dredd Transactions', () => {
 
     beforeEach((done) => {
       const dt = proxyquire('../../src/index',
-        { './compile': function (...args) { throw error; } }
+        { './compile': () => { throw error; } }
       );
-      return dt.compile('... dummy API description document ...', null, (...args) => {
+      dt.compile('... dummy API description document ...', null, (...args) => {
         [err, compilationResult] = Array.from(args);
-        return done();
+        done();
       });
     });
 
     it('passes the error to callback', () => assert.equal(err, error));
-    return it('passes no compilation result to callback', () => assert.isUndefined(compilationResult));
+    it('passes no compilation result to callback', () => assert.isUndefined(compilationResult));
   });
 
   describe('When given empty API description document', () => {
     let compilationResult;
 
-    return fixtures.empty.forEachDescribe(({ source }) => {
+    fixtures.empty.forEachDescribe(({ source }) => {
       beforeEach(done =>
         dreddTransactions.compile(source, null, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -54,7 +45,8 @@ describe('Dredd Transactions', () => {
           transactions: 0
         }))
       );
-      return it('produces warning about falling back to API Blueprint', () =>
+
+      it('produces warning about falling back to API Blueprint', () =>
         assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
           type: 'warning',
           component: 'apiDescriptionParser',
@@ -66,15 +58,13 @@ describe('Dredd Transactions', () => {
 
   describe('When given unknown API description format', () => {
     let compilationResult;
-    const source = '\
-... unknown API description format ...\
-';
+    const source = '... unknown API description format ...';
 
     beforeEach(done =>
       dreddTransactions.compile(source, null, (...args) => {
         let err;
-        [err, compilationResult] = Array.from(args);
-        return done(err);
+        [err, compilationResult] = Array.from(args); // eslint-disable-line
+        done(err);
       })
     );
 
@@ -84,6 +74,7 @@ describe('Dredd Transactions', () => {
         transactions: 0
       }))
     );
+
     it('produces warning about falling back to API Blueprint', () =>
       assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
         type: 'warning',
@@ -91,7 +82,8 @@ describe('Dredd Transactions', () => {
         message: 'to API Blueprint'
       }))
     );
-    return it('produces a warning about the API Blueprint not being valid', () =>
+
+    it('produces a warning about the API Blueprint not being valid', () =>
       assert.jsonSchema(compilationResult.annotations[1], createAnnotationSchema({
         type: 'warning',
         component: 'apiDescriptionParser',
@@ -107,8 +99,8 @@ describe('Dredd Transactions', () => {
     beforeEach(done =>
       dreddTransactions.compile(source, null, (...args) => {
         let err;
-        [err, compilationResult] = Array.from(args);
-        return done(err);
+        [err, compilationResult] = Array.from(args); // eslint-disable-line
+        done(err);
       })
     );
 
@@ -117,10 +109,12 @@ describe('Dredd Transactions', () => {
         annotations: 2
       }))
     );
+
     it('produces no errors', () => {
       const errors = compilationResult.annotations.filter(annotation => annotation.type === 'error');
-      return assert.deepEqual(errors, []);
+      assert.deepEqual(errors, []);
     });
+
     it('produces a warning about falling back to API Blueprint', () =>
       assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
         type: 'warning',
@@ -128,7 +122,8 @@ describe('Dredd Transactions', () => {
         message: 'to API Blueprint'
       }))
     );
-    return it('produces a warning about missing HTTP status code', () =>
+
+    it('produces a warning about missing HTTP status code', () =>
       // "+ Response XXX" would be a match in the API Blueprint detection,
       // so the fixture omits the HTTP status code to prevent that
       assert.jsonSchema(compilationResult.annotations[1], createAnnotationSchema({
@@ -142,12 +137,12 @@ describe('Dredd Transactions', () => {
   describe('When given API description with errors', () => {
     let compilationResult;
 
-    return fixtures.parserError.forEachDescribe(({ source }) => {
+    fixtures.parserError.forEachDescribe(({ source }) => {
       beforeEach(done =>
         dreddTransactions.compile(source, null, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -157,12 +152,12 @@ describe('Dredd Transactions', () => {
           transactions: 0
         }))
       );
-      return it('produces errors', () =>
+
+      it('produces errors', () =>
         assert.jsonSchema(compilationResult.annotations, {
           type: 'array',
           items: createAnnotationSchema({ type: 'error' })
-        }
-        )
+        })
       );
     });
   });
@@ -170,12 +165,12 @@ describe('Dredd Transactions', () => {
   describe('When given API description with warnings', () => {
     let compilationResult;
 
-    return fixtures.parserWarning.forEachDescribe(({ source }) => {
+    fixtures.parserWarning.forEachDescribe(({ source }) => {
       beforeEach(done =>
         dreddTransactions.compile(source, null, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
@@ -184,12 +179,12 @@ describe('Dredd Transactions', () => {
           annotations: [1]
         }))
       );
-      return it('produces warnings', () =>
+
+      it('produces warnings', () =>
         assert.jsonSchema(compilationResult.annotations, {
           type: 'array',
           items: createAnnotationSchema({ type: 'warning' })
-        }
-        )
+        })
       );
     });
   });
@@ -197,16 +192,16 @@ describe('Dredd Transactions', () => {
   describe('When given valid API description', () => {
     let compilationResult;
 
-    return fixtures.ordinary.forEachDescribe(({ source }) => {
+    fixtures.ordinary.forEachDescribe(({ source }) => {
       beforeEach(done =>
         dreddTransactions.compile(source, null, (...args) => {
           let err;
-          [err, compilationResult] = Array.from(args);
-          return done(err);
+          [err, compilationResult] = Array.from(args); // eslint-disable-line
+          done(err);
         })
       );
 
-      return it('produces no annotations and some transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema()));
+      it('produces no annotations and some transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema()));
     });
   });
 
@@ -217,15 +212,12 @@ describe('Dredd Transactions', () => {
 
     beforeEach((done) => {
       const dt = proxyquire('../../src/index', {
-        './parse': function (input, callback) {
-          return callback(new Error(message));
-        }
-      }
-      );
-      return dt.compile(source, null, (...args) => {
+        './parse': (input, callback) => callback(new Error(message))
+      });
+      dt.compile(source, null, (...args) => {
         let err;
-        [err, compilationResult] = Array.from(args);
-        return done(err);
+        [err, compilationResult] = Array.from(args); // eslint-disable-line
+        done(err);
       });
     });
 
@@ -235,7 +227,8 @@ describe('Dredd Transactions', () => {
         transactions: 0
       }))
     );
-    return it('turns the parser error into a valid annotation', () =>
+
+    it('turns the parser error into a valid annotation', () =>
       assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
         type: 'error',
         message
@@ -250,15 +243,12 @@ describe('Dredd Transactions', () => {
 
     beforeEach((done) => {
       const dt = proxyquire('../../src/index', {
-        './parse': function (input, callback) {
-          return callback(new Error(message), { dummy: true });
-        }
-      }
-      );
-      return dt.compile(source, null, (...args) => {
+        './parse': (input, callback) => callback(new Error(message), { dummy: true })
+      });
+      dt.compile(source, null, (...args) => {
         let err;
-        [err, compilationResult] = Array.from(args);
-        return done(err);
+        [err, compilationResult] = Array.from(args); // eslint-disable-line
+        done(err);
       });
     });
 
@@ -268,7 +258,8 @@ describe('Dredd Transactions', () => {
         transactions: 0
       }))
     );
-    return it('turns the parser error into a valid annotation', () =>
+
+    it('turns the parser error into a valid annotation', () =>
       assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
         type: 'error',
         message
@@ -276,21 +267,18 @@ describe('Dredd Transactions', () => {
     );
   });
 
-  return describe('When parser unexpectedly provides malformed API Elements only', () => {
+  describe('When parser unexpectedly provides malformed API Elements only', () => {
     let compilationResult;
     const source = '... dummy API description document ...';
 
     beforeEach((done) => {
       const dt = proxyquire('../../src/index', {
-        './parse': function (input, callback) {
-          return callback(null, { dummy: true });
-        }
-      }
-      );
-      return dt.compile(source, null, (...args) => {
+        './parse': (input, callback) => callback(null, { dummy: true })
+      });
+      dt.compile(source, null, (...args) => {
         let err;
-        [err, compilationResult] = Array.from(args);
-        return done(err);
+        [err, compilationResult] = Array.from(args); // eslint-disable-line
+        done(err);
       });
     });
 
@@ -300,7 +288,8 @@ describe('Dredd Transactions', () => {
         transactions: 0
       }))
     );
-    return it('produces an error about parser failure', () =>
+
+    it('produces an error about parser failure', () =>
       assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
         type: 'error',
         message: 'parser was unable to provide a valid parse result'

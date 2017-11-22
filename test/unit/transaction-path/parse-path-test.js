@@ -1,6 +1,5 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 const { assert } = require('chai');
+
 const parsePath = require('../../../src/transaction-path/parse-path');
 const { ESCAPE_CHAR, DELIMITER } = require('../../../src/transaction-path/constants');
 
@@ -10,19 +9,19 @@ describe('parsePath', () => {
   it('should return an array', () => assert.isArray(parsePath(`${DELIMITER}${DELIMITER}${DELIMITER}${DELIMITER}`)));
 
   it('returned array should have 5 members', () =>
-    assert.equal(parsePath(`${DELIMITER}${DELIMITER}${DELIMITER}${DELIMITER}`).length,
-      5)
+    assert.equal(parsePath(`${DELIMITER}${DELIMITER}${DELIMITER}${DELIMITER}`).length, 5)
   );
 
   it('each member of returned array should be a string', () =>
     Array.from(parsePath(`${DELIMITER}${DELIMITER}${DELIMITER}${DELIMITER}`)).map((item, index) =>
-      assert.isString(item, `on index ${index}`))
+      assert.isString(item, `on index ${index}`)
+    )
   );
 
   describe('when path contains more than 4 unescaped delimiters 4', () =>
     it('should throw', () => {
       const fn = () => parsePath(`${DELIMITER}${DELIMITER}${DELIMITER}${DELIMITER}${DELIMITER}`);
-      return assert.throws(fn);
+      assert.throws(fn);
     })
   );
 
@@ -41,23 +40,22 @@ describe('parsePath', () => {
 
       const parsed = parsePath(path);
 
-      return Array.from(parsed).map((part, index) =>
-        assert.equal(part, ':', `on index ${index}`));
+      Array.from(parsed).map((part, index) =>
+        assert.equal(part, ':', `on index ${index}`)
+      );
     })
   );
 
-  return describe('with a complex example', () =>
-
+  describe('with a complex example', () =>
     it('should have proper parsed parts', () => {
       const path = 'a:b\\b:c\\:C:ddd\\::eeee\\:';
-
       const parsed = parsePath(path);
 
       assert.propertyVal(parsed, 0, 'a');
       assert.propertyVal(parsed, 1, 'b\\b');
       assert.propertyVal(parsed, 2, 'c:C');
       assert.propertyVal(parsed, 3, 'ddd:');
-      return assert.propertyVal(parsed, 4, 'eeee:');
+      assert.propertyVal(parsed, 4, 'eeee:');
     })
   );
 });

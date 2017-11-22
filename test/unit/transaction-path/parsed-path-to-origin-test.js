@@ -1,20 +1,15 @@
-/* eslint-disable
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
 const { assert } = require('chai');
 
 const parsedPathToOrigin = require('../../../src/transaction-path/parsed-path-to-origin');
 const parsePath = require('../../../src/transaction-path/parse-path');
+
 const { ESCAPE_CHAR, DELIMITER } = require('../../../src/transaction-path/constants');
 
 describe('parsedPathToOrigin', () => {
   it('is a function', () => assert.isFunction(parsedPathToOrigin));
 
-  return describe('path compilation', () => {
+  describe('path compilation', () => {
     let transaction = null;
-    const result = null;
 
     describe('Full notation with multiple request-response pairs', () =>
       it('result should match the source origin', () => {
@@ -30,7 +25,7 @@ describe('parsedPathToOrigin', () => {
 
         const origin = parsedPathToOrigin(parsePath('Some API Name:Some Group Name:Some Resource Name:Some Action Name:Example 2'));
 
-        return assert.deepEqual(transaction.origin, origin);
+        assert.deepEqual(transaction.origin, origin);
       })
     );
 
@@ -48,7 +43,7 @@ describe('parsedPathToOrigin', () => {
 
         const origin = parsedPathToOrigin(parsePath('Some API Name:Some Group Name:Some Resource Name:Some Action Name:Example 2'));
 
-        return assert.deepEqual(transaction.origin, origin);
+        assert.deepEqual(transaction.origin, origin);
       })
     );
 
@@ -66,7 +61,7 @@ describe('parsedPathToOrigin', () => {
 
         const origin = parsedPathToOrigin(parsePath('Some API Name::Some Resource Name:Some Action Name:Example 1'));
 
-        return assert.deepEqual(transaction.origin, origin);
+        assert.deepEqual(transaction.origin, origin);
       })
     );
 
@@ -84,7 +79,7 @@ describe('parsedPathToOrigin', () => {
 
         const origin = parsedPathToOrigin(parsePath('::Some Resource Name:Some Action Name:Example 1'));
 
-        return assert.deepEqual(transaction.origin, origin);
+        assert.deepEqual(transaction.origin, origin);
       })
     );
 
@@ -100,10 +95,9 @@ describe('parsedPathToOrigin', () => {
           }
         };
 
-
         const origin = parsedPathToOrigin(parsePath('::Some Resource Name:Some Action Name\\: Colon:Example 1'));
 
-        return assert.deepEqual(transaction.origin, origin);
+        assert.deepEqual(transaction.origin, origin);
       })
     );
 
@@ -121,7 +115,7 @@ describe('parsedPathToOrigin', () => {
 
         const origin = parsedPathToOrigin(parsePath('::Some Resource Name:Some Action Name\\ Backslash:Example 1'));
 
-        return assert.deepEqual(transaction.origin, origin);
+        assert.deepEqual(transaction.origin, origin);
       })
     );
 
@@ -140,11 +134,11 @@ describe('parsedPathToOrigin', () => {
 
         const origin = parsedPathToOrigin(parsePath('::Some Resource Name:Some Action Name\\\\: Backslash with Delimiter:Example 1'));
 
-        return assert.deepEqual(transaction.origin, origin);
+        assert.deepEqual(transaction.origin, origin);
       })
     );
 
-    return describe('Simplified notation', () =>
+    describe('Simplified notation', () =>
       it('result should match the source origin', () => {
         transaction = {
           origin: {
@@ -158,7 +152,7 @@ describe('parsedPathToOrigin', () => {
 
         const origin = parsedPathToOrigin(parsePath('::/message:GET:Example 1'));
 
-        return assert.deepEqual(transaction.origin, origin);
+        assert.deepEqual(transaction.origin, origin);
       })
     );
   });

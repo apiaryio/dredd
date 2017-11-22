@@ -1,17 +1,10 @@
-/* eslint-disable
-    func-names,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
 const createLocationSchema = require('./location');
 const createOriginSchema = require('./origin');
-
 
 const TYPES = ['error', 'warning'];
 const COMPONENTS = ['apiDescriptionParser', 'parametersValidation', 'uriTemplateExpansion'];
 
-
-module.exports = function (options = {}) {
+module.exports = function createAnnotationSchema(options = {}) {
   // Either filename string or undefined (= doesn't matter)
   const { filename } = options;
 

@@ -1,9 +1,3 @@
-/* eslint-disable
-    no-return-assign,
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
 const { assert } = require('chai');
 
 const getTransactionPath = require('../../../src/transaction-path');
@@ -12,8 +6,7 @@ const { ESCAPE_CHAR, DELIMITER } = require('../../../src/transaction-path/consta
 describe('getTransactionPath', () => {
   it('is a function', () => assert.isFunction(getTransactionPath));
 
-  return describe('path compilation', () => {
-    const transaction = null;
+  describe('path compilation', () => {
     let result = null;
 
     describe('Full notation with multiple request-response pairs', () => {
@@ -26,10 +19,10 @@ describe('getTransactionPath', () => {
           exampleName: 'Example 2'
         };
 
-        return result = getTransactionPath(pathOrigin);
+        result = getTransactionPath(pathOrigin);
       });
 
-      return it('should return an appropriate path', () => assert.equal(result, 'Some API Name:Some Group Name:Some Resource Name:Some Action Name:Example 2'));
+      it('should return an appropriate path', () => assert.equal(result, 'Some API Name:Some Group Name:Some Resource Name:Some Action Name:Example 2'));
     });
 
     describe('Full notation with multiple request-response pairs and a colon in some name', () => {
@@ -42,10 +35,10 @@ describe('getTransactionPath', () => {
           exampleName: 'Example 2'
         };
 
-        return result = getTransactionPath(pathOrigin);
+        result = getTransactionPath(pathOrigin);
       });
 
-      return it('should return an appropriate path', () => assert.equal(result, 'Some API Name:Some Group Name:Some Resource Name:Some Action Name:Example 2'));
+      it('should return an appropriate path', () => assert.equal(result, 'Some API Name:Some Group Name:Some Resource Name:Some Action Name:Example 2'));
     });
 
 
@@ -59,10 +52,10 @@ describe('getTransactionPath', () => {
           exampleName: 'Example 1'
         };
 
-        return result = getTransactionPath(pathOrigin);
+        result = getTransactionPath(pathOrigin);
       });
 
-      return it('should return an appropriate path', () => assert.equal(result, 'Some API Name::Some Resource Name:Some Action Name:Example 1'));
+      it('should return an appropriate path', () => assert.equal(result, 'Some API Name::Some Resource Name:Some Action Name:Example 1'));
     });
 
     describe('Full notation without group and API name', () => {
@@ -75,10 +68,10 @@ describe('getTransactionPath', () => {
           exampleName: 'Example 1'
         };
 
-        return result = getTransactionPath(pathOrigin);
+        result = getTransactionPath(pathOrigin);
       });
 
-      return it('should return an appropriate path', () => assert.equal(result, '::Some Resource Name:Some Action Name:Example 1'));
+      it('should return an appropriate path', () => assert.equal(result, '::Some Resource Name:Some Action Name:Example 1'));
     });
 
     describe('Full notation without group and API name with used delimiter character', () => {
@@ -91,10 +84,10 @@ describe('getTransactionPath', () => {
           exampleName: 'Example 1'
         };
 
-        return result = getTransactionPath(pathOrigin);
+        result = getTransactionPath(pathOrigin);
       });
 
-      return it('should return an appropriate path', () => assert.equal(result, '::Some Resource Name:Some Action Name\\: Colon:Example 1'));
+      it('should return an appropriate path', () => assert.equal(result, '::Some Resource Name:Some Action Name\\: Colon:Example 1'));
     });
 
     describe('Full notation without group and API name with used escape character without delimiter character', () => {
@@ -107,10 +100,10 @@ describe('getTransactionPath', () => {
           exampleName: 'Example 1'
         };
 
-        return result = getTransactionPath(pathOrigin);
+        result = getTransactionPath(pathOrigin);
       });
 
-      return it('should return an appropriate path', () => assert.equal(result, '::Some Resource Name:Some Action Name\\ Backslash:Example 1'));
+      it('should return an appropriate path', () => assert.equal(result, '::Some Resource Name:Some Action Name\\ Backslash:Example 1'));
     });
 
     describe('Full notation without group and API name with used escape character with delimiter character', () => {
@@ -123,13 +116,13 @@ describe('getTransactionPath', () => {
           exampleName: 'Example 1'
         };
 
-        return result = getTransactionPath(pathOrigin);
+        result = getTransactionPath(pathOrigin);
       });
 
-      return it('should return an appropriate path', () => assert.equal(result, '::Some Resource Name:Some Action Name\\\\: Backslash with Delimiter:Example 1'));
+      it('should return an appropriate path', () => assert.equal(result, '::Some Resource Name:Some Action Name\\\\: Backslash with Delimiter:Example 1'));
     });
 
-    return describe('Simplified notation', () => {
+    describe('Simplified notation', () => {
       before(() => {
         const pathOrigin = {
           apiName: '',
@@ -139,10 +132,10 @@ describe('getTransactionPath', () => {
           exampleName: 'Example 1'
         };
 
-        return result = getTransactionPath(pathOrigin);
+        result = getTransactionPath(pathOrigin);
       });
 
-      return it('should return an appropriate path', () => assert.equal(result, '::/message:GET:Example 1'));
+      it('should return an appropriate path', () => assert.equal(result, '::/message:GET:Example 1'));
     });
   });
 });
