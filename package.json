@@ -7,14 +7,15 @@
     "node": ">= 4"
   },
   "scripts": {
-    "build": "babel src --out-dir ./dist/src",
+    "build:source": "babel src --out-dir ./dist/src",
+    "build:test": "babel test --out-dir ./dist/test --copy-files",
     "clean": "rimraf dist",
-    "copy:test": "node scripts/copy.js",
     "coveralls": "scripts/coveralls.sh",
+    "make": "npm run build:source && npm run build:test",
     "lint": "scripts/commitlint.sh && eslint src",
-    "prepublish": "npm run build",
+    "prepublish": "npm run build:source",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
-    "test": "npm run clean && npm run copy:test && npm run build && mocha \"./dist/test/**/*-test.coffee\" --opts \"./mocha.opts\"",
+    "test": "npm run clean && npm run make && mocha dist/test --opts ./mocha.opts",
     "test:coverage": "scripts/coverage.sh"
   },
   "repository": {
@@ -22,6 +23,10 @@
     "url": "https://github.com/apiaryio/dredd-transactions"
   },
   "babel": {
+    "ignore": [
+      "test/**/*.apib",
+      "test/**/*.yml"
+    ],
     "presets": [
       [
         "env",
@@ -53,7 +58,6 @@
     "coffee-script": "^1.12.6",
     "coffeelint": "^1.15.7",
     "coveralls": "^2.13.1",
-    "cpy": "^6.0.0",
     "drafter": "^1.0.0",
     "eslint": "^4.4.1",
     "eslint-config-airbnb": "^15.1.0",

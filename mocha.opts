@@ -1,4 +1,2 @@
---require=coffee-script/register
---reporter=test/reporter.js
---watch-extensions=coffee
+--watch-extensions=js
 --recursive
