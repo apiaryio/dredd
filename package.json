@@ -11,11 +11,11 @@
     "build:test": "babel test --out-dir ./dist/test --copy-files",
     "clean": "rimraf dist",
     "coveralls": "scripts/coveralls.sh",
-    "make": "npm run build:source && npm run build:test",
+    "build": "npm run build:source && npm run build:test",
     "lint": "scripts/commitlint.sh && eslint src",
     "prepublish": "npm run build:source",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
-    "test": "npm run clean && npm run make && mocha dist/test --opts ./mocha.opts",
+    "test": "npm run clean && npm run build && mocha dist/test",
     "test:coverage": "scripts/coverage.sh"
   },
   "repository": {
@@ -25,7 +25,8 @@
   "babel": {
     "ignore": [
       "test/**/*.apib",
-      "test/**/*.yml"
+      "test/**/*.yml",
+      "test/mocha.opts"
     ],
     "presets": [
       [

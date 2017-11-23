@@ -15,11 +15,11 @@ TEST_GLOB="$PROJECT_DIR"/dist/test/**/*-test.js
 # Cleanup & preparation
 rm -rf "$COVERRAGE_DIR"
 rm -rf dist
-npm run make
+npm run build
 
 
 # Testing
 export COVERAGE_FILE
-istanbul cover ./node_modules/.bin/_mocha -- "$TEST_GLOB" --opts=./mocha.opts
+istanbul cover ./node_modules/.bin/_mocha -- "$TEST_GLOB"
 cd ..
 echo "Coverage saved as '$COVERAGE_FILE'"
