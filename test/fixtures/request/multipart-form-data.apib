@@ -4,21 +4,22 @@ FORMAT: 1A
 
 # POST /data
 
-+ Request (multipart/form-data;boundary=---BOUNDARY)
++ Request (multipart/form-data; boundary=CUSTOM-BOUNDARY)
 
     + Body
 
-            ---BOUNDARY
+            --CUSTOM-BOUNDARY
             Content-Disposition: form-data; name="text"
             Content-Type: text/plain
 
             test equals to 42
-            ---BOUNDARY
-            Content-Disposition: form-data; name="json"; filename="filename.json"
+            --CUSTOM-BOUNDARY
+            Content-Disposition: form-data; name="json"
             Content-Type: application/json
 
             {"test": 42}
-            ---BOUNDARY--
+
+            --CUSTOM-BOUNDARY--
 
 + Response 200 (application/json; charset=utf-8)
 

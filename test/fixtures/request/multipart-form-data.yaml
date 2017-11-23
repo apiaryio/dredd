@@ -1,0 +1,28 @@
+swagger: '2.0'
+info:
+  title: "Testing 'multipart/form-data' Request API"
+  version: '1.0'
+consumes:
+  - multipart/form-data; boundary=CUSTOM-BOUNDARY
+produces:
+  - application/json; charset=utf-8
+paths:
+  '/data':
+    post:
+      parameters:
+        - name: text
+          in: formData
+          type: string
+          required: true
+          x-example: "test equals to 42"
+        - name: json
+          in: formData
+          type: string
+          required: true
+          x-example: '{"test": 42}'
+      responses:
+        200:
+          description: 'Test OK'
+          examples:
+            application/json; charset=utf-8:
+              test: 'OK'
