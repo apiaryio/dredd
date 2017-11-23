@@ -505,30 +505,22 @@ Most of the authentication schemes use HTTP header for carrying the authenticati
 
 ## Sending Multipart Requests
 
-API Blueprint format supports `multipart/form-data` media type and so does Dredd. In the example below, Dredd will automatically add `LF` to all lines in request body:
+```apiblueprint
+:[API Blueprint example](../test/fixtures/request/multipart-form-data.apib)
+```
+
+```yaml
+:[Swagger example](../test/fixtures/request/multipart-form-data.yaml)
+```
+
+## Sending Form Data
 
 ```apiblueprint
-# POST /images
+:[API Blueprint example](../test/fixtures/request/application-x-www-form-urlencoded.apib)
+```
 
-+ Request (multipart/form-data;boundary=---BOUNDARY)
-    + Headers
-
-            Authorization: qwertyqwerty
-
-    + Body
-
-            ---BOUNDARY
-            Content-Disposition: form-data; name="json"
-
-
-            {"name": "test"}
-            ---BOUNDARY
-            Content-Disposition: form-data; name="image"; filename="filename.jpg"
-            Content-Type: image/jpeg
-
-            data
-            ---BOUNDARY--
-
+```yaml
+:[Swagger example](../test/fixtures/request/application-x-www-form-urlencoded.yaml)
 ```
 
 ## Multiple Requests and Responses within One API Blueprint Action
