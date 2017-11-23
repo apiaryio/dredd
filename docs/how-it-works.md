@@ -176,9 +176,9 @@ The [Swagger][] format allows to specify multiple responses for a single operati
 By default Dredd tests only responses with `2xx` status codes. Responses with other
 codes are marked as _skipped_ and can be activated in [hooks](hooks.md) - see [Testing non-2xx Responses with Swagger](how-to-guides.md#testing-non-2xx-responses-with-swagger).
 
-[Default responses][default-responses] are ignored by Dredd. Also, as of now,
-only `application/json` media type is supported in [`produces`][produces] and [`consumes`][consumes].
-Other media types are skipped.
+In [`produces`][produces] and [`consumes`][consumes], only JSON media types are supported. Only the first JSON media type in `produces` is effective, others are skipped. Other media types are respected only when provided with [explicit examples][response-examples].
+
+[Default response][default-responses] is ignored by Dredd unless it is the only available response. In that case, the default response is assumed to have HTTP 200 status code.
 
 ## Security
 
