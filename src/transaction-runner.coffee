@@ -635,8 +635,8 @@ class TransactionRunner
         # Warn about empty responses
         if (
           ( # expected is as string, actual is as integer :facepalm:
-            test.expected.statusCode.toString() in ['204', '205'] or
-            test.actual.statusCode.toString() in ['204', '205']
+            test.expected.statusCode?.toString() in ['204', '205'] or
+            test.actual.statusCode?.toString() in ['204', '205']
           ) and (test.expected.body or test.actual.body)
         )
           logger.warn("""\
