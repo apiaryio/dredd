@@ -9,14 +9,14 @@
   "scripts": {
     "build:source": "babel src --out-dir ./dist/src",
     "build:test": "babel test --out-dir ./dist/test --copy-files",
-    "clean": "rimraf dist",
+    "clean": "rimraf coverage dist",
     "coveralls": "scripts/coveralls.sh",
     "build": "npm run build:source && npm run build:test",
     "lint": "scripts/commitlint.sh && eslint src",
     "prepublish": "npm run build:source",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
     "test": "npm run clean && npm run build && mocha dist/test",
-    "test:coverage": "scripts/coverage.sh"
+    "test:coverage": "npm run clean && npm run build && istanbul cover ./node_modules/.bin/_mocha -- dist/test"
   },
   "repository": {
     "type": "git",
