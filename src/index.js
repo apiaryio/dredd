@@ -21,7 +21,7 @@ function compile(source, filename, callback) {
     // as it should be represented by annotation inside 'apiElements'
     // and compilation should be able to deal with it and to propagate it.
     let compilationResult;
-    if (!(parseResult != null ? parseResult.apiElements : undefined)) {
+    if (!(parseResult ? parseResult.apiElements : undefined)) {
       if (err) { return callback(null, createParserErrorCompilationResult(err.message)); }
 
       const message = 'The API description parser was unable to provide a valid parse result';

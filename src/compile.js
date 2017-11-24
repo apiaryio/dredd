@@ -58,7 +58,7 @@ function compileOriginExampleName(mediaType, httpResponseElement, exampleNo) {
       exampleName = `Example ${exampleNo}`;
     }
   } else {
-    const statusCode = (httpResponseElement.statusCode != null ? httpResponseElement.statusCode.toValue() : undefined) || '200';
+    const statusCode = (httpResponseElement.statusCode ? httpResponseElement.statusCode.toValue() : undefined) || '200';
     const headers = compileHeaders(httpResponseElement.headers);
 
     const contentType = headers
@@ -84,7 +84,7 @@ function compileOrigin(mediaType, filename, httpTransactionElement, exampleNo) {
   return {
     filename: filename || '',
     apiName: apiElement.meta.getValue('title') || filename || '',
-    resourceGroupName: (resourceGroupElement != null ? resourceGroupElement.meta.getValue('title') : undefined) || '',
+    resourceGroupName: (resourceGroupElement ? resourceGroupElement.meta.getValue('title') : undefined) || '',
     resourceName: resourceElement.meta.getValue('title') || resourceElement.attributes.getValue('href') || '',
     actionName: transitionElement.meta.getValue('title') || httpRequestElement.attributes.getValue('method') || '',
     exampleName: compileOriginExampleName(mediaType, httpResponseElement, exampleNo)
@@ -110,7 +110,7 @@ function compileRequest(httpRequestElement) {
       method: httpRequestElement.method.toValue(),
       uri,
       headers: compileHeaders(httpRequestElement.headers),
-      body: (httpRequestElement.messageBody != null ? httpRequestElement.messageBody.toValue() : undefined) || ''
+      body: (httpRequestElement.messageBody ? httpRequestElement.messageBody.toValue() : undefined) || ''
     };
   } else {
     request = null;
@@ -144,7 +144,7 @@ function compilePathOrigin(filename, httpTransactionElement, exampleNo) {
   const httpRequestElement = httpTransactionElement.request;
   return {
     apiName: apiElement.meta.getValue('title') || '',
-    resourceGroupName: (resourceGroupElement != null ? resourceGroupElement.meta.getValue('title') : undefined) || '',
+    resourceGroupName: (resourceGroupElement ? resourceGroupElement.meta.getValue('title') : undefined) || '',
     resourceName: resourceElement.meta.getValue('title') || resourceElement.attributes.getValue('href') || '',
     actionName: transitionElement.meta.getValue('title') || httpRequestElement.attributes.getValue('method') || '',
     exampleName: `Example ${exampleNo || 1}`

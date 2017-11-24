@@ -22,7 +22,7 @@ module.exports = function createCompilationResultSchema(options = {}) {
 
   // Either exact number or interval ([1, 4] means 1 min, 4 max)
   const annotations = options.annotations || 0;
-  const transactions = (options.transactions != null) ? options.transactions : [1];
+  const transactions = options.transactions != null ? options.transactions : [1];
 
   const headersSchema = {
     type: 'array',

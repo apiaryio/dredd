@@ -27,7 +27,7 @@ describe('Parsing API description document', () => {
       it('produces API Elements', () => assert.isObject(apiElements));
       it('produces media type', () => assert.match(mediaType, reMediaType));
       it('the parse result is API Elements represented by minim objects', () => assert.instanceOf(apiElements, fury.minim.elements.ParseResult));
-      it('the parse result contains no annotation elements', () => assert.isTrue(apiElements.annotations != null ? apiElements.annotations.isEmpty : undefined));
+      it('the parse result contains no annotation elements', () => assert.isTrue(apiElements.annotations ? apiElements.annotations.isEmpty : undefined));
       it('the parse result contains source map elements', () => {
         const sourceMaps = apiElements
           .recursiveChildren
@@ -54,8 +54,8 @@ describe('Parsing API description document', () => {
       it('produces error', () => assert.instanceOf(error, Error));
       it('produces API Elements', () => assert.isObject(apiElements));
       it('produces media type', () => assert.match(mediaType, reMediaType));
-      it('the parse result contains annotation elements', () => assert.isFalse(apiElements.annotations != null ? apiElements.annotations.isEmpty : undefined));
-      it('the annotations are errors', () => assert.equal(apiElements.errors != null ? apiElements.errors.length : undefined, apiElements.annotations.length));
+      it('the parse result contains annotation elements', () => assert.isFalse(apiElements.annotations ? apiElements.annotations.isEmpty : undefined));
+      it('the annotations are errors', () => assert.equal(apiElements.errors ? apiElements.errors.length : undefined, apiElements.annotations.length));
     })
   );
 
@@ -76,8 +76,8 @@ describe('Parsing API description document', () => {
       it('produces no error', () => assert.isNull(error));
       it('produces API Elements', () => assert.isObject(apiElements));
       it('produces media type', () => assert.match(mediaType, reMediaType));
-      it('the parse result contains annotation elements', () => assert.isFalse(apiElements.annotations != null ? apiElements.annotations.isEmpty : undefined));
-      it('the annotations are warnings', () => assert.equal(apiElements.warnings != null ? apiElements.warnings.length : undefined, apiElements.annotations.length));
+      it('the parse result contains annotation elements', () => assert.isFalse(apiElements.annotations ? apiElements.annotations.isEmpty : undefined));
+      it('the annotations are warnings', () => assert.equal(apiElements.warnings ? apiElements.warnings.length : undefined, apiElements.annotations.length));
     })
   );
 
@@ -116,8 +116,8 @@ describe('Parsing API description document', () => {
     it('produces no error', () => assert.isNull(error));
     it('produces API Elements', () => assert.isObject(apiElements));
     it('produces media type', () => assert.match(mediaType, reMediaType));
-    it('the parse result contains annotation elements', () => assert.isFalse(apiElements.annotations != null ? apiElements.annotations.isEmpty : undefined));
-    it('the annotations are warnings', () => assert.equal(apiElements.warnings != null ? apiElements.warnings.length : undefined, apiElements.annotations.length));
+    it('the parse result contains annotation elements', () => assert.isFalse(apiElements.annotations ? apiElements.annotations.isEmpty : undefined));
+    it('the annotations are warnings', () => assert.equal(apiElements.warnings ? apiElements.warnings.length : undefined, apiElements.annotations.length));
     it('the first warning is about falling back to API Blueprint', () => assert.include(apiElements.warnings.getValue(0), 'to API Blueprint'));
   });
 
@@ -137,8 +137,8 @@ describe('Parsing API description document', () => {
     it('produces no error', () => assert.isNull(error));
     it('produces API Elements', () => assert.isObject(apiElements));
     it('produces media type', () => assert.match(mediaType, reMediaType));
-    it('the parse result contains annotation elements', () => assert.isFalse(apiElements.annotations != null ? apiElements.annotations.isEmpty : undefined));
-    it('the annotations are warnings', () => assert.equal(apiElements.warnings != null ? apiElements.warnings.length : undefined, apiElements.annotations.length));
+    it('the parse result contains annotation elements', () => assert.isFalse(apiElements.annotations ? apiElements.annotations.isEmpty : undefined));
+    it('the annotations are warnings', () => assert.equal(apiElements.warnings ? apiElements.warnings.length : undefined, apiElements.annotations.length));
     it('the first warning is about falling back to API Blueprint', () => assert.include(apiElements.warnings.getValue(0), 'to API Blueprint'));
   });
 });

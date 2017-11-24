@@ -227,7 +227,7 @@ describe('validateParams', () => {
       })
     );
 
-    return describe('and example value is not empty and default value is empty', () =>
+    describe('and example value is not empty and default value is empty', () =>
       it('should not set the error', () => {
         const params = {
           name: {
@@ -246,7 +246,7 @@ describe('validateParams', () => {
     );
   });
 
-  return describe('when parameter is not required', () => {
+  describe('when parameter is not required', () => {
     describe('and example and default value are empty', () =>
       it('should not set descirptive error', () => {
         const params = {
@@ -284,7 +284,7 @@ describe('validateParams', () => {
       })
     );
 
-    return describe('and example value is not empty and default value is empty', () =>
+    describe('and example value is not empty and default value is empty', () =>
       it('should not set the error', () => {
         const params = {
           name: {
@@ -303,4 +303,3 @@ describe('validateParams', () => {
     );
   });
 });
-
