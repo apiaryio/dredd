@@ -9,11 +9,16 @@ clone = require 'clone'
 caseless = require 'caseless'
 {Pitboss} = require 'pitboss-ng'
 
-flattenHeaders = require './flatten-headers'
 addHooks = require './add-hooks'
 sortTransactions = require './sort-transactions'
 packageData = require './../package.json'
 logger = require './logger'
+
+
+headersArrayToObject = (arr) ->
+  obj = {}
+  obj[name] = value for {name, value} in arr
+  return obj
 
 
 # use "lib" folder, because pitboss-ng does not support "coffee-script:register"
@@ -282,13 +287,12 @@ class TransactionRunner
     @parsedUrl ?= @parseServerUrl(configuration.server)
     fullPath = @getFullPath(@parsedUrl.path, request.uri)
 
-    flatHeaders = flattenHeaders(request['headers'])
+    headers = headersArrayToObject(request.headers)
 
     # Add Dredd User-Agent (if no User-Agent is already present)
-    if not flatHeaders['User-Agent']
+    if 'user-agent' not in (name.toLowerCase() for name in Object.keys(headers))
       system = os.type() + ' ' + os.release() + '; ' + os.arch()
-      flatHeaders['User-Agent'] = "Dredd/" + \
-        packageData.version + " (" + system + ")"
+      headers['User-Agent'] = "Dredd/#{packageData.version} (#{system})"
 
     # Parse and add headers from the config to the transaction
     if configuration.options.header.length > 0
@@ -296,12 +300,12 @@ class TransactionRunner
         splitIndex = header.indexOf(':')
         headerKey = header.substring(0, splitIndex)
         headerValue = header.substring(splitIndex + 1)
-        flatHeaders[headerKey] = headerValue
-    request['headers'] = flatHeaders
+        headers[headerKey] = headerValue
+    request.headers = headers
 
     # The data models as used here must conform to Gavel.js
     # as defined in `http-response.coffee`
-    expected = {headers: flattenHeaders(response['headers'])}
+    expected = {headers: headersArrayToObject(response.headers)}
     expected.body = response.body if response.body
     expected.statusCode = response.status if response.status
     expected.bodySchema = response.schema if response.schema
