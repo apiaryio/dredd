@@ -525,7 +525,7 @@ Most of the authentication schemes use HTTP header for carrying the authenticati
 
 ## Multiple Requests and Responses
 
-> **Note:** For details on this topic see also [How Dredd Works With HTTP Transactions](how-it-works.md#how-dredd-works-with-http-transactions).
+> **Note:** For details on this topic see also [How Dredd Works With HTTP Transactions](how-it-works.md#choosing-http-transactions).
 
 ### API Blueprint
 
