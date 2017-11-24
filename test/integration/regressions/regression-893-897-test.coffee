@@ -8,7 +8,7 @@ describe('Regression: Issue #893 and #897', ->
   describe('when the response has no explicit status code', ->
     runtimeInfo = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       app = createServer()
       app.get('/resource', (req, res) ->
         res.json({name: 'Honza', color: 'green'})
@@ -35,7 +35,7 @@ describe('Regression: Issue #893 and #897', ->
   describe('when the response has no explicit schema and it has empty body', ->
     runtimeInfo = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       app = createServer()
       app.get('/resource', (req, res) ->
         res.json({name: 'Honza', color: 'green'})
@@ -65,7 +65,7 @@ describe('Regression: Issue #893 and #897', ->
   describe('when the response has no explicit schema', ->
     runtimeInfo = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       app = createServer()
       app.get('/resource', (req, res) ->
         res.json({name: 'Honza', color: 'green'})

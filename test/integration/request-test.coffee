@@ -9,7 +9,7 @@ describe('Sending \'application/json\' request', ->
   runtimeInfo = undefined
   contentType = 'application/json'
 
-  beforeEach((done) ->
+  before((done) ->
     app = createServer({bodyParser: bodyParser.text({type: contentType})})
     app.post('/data', (req, res) ->
       res.json({test: 'OK'})
@@ -54,7 +54,7 @@ describe('Sending \'application/json\' request', ->
     runtimeInfo = undefined
     contentType = 'multipart/form-data'
 
-    beforeEach((done) ->
+    before((done) ->
       app = createServer({bodyParser: bodyParser.text({type: contentType})})
       app.post('/data', (req, res) ->
         res.json({test: 'OK'})
@@ -113,7 +113,7 @@ describe('Sending \'application/json\' request', ->
     runtimeInfo = undefined
     contentType = 'application/x-www-form-urlencoded'
 
-    beforeEach((done) ->
+    before((done) ->
       app = createServer({bodyParser: bodyParser.text({type: contentType})})
       app.post('/data', (req, res) ->
         res.json({test: 'OK'})
@@ -148,7 +148,7 @@ describe('Sending \'text/plain\' request', ->
   runtimeInfo = undefined
   contentType = 'text/plain'
 
-  beforeEach((done) ->
+  before((done) ->
     path = './test/fixtures/request/text-plain.apib'
 
     app = createServer({bodyParser: bodyParser.text({type: contentType})})

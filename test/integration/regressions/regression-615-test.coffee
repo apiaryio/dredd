@@ -7,7 +7,7 @@ Dredd = require('../../../src/dredd')
 describe('Regression: Issue #615', ->
   runtimeInfo = undefined
 
-  beforeEach((done) ->
+  before((done) ->
     app = createServer()
     app.all('/honey', (req, res) ->
       res.status(200).type('text/plain').send('')

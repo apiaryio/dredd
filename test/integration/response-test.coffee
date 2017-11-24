@@ -15,7 +15,7 @@ Dredd = require('../../src/dredd')
     describe('when the server returns non-empty responses', ->
       runtimeInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         app = createServer()
         app.get('/resource.json', (req, res) ->
           res.json({test: 'OK'})
@@ -38,7 +38,7 @@ Dredd = require('../../src/dredd')
     describe('when the server returns empty responses', ->
       runtimeInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         app = createServer()
         app.get('/resource.json', (req, res) ->
           res.type('json').send()
@@ -72,7 +72,7 @@ Dredd = require('../../src/dredd')
     describe('when the server returns a response not valid according to the schema', ->
       runtimeInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         app = createServer()
         app.get('/resource', (req, res) ->
           res.json({name: 123})
@@ -95,7 +95,7 @@ Dredd = require('../../src/dredd')
     describe('when the server returns a response valid according to the schema', ->
       runtimeInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         app = createServer()
         app.get('/resource', (req, res) ->
           res.json({name: "test"})
@@ -126,7 +126,7 @@ Dredd = require('../../src/dredd')
     describe('when the server returns a non-empty responses', ->
       runtimeInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         app = createServer()
         app.get('/resource.json', (req, res) ->
           res.json({test: 'OK'})
@@ -156,7 +156,7 @@ Dredd = require('../../src/dredd')
     describe('when the server returns an empty responses', ->
       runtimeInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         app = createServer()
         app.get('/resource.json', (req, res) ->
           res.send()
@@ -194,7 +194,7 @@ Dredd = require('../../src/dredd')
     describe('when the server returns non-empty responses', ->
       runtimeInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         app = createServer()
         app.get('/resource.json', (req, res) ->
           res.json({test: 'OK'})
@@ -224,7 +224,7 @@ Dredd = require('../../src/dredd')
     describe('when the server returns empty responses', ->
       runtimeInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         app = createServer()
         app.get('/resource.json', (req, res) ->
           res.send()
@@ -262,7 +262,7 @@ Dredd = require('../../src/dredd')
     describe('when the actual response is non-empty', ->
       runtimeInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         # It's not trivial to create an actual server sending HTTP 204 or 205
         # with non-empty body, because it's against specs. That's why we're
         # returning HTTP 200 here and in the assertions we're making sure
@@ -300,7 +300,7 @@ Dredd = require('../../src/dredd')
     describe('when the actual response is empty', ->
       runtimeInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         # It's not trivial to create an actual server sending HTTP 204 or 205
         # sending a Content-Type header, because it's against specs. That's
         # why we're returning HTTP 200 here and in the assertions we're making

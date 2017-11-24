@@ -8,7 +8,7 @@ describe('Regression: Issue #152', ->
   describe('Modify transaction object inside beforeAll combined with beforeEach helper', ->
     runtimeInfo = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       app = createServer()
       app.get('/machines', (req, res) ->
         res.json([{type: 'bulldozer', name: 'willy'}])
