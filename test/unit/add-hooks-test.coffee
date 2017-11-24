@@ -115,7 +115,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
       runner =
         configuration:
           options:
-            hookfiles: './**/*_hooks.*'
+            hookfiles: './test/**/*_hooks.*'
 
     it 'should return files', (done) ->
       sinon.spy globStub, 'sync'
@@ -129,7 +129,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
       runner =
         configuration:
           options:
-            hookfiles: ['./**/*_hooks.*', '/baz/x.js', '/foo/y.js', '/bar/z.js', '/foo/a.js', '/bar/b.js', '/baz/c.js', '/foo/o.js', '/bar/p.js']
+            hookfiles: ['./test/**/*_hooks.*', '/baz/x.js', '/foo/y.js', '/bar/z.js', '/foo/a.js', '/bar/b.js', '/baz/c.js', '/foo/o.js', '/bar/p.js']
 
       addHooks runner, transactions, (err) ->
         return done err if err
@@ -194,7 +194,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
       runner =
         configuration:
           options:
-            hookfiles: ['foo/bar/hooks', './**/*_hooks.*']
+            hookfiles: ['foo/bar/hooks', './test/**/*_hooks.*']
 
       addHooks runner, transactions, (err) ->
         return done err if err
@@ -218,7 +218,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
         runner =
           configuration:
             options:
-              hookfiles: './**/*_hooks.*'
+              hookfiles: './test/**/*_hooks.*'
         sinon.stub(globStub, 'sync').callsFake (pattern) ->
           ['file1.js', 'file2.coffee']
         sinon.stub(pathStub, 'resolve').callsFake (path, rel) ->
