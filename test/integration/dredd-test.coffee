@@ -548,39 +548,51 @@ describe 'Dredd class Integration', ->
         assert.include stderr, 'Fixed transaction name'
 
   describe('when Swagger document has multiple responses', ->
-    reTransaction = /(\w+): (\w+) \(\d+\) \/honey/g
-    matches = undefined
+    reTransaction = /(\w+): (\w+) \((\d+)\) \/honey/g
+    actual = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       execCommand(
         options:
           path: './test/fixtures/multiple-responses.yaml'
       , (err) ->
         matches = []
         matches.push(groups) while groups = reTransaction.exec(stdout)
+        actual = matches.map((match) ->
+          keyMap = {'0': 'name', '1': 'action', '2': 'method', '3': 'statusCode'}
+          match.reduce((result, element, i) ->
+            Object.assign(result, "#{keyMap[i]}": element)
+          , {})
+        )
         done(err)
       )
     )
 
     it('recognizes all 3 transactions', ->
-      assert.equal(matches.length, 3)
+      assert.equal(actual.length, 3)
     )
-    it('the transaction #1 is skipped', ->
-      assert.equal(matches[0][1], 'skip')
-    )
-    it('the transaction #2 is skipped', ->
-      assert.equal(matches[1][1], 'skip')
-    )
-    it('the transaction #3 is not skipped (status 200)', ->
-      assert.notEqual(matches[2][1], 'skip')
+
+    [
+      {action: 'skip', statusCode: '400'}
+      {action: 'skip', statusCode: '500'}
+      {action: 'fail', statusCode: '200'}
+    ].forEach((expected, i) ->
+      context("the transaction ##{i + 1}", ->
+        it("has status code #{expected.statusCode}", ->
+          assert.equal(expected.statusCode, actual[i].statusCode)
+        )
+        it("is #{if expected.action is 'skip' then '' else 'not '}skipped by default", ->
+          assert.equal(expected.action, actual[i].action)
+        )
+      )
     )
   )
 
   describe('when Swagger document has multiple responses and hooks unskip some of them', ->
-    reTransaction = /(\w+): (\w+) \(\d+\) \/honey/g
-    matches = undefined
+    reTransaction = /(\w+): (\w+) \((\d+)\) \/honey/g
+    actual = undefined
 
-    beforeEach((done) ->
+    before((done) ->
       execCommand(
         options:
           path: './test/fixtures/multiple-responses.yaml'
@@ -588,21 +600,36 @@ describe 'Dredd class Integration', ->
       , (err) ->
         matches = []
         matches.push(groups) while groups = reTransaction.exec(stdout)
+        actual = matches.map((match) ->
+          keyMap = {'0': 'name', '1': 'action', '2': 'method', '3': 'statusCode'}
+          match.reduce((result, element, i) ->
+            Object.assign(result, "#{keyMap[i]}": element)
+          , {})
+        )
         done(err)
       )
     )
 
     it('recognizes all 3 transactions', ->
-      assert.equal(matches.length, 3)
+      assert.equal(actual.length, 3)
     )
-    it('the transaction #1 is skipped', ->
-      assert.equal(matches[0][1], 'skip')
-    )
-    it('the transaction #2 is not skipped (unskipped in hooks)', ->
-      assert.notEqual(matches[1][1], 'skip')
-    )
-    it('the transaction #3 is not skipped (status 200)', ->
-      assert.notEqual(matches[2][1], 'skip')
+
+    [
+      {action: 'skip', statusCode: '400'}
+      {action: 'fail', statusCode: '200'}
+      {action: 'fail', statusCode: '500'} # Unskipped in hooks
+    ].forEach((expected, i) ->
+      context("the transaction ##{i + 1}", ->
+        it("has status code #{expected.statusCode}", ->
+          assert.equal(expected.statusCode, actual[i].statusCode)
+        )
+
+        defaultMessage = "is #{if expected.action is 'skip' then '' else 'not '}skipped by default"
+        unskippedMessage = 'is unskipped in hooks'
+        it("#{if expected.statusCode is '500' then unskippedMessage else defaultMessage}", ->
+          assert.equal(expected.action, actual[i].action)
+        )
+      )
     )
   )
 

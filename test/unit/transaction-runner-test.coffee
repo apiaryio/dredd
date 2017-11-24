@@ -96,7 +96,7 @@ describe 'TransactionRunner', ->
 
         assert.isOk runner.multiBlueprint
 
-  describe 'configureTransaction(transaction, callback)', ->
+  describe 'configureTransaction(transaction)', ->
     beforeEach ->
       transaction =
         name: "Machines API > Group Machine > Machine > Delete Message > Bogus example name"
@@ -181,7 +181,7 @@ describe 'TransactionRunner', ->
 
       ].forEach(({description, input, expected}) ->
         context("#{description}: '#{input.serverUrl}' + '#{input.requestPath}'", ->
-          beforeEach((done) ->
+          beforeEach( ->
             transaction.request.uri = input.requestPath
             transaction.origin.filename = filename
 
@@ -190,10 +190,7 @@ describe 'TransactionRunner', ->
             runner.configuration.data[filename] ?= {}
             runner.configuration.data[filename].mediaType = 'text/vnd.apiblueprint'
 
-            runner.configureTransaction(transaction, (args...) ->
-              [err, configuredTransaction] = args
-              done(err)
-            )
+            configuredTransaction = runner.configureTransaction(transaction)
           )
 
           it("the transaction gets configured with fullPath '#{expected.fullPath}' and has expected host, port, and protocol", ->
@@ -214,7 +211,7 @@ describe 'TransactionRunner', ->
 
       ['100', '400', 199, 300].forEach((status) ->
         context('status code: ' + JSON.stringify(status), ->
-          beforeEach((done) ->
+          beforeEach( ->
             transaction.response.status = status
             transaction.origin.filename = filename
 
@@ -222,10 +219,7 @@ describe 'TransactionRunner', ->
             runner.configuration.data[filename] ?= {}
             runner.configuration.data[filename].mediaType = 'application/swagger+json'
 
-            runner.configureTransaction(transaction, (args...) ->
-              [err, configuredTransaction] = args
-              done(err)
-            )
+            configuredTransaction = runner.configureTransaction(transaction)
           )
 
           it('skips the transaction by default', ->
@@ -241,7 +235,7 @@ describe 'TransactionRunner', ->
 
       ['200', 299].forEach((status) ->
         context('status code: ' + JSON.stringify(status), ->
-          beforeEach((done) ->
+          beforeEach( ->
             transaction.response.status = status
             transaction.origin.filename = filename
 
@@ -249,10 +243,7 @@ describe 'TransactionRunner', ->
             runner.configuration.data[filename] ?= {}
             runner.configuration.data[filename].mediaType = 'application/swagger+json'
 
-            runner.configureTransaction(transaction, (args...) ->
-              [err, configuredTransaction] = args
-              done(err)
-            )
+            configuredTransaction = runner.configureTransaction(transaction)
           )
 
           it('does not skip the transaction by default', ->
@@ -266,7 +257,7 @@ describe 'TransactionRunner', ->
       filename = 'api-description.yml'
       configuredTransaction = undefined
 
-      beforeEach((done) ->
+      beforeEach( ->
         transaction.response.status = 400
         transaction.origin.filename = filename
 
@@ -274,10 +265,7 @@ describe 'TransactionRunner', ->
         runner.configuration.data[filename] ?= {}
         runner.configuration.data[filename].mediaType = 'text/plain'
 
-        runner.configureTransaction(transaction, (args...) ->
-          [err, configuredTransaction] = args
-          done(err)
-        )
+        configuredTransaction = runner.configureTransaction(transaction)
       )
 
       it('does not skip the transaction by default', ->
@@ -286,25 +274,22 @@ describe 'TransactionRunner', ->
     )
 
     describe 'when processing multiple API description documents', ->
-      it 'should include api name in the transaction name', (done) ->
+      it 'should include api name in the transaction name', ->
         runner.multiBlueprint = true
-        runner.configureTransaction transaction, (err, configuredTransaction) ->
-          assert.include configuredTransaction.name, 'Machines API'
-          done()
+        configuredTransaction = runner.configureTransaction transaction
+        assert.include configuredTransaction.name, 'Machines API'
 
     describe 'when processing only single API description document', ->
-      it 'should not include api name in the transaction name', (done) ->
+      it 'should not include api name in the transaction name', ->
         runner.multiBlueprint = false
-        runner.configureTransaction transaction, (err, configuredTransaction) ->
-          assert.notInclude configuredTransaction.name, 'Machines API'
-          done()
+        configuredTransaction = runner.configureTransaction transaction
+        assert.notInclude configuredTransaction.name, 'Machines API'
 
     describe 'when request does not have User-Agent', ->
 
-      it 'should add the Dredd User-Agent', (done) ->
-        runner.configureTransaction transaction, (err, configuredTransaction) ->
-          assert.isOk configuredTransaction.request.headers['User-Agent']
-          done()
+      it 'should add the Dredd User-Agent', ->
+        configuredTransaction = runner.configureTransaction transaction
+        assert.isOk configuredTransaction.request.headers['User-Agent']
 
     describe 'when an additional header has a colon', ->
       beforeEach ->
@@ -312,22 +297,20 @@ describe 'TransactionRunner', ->
         conf.options.header = ["MyCustomDate:Wed, 10 Sep 2014 12:34:26 GMT"]
         runner = new Runner(conf)
 
-      it 'should include the entire value in the header', (done) ->
-        runner.configureTransaction transaction, (err, configuredTransaction) ->
-          assert.equal configuredTransaction.request.headers['MyCustomDate'], 'Wed, 10 Sep 2014 12:34:26 GMT'
-          done()
+      it 'should include the entire value in the header', ->
+        configuredTransaction = runner.configureTransaction transaction
+        assert.equal configuredTransaction.request.headers['MyCustomDate'], 'Wed, 10 Sep 2014 12:34:26 GMT'
 
     describe 'when configuring a transaction', ->
 
-      it 'should callback with a properly configured transaction', (done) ->
-        runner.configureTransaction transaction, (err, configuredTransaction) ->
-          assert.equal configuredTransaction.name, 'Group Machine > Machine > Delete Message > Bogus example name'
-          assert.equal configuredTransaction.id, 'POST (202) /machines'
-          assert.isOk configuredTransaction.host
-          assert.isOk configuredTransaction.request
-          assert.isOk configuredTransaction.expected
-          assert.strictEqual transaction.origin, configuredTransaction.origin
-          done()
+      it 'should callback with a properly configured transaction', ->
+        configuredTransaction = runner.configureTransaction transaction
+        assert.equal configuredTransaction.name, 'Group Machine > Machine > Delete Message > Bogus example name'
+        assert.equal configuredTransaction.id, 'POST (202) /machines'
+        assert.isOk configuredTransaction.host
+        assert.isOk configuredTransaction.request
+        assert.isOk configuredTransaction.expected
+        assert.strictEqual transaction.origin, configuredTransaction.origin
 
     describe 'when endpoint URL contains PORT and path', ->
       beforeEach ->
@@ -335,21 +318,19 @@ describe 'TransactionRunner', ->
         configurationWithPath.server = 'https://hostname.tld:9876/my/path/to/api/'
         runner = new Runner(configurationWithPath)
 
-      it 'should join the endpoint path with transaction uriTemplate together', (done) ->
-        runner.configureTransaction transaction, (err, configuredTransaction) ->
-          assert.equal configuredTransaction.id, 'POST (202) /machines'
-          assert.strictEqual configuredTransaction.host, 'hostname.tld'
-          assert.equal configuredTransaction.port, 9876
-          assert.strictEqual configuredTransaction.protocol, 'https:'
-          assert.strictEqual configuredTransaction.fullPath, '/my/path/to/api' + '/machines'
-          done()
+      it 'should join the endpoint path with transaction uriTemplate together', ->
+        configuredTransaction = runner.configureTransaction transaction
+        assert.equal configuredTransaction.id, 'POST (202) /machines'
+        assert.strictEqual configuredTransaction.host, 'hostname.tld'
+        assert.equal configuredTransaction.port, 9876
+        assert.strictEqual configuredTransaction.protocol, 'https:'
+        assert.strictEqual configuredTransaction.fullPath, '/my/path/to/api' + '/machines'
 
-       it 'should keep trailing slash in url if present', (done) ->
-         transaction.request.uri = '/machines/'
-         runner.configureTransaction transaction, (err, configuredTransaction) ->
-           assert.equal configuredTransaction.id, 'POST (202) /machines/'
-           assert.strictEqual configuredTransaction.fullPath, '/my/path/to/api' + '/machines/'
-           done()
+      it 'should keep trailing slash in url if present', ->
+        transaction.request.uri = '/machines/'
+        configuredTransaction = runner.configureTransaction transaction
+        assert.equal configuredTransaction.id, 'POST (202) /machines/'
+        assert.strictEqual configuredTransaction.fullPath, '/my/path/to/api' + '/machines/'
 
   describe 'executeTransaction(transaction, callback)', ->
 

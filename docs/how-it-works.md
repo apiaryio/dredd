@@ -148,9 +148,19 @@ If body parameter has [`schema.example`][schema-example], it is used as a raw JS
 2. First value from `enum`.
 3. Dummy, generated value.
 
-## How Dredd Works With HTTP Transactions
+### Empty Response Body
 
-### Multiple Requests and Responses
+If there is no body example or schema specified for the response in your API description document, Dredd won't imply any assertions. Any server response will be considered as valid.
+
+If you want to enforce the incoming body is empty, you can use [hooks](hooks.md):
+
+```js
+:[hooks example](../test/fixtures/response/empty-body-hooks.js)
+```
+
+In case of responses with 204 or 205 status codes Dredd still behaves the same way, but it warns about violating the [RFC7231](https://tools.ietf.org/html/rfc7231) when the responses have non-empty bodies.
+
+## Choosing HTTP Transactions
 
 #### API Blueprint
 
@@ -168,17 +178,17 @@ currently supports just separated HTTP transaction pairs like this:
 
 In other words, Dredd always selects just the first response for each request.
 
-> **Note:** Improving the support for multiple requests and responses is under development. Refer to issues [#25](https://github.com/apiaryio/dredd/issues/25) and [#78](https://github.com/apiaryio/dredd/issues/78) for details. Support for URI parameters specific to a single request within one action is also limited. Solving [#227](https://github.com/apiaryio/dredd/issues/227) should unblock many related problems. Also see [Multiple Requests and Responses within One API Blueprint Action](how-to-guides.md#multiple-requests-and-responses-within-one-api-blueprint-action) guide for workarounds.
+> **Note:** Improving the support for multiple requests and responses is under development. Refer to issues [#25](https://github.com/apiaryio/dredd/issues/25) and [#78](https://github.com/apiaryio/dredd/issues/78) for details. Support for URI parameters specific to a single request within one action is also limited. Solving [#227](https://github.com/apiaryio/dredd/issues/227) should unblock many related problems. Also see [Multiple Requests and Responses](how-to-guides.md#multiple-requests-and-responses) guide for workarounds.
 
 #### Swagger
 
 The [Swagger][] format allows to specify multiple responses for a single operation.
 By default Dredd tests only responses with `2xx` status codes. Responses with other
-codes are marked as _skipped_ and can be activated in [hooks](hooks.md) - see [Testing non-2xx Responses with Swagger](how-to-guides.md#testing-non-2xx-responses-with-swagger).
+codes are marked as _skipped_ and can be activated in [hooks](hooks.md) - see the [Multiple Requests and Responses](how-to-guides.md#multiple-requests-and-responses) how-to guide.
 
-[Default responses][default-responses] are ignored by Dredd. Also, as of now,
-only `application/json` media type is supported in [`produces`][produces] and [`consumes`][consumes].
-Other media types are skipped.
+In [`produces`][produces] and [`consumes`][consumes], only JSON media types are supported. Only the first JSON media type in `produces` is effective, others are skipped. Other media types are respected only when provided with [explicit examples][response-examples].
+
+[Default response][default-responses] is ignored by Dredd unless it is the only available response. In that case, the default response is assumed to have HTTP 200 status code.
 
 ## Security
 

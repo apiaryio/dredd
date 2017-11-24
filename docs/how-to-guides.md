@@ -505,35 +505,29 @@ Most of the authentication schemes use HTTP header for carrying the authenticati
 
 ## Sending Multipart Requests
 
-API Blueprint format supports `multipart/form-data` media type and so does Dredd. In the example below, Dredd will automatically add `LF` to all lines in request body:
-
 ```apiblueprint
-# POST /images
-
-+ Request (multipart/form-data;boundary=---BOUNDARY)
-    + Headers
-
-            Authorization: qwertyqwerty
-
-    + Body
-
-            ---BOUNDARY
-            Content-Disposition: form-data; name="json"
-
-
-            {"name": "test"}
-            ---BOUNDARY
-            Content-Disposition: form-data; name="image"; filename="filename.jpg"
-            Content-Type: image/jpeg
-
-            data
-            ---BOUNDARY--
-
+:[API Blueprint example](../test/fixtures/request/multipart-form-data.apib)
 ```
 
-## Multiple Requests and Responses within One API Blueprint Action
+```yaml
+:[Swagger example](../test/fixtures/request/multipart-form-data.yaml)
+```
+
+## Sending Form Data
+
+```apiblueprint
+:[API Blueprint example](../test/fixtures/request/application-x-www-form-urlencoded.apib)
+```
+
+```yaml
+:[Swagger example](../test/fixtures/request/application-x-www-form-urlencoded.yaml)
+```
+
+## Multiple Requests and Responses
 
 > **Note:** For details on this topic see also [How Dredd Works With HTTP Transactions](how-it-works.md#how-dredd-works-with-http-transactions).
+
+### API Blueprint
 
 To test multiple requests and responses within one action in Dredd, you need to cluster them into pairs:
 
@@ -580,7 +574,7 @@ info: Resource > Update Resource > Example 2
 
 In case you need to perform particular request with different URI parameters and standard inheritance of URI parameters isn't working for you, try [modifying transaction before its execution](hooks-nodejs.md#modifying-transaction-request-body-prior-to-execution) in hooks.
 
-## Testing non-2xx Responses with Swagger
+### Swagger
 
 When using [Swagger][] format, by default Dredd tests only responses with `2xx` status codes. Responses with other codes are marked as _skipped_ and can be activated in [hooks](hooks.md):
 

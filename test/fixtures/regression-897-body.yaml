@@ -1,0 +1,22 @@
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: Colors API
+schemes:
+  - http
+produces:
+  - application/json; charset=utf-8
+  - text/csv; charset=utf-8
+paths:
+  /resource:
+    get:
+      responses:
+        200:
+          description: Representation
+  /resource.csv:
+    get:
+      responses:
+        200:
+          description: Representation
+          examples:
+            "text/csv; charset=utf-8": ""

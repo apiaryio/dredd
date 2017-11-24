@@ -36,16 +36,15 @@ class TransactionRunner
     transactions = if @configuration.options['sorted'] then sortTransactions(transactions) else transactions
 
     logger.verbose('Configuring HTTP transactions')
-    async.mapSeries transactions, @configureTransaction.bind(@), (err, results) =>
-      transactions = results
+    transactions = transactions.map(@configureTransaction.bind(@))
 
-      # Remainings of functional approach, probs to be eradicated
-      logger.verbose('Reading hook files and registering hooks')
-      addHooks @, transactions, (addHooksError) =>
-        return callback addHooksError if addHooksError
+    # Remainings of functional approach, probs to be eradicated
+    logger.verbose('Reading hook files and registering hooks')
+    addHooks @, transactions, (addHooksError) =>
+      return callback addHooksError if addHooksError
 
-        logger.verbose('Executing HTTP transactions')
-        @executeAllTransactions(transactions, @hooks, callback)
+      logger.verbose('Executing HTTP transactions')
+      @executeAllTransactions(transactions, @hooks, callback)
 
   executeAllTransactions: (transactions, hooks, callback) ->
     # Warning: Following lines is "differently" performed by 'addHooks'
@@ -111,8 +110,8 @@ class TransactionRunner
 
   # The 'data' argument can be 'transactions' array or 'transaction' object
   runHooksForData: (hooks, data, legacy = false, callback) ->
-    if hooks? and Array.isArray hooks
-      logger.debug 'Running hooks...'
+    if hooks?.length
+      logger.debug('Running hooks...')
 
       runHookWithData = (hookFnIndex, runHookCallback) =>
         hookFn = hooks[hookFnIndex]
@@ -148,8 +147,7 @@ class TransactionRunner
           runHookCallback()
 
       async.timesSeries hooks.length, runHookWithData, ->
-        process.nextTick(() -> callback())
-
+        process.nextTick( -> callback())
     else
       callback()
 
@@ -274,7 +272,7 @@ class TransactionRunner
     if typeof(hook) == 'string'
       @runSandboxedHookFromString hook, data, callback
 
-  configureTransaction: (transaction, callback) =>
+  configureTransaction: (transaction) =>
     configuration = @configuration
 
     {origin, request, response} = transaction
@@ -303,11 +301,10 @@ class TransactionRunner
 
     # The data models as used here must conform to Gavel.js
     # as defined in `http-response.coffee`
-    expected =
-      headers: flattenHeaders response['headers']
-      body: response['body']
-      statusCode: response['status']
-    expected['bodySchema'] = response['schema'] if response['schema']
+    expected = {headers: flattenHeaders(response['headers'])}
+    expected.body = response.body if response.body
+    expected.statusCode = response.status if response.status
+    expected.bodySchema = response.schema if response.schema
 
     # Backward compatible transaction name hack. Transaction names will be
     # replaced by Canonical Transaction Paths: https://github.com/apiaryio/dredd/issues/227
@@ -334,7 +331,7 @@ class TransactionRunner
       protocol: @parsedUrl.protocol
       skip: skip
 
-    return process.nextTick(() -> callback(null, configuredTransaction))
+    return configuredTransaction
 
   parseServerUrl: (serverUrl) ->
     unless serverUrl.match(/^https?:\/\//i)
@@ -570,14 +567,18 @@ class TransactionRunner
 
       logger.verbose('Handling HTTP response from tested server')
 
-      # The data models as used here must conform to Gavel.js
-      # as defined in `http-response.coffee`
-      real =
+      # The data models as used here must conform to Gavel.js as defined in 'http-response.coffee'
+      transaction.real =
         statusCode: res.statusCode
         headers: res.headers
-        body: body
 
-      transaction['real'] = real
+      if body
+        transaction.real.body = body
+      else if transaction.expected.body
+        # Leaving body as undefined skips its validation completely. In case
+        # there is no real body, but there is one expected, the empty string
+        # ensures Gavel does the validation.
+        transaction.real.body = ''
 
       logger.verbose('Running \'beforeEachValidation\' hooks')
       @runHooksForData hooks?.beforeEachValidationHooks, transaction, false, () =>
@@ -608,8 +609,6 @@ class TransactionRunner
     requestLib(options, callback)
 
   validateTransaction: (test, transaction, callback) ->
-    configuration = @configuration
-
     logger.verbose('Validating HTTP transaction by Gavel.js')
     logger.debug('Determining whether HTTP transaction is valid (getting boolean verdict)')
     gavel.isValid transaction.real, transaction.expected, 'response', (isValidError, isValid) =>
@@ -632,6 +631,18 @@ class TransactionRunner
         if not isValidError and validateError
           logger.debug('Gavel.js validation errored:', validateError)
           @emitError(validateError, test)
+
+        # Warn about empty responses
+        if (
+          ( # expected is as string, actual is as integer :facepalm:
+            test.expected.statusCode?.toString() in ['204', '205'] or
+            test.actual.statusCode?.toString() in ['204', '205']
+          ) and (test.expected.body or test.actual.body)
+        )
+          logger.warn("""\
+            #{test.title} HTTP 204 and 205 responses must not \
+            include a message body: https://tools.ietf.org/html/rfc7231#section-6.3
+          """)
 
         # Create test message from messages of all validation errors
         message = ''
