@@ -57,7 +57,7 @@ describe('Babysitting Child Processes', ->
     describe('process with support for graceful termination', ->
       processInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) ->
           childProcess.signalKill()
         , (err, info) ->
@@ -65,7 +65,7 @@ describe('Babysitting Child Processes', ->
           done(err)
         )
       )
-      afterEach((done) ->
+      after((done) ->
         helpers.kill(processInfo.childProcess.pid, done)
       )
 
@@ -94,7 +94,7 @@ describe('Babysitting Child Processes', ->
     describe('process without support for graceful termination', ->
       processInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', (childProcess) ->
           childProcess.signalKill()
         , (err, info) ->
@@ -102,7 +102,7 @@ describe('Babysitting Child Processes', ->
           done(err)
         )
       )
-      afterEach((done) ->
+      after((done) ->
         helpers.kill(processInfo.childProcess.pid, done)
       )
 
@@ -134,7 +134,7 @@ describe('Babysitting Child Processes', ->
       describe('process with support for graceful termination', ->
         processInfo = undefined
 
-        beforeEach((done) ->
+        before((done) ->
           runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) ->
             childProcess[functionName]()
           , (err, info) ->
@@ -142,7 +142,7 @@ describe('Babysitting Child Processes', ->
             done(err)
           )
         )
-        afterEach((done) ->
+        after((done) ->
           helpers.kill(processInfo.childProcess.pid, done)
         )
 
@@ -167,7 +167,7 @@ describe('Babysitting Child Processes', ->
       describe('process without support for graceful termination', ->
         processInfo = undefined
 
-        beforeEach((done) ->
+        before((done) ->
           runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', (childProcess) ->
             childProcess.terminate()
           , (err, info) ->
@@ -175,7 +175,7 @@ describe('Babysitting Child Processes', ->
             done(err)
           )
         )
-        afterEach((done) ->
+        after((done) ->
           helpers.kill(processInfo.childProcess.pid, done)
         )
 
@@ -205,7 +205,7 @@ describe('Babysitting Child Processes', ->
     describe('process with support for graceful termination', ->
       processInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) ->
           childProcess.terminate({force: true})
         , (err, info) ->
@@ -213,7 +213,7 @@ describe('Babysitting Child Processes', ->
           done(err)
         )
       )
-      afterEach((done) ->
+      after((done) ->
         helpers.kill(processInfo.childProcess.pid, done)
       )
 
@@ -238,7 +238,7 @@ describe('Babysitting Child Processes', ->
     describe('process without support for graceful termination', ->
       processInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', (childProcess) ->
           childProcess.terminate({force: true})
         , (err, info) ->
@@ -246,7 +246,7 @@ describe('Babysitting Child Processes', ->
           done(err)
         )
       )
-      afterEach((done) ->
+      after((done) ->
         helpers.kill(processInfo.childProcess.pid, done)
       )
 
@@ -279,7 +279,7 @@ describe('Babysitting Child Processes', ->
     describe('normally with zero status code', ->
       processInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         runChildProcess('test/fixtures/scripts/exit-0.coffee', (childProcess) ->
           true
         , (err, info) ->
@@ -287,7 +287,7 @@ describe('Babysitting Child Processes', ->
           done(err)
         )
       )
-      afterEach((done) ->
+      after((done) ->
         helpers.kill(processInfo.childProcess.pid, done)
       )
 
@@ -311,7 +311,7 @@ describe('Babysitting Child Processes', ->
     describe('normally with non-zero status code', ->
       processInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         runChildProcess('test/fixtures/scripts/exit-3.coffee', (childProcess) ->
           true
         , (err, info) ->
@@ -319,7 +319,7 @@ describe('Babysitting Child Processes', ->
           done(err)
         )
       )
-      afterEach((done) ->
+      after((done) ->
         helpers.kill(processInfo.childProcess.pid, done)
       )
 
@@ -349,7 +349,7 @@ describe('Babysitting Child Processes', ->
     describe('intentionally gracefully with zero status code', ->
       processInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) ->
           childProcess.signalTerm()
         , (err, info) ->
@@ -357,7 +357,7 @@ describe('Babysitting Child Processes', ->
           done(err)
         )
       )
-      afterEach((done) ->
+      after((done) ->
         helpers.kill(processInfo.childProcess.pid, done)
       )
 
@@ -381,7 +381,7 @@ describe('Babysitting Child Processes', ->
     describe('intentionally gracefully with non-zero status code', ->
       processInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         runChildProcess('test/fixtures/scripts/stdout-exit-3.coffee', (childProcess) ->
           childProcess.signalTerm()
         , (err, info) ->
@@ -389,7 +389,7 @@ describe('Babysitting Child Processes', ->
           done(err)
         )
       )
-      afterEach((done) ->
+      after((done) ->
         helpers.kill(processInfo.childProcess.pid, done)
       )
 
@@ -413,7 +413,7 @@ describe('Babysitting Child Processes', ->
     describe('intentionally forcefully', ->
       processInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) ->
           childProcess.signalKill()
         , (err, info) ->
@@ -421,7 +421,7 @@ describe('Babysitting Child Processes', ->
           done(err)
         )
       )
-      afterEach((done) ->
+      after((done) ->
         helpers.kill(processInfo.childProcess.pid, done)
       )
 
@@ -453,7 +453,7 @@ describe('Babysitting Child Processes', ->
     describe('gracefully with zero status code', ->
       processInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) ->
           # simulate that the process was terminated externally
           emit = sinon.stub(childProcess, 'emit')
@@ -464,7 +464,7 @@ describe('Babysitting Child Processes', ->
           done(err)
         )
       )
-      afterEach((done) ->
+      after((done) ->
         helpers.kill(processInfo.childProcess.pid, done)
       )
 
@@ -488,7 +488,7 @@ describe('Babysitting Child Processes', ->
     describe('gracefully with non-zero status code', ->
       processInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         runChildProcess('test/fixtures/scripts/stdout-exit-3.coffee', (childProcess) ->
           # simulate that the process was terminated externally
           emit = sinon.stub(childProcess, 'emit')
@@ -499,7 +499,7 @@ describe('Babysitting Child Processes', ->
           done(err)
         )
       )
-      afterEach((done) ->
+      after((done) ->
         helpers.kill(processInfo.childProcess.pid, done)
       )
 
@@ -529,7 +529,7 @@ describe('Babysitting Child Processes', ->
     describe('forcefully', ->
       processInfo = undefined
 
-      beforeEach((done) ->
+      before((done) ->
         runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) ->
           # simulate that the process was killed externally
           emit = sinon.stub(childProcess, 'emit')
@@ -540,7 +540,7 @@ describe('Babysitting Child Processes', ->
           done(err)
         )
       )
-      afterEach((done) ->
+      after((done) ->
         helpers.kill(processInfo.childProcess.pid, done)
       )
 
