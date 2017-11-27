@@ -7,8 +7,9 @@ loggerStub = require '../../../src/logger'
 fsStub = require 'fs'
 mkdirpStub = sinon.spy((path, cb) => cb())
 mkdirpProxy = (path, cb) -> mkdirpStub(path, cb)
+
 XUnitReporter = proxyquire '../../../src/reporters/x-unit-reporter', {
-  './../logger' : loggerStub,
+  './../logger' : loggerStub
   'fs' : fsStub
   'mkdirp' : mkdirpProxy
 }
@@ -83,7 +84,7 @@ describe 'XUnitReporter', () ->
 
       after () ->
         loggerStub.error.restore()
-         mkdirpStub = sinon.spy((path, cb) => cb())
+        mkdirpStub = sinon.spy((path, cb) => cb())
 
       it 'should write to log', (done) ->
         emitter = new EventEmitter()
