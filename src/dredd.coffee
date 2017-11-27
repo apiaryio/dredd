@@ -202,15 +202,8 @@ class Dredd
       dreddTransactions.compile(fileData.raw, filename, (compilationError, compilationResult) =>
         return next(compilationError) if compilationError
 
-        for error in compilationResult.errors
-          error.type = 'error'
-          fileData.annotations.push(error)
-
-        for warning in compilationResult.warnings
-          warning.type = 'warning'
-          fileData.annotations.push(warning)
-
         fileData.mediaType = compilationResult.mediaType
+        fileData.annotations = fileData.annotations.concat(compilationResult.annotations)
         @transactions = @transactions.concat(compilationResult.transactions)
         next()
       )

@@ -11,16 +11,8 @@ handleRuntimeProblems = proxyquire('../../src/handle-runtime-problems',
 
 
 prepareData = (apiDescriptionDocument, filename, done) ->
-  dreddTransactions.compile(apiDescriptionDocument, filename, (err, {errors, warnings}) ->
+  dreddTransactions.compile(apiDescriptionDocument, filename, (err, {annotations}) ->
     return done(err) if err
-
-    annotations = []
-    for error in errors
-      error.type = 'error'
-      annotations.push(error)
-    for warning in warnings
-      warning.type = 'warning'
-      annotations.push(warning)
 
     data = {}
     data[filename] = {raw: apiDescriptionDocument, filename, annotations}

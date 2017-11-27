@@ -1,4 +1,3 @@
-
 blueprintUtils = require './blueprint-utils'
 logger = require './logger'
 
@@ -18,11 +17,7 @@ handleRuntimeProblems = (blueprintData) ->
 
       if annotation.component is 'apiDescriptionParser'
         ranges = blueprintUtils.warningLocationToRanges(annotation.location, apiDescriptionDocument)
-
-        message = """\
-          Parser #{annotation.type} in file '#{filename}': \
-          (#{annotation.type} code #{annotation.code}) #{annotation.message} \
-        """
+        message = "Parser #{annotation.type} in file '#{filename}': #{annotation.message}"
         message += "on #{blueprintUtils.rangesToLinesText(ranges)}" if ranges?.length
         log(message)
       else
@@ -31,11 +26,7 @@ handleRuntimeProblems = (blueprintData) ->
           annotation.origin.resourceName
           annotation.origin.actionName
         ].join(' > ')
-
-        log("""\
-          Compilation #{annotation.type} in file '#{filename}': \
-          #{annotation.message} (#{transactionName}) \
-        """)
+        log("Compilation #{annotation.type} in file '#{filename}': #{annotation.message} (#{transactionName})")
 
   return new Error('Error when processing API description.') if error
 
