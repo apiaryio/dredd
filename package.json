@@ -20,7 +20,8 @@
     "pretest": "npm run build",
     "test": "mocha \"test/**/*-test.coffee\"",
     "test:coverage": "scripts/coverage.sh",
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
+    "prepublish": "check-node-version --npm \">=4\" || npm run prepare",
     "coveralls": "scripts/coveralls.sh",
     "semantic-release": "scripts/semantic-release.sh"
   },
@@ -56,6 +57,7 @@
   },
   "devDependencies": {
     "body-parser": "^1.17.1",
+    "check-node-version": "^2.1.0",
     "coffee-coverage": "^2.0.1",
     "coffeelint": "^1.15.7",
     "conventional-changelog-lint": "^1.1.9",
