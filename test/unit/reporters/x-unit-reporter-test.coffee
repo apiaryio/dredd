@@ -6,10 +6,12 @@ proxyquire = require('proxyquire').noCallThru()
 loggerStub = require '../../../src/logger'
 fsStub = require 'fs'
 mkdirpStub = sinon.spy((path, cb) => cb())
+mkdirpProxy = (path, cb) -> mkdirpStub(path, cb)
+
 XUnitReporter = proxyquire '../../../src/reporters/x-unit-reporter', {
-  './../logger' : loggerStub,
+  './../logger' : loggerStub
   'fs' : fsStub
-  'mkdirp' : mkdirpStub
+  'mkdirp' : mkdirpProxy
 }
 
 describe 'XUnitReporter', () ->
@@ -73,6 +75,25 @@ describe 'XUnitReporter', () ->
         assert.isOk mkdirpStub.called
         assert.isOk fsStub.appendFileSync.called
         done()
+
+    describe 'when cannot create output directory', () ->
+
+      beforeEach () ->
+        sinon.stub loggerStub, 'error'
+        mkdirpStub = sinon.spy((path, cb) => cb('error'))
+
+      after () ->
+        loggerStub.error.restore()
+        mkdirpStub = sinon.spy((path, cb) => cb())
+
+      it 'should write to log', (done) ->
+        emitter = new EventEmitter()
+        xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
+        emitter.emit 'start', '', () ->
+          assert.isOk mkdirpStub.called
+          assert.isOk fsStub.appendFileSync.notCalled
+          assert.isOk loggerStub.error.called
+          done()
 
   describe 'when ending', () ->
 
