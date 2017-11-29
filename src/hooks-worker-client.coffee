@@ -1,4 +1,5 @@
 net = require('net')
+path = require('path')
 {EventEmitter} = require('events')
 spawnArgs = require('spawn-args')
 generateUuid = require('uuid').v4
@@ -6,6 +7,7 @@ generateUuid = require('uuid').v4
 {spawn} = require('./child-process')
 logger = require('./logger')
 which = require('./which')
+getGoBin = require('./get-go-bin')
 
 
 class HooksWorkerClient
@@ -134,33 +136,22 @@ class HooksWorkerClient
       return callback(new Error(msg))
 
     else if @language == 'go'
-      # https://golang.org/cmd/go/
-      # "you can add DIR/bin to your PATH to get at the installed commands.
-      # If the GOBIN environment variable is set, commands are installed to the
-      # directory it names instead of DIR/bin. GOBIN must be an absolute path."
-      # Use the gobin if provided, otherwise fall back to gopath
-      {exec} = require 'child_process'
-      getGobin = (callback) ->
-        gobin = process.env.GOBIN
-        if !gobin
-          if process.env.GOPATH
-            gobin = "#{process.env.GOPATH}/bin"
-          else
-            exec "go env GOPATH", (error, stdout, stderr) -> callback "#{stdout.trim()}/bin"
-            return
-        callback gobin
-      getGobin (gobin) => 
-        @handlerCommand = "#{gobin}/goodman"
-        @handlerCommandArgs = []
-        unless which.which @handlerCommand
-          msg = '''\
-            Go hooks handler command not found in $GOBIN or $GOPATH/bin
-            Install go hooks handler by running:
-            $ go get github.com/snikch/goodman/cmd/goodman
-          '''
-          return callback(new Error(msg))
+      getGoBin((err, goBin) =>
+        if err
+          callback(new Error("Go doesn't seem to be installed: #{err.message}"))
         else
-          callback()
+          @handlerCommand = path.join(goBin, 'goodman')
+          @handlerCommandArgs = []
+          if which.which(@handlerCommand)
+            callback()
+          else
+            msg = """\
+              Go hooks handler command not found: #{@handlerCommand}
+              Install go hooks handler by running:
+              $ go get github.com/snikch/goodman/cmd/goodman
+            """
+            return callback(new Error(msg))
+      )
     else
       parsedArgs = spawnArgs(@language)
       @handlerCommand = parsedArgs.shift()
