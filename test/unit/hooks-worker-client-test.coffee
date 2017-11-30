@@ -4,6 +4,7 @@ sinon = require 'sinon'
 net = require 'net'
 {assert} = require 'chai'
 clone = require 'clone'
+childProcess = require('child_process')
 
 crossSpawnStub = require('cross-spawn')
 whichStub = require('../../src/which')
@@ -344,24 +345,15 @@ describe 'Hooks worker client', ->
           assert.include err.message, "composer require ddelnano/dredd-hooks-php --dev"
           done()
 
-    describe 'when --language=go option is given and go is not installed', ->
-      beforeEach ->
-        runner.hooks['configuration'] =
-          options:
-            language: 'go'
-            hookfiles: 'gobinary'
-
-      it 'should write an error', (done) ->
-        loadWorkerClient (err) ->
-          assert.isOk err
-          assert.include err.message, "Go doesn't seem to be installed"
-          done()
-
     describe 'when --language=go option is given and the worker is not installed', ->
       goBin = undefined
+      goPath = undefined
       beforeEach ->
         goBin = process.env.GOBIN
+        goPath = process.env.GOPATH
         process.env.GOBIN = '/dummy/gobin/path'
+        delete process.env.GOPATH
+
         sinon.stub(whichStub, 'which').callsFake (command) -> false
 
         runner.hooks['configuration'] =
@@ -371,6 +363,7 @@ describe 'Hooks worker client', ->
       afterEach ->
         whichStub.which.restore()
         process.env.GOBIN = goBin
+        process.env.GOPATH = goPath
 
       it 'should write a hint how to install', (done) ->
         loadWorkerClient (err) ->
@@ -380,9 +373,13 @@ describe 'Hooks worker client', ->
 
     describe 'when --language=go option is given and the worker is installed', ->
       goBin = undefined
+      goPath = undefined
       beforeEach ->
         goBin = process.env.GOBIN
+        goPath = process.env.GOPATH
         process.env.GOBIN = '/dummy/gobin/path'
+        delete process.env.GOPATH
+
         sinon.stub(crossSpawnStub, 'spawn').callsFake( ->
           emitter = new EventEmitter
           emitter.stdout = new EventEmitter
@@ -408,6 +405,7 @@ describe 'Hooks worker client', ->
         whichStub.which.restore()
         HooksWorkerClient.prototype.terminateHandler.restore()
         process.env.GOBIN = goBin
+        process.env.GOPATH = goPath
 
       it 'should spawn the server process with command "$GOBIN/goodman"', (done) ->
         loadWorkerClient (err) ->
