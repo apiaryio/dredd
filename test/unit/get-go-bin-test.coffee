@@ -1,5 +1,6 @@
 {assert} = require('chai')
 sinon = require('sinon')
+path = require('path')
 childProcess = require('child_process')
 
 getGoBin = require('../../src/get-go-bin')
@@ -24,7 +25,7 @@ describe('getGoBin()', ->
     callbackArgs = undefined
 
     beforeEach((done) ->
-      process.env.GOBIN = '/dummy/gobin/path'
+      process.env.GOBIN = path.join('dummy', 'gobin', 'path')
       getGoBin((args...) ->
         callbackArgs = args
         done()
@@ -32,7 +33,7 @@ describe('getGoBin()', ->
     )
 
     it('resolves as $GOBIN', ->
-      assert.deepEqual(callbackArgs, [null, '/dummy/gobin/path'])
+      assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gobin', 'path')])
     )
   )
 
@@ -40,7 +41,7 @@ describe('getGoBin()', ->
     callbackArgs = undefined
 
     beforeEach((done) ->
-      process.env.GOPATH = '/dummy/gopath/path'
+      process.env.GOPATH = path.join('dummy', 'gopath', 'path')
       getGoBin((args...) ->
         callbackArgs = args
         done()
@@ -48,7 +49,7 @@ describe('getGoBin()', ->
     )
 
     it('resolves as $GOPATH + /bin', ->
-      assert.deepEqual(callbackArgs, [null, '/dummy/gopath/path/bin'])
+      assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gopath', 'path', 'bin')])
     )
   )
 
@@ -56,8 +57,8 @@ describe('getGoBin()', ->
     callbackArgs = undefined
 
     beforeEach((done) ->
-      process.env.GOBIN = '/dummy/gobin/path'
-      process.env.GOPATH = '/dummy/gopath/path'
+      process.env.GOBIN = path.join('dummy', 'gobin', 'path')
+      process.env.GOPATH = path.join('dummy', 'gopath', 'path')
       getGoBin((args...) ->
         callbackArgs = args
         done()
@@ -65,7 +66,7 @@ describe('getGoBin()', ->
     )
 
     it('resolves as $GOBIN', ->
-      assert.deepEqual(callbackArgs, [null, '/dummy/gobin/path'])
+      assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gobin', 'path')])
     )
   )
 
@@ -74,7 +75,7 @@ describe('getGoBin()', ->
 
     beforeEach((done) ->
       sinon.stub(childProcess, 'exec').callsFake((command, callback) ->
-        callback(null, '/dummy/gopath/path')
+        callback(null, path.join('dummy', 'gopath', 'path'))
       )
       getGoBin((args...) ->
         callbackArgs = args
@@ -86,7 +87,7 @@ describe('getGoBin()', ->
     )
 
     it('calls \'go env GOPATH\' + /bin', ->
-      assert.deepEqual(callbackArgs, [null, '/dummy/gopath/path/bin'])
+      assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gopath', 'path', 'bin')])
     )
   )
 

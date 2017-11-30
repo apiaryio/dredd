@@ -372,12 +372,13 @@ describe 'Hooks worker client', ->
           done()
 
     describe 'when --language=go option is given and the worker is installed', ->
+      dummyPath = path.join('dummy', 'gobin', 'path')
       goBin = undefined
       goPath = undefined
       beforeEach ->
         goBin = process.env.GOBIN
         goPath = process.env.GOPATH
-        process.env.GOBIN = '/dummy/gobin/path'
+        process.env.GOBIN = dummyPath
         delete process.env.GOPATH
 
         sinon.stub(crossSpawnStub, 'spawn').callsFake( ->
