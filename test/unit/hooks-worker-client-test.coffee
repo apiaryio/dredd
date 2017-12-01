@@ -4,6 +4,7 @@ sinon = require 'sinon'
 net = require 'net'
 {assert} = require 'chai'
 clone = require 'clone'
+childProcess = require('child_process')
 
 crossSpawnStub = require('cross-spawn')
 whichStub = require('../../src/which')
@@ -345,7 +346,14 @@ describe 'Hooks worker client', ->
           done()
 
     describe 'when --language=go option is given and the worker is not installed', ->
+      goBin = undefined
+      goPath = undefined
       beforeEach ->
+        goBin = process.env.GOBIN
+        goPath = process.env.GOPATH
+        process.env.GOBIN = '/dummy/gobin/path'
+        delete process.env.GOPATH
+
         sinon.stub(whichStub, 'which').callsFake (command) -> false
 
         runner.hooks['configuration'] =
@@ -354,6 +362,8 @@ describe 'Hooks worker client', ->
             hookfiles: 'gobinary'
       afterEach ->
         whichStub.which.restore()
+        process.env.GOBIN = goBin
+        process.env.GOPATH = goPath
 
       it 'should write a hint how to install', (done) ->
         loadWorkerClient (err) ->
@@ -362,7 +372,15 @@ describe 'Hooks worker client', ->
           done()
 
     describe 'when --language=go option is given and the worker is installed', ->
+      dummyPath = path.join('dummy', 'gobin', 'path')
+      goBin = undefined
+      goPath = undefined
       beforeEach ->
+        goBin = process.env.GOBIN
+        goPath = process.env.GOPATH
+        process.env.GOBIN = dummyPath
+        delete process.env.GOPATH
+
         sinon.stub(crossSpawnStub, 'spawn').callsFake( ->
           emitter = new EventEmitter
           emitter.stdout = new EventEmitter
@@ -387,16 +405,17 @@ describe 'Hooks worker client', ->
 
         whichStub.which.restore()
         HooksWorkerClient.prototype.terminateHandler.restore()
+        process.env.GOBIN = goBin
+        process.env.GOPATH = goPath
 
-      it 'should spawn the server process with command "$GOPATH/bin/goodman"', (done) ->
-        process.env.GOPATH = 'gopath'
+      it 'should spawn the server process with command "$GOBIN/goodman"', (done) ->
         loadWorkerClient (err) ->
           assert.isUndefined err
 
           hooksWorkerClient.stop (err) ->
             assert.isUndefined err
             assert.isTrue crossSpawnStub.spawn.called
-            assert.equal crossSpawnStub.spawn.getCall(0).args[0], 'gopath/bin/goodman'
+            assert.equal crossSpawnStub.spawn.getCall(0).args[0], path.join(dummyPath, 'goodman')
             done()
 
       it 'should pass --hookfiles option as an array of arguments', (done) ->
