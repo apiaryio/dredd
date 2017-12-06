@@ -155,9 +155,8 @@ describe('compileParams', () => {
 
   it('should compile an enum href variable', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
-    const value = new fury.minim.elements.Element();
-    value.element = 'enum';
-    value.attributes.set('enumerations', ['ascending', 'decending']);
+    const value = new fury.minim.elements.Enum();
+    value.enumerations = ['ascending', 'decending'];
     hrefVariables.set('order', value);
 
     const parameters = compileParams(hrefVariables);
@@ -174,9 +173,8 @@ describe('compileParams', () => {
 
   it('should compile an enum href variable with values', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
-    const value = new fury.minim.elements.Element('decending');
-    value.element = 'enum';
-    value.attributes.set('enumerations', ['ascending', 'decending']);
+    const value = new fury.minim.elements.Enum('decending');
+    value.enumerations = ['ascending', 'decending'];
     hrefVariables.set('order', value);
 
     const parameters = compileParams(hrefVariables);
@@ -193,10 +191,9 @@ describe('compileParams', () => {
 
   it('should compile an enum href variable with default', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
-    const value = new fury.minim.elements.Element();
-    value.element = 'enum';
-    value.attributes.set('enumerations', ['ascending', 'decending']);
-    value.attributes.set('default', 'decending');
+    const value = new fury.minim.elements.Enum();
+    value.enumerations = ['ascending', 'decending'];
+    value.attributes.set('default', new fury.minim.elements.Enum('decending'));
     hrefVariables.set('order', value);
 
     const parameters = compileParams(hrefVariables);
