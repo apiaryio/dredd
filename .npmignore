@@ -1,6 +1,7 @@
 .git*
 /src
 /test
+/dist/test
 /coverage
 /scripts
 .*rc.json
