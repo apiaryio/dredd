@@ -87,7 +87,7 @@ In case of compilation errors, Dredd automatically uses a less performant soluti
 The installation process features compilation of some C++ components, which may take some time ([learn more about this][C++11 vs JS]). You can simplify and speed up the process using `npm install -g dredd --no-optional` if you are:
 
 - using Dredd exclusively with [Swagger][],
-- using Dredd with small [API Bluepint][] files,
+- using Dredd with small [API Blueprint][] files,
 - using Dredd on Windows or other environments with complicated C++11 compiler setup.
 
 The `--no-optional` option avoids any compilation attempts when installing Dredd, but causes slower reading of the API Blueprint files, especially the large ones.
