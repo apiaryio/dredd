@@ -152,7 +152,7 @@ class TransactionRunner
           runHookCallback()
 
       async.timesSeries hooks.length, runHookWithData, ->
-        process.nextTick( -> callback())
+        callback()
     else
       callback()
 
