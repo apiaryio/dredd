@@ -1,4 +1,8 @@
-src/
-.travis.yml
 .git*
-test/
+/src
+/test
+/dist/test
+/coverage
+/scripts
+.*rc.json
+*.yml
