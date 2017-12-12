@@ -21,6 +21,10 @@ headersArrayToObject = (arr) ->
   return obj
 
 
+eventCallback = (reporterError) ->
+  logger.error(reporterError.message) if reporterError
+
+
 # use "lib" folder, because pitboss-ng does not support "coffee-script:register"
 # out of the box now
 sandboxedLogLibraryPath = '../../../lib/hooks-log-sandboxed'
@@ -420,27 +424,27 @@ class TransactionRunner
 
     if transaction.skip
       logger.debug('Emitting to reporters: test skip')
-      @configuration.emitter.emit('test skip', transaction.test, -> )
+      @configuration.emitter.emit('test skip', transaction.test, eventCallback)
       return callback()
 
     if transaction.test.valid
       if transaction.fail
         @failTransaction(transaction, "Failed in after hook: #{transaction.fail}")
         logger.debug('Emitting to reporters: test fail')
-        @configuration.emitter.emit('test fail', transaction.test, -> )
+        @configuration.emitter.emit('test fail', transaction.test, eventCallback)
       else
         logger.debug('Emitting to reporters: test pass')
-        @configuration.emitter.emit('test pass', transaction.test, -> )
+        @configuration.emitter.emit('test pass', transaction.test, eventCallback)
       return callback()
 
     logger.debug('Emitting to reporters: test fail')
-    @configuration.emitter.emit('test fail', transaction.test, -> )
+    @configuration.emitter.emit('test fail', transaction.test, eventCallback)
     callback()
 
   # Emits 'test error' with given test data. Halts the transaction runner.
   emitError: (error, test) ->
     logger.debug('Emitting to reporters: test error')
-    @configuration.emitter.emit('test error', error, test, -> )
+    @configuration.emitter.emit('test error', error, test, eventCallback)
 
     # Record the error to halt the transaction runner. Do not overwrite
     # the first recorded error if more of them occured.
@@ -471,7 +475,7 @@ class TransactionRunner
 
     test = @createTest(transaction)
     logger.debug('Emitting to reporters: test start')
-    @configuration.emitter.emit('test start', test, -> )
+    @configuration.emitter.emit('test start', test, eventCallback)
 
     @ensureTransactionResultsGeneralSection(transaction)
 
@@ -585,11 +589,11 @@ class TransactionRunner
         transaction.real.body = ''
 
       logger.verbose('Running \'beforeEachValidation\' hooks')
-      @runHooksForData hooks?.beforeEachValidationHooks, transaction, false, () =>
+      @runHooksForData hooks?.beforeEachValidationHooks, transaction, false, =>
         return callback(@hookHandlerError) if @hookHandlerError
 
         logger.verbose('Running \'beforeValidation\' hooks')
-        @runHooksForData hooks?.beforeValidationHooks[transaction.name], transaction, false, () =>
+        @runHooksForData hooks?.beforeValidationHooks[transaction.name], transaction, false, =>
           return callback(@hookHandlerError) if @hookHandlerError
 
           @validateTransaction test, transaction, callback

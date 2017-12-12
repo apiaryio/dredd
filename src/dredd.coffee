@@ -214,24 +214,19 @@ class Dredd
 
   # start the runner
   emitStart: (callback) ->
-    # dredd can have registered more than one reporter
+    # more than one reporter is supported
     reporterCount = @configuration.emitter.listeners('start').length
 
-    # atomic state shared between reporters
-    reporterErrorOccurred = false
+    # when event 'start' is emitted, function in callback is executed for each
+    # reporter registered by listeners
+    @configuration.emitter.emit('start', @configuration.data, (reporterError) =>
+      logger.error(reporterError.message) if reporterError
 
-    # when event start is emitted, function in callback is executed for each registered reporter by listeners
-    @configuration.emitter.emit 'start', @configuration.data, (reporterError) =>
+      # last called reporter callback function starts the runner
       reporterCount--
-
-      # if any error in one of reporters occurres, callback is called and other reporters are not executed
-      if reporterError and reporterErrorOccurred is false
-        reporterErrorOccurred = true
-        return callback(reporterError, @stats)
-
-      # # last called reporter callback function starts the runner
-      if reporterCount is 0 and reporterErrorOccurred is false
-        callback null, @stats
+      if reporterCount is 0
+        callback(null, @stats)
+    )
 
   startRunner: (callback) ->
     # run all transactions

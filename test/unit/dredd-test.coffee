@@ -601,8 +601,10 @@ describe 'Dredd class', ->
       PORT = 9876
       dredd = null
       apiaryServer = null
+      errorLogger = undefined
 
       beforeEach ->
+        errorLogger = sinon.spy(loggerStub, 'error')
         configuration =
           server: 'http://127.0.0.1:3000/'
           options:
@@ -617,13 +619,20 @@ describe 'Dredd class', ->
 
         dredd = new Dredd(configuration)
 
-      it 'should call the callback with error', (done) ->
+      afterEach ->
+        loggerStub.error.restore()
+
+      it 'should call the callback without the error', (done) ->
         callback = sinon.spy (error) ->
-          assert.isNotNull error
+          assert.isNull error
           assert.isOk callback.called
           done()
-
         dredd.emitStart callback
+
+      it 'should print the error', (done) ->
+        dredd.emitStart ->
+          assert.isTrue(errorLogger.called)
+          done()
 
   describe('#logProxySettings', ->
     verboseLogger = undefined
