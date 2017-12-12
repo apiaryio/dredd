@@ -192,6 +192,7 @@ class ApiaryReporter
       try
         parsedBody = JSON.parse(resBody)
       catch err
+        @serverError = true
         err = new Error("""\
           Apiary reporter failed to parse Apiary API response body: \
           #{err.message}\n#{resBody}\
@@ -227,6 +228,7 @@ class ApiaryReporter
       logger.debug('Request details:', JSON.stringify({options, body}, null, 2))
       request(options, handleRequest)
     catch error
+      @serverError = true
       logger.debug('Requesting Apiary API errored:', error)
       return callback(error)
 
