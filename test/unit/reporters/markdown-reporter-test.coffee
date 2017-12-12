@@ -2,13 +2,16 @@
 sinon = require 'sinon'
 proxyquire = require('proxyquire').noCallThru()
 
-
 {EventEmitter} = require 'events'
-fsStub = require 'fs'
 loggerStub = require '../../../src/logger'
+fsStub = require 'fs'
+mkdirpStub = sinon.spy((path, cb) => cb())
+mkdirpProxy = (path, cb) -> mkdirpStub(path, cb)
+
 MarkdownReporter = proxyquire '../../../src/reporters/markdown-reporter', {
   './../logger' : loggerStub
-  'fs': fsStub
+  'fs' : fsStub
+  'mkdirp' : mkdirpProxy
 }
 
 describe 'MarkdownReporter', () ->
@@ -87,8 +90,26 @@ describe 'MarkdownReporter', () ->
 
     it 'should write buffer to file', (done) ->
       emitter.emit 'end'
+      assert.isOk mkdirpStub.called
       assert.isOk fsStub.writeFile.called
       done()
+
+    describe 'when cannot create output directory', () ->
+
+      beforeEach () ->
+        sinon.stub loggerStub, 'error'
+        mkdirpStub = sinon.spy((path, cb) => cb('error'))
+
+      after () ->
+        loggerStub.error.restore()
+        mkdirpStub = sinon.spy((path, cb) => cb())
+
+      it 'should write to log', (done) ->
+        emitter.emit 'end', () ->
+          assert.isOk mkdirpStub.called
+          assert.isOk fsStub.writeFile.notCalled
+          assert.isOk loggerStub.error.called
+          done()
 
   describe 'when test passes', () ->
 
