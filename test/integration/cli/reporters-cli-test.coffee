@@ -274,12 +274,12 @@ describe 'CLI - Reporters', ->
       assert.isOk fs.existsSync "#{process.cwd()}/__test_file_output1__.xml"
       assert.isOk fs.existsSync "#{process.cwd()}/__test_file_output2__.xml"
 
-  describe 'When -o/--output is used to specify output file but directory is not existent', ->
+  describe 'when -o/--output is used to specify output file but directory is not existent', ->
     dreddCommandInfo = undefined
     args = [
       './test/fixtures/single-get.apib'
       "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
-      '--reporter=junit'
+      '--reporter=xunit'
       '--output=./__test_directory/__test_file_output__.xml'
     ]
 
@@ -298,3 +298,35 @@ describe 'CLI - Reporters', ->
 
     it 'should create given file', ->
       assert.isOk fs.existsSync "#{process.cwd()}/__test_directory/__test_file_output__.xml"
+
+  describe('when the \'apiary\' reporter fails', ->
+    apiaryApiUrl = undefined
+    dreddCommandInfo = undefined
+    args = [
+      './test/fixtures/single-get.apib'
+      "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"
+      '--reporter=apiary'
+    ]
+
+    beforeEach((done) ->
+      apiaryApiUrl = process.env.APIARY_API_URL
+
+      nonExistentPort = DEFAULT_SERVER_PORT + 42
+      process.env.APIARY_API_URL = "http://127.0.0.1:#{nonExistentPort}"
+
+      runDreddCommand(args, (err, info) ->
+        dreddCommandInfo = info
+        done(err)
+      )
+    )
+    afterEach( ->
+      process.env.APIARY_API_URL = apiaryApiUrl
+    )
+
+    it('ends successfully', ->
+      assert.equal(dreddCommandInfo.exitStatus, 0)
+    )
+    it('prints error about Apiary API connection issues', ->
+      assert.include(dreddCommandInfo.stderr, 'Apiary reporter could not connect to Apiary API')
+    )
+  )
