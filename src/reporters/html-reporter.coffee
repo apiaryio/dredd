@@ -3,7 +3,7 @@ fs = require 'fs'
 
 md = require('markdown-it')()
 file = require 'file'
-mkdirp = require 'mkdirp'
+fsExtra = require 'fs-extra'
 pathmodule = require 'path'
 
 logger = require('./../logger')
@@ -43,7 +43,7 @@ class HtmlReporter extends EventEmitter
 
     emitter.on 'end', (callback) =>
       html = md.render @buf
-      mkdirp pathmodule.dirname(@path), (err) ->
+      fsExtra.mkdirp pathmodule.dirname(@path), (err) =>
         if !err
           fs.writeFile @path, html, (err) ->
             logger.error err if err

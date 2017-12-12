@@ -284,6 +284,11 @@ describe 'CLI - Reporters', ->
     ]
 
     beforeEach (done) ->
+      try
+        fs.unlinkSync "#{process.cwd()}/__test_directory/__test_file_output__.xml"
+      catch
+        # do nothing
+
       runDreddCommand args, (err, info) ->
         dreddCommandInfo = info
         done(err)

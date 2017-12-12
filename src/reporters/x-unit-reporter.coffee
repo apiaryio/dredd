@@ -4,7 +4,7 @@ fs = require 'fs'
 htmlencode = require 'htmlencode'
 file = require 'file'
 pathmodule = require 'path'
-mkdirp = require 'mkdirp'
+fsExtra = require 'fs-extra'
 
 logger = require('./../logger')
 prettifyResponse = require './../prettify-response'
@@ -30,7 +30,7 @@ class XUnitReporter extends EventEmitter
 
   configureEmitter: (emitter) ->
     emitter.on 'start', (rawBlueprint, callback) =>
-      mkdirp pathmodule.dirname(@path), (err) =>
+      fsExtra.mkdirp pathmodule.dirname(@path), (err) =>
         if !err
           appendLine @path, toTag('testsuite', {
             name: 'Dredd Tests'

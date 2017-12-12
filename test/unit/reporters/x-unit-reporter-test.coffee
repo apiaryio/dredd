@@ -5,14 +5,14 @@ proxyquire = require('proxyquire').noCallThru()
 
 loggerStub = require '../../../src/logger'
 fsStub = require 'fs'
-mkdirpStub = sinon.spy((path, cb) => cb())
-mkdirpProxy = (path, cb) -> mkdirpStub(path, cb)
+fsExtraStub = {mkdirp: (path, cb) -> cb()}
 
 XUnitReporter = proxyquire '../../../src/reporters/x-unit-reporter', {
   './../logger' : loggerStub
   'fs' : fsStub
-  'mkdirp' : mkdirpProxy
+  'fs-extra' : fsExtraStub
 }
+
 
 describe 'XUnitReporter', () ->
 
@@ -62,35 +62,41 @@ describe 'XUnitReporter', () ->
 
   describe 'when starting', () ->
 
-    beforeEach () ->
-      sinon.stub fsStub, 'appendFileSync'
+    describe 'when can create output directory', () ->
 
-    afterEach () ->
-      fsStub.appendFileSync.restore()
+      beforeEach () ->
+        sinon.stub fsStub, 'appendFileSync'
+        sinon.spy fsExtraStub, 'mkdirp'
 
-    it 'should write opening to file', (done) ->
-      emitter = new EventEmitter()
-      xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
-      emitter.emit 'start', '', () ->
-        assert.isOk mkdirpStub.called
-        assert.isOk fsStub.appendFileSync.called
-        done()
+      afterEach () ->
+        fsStub.appendFileSync.restore()
+        fsExtraStub.mkdirp.restore()
+
+      it 'should write opening to file', (done) ->
+        emitter = new EventEmitter()
+        xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
+        emitter.emit 'start', '', () ->
+          assert.isOk fsExtraStub.mkdirp.called
+          assert.isOk fsStub.appendFileSync.called
+          done()
 
     describe 'when cannot create output directory', () ->
 
       beforeEach () ->
+        sinon.stub fsStub, 'appendFileSync'
         sinon.stub loggerStub, 'error'
-        mkdirpStub = sinon.spy((path, cb) => cb('error'))
+        sinon.stub(fsExtraStub, 'mkdirp').callsFake((path, cb) => cb('error'))
 
       after () ->
+        fsStub.appendFileSync.restore()
         loggerStub.error.restore()
-        mkdirpStub = sinon.spy((path, cb) => cb())
+        fsExtraStub.mkdirp.restore()
 
       it 'should write to log', (done) ->
         emitter = new EventEmitter()
         xUnitReporter = new XUnitReporter(emitter, {}, {}, "test.xml")
         emitter.emit 'start', '', () ->
-          assert.isOk mkdirpStub.called
+          assert.isOk fsExtraStub.mkdirp.called
           assert.isOk fsStub.appendFileSync.notCalled
           assert.isOk loggerStub.error.called
           done()

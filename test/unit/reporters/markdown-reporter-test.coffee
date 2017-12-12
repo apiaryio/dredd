@@ -5,14 +5,14 @@ proxyquire = require('proxyquire').noCallThru()
 {EventEmitter} = require 'events'
 loggerStub = require '../../../src/logger'
 fsStub = require 'fs'
-mkdirpStub = sinon.spy((path, cb) => cb())
-mkdirpProxy = (path, cb) -> mkdirpStub(path, cb)
+fsExtraStub = {mkdirp: (path, cb) -> cb()}
 
 MarkdownReporter = proxyquire '../../../src/reporters/markdown-reporter', {
   './../logger' : loggerStub
   'fs' : fsStub
-  'mkdirp' : mkdirpProxy
+  'fs-extra' : fsExtraStub
 }
+
 
 describe 'MarkdownReporter', () ->
 
@@ -82,31 +82,37 @@ describe 'MarkdownReporter', () ->
 
   describe 'when ending', () ->
 
-    beforeEach () ->
-      sinon.stub fsStub, 'writeFile'
+    describe 'when can create output directory', () ->
 
-    afterEach () ->
-      fsStub.writeFile.restore()
+      beforeEach () ->
+        sinon.stub fsStub, 'writeFile'
+        sinon.spy fsExtraStub, 'mkdirp'
 
-    it 'should write buffer to file', (done) ->
-      emitter.emit 'end'
-      assert.isOk mkdirpStub.called
-      assert.isOk fsStub.writeFile.called
-      done()
+      afterEach () ->
+        fsStub.writeFile.restore()
+        fsExtraStub.mkdirp.restore()
+
+      it 'should write buffer to file', (done) ->
+        emitter.emit 'end'
+        assert.isOk fsExtraStub.mkdirp.called
+        assert.isOk fsStub.writeFile.called
+        done()
 
     describe 'when cannot create output directory', () ->
 
       beforeEach () ->
+        sinon.stub fsStub, 'writeFile'
         sinon.stub loggerStub, 'error'
-        mkdirpStub = sinon.spy((path, cb) => cb('error'))
+        sinon.stub(fsExtraStub, 'mkdirp').callsFake((path, cb) -> cb('error'))
 
       after () ->
+        fsStub.writeFile.restore()
         loggerStub.error.restore()
-        mkdirpStub = sinon.spy((path, cb) => cb())
+        fsExtraStub.mkdirp.restore()
 
       it 'should write to log', (done) ->
         emitter.emit 'end', () ->
-          assert.isOk mkdirpStub.called
+          assert.isOk fsExtraStub.mkdirp.called
           assert.isOk fsStub.writeFile.notCalled
           assert.isOk loggerStub.error.called
           done()
