@@ -10,9 +10,9 @@ NON_EXISTENT_PORT = DEFAULT_SERVER_PORT + 1
 
 describe 'CLI - API Description Document', ->
 
-  describe 'When loaded from file', ->
+  describe 'when loaded from file', ->
 
-    describe 'When loaded by glob pattern', ->
+    describe 'when loaded by glob pattern', ->
       runtimeInfo = undefined
       args = ['./test/fixtures/single-g*t.apib', "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"]
 
@@ -30,7 +30,7 @@ describe 'CLI - API Description Document', ->
       it 'should exit with status 0', ->
         assert.equal runtimeInfo.dredd.exitStatus, 0
 
-    describe 'When file not found', ->
+    describe 'when file not found', ->
       runtimeInfo = undefined
       args = [
         './test/fixtures/__non-existent__.apib'
@@ -48,7 +48,7 @@ describe 'CLI - API Description Document', ->
       it 'should print error message to stderr', ->
         assert.include runtimeInfo.dredd.stderr, 'not found'
 
-    describe 'When given path exists, but can\'t be read', ->
+    describe 'when given path exists, but can\'t be read', ->
       runtimeInfo = undefined
       args = [
         os.homedir(),
@@ -67,9 +67,9 @@ describe 'CLI - API Description Document', ->
         assert.include runtimeInfo.dredd.stderr, 'Error when reading file'
 
 
-  describe 'When loaded from URL', ->
+  describe 'when loaded from URL', ->
 
-    describe 'When successfully loaded from URL', ->
+    describe 'when successfully loaded from URL', ->
       runtimeInfo = undefined
       args = [
         "http://127.0.0.1:#{DEFAULT_SERVER_PORT}/single-get.apib"
@@ -96,7 +96,7 @@ describe 'CLI - API Description Document', ->
       it 'should exit with status 0', ->
         assert.equal runtimeInfo.dredd.exitStatus, 0
 
-    describe 'When URL points to non-existent server', ->
+    describe 'when URL points to non-existent server', ->
       runtimeInfo = undefined
       args = [
         "http://127.0.0.1:#{NON_EXISTENT_PORT}/single-get.apib"
@@ -118,7 +118,7 @@ describe 'CLI - API Description Document', ->
         assert.include runtimeInfo.dredd.stderr, 'Is the provided URL correct?'
         assert.include runtimeInfo.dredd.stderr, "http://127.0.0.1:#{NON_EXISTENT_PORT}/single-get.apib"
 
-    describe 'When URL points to non-existent resource', ->
+    describe 'when URL points to non-existent resource', ->
       runtimeInfo = undefined
       args = [
         "http://127.0.0.1:#{DEFAULT_SERVER_PORT}/__non-existent__.apib"
@@ -144,9 +144,9 @@ describe 'CLI - API Description Document', ->
         assert.include runtimeInfo.dredd.stderr, "http://127.0.0.1:#{DEFAULT_SERVER_PORT}/__non-existent__.apib"
 
 
-  describe 'When loaded by -p/--path', ->
+  describe 'when loaded by -p/--path', ->
 
-    describe 'When loaded from file', ->
+    describe 'when loaded from file', ->
       runtimeInfo = undefined
       args = [
         './test/fixtures/single-get.apib'
@@ -170,7 +170,7 @@ describe 'CLI - API Description Document', ->
       it 'should exit with status 0', ->
         assert.equal runtimeInfo.dredd.exitStatus, 0
 
-    describe 'When loaded from URL', ->
+    describe 'when loaded from URL', ->
       runtimeInfo = undefined
       args = [
         './test/fixtures/single-get-uri-template.apib'
@@ -200,7 +200,7 @@ describe 'CLI - API Description Document', ->
       it 'should exit with status 0', ->
         assert.equal runtimeInfo.dredd.exitStatus, 0
 
-    describe 'When used multiple times', ->
+    describe 'when used multiple times', ->
       runtimeInfo = undefined
       args = [
         './test/fixtures/single-get.apib'
@@ -227,7 +227,7 @@ describe 'CLI - API Description Document', ->
       it 'should exit with status 0', ->
         assert.equal runtimeInfo.dredd.exitStatus, 0
 
-    describe 'When loaded by glob pattern', ->
+    describe 'when loaded by glob pattern', ->
       runtimeInfo = undefined
       args = [
         './test/fixtures/single-get.apib'
@@ -251,7 +251,7 @@ describe 'CLI - API Description Document', ->
       it 'should exit with status 0', ->
         assert.equal runtimeInfo.dredd.exitStatus, 0
 
-    describe 'When additional file not found', ->
+    describe 'when additional file not found', ->
       runtimeInfo = undefined
       args = [
         './test/fixtures/single-get.apib'

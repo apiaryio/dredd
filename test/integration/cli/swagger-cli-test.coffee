@@ -6,9 +6,9 @@ fs = require 'fs'
 
 describe 'CLI - Swagger Document', ->
 
-  describe 'When loaded from file', ->
+  describe 'when loaded from file', ->
 
-    describe 'When successfully loaded', ->
+    describe 'when successfully loaded', ->
       runtimeInfo = undefined
       args = ['./test/fixtures/single-get.yaml', "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"]
 
@@ -26,7 +26,7 @@ describe 'CLI - Swagger Document', ->
       it 'should exit with status 0', ->
         assert.equal runtimeInfo.dredd.exitStatus, 0
 
-    describe 'When Swagger is loaded with errors', ->
+    describe 'when Swagger is loaded with errors', ->
       runtimeInfo = undefined
       args = [
         './test/fixtures/error-swagger.yaml'
@@ -44,7 +44,7 @@ describe 'CLI - Swagger Document', ->
       it 'should print error message to stderr', ->
         assert.include runtimeInfo.dredd.stderr, 'Error when processing API description'
 
-    describe 'When Swagger is loaded with warnings', ->
+    describe 'when Swagger is loaded with warnings', ->
       runtimeInfo = undefined
       args = [
         './test/fixtures/warning-swagger.yaml'

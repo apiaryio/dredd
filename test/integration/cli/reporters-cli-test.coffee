@@ -27,7 +27,7 @@ describe 'CLI - Reporters', ->
     server.close(done)
 
 
-  describe 'When -r/--reporter is provided to use additional reporters', ->
+  describe 'when -r/--reporter is provided to use additional reporters', ->
     dreddCommandInfo = undefined
     args = [
       './test/fixtures/single-get.apib'
@@ -45,7 +45,7 @@ describe 'CLI - Reporters', ->
       assert.include dreddCommandInfo.stdout, '/\\_/\\'
 
 
-  describe 'When apiary reporter is used', ->
+  describe 'when apiary reporter is used', ->
     apiary = undefined
     apiaryRuntimeInfo = undefined
 
@@ -71,7 +71,7 @@ describe 'CLI - Reporters', ->
     afterEach (done) ->
       apiary.close(done)
 
-    describe 'When Dredd successfully performs requests to Apiary', ->
+    describe 'when Dredd successfully performs requests to Apiary', ->
       dreddCommandInfo = undefined
       stepRequest = undefined
       args = [
@@ -106,7 +106,7 @@ describe 'CLI - Reporters', ->
         assert.nestedProperty stepRequest.body, 'resultData.result.headers.validator'
         assert.nestedProperty stepRequest.body, 'resultData.result.statusCode.validator'
 
-    describe 'When hooks file uses hooks.log function for logging', ->
+    describe 'when hooks file uses hooks.log function for logging', ->
       dreddCommandInfo = undefined
       updateRequest = undefined
       stepRequest = undefined
@@ -172,7 +172,7 @@ describe 'CLI - Reporters', ->
           assert.isNumber stepRequest.body.startedAt
           assert.operator stepRequest.body.startedAt, '<=', updateRequest.body.logs[2].timestamp
 
-    describe 'When hooks file uses hooks.log function for logging and hooks are in sandbox mode', ->
+    describe 'when hooks file uses hooks.log function for logging and hooks are in sandbox mode', ->
       dreddCommandInfo = undefined
       updateRequest = undefined
       stepRequest = undefined
@@ -230,7 +230,7 @@ describe 'CLI - Reporters', ->
           assert.isNumber stepRequest.body.startedAt
           assert.operator stepRequest.body.startedAt, '<=', updateRequest.body.logs[1].timestamp
 
-  describe 'When -o/--output is used to specify output file', ->
+  describe 'when -o/--output is used to specify output file', ->
     dreddCommandInfo = undefined
     args = [
       './test/fixtures/single-get.apib'
@@ -250,7 +250,7 @@ describe 'CLI - Reporters', ->
     it 'should create given file', ->
       assert.isOk fs.existsSync "#{process.cwd()}/__test_file_output__.xml"
 
-  describe 'When -o/--output is used multiple times to specify output files', ->
+  describe 'when -o/--output is used multiple times to specify output files', ->
     dreddCommandInfo = undefined
     args = [
       './test/fixtures/single-get.apib'

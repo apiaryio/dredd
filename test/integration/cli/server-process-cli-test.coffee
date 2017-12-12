@@ -9,7 +9,7 @@ NON_EXISTENT_PORT = DEFAULT_SERVER_PORT + 1
 
 describe 'CLI - Server Process', ->
 
-  describe 'When specified by URL', ->
+  describe 'when specified by URL', ->
     server = undefined
     serverRuntimeInfo = undefined
 
@@ -30,7 +30,7 @@ describe 'CLI - Server Process', ->
       server.close(done)
 
 
-    describe 'When is running', ->
+    describe 'when is running', ->
       dreddCommandInfo = undefined
       args = ['./test/fixtures/single-get.apib', "http://127.0.0.1:#{DEFAULT_SERVER_PORT}"]
 
@@ -44,7 +44,7 @@ describe 'CLI - Server Process', ->
       it 'should exit with status 0', ->
         assert.equal dreddCommandInfo.exitStatus, 0
 
-    describe 'When is not running', ->
+    describe 'when is not running', ->
       dreddCommandInfo = undefined
       args = ['./test/fixtures/apiary.apib', "http://127.0.0.1:#{NON_EXISTENT_PORT}"]
 
@@ -64,12 +64,12 @@ describe 'CLI - Server Process', ->
         assert.equal dreddCommandInfo.exitStatus, 1
 
 
-  describe 'When specified by -g/--server', ->
+  describe 'when specified by -g/--server', ->
 
     afterEach (done) ->
       killAll('test/fixtures/scripts/', done)
 
-    describe 'When works as expected', ->
+    describe 'when works as expected', ->
       dreddCommandInfo = undefined
       args = [
         './test/fixtures/single-get.apib'
@@ -90,7 +90,7 @@ describe 'CLI - Server Process', ->
       it 'should exit with status 0', ->
         assert.equal dreddCommandInfo.exitStatus, 0
 
-    describe 'When it fails to start', ->
+    describe 'when it fails to start', ->
       dreddCommandInfo = undefined
       args = [
         './test/fixtures/single-get.apib'
@@ -162,7 +162,7 @@ describe 'CLI - Server Process', ->
           it 'should exit with status 1', ->
             assert.equal dreddCommandInfo.exitStatus, 1
 
-    describe 'When didn\'t terminate and had to be killed by Dredd', ->
+    describe 'when didn\'t terminate and had to be killed by Dredd', ->
       dreddCommandInfo = undefined
       args = [
         './test/fixtures/single-get.apib'
