@@ -2,6 +2,8 @@
 fs = require 'fs'
 
 file = require 'file'
+pathmodule = require 'path'
+fsExtra = require 'fs-extra'
 
 logger = require('./../logger')
 prettifyResponse = require './../prettify-response'
@@ -39,9 +41,14 @@ class MarkdownReporter extends EventEmitter
       callback()
 
     emitter.on 'end', (callback) =>
-      fs.writeFile @path, @buf, (err) ->
-        logger.error err if err
-        callback()
+      fsExtra.mkdirp pathmodule.dirname(@path), (err) =>
+        if !err
+          fs.writeFile @path, @buf, (err) ->
+            logger.error err if err
+            callback()
+        else
+          logger.error err if err
+          callback()
 
     emitter.on 'test start', (test) =>
       @level++

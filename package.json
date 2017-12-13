@@ -38,6 +38,7 @@
     "cross-spawn": "^5.0.1",
     "dredd-transactions": "5.0.3",
     "file": "^0.2.2",
+    "fs-extra": "5.0.0",
     "gavel": "^1.1.1",
     "glob": "^7.0.5",
     "html": "^1.0.0",

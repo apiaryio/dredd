@@ -5,11 +5,14 @@ proxyquire = require('proxyquire').noCallThru()
 {EventEmitter} = require 'events'
 loggerStub = require '../../../src/logger'
 fsStub = require 'fs'
+fsExtraStub = {mkdirp: (path, cb) -> cb()}
 
 HtmlReporter = proxyquire '../../../src/reporters/html-reporter', {
   './../logger' : loggerStub
   'fs' : fsStub
+  'fs-extra' : fsExtraStub
 }
+
 
 describe 'HtmlReporter', () ->
 
@@ -78,17 +81,42 @@ describe 'HtmlReporter', () ->
     before () ->
       stats.tests = 1
 
-    beforeEach () ->
-      sinon.stub(fsStub, 'writeFile').callsFake (path, data, callback) ->
-        callback()
+    describe 'when can create output directory', () ->
 
-    afterEach () ->
-      fsStub.writeFile.restore()
+      beforeEach () ->
+        sinon.stub(fsStub, 'writeFile').callsFake (path, data, callback) ->
+          callback()
+        sinon.spy(fsExtraStub, 'mkdirp')
 
-    it 'should write the file', (done) ->
-      emitter.emit 'end', () ->
-        assert.isOk fsStub.writeFile.called
-        done()
+      afterEach () ->
+        fsStub.writeFile.restore()
+        fsExtraStub.mkdirp.restore()
+
+      it 'should write the file', (done) ->
+        emitter.emit 'end', () ->
+          assert.isOk fsExtraStub.mkdirp.called
+          assert.isOk fsStub.writeFile.called
+          done()
+
+    describe 'when cannot create output directory', () ->
+
+      beforeEach () ->
+        sinon.stub loggerStub, 'error'
+        sinon.stub(fsStub, 'writeFile').callsFake (path, data, callback) ->
+          callback()
+        sinon.stub(fsExtraStub, 'mkdirp').callsFake((path, cb) -> cb('error'))
+
+      after () ->
+        loggerStub.error.restore()
+        fsStub.writeFile.restore()
+        fsExtraStub.mkdirp.restore()
+
+      it 'should write to log', (done) ->
+        emitter.emit 'end', () ->
+          assert.isOk fsExtraStub.mkdirp.called
+          assert.isOk fsStub.writeFile.notCalled
+          assert.isOk loggerStub.error.called
+          done()
 
   describe 'when test passes', () ->
 
