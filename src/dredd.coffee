@@ -126,17 +126,16 @@ class Dredd
       glob globToExpand, (err, match) =>
         return globCallback(err) if err
         @configuration.files = @configuration.files.concat match
+        if match.length == 0
+          err = new Error("""\
+            API description document(s) not found on path: \
+            '#{globToExpand}'\
+          """)
+          return globCallback(err)
         globCallback()
 
     , (err) =>
       return callback(err, @stats) if err
-
-      if @configDataIsEmpty and @configuration.files.length == 0
-        err = new Error("""\
-          API description document (or documents) not found on path: \
-          '#{@configuration.options.path}'\
-        """)
-        return callback(err, @stats)
 
       # remove duplicate filenames
       @configuration.files = removeDuplicates @configuration.files
