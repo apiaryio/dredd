@@ -1,17 +1,23 @@
-clone = require 'clone'
+const clone = require('clone');
 
-mergeSandboxedHooks = (original, toMerge) ->
+const mergeSandboxedHooks = function(original, toMerge) {
 
-  newHooks = clone original
+  const newHooks = clone(original);
 
-  for target, functions of toMerge
-    if Array.isArray functions
-      newHooks[target] = newHooks[target].concat functions
-    else if typeof(functions) == "object" and not Array.isArray functions
-      for transactionName, funcArray of functions
-        newHooks[target][transactionName] ?= []
-        newHooks[target][transactionName] = newHooks[target][transactionName].concat funcArray
+  for (let target in toMerge) {
+    const functions = toMerge[target];
+    if (Array.isArray(functions)) {
+      newHooks[target] = newHooks[target].concat(functions);
+    } else if ((typeof(functions) === "object") && !Array.isArray(functions)) {
+      for (let transactionName in functions) {
+        const funcArray = functions[transactionName];
+        if (newHooks[target][transactionName] == null) { newHooks[target][transactionName] = []; }
+        newHooks[target][transactionName] = newHooks[target][transactionName].concat(funcArray);
+      }
+    }
+  }
 
-  return newHooks
+  return newHooks;
+};
 
-module.exports = mergeSandboxedHooks
+module.exports = mergeSandboxedHooks;

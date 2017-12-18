@@ -1,47 +1,54 @@
-fs = require 'fs'
-yaml = require 'js-yaml'
-clone = require 'clone'
+const fs = require('fs');
+const yaml = require('js-yaml');
+const clone = require('clone');
 
-configUtils = {}
+const configUtils = {};
 
-configUtils.save = (argsOrigin, path) ->
-  path ?= './dredd.yml'
+configUtils.save = function(argsOrigin, path) {
+  if (path == null) { path = './dredd.yml'; }
 
-  args = clone argsOrigin
+  const args = clone(argsOrigin);
 
-  args['blueprint'] = args['_'][0]
-  args['endpoint'] = args['_'][1]
+  args['blueprint'] = args['_'][0];
+  args['endpoint'] = args['_'][1];
 
-  for key, value of args
-    delete args[key] if key.length == 1
+  for (let key in args) {
+    const value = args[key];
+    if (key.length === 1) { delete args[key]; }
+  }
 
-  delete args['$0']
-  delete args['_']
+  delete args['$0'];
+  delete args['_'];
 
-  yamlArgs = yaml.dump args
-  fs.writeFileSync path, yamlArgs
+  const yamlArgs = yaml.dump(args);
+  return fs.writeFileSync(path, yamlArgs);
+};
 
 
-configUtils.load = (path) ->
-  path ?= './dredd.yml'
+configUtils.load = function(path) {
+  if (path == null) { path = './dredd.yml'; }
 
-  yamlData = fs.readFileSync path
-  data = yaml.safeLoad yamlData
+  const yamlData = fs.readFileSync(path);
+  const data = yaml.safeLoad(yamlData);
 
-  data['_'] = [data['blueprint'], data['endpoint']]
+  data['_'] = [data['blueprint'], data['endpoint']];
 
-  delete data['blueprint']
-  delete data['endpoint']
+  delete data['blueprint'];
+  delete data['endpoint'];
 
-  data
+  return data;
+};
 
-configUtils.parseCustom = (customArray) ->
-  output = {}
-  if Array.isArray customArray
-    for string in customArray
-      splitted = string.split(/:(.+)?/)
-      output[splitted[0]] = splitted[1]
+configUtils.parseCustom = function(customArray) {
+  const output = {};
+  if (Array.isArray(customArray)) {
+    for (let string of customArray) {
+      const splitted = string.split(/:(.+)?/);
+      output[splitted[0]] = splitted[1];
+    }
+  }
 
-  output
+  return output;
+};
 
-module.exports = configUtils
+module.exports = configUtils;

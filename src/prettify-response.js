@@ -1,43 +1,57 @@
-html = require 'html'
+const html = require('html');
 
-logger = require './logger'
+const logger = require('./logger');
 
-prettifyResponse = (response) ->
-  stringify = (obj) ->
-    try
-      if typeof obj is 'string'
-        obj = JSON.parse(obj)
-      obj = JSON.stringify obj, null, 2
-    catch e
-      logger.debug "Could not stringify: " + obj
-    obj
+const prettifyResponse = function(response) {
+  let contentType;
+  const stringify = function(obj) {
+    try {
+      if (typeof obj === 'string') {
+        obj = JSON.parse(obj);
+      }
+      obj = JSON.stringify(obj, null, 2);
+    } catch (e) {
+      logger.debug(`Could not stringify: ${obj}`);
+    }
+    return obj;
+  };
 
-  prettifyBody = (body, contentType) ->
-    switch contentType
-      when 'application/json'
-        body = stringify body
-      when 'text/html'
-        body = html.prettyPrint body, {indent_size: 2}
-    body
+  const prettifyBody = function(body, contentType) {
+    switch (contentType) {
+      case 'application/json':
+        body = stringify(body);
+        break;
+      case 'text/html':
+        body = html.prettyPrint(body, {indent_size: 2});
+        break;
+    }
+    return body;
+  };
 
 
-  contentType = (response?.headers['content-type'] || response?.headers['Content-Type']) if response?.headers?
+  if ((response != null ? response.headers : undefined) != null) { contentType = ((response != null ? response.headers['content-type'] : undefined) || (response != null ? response.headers['Content-Type'] : undefined)); }
 
-  stringRepresentation = ""
+  let stringRepresentation = "";
 
-  for own key, value of response
-    if key is 'body'
-      value = '\n' + prettifyBody value, contentType
-    else if key is 'schema'
-      value = '\n' + stringify value
-    else if key is 'headers'
-      header = '\n'
-      for own hkey, hval of value
-        header += "    #{hkey}: #{hval}\n"
-      value = header
+  for (let key of Object.keys(response || {})) {
+    let value = response[key];
+    if (key === 'body') {
+      value = `\n${prettifyBody(value, contentType)}`;
+    } else if (key === 'schema') {
+      value = `\n${stringify(value)}`;
+    } else if (key === 'headers') {
+      let header = '\n';
+      for (let hkey of Object.keys(value || {})) {
+        const hval = value[hkey];
+        header += `    ${hkey}: ${hval}\n`;
+      }
+      value = header;
+    }
 
-    stringRepresentation += "#{key}: #{value}\n"
+    stringRepresentation += `${key}: ${value}\n`;
+  }
 
-  return stringRepresentation
+  return stringRepresentation;
+};
 
-module.exports = prettifyResponse
+module.exports = prettifyResponse;
