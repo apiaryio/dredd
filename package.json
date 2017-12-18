@@ -10,7 +10,7 @@
     "node": ">= 4"
   },
   "scripts": {
-    "lint": "conventional-changelog-lint --from=master && coffeelint src",
+    "lint": "conventional-changelog-lint --from=master && eslint src",
     "build": "coffee -b -c -o lib/ src/",
     "build:watch": "coffee -b -w -o lib/ src/",
     "docs:lint": "sphinx-build -nW -b linkcheck docs docs/_build/",
@@ -58,12 +58,14 @@
   "devDependencies": {
     "body-parser": "^1.17.1",
     "coffee-coverage": "^2.0.1",
-    "coffeelint": "^1.15.7",
     "conventional-changelog-lint": "^1.1.9",
     "coveralls": "^2.13.0",
     "cz-conventional-changelog": "^2.0.0",
     "drafter": "^1.0.0",
     "ect": "^0.5.9",
+    "eslint": "^4.4.1",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.7.0",
     "express": "^4.15.2",
     "hercule": "^4.0.1",
     "jscoverage": "^0.6.0",
