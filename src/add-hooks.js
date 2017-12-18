@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 require('coffee-script/register');
 const path = require('path');
 const proxyquire = require('proxyquire').noCallThru();

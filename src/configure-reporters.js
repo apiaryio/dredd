@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 const BaseReporter = require('./reporters/base-reporter');
 const XUnitReporter = require('./reporters/x-unit-reporter');
 const CliReporter = require('./reporters/cli-reporter');

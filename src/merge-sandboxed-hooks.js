@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 const clone = require('clone');
 
 const mergeSandboxedHooks = function(original, toMerge) {

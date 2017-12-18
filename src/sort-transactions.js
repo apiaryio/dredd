@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 // Often, API description is arranged with a sequence of methods that lends
 // itself to understanding by the human reading the documentation.
 //

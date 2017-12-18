@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 const net = require('net');
 const path = require('path');
 const {EventEmitter} = require('events');

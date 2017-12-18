@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 
 const logger = require('../logger');
 const prettifyResponse = require('../prettify-response');
