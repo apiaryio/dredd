@@ -198,7 +198,7 @@ describe 'CLI', ->
           app.get '/machines', (req, res) ->
             # path.posix|win32.normalize and path.join do not do the job in this case,
             # hence this ingenious hack
-            normalizedPath = path.normalize('foo/bar/hooks').replace(/\\/g, '\\\\')
+            normalizedPath = path.normalize('test/fixtures/hooks.js').replace(/\\/g, '\\\\')
             killAll("endless-ignore-term.+[^=]#{normalizedPath}", (err) ->
               done err if err
               res.json([{type: 'bulldozer', name: 'willy'}])
@@ -215,7 +215,7 @@ describe 'CLI', ->
             "--server=#{COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee"
             '--server-wait=0'
             "--language=#{COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee"
-            '--hookfiles=foo/bar/hooks'
+            '--hookfiles=test/fixtures/hooks.js'
           ]
           hookHandler.listen DEFAULT_HOOK_HANDLER_PORT, ->
             runDreddCommandWithServer(args, app, (err, info) ->

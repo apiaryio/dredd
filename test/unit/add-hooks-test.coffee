@@ -95,7 +95,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
         configuration:
           options:
             language: 'ruby'
-            hookfiles: './some/ruby/file.rb'
+            hookfiles: './test/fixtures/non-js-hooks.rb'
 
       sinon.stub(hooksWorkerClientStub.prototype, 'start').callsFake (cb) -> cb()
 
@@ -129,7 +129,17 @@ describe 'addHooks(runner, transactions, callback)', () ->
       runner =
         configuration:
           options:
-            hookfiles: ['./test/**/*_hooks.*', '/baz/x.js', '/foo/y.js', '/bar/z.js', '/foo/a.js', '/bar/b.js', '/baz/c.js', '/foo/o.js', '/bar/p.js']
+            hookfiles: [
+              './test/**/*_hooks.*',
+              './test/fixtures/hooks-glob/baz/x.js',
+              './test/fixtures/hooks-glob/foo/y.js',
+              './test/fixtures/hooks-glob/bar/z.js',
+              './test/fixtures/hooks-glob/foo/a.js',
+              './test/fixtures/hooks-glob/bar/b.js',
+              './test/fixtures/hooks-glob/baz/c.js',
+              './test/fixtures/hooks-glob/foo/o.js',
+              './test/fixtures/hooks-glob/bar/p.js',
+            ]
 
       addHooks runner, transactions, (err) ->
         return done err if err
@@ -174,37 +184,35 @@ describe 'addHooks(runner, transactions, callback)', () ->
 
         done()
 
-    it 'should return resolved path for non existing file', (done) ->
+    it 'should return error for non-existing file', (done) ->
       runner =
         configuration:
           options:
             hookfiles: 'foo/bar/hooks'
 
       addHooks runner, transactions, (err) ->
-        return done err if err
-
-        actual = runner.hooks.configuration.options.hookfiles
-        expected = [pathStub.resolve(process.cwd(), 'foo/bar/hooks')]
-
-        assert.deepEqual actual, expected
-
+        assert.instanceOf(err, Error)
+        assert.include(err.message, 'foo/bar/hooks')
         done()
 
     it 'should handle mixed filepaths and globs', (done) ->
       runner =
         configuration:
           options:
-            hookfiles: ['foo/bar/hooks', './test/**/*_hooks.*']
+            hookfiles: [
+              './test/fixtures/hooks-glob/bar/z.js',
+              './test/**/*_hooks.*',
+            ]
 
       addHooks runner, transactions, (err) ->
         return done err if err
 
         actual = runner.hooks.configuration.options.hookfiles
         expected = [
-          pathStub.resolve(process.cwd(), 'foo/bar/hooks')
           pathStub.resolve(process.cwd(), './test/fixtures/multifile/multifile_hooks.coffee')
           pathStub.resolve(process.cwd(), './test/fixtures/test2_hooks.js')
           pathStub.resolve(process.cwd(), './test/fixtures/test_hooks.coffee')
+          pathStub.resolve(process.cwd(), './test/fixtures/hooks-glob/bar/z.js')
         ]
 
         assert.deepEqual actual, expected
@@ -221,7 +229,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
           addHooks runner, transactions, (error) ->
             assert.isOk error
             done()
-          
+
       describe 'for some hook files', () ->
         it 'should return an error', (done) ->
           runner =
@@ -231,7 +239,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
           addHooks runner, transactions, (error) ->
             assert.isOk error
             done()
-          
+
       describe 'for a single hook file', () ->
         it 'should return an error', (done) ->
           runner =
@@ -241,7 +249,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
           addHooks runner, transactions, (error) ->
             assert.isOk error
             done()
-          
+
 
     describe 'when files are valid js/coffeescript', () ->
       runner = null
