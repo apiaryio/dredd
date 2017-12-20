@@ -1,7 +1,6 @@
 require 'coffee-script/register'
 path = require 'path'
 proxyquire = require('proxyquire').noCallThru()
-glob = require 'glob'
 fs = require 'fs'
 async = require 'async'
 clone = require 'clone'
@@ -9,16 +8,13 @@ clone = require 'clone'
 Hooks = require './hooks'
 logger = require './logger'
 sandboxHooksCode = require './sandbox-hooks-code'
+resolveHookfiles = require './resolve-hookfiles'
 mergeSandboxedHooks = require './merge-sandboxed-hooks'
 HooksWorkerClient = require './hooks-worker-client'
 
-# Ensure platform agnostic path.basename function
-basename = if process.platform is 'win32' then path.win32.basename else path.basename
 
+# Note: runner.configuration.options must be defined
 addHooks = (runner, transactions, callback) ->
-  # Note: runner.configuration.options must be defined
-
-  customConfigCwd = runner?.configuration?.custom?.cwd
 
   fixLegacyTransactionNames = (allHooks) ->
     pattern = /^\s>\s/g
@@ -97,43 +93,14 @@ addHooks = (runner, transactions, callback) ->
       # No data found, doing nothing
       return callback()
 
-  # Loading hookfiles from fs
   else
-    # Expand hookfiles - sort files alphabetically and resolve their paths
-    hookfiles = [].concat runner.configuration?.options?.hookfiles
+    # Loading hookfiles from fs
+    hookfiles = [].concat(runner.configuration?.options?.hookfiles)
+    cwd = runner?.configuration?.custom?.cwd
     try
-      files = hookfiles.reduce((result, unresolvedPath) ->
-        # glob.sync does not resolve paths, only glob patterns
-
-        unresolvedPaths = if glob.hasMagic(unresolvedPath) then glob.sync(unresolvedPath) else
-          if fs.existsSync(unresolvedPath) then [unresolvedPath] else []
-
-        if unresolvedPaths.length == 0
-          throw new Error("Hook file(s) not found on path: #{unresolvedPath}")
-
-        # Gradually append sorted and resolved paths
-        result.concat unresolvedPaths
-          # Create a filename / filepath map for easier sorting
-          # Example:
-          # [
-          #   { basename: 'filename1.coffee', path: './path/to/filename1.coffee' }
-          #   { basename: 'filename2.coffee', path: './path/to/filename2.coffee' }
-          # ]
-          .map((filepath) -> basename: basename(filepath), path: filepath)
-          # Sort 'em up
-          .sort((a, b) -> switch
-            when a.basename < b.basename then -1
-            when a.basename > b.basename then 1
-            else 0
-          )
-          # Resolve paths to absolute form. Take into account user defined current
-          # working directory, fallback to process.cwd() otherwise
-          .map((item) -> path.resolve(customConfigCwd or process.cwd(), item.path))
-      , [] # Start with empty result
-      )
+      files = resolveHookfiles(hookfiles, cwd)
     catch err
       return callback(err)
-
     logger.info('Found Hookfiles:', files)
 
     # Clone the configuration object to hooks.configuration to make it
