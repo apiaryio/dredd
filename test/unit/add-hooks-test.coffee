@@ -125,131 +125,16 @@ describe 'addHooks(runner, transactions, callback)', () ->
         globStub.sync.restore()
         done()
 
-    it 'should return files alphabetically sorted', (done) ->
-      runner =
-        configuration:
-          options:
-            hookfiles: [
-              './test/**/*_hooks.*',
-              './test/fixtures/hooks-glob/baz/x.js',
-              './test/fixtures/hooks-glob/foo/y.js',
-              './test/fixtures/hooks-glob/bar/z.js',
-              './test/fixtures/hooks-glob/foo/a.js',
-              './test/fixtures/hooks-glob/bar/b.js',
-              './test/fixtures/hooks-glob/baz/c.js',
-              './test/fixtures/hooks-glob/foo/o.js',
-              './test/fixtures/hooks-glob/bar/p.js',
-            ]
-
-      addHooks runner, transactions, (err) ->
-        return done err if err
-
-        # We need >10 files to prove that sorting is ok
-        expected = [
-          'a.js',
-          'b.js',
-          'c.js',
-          'multifile_hooks.coffee',
-          'o.js',
-          'p.js',
-          'test2_hooks.js',
-          'test_hooks.coffee',
-          'x.js',
-          'y.js',
-          'z.js',
-        ]
-
-        actual = runner.hooks.configuration.options.hookfiles
-
-        assert.notEqual actual.length, 0
-
-        actual.forEach (item, index) ->
-          assert.include item, expected[index]
-
-        done()
-
     it 'should return files with resolved paths', (done) ->
       addHooks runner, transactions, (err) ->
         return done err if err
 
-        expected = [
+        assert.deepEqual runner.hooks.configuration.options.hookfiles, [
           pathStub.resolve(process.cwd(), './test/fixtures/multifile/multifile_hooks.coffee'),
           pathStub.resolve(process.cwd(), './test/fixtures/test2_hooks.js'),
           pathStub.resolve(process.cwd(), './test/fixtures/test_hooks.coffee')
         ]
-
-        actual = runner.hooks.configuration.options.hookfiles
-
-        assert.deepEqual actual, expected
-
         done()
-
-    it 'should return error for non-existing file', (done) ->
-      runner =
-        configuration:
-          options:
-            hookfiles: 'foo/bar/hooks'
-
-      addHooks runner, transactions, (err) ->
-        assert.instanceOf(err, Error)
-        assert.include(err.message, 'foo/bar/hooks')
-        done()
-
-    it 'should handle mixed filepaths and globs', (done) ->
-      runner =
-        configuration:
-          options:
-            hookfiles: [
-              './test/fixtures/hooks-glob/bar/z.js',
-              './test/**/*_hooks.*',
-            ]
-
-      addHooks runner, transactions, (err) ->
-        return done err if err
-
-        actual = runner.hooks.configuration.options.hookfiles
-        expected = [
-          pathStub.resolve(process.cwd(), './test/fixtures/multifile/multifile_hooks.coffee')
-          pathStub.resolve(process.cwd(), './test/fixtures/test2_hooks.js')
-          pathStub.resolve(process.cwd(), './test/fixtures/test_hooks.coffee')
-          pathStub.resolve(process.cwd(), './test/fixtures/hooks-glob/bar/z.js')
-        ]
-
-        assert.deepEqual actual, expected
-
-        done()
-
-    describe 'when the hook file(s) doesn\'t exist', () ->
-      describe 'for all hook files', () ->
-        it 'should return an error', (done) ->
-          runner =
-            configuration:
-              options:
-                hookfiles: './**/*_hooks.balony'
-          addHooks runner, transactions, (error) ->
-            assert.isOk error
-            done()
-
-      describe 'for some hook files', () ->
-        it 'should return an error', (done) ->
-          runner =
-            configuration:
-              options:
-                hookfiles: ['./**/*_hooks.coffee', './**/*_hooks.balony']
-          addHooks runner, transactions, (error) ->
-            assert.isOk error
-            done()
-
-      describe 'for a single hook file', () ->
-        it 'should return an error', (done) ->
-          runner =
-            configuration:
-              options:
-                hookfiles: './test/fixtures/balony_hooks.balony'
-          addHooks runner, transactions, (error) ->
-            assert.isOk error
-            done()
-
 
     describe 'when files are valid js/coffeescript', () ->
       runner = null

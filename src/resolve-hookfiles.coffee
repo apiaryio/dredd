@@ -13,8 +13,14 @@ resolveHookfiles = (hookfiles, cwd = null) ->
   return hookfiles.reduce((result, unresolvedPath) ->
     # glob.sync does not resolve paths, only glob patterns
 
-    unresolvedPaths = if glob.hasMagic(unresolvedPath) then glob.sync(unresolvedPath) else
-      if fs.existsSync(unresolvedPath) then [unresolvedPath] else []
+    if glob.hasMagic(unresolvedPath)
+      unresolvedPaths = glob.sync(unresolvedPath, {cwd})
+    else
+      p = path.resolve(cwd, unresolvedPath)
+      if fs.existsSync(p)
+        unresolvedPaths = [p]
+      else
+        unresolvedPaths = []
 
     if unresolvedPaths.length == 0
       throw new Error("Hook file(s) not found on path: #{unresolvedPath}")
