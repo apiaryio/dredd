@@ -8,42 +8,31 @@ basename = if process.platform is 'win32' then path.win32.basename else path.bas
 
 # Expand hookfiles - sort files alphabetically and resolve their paths
 resolveHookfiles = (hookfiles, cwd = null) ->
+  return [] if not hookfiles or not hookfiles.length
   cwd ?= process.cwd()
 
-  return hookfiles.reduce((result, unresolvedPath) ->
+  resolvedPathsArrays = hookfiles.map((hookfile) ->
     # glob.sync does not resolve paths, only glob patterns
-
-    if glob.hasMagic(unresolvedPath)
-      unresolvedPaths = glob.sync(unresolvedPath, {cwd})
+    if glob.hasMagic(hookfile)
+      resolvedPaths = glob.sync(hookfile, {cwd}).map((p) -> path.resolve(cwd, p))
     else
-      p = path.resolve(cwd, unresolvedPath)
-      if fs.existsSync(p)
-        unresolvedPaths = [p]
-      else
-        unresolvedPaths = []
+      resolvedPath = path.resolve(cwd, hookfile)
+      resolvedPaths = if fs.existsSync(resolvedPath) then [resolvedPath] else []
 
-    if unresolvedPaths.length == 0
-      throw new Error("Hook file(s) not found on path: #{unresolvedPath}")
+    unless resolvedPaths.length
+      throw new Error("Could not find any hook file(s) on path: '#{hookfile}'")
 
-    # Gradually append sorted and resolved paths
-    result.concat unresolvedPaths
-      # Create a filename / filepath map for easier sorting
-      # Example:
-      # [
-      #   { basename: 'filename1.coffee', path: './path/to/filename1.coffee' }
-      #   { basename: 'filename2.coffee', path: './path/to/filename2.coffee' }
-      # ]
-      .map((filepath) -> basename: basename(filepath), path: filepath)
-      # Sort 'em up
-      .sort((a, b) -> switch
-        when a.basename < b.basename then -1
-        when a.basename > b.basename then 1
-        else 0
-      )
-      # Resolve paths to absolute form. Take into account current working dir
-      .map((item) -> path.resolve(cwd, item.path))
-  , [] # Start with empty result
+    return resolvedPaths
   )
+  resolvedPaths = Array.concat.apply([], resolvedPathsArrays)
+  resolvedPaths = resolvedPaths.sort((p1, p2) ->
+    [p1, p2] = [basename(p1), basename(p2)]
+    switch
+      when p1 < p2 then -1
+      when p1 > p2 then 1
+      else 0
+  )
+  return resolvedPaths
 
 
 module.exports = resolveHookfiles
