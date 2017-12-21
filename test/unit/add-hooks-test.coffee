@@ -95,7 +95,7 @@ describe 'addHooks(runner, transactions, callback)', () ->
         configuration:
           options:
             language: 'ruby'
-            hookfiles: './some/ruby/file.rb'
+            hookfiles: './test/fixtures/non-js-hooks.rb'
 
       sinon.stub(hooksWorkerClientStub.prototype, 'start').callsFake (cb) -> cb()
 
@@ -125,92 +125,16 @@ describe 'addHooks(runner, transactions, callback)', () ->
         globStub.sync.restore()
         done()
 
-    it 'should return files alphabetically sorted', (done) ->
-      runner =
-        configuration:
-          options:
-            hookfiles: ['./test/**/*_hooks.*', '/baz/x.js', '/foo/y.js', '/bar/z.js', '/foo/a.js', '/bar/b.js', '/baz/c.js', '/foo/o.js', '/bar/p.js']
-
-      addHooks runner, transactions, (err) ->
-        return done err if err
-
-        # We need >10 files to prove that sorting is ok
-        expected = [
-          'a.js',
-          'b.js',
-          'c.js',
-          'multifile_hooks.coffee',
-          'o.js',
-          'p.js',
-          'test2_hooks.js',
-          'test_hooks.coffee',
-          'x.js',
-          'y.js',
-          'z.js',
-        ]
-
-        actual = runner.hooks.configuration.options.hookfiles
-
-        assert.notEqual actual.length, 0
-
-        actual.forEach (item, index) ->
-          assert.include item, expected[index]
-
-        done()
-
     it 'should return files with resolved paths', (done) ->
       addHooks runner, transactions, (err) ->
         return done err if err
 
-        expected = [
+        assert.deepEqual runner.hooks.configuration.options.hookfiles, [
           pathStub.resolve(process.cwd(), './test/fixtures/multifile/multifile_hooks.coffee'),
           pathStub.resolve(process.cwd(), './test/fixtures/test2_hooks.js'),
           pathStub.resolve(process.cwd(), './test/fixtures/test_hooks.coffee')
         ]
-
-        actual = runner.hooks.configuration.options.hookfiles
-
-        assert.deepEqual actual, expected
-
         done()
-
-    it 'should return resolved path for non existing file', (done) ->
-      runner =
-        configuration:
-          options:
-            hookfiles: 'foo/bar/hooks'
-
-      addHooks runner, transactions, (err) ->
-        return done err if err
-
-        actual = runner.hooks.configuration.options.hookfiles
-        expected = [pathStub.resolve(process.cwd(), 'foo/bar/hooks')]
-
-        assert.deepEqual actual, expected
-
-        done()
-
-    it 'should handle mixed filepaths and globs', (done) ->
-      runner =
-        configuration:
-          options:
-            hookfiles: ['foo/bar/hooks', './test/**/*_hooks.*']
-
-      addHooks runner, transactions, (err) ->
-        return done err if err
-
-        actual = runner.hooks.configuration.options.hookfiles
-        expected = [
-          pathStub.resolve(process.cwd(), 'foo/bar/hooks')
-          pathStub.resolve(process.cwd(), './test/fixtures/multifile/multifile_hooks.coffee')
-          pathStub.resolve(process.cwd(), './test/fixtures/test2_hooks.js')
-          pathStub.resolve(process.cwd(), './test/fixtures/test_hooks.coffee')
-        ]
-
-        assert.deepEqual actual, expected
-
-        done()
-
 
     describe 'when files are valid js/coffeescript', () ->
       runner = null
