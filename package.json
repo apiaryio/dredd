@@ -17,7 +17,7 @@
     "docs:build": "sphinx-build -nW -b html docs docs/_build/",
     "docs:serve": "sphinx-autobuild docs docs/_build/",
     "docs:install": "pip install -r docs/requirements.txt",
-    "lint": "conventional-changelog-lint --from=master && eslint .",
+    "lint": "conventional-changelog-lint --from=master && eslint . && npm run docs:lint",
     "prepare": "npm run build",
     "pretest": "npm run build",
     "semantic-release": "scripts/semantic-release.sh",

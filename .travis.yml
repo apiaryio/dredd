@@ -1,6 +1,11 @@
 sudo: false
 dist: "trusty"
 language: "node_js"
+addons:
+  apt:
+    packages:
+      - "python3"
+      - "python3-pip"
 env:
   global:
     # GH_TOKEN and NPM_TOKEN encrypted by 'travis encrypt' utility
@@ -13,12 +18,16 @@ before_install:
   # so 'conventional-changelog-lint' could compare commits and lint them: marionebl/conventional-changelog-lint#7
   - "git remote set-branches origin master && git fetch && git checkout master && git checkout -"
   - "npm -g install npm@5"
+  - "pip3 install --user -r docs/requirements.txt"
 install: "npm install --no-optional"
 jobs:
   include:
     - stage: "code/docs/commits quality checks"
       node_js: "8"
       script: "npm run lint"
+    - stage: "docs build dry run"
+      node_js: "8"
+      script: "npm run docs:build"
     - stage: "tests & code coverage"
       node_js: "6"
       script: "npm run test:coverage && npm run coveralls"
