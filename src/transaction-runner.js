@@ -18,9 +18,10 @@ const logger = require('./logger');
 
 
 const headersArrayToObject = function(arr) {
-  const obj = {};
-  for (let {name, value} of arr) { obj[name] = value; }
-  return obj;
+  return Array.from(arr).reduce((result, currentItem) => {
+    result[currentItem.name] = currentItem.value;
+    return result;
+  }, {});
 };
 
 

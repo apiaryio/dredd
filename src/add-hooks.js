@@ -95,9 +95,9 @@ Stack: ${error.stack}\
   runner.hooks = new Hooks({logs: runner.logs, logger});
   if (runner.hooks.transactions == null) { runner.hooks.transactions = {}; }
 
-  for (let transaction of transactions) {
+  Array.from(transactions).forEach((transaction) => {
     runner.hooks.transactions[transaction.name] = transaction;
-  }
+  });
 
   // Loading hooks from string, sandbox mode must be enabled
   if (!__guard__(__guard__(runner != null ? runner.configuration : undefined, x3 => x3.options), x2 => x2.hookfiles)) {
