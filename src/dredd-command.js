@@ -399,5 +399,4 @@ ${packageData.name} v${packageData.version} \
   }
 }
 
-
-const exports = (module.exports = DreddCommand);
+module.exports = DreddCommand;
