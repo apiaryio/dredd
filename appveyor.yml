@@ -1,8 +1,8 @@
 environment:
-  nodejs_version: "6"
+  nodejs_version: "8"
 install:
-  - ps: Install-Product node 6
-  - "npm -g install npm@latest"
+  - ps: Install-Product node 8
+  - "npm -g install npm@5"
   - "set PATH=%APPDATA%\\npm;%PATH%"
   - "npm install --no-optional"
 cache:

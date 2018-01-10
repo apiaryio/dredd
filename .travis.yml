@@ -12,18 +12,20 @@ before_install:
   # Travis CI has only shallow clone of the repository. We need to get the 'master' branch
   # so 'conventional-changelog-lint' could compare commits and lint them: marionebl/conventional-changelog-lint#7
   - "git remote set-branches origin master && git fetch && git checkout master && git checkout -"
-  - "npm -g install npm@4"
+  - "npm -g install npm@5"
 install: "npm install --no-optional"
 jobs:
   include:
     - stage: "code/docs/commits quality checks"
-      node_js: "6"
+      node_js: "8"
       script: "npm run lint"
     - stage: "tests & code coverage"
       node_js: "4"
       script: "npm run test:coverage && npm run coveralls"
     - node_js: "6"
       script: "npm run test:coverage && npm run coveralls"
+    - node_js: "8"
+      script: "npm run test:coverage && npm run coveralls"
     - stage: "semantic release"
-      node_js: "6"
+      node_js: "8"
       script: " npm run semantic-release || true"

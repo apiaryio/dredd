@@ -11,8 +11,8 @@ if [ "$READTHEDOCS" = 'True' ]; then
     fi
     . ~/.nvm/nvm.sh
 
-    nvm install 6
-    nvm use 6
+    nvm install 8
+    nvm use 8
 
     npm install --no-optional
 
