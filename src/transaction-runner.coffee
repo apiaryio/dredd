@@ -197,6 +197,15 @@ class TransactionRunner
 
   sandboxedWrappedCode: (hookCode) ->
     return """
+      // make console unavailable
+      try {
+        // node >= 8
+        console = undefined;
+      } catch (_exc) {
+        // node < 8
+        var console = undefined;
+      }
+
       // run the hook
       var log = _log.bind(null, _logs);
 
