@@ -7,7 +7,7 @@
     "dredd": "bin/dredd"
   },
   "engines": {
-    "node": ">= 4"
+    "node": ">= 6"
   },
   "scripts": {
     "lint": "conventional-changelog-lint --from=master && coffeelint src",
