@@ -1,75 +1,70 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-
 const logger = require('../logger');
 const prettifyResponse = require('../prettify-response');
 
+function DotReporter(emitter, stats, tests) {
+  this.type = 'dot';
+  this.stats = stats;
+  this.tests = tests;
+  this.errors = [];
 
-class DotReporter {
-  constructor(emitter, stats, tests) {
-    this.type = 'dot';
-    this.stats = stats;
-    this.tests = tests;
-    this.configureEmitter(emitter);
-    this.errors = [];
-    logger.verbose(`Using '${this.type}' reporter.`);
-  }
+  this.configureEmitter(emitter);
 
-  configureEmitter(emitter) {
-    emitter.on('start', function(rawBlueprint, callback) {
-      logger.info('Beginning Dredd testing...');
-      return callback();
-    });
+  logger.verbose(`Using '${this.type}' reporter.`);
+}
 
-    emitter.on('end', callback => {
-      if (this.stats.tests > 0) {
-        if (this.errors.length > 0) {
-          this.write('\n');
-          logger.info('Displaying failed tests...');
-          for (let test of this.errors) {
-            logger.fail(test.title + ` duration: ${test.duration}ms`);
-            logger.fail(test.message);
-            logger.request(`\n${prettifyResponse(test.request)}\n`);
-            logger.expected(`\n${prettifyResponse(test.expected)}\n`);
-            logger.actual(`\n${prettifyResponse(test.actual)}\n\n`);
-          }
-        }
+DotReporter.prototype.configureEmitter = function (emitter) {
+  emitter.on('start', (rawBlueprint, callback) => {
+    logger.info('Beginning Dredd testing...');
+    callback();
+  });
+
+  emitter.on('end', callback => {
+    if (this.stats.tests > 0) {
+      if (this.errors.length > 0) {
         this.write('\n');
+        logger.info('Displaying failed tests...');
+        for (let test of this.errors) {
+          logger.fail(test.title + ` duration: ${test.duration}ms`);
+          logger.fail(test.message);
+          logger.request(`\n${prettifyResponse(test.request)}\n`);
+          logger.expected(`\n${prettifyResponse(test.expected)}\n`);
+          logger.actual(`\n${prettifyResponse(test.actual)}\n\n`);
+        }
+      }
+      this.write('\n');
 
-        logger.complete(`\
+      logger.complete(`\
 ${this.stats.passes} passing, ${this.stats.failures} failing, \
 ${this.stats.errors} errors, ${this.stats.skipped} skipped\
 `);
-        logger.complete(`Tests took ${this.stats.duration}ms`);
-        return callback();
-      }
-    });
+      logger.complete(`Tests took ${this.stats.duration}ms`);
 
-    emitter.on('test pass', test => {
-      return this.write('.');
-    });
+      callback();
+    }
+  });
 
-    emitter.on('test skip', test => {
-      return this.write('-');
-    });
+  emitter.on('test pass', test => {
+    this.write('.');
+  });
 
-    emitter.on('test fail', test => {
-      this.write('F');
-      return this.errors.push(test);
-    });
+  emitter.on('test skip', test => {
+    this.write('-');
+  });
 
-    return emitter.on('test error', (error, test) => {
-      this.write('E');
-      test.message = `\nError: \n${error}\nStacktrace: \n${error.stack}\n`;
-      return this.errors.push(test);
-    });
-  }
+  emitter.on('test fail', test => {
+    this.write('F');
+    this.errors.push(test);
+  });
 
-  write(str) {
-    return process.stdout.write(str);
-  }
+  emitter.on('test error', (error, test) => {
+    this.write('E');
+    test.message = `\nError: \n${error}\nStacktrace: \n${error.stack}\n`;
+    this.errors.push(test);
+  });
 }
 
-
+DotReporter.prototype.write = function (str) {
+  process.stdout.write(str);
+}
 
 module.exports = DotReporter;
