@@ -1,5 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 const hooksLog = require('./hooks-log');
 
 // READ THIS! Disclaimer:
@@ -18,7 +16,7 @@ class Hooks {
     this.afterEach = this.afterEach.bind(this);
     this.log = this.log.bind(this);
     this.dumpHooksFunctionsToStrings = this.dumpHooksFunctionsToStrings.bind(this);
-    ({logs: this.logs, logger: this.logger} = options);
+    ({ logs: this.logs, logger: this.logger } = options);
     this.transactions = {};
     this.beforeHooks = {};
     this.beforeValidationHooks = {};
@@ -31,42 +29,42 @@ class Hooks {
   }
 
   before(name, hook) {
-    return this.addHook(this.beforeHooks, name, hook);
+    this.addHook(this.beforeHooks, name, hook);
   }
 
   beforeValidation(name, hook) {
-    return this.addHook(this.beforeValidationHooks, name, hook);
+    this.addHook(this.beforeValidationHooks, name, hook);
   }
 
   after(name, hook) {
-    return this.addHook(this.afterHooks, name, hook);
+    this.addHook(this.afterHooks, name, hook);
   }
 
   beforeAll(hook) {
-    return this.beforeAllHooks.push(hook);
+    this.beforeAllHooks.push(hook);
   }
 
   afterAll(hook) {
-    return this.afterAllHooks.push(hook);
+    this.afterAllHooks.push(hook);
   }
 
   beforeEach(hook) {
-    return this.beforeEachHooks.push(hook);
+    this.beforeEachHooks.push(hook);
   }
 
   beforeEachValidation(hook) {
-    return this.beforeEachValidationHooks.push(hook);
+    this.beforeEachValidationHooks.push(hook);
   }
 
   afterEach(hook) {
-    return this.afterEachHooks.push(hook);
+    this.afterEachHooks.push(hook);
   }
 
   addHook(hooks, name, hook) {
     if (hooks[name]) {
-      return hooks[name].push(hook);
+      hooks[name].push(hook);
     } else {
-      return hooks[name] = [hook];
+      hooks[name] = [hook];
     }
   }
 
@@ -79,7 +77,7 @@ class Hooks {
   // This is not part of hooks API
   // This is here only because it has to be injected into sandboxed context
   dumpHooksFunctionsToStrings() {
-    // prepare JSON friendly object
+    // Prepare JSON friendly object
     const toReturn = {};
     const names = [
       'beforeHooks',
@@ -93,7 +91,7 @@ class Hooks {
     ];
 
     for (let property of names) {
-      var hookFunc, index;
+      let hookFunc, index;
       if (Array.isArray(this[property])) {
         toReturn[property] = [];
         for (index in this[property]) {
@@ -101,7 +99,7 @@ class Hooks {
           toReturn[property][index] = hookFunc.toString();
         }
 
-      } else if ((typeof(this[property]) === 'object') && !Array.isArray(this[property])) {
+      } else if ((typeof this[property] === 'object') && !Array.isArray(this[property])) {
         toReturn[property] = {};
         for (let transactionName in this[property]) {
           const funcArray = this[property][transactionName];

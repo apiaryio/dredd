@@ -1,10 +1,7 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 const blueprintUtils = require('./blueprint-utils');
 const logger = require('./logger');
 
-
-const handleRuntimeProblems = function(blueprintData) {
+module.exports = function handleRuntimeProblems(blueprintData) {
   let error = false;
 
   for (let filename of Object.keys(blueprintData || {})) {
@@ -12,7 +9,8 @@ const handleRuntimeProblems = function(blueprintData) {
     const apiDescriptionDocument = data.raw;
 
     for (let annotation of data.annotations) {
-      var log, message;
+      let log;
+      let message;
       if (annotation.type === 'warning') {
         log = logger.warn;
       } else {
@@ -23,7 +21,9 @@ const handleRuntimeProblems = function(blueprintData) {
       if (annotation.component === 'apiDescriptionParser') {
         const ranges = blueprintUtils.warningLocationToRanges(annotation.location, apiDescriptionDocument);
         message = `Parser ${annotation.type} in file '${filename}': ${annotation.message}`;
-        if (ranges != null ? ranges.length : undefined) { message += `on ${blueprintUtils.rangesToLinesText(ranges)}`; }
+        if (ranges && ranges.length) {
+          message += `on ${blueprintUtils.rangesToLinesText(ranges)}`;
+        }
         log(message);
       } else {
         const transactionName = [
@@ -36,8 +36,7 @@ const handleRuntimeProblems = function(blueprintData) {
     }
   }
 
-  if (error) { return new Error('Error when processing API description.'); }
+  if (error) {
+    return new Error('Error when processing API description.');
+  }
 };
-
-
-module.exports = handleRuntimeProblems;

@@ -1,12 +1,8 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-
 const winston = require('winston');
-
 
 module.exports = new (winston.Logger)({
   transports: [
-    new (winston.transports.Console)({colorize: true})
+    new (winston.transports.Console)({ colorize: true })
   ],
   levels: {
     silly: 14,

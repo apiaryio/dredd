@@ -1,12 +1,11 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 const html = require('html');
 
 const logger = require('./logger');
 
-const prettifyResponse = function(response) {
+module.exports = function prettifyResponse(response) {
   let contentType;
-  const stringify = function(obj) {
+
+  function stringify(obj) {
     try {
       if (typeof obj === 'string') {
         obj = JSON.parse(obj);
@@ -18,23 +17,24 @@ const prettifyResponse = function(response) {
     return obj;
   };
 
-  const prettifyBody = function(body, contentType) {
+  function prettifyBody(body, contentType) {
     switch (contentType) {
       case 'application/json':
         body = stringify(body);
         break;
       case 'text/html':
-        body = html.prettyPrint(body, {indent_size: 2});
+        body = html.prettyPrint(body, { indent_size: 2 });
         break;
     }
     return body;
   };
 
 
-  if ((response != null ? response.headers : undefined) != null) { contentType = ((response != null ? response.headers['content-type'] : undefined) || (response != null ? response.headers['Content-Type'] : undefined)); }
+  if (response && response.headers) {
+    contentType = response.headers['content-type'] || response.headers['Content-Type'];
+  }
 
-  let stringRepresentation = "";
-
+  let stringRepresentation = '';
   for (let key of Object.keys(response || {})) {
     let value = response[key];
     if (key === 'body') {
@@ -55,5 +55,3 @@ const prettifyResponse = function(response) {
 
   return stringRepresentation;
 };
-
-module.exports = prettifyResponse;

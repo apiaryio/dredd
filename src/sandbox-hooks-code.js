@@ -1,9 +1,7 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-const {Pitboss} = require('pitboss-ng');
+const { Pitboss } = require('pitboss-ng');
 const Hooks = require('./hooks');
 
-const sandboxHooksCode = function(hooksCode, callback) {
+module.exports = function sandboxHooksCode(hooksCode, callback) {
   const hooks = new Hooks();
   const wrappedCode = `\
 var _hooks = new _Hooks();
@@ -32,11 +30,11 @@ output\
 `;
 
   const sandbox = new Pitboss(wrappedCode);
-  sandbox.run({libraries: {'_Hooks': '../../../lib/hooks', 'console': 'console'}}, function(err, result) {
+  sandbox.run({ libraries: {
+    '_Hooks': '../../../lib/hooks', 'console': 'console'
+  } }, (err, result) => {
     sandbox.kill();
     if (err) { return callback(err); }
     callback(undefined, result);
   });
 };
-
-module.exports = sandboxHooksCode;

@@ -1,12 +1,9 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-const {EventEmitter} = require('events');
 const clone = require('clone');
+const { EventEmitter } = require('events');
 
 const logger = require('./logger');
 
-
-const coerceToArray = function(value) {
+function coerceToArray(value) {
   if (Array.isArray(value)) {
     return value;
   } else if (typeof value === 'string') {
@@ -18,8 +15,7 @@ const coerceToArray = function(value) {
   }
 };
 
-
-const applyLoggingOptions = function(options) {
+function applyLoggingOptions(options) {
   // Color can be either specified as "stringified bool" or bool (nothing else
   // is expected valid value). Here we're coercing the value to boolean.
   if (options.color === 'false') {
@@ -36,15 +32,14 @@ const applyLoggingOptions = function(options) {
   return options;
 };
 
-
-const applyConfiguration = function(config) {
+function applyConfiguration(config) {
   let method;
   const configuration = {
     blueprintPath: null,
     server: null,
     emitter: new EventEmitter,
     hooksCode: null,
-    custom: { // used for custom settings of various APIs or reporters
+    custom: { // Used for custom settings of various APIs or reporters
       // Keep commented-out, so these values are actually set by DreddCommand
       // cwd: process.cwd()
     },
@@ -79,23 +74,23 @@ const applyConfiguration = function(config) {
     }
   };
 
-  // normalize options and config
+  // Normalize options and config
   for (let key of Object.keys(config || {})) {
-    // copy anything except "custom" hash
+    // Copy anything except "custom" hash
     const value = config[key];
     if (key !== 'custom') {
       configuration[key] = value;
     } else {
-      if (configuration['custom'] == null) { configuration['custom'] = {}; }
-      const object = config['custom'] || {};
+      if (!configuration.custom) { configuration.custom = {}; }
+      const object = config.custom || {};
       for (let customKey of Object.keys(object || {})) {
         const customVal = object[customKey];
-        configuration['custom'][customKey] = clone(customVal, false);
+        configuration.custom[customKey] = clone(customVal, false);
       }
     }
   }
 
-  // coerce single/multiple options into an array
+  // Coerce single/multiple options into an array
   configuration.options.reporter = coerceToArray(configuration.options.reporter);
   configuration.options.output = coerceToArray(configuration.options.output);
   configuration.options.header = coerceToArray(configuration.options.header);
@@ -103,21 +98,14 @@ const applyConfiguration = function(config) {
   configuration.options.only = coerceToArray(configuration.options.only);
   configuration.options.path = coerceToArray(configuration.options.path);
 
-  // support for legacy JS API options
+  // Support for legacy JS API options
   if (config.blueprintPath) {
     configuration.options.path.push(config.blueprintPath);
   }
 
-  configuration.options.method = ((() => {
-    const result = [];
-    
-    for (method of configuration.options.method) {       result.push(method.toUpperCase());
-    }
-  
-    return result;
-  })());
+  configuration.options.method = configuration.options.method.map(method => method.toUpperCase());
 
-  if (configuration.options.user != null) {
+  if (configuration.options.user) {
     const authHeader = `Authorization:Basic ${new Buffer(configuration.options.user).toString('base64')}`;
     configuration.options.header.push(authHeader);
   }
@@ -126,8 +114,7 @@ const applyConfiguration = function(config) {
   return configuration;
 };
 
-
 module.exports = {
-  applyLoggingOptions,
-  applyConfiguration
+  applyConfiguration,
+  applyLoggingOptions
 };

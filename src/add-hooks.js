@@ -1,59 +1,57 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 require('coffee-script/register');
-const path = require('path');
-const proxyquire = require('proxyquire').noCallThru();
-const glob = require('glob');
-const fs = require('fs');
+
 const async = require('async');
 const clone = require('clone');
+const glob = require('glob');
+const fs = require('fs');
+const path = require('path');
+const proxyquire = require('proxyquire').noCallThru();
 
 const Hooks = require('./hooks');
-const logger = require('./logger');
-const sandboxHooksCode = require('./sandbox-hooks-code');
-const mergeSandboxedHooks = require('./merge-sandboxed-hooks');
 const HooksWorkerClient = require('./hooks-worker-client');
+const logger = require('./logger');
+const mergeSandboxedHooks = require('./merge-sandboxed-hooks');
+const sandboxHooksCode = require('./sandbox-hooks-code');
 
 // Ensure platform agnostic path.basename function
 const basename = process.platform === 'win32' ? path.win32.basename : path.basename;
 
-const addHooks = function(runner, transactions, callback) {
-  // Note: runner.configuration.options must be defined
+function addHooks(runner, transactions, callback) {
+  const customConfigCwd = (runner && runner.configuration && runner.configuration.custom) ?
+    runner.configuration.custom.cwd :
+    undefined;
 
-  const customConfigCwd = __guard__(__guard__(runner != null ? runner.configuration : undefined, x1 => x1.custom), x => x.cwd);
+  function fixLegacyTransactionNames(hooks) {
+    let hooksWithFixedTransactionNames = {
+      'beforeHooks': {},
+      'afterHooks': {}
+    };
 
-  const fixLegacyTransactionNames = function(allHooks) {
-    const pattern = /^\s>\s/g;
-    return ['beforeHooks', 'afterHooks'].map((hookType) =>
-      (() => {
-        const result = [];
-        for (let transactionName in allHooks[hookType]) {
-          const hooks = allHooks[hookType][transactionName];
-          if (transactionName.match(pattern) !== null) {
-            const newTransactionName = transactionName.replace(pattern, '');
-            if (allHooks[hookType][newTransactionName] !== undefined) {
-              allHooks[hookType][newTransactionName] = hooks.concat(allHooks[hookType][newTransactionName]);
-            } else {
-              allHooks[hookType][newTransactionName] = hooks;
-            }
+    ['beforeHooks', 'afterHooks'].forEach((hookType) => {
+      const pattern = /^\s>\s/g;
 
-            result.push(delete allHooks[hookType][transactionName]);
-          } else {
-            result.push(undefined);
-          }
+      Object.keys(hooks[hookType]).forEach(transactionName => {
+        const transactionHooks = hooks[hookType][transactionName];
+        if (transactionName.match(pattern)) {
+          const newTransactionName = transactionName.replace(pattern, '');
+          hooksWithFixedTransactionNames[hookType][newTransactionName] = transactionHooks;
+        } else {
+          hooksWithFixedTransactionNames[hookType][transactionName] = transactionHooks;
         }
-        return result;
-      })());
-  };
+      });
+    });
 
-  const loadHookFile = function(filePath) {
+    return Object.assign({}, hooks, hooksWithFixedTransactionNames);
+  }
+
+  function loadHookFile(filePath) {
     try {
       proxyquire(filePath, {
         'hooks': runner.hooks
       });
 
       // Fixing #168 issue
-      return fixLegacyTransactionNames(runner.hooks);
+      runner.hooks = fixLegacyTransactionNames(runner.hooks);
 
     } catch (error) {
       return logger.warn(`\
@@ -63,58 +61,65 @@ Message: ${error.message}
 Stack: ${error.stack}\
 `);
     }
-  };
+  }
 
-  const loadSandboxHooksFromStrings = function(callback) {
-    if ((typeof(runner.configuration.hooksData) !== 'object') || (Array.isArray(runner.configuration.hooksData) !== false)) {
-      return callback(new Error("hooksData option must be an object e.g. {'filename.js':'console.log(\"Hey!\")'}"));
+  function loadSandboxHooksFromStrings(callback) {
+    const isHooksDataCorrect = (
+      typeof runner.configuration.hooksData === 'object' ||
+      !Array.isArray(runner.configuration.hooksData)
+    );
+
+    if (!isHooksDataCorrect) {
+      return callback(
+        new Error('hooksData option must be an object e.g. {"filename.js":"console.log("Hey!")"}')
+      );
     }
 
     // Run code in sandbox
-    return async.eachSeries(Object.keys(runner.configuration.hooksData), function(key, nextHook) {
+    return async.eachSeries(Object.keys(runner.configuration.hooksData), (key, nextHook) => {
       const data = runner.configuration.hooksData[key];
 
       // Run code in sandbox
-      return sandboxHooksCode(data, function(sandboxError, result) {
+      return sandboxHooksCode(data, (sandboxError, result) => {
         if (sandboxError) { return nextHook(sandboxError); }
 
         // Merge stringified hooks
         runner.hooks = mergeSandboxedHooks(runner.hooks, result);
 
         // Fixing #168 issue
-        fixLegacyTransactionNames(runner.hooks);
+        runner.hooks = fixLegacyTransactionNames(runner.hooks);
 
         return nextHook();
       });
     }
-
     , callback);
   };
 
-  if (runner.logs == null) { runner.logs = []; }
-  runner.hooks = new Hooks({logs: runner.logs, logger});
-  if (runner.hooks.transactions == null) { runner.hooks.transactions = {}; }
+  if (!runner.logs) { runner.logs = []; }
+  runner.hooks = new Hooks({ logs: runner.logs, logger });
+  
+  if (!runner.hooks.transactions) { runner.hooks.transactions = {}; }
 
   Array.from(transactions).forEach((transaction) => {
     runner.hooks.transactions[transaction.name] = transaction;
   });
 
   // Loading hooks from string, sandbox mode must be enabled
-  if (!__guard__(__guard__(runner != null ? runner.configuration : undefined, x3 => x3.options), x2 => x2.hookfiles)) {
-    if (runner.configuration.hooksData != null) {
+  if (!(runner && runner.configuration && runner.configuration.options &&
+        runner.configuration.options.hookfiles)) {
 
+    if (runner.configuration.hooksData) {
       if (runner.configuration.options.sandbox === true) {
         return loadSandboxHooksFromStrings(callback);
       } else {
-        // not sandboxed code can't be loaded from the string
+        // Not sandboxed code can't be loaded from the string
         const msg = `\
-Not sandboxed hooks loading from strings is not implemented, \
-Sandbox mode must be enabled when loading hooks from strings.\
-`;
+  Not sandboxed hooks loading from strings is not implemented, \
+  Sandbox mode must be enabled when loading hooks from strings.\
+  `;
         return callback(new Error(msg));
       }
     } else {
-
       // No data found, doing nothing
       return callback();
     }
@@ -122,8 +127,8 @@ Sandbox mode must be enabled when loading hooks from strings.\
   // Loading hookfiles from fs
   } else {
     // Expand hookfiles - sort files alphabetically and resolve their paths
-    const hookfiles = [].concat(__guard__(runner.configuration != null ? runner.configuration.options : undefined, x4 => x4.hookfiles));
-    const files = hookfiles.reduce(function(result, unresolvedPath) {
+    const hookfiles = [].concat(runner.configuration.options.hookfiles);
+    const files = hookfiles.reduce((result, unresolvedPath) => {
       // glob.sync does not resolve paths, only glob patterns
       const unresolvedPaths = glob.hasMagic(unresolvedPath) ? glob.sync(unresolvedPath) : [unresolvedPath];
 
@@ -135,13 +140,12 @@ Sandbox mode must be enabled when loading hooks from strings.\
         //   { basename: 'filename1.coffee', path: './path/to/filename1.coffee' }
         //   { basename: 'filename2.coffee', path: './path/to/filename2.coffee' }
         // ]
-        .map(filepath => ({basename: basename(filepath), path: filepath}))
+        .map(filepath => ({ basename: basename(filepath), path: filepath }))
         // Sort 'em up
-        .sort(function(a, b) { switch (false) {
-          case !(a.basename < b.basename): return -1;
-          case !(a.basename > b.basename): return 1;
-          default: return 0;
-        }
+        .sort((a, b) => { 
+          if (a.basename < b.basename) return -1;
+          if (a.basename > b.basename) return 1;
+          return 0;
          })
         // Resolve paths to absolute form. Take into account user defined current
         // working directory, fallback to process.cwd() otherwise
@@ -154,7 +158,7 @@ Sandbox mode must be enabled when loading hooks from strings.\
 
     // Clone the configuration object to hooks.configuration to make it
     // accessible in the node.js hooks API
-    runner.hooks.configuration = clone(runner != null ? runner.configuration : undefined);
+    runner.hooks.configuration = clone(runner.configuration);
 
     // Override hookfiles option in configuration object with
     // sorted and resolved files
@@ -164,9 +168,8 @@ Sandbox mode must be enabled when loading hooks from strings.\
     if (!runner.configuration.options.sandbox === true) {
 
       // If the language is empty or it is nodejs
-      if ((__guard__(__guard__(runner != null ? runner.configuration : undefined, x6 => x6.options), x5 => x5.language) === "") ||
-      (__guard__(__guard__(runner != null ? runner.configuration : undefined, x8 => x8.options), x7 => x7.language) === undefined) ||
-      (__guard__(__guard__(runner != null ? runner.configuration : undefined, x10 => x10.options), x9 => x9.language) === "nodejs")) {
+      if (!runner.configuration.options.language ||
+           runner.configuration.options.language === 'nodejs') {
 
         // Load regular files from fs
         for (let file of files) {
@@ -179,40 +182,32 @@ Sandbox mode must be enabled when loading hooks from strings.\
       // Worker client will start the worker server and pass the "hookfiles" options as CLI arguments to it
       } else {
         // Start hooks worker
-        const hooksWorkerClient = new HooksWorkerClient(runner);
-        return hooksWorkerClient.start(callback);
+        return (new HooksWorkerClient(runner)).start(callback);
       }
 
     // Loading files in sandboxed mode
     } else {
-
       // Load sandbox files from fs
       logger.info('Loading hook files in sandboxed context:', files);
+
       return async.eachSeries(files, (resolvedPath, nextFile) =>
         // Load hook file content
-        fs.readFile(resolvedPath, 'utf8', function(readingError, data) {
+        fs.readFile(resolvedPath, 'utf8', (readingError, data) => {
           if (readingError) { return nextFile(readingError); }
           // Run code in sandbox
-          return sandboxHooksCode(data, function(sandboxError, result) {
+          sandboxHooksCode(data, (sandboxError, result) => {
             if (sandboxError) { return nextFile(sandboxError); }
             runner.hooks = mergeSandboxedHooks(runner.hooks, result);
 
             // Fixing #168 issue
-            fixLegacyTransactionNames(runner.hooks);
+            runner.hooks = fixLegacyTransactionNames(runner.hooks);
 
             return nextFile();
           });
         })
-      
       , callback);
     }
   }
 };
 
-
-
 module.exports = addHooks;
-
-function __guard__(value, transform) {
-  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-}

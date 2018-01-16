@@ -1,36 +1,31 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
+const async = require('async');
+const caseless = require('caseless');
+const chai = require('chai');
+const clone = require('clone');
+const gavel = require('gavel');
+const os = require('os');
+const path = require('path');
 const requestLib = require('request');
 const url = require('url');
-const path = require('path');
-const os = require('os');
-const chai = require('chai');
-const gavel = require('gavel');
-const async = require('async');
-const clone = require('clone');
-const caseless = require('caseless');
-const {Pitboss} = require('pitboss-ng');
+const { Pitboss } = require('pitboss-ng');
 
 const addHooks = require('./add-hooks');
-const sortTransactions = require('./sort-transactions');
-const packageData = require('./../package.json');
 const logger = require('./logger');
+const packageData = require('./../package.json');
+const sortTransactions = require('./sort-transactions');
 
-
-const headersArrayToObject = function(arr) {
+function headersArrayToObject(arr) {
   return Array.from(arr).reduce((result, currentItem) => {
     result[currentItem.name] = currentItem.value;
     return result;
   }, {});
-};
+}
 
+function eventCallback(reporterError) {
+  if (reporterError) { logger.error(reporterError.message); }
+}
 
-const eventCallback = function(reporterError) {
-  if (reporterError) { return logger.error(reporterError.message); }
-};
-
-
-// use "lib" folder, because pitboss-ng does not support "coffee-script:register"
+// Use "lib" folder, because pitboss-ng does not support "coffee-script:register"
 // out of the box now
 const sandboxedLogLibraryPath = '../../../lib/hooks-log-sandboxed';
 
@@ -47,7 +42,7 @@ class TransactionRunner {
 
   config(config) {
     this.configuration = config;
-    return this.multiBlueprint = Object.keys(this.configuration.data).length > 1;
+     this.multiBlueprint = Object.keys(this.configuration.data).length > 1;
   }
 
   run(transactions, callback) {
@@ -59,11 +54,11 @@ class TransactionRunner {
 
     // Remainings of functional approach, probs to be eradicated
     logger.verbose('Reading hook files and registering hooks');
-    return addHooks(this, transactions, addHooksError => {
+    addHooks(this, transactions, addHooksError => {
       if (addHooksError) { return callback(addHooksError); }
 
       logger.verbose('Executing HTTP transactions');
-      return this.executeAllTransactions(transactions, this.hooks, callback);
+      this.executeAllTransactions(transactions, this.hooks, callback);
     });
   }
 
@@ -80,12 +75,13 @@ class TransactionRunner {
         hooks.transactions[transaction.name] = transaction;
       }
     }
-    // /end warning
+    // End of warning
 
     if (this.hookHandlerError) { return callback(this.hookHandlerError); }
 
     logger.verbose('Running \'beforeAll\' hooks');
-    return this.runHooksForData(hooks.beforeAllHooks, transactions, true, () => {
+
+    this.runHooksForData(hooks.beforeAllHooks, transactions, true, () => {
       if (this.hookHandlerError) { return callback(this.hookHandlerError); }
 
       // Iterate over transactions' transaction
@@ -96,11 +92,11 @@ class TransactionRunner {
         logger.verbose(`Processing transaction #${transactionIndex + 1}:`, transaction.name);
 
         logger.verbose('Running \'beforeEach\' hooks');
-        return this.runHooksForData(hooks.beforeEachHooks, transaction, false, () => {
+        this.runHooksForData(hooks.beforeEachHooks, transaction, false, () => {
           if (this.hookHandlerError) { return iterationCallback(this.hookHandlerError); }
 
           logger.verbose('Running \'before\' hooks');
-          return this.runHooksForData(hooks.beforeHooks[transaction.name], transaction, false, () => {
+          this.runHooksForData(hooks.beforeHooks[transaction.name], transaction, false, () => {
             if (this.hookHandlerError) { return iterationCallback(this.hookHandlerError); }
 
             // This method:
@@ -110,33 +106,32 @@ class TransactionRunner {
             // - runs beforeEachValidation hooks
             // - runs beforeValidation hooks
             // - runs Gavel validation
-            return this.executeTransaction(transaction, hooks, () => {
+            this.executeTransaction(transaction, hooks, () => {
               if (this.hookHandlerError) { return iterationCallback(this.hookHandlerError); }
 
               logger.verbose('Running \'afterEach\' hooks');
-              return this.runHooksForData(hooks.afterEachHooks, transaction, false, () => {
+              this.runHooksForData(hooks.afterEachHooks, transaction, false, () => {
                 if (this.hookHandlerError) { return iterationCallback(this.hookHandlerError); }
 
                 logger.verbose('Running \'after\' hooks');
-                return this.runHooksForData(hooks.afterHooks[transaction.name], transaction, false, () => {
+                this.runHooksForData(hooks.afterHooks[transaction.name], transaction, false, () => {
                   if (this.hookHandlerError) { return iterationCallback(this.hookHandlerError); }
 
                   logger.debug(`Evaluating results of transaction execution #${transactionIndex + 1}:`, transaction.name);
-                  return this.emitResult(transaction, iterationCallback);
+                  this.emitResult(transaction, iterationCallback);
                 });
               });
             });
           });
         });
       }
-
       , iterationError => {
         if (iterationError) { return callback(iterationError); }
 
         logger.verbose('Running \'afterAll\' hooks');
-        return this.runHooksForData(hooks.afterAllHooks, transactions, true, () => {
+        this.runHooksForData(hooks.afterAllHooks, transactions, true, () => {
           if (this.hookHandlerError) { return callback(this.hookHandlerError); }
-          return callback();
+          callback();
         });
       });
     });
@@ -144,9 +139,10 @@ class TransactionRunner {
 
   // The 'data' argument can be 'transactions' array or 'transaction' object
   runHooksForData(hooks, data, legacy = false, callback) {
-    if (hooks != null ? hooks.length : undefined) {
+    if (hooks ? hooks.length : undefined) {
       logger.debug('Running hooks...');
 
+      // Capture outer this
       const runHookWithData = (hookFnIndex, runHookCallback) => {
         const hookFn = hooks[hookFnIndex];
         try {
@@ -154,20 +150,20 @@ class TransactionRunner {
             // Legacy mode is only for running beforeAll and afterAll hooks with
             // old API, i.e. callback as a first argument
 
-            return this.runLegacyHook(hookFn, data, err => {
+            this.runLegacyHook(hookFn, data, err => {
               if (err) {
                 logger.debug('Legacy hook errored:', err);
                 this.emitHookError(err, data);
               }
-              return runHookCallback();
+              runHookCallback();
             });
           } else {
-            return this.runHook(hookFn, data, err => {
+            this.runHook(hookFn, data, err => {
               if (err) {
                 logger.debug('Hook errored:', err);
                 this.emitHookError(err, data);
               }
-              return runHookCallback();
+              runHookCallback();
             });
           }
 
@@ -184,13 +180,13 @@ class TransactionRunner {
             this.emitHookError(error, data);
           }
 
-          return runHookCallback();
+          runHookCallback();
         }
       };
 
-      return async.timesSeries(hooks.length, runHookWithData, () => callback());
+      async.timesSeries(hooks.length, runHookWithData, () => callback());
     } else {
-      return callback();
+      callback();
     }
   }
 
@@ -203,13 +199,13 @@ class TransactionRunner {
     if (!(error instanceof Error)) { error = new Error(error); }
     const test = this.createTest(data);
     test.request = data.request;
-    return this.emitError(error, test);
+    this.emitError(error, test);
   }
 
   sandboxedHookResultsHandler(err, data, results = {}, callback) {
     if (err) { return callback(err); }
 
-    // reference to `transaction` gets lost here if whole object is assigned
+    // Reference to `transaction` gets lost here if whole object is assigned
     // this is workaround how to copy properties - clone doesn't work either
     const object = results.data || {};
     for (let key in object) {
@@ -268,16 +264,16 @@ output;\
     }
     , (err, result = {}) => {
       sandbox.kill();
-      return this.sandboxedHookResultsHandler(err, data, result, callback);
+      this.sandboxedHookResultsHandler(err, data, result, callback);
     });
   }
 
   // Will be used runHook instead in next major release, see deprecation warning
   runLegacyHook(hook, data, callback) {
-    // not sandboxed mode - hook is a function
-    if (typeof(hook) === 'function') {
+    // Not sandboxed mode - hook is a function
+    if (typeof hook === 'function') {
       if (hook.length === 1) {
-        // sync api
+        // Sync api
         logger.warn(`\
 DEPRECATION WARNING!
 
@@ -296,39 +292,39 @@ Interface of the hooks functions will be unified soon across all hook functions:
 `);
 
         // DEPRECATION WARNING
-        // this will not be supported in future hook function will be called with
+        // This will not be supported in future hook function will be called with
         // data synchronously and callback will be called immediatelly and not
         // passed as a second argument
         hook(callback);
 
       } else if (hook.length === 2) {
-        // async api
+        // Async api
         hook(data, () => callback());
       }
     }
 
-    // sandboxed mode - hook is a string - only sync API
-    if (typeof(hook) === 'string') {
-      return this.runSandboxedHookFromString(hook, data, callback);
+    // Sandboxed mode - hook is a string - only sync API
+    if (typeof hook === 'string') {
+      this.runSandboxedHookFromString(hook, data, callback);
     }
   }
 
   runHook(hook, data, callback) {
-    // not sandboxed mode - hook is a function
-    if (typeof(hook) === 'function') {
+    // Not sandboxed mode - hook is a function
+    if (typeof hook === 'function') {
       if (hook.length === 1) {
-        // sync api
+        // Sync api
         hook(data);
         callback();
       } else if (hook.length === 2) {
-        // async api
+        // Async api
         hook(data, () => callback());
       }
     }
 
-    // sandboxed mode - hook is a string - only sync API
-    if (typeof(hook) === 'string') {
-      return this.runSandboxedHookFromString(hook, data, callback);
+    // Sandboxed mode - hook is a string - only sync API
+    if (typeof hook === 'string') {
+      this.runSandboxedHookFromString(hook, data, callback);
     }
   }
 
@@ -338,21 +334,23 @@ Interface of the hooks functions will be unified soon across all hook functions:
     const { configuration } = this;
 
     const {origin, request, response} = transaction;
-    const mediaType = (configuration.data[origin.filename] != null ? configuration.data[origin.filename].mediaType : undefined) || 'text/vnd.apiblueprint';
+    const mediaType = (
+      configuration.data[origin.filename] ?
+      configuration.data[origin.filename].mediaType :
+      undefined
+    ) || 'text/vnd.apiblueprint';
 
     // Parse the server URL (just once, caching it in @parsedUrl)
-    if (this.parsedUrl == null) { this.parsedUrl = this.parseServerUrl(configuration.server); }
+    if (!this.parsedUrl) { this.parsedUrl = this.parseServerUrl(configuration.server); }
     const fullPath = this.getFullPath(this.parsedUrl.path, request.uri);
 
     const headers = headersArrayToObject(request.headers);
 
     // Add Dredd User-Agent (if no User-Agent is already present)
-    if ((needle = 'user-agent', !Array.from(((() => {
-      const result = [];
-      for (name of Object.keys(headers)) {         result.push(name.toLowerCase());
-      }
-      return result;
-    })())).includes(needle))) {
+    const hasUserAgent = Object.keys(headers)
+                          .map(name => name.toLowerCase())
+                          .includes('user-agent');
+    if (!hasUserAgent) {
       const system = os.type() + ' ' + os.release() + '; ' + os.arch();
       headers['User-Agent'] = `Dredd/${packageData.version} (${system})`;
     }
@@ -370,7 +368,7 @@ Interface of the hooks functions will be unified soon across all hook functions:
 
     // The data models as used here must conform to Gavel.js
     // as defined in `http-response.coffee`
-    const expected = {headers: headersArrayToObject(response.headers)};
+    const expected = { headers: headersArrayToObject(response.headers) };
     if (response.body) { expected.body = response.body; }
     if (response.status) { expected.statusCode = response.status; }
     if (response.schema) { expected.bodySchema = response.schema; }
@@ -457,12 +455,15 @@ Interface of the hooks functions will be unified soon across all hook functions:
     transaction.fail = true;
 
     this.ensureTransactionResultsGeneralSection(transaction);
-    if (reason) { transaction.results.general.results.push({severity: 'error', message: reason}); }
+    if (reason) { transaction.results.general.results.push({ severity: 'error', message: reason }); }
 
-    if (transaction.test == null) { transaction.test = this.createTest(transaction); }
+    if (!transaction.test) { transaction.test = this.createTest(transaction); }
     transaction.test.status = 'fail';
     if (reason) { transaction.test.message = reason; }
-    return transaction.test.results != null ? transaction.test.results : (transaction.test.results = transaction.results);
+    return transaction.test.results ?
+      transaction.test.results :
+      (transaction.test.results = transaction.results)
+    ;
   }
 
   // Marks the transaction as skipped and makes sure everything in the transaction
@@ -471,20 +472,26 @@ Interface of the hooks functions will be unified soon across all hook functions:
     transaction.skip = true;
 
     this.ensureTransactionResultsGeneralSection(transaction);
-    if (reason) { transaction.results.general.results.push({severity: 'warning', message: reason}); }
+    if (reason) { transaction.results.general.results.push({ severity: 'warning', message: reason }); }
 
-    if (transaction.test == null) { transaction.test = this.createTest(transaction); }
+    if (!transaction.test) { transaction.test = this.createTest(transaction); }
     transaction.test.status = 'skip';
     if (reason) { transaction.test.message = reason; }
-    return transaction.test.results != null ? transaction.test.results : (transaction.test.results = transaction.results);
+    return transaction.test.results ?
+      transaction.test.results :
+      (transaction.test.results = transaction.results)
+    ;
   }
 
   // Ensures that given transaction object has 'results' with 'general' section
   // where custom Gavel-like errors or warnings can be inserted.
   ensureTransactionResultsGeneralSection(transaction) {
-    if (transaction.results == null) { transaction.results = {}; }
-    if (transaction.results.general == null) { transaction.results.general = {}; }
-    return transaction.results.general.results != null ? transaction.results.general.results : (transaction.results.general.results = []);
+    if (!transaction.results) { transaction.results = {}; }
+    if (!transaction.results.general) { transaction.results.general = {}; }
+    return transaction.results.general.results ?
+      transaction.results.general.results :
+      (transaction.results.general.results = [])
+    ;
   }
 
   // Inspects given transaction and emits 'test *' events with 'transaction.test'
@@ -492,7 +499,7 @@ Interface of the hooks functions will be unified soon across all hook functions:
   emitResult(transaction, callback) {
     if (this.error || !transaction.test) {
       logger.debug('No emission of test data to reporters', this.error, transaction.test);
-      this.error = null; // reset the error indicator
+      this.error = null; // Reset the error indicator
       return callback();
     }
 
@@ -516,7 +523,7 @@ Interface of the hooks functions will be unified soon across all hook functions:
 
     logger.debug('Emitting to reporters: test fail');
     this.configuration.emitter.emit('test fail', transaction.test, eventCallback);
-    return callback();
+    callback();
   }
 
   // Emits 'test error' with given test data. Halts the transaction runner.
@@ -526,7 +533,7 @@ Interface of the hooks functions will be unified soon across all hook functions:
 
     // Record the error to halt the transaction runner. Do not overwrite
     // the first recorded error if more of them occured.
-    return this.error = this.error || error;
+    return (this.error = this.error || error);
   }
 
   getRequestOptionsFromTransaction(transaction) {
@@ -551,7 +558,7 @@ Interface of the hooks functions will be unified soon across all hook functions:
   executeTransaction(transaction, hooks, callback) {
     if (!callback) { [callback, hooks] = Array.from([hooks, undefined]); }
 
-    // number in miliseconds (UNIX-like timestamp * 1000 precision)
+    // Number in miliseconds (UNIX-like timestamp * 1000 precision)
     transaction.startedAt = Date.now();
 
     const test = this.createTest(transaction);
@@ -604,7 +611,7 @@ Not performing HTTP request for '${transaction.name}'.\
       return callback();
 
     } else {
-      return this.performRequestAndValidate(test, transaction, hooks, callback);
+      this.performRequestAndValidate(test, transaction, hooks, callback);
     }
   }
 
@@ -626,7 +633,7 @@ Specified Content-Length header is ${contentLengthValue}, but \
 the real body length is ${calculatedContentLengthValue}. Using \
 ${calculatedContentLengthValue} instead.\
 `);
-          return headers[contentLengthHeaderName] = calculatedContentLengthValue;
+          headers[contentLengthHeaderName] = calculatedContentLengthValue;
         }
 
       } else if (contentLengthValue !== 0) {
@@ -634,11 +641,11 @@ ${calculatedContentLengthValue} instead.\
 Specified Content-Length header is ${contentLengthValue}, but \
 the real body length is 0. Using 0 instead.\
 `);
-        return headers[contentLengthHeaderName] = 0;
+        headers[contentLengthHeaderName] = 0;
       }
 
     } else {
-      return headers['Content-Length'] = body ? Buffer.byteLength(body) : 0;
+      headers['Content-Length'] = body ? Buffer.byteLength(body) : 0;
     }
   }
 
@@ -680,27 +687,27 @@ the real body length is 0. Using 0 instead.\
       }
 
       logger.verbose('Running \'beforeEachValidation\' hooks');
-      return this.runHooksForData(hooks != null ? hooks.beforeEachValidationHooks : undefined, transaction, false, () => {
+      this.runHooksForData(hooks ? hooks.beforeEachValidationHooks : undefined, transaction, false, () => {
         if (this.hookHandlerError) { return callback(this.hookHandlerError); }
 
         logger.verbose('Running \'beforeValidation\' hooks');
-        return this.runHooksForData(hooks != null ? hooks.beforeValidationHooks[transaction.name] : undefined, transaction, false, () => {
+        this.runHooksForData(hooks != null ? hooks.beforeValidationHooks[transaction.name] : undefined, transaction, false, () => {
           if (this.hookHandlerError) { return callback(this.hookHandlerError); }
 
-          return this.validateTransaction(test, transaction, callback);
+          this.validateTransaction(test, transaction, callback);
         });
       });
     };
 
     try {
-      return this.performRequest(requestOptions, handleRequest);
+      this.performRequest(requestOptions, handleRequest);
     } catch (error) {
       logger.debug('Requesting tested server errored:', error);
       test.title = transaction.id;
       test.expected = transaction.expected;
       test.request = transaction.request;
       this.emitError(error, test);
-      return callback();
+      callback();
     }
   }
 
@@ -710,13 +717,13 @@ the real body length is 0. Using 0 instead.\
 About to perform an ${protocol} request to the server \
 under test: ${options.method} ${options.uri}\
 `);
-    return requestLib(options, callback);
+    requestLib(options, callback);
   }
 
   validateTransaction(test, transaction, callback) {
     logger.verbose('Validating HTTP transaction by Gavel.js');
     logger.debug('Determining whether HTTP transaction is valid (getting boolean verdict)');
-    return gavel.isValid(transaction.real, transaction.expected, 'response', (isValidError, isValid) => {
+    gavel.isValid(transaction.real, transaction.expected, 'response', (isValidError, isValid) => {
       if (isValidError) {
         logger.debug('Gavel.js validation errored:', isValidError);
         this.emitError(isValidError, test);
@@ -734,20 +741,22 @@ under test: ${options.method} ${options.uri}\
       }
 
       logger.debug('Validating HTTP transaction (getting verbose validation result)');
-      return gavel.validate(transaction.real, transaction.expected, 'response', (validateError, gavelResult) => {
-        let needle, needle1, validatorOutput;
+      gavel.validate(transaction.real, transaction.expected, 'response', (validateError, gavelResult) => {
         if (!isValidError && validateError) {
           logger.debug('Gavel.js validation errored:', validateError);
           this.emitError(validateError, test);
         }
 
         // Warn about empty responses
-        if (
-          ( // expected is as string, actual is as integer :facepalm:
-            (needle = test.expected.statusCode != null ? test.expected.statusCode.toString() : undefined, ['204', '205'].includes(needle)) ||
-            (needle1 = test.actual.statusCode != null ? test.actual.statusCode.toString() : undefined, ['204', '205'].includes(needle1))
-          ) && (test.expected.body || test.actual.body)
-        ) {
+        // Expected is as string, actual is as integer :facepalm:
+        const isExpectedResponseStatusCodeEmpty = ['204', '205'].includes(
+          test.expected.statusCode ? test.expected.statusCode.toString() : undefined
+        );
+        const isActualResponseStatusCodeEmpty = ['204', '205'].includes(
+          test.actual.statusCode ? test.actual.statusCode.toString() : undefined
+        );
+        const hasBody = (test.expected.body || test.actual.body);
+        if ((isExpectedResponseStatusCodeEmpty || isActualResponseStatusCodeEmpty) && hasBody) {
           logger.warn(`\
 ${test.title} HTTP 204 and 205 responses must not \
 include a message body: https://tools.ietf.org/html/rfc7231#section-6.3\
@@ -757,6 +766,7 @@ include a message body: https://tools.ietf.org/html/rfc7231#section-6.3\
         // Create test message from messages of all validation errors
         let message = '';
         const object = gavelResult || {};
+        let validatorOutput;
         for (var sectionName of Object.keys(object || {})) {
           // Section names are 'statusCode', 'headers', 'body' (and 'version', which is irrelevant)
           validatorOutput = object[sectionName];
@@ -779,7 +789,7 @@ include a message body: https://tools.ietf.org/html/rfc7231#section-6.3\
           // Section names are 'statusCode', 'headers', 'body' (and 'version', which is irrelevant)
           const rawValidatorOutput = gavelResult[sectionName];
           if (sectionName !== 'version') {
-            if (results[sectionName] == null) { results[sectionName] = {}; }
+            if (!results[sectionName]) { results[sectionName] = {}; }
 
             // We don't want to modify the object and we want to get rid of some
             // custom Gavel.js types ('clone' will keep just plain JS objects).
@@ -803,7 +813,7 @@ include a message body: https://tools.ietf.org/html/rfc7231#section-6.3\
 
         // Propagate test object so 'after' hooks can modify it
         transaction.test = test;
-        return callback();
+        callback();
       });
     });
   }
@@ -825,6 +835,5 @@ include a message body: https://tools.ietf.org/html/rfc7231#section-6.3\
     return body.replace(/\r?\n/g, '\r\n');
   }
 }
-
 
 module.exports = TransactionRunner;

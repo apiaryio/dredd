@@ -1,5 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 const options = {
   "dry-run": {
     alias: 'y',
@@ -204,6 +202,5 @@ This option can be used multiple times to allow multiple methods.\n`,
     default: './dredd.yml'
   }
 };
-
 
 module.exports = options;

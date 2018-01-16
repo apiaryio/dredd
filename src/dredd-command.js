@@ -1,34 +1,31 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-const path = require('path');
-const optimist = require('optimist');
+const console = require('console'); // Stubbed in tests by proxyquire
 const fs = require('fs');
+const optimist = require('optimist');
 const os = require('os');
+const path = require('path');
 const spawnArgs = require('spawn-args');
 const spawnSync = require('cross-spawn').sync;
-const console = require('console'); // stubbed in tests by proxyquire
 
+const configUtils = require('./config-utils');
 const Dredd = require('./dredd');
 const interactiveConfig = require('./interactive-config');
-const {applyLoggingOptions} = require('./configuration');
-const configUtils = require('./config-utils');
-const {spawn} = require('./child-process');
 const logger = require('./logger');
+const { applyLoggingOptions } = require('./configuration');
+const { spawn } = require('./child-process');
 
 const packageData = require('../package.json');
-
 
 class DreddCommand {
   constructor(options = {}, cb) {
     this.cb = cb;
     this.finished = false;
-    ({exit: this.exit, custom: this.custom} = options);
+    ({ exit: this.exit, custom: this.custom } = options);
 
     this.setExitOrCallback();
 
-    if (this.custom == null) { this.custom = {}; }
+    if (!this.custom) { this.custom = {}; }
 
-    if (!this.custom.cwd || (typeof this.custom.cwd !== 'string')) {
+    if (!this.custom.cwd || typeof this.custom.cwd !== 'string') {
       this.custom.cwd = process.cwd();
     }
 
@@ -55,7 +52,7 @@ Example:
       .wrap(80);
 
     this.argv = this.optimist.argv;
-    return this.argv = applyLoggingOptions(this.argv);
+    this.argv = applyLoggingOptions(this.argv);
   }
 
   // Gracefully terminate server
@@ -70,40 +67,40 @@ Example:
     }
     logger.verbose('Terminating backend server process, PID', this.serverProcess.pid);
     this.serverProcess.terminate({force: true});
-    return this.serverProcess.on('exit', () => callback());
+    this.serverProcess.on('exit', () => callback());
   }
 
   // This thing-a-ma-bob here is only for purpose of testing
   // It's basically a dependency injection for the process.exit function
   setExitOrCallback() {
     if (!this.cb) {
-      if (this.exit && (this.exit === process.exit)) {
+      if (this.exit && this.exit === process.exit) {
         this.sigIntEventAdd = true;
       }
 
       if (this.exit) {
-        return this._processExit = exitStatus => {
+        this._processExit = exitStatus => {
           logger.verbose(`Exiting Dredd process with status '${exitStatus}'.`);
           logger.debug('Using configured custom exit() method to terminate the Dredd process.');
           this.finished = true;
-          return this.stopServer(() => {
-            return this.exit(exitStatus);
+          this.stopServer(() => {
+            this.exit(exitStatus);
           });
         };
       } else {
-        return this._processExit = exitStatus => {
+        this._processExit = exitStatus => {
           logger.verbose(`Exiting Dredd process with status '${exitStatus}'.`);
           logger.debug('Using native process.exit() method to terminate the Dredd process.');
-          return this.stopServer(() => process.exit(exitStatus));
+          this.stopServer(() => process.exit(exitStatus));
         };
       }
     } else {
-      return this._processExit = exitStatus => {
+      this._processExit = exitStatus => {
         logger.verbose(`Exiting Dredd process with status '${exitStatus}'.`);
         logger.debug('Using configured custom callback to terminate the Dredd process.');
         this.finished = true;
         if (this.sigIntEventAdded) {
-          if ((this.serverProcess != null) && !this.serverProcess.terminated) {
+          if (this.serverProcess && !this.serverProcess.terminated) {
             logger.verbose('Killing backend server process before Dredd exits.');
             this.serverProcess.signalKill();
           }
@@ -116,85 +113,85 @@ Example:
   }
 
   moveBlueprintArgToPath() {
-    // transform path and p argument to array if it's not
-    if (!Array.isArray(this.argv['path'])) {
-      return this.argv['path'] = (this.argv['p'] = [this.argv['path']]);
+    // Transform path and p argument to array if it's not
+    if (!Array.isArray(this.argv.path)) {
+      this.argv.path = this.argv.p = [this.argv.path];
     }
   }
 
   checkRequiredArgs() {
     let argError = false;
 
-    // if 'blueprint' is missing
-    if ((this.argv._[0] == null)) {
-      console.error("\nError: Must specify path to API description document.");
+    // If 'blueprint' is missing
+    if (!this.argv._[0]) {
+      console.error('\nError: Must specify path to API description document.');
       argError = true;
     }
 
-    // if 'endpoint' is missing
-    if ((this.argv._[1] == null)) {
-      console.error("\nError: Must specify URL of the tested API instance.");
+    // If 'endpoint' is missing
+    if (!this.argv._[1]) {
+      console.error('\nError: Must specify URL of the tested API instance.');
       argError = true;
     }
 
-    // show help if argument is missing
+    // Show help if argument is missing
     if (argError) {
-      console.error("\n");
+      console.error('\n');
       this.optimist.showHelp(console.error);
-      return this._processExit(1);
+      this._processExit(1);
     }
   }
 
   runExitingActions() {
-    // run interactive config
-    if ((this.argv["_"][0] === "init") || (this.argv.init === true)) {
+    // Run interactive config
+    if (this.argv._[0] === 'init' || this.argv.init === true) {
       logger.silly('Starting interactive configuration.');
       this.finished = true;
-      return interactiveConfig.run(this.argv, config => {
+      interactiveConfig.run(this.argv, config => {
         configUtils.save(config);
-        console.log("");
-        console.log("Configuration saved to dredd.yml");
-        console.log("");
-        if (config['language'] === "nodejs") {
-          console.log("Run test now, with:");
+        console.log('');
+        console.log('Configuration saved to dredd.yml');
+        console.log('');
+        if (config['language'] === 'nodejs') {
+          console.log('Run test now, with:');
         } else {
-          console.log("Install hooks handler and run Dredd test with:");
+          console.log('Install hooks handler and run Dredd test with:');
         }
-        console.log("");
+        console.log('');
         if (config['language'] === 'ruby') {
-          console.log("  $ gem install dredd_hooks");
+          console.log('  $ gem install dredd_hooks');
         } else if (config['language'] === 'python') {
-          console.log("  $ pip install dredd_hooks");
+          console.log('  $ pip install dredd_hooks');
         } else if (config['language'] === 'php') {
-          console.log("  $ composer require ddelnano/dredd-hooks-php --dev");
+          console.log('  $ composer require ddelnano/dredd-hooks-php --dev');
         } else if (config['language'] === 'perl') {
-          console.log("  $ cpanm Dredd::Hooks");
+          console.log('  $ cpanm Dredd::Hooks');
         } else if (config['language'] === 'go') {
-          console.log("  $ go get github.com/snikch/goodman/cmd/goodman");
+          console.log('  $ go get github.com/snikch/goodman/cmd/goodman');
         } else if (config['language'] === 'rust') {
-          console.log("  $ cargo install dredd-hooks");
+          console.log('  $ cargo install dredd-hooks');
         }
 
-        console.log("  $ dredd");
-        console.log("");
+        console.log('  $ dredd');
+        console.log('');
 
-        return this._processExit(0);
+        this._processExit(0);
       });
 
-    // show help
+    // Show help
     } else if (this.argv.help === true) {
       logger.silly('Printing help.');
       this.optimist.showHelp(console.error);
-      return this._processExit(0);
+      this._processExit(0);
 
-    // show version
+    // Show version
     } else if (this.argv.version === true) {
       logger.silly('Printing version.');
       console.log(`\
 ${packageData.name} v${packageData.version} \
 (${os.type()} ${os.release()}; ${os.arch()})\
 `);
-      return this._processExit(0);
+      this._processExit(0);
     }
   }
 
@@ -207,29 +204,29 @@ ${packageData.name} v${packageData.version} \
       this.argv = configUtils.load(configPath);
     }
 
-    // overwrite saved config with cli arguments
+    // Overwrite saved config with cli arguments
     for (let key in this.cliArgv) {
       const value = this.cliArgv[key];
-      if ((key !== "_") && (key !== "$0")) {
+      if (key !== '_' && key !== '$0') {
         this.argv[key] = value;
       }
     }
 
-    return this.argv = applyLoggingOptions(this.argv);
+    this.argv = applyLoggingOptions(this.argv);
   }
 
   parseCustomConfig() {
-    return this.argv.custom = configUtils.parseCustom(this.argv.custom);
+    this.argv.custom = configUtils.parseCustom(this.argv.custom);
   }
 
   runServerAndThenDredd(callback) {
-    if ((this.argv['server'] == null)) {
+    if (!this.argv.server) {
       logger.verbose('No backend server process specified, starting testing at once');
-      return this.runDredd(this.dreddInstance);
+      this.runDredd(this.dreddInstance);
     } else {
       logger.verbose('Backend server process specified, starting backend server and then testing');
 
-      const parsedArgs = spawnArgs(this.argv['server']);
+      const parsedArgs = spawnArgs(this.argv.server);
       const command = parsedArgs.shift();
 
       logger.verbose(`Using '${command}' as a server command, ${JSON.stringify(parsedArgs)} as arguments`);
@@ -246,31 +243,31 @@ ${packageData.name} v${packageData.version} \
       this.serverProcess.on('signalKill', () => logger.verbose('Killing the backend server process'));
 
       this.serverProcess.on('crash', (exitStatus, killed) => {
-        if (killed) { return logger.info('Backend server process was killed'); }
+        if (killed) { logger.info('Backend server process was killed'); }
       });
 
       this.serverProcess.on('exit', () => {
-        return logger.info('Backend server process exited');
+        logger.info('Backend server process exited');
       });
 
       this.serverProcess.on('error', err => {
         logger.error('Command to start backend server process failed, exiting Dredd', err);
-        return this._processExit(1);
+        this._processExit(1);
       });
 
       // Ensure server is not running when dredd exits prematurely somewhere
       process.on('beforeExit', () => {
-        if ((this.serverProcess != null) && !this.serverProcess.terminated) {
+        if (this.serverProcess && !this.serverProcess.terminated) {
           logger.verbose('Killing backend server process before Dredd exits');
-          return this.serverProcess.signalKill();
+          this.serverProcess.signalKill();
         }
       });
 
       // Ensure server is not running when dredd exits prematurely somewhere
       process.on('exit', () => {
-        if ((this.serverProcess != null) && !this.serverProcess.terminated) {
+        if (this.serverProcess && !this.serverProcess.terminated) {
           logger.verbose('Killing backend server process on Dredd\'s exit');
-          return this.serverProcess.signalKill();
+          this.serverProcess.signalKill();
         }
       });
 
@@ -278,8 +275,8 @@ ${packageData.name} v${packageData.version} \
       const waitMilis = waitSecs * 1000;
       logger.info(`Waiting ${waitSecs} seconds for backend server process to start`);
 
-      return this.wait = setTimeout(() => {
-        return this.runDredd(this.dreddInstance);
+      this.wait = setTimeout(() => {
+        this.runDredd(this.dreddInstance);
       }
       , waitMilis);
     }
@@ -298,7 +295,7 @@ ${packageData.name} v${packageData.version} \
     } catch (err) {
       logger.debug('npm version: unable to determine npm version:', err);
     }
-    return logger.debug('Configuration:', JSON.stringify(config));
+    logger.debug('Configuration:', JSON.stringify(config));
   }
 
   run() {
@@ -323,13 +320,13 @@ ${packageData.name} v${packageData.version} \
     } catch (e) {
       logger.error(e.message, e.stack);
       this.stopServer(() => {
-        return this._processExit(2);
+        this._processExit(2);
       });
     }
   }
 
   lastArgvIsApiEndpoint() {
-    // when API description path is a glob, some shells are automatically expanding globs and concating
+    // When API description path is a glob, some shells are automatically expanding globs and concating
     // result as arguments so I'm taking last argument as API endpoint server URL and removing it
     // from optimist's args
     this.server = this.argv._[this.argv._.length - 1];
@@ -338,8 +335,8 @@ ${packageData.name} v${packageData.version} \
   }
 
   takeRestOfParamsAsPath() {
-    // and rest of arguments concating to 'path' and 'p' opts, duplicates are filtered out later
-    this.argv['p'] = (this.argv['path'] = this.argv['path'].concat(this.argv._));
+    // And rest of arguments concating to 'path' and 'p' opts, duplicates are filtered out later
+    this.argv.p = this.argv.path = this.argv.path.concat(this.argv._);
     return this;
   }
 
@@ -351,8 +348,8 @@ ${packageData.name} v${packageData.version} \
       'options': this.argv
     };
 
-    // push first argument (without some known configuration --key) into paths
-    if (configuration.options.path == null) { configuration.options.path = []; }
+    // Push first argument (without some known configuration --key) into paths
+    if (!configuration.options.path) { configuration.options.path = []; }
     configuration.options.path.push(this.argv._[0]);
 
     configuration.custom = this.custom;
@@ -366,12 +363,12 @@ ${packageData.name} v${packageData.version} \
 
   commandSigInt() {
     logger.error('\nShutting down from keyboard interruption (Ctrl+C)');
-    return this.dreddInstance.transactionsComplete(() => this._processExit(0));
+    this.dreddInstance.transactionsComplete(() => this._processExit(0));
   }
 
   runDredd(dreddInstance) {
     if (this.sigIntEventAdd) {
-      // handle SIGINT from user
+      // Handle SIGINT from user
       this.sigIntEventAdded = !(this.sigIntEventAdd = false);
       process.on('SIGINT', this.commandSigInt);
     }
@@ -379,7 +376,7 @@ ${packageData.name} v${packageData.version} \
     logger.verbose('Running Dredd instance.');
     dreddInstance.run((error, stats) => {
       logger.verbose('Dredd instance run finished.');
-      return this.exitWithStatus(error, stats);
+      this.exitWithStatus(error, stats);
     });
 
     return this;
@@ -388,7 +385,7 @@ ${packageData.name} v${packageData.version} \
   exitWithStatus(error, stats) {
     if (error) {
       if (error.message) { logger.error(error.message); }
-      return this._processExit(1);
+      this._processExit(1);
     }
 
     if ((stats.failures + stats.errors) > 0) {
