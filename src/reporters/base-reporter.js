@@ -14,32 +14,32 @@ BaseReporter.prototype.configureEmitter = function (emitter) {
     callback();
   });
 
-  emitter.on('end', callback => {
+  emitter.on('end', (callback) => {
     this.stats.end = new Date();
     this.stats.duration = this.stats.end - this.stats.start;
     callback();
   });
 
-  emitter.on('test start', test => {
+  emitter.on('test start', (test) => {
     this.tests.push(test);
     this.stats.tests += 1;
     test.start = new Date();
   });
 
-  emitter.on('test pass', test => {
+  emitter.on('test pass', (test) => {
     this.stats.passes += 1;
-    test.end  = new Date();
+    test.end = new Date();
     if (typeof test.start === 'string') {
       test.start = new Date(test.start);
     }
     test.duration = test.end - test.start;
   });
 
-  emitter.on('test skip', test => {
+  emitter.on('test skip', () => {
     this.stats.skipped += 1;
   });
 
-  emitter.on('test fail', test => {
+  emitter.on('test fail', (test) => {
     this.stats.failures += 1;
     test.end = new Date();
     if (typeof test.start === 'string') {
@@ -52,10 +52,10 @@ BaseReporter.prototype.configureEmitter = function (emitter) {
     this.stats.errors += 1;
     test.end = new Date();
     if (typeof test.start === 'string') {
-      test.start = new Date(test['start']);
+      test.start = new Date(test.start);
     }
     test.duration = test.end - test.start;
   });
-}
+};
 
 module.exports = BaseReporter;

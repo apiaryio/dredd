@@ -41,8 +41,8 @@ XUnitReporter.prototype.updateSuiteStats = function (path, stats, callback) {
           time: stats.duration / 1000
         }, false);
         const xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>';
-        fs.writeFile(path, xmlHeader + '\n' + newStats + '\n' + restOfFile + '</testsuite>', err => {
-          if (err) { logger.error(err); }
+        fs.writeFile(path, `${xmlHeader}\n${newStats}\n${restOfFile}</testsuite>`, (error) => {
+          if (error) { logger.error(error); }
           callback();
         });
       } else {
@@ -53,24 +53,24 @@ XUnitReporter.prototype.updateSuiteStats = function (path, stats, callback) {
       callback();
     }
   });
-}
-  
+};
+
 XUnitReporter.prototype.cdata = function (str) {
   return `<![CDATA[${str}]]>`;
-}
+};
 
 XUnitReporter.prototype.appendLine = function (path, line) {
-  fs.appendFileSync(path, line + '\n');
-}
+  fs.appendFileSync(path, `${line}\n`);
+};
 
 XUnitReporter.prototype.toTag = function (name, attrs, close, content) {
   const end = close ? '/>' : '>';
   const pairs = [];
-  for (let key in attrs) {
-    pairs.push(key + '=\"" + attrs[key] + "\"');
+  if (attrs) {
+    Object.keys(attrs).forEach(key => pairs.push(`${key}="${attrs[key]}"`));
   }
   let tag = `<${name}${pairs.length ? ` ${pairs.join(' ')}` : ''}${end}`;
-  if (content) { tag += content + '</' + name + end; }
+  if (content) { tag += `${content}</${name}${end}`; }
   return tag;
 };
 
@@ -81,11 +81,11 @@ XUnitReporter.prototype.sanitizedPath = function (path) {
     fs.unlinkSync(filePath);
   }
   return filePath;
-}
+};
 
 XUnitReporter.prototype.configureEmitter = function (emitter) {
   emitter.on('start', (rawBlueprint, callback) => {
-    fsExtra.mkdirp(pathmodule.dirname(this.path), err => {
+    fsExtra.mkdirp(pathmodule.dirname(this.path), (err) => {
       if (!err) {
         this.appendLine(this.path, this.toTag('testsuite', {
           name: 'Dredd Tests',
@@ -105,12 +105,12 @@ XUnitReporter.prototype.configureEmitter = function (emitter) {
     });
   });
 
-  emitter.on('end', callback => {
+  emitter.on('end', (callback) => {
     this.updateSuiteStats(this.path, this.stats, callback);
   });
 
-  emitter.on('test pass', test => {
-    let attrs = {
+  emitter.on('test pass', (test) => {
+    const attrs = {
       name: htmlencode.htmlEncode(test.title),
       time: test.duration / 1000
     };
@@ -133,16 +133,16 @@ ${prettifyResponse(test.actual)}\
     }
   });
 
-  emitter.on('test skip', test => {
-    let attrs = {
+  emitter.on('test skip', (test) => {
+    const attrs = {
       name: htmlencode.htmlEncode(test.title),
       time: test.duration / 1000
     };
     this.appendLine(this.path, this.toTag('testcase', attrs, false, this.toTag('skipped', null, true)));
   });
 
-  emitter.on('test fail', test => {
-    let attrs = {
+  emitter.on('test fail', (test) => {
+    const attrs = {
       name: htmlencode.htmlEncode(test.title),
       time: test.duration / 1000
     };
@@ -163,7 +163,7 @@ ${prettifyResponse(test.actual)}\
   });
 
   emitter.on('test error', (error, test) => {
-    let attrs = {
+    const attrs = {
       name: htmlencode.htmlEncode(test.title),
       time: test.duration / 1000
     };
@@ -173,7 +173,7 @@ ${prettifyResponse(test.actual)}\
       this.toTag('testcase', attrs, false, this.toTag('failure', null, false, this.cdata(errorMessage)))
     );
   });
-}
+};
 
 inherits(XUnitReporter, EventEmitter);
 

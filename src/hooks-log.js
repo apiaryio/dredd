@@ -1,7 +1,6 @@
 const util = require('util');
 
 module.exports = function hooksLog(logs = [], logger, content) {
-
   // Log to logger
   if (logger && typeof logger.hook === 'function') { logger.hook(content); }
 

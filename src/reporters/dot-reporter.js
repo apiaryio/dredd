@@ -18,13 +18,13 @@ DotReporter.prototype.configureEmitter = function (emitter) {
     callback();
   });
 
-  emitter.on('end', callback => {
+  emitter.on('end', (callback) => {
     if (this.stats.tests > 0) {
       if (this.errors.length > 0) {
         this.write('\n');
         logger.info('Displaying failed tests...');
-        for (let test of this.errors) {
-          logger.fail(test.title + ` duration: ${test.duration}ms`);
+        for (const test of this.errors) {
+          logger.fail(`${test.title} duration: ${test.duration}ms`);
           logger.fail(test.message);
           logger.request(`\n${prettifyResponse(test.request)}\n`);
           logger.expected(`\n${prettifyResponse(test.expected)}\n`);
@@ -43,15 +43,15 @@ ${this.stats.errors} errors, ${this.stats.skipped} skipped\
     }
   });
 
-  emitter.on('test pass', test => {
+  emitter.on('test pass', () => {
     this.write('.');
   });
 
-  emitter.on('test skip', test => {
+  emitter.on('test skip', () => {
     this.write('-');
   });
 
-  emitter.on('test fail', test => {
+  emitter.on('test fail', (test) => {
     this.write('F');
     this.errors.push(test);
   });
@@ -61,10 +61,10 @@ ${this.stats.errors} errors, ${this.stats.skipped} skipped\
     test.message = `\nError: \n${error}\nStacktrace: \n${error.stack}\n`;
     this.errors.push(test);
   });
-}
+};
 
 DotReporter.prototype.write = function (str) {
   process.stdout.write(str);
-}
+};
 
 module.exports = DotReporter;

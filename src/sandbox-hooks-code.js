@@ -1,8 +1,6 @@
 const { Pitboss } = require('pitboss-ng');
-const Hooks = require('./hooks');
 
 module.exports = function sandboxHooksCode(hooksCode, callback) {
-  const hooks = new Hooks();
   const wrappedCode = `\
 var _hooks = new _Hooks();
 
@@ -31,7 +29,7 @@ output\
 
   const sandbox = new Pitboss(wrappedCode);
   sandbox.run({ libraries: {
-    '_Hooks': '../../../lib/hooks', 'console': 'console'
+    _Hooks: '../../../lib/hooks', console: 'console'
   } }, (err, result) => {
     sandbox.kill();
     if (err) { return callback(err); }

@@ -90,27 +90,26 @@ class Hooks {
       'afterEachHooks'
     ];
 
-    for (let property of names) {
-      let hookFunc, index;
+    for (const property of names) {
+      let hookFunc;
       if (Array.isArray(this[property])) {
         toReturn[property] = [];
-        for (index in this[property]) {
+        Object.keys(this[property]).forEach((index) => {
           hookFunc = this[property][index];
           toReturn[property][index] = hookFunc.toString();
-        }
-
-      } else if ((typeof this[property] === 'object') && !Array.isArray(this[property])) {
+        });
+      } else if (typeof this[property] === 'object' && !Array.isArray(this[property])) {
         toReturn[property] = {};
-        for (let transactionName in this[property]) {
+        Object.keys(this[property]).forEach((transactionName) => {
           const funcArray = this[property][transactionName];
           if (funcArray.length) {
             toReturn[property][transactionName] = [];
-            for (index in funcArray) {
+            Object.keys(funcArray).forEach((index) => {
               hookFunc = funcArray[index];
               toReturn[property][transactionName][index] = hookFunc.toString();
-            }
+            });
           }
-        }
+        });
       }
     }
 

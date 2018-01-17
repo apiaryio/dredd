@@ -23,7 +23,7 @@ function removeDuplicates(arr) {
       return alreadyProcessed.concat(currentItem);
     }
     return alreadyProcessed;
-  }, [])
+  }, []);
 }
 
 class Dredd {
@@ -54,7 +54,7 @@ class Dredd {
 
   logProxySettings() {
     const proxySettings = [];
-    for (let envVariableName of Object.keys(process.env || {})) {
+    for (const envVariableName of Object.keys(process.env || {})) {
       const envVariableValue = process.env[envVariableName];
       if (!Array.from(PROXY_ENV_VARIABLES).includes(envVariableName.toUpperCase())) { continue; }
       if (envVariableValue === '') { continue; }
@@ -62,11 +62,11 @@ class Dredd {
     }
 
     if (proxySettings.length) {
-      const message = `\
-HTTP(S) proxy specified by environment variables: \
-${proxySettings.join(', ')}. Please read documentation on how \
-Dredd works with proxies: \
-https://dredd.readthedocs.io/en/latest/how-it-works/#using-https-proxy\
+      const message = `
+HTTP(S) proxy specified by environment variables:
+${proxySettings.join(', ')}. Please read documentation on how
+Dredd works with proxies:
+https://dredd.readthedocs.io/en/latest/how-it-works/#using-https-proxy
 `;
       logger.verbose(message);
     }
@@ -81,7 +81,7 @@ https://dredd.readthedocs.io/en/latest/how-it-works/#using-https-proxy\
     const passedConfigData = {};
 
     const object = this.configuration.data || {};
-    for (let key of Object.keys(object || {})) {
+    for (const key of Object.keys(object || {})) {
       const val = object[key];
       this.configDataIsEmpty = false;
       if (typeof val === 'string') {
@@ -106,23 +106,23 @@ https://dredd.readthedocs.io/en/latest/how-it-works/#using-https-proxy\
 
     // Spin that merry-go-round
     logger.verbose('Expanding glob patterns.');
-    this.expandGlobs(globsErr => {
+    this.expandGlobs((globsErr) => {
       if (globsErr) { return callback(globsErr, this.stats); }
 
       logger.verbose('Reading API description files.');
-      this.loadFiles(loadErr => {
+      this.loadFiles((loadErr) => {
         if (loadErr) { return callback(loadErr, this.stats); }
 
         logger.verbose('Parsing API description files and compiling a list of HTTP transactions to test.');
-        this.compileTransactions(compileErr => {
+        this.compileTransactions((compileErr) => {
           if (compileErr) { return callback(compileErr, this.stats); }
 
           logger.verbose('Starting reporters and waiting until all of them are ready.');
-          this.emitStart(emitStartErr => {
+          this.emitStart((emitStartErr) => {
             if (emitStartErr) { return callback(emitStartErr, this.stats); }
 
             logger.verbose('Starting transaction runner.');
-            this.startRunner(runnerErr => {
+            this.startRunner((runnerErr) => {
               if (runnerErr) { return callback(runnerErr, this.stats); }
 
               logger.verbose('Wrapping up testing.');
@@ -148,13 +148,13 @@ https://dredd.readthedocs.io/en/latest/how-it-works/#using-https-proxy\
         globCallback();
       });
     }
-    , err => {
+      , (err) => {
       if (err) { return callback(err, this.stats); }
 
       if (this.configDataIsEmpty && this.configuration.files.length === 0) {
-        err = new Error(`\
-API description document (or documents) not found on path: \
-'${this.configuration.options.path}'\
+        err = new Error(`
+API description document (or documents) not found on path:
+'${this.configuration.options.path}'
 `);
         return callback(err, this.stats);
       }
@@ -178,7 +178,7 @@ API description document (or documents) not found on path: \
         this.readLocalFile(fileUrlOrPath, loadCallback);
       }
     }
-    , callback);
+      , callback);
   }
 
   downloadFile(fileUrl, callback) {
@@ -190,20 +190,20 @@ API description document (or documents) not found on path: \
       let err;
       if (downloadError) {
         logger.debug(`Downloading ${fileUrl} errored:`, `${downloadError}` || downloadError.code);
-        err = new Error(`\
-Error when loading file from URL '${fileUrl}'. \
-Is the provided URL correct?\
+        err = new Error(`
+Error when loading file from URL '${fileUrl}'.
+Is the provided URL correct?
 `);
         return callback(err, this.stats);
       }
       if (!body || (res.statusCode < 200) || (res.statusCode >= 300)) {
-        err = new Error(`\
-Unable to load file from URL '${fileUrl}'. \
-Server did not send any blueprint back and responded with status code ${res.statusCode}.\
+        err = new Error(`
+Unable to load file from URL '${fileUrl}'.
+Server did not send any blueprint back and responded with status code ${res.statusCode}.
 `);
         return callback(err, this.stats);
       }
-      this.configuration.data[fileUrl] = {raw: body, filename: fileUrl};
+      this.configuration.data[fileUrl] = { raw: body, filename: fileUrl };
       callback(null, this.stats);
     });
   }
@@ -211,13 +211,13 @@ Server did not send any blueprint back and responded with status code ${res.stat
   readLocalFile(filePath, callback) {
     fs.readFile(filePath, 'utf8', (readError, data) => {
       if (readError) {
-        const err = new Error(`\
-Error when reading file '${filePath}' (${readError.message}). \
-Is the provided path correct?\
+        const err = new Error(`
+Error when reading file '${filePath}' (${readError.message}).
+Is the provided path correct?
 `);
         return callback(err);
       }
-      this.configuration.data[filePath] = {raw: data, filename: filePath};
+      this.configuration.data[filePath] = { raw: data, filename: filePath };
       callback(null, this.stats);
     });
   }
@@ -241,7 +241,7 @@ Is the provided path correct?\
         next();
       });
     }
-    , runtimeError => {
+      , (runtimeError) => {
       if (!runtimeError) { runtimeError = handleRuntimeProblems(this.configuration.data); }
       callback(runtimeError, this.stats);
     });
@@ -254,7 +254,7 @@ Is the provided path correct?\
 
     // when event 'start' is emitted, function in callback is executed for each
     // reporter registered by listeners
-    return this.configuration.emitter.emit('start', this.configuration.data, reporterError => {
+    return this.configuration.emitter.emit('start', this.configuration.data, (reporterError) => {
       if (reporterError) { logger.error(reporterError.message); }
 
       // last called reporter callback function starts the runner

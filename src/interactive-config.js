@@ -8,13 +8,13 @@ const interactiveConfig = {};
 
 interactiveConfig.prompt = function (config = {}, callback) {
   const questions = [];
-  
+
   questions.push({
     type: 'input',
     name: 'blueprint',
     message: 'Location of the API description document',
     default: config.blueprint || 'apiary.apib'
-   });
+  });
 
   questions.push({
     type: 'input',
@@ -51,7 +51,7 @@ interactiveConfig.prompt = function (config = {}, callback) {
     name: 'apiary',
     message: 'Do you want to use Apiary test inspector?',
     default: true,
-    when(answers) { return config.reporter !== 'apiary'; }
+    when() { return config.reporter !== 'apiary'; }
   });
 
   questions.push({
@@ -94,7 +94,7 @@ interactiveConfig.prompt = function (config = {}, callback) {
     type: 'confirm',
     name: 'circleCreate',
     message: 'Dredd is best served with Continuous Integration. Create CircleCI config for Dredd?',
-    when(answers) {
+    when() {
       return (!fs.existsSync('circle.yml') && !fs.existsSync('.travis.yml'));
     }
   });
@@ -142,7 +142,7 @@ interactiveConfig.updateCircle = function () {
   }
 
   if (!config.dependencies) { config.dependencies = {}; }
-  if (!config.dependencies.pre) { config['dependencies']['pre'] = []; }
+  if (!config.dependencies.pre) { config.dependencies.pre = []; }
   if (config.dependencies.pre.indexOf('npm install -g dredd') === -1) {
     config.dependencies.pre.push(`npm install -g dredd@${packageData.version}`);
   }
@@ -156,7 +156,7 @@ interactiveConfig.updateCircle = function () {
   fs.writeFileSync(file, yaml.safeDump(config));
 };
 
-interactiveConfig.updateTravis = function() {
+interactiveConfig.updateTravis = function () {
   let config;
   const file = '.travis.yml';
 

@@ -2,7 +2,6 @@ const console = require('console'); // Stubbed in tests by proxyquire
 const fs = require('fs');
 const optimist = require('optimist');
 const os = require('os');
-const path = require('path');
 const spawnArgs = require('spawn-args');
 const spawnSync = require('cross-spawn').sync;
 
@@ -66,7 +65,7 @@ Example:
       return callback();
     }
     logger.verbose('Terminating backend server process, PID', this.serverProcess.pid);
-    this.serverProcess.terminate({force: true});
+    this.serverProcess.terminate({ force: true });
     this.serverProcess.on('exit', () => callback());
   }
 
@@ -79,7 +78,7 @@ Example:
       }
 
       if (this.exit) {
-        this._processExit = exitStatus => {
+        this._processExit = (exitStatus) => {
           logger.verbose(`Exiting Dredd process with status '${exitStatus}'.`);
           logger.debug('Using configured custom exit() method to terminate the Dredd process.');
           this.finished = true;
@@ -88,14 +87,14 @@ Example:
           });
         };
       } else {
-        this._processExit = exitStatus => {
+        this._processExit = (exitStatus) => {
           logger.verbose(`Exiting Dredd process with status '${exitStatus}'.`);
           logger.debug('Using native process.exit() method to terminate the Dredd process.');
           this.stopServer(() => process.exit(exitStatus));
         };
       }
     } else {
-      this._processExit = exitStatus => {
+      this._processExit = (exitStatus) => {
         logger.verbose(`Exiting Dredd process with status '${exitStatus}'.`);
         logger.debug('Using configured custom callback to terminate the Dredd process.');
         this.finished = true;
@@ -147,28 +146,28 @@ Example:
     if (this.argv._[0] === 'init' || this.argv.init === true) {
       logger.silly('Starting interactive configuration.');
       this.finished = true;
-      interactiveConfig.run(this.argv, config => {
+      interactiveConfig.run(this.argv, (config) => {
         configUtils.save(config);
         console.log('');
         console.log('Configuration saved to dredd.yml');
         console.log('');
-        if (config['language'] === 'nodejs') {
+        if (config.language === 'nodejs') {
           console.log('Run test now, with:');
         } else {
           console.log('Install hooks handler and run Dredd test with:');
         }
         console.log('');
-        if (config['language'] === 'ruby') {
+        if (config.language === 'ruby') {
           console.log('  $ gem install dredd_hooks');
-        } else if (config['language'] === 'python') {
+        } else if (config.language === 'python') {
           console.log('  $ pip install dredd_hooks');
-        } else if (config['language'] === 'php') {
+        } else if (config.language === 'php') {
           console.log('  $ composer require ddelnano/dredd-hooks-php --dev');
-        } else if (config['language'] === 'perl') {
+        } else if (config.language === 'perl') {
           console.log('  $ cpanm Dredd::Hooks');
-        } else if (config['language'] === 'go') {
+        } else if (config.language === 'go') {
           console.log('  $ go get github.com/snikch/goodman/cmd/goodman');
-        } else if (config['language'] === 'rust') {
+        } else if (config.language === 'rust') {
           console.log('  $ cargo install dredd-hooks');
         }
 
@@ -205,12 +204,12 @@ ${packageData.name} v${packageData.version} \
     }
 
     // Overwrite saved config with cli arguments
-    for (let key in this.cliArgv) {
+    Object.keys(this.cliArgv).forEach((key) => {
       const value = this.cliArgv[key];
       if (key !== '_' && key !== '$0') {
         this.argv[key] = value;
       }
-    }
+    });
 
     this.argv = applyLoggingOptions(this.argv);
   }
@@ -219,7 +218,7 @@ ${packageData.name} v${packageData.version} \
     this.argv.custom = configUtils.parseCustom(this.argv.custom);
   }
 
-  runServerAndThenDredd(callback) {
+  runServerAndThenDredd() {
     if (!this.argv.server) {
       logger.verbose('No backend server process specified, starting testing at once');
       this.runDredd(this.dreddInstance);
@@ -231,7 +230,7 @@ ${packageData.name} v${packageData.version} \
 
       logger.verbose(`Using '${command}' as a server command, ${JSON.stringify(parsedArgs)} as arguments`);
       this.serverProcess = spawn(command, parsedArgs);
-      logger.info(`Starting backend server process with command: ${this.argv['server']}`);
+      logger.info(`Starting backend server process with command: ${this.argv.server}`);
 
       this.serverProcess.stdout.setEncoding('utf8');
       this.serverProcess.stdout.on('data', data => process.stdout.write(data.toString()));
@@ -250,7 +249,7 @@ ${packageData.name} v${packageData.version} \
         logger.info('Backend server process exited');
       });
 
-      this.serverProcess.on('error', err => {
+      this.serverProcess.on('error', (err) => {
         logger.error('Command to start backend server process failed, exiting Dredd', err);
         this._processExit(1);
       });
@@ -278,7 +277,7 @@ ${packageData.name} v${packageData.version} \
       this.wait = setTimeout(() => {
         this.runDredd(this.dreddInstance);
       }
-      , waitMilis);
+        , waitMilis);
     }
   }
 
@@ -299,7 +298,7 @@ ${packageData.name} v${packageData.version} \
   }
 
   run() {
-    for (let task of [
+    for (const task of [
       this.setOptimistArgv,
       this.parseCustomConfig,
       this.runExitingActions,
@@ -344,8 +343,8 @@ ${packageData.name} v${packageData.version} \
     this.lastArgvIsApiEndpoint().takeRestOfParamsAsPath();
 
     const configuration = {
-      'server': this.server,
-      'options': this.argv
+      server: this.server,
+      options: this.argv
     };
 
     // Push first argument (without some known configuration --key) into paths

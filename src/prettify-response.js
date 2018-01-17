@@ -15,27 +15,25 @@ module.exports = function prettifyResponse(response) {
       logger.debug(`Could not stringify: ${obj}`);
     }
     return obj;
-  };
+  }
 
-  function prettifyBody(body, contentType) {
-    switch (contentType) {
-      case 'application/json':
-        body = stringify(body);
-        break;
+  function prettifyBody(body, contentKind) {
+    switch (contentKind) {
       case 'text/html':
         body = html.prettyPrint(body, { indent_size: 2 });
         break;
+      default:
+        body = stringify(body);
     }
     return body;
-  };
-
+  }
 
   if (response && response.headers) {
     contentType = response.headers['content-type'] || response.headers['Content-Type'];
   }
 
   let stringRepresentation = '';
-  for (let key of Object.keys(response || {})) {
+  for (const key of Object.keys(response || {})) {
     let value = response[key];
     if (key === 'body') {
       value = `\n${prettifyBody(value, contentType)}`;
@@ -43,7 +41,7 @@ module.exports = function prettifyResponse(response) {
       value = `\n${stringify(value)}`;
     } else if (key === 'headers') {
       let header = '\n';
-      for (let hkey of Object.keys(value || {})) {
+      for (const hkey of Object.keys(value || {})) {
         const hval = value[hkey];
         header += `    ${hkey}: ${hval}\n`;
       }

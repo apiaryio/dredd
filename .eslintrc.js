@@ -6,6 +6,19 @@ module.exports = {
     'node': true
   },
   rules: {
-    'comma-dangle': ['error', 'never']
+    'class-methods-use-this': 'off',
+    'comma-dangle': ['error', 'never'],
+    'consistent-return': 'off',
+    'func-names': 'off',
+    'max-len': 'off',
+    'no-bitwise': 'off',
+    'no-continue': 'off',
+    'no-empty': 'off',
+    'no-multi-assign': 'off',
+    'no-param-reassign': 'off',
+    'no-plusplus': 'off',
+    'no-restricted-syntax': 'off',
+    'no-underscore-dangle': 'off',
+    'no-use-before-define': 'off'
   }
 };

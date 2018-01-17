@@ -4,11 +4,11 @@ const logger = require('./logger');
 module.exports = function handleRuntimeProblems(blueprintData) {
   let error = false;
 
-  for (let filename of Object.keys(blueprintData || {})) {
+  for (const filename of Object.keys(blueprintData || {})) {
     const data = blueprintData[filename];
     const apiDescriptionDocument = data.raw;
 
-    for (let annotation of data.annotations) {
+    for (const annotation of data.annotations) {
       let log;
       let message;
       if (annotation.type === 'warning') {

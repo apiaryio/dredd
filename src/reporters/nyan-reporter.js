@@ -26,11 +26,11 @@ function NyanCatReporter(emitter, stats, tests) {
   this.numberOfLines = 4;
   this.trajectories = [[], [], [], []];
   this.nyanCatWidth = 11;
-  this.trajectoryWidthMax = (((windowWidth * .75) | 0) - this.nyanCatWidth);
+  this.trajectoryWidthMax = (((windowWidth * 0.75) | 0) - this.nyanCatWidth);
   this.scoreboardWidth = 5;
   this.tick = 0;
   this.errors = [];
-  
+
   this.configureEmitter(emitter);
 
   logger.verbose(`Using '${this.type}' reporter.`);
@@ -43,7 +43,7 @@ NyanCatReporter.prototype.configureEmitter = function (emitter) {
     callback();
   });
 
-  emitter.on('end', callback => {
+  emitter.on('end', (callback) => {
     this.cursorShow();
     let i = 0;
 
@@ -55,8 +55,8 @@ NyanCatReporter.prototype.configureEmitter = function (emitter) {
     if (this.errors.length > 0) {
       this.write('\n');
       logger.info('Displaying failed tests...');
-      for (let test of this.errors) {
-        logger.fail(test.title + ` duration: ${test.duration}ms`);
+      for (const test of this.errors) {
+        logger.fail(`${test.title} duration: ${test.duration}ms`);
         logger.fail(test.message);
         logger.request(`\n${prettifyResponse(test.request)}\n`);
         logger.expected(`\n${prettifyResponse(test.expected)}\n`);
@@ -69,15 +69,15 @@ NyanCatReporter.prototype.configureEmitter = function (emitter) {
     callback();
   });
 
-  emitter.on('test pass', test => {
+  emitter.on('test pass', () => {
     this.draw();
   });
 
-  emitter.on('test skip', test => {
+  emitter.on('test skip', () => {
     this.draw();
   });
 
-  emitter.on('test fail', test => {
+  emitter.on('test fail', (test) => {
     this.errors.push(test);
     this.draw();
   });
@@ -87,7 +87,7 @@ NyanCatReporter.prototype.configureEmitter = function (emitter) {
     this.errors.push(test);
     this.draw();
   });
-}
+};
 
 NyanCatReporter.prototype.draw = function () {
   this.appendRainbow();
@@ -95,7 +95,7 @@ NyanCatReporter.prototype.draw = function () {
   this.drawRainbow();
   this.drawNyanCat();
   this.tick = !this.tick;
-}
+};
 
 NyanCatReporter.prototype.drawScoreboard = function () {
   const colors = {
@@ -105,7 +105,7 @@ NyanCatReporter.prototype.drawScoreboard = function () {
   };
 
   // Capture outer `this`
-  draw = (color, n) => {
+  const draw = (color, n) => {
     this.write(' ');
     this.write(`\u001b[${color}m${n}\u001b[0m`);
     this.write('\n');
@@ -118,13 +118,13 @@ NyanCatReporter.prototype.drawScoreboard = function () {
 
   this.write('\n');
   this.cursorUp(this.numberOfLines + 1);
-}
+};
 
 NyanCatReporter.prototype.appendRainbow = function () {
   const segment = (this.tick ? '_' : '-');
   const rainbowified = this.rainbowify(segment);
   const result = [];
-  
+
   let index = 0;
   while (index < this.numberOfLines) {
     const trajectory = this.trajectories[index];
@@ -133,17 +133,17 @@ NyanCatReporter.prototype.appendRainbow = function () {
     result.push(index++);
   }
   return result;
-}
+};
 
 NyanCatReporter.prototype.drawRainbow = function () {
-  this.trajectories.forEach((line, index) => {
+  this.trajectories.forEach((line) => {
     this.write(`\u001b[${this.scoreboardWidth}C`);
     this.write(line.join(''));
     this.write('\n');
   });
 
   this.cursorUp(this.numberOfLines);
-}
+};
 
 NyanCatReporter.prototype.drawNyanCat = function () {
   const startWidth = this.scoreboardWidth + this.trajectories[0].length;
@@ -159,14 +159,14 @@ NyanCatReporter.prototype.drawNyanCat = function () {
   this.write(color);
   padding = (this.tick ? '_' : '__');
   const tail = (this.tick ? '~' : '^');
-  this.write(tail + '|' + padding + this.face() + ' ');
+  this.write(`${tail}|${padding}${this.face()} `);
   this.write('\n');
   this.write(color);
   padding = (this.tick ? ' ' : '  ');
-  this.write(padding + '\'\'  \'\' ');
+  this.write(`${padding}''  '' `);
   this.write('\n');
   this.cursorUp(this.numberOfLines);
-}
+};
 
 NyanCatReporter.prototype.face = function () {
   if (this.stats.failures) {
@@ -175,26 +175,25 @@ NyanCatReporter.prototype.face = function () {
     return '( o .o)';
   } else if (this.stats.passes) {
     return '( ^ .^)';
-  } else {
-    return '( - .-)';
   }
-}
+  return '( - .-)';
+};
 
 NyanCatReporter.prototype.cursorUp = function (n) {
   this.write(`\u001b[${n}A`);
-}
+};
 
 NyanCatReporter.prototype.cursorDown = function (n) {
   this.write(`\u001b[${n}B`);
-}
+};
 
 NyanCatReporter.prototype.cursorShow = function () {
-  (this.isatty && this.write('\u001b[?25h'));
-}
+  if (this.isatty) { this.write('\u001b[?25h'); }
+};
 
 NyanCatReporter.prototype.cursorHide = function () {
-  (this.isatty && this.write('\u001b[?25l'));
-}
+  if (this.isatty) { this.write('\u001b[?25l'); }
+};
 
 NyanCatReporter.prototype.generateColors = function () {
   const colors = [];
@@ -210,16 +209,16 @@ NyanCatReporter.prototype.generateColors = function () {
     i++;
   }
   return colors;
-}
+};
 
 NyanCatReporter.prototype.rainbowify = function (str) {
   const color = this.rainbowColors[this.colorIndex % this.rainbowColors.length];
   this.colorIndex += 1;
   return `\u001b[38;5;${color}m${str}\u001b[0m`;
-}
+};
 
 NyanCatReporter.prototype.write = function (str) {
   process.stdout.write(str);
-}
+};
 
 module.exports = NyanCatReporter;

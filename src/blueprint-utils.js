@@ -5,7 +5,7 @@ function characterIndexToPosition(charIndex = 0, code = '') {
   const match = codeFragment.match(NEWLINE_RE) || [];
   const row = match.length + 1;
   return { row };
-};
+}
 
 const sortNumbersAscending = (a, b) => a - b;
 
@@ -22,8 +22,6 @@ function warningLocationToRanges(warningLocation = [], text = '') {
   // Add this warning position row into ranges array
   rowsIndexes.push(position.row);
 
-  const lastLocation = warningLocation[warningLocation.length - 1];
-
   if (warningLocation.length > 0) {
     // More lines
     for (let locKey = 0; locKey < warningLocation.length; locKey++) {
@@ -39,19 +37,19 @@ function warningLocationToRanges(warningLocation = [], text = '') {
 
   const ranges = [];
   let range = { start: rowsIndexes[0], end: rowsIndexes[0] };
-  for (let rowIndex of rowsIndexes) {
+  for (const rowIndex of rowsIndexes) {
     if ((rowIndex === range.end) || (rowIndex === (range.end + 1))) { // Moving end of known range
       range.end = rowIndex;
     } else {
       ranges.push(range); // non-continuous range
-      range = {start: rowIndex, end: rowIndex};
+      range = { start: rowIndex, end: rowIndex };
     }
   }
   // Push the last edited range to ranges-array
   ranges.push(range);
 
   return ranges;
-};
+}
 
 function rangesToLinesText(ranges) {
   let pos = '';
@@ -68,7 +66,7 @@ function rangesToLinesText(ranges) {
     }
   }
   return pos;
-};
+}
 
 module.exports = {
   characterIndexToPosition,

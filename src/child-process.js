@@ -51,7 +51,7 @@ function signalTerm(childProcess, callback) {
     childProcess.kill('SIGTERM');
   }
   process.nextTick(callback);
-};
+}
 
 // Gracefully terminates a child process
 //
@@ -94,24 +94,23 @@ function terminate(childProcess, options = {}, callback) {
       // Successfully terminated
       clearTimeout(t);
       return callback();
+    }
+    if ((Date.now() - start) < timeout) {
+      // Still not terminated, try again
+      signalTerm(childProcess, (err) => {
+        if (err) { return callback(err); }
+        t = setTimeout(check, retryDelay);
+      });
     } else {
-      if ((Date.now() - start) < timeout) {
-        // Still not terminated, try again
-        signalTerm(childProcess, (err) => {
-          if (err) { return callback(err); }
-          t = setTimeout(check, retryDelay);
-        });
+      // Still not terminated and the timeout has passed, either
+      // kill the process (force) or provide an error
+      clearTimeout(t);
+      if (force) {
+        signalKill(childProcess, callback);
       } else {
-        // Still not terminated and the timeout has passed, either
-        // kill the process (force) or provide an error
-        clearTimeout(t);
-        if (force) {
-          signalKill(childProcess, callback);
-        } else {
-          callback(
-            new Error(`Unable to gracefully terminate process ${childProcess.pid}`)
-          );
-        }
+        callback(
+          new Error(`Unable to gracefully terminate process ${childProcess.pid}`)
+        );
       }
     }
   };
@@ -121,7 +120,7 @@ function terminate(childProcess, options = {}, callback) {
     if (err) { return callback(err); }
     t = setTimeout(check, TERM_FIRST_CHECK_TIMEOUT_MS);
   });
-};
+}
 
 const spawn = function (...args) {
   const childProcess = crossSpawn.spawn.apply(null, args);
@@ -131,8 +130,8 @@ const spawn = function (...args) {
   let killedIntentionally = false;
   let terminatedIntentionally = false;
 
-  childProcess.on('signalKill', () => killedIntentionally = true);
-  childProcess.on('signalTerm', () => terminatedIntentionally = true);
+  childProcess.on('signalKill', () => { killedIntentionally = true; });
+  childProcess.on('signalTerm', () => { terminatedIntentionally = true; });
 
   childProcess.signalKill = () => {
     signalKill(childProcess, (err) => {
@@ -146,7 +145,7 @@ const spawn = function (...args) {
     });
   };
 
-  childProcess.terminate = options => {
+  childProcess.terminate = (options) => {
     terminate(childProcess, options, (err) => {
       if (err) { childProcess.emit('error', err); }
     });

@@ -4,7 +4,6 @@ const chai = require('chai');
 const clone = require('clone');
 const gavel = require('gavel');
 const os = require('os');
-const path = require('path');
 const requestLib = require('request');
 const url = require('url');
 const { Pitboss } = require('pitboss-ng');
@@ -42,19 +41,19 @@ class TransactionRunner {
 
   config(config) {
     this.configuration = config;
-     this.multiBlueprint = Object.keys(this.configuration.data).length > 1;
+    this.multiBlueprint = Object.keys(this.configuration.data).length > 1;
   }
 
   run(transactions, callback) {
     logger.verbose('Sorting HTTP transactions');
-    transactions = this.configuration.options['sorted'] ? sortTransactions(transactions) : transactions;
+    transactions = this.configuration.options.sorted ? sortTransactions(transactions) : transactions;
 
     logger.verbose('Configuring HTTP transactions');
     transactions = transactions.map(this.configureTransaction.bind(this));
 
     // Remainings of functional approach, probs to be eradicated
     logger.verbose('Reading hook files and registering hooks');
-    addHooks(this, transactions, addHooksError => {
+    addHooks(this, transactions, (addHooksError) => {
       if (addHooksError) { return callback(addHooksError); }
 
       logger.verbose('Executing HTTP transactions');
@@ -125,7 +124,7 @@ class TransactionRunner {
           });
         });
       }
-      , iterationError => {
+        , (iterationError) => {
         if (iterationError) { return callback(iterationError); }
 
         logger.verbose('Running \'afterAll\' hooks');
@@ -150,7 +149,7 @@ class TransactionRunner {
             // Legacy mode is only for running beforeAll and afterAll hooks with
             // old API, i.e. callback as a first argument
 
-            this.runLegacyHook(hookFn, data, err => {
+            this.runLegacyHook(hookFn, data, (err) => {
               if (err) {
                 logger.debug('Legacy hook errored:', err);
                 this.emitHookError(err, data);
@@ -158,7 +157,7 @@ class TransactionRunner {
               runHookCallback();
             });
           } else {
-            this.runHook(hookFn, data, err => {
+            this.runHook(hookFn, data, (err) => {
               if (err) {
                 logger.debug('Hook errored:', err);
                 this.emitHookError(err, data);
@@ -166,7 +165,6 @@ class TransactionRunner {
               runHookCallback();
             });
           }
-
         } catch (error) {
           // Beware! This is very problematic part of code. This try/catch block
           // catches also errors thrown in 'runHookCallback', i.e. in all
@@ -174,7 +172,7 @@ class TransactionRunner {
           // all the flow can be executed twice. We need to reimplement this.
           if (error instanceof chai.AssertionError) {
             const transactions = Array.isArray(data) ? data : [data];
-            for (let transaction of transactions) { this.failTransaction(transaction, `Failed assertion in hooks: ${error.message}`); }
+            for (const transaction of transactions) { this.failTransaction(transaction, `Failed assertion in hooks: ${error.message}`); }
           } else {
             logger.debug('Hook errored:', error);
             this.emitHookError(error, data);
@@ -208,14 +206,14 @@ class TransactionRunner {
     // Reference to `transaction` gets lost here if whole object is assigned
     // this is workaround how to copy properties - clone doesn't work either
     const object = results.data || {};
-    for (let key in object) {
+    Object.keys(object).forEach((key) => {
       const value = object[key];
       data[key] = value;
-    }
+    });
     this.hookStash = results.stash;
 
     if (this.logs == null) { this.logs = []; }
-    for (let log of results.logs || []) {
+    for (const log of results.logs || []) {
       this.logs.push(log);
     }
 
@@ -251,18 +249,18 @@ output;\
   runSandboxedHookFromString(hookString, data, callback) {
     const wrappedCode = this.sandboxedWrappedCode(hookString);
 
-    const sandbox = new Pitboss(wrappedCode, {timeout: 500});
+    const sandbox = new Pitboss(wrappedCode, { timeout: 500 });
     return sandbox.run({
       context: {
-        '_data': data,
-        '_logs': [],
-        'stash': this.hookStash
+        _data: data,
+        _logs: [],
+        stash: this.hookStash
       },
       libraries: {
-        '_log': sandboxedLogLibraryPath
+        _log: sandboxedLogLibraryPath
       }
     }
-    , (err, result = {}) => {
+      , (err, result = {}) => {
       sandbox.kill();
       this.sandboxedHookResultsHandler(err, data, result, callback);
     });
@@ -296,7 +294,6 @@ Interface of the hooks functions will be unified soon across all hook functions:
         // data synchronously and callback will be called immediatelly and not
         // passed as a second argument
         hook(callback);
-
       } else if (hook.length === 2) {
         // Async api
         hook(data, () => callback());
@@ -329,15 +326,13 @@ Interface of the hooks functions will be unified soon across all hook functions:
   }
 
   configureTransaction(transaction) {
-    let needle;
-    let name;
     const { configuration } = this;
 
-    const {origin, request, response} = transaction;
+    const { origin, request, response } = transaction;
     const mediaType = (
       configuration.data[origin.filename] ?
-      configuration.data[origin.filename].mediaType :
-      undefined
+        configuration.data[origin.filename].mediaType :
+        undefined
     ) || 'text/vnd.apiblueprint';
 
     // Parse the server URL (just once, caching it in @parsedUrl)
@@ -348,16 +343,16 @@ Interface of the hooks functions will be unified soon across all hook functions:
 
     // Add Dredd User-Agent (if no User-Agent is already present)
     const hasUserAgent = Object.keys(headers)
-                          .map(name => name.toLowerCase())
-                          .includes('user-agent');
+      .map(name => name.toLowerCase())
+      .includes('user-agent');
     if (!hasUserAgent) {
-      const system = os.type() + ' ' + os.release() + '; ' + os.arch();
+      const system = `${os.type()} ${os.release()}; ${os.arch()}`;
       headers['User-Agent'] = `Dredd/${packageData.version} (${system})`;
     }
 
     // Parse and add headers from the config to the transaction
     if (configuration.options.header.length > 0) {
-      for (let header of configuration.options.header) {
+      for (const header of configuration.options.header) {
         const splitIndex = header.indexOf(':');
         const headerKey = header.substring(0, splitIndex);
         const headerValue = header.substring(splitIndex + 1);
@@ -376,7 +371,7 @@ Interface of the hooks functions will be unified soon across all hook functions:
     // Backward compatible transaction name hack. Transaction names will be
     // replaced by Canonical Transaction Paths: https://github.com/apiaryio/dredd/issues/227
     if (!this.multiBlueprint) {
-      transaction.name = transaction.name.replace(`${transaction.origin.apiName} > `, "");
+      transaction.name = transaction.name.replace(`${transaction.origin.apiName} > `, '');
     }
 
     // Transaction skipping (can be modified in hooks). If the input format
@@ -391,7 +386,7 @@ Interface of the hooks functions will be unified soon across all hook functions:
 
     const configuredTransaction = {
       name: transaction.name,
-      id: request.method + ' (' + expected.statusCode + ') ' + request.uri,
+      id: `${request.method} (${expected.statusCode}) ${request.uri}`,
       host: this.parsedUrl.hostname,
       port: this.parsedUrl.port,
       request,
@@ -409,7 +404,7 @@ Interface of the hooks functions will be unified soon across all hook functions:
     if (!serverUrl.match(/^https?:\/\//i)) {
       // Protocol is missing. Remove any : or / at the beginning of the URL
       // and prepend the URL with 'http://' (assumed as default fallback).
-      serverUrl = `http://${serverUrl.replace(/^[:\/]*/, '')}`;
+      serverUrl = `http://${serverUrl.replace(/^[:/]*/, '')}`;
     }
     return url.parse(serverUrl);
   }
@@ -430,7 +425,7 @@ Interface of the hooks functions will be unified soon across all hook functions:
     // undesirable behavior depending on slashes.
     // See also https://github.com/joyent/node/issues/2216
     let segments = [serverPath, requestPath];
-    segments = (Array.from(segments).map((segment) => segment.replace(/^\/|\/$/g, '')));
+    segments = (Array.from(segments).map(segment => segment.replace(/^\/|\/$/g, '')));
     // Keep trailing slash at the end if specified in requestPath
     // and if requestPath isn't only '/'
     const trailingSlash = (requestPath !== '/') && (requestPath.slice(-1) === '/') ? '/' : '';
@@ -460,10 +455,13 @@ Interface of the hooks functions will be unified soon across all hook functions:
     if (!transaction.test) { transaction.test = this.createTest(transaction); }
     transaction.test.status = 'fail';
     if (reason) { transaction.test.message = reason; }
-    return transaction.test.results ?
-      transaction.test.results :
-      (transaction.test.results = transaction.results)
-    ;
+    let results;
+    if (transaction.test.results) {
+      results = transaction.test.results;
+    } else {
+      results = transaction.test.results = transaction.results;
+    }
+    return results;
   }
 
   // Marks the transaction as skipped and makes sure everything in the transaction
@@ -477,10 +475,13 @@ Interface of the hooks functions will be unified soon across all hook functions:
     if (!transaction.test) { transaction.test = this.createTest(transaction); }
     transaction.test.status = 'skip';
     if (reason) { transaction.test.message = reason; }
-    return transaction.test.results ?
-      transaction.test.results :
-      (transaction.test.results = transaction.results)
-    ;
+    let results;
+    if (transaction.test.results) {
+      results = transaction.test.results;
+    } else {
+      results = transaction.test.results = transaction.results;
+    }
+    return results;
   }
 
   // Ensures that given transaction object has 'results' with 'general' section
@@ -488,10 +489,13 @@ Interface of the hooks functions will be unified soon across all hook functions:
   ensureTransactionResultsGeneralSection(transaction) {
     if (!transaction.results) { transaction.results = {}; }
     if (!transaction.results.general) { transaction.results.general = {}; }
-    return transaction.results.general.results ?
-      transaction.results.general.results :
-      (transaction.results.general.results = [])
-    ;
+    let results;
+    if (transaction.results.general.results) {
+      results = transaction.results.general.results;
+    } else {
+      results = transaction.results.general.results = [];
+    }
+    return results;
   }
 
   // Inspects given transaction and emits 'test *' events with 'transaction.test'
@@ -533,7 +537,7 @@ Interface of the hooks functions will be unified soon across all hook functions:
 
     // Record the error to halt the transaction runner. Do not overwrite
     // the first recorded error if more of them occured.
-    return (this.error = this.error || error);
+    this.error = this.error || error;
   }
 
   getRequestOptionsFromTransaction(transaction) {
@@ -572,35 +576,30 @@ Interface of the hooks functions will be unified soon across all hook functions:
       transaction.test = test;
       this.skipTransaction(transaction, 'Skipped in before hook');
       return callback();
-
     } else if (transaction.fail) {
       logger.verbose('HTTP transaction was marked in hooks as to be failed. Reporting as failed');
       transaction.test = test;
       this.failTransaction(transaction, `Failed in before hook: ${transaction.fail}`);
       return callback();
-
     } else if (this.configuration.options['dry-run']) {
       logger.info('Dry run. Not performing HTTP request');
       transaction.test = test;
       this.skipTransaction(transaction);
       return callback();
-
     } else if (this.configuration.options.names) {
       logger.info(transaction.name);
       transaction.test = test;
       this.skipTransaction(transaction);
       return callback();
-
     } else if ((this.configuration.options.method.length > 0) && !(Array.from(this.configuration.options.method).includes(transaction.request.method))) {
       logger.info(`\
-Only ${(Array.from(this.configuration.options.method).map((m) => m.toUpperCase())).join(', ')}\
+Only ${(Array.from(this.configuration.options.method).map(m => m.toUpperCase())).join(', ')}\
 requests are set to be executed. \
 Not performing HTTP ${transaction.request.method.toUpperCase()} request.\
 `);
       transaction.test = test;
       this.skipTransaction(transaction);
       return callback();
-
     } else if ((this.configuration.options.only.length > 0) && !(Array.from(this.configuration.options.only).includes(transaction.name))) {
       logger.info(`\
 Only '${this.configuration.options.only}' transaction is set to be executed. \
@@ -609,10 +608,8 @@ Not performing HTTP request for '${transaction.name}'.\
       transaction.test = test;
       this.skipTransaction(transaction);
       return callback();
-
-    } else {
-      this.performRequestAndValidate(test, transaction, hooks, callback);
     }
+    this.performRequestAndValidate(test, transaction, hooks, callback);
   }
 
   // Sets the Content-Length header. Overrides user-provided Content-Length
@@ -635,7 +632,6 @@ ${calculatedContentLengthValue} instead.\
 `);
           headers[contentLengthHeaderName] = calculatedContentLengthValue;
         }
-
       } else if (contentLengthValue !== 0) {
         logger.warn(`\
 Specified Content-Length header is ${contentLengthValue}, but \
@@ -643,7 +639,6 @@ the real body length is 0. Using 0 instead.\
 `);
         headers[contentLengthHeaderName] = 0;
       }
-
     } else {
       headers['Content-Length'] = body ? Buffer.byteLength(body) : 0;
     }
@@ -767,11 +762,11 @@ include a message body: https://tools.ietf.org/html/rfc7231#section-6.3\
         let message = '';
         const object = gavelResult || {};
         let validatorOutput;
-        for (var sectionName of Object.keys(object || {})) {
+        for (const sectionName of Object.keys(object || {})) {
           // Section names are 'statusCode', 'headers', 'body' (and 'version', which is irrelevant)
           validatorOutput = object[sectionName];
           if (sectionName !== 'version') {
-            for (let gavelError of validatorOutput.results || []) {
+            for (const gavelError of validatorOutput.results || []) {
               message += `${sectionName}: ${gavelError.message}\n`;
             }
           }
@@ -785,7 +780,7 @@ include a message body: https://tools.ietf.org/html/rfc7231#section-6.3\
         // version of the code.) In that case, we want to save the new validation
         // output, but we want to keep at least the original array of Gavel errors.
         const results = transaction.results || {};
-        for (sectionName of Object.keys(gavelResult || {})) {
+        for (const sectionName of Object.keys(gavelResult || {})) {
           // Section names are 'statusCode', 'headers', 'body' (and 'version', which is irrelevant)
           const rawValidatorOutput = gavelResult[sectionName];
           if (sectionName !== 'version') {
@@ -822,9 +817,8 @@ include a message body: https://tools.ietf.org/html/rfc7231#section-6.3\
     const contentType = caseless(headers).get('Content-Type');
     if (contentType) {
       return contentType.indexOf('multipart') > -1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   // Finds newlines not preceeded by carriage returns and replaces them by

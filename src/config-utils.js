@@ -12,10 +12,9 @@ configUtils.save = function (argsOrigin, path) {
   args.blueprint = args._[0];
   args.endpoint = args._[1];
 
-  for (let key in args) {
-    const value = args[key];
+  Object.keys(args).forEach((key) => {
     if (key.length === 1) { delete args[key]; }
-  }
+  });
 
   delete args.$0;
   delete args._;
@@ -40,7 +39,7 @@ configUtils.load = function (path) {
 configUtils.parseCustom = function (customArray) {
   const output = {};
   if (Array.isArray(customArray)) {
-    for (let string of customArray) {
+    for (const string of customArray) {
       const splitted = string.split(/:(.+)?/);
       output[splitted[0]] = splitted[1];
     }

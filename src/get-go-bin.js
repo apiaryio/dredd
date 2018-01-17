@@ -8,14 +8,12 @@ module.exports = function getGoBin(callback) {
   const goBin = process.env.GOBIN;
   if (goBin) {
     process.nextTick(() => callback(null, goBin));
+  } else if (process.env.GOPATH) {
+    process.nextTick(() => callback(null, path.join(process.env.GOPATH, 'bin')));
   } else {
-    if (process.env.GOPATH) {
-      process.nextTick(() => callback(null, path.join(process.env.GOPATH, 'bin')));
-    } else {
-      childProcess.exec('go env GOPATH', (err, stdout) => {
-        if (err) { return callback(err); }
-        callback(null, path.join(stdout.trim(), 'bin'));
-      });
-    }
+    childProcess.exec('go env GOPATH', (err, stdout) => {
+      if (err) { return callback(err); }
+      callback(null, path.join(stdout.trim(), 'bin'));
+    });
   }
 };

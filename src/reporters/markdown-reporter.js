@@ -11,7 +11,7 @@ const prettifyResponse = require('./../prettify-response');
 
 function MarkdownReporter(emitter, stats, tests, path, details) {
   EventEmitter.call(this);
-  
+
   this.type = 'markdown';
   this.stats = stats;
   this.tests = tests;
@@ -31,24 +31,24 @@ MarkdownReporter.prototype.sanitizedPath = function (path) {
     logger.info(`File exists at ${filePath}, will be overwritten...`);
   }
   return filePath;
-}
+};
 
 MarkdownReporter.prototype.configureEmitter = function (emitter) {
-  function title(str){
-    return Array(this.level).join('#') + ' ' + str;
-  };
+  function title(str) {
+    return `${Array(this.level).join('#')} ${str}`;
+  }
 
   emitter.on('start', (rawBlueprint, callback) => {
     this.level++;
-    this.buf += title('Dredd Tests') + '\n';
+    this.buf += `${title('Dredd Tests')}\n`;
     callback();
   });
 
-  emitter.on('end', callback => {
-    fsExtra.mkdirp(pathmodule.dirname(this.path), err => {
+  emitter.on('end', (callback) => {
+    fsExtra.mkdirp(pathmodule.dirname(this.path), (err) => {
       if (!err) {
-        fs.writeFile(this.path, this.buf, err => {
-          if (err) { logger.error(err); }
+        fs.writeFile(this.path, this.buf, (error) => {
+          if (error) { logger.error(error); }
           callback();
         });
       } else {
@@ -58,37 +58,37 @@ MarkdownReporter.prototype.configureEmitter = function (emitter) {
     });
   });
 
-  emitter.on('test start', test => {
+  emitter.on('test start', () => {
     this.level++;
   });
 
-  emitter.on('test pass', test => {
-    this.buf += title(`Pass: ${test.title}`) +  '\n';
+  emitter.on('test pass', (test) => {
+    this.buf += `${title(`Pass: ${test.title}`)}\n`;
 
     if (this.details) {
       this.level++;
-      this.buf += title('Request') + '\n```\n' + prettifyResponse(test.request) + '\n```\n\n';
-      this.buf += title('Expected') + '\n```\n' + prettifyResponse(test.expected) + '\n```\n\n';
-      this.buf += title('Actual') + '\n```\n' + prettifyResponse(test.actual) + '\n```\n\n';
+      this.buf += `${title('Request')}\n\`\`\`\n${prettifyResponse(test.request)}\n\`\`\`\n\n`;
+      this.buf += `${title('Expected')}\n\`\`\`\n${prettifyResponse(test.expected)}\n\`\`\`\n\n`;
+      this.buf += `${title('Actual')}\n\`\`\`\n${prettifyResponse(test.actual)}\n\`\`\`\n\n`;
       this.level--;
     }
 
     this.level--;
   });
 
-  emitter.on('test skip', test => {
-    this.buf += title(`Skip: ${test.title}`) +  "\n";
+  emitter.on('test skip', (test) => {
+    this.buf += `${title(`Skip: ${test.title}`)}\n`;
     this.level--;
   });
 
-  emitter.on('test fail', test => {
+  emitter.on('test fail', (test) => {
     this.buf += title(`Fail: ${test.title}\n`);
 
     this.level++;
-    this.buf += title('Message') + '\n```\n' + test.message + '\n```\n\n';
-    this.buf += title('Request') + '\n```\n' + prettifyResponse(test.request) + '\n```\n\n';
-    this.buf += title('Expected') + '\n```\n' + prettifyResponse(test.expected) + '\n```\n\n';
-    this.buf += title('Actual') + '\n```\n' + prettifyResponse(test.actual) + '\n```\n\n';
+    this.buf += `${title('Message')}\n\`\`\`\n${test.message}\n\`\`\`\n\n`;
+    this.buf += `${title('Request')}\n\`\`\`\n${prettifyResponse(test.request)}\n\`\`\`\n\n`;
+    this.buf += `${title('Expected')}\n\`\`\`\n${prettifyResponse(test.expected)}\n\`\`\`\n\n`;
+    this.buf += `${title('Actual')}\n\`\`\`\n${prettifyResponse(test.actual)}\n\`\`\`\n\n`;
     this.level--;
 
     this.level--;
@@ -101,7 +101,7 @@ MarkdownReporter.prototype.configureEmitter = function (emitter) {
     this.buf += '```\n\n';
     this.level--;
   });
-}
+};
 
 inherits(MarkdownReporter, EventEmitter);
 

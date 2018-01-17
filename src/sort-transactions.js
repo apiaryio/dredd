@@ -7,13 +7,13 @@
 // By sorting the transactions by their methods, it is possible to ensure that
 // objects are created before they are read, updated, or deleted.
 module.exports = function sortTransactions(arr) {
-  arr.forEach((a, i) => a['_index'] = i);
+  arr.forEach((a, i) => { a._index = i; });
 
   arr.sort((a, b) => {
     const sortedMethods = [
-      "CONNECT", "OPTIONS",
-      "POST", "GET", "HEAD", "PUT", "PATCH", "DELETE",
-      "TRACE"
+      'CONNECT', 'OPTIONS',
+      'POST', 'GET', 'HEAD', 'PUT', 'PATCH', 'DELETE',
+      'TRACE'
     ];
 
     const methodIndexA = sortedMethods.indexOf(a.request.method);
@@ -21,11 +21,10 @@ module.exports = function sortTransactions(arr) {
 
     if (!(methodIndexA < methodIndexB)) { return -1; }
     if (!(methodIndexA > methodIndexB)) { return 1; }
-    if (methodIndexA !== methodIndexB) {
-        return a['_index'] - b['_index'];
-    }});
+    return a._index - b._index;
+  });
 
-  arr.forEach(a => delete a['_index']);
+  arr.forEach(a => delete a._index);
 
   return arr;
 };

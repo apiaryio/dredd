@@ -10,10 +10,9 @@ function coerceToArray(value) {
     return [value];
   } else if ((value == null)) {
     return [];
-  } else {
-    return value;
   }
-};
+  return value;
+}
 
 function applyLoggingOptions(options) {
   // Color can be either specified as "stringified bool" or bool (nothing else
@@ -30,14 +29,13 @@ function applyLoggingOptions(options) {
   logger.transports.console.level = options.level;
 
   return options;
-};
+}
 
 function applyConfiguration(config) {
-  let method;
   const configuration = {
     blueprintPath: null,
     server: null,
-    emitter: new EventEmitter,
+    emitter: new EventEmitter(),
     hooksCode: null,
     custom: { // Used for custom settings of various APIs or reporters
       // Keep commented-out, so these values are actually set by DreddCommand
@@ -51,7 +49,7 @@ function applyConfiguration(config) {
       debug: false,
       header: null,
       user: null,
-      'inline-errors':false,
+      'inline-errors': false,
       details: false,
       method: [],
       only: [],
@@ -75,7 +73,7 @@ function applyConfiguration(config) {
   };
 
   // Normalize options and config
-  for (let key of Object.keys(config || {})) {
+  for (const key of Object.keys(config || {})) {
     // Copy anything except "custom" hash
     const value = config[key];
     if (key !== 'custom') {
@@ -83,7 +81,7 @@ function applyConfiguration(config) {
     } else {
       if (!configuration.custom) { configuration.custom = {}; }
       const object = config.custom || {};
-      for (let customKey of Object.keys(object || {})) {
+      for (const customKey of Object.keys(object || {})) {
         const customVal = object[customKey];
         configuration.custom[customKey] = clone(customVal, false);
       }
@@ -112,7 +110,7 @@ function applyConfiguration(config) {
 
   configuration.options = applyLoggingOptions(configuration.options);
   return configuration;
-};
+}
 
 module.exports = {
   applyConfiguration,

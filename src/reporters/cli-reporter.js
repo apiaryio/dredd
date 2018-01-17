@@ -20,11 +20,11 @@ CliReporter.prototype.configureEmitter = function (emitter) {
     callback();
   });
 
-  emitter.on('end', callback => {
+  emitter.on('end', (callback) => {
     if (!this.inlineErrors) {
       if (this.errors.length !== 0) { logger.info('Displaying failed tests...'); }
-      for (let test of this.errors) {
-        logger.fail(test.title + ` duration: ${test.duration}ms`);
+      for (const test of this.errors) {
+        logger.fail(`${test.title} duration: ${test.duration}ms`);
         logger.fail(test.message);
         if (test.request) { logger.request(`\n${prettifyResponse(test.request)}\n`); }
         if (test.expected) { logger.expected(`\n${prettifyResponse(test.expected)}\n`); }
@@ -45,8 +45,8 @@ CliReporter.prototype.configureEmitter = function (emitter) {
     callback();
   });
 
-  emitter.on('test pass', test => {
-    logger.pass(test.title + ` duration: ${test.duration}ms`);
+  emitter.on('test pass', (test) => {
+    logger.pass(`${test.title} duration: ${test.duration}ms`);
     if (this.details) {
       logger.request(`\n${prettifyResponse(test.request)}\n`);
       logger.expected(`\n${prettifyResponse(test.expected)}\n`);
@@ -56,8 +56,8 @@ CliReporter.prototype.configureEmitter = function (emitter) {
 
   emitter.on('test skip', test => logger.skip(test.title));
 
-  emitter.on('test fail', test => {
-    logger.fail(test.title + ` duration: ${test.duration}ms`);
+  emitter.on('test fail', (test) => {
+    logger.fail(`${test.title} duration: ${test.duration}ms`);
     if (this.inlineErrors) {
       logger.fail(test.message);
       if (test.request) { logger.request(`\n${prettifyResponse(test.request)}\n`); }
@@ -87,14 +87,13 @@ CliReporter.prototype.configureEmitter = function (emitter) {
       this.errors.push(test);
     }
 
-    logger.error(test.title  + ` duration: ${test.duration}ms`);
+    logger.error(`${test.title} duration: ${test.duration}ms`);
 
     if (connectionErrors.indexOf(error.code) > -1) {
       return logger.error(test.message);
-    } else {
-      logger.error(error.stack);
     }
+    logger.error(error.stack);
   });
-}
+};
 
 module.exports = CliReporter;
