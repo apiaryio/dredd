@@ -7,7 +7,7 @@ install:
   - "npm install --no-optional"
 cache:
   - "node_modules -> package.json"
-  - "%APPDATA%\\npm-cache"
+  - "%APPDATA%\\npm-cache -> package.json"
 build: off
 test_script:
   - "node --version"
