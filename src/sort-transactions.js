@@ -19,8 +19,8 @@ module.exports = function sortTransactions(arr) {
     const methodIndexA = sortedMethods.indexOf(a.request.method);
     const methodIndexB = sortedMethods.indexOf(b.request.method);
 
-    if (!(methodIndexA < methodIndexB)) { return -1; }
-    if (!(methodIndexA > methodIndexB)) { return 1; }
+    if (methodIndexA < methodIndexB) { return -1; }
+    if (methodIndexA > methodIndexB) { return 1; }
     return a._index - b._index;
   });
 

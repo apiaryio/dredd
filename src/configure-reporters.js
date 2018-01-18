@@ -1,4 +1,5 @@
 const ApiaryReporter = require('./reporters/apiary-reporter');
+const BaseReporter = require('./reporters/base-reporter');
 const CliReporter = require('./reporters/cli-reporter');
 const DotReporter = require('./reporters/dot-reporter');
 const HtmlReporter = require('./reporters/html-reporter');
@@ -24,6 +25,8 @@ function intersection(a, b) {
 }
 
 function configureReporters(config, stats, tests, runner) {
+  addReporter('base', config.emitter, stats, tests);
+
   const reporters = config.options.reporter;
   const outputs = config.options.output;
 
@@ -59,8 +62,12 @@ function configureReporters(config, stats, tests, runner) {
         return new HtmlReporter(emitter, statistics, testsArg, path, config.options.details);
       case 'markdown':
         return new MarkdownReporter(emitter, statistics, testsArg, path, config.options.details);
-      default:
+      case 'apiary':
         return new ApiaryReporter(emitter, statistics, testsArg, config, runner);
+      default:
+        // I don't even know where to begin...
+        // TODO: DESIGN / REFACTOR WHOLE REPORTER(S) API FROM SCRATCH, THIS IS MADNESS!!1
+        (new BaseReporter(emitter, stats, tests));
     }
   }
 

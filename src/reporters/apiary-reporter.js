@@ -144,7 +144,7 @@ ApiaryReporter.prototype.configureEmitter = function (emitter) {
 
   emitter.on('test error', (error, test, callback) => {
     if (this.serverError === true) { return callback(); }
-    const data = _transformTestToReporter(test);
+    const data = this._transformTestToReporter(test);
 
     if (!data.resultData.result) { data.resultData.result = {}; }
     if (!data.resultData.result.general) { data.resultData.result.general = []; }
@@ -189,7 +189,7 @@ ApiaryReporter.prototype.configureEmitter = function (emitter) {
 
 ApiaryReporter.prototype._createStep = function (test, callback) {
   if (this.serverError === true) { return callback(); }
-  const data = _transformTestToReporter(test);
+  const data = this._transformTestToReporter(test);
   const path = `/apis/${this.configuration.apiSuite}/tests/steps?testRunId=${this.remoteId}`;
   this._performRequestAsync(path, 'POST', data, (error) => {
     if (error) { return callback(error); }
@@ -263,7 +263,7 @@ to Apiary API: ${options.method} ${options.uri} \
   }
 };
 
-function _transformTestToReporter(test) {
+ApiaryReporter.prototype._transformTestToReporter = function (test) {
   return {
     testRunId: this.remoteId,
     origin: test.origin,
@@ -277,6 +277,6 @@ function _transformTestToReporter(test) {
       result: test.results
     }
   };
-}
+};
 
 module.exports = ApiaryReporter;
