@@ -2,25 +2,18 @@ require('coffee-script/register');
 
 const async = require('async');
 const clone = require('clone');
-const glob = require('glob');
 const fs = require('fs');
-const path = require('path');
 const proxyquire = require('proxyquire').noCallThru();
 
 const Hooks = require('./hooks');
 const HooksWorkerClient = require('./hooks-worker-client');
 const logger = require('./logger');
 const mergeSandboxedHooks = require('./merge-sandboxed-hooks');
+const resolveHookfiles = require('./resolve-hookfiles');
 const sandboxHooksCode = require('./sandbox-hooks-code');
 
-// Ensure platform agnostic path.basename function
-const basename = process.platform === 'win32' ? path.win32.basename : path.basename;
-
+// Note: runner.configuration.options must be defined
 function addHooks(runner, transactions, callback) {
-  const customConfigCwd = (runner && runner.configuration && runner.configuration.custom) ?
-    runner.configuration.custom.cwd :
-    undefined;
-
   function fixLegacyTransactionNames(hooks) {
     const hooksWithFixedTransactionNames = {
       beforeHooks: {},
@@ -53,11 +46,11 @@ function addHooks(runner, transactions, callback) {
       // Fixing #168 issue
       runner.hooks = fixLegacyTransactionNames(runner.hooks);
     } catch (error) {
-      logger.warn(`\
-Skipping hook loading. Error reading hook file '${filePath}'. \
+      logger.warn(`
+Skipping hook loading. Error reading hook file '${filePath}'.
 This probably means one or more of your hook files are invalid.
 Message: ${error.message}
-Stack: ${error.stack}\
+Stack: ${error.stack}
 `);
     }
   }
@@ -119,37 +112,17 @@ Stack: ${error.stack}\
     }
     // No data found, doing nothing
     return callback();
+  }
 
   // Loading hookfiles from fs
-  }
-  // Expand hookfiles - sort files alphabetically and resolve their paths
   const hookfiles = [].concat(runner.configuration.options.hookfiles);
-  const files = hookfiles.reduce((result, unresolvedPath) => {
-    // glob.sync does not resolve paths, only glob patterns
-    const unresolvedPaths = glob.hasMagic(unresolvedPath) ? glob.sync(unresolvedPath) : [unresolvedPath];
-
-    // Gradually append sorted and resolved paths
-    return result.concat(unresolvedPaths)
-    // Create a filename / filepath map for easier sorting
-    // Example:
-    // [
-    //   { basename: 'filename1.coffee', path: './path/to/filename1.coffee' }
-    //   { basename: 'filename2.coffee', path: './path/to/filename2.coffee' }
-    // ]
-      .map(filepath => ({ basename: basename(filepath), path: filepath }))
-    // Sort 'em up
-      .sort((a, b) => {
-        if (a.basename < b.basename) return -1;
-        if (a.basename > b.basename) return 1;
-        return 0;
-      })
-    // Resolve paths to absolute form. Take into account user defined current
-    // working directory, fallback to process.cwd() otherwise
-      .map(item => path.resolve(customConfigCwd || process.cwd(), item.path));
+  const cwd = runner.configuration.custom ? runner.configuration.custom.cwd : null;
+  let files;
+  try {
+    files = resolveHookfiles(hookfiles, cwd);
+  } catch (err) {
+    return callback(err);
   }
-    , [] // Start with empty result
-  );
-
   logger.info('Found Hookfiles:', files);
 
   // Clone the configuration object to hooks.configuration to make it

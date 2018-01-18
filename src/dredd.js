@@ -147,6 +147,13 @@ https://dredd.readthedocs.io/en/latest/how-it-works/#using-https-proxy
       glob(globToExpand, (err, match) => {
         if (err) { return globCallback(err); }
         this.configuration.files = this.configuration.files.concat(match);
+        if (match.length === 0) {
+          err = new Error(`
+            API description document(s) not found on path:
+            '${globToExpand}'
+         `);
+          return globCallback(err);
+        }
         globCallback();
       });
     }
