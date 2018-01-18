@@ -116,6 +116,14 @@ In following files the latest supported Node.js version should be used:
 - `appveyor.yml` - Windows CI builds
 - `docs/install-node.sh` - ReadTheDocs docs builds
 
+### Dependencies
+
+New versions of dependencies are monitored by [David][] and/or [Greenkeeper][]. Security issues are monitored by [Snyk][].
+
+Dependencies should not be specified in a loose way - only exact versions are allowed. Any changes to dependencies (version upgrades included) must be approved by Oracle before merged to `master`. Dredd maintainers take care of the approval. For transparency, PRs with pending dependency approval are labeled respectively.
+
+The internal Oracle policies about dependencies pay attention mainly to licenses. Before adding a new dependency or upgrading an existing one try to [make sure](https://github.com/davglass/license-checker) the project and all its transitive dependencies feature standard permissive licenses, including correct copyright holders and license texts.
+
 ### Versioning
 
 Dredd follows [Semantic Versioning][]. To ensure certain stability of Dredd installations (e.g. in CI builds), users can pin their version. They can also use release tags:
@@ -316,6 +324,9 @@ There is also one environment variable you could find useful:
 [AppVeyor]: https://www.appveyor.com/
 [nvm]: https://github.com/creationix/nvm
 [reStructuredText]: http://www.sphinx-doc.org/en/stable/rest.html
+[David]: https://david-dm.org/apiaryio/dredd
+[Greenkeeper]: https://greenkeeper.io/
+[Snyk]: https://snyk.io/test/npm/dredd
 
 [Drafter]: https://github.com/apiaryio/drafter
 [API Blueprint]: https://apiblueprint.org/
