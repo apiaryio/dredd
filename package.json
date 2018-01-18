@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "babel ./src --out-dir ./lib/src",
-    "build:watch": "babel src --out-dir ./lib/src --watch",
+    "build:watch": "babel ./src --out-dir ./lib/src --watch",
     "coveralls": "scripts/coveralls.sh",
     "docs:lint": "sphinx-build -nW -b linkcheck docs docs/_build/",
     "docs:build": "sphinx-build -nW -b html docs docs/_build/",
