@@ -65,7 +65,7 @@ class Dredd {
 
     if (proxySettings.length) {
       const message = `
-HTTP(S) proxy specified by environment variables:
+HTTP(S) proxy specified by environment variables: \
 ${proxySettings.join(', ')}. Please read documentation on how
 Dredd works with proxies:
 https://dredd.readthedocs.io/en/latest/how-it-works/#using-https-proxy
@@ -256,20 +256,20 @@ Is the provided path correct?
     });
   }
 
-  // start the runner
+  // Start the runner
   emitStart(callback) {
-    // more than one reporter is supported
+    // More than one reporter is supported
     let reporterCount = this.configuration.emitter.listeners('start').length;
 
-    // when event 'start' is emitted, function in callback is executed for each
+    // When event 'start' is emitted, function in callback is executed for each
     // reporter registered by listeners
-    return this.configuration.emitter.emit('start', this.configuration.data, (reporterError) => {
+    this.configuration.emitter.emit('start', this.configuration.data, (reporterError) => {
       if (reporterError) { logger.error(reporterError.message); }
 
-      // last called reporter callback function starts the runner
+      // Last called reporter callback function starts the runner
       reporterCount--;
       if (reporterCount === 0) {
-        return callback(null, this.stats);
+        callback(null, this.stats);
       }
     });
   }

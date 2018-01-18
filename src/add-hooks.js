@@ -15,26 +15,22 @@ const sandboxHooksCode = require('./sandbox-hooks-code');
 // Note: runner.configuration.options must be defined
 function addHooks(runner, transactions, callback) {
   function fixLegacyTransactionNames(hooks) {
-    const hooksWithFixedTransactionNames = {
-      beforeHooks: {},
-      afterHooks: {}
-    };
-
+    const pattern = /^\s>\s/g;
     ['beforeHooks', 'afterHooks'].forEach((hookType) => {
-      const pattern = /^\s>\s/g;
-
       Object.keys(hooks[hookType]).forEach((transactionName) => {
         const transactionHooks = hooks[hookType][transactionName];
         if (transactionName.match(pattern)) {
           const newTransactionName = transactionName.replace(pattern, '');
-          hooksWithFixedTransactionNames[hookType][newTransactionName] = transactionHooks;
-        } else {
-          hooksWithFixedTransactionNames[hookType][transactionName] = transactionHooks;
+          if (hooks[hookType][newTransactionName]) {
+            hooks[hookType][newTransactionName] =
+              transactionHooks.concat(hooks[hookType][newTransactionName]);
+          } else {
+            hooks[hookType][newTransactionName] = transactionHooks;
+          }
+          delete hooks[hookType][transactionName];
         }
       });
     });
-
-    return Object.assign({}, hooks, hooksWithFixedTransactionNames);
   }
 
   function loadHookFile(filePath) {
@@ -44,7 +40,7 @@ function addHooks(runner, transactions, callback) {
       });
 
       // Fixing #168 issue
-      runner.hooks = fixLegacyTransactionNames(runner.hooks);
+      fixLegacyTransactionNames(runner.hooks);
     } catch (error) {
       logger.warn(`
 Skipping hook loading. Error reading hook file '${filePath}'.
@@ -79,7 +75,7 @@ Stack: ${error.stack}
         runner.hooks = mergeSandboxedHooks(runner.hooks, result);
 
         // Fixing #168 issue
-        runner.hooks = fixLegacyTransactionNames(runner.hooks);
+        fixLegacyTransactionNames(runner.hooks);
 
         nextHook();
       });
@@ -167,7 +163,7 @@ Stack: ${error.stack}
         runner.hooks = mergeSandboxedHooks(runner.hooks, result);
 
         // Fixing #168 issue
-        runner.hooks = fixLegacyTransactionNames(runner.hooks);
+        fixLegacyTransactionNames(runner.hooks);
 
         return nextFile();
       });
