@@ -63,7 +63,7 @@
     "cz-conventional-changelog": "2.0.0",
     "drafter": "1.0.0",
     "ect": "0.5.9",
-    "express": "4.15.2",
+    "express": "4.16.2",
     "hercule": "4.0.1",
     "jscoverage": "0.6.0",
     "lcov-result-merger": "1.2.0",
