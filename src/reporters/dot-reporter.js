@@ -1,66 +1,70 @@
+const logger = require('../logger');
+const prettifyResponse = require('../prettify-response');
 
-logger = require('../logger')
-prettifyResponse = require('../prettify-response')
+function DotReporter(emitter, stats, tests) {
+  this.type = 'dot';
+  this.stats = stats;
+  this.tests = tests;
+  this.errors = [];
 
+  this.configureEmitter(emitter);
 
-class DotReporter
-  constructor: (emitter, stats, tests) ->
-    @type = 'dot'
-    @stats = stats
-    @tests = tests
-    @configureEmitter(emitter)
-    @errors = []
-    logger.verbose("Using '#{@type}' reporter.")
+  logger.verbose(`Using '${this.type}' reporter.`);
+}
 
-  configureEmitter: (emitter) ->
-    emitter.on('start', (rawBlueprint, callback) ->
-      logger.info('Beginning Dredd testing...')
-      callback()
-    )
+DotReporter.prototype.configureEmitter = function (emitter) {
+  emitter.on('start', (rawBlueprint, callback) => {
+    logger.info('Beginning Dredd testing...');
+    callback();
+  });
 
-    emitter.on('end', (callback) =>
-      if @stats.tests > 0
-        if @errors.length > 0
-          @write('\n')
-          logger.info('Displaying failed tests...')
-          for test in @errors
-            logger.fail(test.title + " duration: #{test.duration}ms")
-            logger.fail(test.message)
-            logger.request("\n" + prettifyResponse(test.request) + "\n")
-            logger.expected("\n" + prettifyResponse(test.expected) + "\n")
-            logger.actual("\n" + prettifyResponse(test.actual) + "\n\n")
-        @write('\n')
+  emitter.on('end', (callback) => {
+    if (this.stats.tests > 0) {
+      if (this.errors.length > 0) {
+        this.write('\n');
+        logger.info('Displaying failed tests...');
+        for (const test of this.errors) {
+          logger.fail(`${test.title} duration: ${test.duration}ms`);
+          logger.fail(test.message);
+          logger.request(`\n${prettifyResponse(test.request)}\n`);
+          logger.expected(`\n${prettifyResponse(test.expected)}\n`);
+          logger.actual(`\n${prettifyResponse(test.actual)}\n\n`);
+        }
+      }
+      this.write('\n');
 
-        logger.complete("""\
-          #{@stats.passes} passing, #{@stats.failures} failing, \
-          #{@stats.errors} errors, #{@stats.skipped} skipped
-        """)
-        logger.complete("Tests took #{@stats.duration}ms")
-        callback()
-    )
+      logger.complete(`\
+${this.stats.passes} passing, ${this.stats.failures} failing, \
+${this.stats.errors} errors, ${this.stats.skipped} skipped\
+`);
+      logger.complete(`Tests took ${this.stats.duration}ms`);
 
-    emitter.on('test pass', (test) =>
-      @write('.')
-    )
+      callback();
+    }
+  });
 
-    emitter.on('test skip', (test) =>
-      @write('-')
-    )
+  emitter.on('test pass', () => {
+    this.write('.');
+  });
 
-    emitter.on('test fail', (test) =>
-      @write('F')
-      @errors.push(test)
-    )
+  emitter.on('test skip', () => {
+    this.write('-');
+  });
 
-    emitter.on('test error', (error, test) =>
-      @write('E')
-      test.message = "\nError: \n"  + error + "\nStacktrace: \n" + error.stack + "\n"
-      @errors.push(test)
-    )
+  emitter.on('test fail', (test) => {
+    this.write('F');
+    this.errors.push(test);
+  });
 
-  write: (str) ->
-    process.stdout.write(str)
+  emitter.on('test error', (error, test) => {
+    this.write('E');
+    test.message = `\nError: \n${error}\nStacktrace: \n${error.stack}\n`;
+    this.errors.push(test);
+  });
+};
 
+DotReporter.prototype.write = function (str) {
+  process.stdout.write(str);
+};
 
-
-module.exports = DotReporter
+module.exports = DotReporter;

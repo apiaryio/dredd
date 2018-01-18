@@ -1,236 +1,282 @@
-request = require 'request'
-os = require 'os'
-url = require 'url'
-clone = require 'clone'
-generateUuid = require('uuid').v4
+const clone = require('clone');
+const generateUuid = require('uuid').v4;
+const os = require('os');
+const request = require('request');
 
-packageData = require './../../package.json'
-logger = require('./../logger')
+const logger = require('./../logger');
+const packageData = require('./../../package.json');
 
-CONNECTION_ERRORS = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
+const CONNECTION_ERRORS = [
+  'ECONNRESET',
+  'ENOTFOUND',
+  'ESOCKETTIMEDOUT',
+  'ETIMEDOUT',
+  'ECONNREFUSED',
+  'EHOSTUNREACH',
+  'EPIPE'
+];
 
+function ApiaryReporter(emitter, stats, tests, config, runner) {
+  this.type = 'apiary';
+  this.stats = stats;
+  this.tests = tests;
+  this.uuid = null;
+  this.startedAt = null;
+  this.endedAt = null;
+  this.remoteId = null;
+  this.config = config;
+  this.runner = runner;
+  this.reportUrl = null;
+  this.errors = [];
+  this.serverError = false;
+  this.configuration = {
+    apiUrl: (this._get('apiaryApiUrl', 'APIARY_API_URL', 'https://api.apiary.io')).replace(/\/$/, ''),
+    apiToken: this._get('apiaryApiKey', 'APIARY_API_KEY', null),
+    apiSuite: this._get('apiaryApiName', 'APIARY_API_NAME', null)
+  };
 
-class ApiaryReporter
-  constructor: (emitter, stats, tests, config, runner) ->
-    @type = 'apiary'
-    @stats = stats
-    @tests = tests
-    @uuid = null
-    @startedAt = null
-    @endedAt = null
-    @remoteId = null
-    @config = config
-    @runner = runner
-    @reportUrl = null
-    @configureEmitter emitter
-    @errors = []
-    @serverError = false
-    @configuration =
-      apiUrl: (@_get 'apiaryApiUrl', 'APIARY_API_URL', 'https://api.apiary.io').replace(/\/$/, '')
-      apiToken: @_get 'apiaryApiKey', 'APIARY_API_KEY', null
-      apiSuite: @_get 'apiaryApiName', 'APIARY_API_NAME', null
-    logger.verbose("Using '#{@type}' reporter.")
+  this.configureEmitter(emitter);
 
-    if not @configuration.apiToken and not @configuration.apiSuite
-      logger.warn('''\
-        Apiary API Key or API Project Subdomain were not provided. \
-        Configure Dredd to be able to save test reports alongside your Apiary API project: \
-        https://dredd.readthedocs.io/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests\
-      ''')
-    @configuration.apiSuite ?= 'public'
+  logger.verbose(`Using '${this.type}' reporter.`);
 
-  # THIS IS HIGHWAY TO HELL! Everything should have one single interafce
-  _get: (customProperty, envProperty, defaultVal) ->
-    returnVal = defaultVal
+  if (!this.configuration.apiToken && !this.configuration.apiSuite) {
+    logger.warn(`
+Apiary API Key or API Project Subdomain were not provided.
+Configure Dredd to be able to save test reports alongside your Apiary API project:
+https://dredd.readthedocs.io/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests
+`);
+  }
+  if (!this.configuration.apiSuite) { this.configuration.apiSuite = 'public'; }
+}
 
-    # this will be deprecated
-    if @config.custom?[customProperty]?
-      returnVal = @config.custom[customProperty]
+// THIS IS HIIIIGHWAY TO HELL, HIIIIIGHWAY TO HELL. Everything should have one single interface
+ApiaryReporter.prototype._get = function (customProperty, envProperty, defaultVal) {
+  let returnVal = defaultVal;
 
-    # this will be the ONLY supported way how to configure this reporter
-    else if @config.options?.custom?[customProperty]?
-      returnVal = @config.options.custom[customProperty]
+  // This will be deprecated
+  if (this.config.custom && this.config.custom[customProperty]) {
+    returnVal = this.config.custom[customProperty];
 
-    # this will be deprecated
-    else if @config.custom?.apiaryReporterEnv?[customProperty]?
-      returnVal = @config.custom.apiaryReporterEnv[customProperty]
+  // This will be the ONLY supported way how to configure this reporter
+  } else if (this.config.options && this.config.options.custom && this.config.options.custom[customProperty]) {
+    returnVal = this.config.options.custom[customProperty];
 
-    # this will be deprecated
-    else if @config.custom?.apiaryReporterEnv?[envProperty]?
-      returnVal = @config.custom.apiaryReporterEnv[envProperty]
+  // This will be deprecated
+  } else if (this.config.custom && this.config.custom.apiaryReporterEnv && this.config.custom.apiaryReporterEnv[customProperty]) {
+    returnVal = this.config.custom.apiaryReporterEnv[customProperty];
 
-    # this will be supported for backward compatibility, but can be removed in future.
-    else if process.env[envProperty]?
-      returnVal = process.env[envProperty]
+  // This will be deprecated
+  } else if (this.config.custom && this.config.custom.apiaryReporterEnv && this.config.custom.apiaryReporterEnv[envProperty]) {
+    returnVal = this.config.custom.apiaryReporterEnv[envProperty];
 
-    return returnVal
+  // This will be supported for backward compatibility, but can be removed in future.
+  } else if (process.env[envProperty]) {
+    returnVal = process.env[envProperty];
+  }
 
-  _getKeys: ->
-    returnKeys = []
-    returnKeys = returnKeys.concat Object.keys(@config.custom?.apiaryReporterEnv or {})
-    return returnKeys.concat Object.keys process.env
+  return returnVal;
+};
 
-  configureEmitter: (emitter) =>
-    emitter.on 'start', (blueprintsData, callback) =>
-      return callback() if @serverError == true
-      @uuid = generateUuid()
-      @startedAt = Math.round(new Date().getTime() / 1000)
+ApiaryReporter.prototype._getKeys = function () {
+  let returnKeys = [];
+  returnKeys = returnKeys.concat(Object.keys((this.config.custom && this.config.custom.apiaryReporterEnv) || {}));
+  return returnKeys.concat(Object.keys(process.env));
+};
 
-      # Cycle through all keys from
-      # - config.custom.apiaryReporterEnv
-      # - process.env keys
-      ciVars = /^(TRAVIS|CIRCLE|CI|DRONE|BUILD_ID)/
-      envVarNames = @_getKeys()
-      ciEnvVars = {}
-      for envVarName in envVarNames when envVarName.match(ciVars)?
-        ciEnvVars[envVarName] = @_get envVarName, envVarName
+ApiaryReporter.prototype.configureEmitter = function (emitter) {
+  emitter.on('start', (blueprintsData, callback) => {
+    if (this.serverError === true) { return callback(); }
+    this.uuid = generateUuid();
+    this.startedAt = Math.round(new Date().getTime() / 1000);
 
-      # transform blueprints data to array
-      blueprints = (data for own filename, data of blueprintsData)
+    // Cycle through all keys from
+    // - config.custom.apiaryReporterEnv
+    // - process.env keys
+    const ciVars = /^(TRAVIS|CIRCLE|CI|DRONE|BUILD_ID)/;
+    const envVarNames = this._getKeys();
+    const ciEnvVars = {};
+    for (const envVarName of envVarNames) {
+      if (envVarName.match(ciVars)) {
+        ciEnvVars[envVarName] = this._get(envVarName, envVarName);
+      }
+    }
 
-      data =
-        blueprints: blueprints
-        endpoint: @config.server
-        agent: @_get('dreddAgent', 'DREDD_AGENT') || @_get('user', 'USER')
-        agentRunUuid: @uuid
-        hostname: @_get('dreddHostname', 'DREDD_HOSTNAME') || os.hostname()
-        startedAt: @startedAt
-        public: true
-        status: 'running'
-        agentEnvironment: ciEnvVars
+    // Transform blueprints data to array
+    const blueprints = [];
+    for (const filename of Object.keys(blueprintsData || {})) {
+      blueprints.push(blueprintsData[filename]);
+    }
 
-      if @configuration['apiToken']? and @configuration['apiSuite']?
-        data.public = false
+    const data = {
+      blueprints,
+      endpoint: this.config.server,
+      agent: this._get('dreddAgent', 'DREDD_AGENT') || this._get('user', 'USER'),
+      agentRunUuid: this.uuid,
+      hostname: this._get('dreddHostname', 'DREDD_HOSTNAME') || os.hostname(),
+      startedAt: this.startedAt,
+      public: true,
+      status: 'running',
+      agentEnvironment: ciEnvVars
+    };
 
-      path = '/apis/' + @configuration['apiSuite'] + '/tests/runs'
+    if (this.configuration.apiToken && this.configuration.apiSuite) {
+      data.public = false;
+    }
 
-      @_performRequestAsync path, 'POST', data, (error, response, parsedBody) =>
-        if error
-          return callback(error)
-        else
-          @remoteId = parsedBody['_id']
-          @reportUrl = parsedBody['reportUrl'] if parsedBody['reportUrl']
-          callback()
+    const path = `/apis/${this.configuration.apiSuite}/tests/runs`;
 
-    _createStep = (test, callback) =>
-      return callback() if @serverError == true
-      data = @_transformTestToReporter test
-      path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
-      @_performRequestAsync path, 'POST', data, (error, response, parsedBody) ->
-        return callback(error) if error
-        callback()
+    this._performRequestAsync(path, 'POST', data, (error, response, parsedBody) => {
+      if (error) {
+        callback(error);
+      } else {
+        this.remoteId = parsedBody._id;
+        if (parsedBody.reportUrl) { this.reportUrl = parsedBody.reportUrl; }
+        callback();
+      }
+    });
+  });
 
-    emitter.on 'test pass', _createStep
+  emitter.on('test pass', this._createStep.bind(this));
 
-    emitter.on 'test fail', _createStep
+  emitter.on('test fail', this._createStep.bind(this));
 
-    emitter.on 'test skip', _createStep
+  emitter.on('test skip', this._createStep.bind(this));
 
-    emitter.on 'test error', (error, test, callback) =>
-      return callback() if @serverError == true
-      data = @_transformTestToReporter test
+  emitter.on('test error', (error, test, callback) => {
+    if (this.serverError === true) { return callback(); }
+    const data = _transformTestToReporter(test);
 
-      data.resultData.result ?= {}
-      data.resultData.result.general ?= []
+    if (!data.resultData.result) { data.resultData.result = {}; }
+    if (!data.resultData.result.general) { data.resultData.result.general = []; }
 
-      if error.code in CONNECTION_ERRORS
-        data.resultData.result.general.push {
-          severity: 'error', message: "Error connecting to server under test!"
-        }
-      else
-        data.resultData.result.general.push {
-          severity: 'error', message: "Unhandled error occured when executing the transaction."
-        }
+    if (Array.from(CONNECTION_ERRORS).includes(error.code)) {
+      data.resultData.result.general.push({
+        severity: 'error', message: 'Error connecting to server under test!'
+      });
+    } else {
+      data.resultData.result.general.push({
+        severity: 'error', message: 'Unhandled error occured when executing the transaction.'
+      });
+    }
 
-      path = '/apis/' + @configuration['apiSuite'] + '/tests/steps?testRunId=' + @remoteId
-      @_performRequestAsync path, 'POST', data, (error, response, parsedBody) ->
-        return callback(error) if error
-        callback()
+    const path = `/apis/${this.configuration.apiSuite}/tests/steps?testRunId=${this.remoteId}`;
+    this._performRequestAsync(path, 'POST', data, (err) => {
+      if (err) { return callback(err); }
+      callback();
+    });
+  });
 
-    emitter.on 'end', (callback) =>
-      return callback() if @serverError == true
-      data =
-        endedAt: Math.round(new Date().getTime() / 1000)
-        result: @stats
-        status: if (@stats['failures'] > 0 or @stats['errors'] > 0) then 'failed' else 'passed'
-        logs: @runner.logs if @runner?.logs?.length
+  emitter.on('end', (callback) => {
+    if (this.serverError === true) { return callback(); }
 
-      path = '/apis/' + @configuration['apiSuite'] + '/tests/run/' + @remoteId
+    const data = {
+      endedAt: Math.round(new Date().getTime() / 1000),
+      result: this.stats,
+      status: (this.stats.failures > 0 || this.stats.errors > 0) ? 'failed' : 'passed',
+      logs: (this.runner && this.runner.logs && this.runner.logs.length) ? this.runner.logs : undefined
+    };
 
-      @_performRequestAsync path, 'PATCH', data, (error, response, parsedBody) =>
-        return callback(error) if error
-        reportUrl = @reportUrl || "https://app.apiary.io/#{@configuration.apiSuite}/tests/run/#{@remoteId}"
-        logger.complete "See results in Apiary at: #{reportUrl}"
-        callback()
+    const path = `/apis/${this.configuration.apiSuite}/tests/run/${this.remoteId}`;
 
-  _transformTestToReporter: (test) ->
-    data =
-      testRunId: @remoteId
-      origin: test['origin']
-      duration: test['duration']
-      result: test['status']
-      startedAt: test['startedAt']
-      resultData:
-        request: test['request']
-        realResponse: test['actual']
-        expectedResponse: test['expected']
-        result: test['results']
-    return data
+    this._performRequestAsync(path, 'PATCH', data, (error) => {
+      if (error) { return callback(error); }
+      const reportUrl = this.reportUrl || `https://app.apiary.io/${this.configuration.apiSuite}/tests/run/${this.remoteId}`;
+      logger.complete(`See results in Apiary at: ${reportUrl}`);
+      callback();
+    });
+  });
+};
 
-  _performRequestAsync: (path, method, reqBody, callback) ->
-    handleRequest = (err, res, resBody) =>
-      if err
-        @serverError = true
-        logger.debug('Requesting Apiary API errored:', "#{err}" or err.code)
+ApiaryReporter.prototype._createStep = function (test, callback) {
+  if (this.serverError === true) { return callback(); }
+  const data = _transformTestToReporter(test);
+  const path = `/apis/${this.configuration.apiSuite}/tests/steps?testRunId=${this.remoteId}`;
+  this._performRequestAsync(path, 'POST', data, (error) => {
+    if (error) { return callback(error); }
+    callback();
+  });
+};
 
-        if err.code in CONNECTION_ERRORS
-          return callback(new Error('Apiary reporter could not connect to Apiary API'))
-        else
-          return callback(err)
+ApiaryReporter.prototype._performRequestAsync = function (path, method, reqBody, callback) {
+  const handleRequest = (err, res, resBody) => {
+    let parsedBody;
+    if (err) {
+      this.serverError = true;
+      logger.debug('Requesting Apiary API errored:', `${err}` || err.code);
 
-      logger.verbose('Handling HTTP response from Apiary API')
-      try
-        parsedBody = JSON.parse(resBody)
-      catch err
-        @serverError = true
-        err = new Error("""\
-          Apiary reporter failed to parse Apiary API response body: \
-          #{err.message}\n#{resBody}\
-        """)
-        return callback(err)
+      if (Array.from(CONNECTION_ERRORS).includes(err.code)) {
+        return callback(new Error('Apiary reporter could not connect to Apiary API'));
+      }
+      return callback(err);
+    }
 
-      info = {headers: res.headers, statusCode: res.statusCode, body: parsedBody}
-      logger.debug('Apiary reporter response:', JSON.stringify(info, null, 2))
-      return callback(null, res, parsedBody)
+    logger.verbose('Handling HTTP response from Apiary API');
 
-    body = if reqBody then JSON.stringify(reqBody) else ''
-    system = os.type() + ' ' + os.release() + '; ' + os.arch()
-    headers =
-      'User-Agent': "Dredd Apiary Reporter/#{packageData.version} (#{system})"
-      'Content-Type': 'application/json'
+    try {
+      parsedBody = JSON.parse(resBody);
+    } catch (error) {
+      this.serverError = true;
+      err = new Error(`
+Apiary reporter failed to parse Apiary API response body:
+${error.message}\n${resBody}
+`);
+      return callback(err);
+    }
 
-    options = clone(@config.http or {})
-    options.uri = @configuration.apiUrl + path
-    options.method = method
-    options.headers = headers
-    options.body = body
+    const info = { headers: res.headers, statusCode: res.statusCode, body: parsedBody };
 
-    if @configuration.apiToken
-      options.headers['Authentication'] = 'Token ' + @configuration.apiToken
+    logger.debug('Apiary reporter response:', JSON.stringify(info, null, 2));
 
-    try
-      protocol = options.uri.split(':')[0].toUpperCase()
-      logger.verbose("""\
-        About to perform an #{protocol} request from Apiary reporter \
-        to Apiary API: #{options.method} #{options.uri} \
-        (#{if body then 'with' else 'without'} body)\
-      """)
-      logger.debug('Request details:', JSON.stringify({options, body}, null, 2))
-      request(options, handleRequest)
-    catch error
-      @serverError = true
-      logger.debug('Requesting Apiary API errored:', error)
-      return callback(error)
+    callback(null, res, parsedBody);
+  };
 
+  const body = reqBody ? JSON.stringify(reqBody) : '';
+  const system = `${os.type()} ${os.release()}; ${os.arch()}`;
+  const headers = {
+    'User-Agent': `Dredd Apiary Reporter/${packageData.version} (${system})`,
+    'Content-Type': 'application/json'
+  };
 
-module.exports = ApiaryReporter
+  const options = clone(this.config.http || {});
+  options.uri = this.configuration.apiUrl + path;
+  options.method = method;
+  options.headers = headers;
+  options.body = body;
+
+  if (this.configuration.apiToken) {
+    options.headers.Authentication = `Token ${this.configuration.apiToken}`;
+  }
+
+  try {
+    const protocol = options.uri.split(':')[0].toUpperCase();
+    logger.verbose(`
+About to perform an ${protocol} request from Apiary reporter
+to Apiary API: ${options.method} ${options.uri} \
+(${body ? 'with' : 'without'} body)
+`);
+    logger.debug('Request details:', JSON.stringify({ options, body }, null, 2));
+    return request(options, handleRequest);
+  } catch (error) {
+    this.serverError = true;
+    logger.debug('Requesting Apiary API errored:', error);
+    return callback(error);
+  }
+};
+
+function _transformTestToReporter(test) {
+  return {
+    testRunId: this.remoteId,
+    origin: test.origin,
+    duration: test.duration,
+    result: test.status,
+    startedAt: test.startedAt,
+    resultData: {
+      request: test.request,
+      realResponse: test.actual,
+      expectedResponse: test.expected,
+      result: test.results
+    }
+  };
+}
+
+module.exports = ApiaryReporter;

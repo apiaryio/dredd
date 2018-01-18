@@ -1,34 +1,42 @@
-blueprintUtils = require './blueprint-utils'
-logger = require './logger'
+const blueprintUtils = require('./blueprint-utils');
+const logger = require('./logger');
 
+module.exports = function handleRuntimeProblems(blueprintData) {
+  let error = false;
 
-handleRuntimeProblems = (blueprintData) ->
-  error = false
+  for (const filename of Object.keys(blueprintData || {})) {
+    const data = blueprintData[filename];
+    const apiDescriptionDocument = data.raw;
 
-  for own filename, data of blueprintData
-    apiDescriptionDocument = data.raw
+    for (const annotation of data.annotations) {
+      let log;
+      let message;
+      if (annotation.type === 'warning') {
+        log = logger.warn;
+      } else {
+        error = true;
+        log = logger.error;
+      }
 
-    for annotation in data.annotations
-      if annotation.type is 'warning'
-        log = logger.warn
-      else
-        error = true
-        log = logger.error
-
-      if annotation.component is 'apiDescriptionParser'
-        ranges = blueprintUtils.warningLocationToRanges(annotation.location, apiDescriptionDocument)
-        message = "Parser #{annotation.type} in file '#{filename}': #{annotation.message}"
-        message += "on #{blueprintUtils.rangesToLinesText(ranges)}" if ranges?.length
-        log(message)
-      else
-        transactionName = [
-          annotation.origin.resourceGroupName
-          annotation.origin.resourceName
+      if (annotation.component === 'apiDescriptionParser') {
+        const ranges = blueprintUtils.warningLocationToRanges(annotation.location, apiDescriptionDocument);
+        message = `Parser ${annotation.type} in file '${filename}': ${annotation.message}`;
+        if (ranges && ranges.length) {
+          message += `on ${blueprintUtils.rangesToLinesText(ranges)}`;
+        }
+        log(message);
+      } else {
+        const transactionName = [
+          annotation.origin.resourceGroupName,
+          annotation.origin.resourceName,
           annotation.origin.actionName
-        ].join(' > ')
-        log("Compilation #{annotation.type} in file '#{filename}': #{annotation.message} (#{transactionName})")
+        ].join(' > ');
+        log(`Compilation ${annotation.type} in file '${filename}': ${annotation.message} (${transactionName})`);
+      }
+    }
+  }
 
-  return new Error('Error when processing API description.') if error
-
-
-module.exports = handleRuntimeProblems
+  if (error) {
+    return new Error('Error when processing API description.');
+  }
+};

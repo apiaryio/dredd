@@ -1,77 +1,99 @@
-logger = require('./../logger')
-prettifyResponse = require './../prettify-response'
+const logger = require('./../logger');
+const prettifyResponse = require('./../prettify-response');
 
+function CliReporter(emitter, stats, tests, inlineErrors, details) {
+  this.type = 'cli';
+  this.stats = stats;
+  this.tests = tests;
+  this.inlineErrors = inlineErrors;
+  this.details = details;
+  this.errors = [];
 
-class CliReporter
-  constructor: (emitter, stats, tests, inlineErrors, details) ->
-    @type = 'cli'
-    @stats = stats
-    @tests = tests
-    @configureEmitter emitter
-    @inlineErrors = inlineErrors
-    @details = details
-    @errors = []
-    logger.verbose("Using '#{@type}' reporter.")
+  this.configureEmitter(emitter);
 
-  configureEmitter: (emitter) =>
-    emitter.on 'start', (rawBlueprint, callback) ->
-      logger.info 'Beginning Dredd testing...'
-      callback()
+  logger.verbose(`Using '${this.type}' reporter.`);
+}
 
-    emitter.on 'end', (callback) =>
-      if not @inlineErrors
-        logger.info "Displaying failed tests..." unless @errors.length is 0
-        for test in @errors
-          logger.fail test.title + " duration: #{test.duration}ms"
-          logger.fail test.message
-          logger.request "\n" + prettifyResponse(test.request) + "\n" if test.request
-          logger.expected "\n" + prettifyResponse(test.expected) + "\n" if test.expected
-          logger.actual "\n" + prettifyResponse(test.actual) + "\n\n" if test.actual
-      if @stats.tests > 0
-        logger.complete "#{@stats.passes} passing, " +
-          "#{@stats.failures} failing, " +
-          "#{@stats.errors} errors, " +
-          "#{@stats.skipped} skipped, " +
-          "#{@stats.tests} total"
+CliReporter.prototype.configureEmitter = function (emitter) {
+  emitter.on('start', (rawBlueprint, callback) => {
+    logger.info('Beginning Dredd testing...');
+    callback();
+  });
 
-      logger.complete "Tests took #{@stats.duration}ms"
-      callback()
+  emitter.on('end', (callback) => {
+    if (!this.inlineErrors) {
+      if (this.errors.length !== 0) { logger.info('Displaying failed tests...'); }
+      for (const test of this.errors) {
+        logger.fail(`${test.title} duration: ${test.duration}ms`);
+        logger.fail(test.message);
+        if (test.request) { logger.request(`\n${prettifyResponse(test.request)}\n`); }
+        if (test.expected) { logger.expected(`\n${prettifyResponse(test.expected)}\n`); }
+        if (test.actual) { logger.actual(`\n${prettifyResponse(test.actual)}\n\n`); }
+      }
+    }
 
-    emitter.on 'test pass', (test) =>
-      logger.pass test.title + " duration: #{test.duration}ms"
-      if @details
-        logger.request "\n" + prettifyResponse(test.request) + "\n"
-        logger.expected "\n" + prettifyResponse(test.expected) + "\n"
-        logger.actual "\n" + prettifyResponse(test.actual) + "\n\n"
+    if (this.stats.tests > 0) {
+      logger.complete(`${this.stats.passes} passing, ` +
+        `${this.stats.failures} failing, ` +
+        `${this.stats.errors} errors, ` +
+        `${this.stats.skipped} skipped, ` +
+        `${this.stats.tests} total`
+      );
+    }
 
-    emitter.on 'test skip', (test) ->
-      logger.skip test.title
+    logger.complete(`Tests took ${this.stats.duration}ms`);
+    callback();
+  });
 
-    emitter.on 'test fail', (test) =>
-      logger.fail test.title + " duration: #{test.duration}ms"
-      if @inlineErrors
-        logger.fail test.message
-        logger.request "\n" + prettifyResponse(test.request) + "\n" if test.request
-        logger.expected "\n" + prettifyResponse(test.expected) + "\n" if test.expected
-        logger.actual "\n" + prettifyResponse(test.actual) + "\n\n" if test.actual
-      else
-        @errors.push test
+  emitter.on('test pass', (test) => {
+    logger.pass(`${test.title} duration: ${test.duration}ms`);
+    if (this.details) {
+      logger.request(`\n${prettifyResponse(test.request)}\n`);
+      logger.expected(`\n${prettifyResponse(test.expected)}\n`);
+      logger.actual(`\n${prettifyResponse(test.actual)}\n\n`);
+    }
+  });
 
-    emitter.on 'test error', (error, test) =>
-      connectionErrors = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE']
-      if connectionErrors.indexOf(error.code) > -1
-        test.message = "Error connecting to server under test!"
+  emitter.on('test skip', test => logger.skip(test.title));
 
-      if not @inlineErrors
-        @errors.push test
+  emitter.on('test fail', (test) => {
+    logger.fail(`${test.title} duration: ${test.duration}ms`);
+    if (this.inlineErrors) {
+      logger.fail(test.message);
+      if (test.request) { logger.request(`\n${prettifyResponse(test.request)}\n`); }
+      if (test.expected) { logger.expected(`\n${prettifyResponse(test.expected)}\n`); }
+      if (test.actual) { logger.actual(`\n${prettifyResponse(test.actual)}\n\n`); }
+    } else {
+      this.errors.push(test);
+    }
+  });
 
-      logger.error test.title  + " duration: #{test.duration}ms"
+  emitter.on('test error', (error, test) => {
+    const connectionErrors = [
+      'ECONNRESET',
+      'ENOTFOUND',
+      'ESOCKETTIMEDOUT',
+      'ETIMEDOUT',
+      'ECONNREFUSED',
+      'EHOSTUNREACH',
+      'EPIPE'
+    ];
 
-      if connectionErrors.indexOf(error.code) > -1
-        logger.error test.message
-      else
-        logger.error error.stack
+    if (connectionErrors.indexOf(error.code) > -1) {
+      test.message = 'Error connecting to server under test!';
+    }
 
+    if (!this.inlineErrors) {
+      this.errors.push(test);
+    }
 
+    logger.error(`${test.title} duration: ${test.duration}ms`);
 
-module.exports = CliReporter
+    if (connectionErrors.indexOf(error.code) > -1) {
+      return logger.error(test.message);
+    }
+    logger.error(error.stack);
+  });
+};
+
+module.exports = CliReporter;
