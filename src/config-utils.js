@@ -1,47 +1,50 @@
-fs = require 'fs'
-yaml = require 'js-yaml'
-clone = require 'clone'
+const clone = require('clone');
+const fs = require('fs');
+const yaml = require('js-yaml');
 
-configUtils = {}
+const configUtils = {};
 
-configUtils.save = (argsOrigin, path) ->
-  path ?= './dredd.yml'
+configUtils.save = function (argsOrigin, path) {
+  if (!path) { path = './dredd.yml'; }
 
-  args = clone argsOrigin
+  const args = clone(argsOrigin);
 
-  args['blueprint'] = args['_'][0]
-  args['endpoint'] = args['_'][1]
+  args.blueprint = args._[0];
+  args.endpoint = args._[1];
 
-  for key, value of args
-    delete args[key] if key.length == 1
+  Object.keys(args).forEach((key) => {
+    if (key.length === 1) { delete args[key]; }
+  });
 
-  delete args['$0']
-  delete args['_']
+  delete args.$0;
+  delete args._;
 
-  yamlArgs = yaml.dump args
-  fs.writeFileSync path, yamlArgs
+  fs.writeFileSync(path, yaml.dump(args));
+};
 
+configUtils.load = function (path) {
+  if (!path) { path = './dredd.yml'; }
 
-configUtils.load = (path) ->
-  path ?= './dredd.yml'
+  const yamlData = fs.readFileSync(path);
+  const data = yaml.safeLoad(yamlData);
 
-  yamlData = fs.readFileSync path
-  data = yaml.safeLoad yamlData
+  data._ = [data.blueprint, data.endpoint];
 
-  data['_'] = [data['blueprint'], data['endpoint']]
+  delete data.blueprint;
+  delete data.endpoint;
 
-  delete data['blueprint']
-  delete data['endpoint']
+  return data;
+};
 
-  data
+configUtils.parseCustom = function (customArray) {
+  const output = {};
+  if (Array.isArray(customArray)) {
+    for (const string of customArray) {
+      const splitted = string.split(/:(.+)?/);
+      output[splitted[0]] = splitted[1];
+    }
+  }
+  return output;
+};
 
-configUtils.parseCustom = (customArray) ->
-  output = {}
-  if Array.isArray customArray
-    for string in customArray
-      splitted = string.split(/:(.+)?/)
-      output[splitted[0]] = splitted[1]
-
-  output
-
-module.exports = configUtils
+module.exports = configUtils;

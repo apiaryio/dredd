@@ -1,12 +1,11 @@
-hooksLog = require './hooks-log'
+const hooksLog = require('./hooks-log');
 
-# sandboxed hooks cannot access "console" or system logger
-logger = null
+// Sandboxed hooks cannot access "console" or system logger
+const logger = null;
 
-# sandboxed 'log' function
-# - "logs" must be an Array
-hooksLogSandboxed = (logs = [], content) ->
-  logs = hooksLog logs, logger, content
-  return logs
-
-module.exports = hooksLogSandboxed
+// Sandboxed 'log' function
+// - "logs" must be an Array
+module.exports = function hooksLogSandboxed(logs = [], content) {
+  logs = hooksLog(logs, logger, content);
+  return logs;
+};

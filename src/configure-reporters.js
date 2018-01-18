@@ -1,87 +1,93 @@
-BaseReporter = require './reporters/base-reporter'
-XUnitReporter = require './reporters/x-unit-reporter'
-CliReporter = require './reporters/cli-reporter'
-DotReporter = require './reporters/dot-reporter'
-NyanCatReporter = require './reporters/nyan-reporter'
-HtmlReporter = require './reporters/html-reporter'
-MarkdownReporter = require './reporters/markdown-reporter'
-ApiaryReporter = require './reporters/apiary-reporter'
+const ApiaryReporter = require('./reporters/apiary-reporter');
+const CliReporter = require('./reporters/cli-reporter');
+const DotReporter = require('./reporters/dot-reporter');
+const HtmlReporter = require('./reporters/html-reporter');
+const MarkdownReporter = require('./reporters/markdown-reporter');
+const NyanCatReporter = require('./reporters/nyan-reporter');
+const XUnitReporter = require('./reporters/x-unit-reporter');
 
-logger = require('./logger')
+const logger = require('./logger');
 
-fileReporters = [
+const fileReporters = [
   'xunit',
   'html',
   'markdown',
   'apiary',
-  'junit' # deprecated
-]
-cliReporters = ['dot', 'nyan']
+  'junit' // Deprecated
+];
 
-intersection = (a, b) ->
-  [a, b] = [b, a] if a.length > b.length
-  value for value in a when value in b
+const cliReporters = ['dot', 'nyan'];
 
-configureReporters = (config, stats, tests, runner) ->
-  baseReporter = new BaseReporter(config.emitter, stats, tests)
+function intersection(a, b) {
+  if (a.length > b.length) { [a, b] = Array.from([b, a]); }
+  return Array.from(a).filter(value => Array.from(b).includes(value));
+}
 
-  reporters = config.options.reporter
-  outputs = config.options.output
-  logger.verbose('Configuring reporters:', reporters, outputs)
+function configureReporters(config, stats, tests, runner) {
+  const reporters = config.options.reporter;
+  const outputs = config.options.output;
 
-  addCli = (reporters) ->
-    if reporters.length > 0
-      usedCliReporters = intersection reporters, cliReporters
-      if usedCliReporters.length is 0
-        cliReporter = new CliReporter(config.emitter, stats, tests, config.options['inline-errors'], config.options.details)
-      else
-        addReporter(usedCliReporters[0], config.emitter, stats, tests)
-    else
-      cliReporter = new CliReporter(config.emitter, stats, tests, config.options['inline-errors'], config.options.details)
+  logger.verbose('Configuring reporters:', reporters, outputs);
 
-  addReporter = (reporter, emitter, stats, tests, path) ->
-    switch reporter
-      when 'xunit'
-        xUnitReporter = new XUnitReporter(emitter, stats, tests, path, config.options.details)
-      when 'junit' # deprecated
-        logger.warn('junit will be deprecated in the future. Please use `xunit` instead.')
-        xUnitReporter = new XUnitReporter(emitter, stats, tests, path, config.options.details)
-      when 'dot'
-        dotReporter = new DotReporter(emitter, stats, tests)
-      when 'nyan'
-        nyanCatReporter = new NyanCatReporter(emitter, stats, tests)
-      when 'html'
-        htmlReporter = new HtmlReporter(emitter, stats, tests, path, config.options.details)
-      when 'markdown'
-        mdReporter = new MarkdownReporter(emitter, stats, tests, path, config.options.details)
-      when 'apiary'
-        apiaryReporter = new ApiaryReporter(emitter, stats, tests, config, runner)
-      # else
-      #   Cannot happen, due to 'intersection' usage
-      #   logger.warn "Invalid reporter #{reporter} selected, ignoring."
+  function addCli(reportersArr) {
+    if (reportersArr.length > 0) {
+      const usedCliReporters = intersection(reportersArr, cliReporters);
+      if (usedCliReporters.length === 0) {
+        return new CliReporter(
+          config.emitter, stats, tests, config.options['inline-errors'], config.options.details
+        );
+      }
+      return addReporter(usedCliReporters[0], config.emitter, stats, tests);
+    }
+    return new CliReporter(
+      config.emitter, stats, tests, config.options['inline-errors'], config.options.details
+    );
+  }
 
+  function addReporter(reporter, emitter, statistics, testsArg, path) {
+    switch (reporter) {
+      case 'xunit':
+        return new XUnitReporter(emitter, statistics, testsArg, path, config.options.details);
+      case 'junit': // Deprecated
+        logger.warn('junit will be deprecated in the future. Please use `xunit` instead.');
+        return new XUnitReporter(emitter, statistics, testsArg, path, config.options.details);
+      case 'dot':
+        return new DotReporter(emitter, statistics, testsArg);
+      case 'nyan':
+        return new NyanCatReporter(emitter, statistics, testsArg);
+      case 'html':
+        return new HtmlReporter(emitter, statistics, testsArg, path, config.options.details);
+      case 'markdown':
+        return new MarkdownReporter(emitter, statistics, testsArg, path, config.options.details);
+      default:
+        return new ApiaryReporter(emitter, statistics, testsArg, config, runner);
+    }
+  }
 
-  addCli(reporters) if not config.options.silent
+  if (!config.options.silent) { addCli(reporters); }
 
-  usedFileReporters = intersection reporters, fileReporters
+  const usedFileReporters = intersection(reporters, fileReporters);
 
-  stats.fileBasedReporters = usedFileReporters.length
+  stats.fileBasedReporters = usedFileReporters.length;
 
-  if usedFileReporters.length > 0
-    usedFileReportersLength = usedFileReporters.length
-    if reporters.indexOf('apiary') > -1
-      usedFileReportersLength = usedFileReportersLength - 1
+  if (usedFileReporters.length > 0) {
+    let usedFileReportersLength = usedFileReporters.length;
+    if (reporters.indexOf('apiary') > -1) {
+      usedFileReportersLength -= 1;
+    }
 
-    if usedFileReportersLength > outputs.length
-      logger.warn('''\
-        There are more reporters requiring output paths than there are output paths \
-        provided. Using default paths for additional file-based reporters.\
-      ''')
+    if (usedFileReportersLength > outputs.length) {
+      logger.warn(`
+There are more reporters requiring output paths than there are output paths
+provided. Using default paths for additional file-based reporters.
+`);
+    }
 
-    for reporter, i in usedFileReporters
-      path = if outputs[i] then outputs[i] else null
-      addReporter(reporter, config.emitter, stats, tests, path)
+    return usedFileReporters.map((usedFileReporter, index) => {
+      const path = outputs[index] ? outputs[index] : null;
+      return addReporter(usedFileReporter, config.emitter, stats, tests, path);
+    });
+  }
+}
 
-
-
-module.exports = configureReporters
+module.exports = configureReporters;

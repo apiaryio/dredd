@@ -1,195 +1,224 @@
-tty = require 'tty'
+const tty = require('tty');
 
-logger = require('./../logger')
-prettifyResponse = require './../prettify-response'
+const logger = require('./../logger');
+const prettifyResponse = require('./../prettify-response');
 
+function NyanCatReporter(emitter, stats, tests) {
+  let windowWidth;
 
-class NyanCatReporter
-  constructor: (emitter, stats, tests) ->
-    @type = 'nyan'
-    @stats = stats
-    @tests = tests
-    @isatty = tty.isatty(1) and tty.isatty(2)
-    if @isatty
-      if process.stdout.getWindowSize
-        windowWidth = process.stdout.getWindowSize(1)[0]
-      else
-        windowWidth = tty.getWindowSize()[1]
-    else
-      windowWidth = 75
-    width = windowWidth * .75 | 0
-    @rainbowColors = @generateColors()
-    @colorIndex = 0
-    @numberOfLines = 4
-    @trajectories = [[], [], [], []]
-    @nyanCatWidth = 11
-    @trajectoryWidthMax = (width - @nyanCatWidth)
-    @scoreboardWidth = 5
-    @tick = 0
-    @errors = []
-    @configureEmitter emitter
-    logger.verbose("Using '#{@type}' reporter.")
+  this.type = 'nyan';
+  this.stats = stats;
+  this.tests = tests;
+  this.isatty = tty.isatty(1) && tty.isatty(2);
 
-  configureEmitter: (emitter) =>
-    emitter.on 'start', (rawBlueprint, callback) =>
-      @cursorHide()
-      @draw()
-      callback()
+  if (this.isatty) {
+    if (process.stdout.getWindowSize) {
+      windowWidth = process.stdout.getWindowSize(1)[0];
+    } else {
+      windowWidth = tty.getWindowSize()[1];
+    }
+  } else {
+    windowWidth = 75;
+  }
 
-    emitter.on 'end', (callback) =>
-      @cursorShow()
-      i = 0
+  this.rainbowColors = this.generateColors();
+  this.colorIndex = 0;
+  this.numberOfLines = 4;
+  this.trajectories = [[], [], [], []];
+  this.nyanCatWidth = 11;
+  this.trajectoryWidthMax = (((windowWidth * 0.75) | 0) - this.nyanCatWidth);
+  this.scoreboardWidth = 5;
+  this.tick = 0;
+  this.errors = [];
 
-      while i < @numberOfLines
-        @write "\n"
-        i++
+  this.configureEmitter(emitter);
 
-      if @errors.length > 0
-        @write "\n"
-        logger.info "Displaying failed tests..."
-        for test in @errors
-          logger.fail test.title + " duration: #{test.duration}ms"
-          logger.fail test.message
-          logger.request "\n" + prettifyResponse(test.request) + "\n"
-          logger.expected "\n" + prettifyResponse(test.expected) + "\n"
-          logger.actual "\n" + prettifyResponse(test.actual) + "\n\n"
+  logger.verbose(`Using '${this.type}' reporter.`);
+}
 
-      logger.complete "#{@stats.passes} passing, #{@stats.failures} failing, #{@stats.errors} errors, #{@stats.skipped} skipped"
-      logger.complete "Tests took #{@stats.duration}ms"
-      callback()
+NyanCatReporter.prototype.configureEmitter = function (emitter) {
+  emitter.on('start', (rawBlueprint, callback) => {
+    this.cursorHide();
+    this.draw();
+    callback();
+  });
 
+  emitter.on('end', (callback) => {
+    this.cursorShow();
+    let i = 0;
 
-    emitter.on 'test pass', (test) =>
-      @draw()
+    while (i < this.numberOfLines) {
+      this.write('\n');
+      i++;
+    }
 
-    emitter.on 'test skip', (test) =>
-      @draw()
+    if (this.errors.length > 0) {
+      this.write('\n');
+      logger.info('Displaying failed tests...');
+      for (const test of this.errors) {
+        logger.fail(`${test.title} duration: ${test.duration}ms`);
+        logger.fail(test.message);
+        logger.request(`\n${prettifyResponse(test.request)}\n`);
+        logger.expected(`\n${prettifyResponse(test.expected)}\n`);
+        logger.actual(`\n${prettifyResponse(test.actual)}\n\n`);
+      }
+    }
 
-    emitter.on 'test fail', (test) =>
-      @errors.push test
-      @draw()
+    logger.complete(`${this.stats.passes} passing, ${this.stats.failures} failing, ${this.stats.errors} errors, ${this.stats.skipped} skipped`);
+    logger.complete(`Tests took ${this.stats.duration}ms`);
+    callback();
+  });
 
-    emitter.on 'test error', (error, test) =>
-      test.message = "\nError: \n"  + error + "\nStacktrace: \n" + error.stack + "\n"
-      @errors.push test
-      @draw()
+  emitter.on('test pass', () => {
+    this.draw();
+  });
 
-  draw: =>
-    @appendRainbow()
-    @drawScoreboard()
-    @drawRainbow()
-    @drawNyanCat()
-    @tick = not @tick
+  emitter.on('test skip', () => {
+    this.draw();
+  });
 
-  drawScoreboard: =>
-    write = @write
-    draw = (color, n) ->
-      write " "
-      write "\u001b[" + color + "m" + n + "\u001b[0m"
-      write "\n"
-    stats = @stats
-    colors =
-      fail: 31
-      skipped: 36
-      pass: 32
+  emitter.on('test fail', (test) => {
+    this.errors.push(test);
+    this.draw();
+  });
 
-    draw colors.pass, @stats.passes
-    draw colors.fail, @stats.failures
-    draw colors.fail, @stats.errors
-    draw colors.skipped, @stats.skipped
+  emitter.on('test error', (error, test) => {
+    test.message = `\nError: \n${error}\nStacktrace: \n${error.stack}\n`;
+    this.errors.push(test);
+    this.draw();
+  });
+};
 
-    @write "\n"
-    @cursorUp @numberOfLines + 1
+NyanCatReporter.prototype.draw = function () {
+  this.appendRainbow();
+  this.drawScoreboard();
+  this.drawRainbow();
+  this.drawNyanCat();
+  this.tick = !this.tick;
+};
 
-  appendRainbow: =>
-    segment = (if @tick then "_" else "-")
-    rainbowified = @rainbowify(segment)
-    index = 0
+NyanCatReporter.prototype.drawScoreboard = function () {
+  const colors = {
+    fail: 31,
+    skipped: 36,
+    pass: 32
+  };
 
-    while index < @numberOfLines
-      trajectory = @trajectories[index]
-      trajectory.shift()  if trajectory.length >= @trajectoryWidthMax
-      trajectory.push rainbowified
-      index++
+  // Capture outer `this`
+  const draw = (color, n) => {
+    this.write(' ');
+    this.write(`\u001b[${color}m${n}\u001b[0m`);
+    this.write('\n');
+  };
 
-  drawRainbow : =>
-    scoreboardWidth = @scoreboardWidth
-    write = @write
-    @trajectories.forEach (line, index) ->
-      write "\u001b[" + scoreboardWidth + "C"
-      write line.join("")
-      write "\n"
+  draw(colors.pass, this.stats.passes);
+  draw(colors.fail, this.stats.failures);
+  draw(colors.fail, this.stats.errors);
+  draw(colors.skipped, this.stats.skipped);
 
-    @cursorUp @numberOfLines
+  this.write('\n');
+  this.cursorUp(this.numberOfLines + 1);
+};
 
-  drawNyanCat: =>
-    startWidth = @scoreboardWidth + @trajectories[0].length
-    color = "\u001b[" + startWidth + "C"
-    padding = ""
-    @write color
-    @write "_,------,"
-    @write "\n"
-    @write color
-    padding = (if @tick then "  " else "   ")
-    @write "_|" + padding + "/\\_/\\ "
-    @write "\n"
-    @write color
-    padding = (if @tick then "_" else "__")
-    tail = (if @tick then "~" else "^")
-    face = undefined
-    @write tail + "|" + padding + @face() + " "
-    @write "\n"
-    @write color
-    padding = (if @tick then " " else "  ")
-    @write padding + "\"\"  \"\" "
-    @write "\n"
-    @cursorUp @numberOfLines
+NyanCatReporter.prototype.appendRainbow = function () {
+  const segment = (this.tick ? '_' : '-');
+  const rainbowified = this.rainbowify(segment);
+  const result = [];
 
-  face: =>
-    stats = @stats
-    if stats.failures
-      "( x .x)"
-    else if stats.skipped
-      "( o .o)"
-    else if stats.passes
-      "( ^ .^)"
-    else
-      "( - .-)"
+  let index = 0;
+  while (index < this.numberOfLines) {
+    const trajectory = this.trajectories[index];
+    if (trajectory.length >= this.trajectoryWidthMax) { trajectory.shift(); }
+    trajectory.push(rainbowified);
+    result.push(index++);
+  }
+  return result;
+};
 
-  cursorUp: (n) =>
-    @write "\u001b[" + n + "A"
+NyanCatReporter.prototype.drawRainbow = function () {
+  this.trajectories.forEach((line) => {
+    this.write(`\u001b[${this.scoreboardWidth}C`);
+    this.write(line.join(''));
+    this.write('\n');
+  });
 
-  cursorDown: (n) =>
-    @write "\u001b[" + n + "B"
+  this.cursorUp(this.numberOfLines);
+};
 
-  cursorShow: =>
-    @isatty and @write '\u001b[?25h'
+NyanCatReporter.prototype.drawNyanCat = function () {
+  const startWidth = this.scoreboardWidth + this.trajectories[0].length;
+  const color = `\u001b[${startWidth}C`;
+  let padding = '';
+  this.write(color);
+  this.write('_,------,');
+  this.write('\n');
+  this.write(color);
+  padding = (this.tick ? '  ' : '   ');
+  this.write(`_|${padding}/\\_/\\ `);
+  this.write('\n');
+  this.write(color);
+  padding = (this.tick ? '_' : '__');
+  const tail = (this.tick ? '~' : '^');
+  this.write(`${tail}|${padding}${this.face()} `);
+  this.write('\n');
+  this.write(color);
+  padding = (this.tick ? ' ' : '  ');
+  this.write(`${padding}''  '' `);
+  this.write('\n');
+  this.cursorUp(this.numberOfLines);
+};
 
-  cursorHide: =>
-    @isatty and @write '\u001b[?25l'
+NyanCatReporter.prototype.face = function () {
+  if (this.stats.failures) {
+    return '( x .x)';
+  } else if (this.stats.skipped) {
+    return '( o .o)';
+  } else if (this.stats.passes) {
+    return '( ^ .^)';
+  }
+  return '( - .-)';
+};
 
-  generateColors: ->
-    colors = []
-    i = 0
+NyanCatReporter.prototype.cursorUp = function (n) {
+  this.write(`\u001b[${n}A`);
+};
 
-    while i < (6 * 7)
-      pi3 = Math.floor(Math.PI / 3)
-      n = (i * (1.0 / 6))
-      r = Math.floor(3 * Math.sin(n) + 3)
-      g = Math.floor(3 * Math.sin(n + 2 * pi3) + 3)
-      b = Math.floor(3 * Math.sin(n + 4 * pi3) + 3)
-      colors.push 36 * r + 6 * g + b + 16
-      i++
-    colors
+NyanCatReporter.prototype.cursorDown = function (n) {
+  this.write(`\u001b[${n}B`);
+};
 
-  rainbowify: (str) =>
-    color = @rainbowColors[@colorIndex % @rainbowColors.length]
-    @colorIndex += 1
-    "\u001b[38;5;" + color + "m" + str + "\u001b[0m"
+NyanCatReporter.prototype.cursorShow = function () {
+  if (this.isatty) { this.write('\u001b[?25h'); }
+};
 
+NyanCatReporter.prototype.cursorHide = function () {
+  if (this.isatty) { this.write('\u001b[?25l'); }
+};
 
-  write: (str) ->
-    process.stdout.write str
+NyanCatReporter.prototype.generateColors = function () {
+  const colors = [];
+  let i = 0;
 
+  while (i < (6 * 7)) {
+    const pi3 = Math.floor(Math.PI / 3);
+    const n = (i * (1.0 / 6));
+    const r = Math.floor((3 * Math.sin(n)) + 3);
+    const g = Math.floor((3 * Math.sin(n + (2 * pi3))) + 3);
+    const b = Math.floor((3 * Math.sin(n + (4 * pi3))) + 3);
+    colors.push((36 * r) + (6 * g) + b + 16);
+    i++;
+  }
+  return colors;
+};
 
-module.exports = NyanCatReporter
+NyanCatReporter.prototype.rainbowify = function (str) {
+  const color = this.rainbowColors[this.colorIndex % this.rainbowColors.length];
+  this.colorIndex += 1;
+  return `\u001b[38;5;${color}m${str}\u001b[0m`;
+};
+
+NyanCatReporter.prototype.write = function (str) {
+  process.stdout.write(str);
+};
+
+module.exports = NyanCatReporter;

@@ -1,66 +1,76 @@
+const NEWLINE_RE = /\n/g;
 
-NEWLINE_RE = /\n/g
+function characterIndexToPosition(charIndex = 0, code = '') {
+  const codeFragment = code.substring(0, charIndex);
+  const match = codeFragment.match(NEWLINE_RE) || [];
+  const row = match.length + 1;
+  return { row };
+}
 
+const sortNumbersAscending = (a, b) => a - b;
 
-characterIndexToPosition = (charIndex = 0, code = '') ->
-  codeFragment = code.substring(0, charIndex)
-  row = (codeFragment.match(NEWLINE_RE)?.length or 0) + 1
-  {row}
+function warningLocationToRanges(warningLocation = [], text = '') {
+  if (!warningLocation.length) {
+    // No start-end ranges, nothing to return
+    return [];
+  }
 
+  const rowsIndexes = [];
 
-sortNumbersAscending = (a, b) ->
-  return a - b
+  let position = characterIndexToPosition(warningLocation[0][0], text);
 
+  // Add this warning position row into ranges array
+  rowsIndexes.push(position.row);
 
-warningLocationToRanges = (warningLocation = [], text = '') ->
-  unless warningLocation.length
-    # no start-end ranges, nothing to return
-    return []
+  if (warningLocation.length > 0) {
+    // More lines
+    for (let locKey = 0; locKey < warningLocation.length; locKey++) {
+      const loc = warningLocation[locKey];
+      if (locKey > 0) {
+        position = characterIndexToPosition(loc[0], text);
+        rowsIndexes.push(position.row);
+      }
+    }
+  }
 
-  rowsIndexes = []
+  rowsIndexes.sort(sortNumbersAscending);
 
-  position = characterIndexToPosition(warningLocation[0][0], text)
+  const ranges = [];
+  let range = { start: rowsIndexes[0], end: rowsIndexes[0] };
+  for (const rowIndex of rowsIndexes) {
+    if ((rowIndex === range.end) || (rowIndex === (range.end + 1))) { // Moving end of known range
+      range.end = rowIndex;
+    } else {
+      ranges.push(range); // non-continuous range
+      range = { start: rowIndex, end: rowIndex };
+    }
+  }
+  // Push the last edited range to ranges-array
+  ranges.push(range);
 
-  # add this warning position row into ranges array
-  rowsIndexes.push position.row
+  return ranges;
+}
 
-  lastLocation = warningLocation[warningLocation.length - 1]
-
-  if warningLocation.length > 0
-    # more lines
-    for loc, locKey in warningLocation when locKey > 0
-      position = characterIndexToPosition(loc[0], text)
-      rowsIndexes.push position.row
-
-  rowsIndexes.sort(sortNumbersAscending)
-  ranges = []
-  range = {start: rowsIndexes[0], end: rowsIndexes[0]}
-  for rowIndex in rowsIndexes
-    if rowIndex is range.end or rowIndex is range.end + 1 # moving end of known range
-      range.end = rowIndex
-    else
-      ranges.push range # non-continuous range
-      range = {start: rowIndex, end: rowIndex}
-  # push the last edited range to ranges-array
-  ranges.push range
-  return ranges
-
-
-rangesToLinesText = (ranges) ->
-  pos = ''
-  for range, rangeIndex in ranges or []
-    if rangeIndex > 0
-      pos += ', '
-    if range.start isnt range.end
-      pos += "lines #{range.start}-#{range.end}"
-    else
-      pos += "line #{range.start}"
-  return pos
-
+function rangesToLinesText(ranges) {
+  let pos = '';
+  const iterable = ranges || [];
+  for (let rangeIndex = 0; rangeIndex < iterable.length; rangeIndex++) {
+    const range = iterable[rangeIndex];
+    if (rangeIndex > 0) {
+      pos += ', ';
+    }
+    if (range.start !== range.end) {
+      pos += `lines ${range.start}-${range.end}`;
+    } else {
+      pos += `line ${range.start}`;
+    }
+  }
+  return pos;
+}
 
 module.exports = {
-  characterIndexToPosition
-  sortNumbersAscending
+  characterIndexToPosition,
+  rangesToLinesText,
+  sortNumbersAscending,
   warningLocationToRanges
-  rangesToLinesText
-}
+};
