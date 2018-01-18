@@ -1,3 +1,5 @@
+require('babel-polyfill');
+
 const async = require('async');
 const clone = require('clone');
 const glob = require('glob');
