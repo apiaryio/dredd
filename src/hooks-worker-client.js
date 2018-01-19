@@ -60,7 +60,7 @@ class HooksWorkerClient {
     logger.verbose('Terminating hooks handler process, PID', this.handler.pid);
     if (this.handler.terminated) {
       logger.debug('The hooks handler process has already terminated');
-      callback();
+      return callback();
     }
 
     this.handler.terminate({ force: true, timeout: this.termTimeout, retryDelay: this.termRetry });
@@ -230,7 +230,7 @@ $ go get github.com/snikch/goodman/cmd/goodman
           if (this.handlerClient) { this.handlerClient.destroy(); }
           const msg = `Connection timeout ${this.connectTimeout / 1000}s to hooks handler ` +
           `on ${this.handlerHost}:${this.handlerPort} exceeded. Try increasing the limit.`;
-          return callback(new Error(msg));
+          callback(new Error(msg));
         }
       }
     };
