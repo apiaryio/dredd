@@ -7,7 +7,7 @@
     "dredd": "bin/dredd"
   },
   "engines": {
-    "node": ">= 4"
+    "node": ">= 6"
   },
   "scripts": {
     "build": "babel ./src --out-dir ./lib/",
@@ -27,18 +27,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/apiaryio/dredd"
-  },
-  "babel": {
-    "presets": [
-      [
-        "env",
-        {
-          "targets": {
-            "node": "4.0.0"
-          }
-        }
-      ]
-    ]
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
