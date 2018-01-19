@@ -20,7 +20,5 @@ jobs:
       node_js: "6"
       script: "npm run lint"
     - stage: "tests"
-      node_js: "4"
-      script: "npm run test"
-    - node_js: "6"
+      node_js: "6"
       script: "npm run test"
