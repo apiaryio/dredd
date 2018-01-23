@@ -16,20 +16,17 @@ rm -rf "$COVERAGE_DIR" "$COVERAGE_FILE"
 mkdir "$COVERAGE_DIR"
 chmod +x "$PROJECT_DIR"/bin/dredd
 
-# Testing & coverage
-istanbul cover ./node_modules/.bin/_mocha -- \
-    "test/**/*-test.coffee" \
-    --compilers=coffee:coffee-script/register \
-    --recursive
 
 export COVERAGE_DIR
-cd ..
+
+
+# Testing & coverage
+istanbul cover ./node_modules/.bin/_mocha -- \
+  "test/**/*-test.coffee" \
+  --reporter=test/reporter.js \
+  --recursive
 
 
 # Merging LCOV reports
 "$BIN_DIR"/lcov-result-merger "$COVERAGE_DIR/*.info" "$COVERAGE_FILE"
 echo "Coverage saved as '$COVERAGE_FILE'"
-
-
-# Output & cleanup
-rm -rf "$COVERAGE_DIR"
