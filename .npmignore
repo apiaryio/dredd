@@ -2,8 +2,7 @@
 /src
 
 # Common for .gitignore and .npmignore
-src-cov/
-lcov/
+coverage/
 site/
 cov.*
 .vagrant
@@ -16,7 +15,7 @@ docs/
 test/
 mkdocs.yml
 provisioning.sh
-coffeelint.json
+.eslintrc.js
 Vagrantfile
 *.apib
 *.md
