@@ -73,8 +73,8 @@ Currently responsible people are:
 
 ### Programming Language
 
-Dredd is written in [JavaScript (ES2015+)][] and is meants
-to be ran on server using Node.js. Before publishing to npm registry, it is
+Dredd is written in [JavaScript (ES2015+)][] and is meant
+to be ran on server using Node.js. Before publishing to the npm registry, it is
 compiled to plain ES5 JavaScript code (throwaway `lib` directory).
 
 Tests need pre-compiled every time because some integration tests use code
@@ -147,9 +147,9 @@ Dredd is tested on the [AppVeyor][], a Windows-based CI. There are still [severa
 
 ### Linting
 
-Dredd uses [eslint][] to lint the JavaScript codebase. We are using Airbnb's
-styleguide rules as a baseline with several rules disabled to fit our own
-preferences.
+Dredd uses [eslint][] to lint the JavaScript codebase. We are using [Airbnb's styleguide](https://github.com/airbnb/javascript) 
+rules as a baseline with several rules disabled to allow us to have dirty
+post-decaffeinate code temporarily.
 
 Linter is optional for local development to make easy prototyping and work
 with unpolished code, but it's enforced on CI level. It is recommended you
@@ -249,8 +249,8 @@ provides a good reason why an exception should be made.
 
 The Travis CI build uses following commands to deliver coverage reports:
 
-- `npm run test:coverage` - Tests Dredd and creates the `lcov.info` file
-- `npm run coveralls` - Uploads the `lcov.info` file to Coveralls
+- `npm run test:coverage` - Tests Dredd and creates the `./coverage/lcov.info` file
+- `npm run coveralls` - Uploads the `./coverage/lcov.info` file to Coveralls
 
 The first mentioned command goes like this:
 
