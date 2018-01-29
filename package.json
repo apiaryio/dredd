@@ -28,6 +28,18 @@
     "type": "git",
     "url": "https://github.com/apiaryio/dredd"
   },
+  "babel": {
+    "presets": [
+      [
+        "env",
+        {
+          "targets": {
+            "node": "6.0.0"
+          }
+        }
+      ]
+    ]
+  },
   "dependencies": {
     "async": "2.3.0",
     "caseless": "0.12.0",
