@@ -2,8 +2,8 @@
 /lib
 
 # Common for .gitignore and .npmignore
-src-cov/
-lcov/
+.DS_Store
+coverage/
 site/
 cov.*
 .vagrant

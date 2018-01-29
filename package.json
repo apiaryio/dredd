@@ -7,72 +7,89 @@
     "dredd": "bin/dredd"
   },
   "engines": {
-    "node": ">= 4"
+    "node": ">= 6"
   },
   "scripts": {
-    "lint": "conventional-changelog-lint --from=master && coffeelint src",
-    "build": "coffee -b -c -o lib/ src/",
-    "build:watch": "coffee -b -w -o lib/ src/",
+    "build": "babel ./src --out-dir ./lib/",
+    "build:watch": "babel ./src --out-dir ./lib/ --watch",
+    "coveralls": "scripts/coveralls.sh",
     "docs:lint": "sphinx-build -nW -b linkcheck docs docs/_build/",
     "docs:build": "sphinx-build -nW -b html docs docs/_build/",
     "docs:serve": "sphinx-autobuild docs docs/_build/",
     "docs:install": "pip install -r docs/requirements.txt",
+    "lint": "conventional-changelog-lint --from=master && eslint src",
+    "prepare": "npm run build",
     "pretest": "npm run build",
+    "semantic-release": "scripts/semantic-release.sh",
     "test": "mocha \"test/**/*-test.coffee\"",
-    "test:coverage": "scripts/coverage.sh",
-    "prepublish": "npm run build",
-    "coveralls": "scripts/coveralls.sh",
-    "semantic-release": "scripts/semantic-release.sh"
+    "test:coverage": "scripts/coverage.sh"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/apiaryio/dredd"
   },
+  "babel": {
+    "presets": [
+      [
+        "env",
+        {
+          "targets": {
+            "node": "6.0.0"
+          }
+        }
+      ]
+    ]
+  },
   "dependencies": {
-    "async": "^2.3.0",
-    "caseless": "^0.12.0",
-    "chai": "^4.0.2",
-    "clone": "^2.1.1",
+    "async": "2.3.0",
+    "caseless": "0.12.0",
+    "chai": "4.0.2",
+    "clone": "2.1.1",
     "coffee-script": "1.12.6",
-    "cross-spawn": "^5.0.1",
+    "cross-spawn": "5.0.1",
     "dredd-transactions": "5.0.4",
-    "file": "^0.2.2",
+    "file": "0.2.2",
     "fs-extra": "5.0.0",
-    "gavel": "^1.1.1",
-    "glob": "^7.0.5",
-    "html": "^1.0.0",
+    "gavel": "1.1.1",
+    "glob": "7.0.5",
+    "html": "1.0.0",
     "htmlencode": "0.0.4",
-    "inquirer": "^3.3.0",
-    "js-yaml": "^3.8.3",
-    "markdown-it": "^8.3.1",
-    "optimist": "^0.6.1",
-    "pitboss-ng": "^0.3.3",
-    "proxyquire": "^1.7.10",
-    "request": "^2.81.0",
-    "spawn-args": "^0.2.0",
-    "uuid": "^3.0.0",
-    "which": "^1.2.14",
-    "winston": "^2.2.0"
+    "inquirer": "3.3.0",
+    "js-yaml": "3.8.3",
+    "markdown-it": "8.3.1",
+    "optimist": "0.6.1",
+    "pitboss-ng": "0.3.3",
+    "proxyquire": "1.7.10",
+    "request": "2.81.0",
+    "spawn-args": "0.2.0",
+    "uuid": "3.0.0",
+    "which": "1.2.14",
+    "winston": "2.2.0"
   },
   "devDependencies": {
-    "body-parser": "^1.17.1",
-    "coffee-coverage": "^2.0.1",
-    "coffeelint": "^1.15.7",
-    "conventional-changelog-lint": "^1.1.9",
-    "coveralls": "^2.13.0",
-    "cz-conventional-changelog": "^2.0.0",
-    "drafter": "^1.0.0",
-    "ect": "^0.5.9",
-    "express": "^4.15.2",
-    "hercule": "^4.0.1",
-    "jscoverage": "^0.6.0",
-    "lcov-result-merger": "^1.2.0",
-    "mocha": "^3.0.0",
-    "mocha-lcov-reporter": "^1.3.0",
-    "nock": "^9.0.13",
-    "ps-node": "^0.1.5",
-    "semantic-release": "^7.0.2",
-    "sinon": "^2.1.0"
+    "babel-cli": "6.26.0",
+    "babel-core": "6.26.0",
+    "babel-preset-env": "1.6.1",
+    "body-parser": "1.17.1",
+    "coffee-coverage": "2.0.1",
+    "conventional-changelog-lint": "1.1.9",
+    "coveralls": "2.13.0",
+    "cz-conventional-changelog": "2.0.0",
+    "drafter": "1.0.0",
+    "ect": "0.5.9",
+    "eslint": "4.4.1",
+    "eslint-config-airbnb": "15.1.0",
+    "eslint-plugin-import": "2.7.0",
+    "express": "4.16.2",
+    "hercule": "4.0.1",
+    "istanbul": "0.4.5",
+    "lcov-result-merger": "1.2.0",
+    "mocha": "3.0.0",
+    "mocha-lcov-reporter": "1.3.0",
+    "nock": "9.1.6",
+    "ps-node": "0.1.5",
+    "semantic-release": "7.0.2",
+    "sinon": "2.1.0"
   },
   "keywords": [
     "api",

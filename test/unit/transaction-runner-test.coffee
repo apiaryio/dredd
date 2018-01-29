@@ -2468,5 +2468,5 @@ describe 'TransactionRunner', ->
         """
         runner.runHook hook, {}, (err) ->
           assert.isDefined err
-          assert.include err, 'console'
+          assert.include err, 'Cannot read property \'log\' of undefined'
           done()

@@ -14,7 +14,7 @@
 
 ### Coding
 
-- Dredd is written in [CoffeeScript][].
+- Dredd is written in JavaScript [ES2015+](https://tc39.github.io/ecma262/).
 - Dredd uses [Semantic Release and Conventional Changelog](#sem-rel).
 
 #### Recommended Workflow
@@ -69,22 +69,20 @@ Currently responsible people are:
 
 - [@netmilk](https://github.com/netmilk) - product decisions, feature requests
 - [@honzajavorek](https://github.com/honzajavorek) - lead of development
+- [@michalholasek](https://github.com/michalholasek) - team member
 
 ### Programming Language
 
-Dredd is written in [CoffeeScript][] and is meant to be ran on server using
-Node.js. Before publishing to npm registry, it is compiled to plain
-ES5 JavaScript code (throwaway `lib` directory).
+Dredd is written in [JavaScript (ES2015+)][] and is meant
+to be ran on server using Node.js. Before publishing to the npm registry, it is
+compiled to plain ES5 JavaScript code (throwaway `lib` directory).
 
-While tests are compiled on-the-fly thanks to CoffeeScript integration with
-the Mocha test framework, they actually need the code to be also pre-compiled
-every time because some integration tests use code linked from `lib`. This is
-certainly a flaw and it slows down day-to-day development, but unless we find
-out how to get rid of the `lib` dependency, it's necessary.
+Tests need pre-compiled every time because some integration tests use code
+linked from `lib`. This is certainly a flaw and it slows down day-to-day development,
+but untill we streamline our build pipeline, the `lib` dependency is necessary.
 
-Also mind that CoffeeScript is production dependency (not dev dependency),
-because it's needed not only for compiling Dredd package before uploading
-to npm, but also for running user-provided hooks written in CoffeeScript.
+Also mind that [CoffeeScript][] is production dependency (not dev dependency),
+because it's needed for running user-provided hooks written in CoffeeScript.
 
 ### Compiled vs pure JavaScript
 
@@ -116,6 +114,14 @@ In following files the latest supported Node.js version should be used:
 - `appveyor.yml` - Windows CI builds
 - `docs/install-node.sh` - ReadTheDocs docs builds
 
+### Dependencies
+
+New versions of dependencies are monitored by [David][] and/or [Greenkeeper][]. Security issues are monitored by [Snyk][].
+
+Dependencies should not be specified in a loose way - only exact versions are allowed. Any changes to dependencies (version upgrades included) must be approved by Oracle before merged to `master`. Dredd maintainers take care of the approval. For transparency, PRs with pending dependency approval are labeled respectively.
+
+The internal Oracle policies about dependencies pay attention mainly to licenses. Before adding a new dependency or upgrading an existing one try to [make sure](https://github.com/davglass/license-checker) the project and all its transitive dependencies feature standard permissive licenses, including correct copyright holders and license texts.
+
 ### Versioning
 
 Dredd follows [Semantic Versioning][]. To ensure certain stability of Dredd installations (e.g. in CI builds), users can pin their version. They can also use release tags:
@@ -141,14 +147,13 @@ Dredd is tested on the [AppVeyor][], a Windows-based CI. There are still [severa
 
 ### Linting
 
-Dredd uses [coffeelint][] to lint the CoffeeScript codebase. There is a plan
-to converge with Apiary's [CoffeeScript Style Guide][], but as most of
-the current code was written before the style guide was introduced, it's
-a long run. The effective settings are in the [coffeelint.json][] file.
+Dredd uses [eslint][] to lint the JavaScript codebase. We are using [Airbnb's styleguide](https://github.com/airbnb/javascript) 
+rules as a baseline with several rules disabled to allow us to have dirty
+post-decaffeinate code temporarily.
 
 Linter is optional for local development to make easy prototyping and work
 with unpolished code, but it's enforced on CI level. It is recommended you
-integrate coffeelint with your favorite editor so you see violations
+integrate [eslint][] with your favorite editor so you see violations
 immediately during coding.
 
 ### Changelog
@@ -244,15 +249,14 @@ provides a good reason why an exception should be made.
 
 The Travis CI build uses following commands to deliver coverage reports:
 
-- `npm run test:coverage` - Tests Dredd and creates the `cov.info` file
-- `npm run coveralls` - Uploads the `cov.info` file to Coveralls
+- `npm run test:coverage` - Tests Dredd and creates the `./coverage/lcov.info` file
+- `npm run coveralls` - Uploads the `./coverage/lcov.info` file to Coveralls
 
 The first mentioned command goes like this:
 
-1. [coffee-coverage][] is used to instrument the CoffeeScipt code.
-2. Instrumented code is copied into a separate directory. We run tests in the
-   directory using Mocha with a special lcov reporter, which gives us
-   information about which lines were executed in a standard lcov format.
+1. [istanbul][] is used to instrument and cover the JavaScript code.
+2. We run the tests on the instrumented code using Mocha with a special lcov reporter,
+   which gives us information about which lines were executed in a standard lcov format.
 3. Because some integration tests execute the `bin/dredd` script in
    a subprocess, we collect the coverage stats also in this file. The results
    are appended to a dedicated lcov file.
@@ -286,8 +290,9 @@ There is also one environment variable you could find useful:
 
 ### Misc Tips
 
-- When using long CLI options in tests or documentation, please always use the notation with `=`. For example,
-  use `--path=/dev/null`, not `--path /dev/null`. While both should work, the version with `=` feels
+- When using long CLI options in tests or documentation, please always use the notation with `=`
+  wherever possible. For example, use `--path=/dev/null`, not `--path /dev/null`.
+  While both should work, the version with `=` feels
   more like standard GNU-style long options and it makes arrays of arguments for `spawn` more readable.
 - Using `127.0.0.1` (in code, tests, documentation) is preferred over `localhost` (see [#586](https://github.com/apiaryio/dredd/issues/586)).
 - Prefer explicit `<br>` tags instead of [two spaces][md-two-spaces] at the end of the line when writing documentation in Markdown.
@@ -298,11 +303,11 @@ There is also one environment variable you could find useful:
 [Gavel.js]: https://github.com/apiaryio/gavel.js/
 
 [Semantic Versioning]: http://semver.org/
-[coffee-coverage]: https://github.com/benbria/coffee-coverage
-[coffeelint]: http://www.coffeelint.org/
+[JavaScript (ES2015+)]: https://tc39.github.io/ecma262/
+[eslint]: https://eslint.org/
 [CoffeeScript]: http://coffeescript.org
-[CoffeeScript Style Guide]: https://github.com/apiaryio/coffeescript-style-guide
 [Coveralls]: https://coveralls.io/github/apiaryio/dredd
+[istanbul]: https://github.com/gotwarlost/istanbul
 [lcov-result-merger]: https://github.com/mweibel/lcov-result-merger
 [Markdown]: https://en.wikipedia.org/wiki/Markdown
 [Sphinx]: http://www.sphinx-doc.org/
@@ -316,6 +321,9 @@ There is also one environment variable you could find useful:
 [AppVeyor]: https://www.appveyor.com/
 [nvm]: https://github.com/creationix/nvm
 [reStructuredText]: http://www.sphinx-doc.org/en/stable/rest.html
+[David]: https://david-dm.org/apiaryio/dredd
+[Greenkeeper]: https://greenkeeper.io/
+[Snyk]: https://snyk.io/test/npm/dredd
 
 [Drafter]: https://github.com/apiaryio/drafter
 [API Blueprint]: https://apiblueprint.org/
@@ -327,7 +335,6 @@ There is also one environment variable you could find useful:
 
 [existing commits]: https://github.com/apiaryio/dredd/commits/master
 [docs]: https://github.com/apiaryio/dredd/tree/master/docs
-[coffeelint.json]: https://github.com/apiaryio/dredd/blob/master/coffeelint.json
 [GitHub Releases]: https://github.com/apiaryio/dredd/releases
 [GitHub contributing guidelines]: https://github.com/blog/1184-contributing-guidelines
 
