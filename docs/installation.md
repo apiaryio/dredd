@@ -1,6 +1,6 @@
 # Installation
 
-Dredd is a command-line application written in [CoffeeScript][], a dialect of the JavaScript programming language. To run it on your machine or in your [Continuous Integration server][CI], you first need to have [Node.js][] installed.
+Dredd is a command-line application written in JavaScript. To run it on your machine or in your [Continuous Integration server][CI], you first need to have [Node.js][] installed.
 
 <a name="install-nodejs"></a><!-- legacy MkDocs anchor -->
 
