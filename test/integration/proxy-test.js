@@ -1,10 +1,17 @@
+/* eslint-disable
+    no-return-assign,
+    no-shadow,
+    no-unused-vars,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 const http = require('http');
 const https = require('https');
 const url = require('url');
 const clone = require('clone');
-const {assert} = require('chai');
+const { assert } = require('chai');
 
-const {runDredd, recordLogging, createServer, DEFAULT_SERVER_PORT} = require('./helpers');
+const { runDredd, recordLogging, createServer, DEFAULT_SERVER_PORT } = require('./helpers');
 const logger = require('../../src/logger');
 const Dredd = require('../../src/dredd');
 
@@ -19,20 +26,20 @@ const REGULAR_HTTP_METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
 // Normally, tests create Dredd instance and pass it to the 'runDredd'
 // helper, which captures Dredd's logging while it runs. However, in
 // this case we need to capture logging also during the instantiation.
-const createAndRunDredd = function(configuration, done) {
+const createAndRunDredd = function (configuration, done) {
   if (configuration.options == null) { configuration.options = {}; }
   configuration.options.color = false;
   configuration.options.silent = true;
   configuration.options.level = 'silly';
 
-  let dredd = undefined;
-  return recordLogging(function(next) {
+  let dredd;
+  return recordLogging((next) => {
     dredd = new Dredd(configuration);
     dredd.configuration.http.strictSSL = false;
     return next();
   }
-  , (err, args, dreddInitLogging) =>
-    runDredd(dredd, function(err, info) {
+    , (err, args, dreddInitLogging) =>
+    runDredd(dredd, (err, info) => {
       info.logging = `${dreddInitLogging}\n${info.logging}`;
       return done(err, info);
     })
@@ -43,15 +50,15 @@ const createAndRunDredd = function(configuration, done) {
 // Creates dummy proxy server for given protocol. Records details
 // about the first received request to the object given as a second
 // argument.
-const createProxyServer = function(protocol, proxyRequestInfo) {
+const createProxyServer = function (protocol, proxyRequestInfo) {
   let app;
   if (protocol === 'http') {
     app = http.createServer();
-    app.on('request', function(req, res) {
+    app.on('request', (req, res) => {
       proxyRequestInfo.url = req.url;
       proxyRequestInfo.method = req.method;
 
-      res.writeHead(200, {'Content-Type': 'text/plain'});
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
       return res.end('OK');
     });
   } else if (protocol === 'https') {
@@ -64,7 +71,7 @@ const createProxyServer = function(protocol, proxyRequestInfo) {
     // See https://en.wikipedia.org/wiki/HTTP_tunnel#HTTP_CONNECT_tunneling
     // and https://github.com/request/request#proxies
     app = http.createServer();
-    app.on('connect', function(req, socket) {
+    app.on('connect', (req, socket) => {
       proxyRequestInfo.url = req.url;
       proxyRequestInfo.method = req.method;
 
@@ -89,44 +96,44 @@ const createProxyServer = function(protocol, proxyRequestInfo) {
 //     - proxy - Means Dredd is expected to hit proxy
 //     - server - Means Dredd is expected to hit the dummy server
 // - expectedUrl (string) - Which URL is Dredd expected to request
-const test = function(scenario) {
+const test = function (scenario) {
   // Setup and prepare dummy proxy
-  let proxy = undefined;
+  let proxy;
   let proxyRequestInfo = {};
 
-  beforeEach(function(done) {
+  beforeEach((done) => {
     const app = createProxyServer(scenario.protocol, proxyRequestInfo);
     return proxy = app.listen(PROXY_PORT, done);
   });
-  afterEach(function(done) {
+  afterEach((done) => {
     proxyRequestInfo = {};
     return proxy.close(done);
   });
 
   // Setup and prepare dummy server
-  let server = undefined;
-  let serverRuntimeInfo = undefined;
+  let server;
+  let serverRuntimeInfo;
 
-  beforeEach(function(done) {
-    const app = createServer({protocol: scenario.protocol});
-    return server = app.listen(DEFAULT_SERVER_PORT, function(err, info) {
+  beforeEach((done) => {
+    const app = createServer({ protocol: scenario.protocol });
+    return server = app.listen(DEFAULT_SERVER_PORT, (err, info) => {
       serverRuntimeInfo = info;
       return done(err);
     });
   });
-  afterEach(function(done) {
+  afterEach((done) => {
     serverRuntimeInfo = undefined;
     return server.close(done);
   });
 
   // Setup and run Dredd
-  let dreddLogging = undefined;
+  let dreddLogging;
 
-  beforeEach(function(done) {
-    const configuration = {options: {}};
+  beforeEach((done) => {
+    const configuration = { options: {} };
     scenario.configureDredd(configuration);
 
-    return createAndRunDredd(configuration, function(err, info) {
+    return createAndRunDredd(configuration, (err, info) => {
       if (err) { return done(err); }
       dreddLogging = info.logging;
       return done();
@@ -146,37 +153,34 @@ const test = function(scenario) {
       return it('requests the proxy, using the original URL as a path', () => assert.equal(proxyRequestInfo.url, scenario.expectedUrl));
     } else if (scenario.protocol === 'https') {
       it('requests the proxy with CONNECT', () => assert.equal(proxyRequestInfo.method, 'CONNECT'));
-      return it('asks the proxy to tunnel SSL connection to the original hostname', function() {
+      return it('asks the proxy to tunnel SSL connection to the original hostname', () => {
         const hostname = `${url.parse(scenario.expectedUrl).hostname}:${DEFAULT_SERVER_PORT}`;
         return assert.equal(proxyRequestInfo.url, hostname);
       });
-    } else {
-      throw new Error(`Unsupported protocol: ${scenario.protocol}`);
     }
-
+    throw new Error(`Unsupported protocol: ${scenario.protocol}`);
   } else if (scenario.expectedDestination === 'server') {
     it('does not request the proxy', () => assert.deepEqual(proxyRequestInfo, {}));
     it('does request the server', () => assert.isTrue(serverRuntimeInfo.requestedOnce));
     it('requests the server with regular HTTP method', () => assert.oneOf(serverRuntimeInfo.lastRequest.method, REGULAR_HTTP_METHODS));
     return it('requests the server with the original path', () => assert.equal(serverRuntimeInfo.lastRequest.url, scenario.expectedUrl));
-
   } else {
     throw new Error(`Unsupported destination: ${scenario.expectedDestination}`);
   }
 };
 
 
-['http', 'https'].forEach(function(protocol) {
+['http', 'https'].forEach((protocol) => {
   const serverUrl = `${protocol}://${SERVER_HOST}`;
 
-  return describe(`Respecting ‘${protocol}_proxy’ Environment Variable`, function() {
+  return describe(`Respecting ‘${protocol}_proxy’ Environment Variable`, () => {
     const expectedLog = `\
 proxy specified by environment variables: \
 ${protocol}_proxy=${PROXY_URL}\
 `;
 
-    beforeEach( () => process.env[`${protocol}_proxy`] = PROXY_URL);
-    afterEach( () => delete process.env[`${protocol}_proxy`]);
+    beforeEach(() => process.env[`${protocol}_proxy`] = PROXY_URL);
+    afterEach(() => delete process.env[`${protocol}_proxy`]);
 
     describe('Requesting Server Under Test', () =>
       test({
@@ -191,9 +195,9 @@ ${protocol}_proxy=${PROXY_URL}\
       })
     );
 
-    describe('Using Apiary Reporter', function() {
-      beforeEach( () => process.env.APIARY_API_URL = serverUrl);
-      afterEach( () => delete process.env.APIARY_API_URL);
+    describe('Using Apiary Reporter', () => {
+      beforeEach(() => process.env.APIARY_API_URL = serverUrl);
+      afterEach(() => delete process.env.APIARY_API_URL);
 
       return test({
         protocol,
@@ -204,7 +208,7 @@ ${protocol}_proxy=${PROXY_URL}\
         },
         expectedLog,
         expectedDestination: 'proxy',
-        expectedUrl: serverUrl + '/apis/public/tests/runs'
+        expectedUrl: `${serverUrl}/apis/public/tests/runs`
       });
     });
 
@@ -213,29 +217,29 @@ ${protocol}_proxy=${PROXY_URL}\
         protocol,
         configureDredd(configuration) {
           configuration.server = DUMMY_URL;
-          return configuration.options.path = serverUrl + '/example.apib';
+          return configuration.options.path = `${serverUrl}/example.apib`;
         },
         expectedLog,
         expectedDestination: 'proxy',
-        expectedUrl: serverUrl + '/example.apib'
+        expectedUrl: `${serverUrl}/example.apib`
       })
     );
   });
 });
 
 
-describe("Respecting ‘no_proxy’ Environment Variable", function() {
+describe('Respecting ‘no_proxy’ Environment Variable', () => {
   const serverUrl = `http://${SERVER_HOST}`;
   const expectedLog = `\
 proxy specified by environment variables: \
 http_proxy=${PROXY_URL}, no_proxy=${SERVER_HOST}\
 `;
 
-  beforeEach( function() {
+  beforeEach(() => {
     process.env.http_proxy = PROXY_URL;
     return process.env.no_proxy = SERVER_HOST;
   });
-  afterEach( function() {
+  afterEach(() => {
     delete process.env.http_proxy;
     return delete process.env.no_proxy;
   });
@@ -253,9 +257,9 @@ http_proxy=${PROXY_URL}, no_proxy=${SERVER_HOST}\
     })
   );
 
-  describe('Using Apiary Reporter', function() {
-    beforeEach( () => process.env.APIARY_API_URL = serverUrl);
-    afterEach( () => delete process.env.APIARY_API_URL);
+  describe('Using Apiary Reporter', () => {
+    beforeEach(() => process.env.APIARY_API_URL = serverUrl);
+    afterEach(() => delete process.env.APIARY_API_URL);
 
     return test({
       protocol: 'http',
@@ -275,7 +279,7 @@ http_proxy=${PROXY_URL}, no_proxy=${SERVER_HOST}\
       protocol: 'http',
       configureDredd(configuration) {
         configuration.server = DUMMY_URL;
-        return configuration.options.path = serverUrl + '/example.apib';
+        return configuration.options.path = `${serverUrl}/example.apib`;
       },
       expectedLog,
       expectedDestination: 'server',

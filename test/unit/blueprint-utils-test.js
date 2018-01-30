@@ -1,37 +1,38 @@
-const {assert} = require('chai');
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
+const { assert } = require('chai');
 
 const drafter = require('drafter');
 const blueprintUtils = require('../../src/blueprint-utils');
 
-describe('blueprintUtils', function() {
-
+describe('blueprintUtils', () => {
   const placeholderText = '';
-  const options = {type: 'refract'};
+  const options = { type: 'refract' };
 
-  describe('characterIndexToPosition()', function() {
+  describe('characterIndexToPosition()', () => {
     describe('under standard circumstances', () =>
-      it('returns an object with non-zero-based row', function() {
-        const str = "first\nsecond\nthird lines\ncontent continues";
+      it('returns an object with non-zero-based row', () => {
+        const str = 'first\nsecond\nthird lines\ncontent continues';
         const position = blueprintUtils.characterIndexToPosition(str.indexOf('lines', str), str);
-        return assert.deepEqual(position, {row: 3});
-    })
-  );
+        return assert.deepEqual(position, { row: 3 });
+      })
+    );
 
     return describe('when given one-line input and zero index', () =>
-      it('returns an object with row 1', function() {
-        const str = "hello\n";
+      it('returns an object with row 1', () => {
+        const str = 'hello\n';
         const position = blueprintUtils.characterIndexToPosition(str.indexOf('hello', str), str);
-        return assert.deepEqual(position, {row: 1});
-    })
-  );
-});
+        return assert.deepEqual(position, { row: 1 });
+      })
+    );
+  });
 
-  describe('warningLocationToRanges()', function() {
+  describe('warningLocationToRanges()', () => {
     let str = null;
     let location = [];
 
-    it('keeps ranges that follow each other line-numbers, but also resolves single-lines', function() {
-      str = "one\ntwo\nthree\nfour\nfive\nsix\nseven\neight\nnine\nten";
+    it('keeps ranges that follow each other line-numbers, but also resolves single-lines', () => {
+      str = 'one\ntwo\nthree\nfour\nfive\nsix\nseven\neight\nnine\nten';
       location = [
         [str.indexOf('two'), 2],
         [str.indexOf('three'), 2],
@@ -47,13 +48,13 @@ describe('blueprintUtils', function() {
       assert.isArray(ranges);
       assert.lengthOf(ranges, 3);
       return assert.deepEqual(ranges, [
-        {start: 2, end: 4},
-        {start:6, end: 8},
-        {start: 10, end: 10}
+        { start: 2, end: 4 },
+        { start: 6, end: 8 },
+        { start: 10, end: 10 }
       ]);
-  });
+    });
 
-    it('works for some API description warnings too', function(done) {
+    it('works for some API description warnings too', (done) => {
       const blueprint = `\
 # Indented API
 
@@ -67,15 +68,15 @@ describe('blueprintUtils', function() {
 
         ok indentation\
 `;
-      return drafter.parse(blueprint, options, function(err, parseResult) {
+      return drafter.parse(blueprint, options, (err, parseResult) => {
         if (err) { return done(new Error(err.message)); }
 
-        const annotations = (Array.from(parseResult.content).filter((node) => node.element === 'annotation'));
+        const annotations = (Array.from(parseResult.content).filter(node => node.element === 'annotation'));
         assert.isAbove(annotations.length, 0);
         const annotation = annotations[0];
 
         location = [];
-        for (let sourceMap of annotation.attributes.sourceMap) {
+        for (const sourceMap of annotation.attributes.sourceMap) {
           location = location.concat(sourceMap.content);
         }
         assert.isAbove(location.length, 0);
@@ -83,7 +84,7 @@ describe('blueprintUtils', function() {
         const ranges = blueprintUtils.warningLocationToRanges(location, blueprint);
         assert.isArray(ranges);
         assert.lengthOf(ranges, 1);
-        assert.deepEqual(ranges, [{start: 6, end: 7}]);
+        assert.deepEqual(ranges, [{ start: 6, end: 7 }]);
         return done();
       });
     });
@@ -91,27 +92,26 @@ describe('blueprintUtils', function() {
     it('returns an empty Array for empty locations', () => assert.deepEqual(blueprintUtils.warningLocationToRanges([], placeholderText), []));
 
     return it('returns an empty Array for undefined locations', () => assert.deepEqual(blueprintUtils.warningLocationToRanges(undefined, placeholderText), []));
-});
+  });
 
-  return describe('rangesToLinesText()', function() {
-
+  return describe('rangesToLinesText()', () => {
     describe('when tested on fake locations', () =>
 
-      it('should return a string of line(s) separated with comma', function() {
+      it('should return a string of line(s) separated with comma', () => {
         const line = blueprintUtils.rangesToLinesText([
-          {start: 2, end: 4},
-          {start: 8, end: 8},
-          {start: 10, end: 15}
+          { start: 2, end: 4 },
+          { start: 8, end: 8 },
+          { start: 10, end: 15 }
         ]);
         return assert.strictEqual(line, 'lines 2-4, line 8, lines 10-15');
       })
     );
 
-    return describe('for a real API description document', function() {
+    return describe('for a real API description document', () => {
       let warnings = 0;
       let blueprint = null;
       const allRanges = [];
-      before(function(done) {
+      before((done) => {
         blueprint = `\
 # Indentation warnings API
 ## GET /url
@@ -141,15 +141,15 @@ describe('blueprintUtils', function() {
 
         yup!\
 `;
-        return drafter.parse(blueprint, options, function(err, parseResult) {
+        return drafter.parse(blueprint, options, (err, parseResult) => {
           if (err) { return done(err); }
 
-          const annotations = (Array.from(parseResult.content).filter((node) => node.element === 'annotation'));
+          const annotations = (Array.from(parseResult.content).filter(node => node.element === 'annotation'));
           warnings = annotations.length;
 
-          for (let annotation of annotations) {
+          for (const annotation of annotations) {
             let location = [];
-            for (let sourceMap of annotation.attributes.sourceMap) {
+            for (const sourceMap of annotation.attributes.sourceMap) {
               location = location.concat(sourceMap.content);
             }
             allRanges.push(blueprintUtils.warningLocationToRanges(location, blueprint));
@@ -160,7 +160,7 @@ describe('blueprintUtils', function() {
 
       it('shows ~ 4 warnings', () => assert.equal(warnings, 4));
 
-      return it('prints lines for those warnings', function() {
+      return it('prints lines for those warnings', () => {
         const expectedLines = [
           'lines 5-6',
           'line 12',

@@ -1,13 +1,21 @@
-const {assert} = require('chai');
+/* eslint-disable
+    default-case,
+    no-shadow,
+    no-unused-vars,
+    prefer-const,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 const clone = require('clone');
 
 const Dredd = require('../../../src/dredd');
-let {runDreddCommandWithServer, createServer, parseDreddStdout, DEFAULT_SERVER_PORT} = require('../helpers');
+let { runDreddCommandWithServer, createServer, parseDreddStdout, DEFAULT_SERVER_PORT } = require('../helpers');
 
 
 // Helper, tries to parse given HTTP body and in case it can be parsed as JSON,
 // it returns the resulting JS object, otherwise it returns whatever came in.
-const parseIfJson = function(body) {
+const parseIfJson = function (body) {
   if (!body) { return undefined; }
   try {
     return JSON.parse(body);
@@ -18,18 +26,18 @@ const parseIfJson = function(body) {
 
 
 // This can be removed once https://github.com/apiaryio/dredd/issues/341 is done
-parseDreddStdout = function(stdout) {
+parseDreddStdout = function (stdout) {
   // Parse individual entries (deals also with multi-line entries)
   let entries = [];
-  let entry = undefined;
-  for (let line of stdout.split(/\r?\n/)) {
+  let entry;
+  for (const line of stdout.split(/\r?\n/)) {
     const match = line.match(/^(\w+): (.+)?$/);
     if (match) {
       if (entry) {
         entry.body = entry.body.trim();
         entries.push(entry);
       }
-      entry = {label: match[1], body: match[2] || ''};
+      entry = { label: match[1], body: match[2] || '' };
     } else {
       entry.body += `\n${line.trim()}`;
     }
@@ -40,7 +48,7 @@ parseDreddStdout = function(stdout) {
   // fail: POST /customers duration: 13ms
   // fail: body: At '/name' Invalid type: null (expected string)
   // body: At '/shoeSize' Invalid type: string (expected number)
-  entries = entries.filter(function(entry, i) {
+  entries = entries.filter((entry, i) => {
     const previousEntry = entries[i - 1];
     if ((entry.label === 'body') && (previousEntry.label === 'fail')) {
       previousEntry.body += `\n${entry.body}`;
@@ -50,7 +58,7 @@ parseDreddStdout = function(stdout) {
   });
 
   // Re-arrange data from entries
-  const results = {summary: '', failures: [], bodies: [], schemas: []};
+  const results = { summary: '', failures: [], bodies: [], schemas: [] };
   for (entry of entries) {
     switch (entry.label) {
       case 'body': results.bodies.push(parseIfJson(entry.body)); break;
@@ -63,8 +71,8 @@ parseDreddStdout = function(stdout) {
 };
 
 
-describe('Regression: Issues #319 and #354', function() {
-  let results = undefined;
+describe('Regression: Issues #319 and #354', () => {
+  let results;
 
   const brickTypePayload = {
     id: '',
@@ -83,18 +91,18 @@ describe('Regression: Issues #319 and #354', function() {
     $schema: 'http://json-schema.org/draft-04/schema#',
     type: 'object',
     properties: {
-      id: {type: 'string'},
-      name: {type: 'string'},
-      colors: {type: 'array'},
-      dimensions: {type: 'array'},
+      id: { type: 'string' },
+      name: { type: 'string' },
+      colors: { type: 'array' },
+      dimensions: { type: 'array' },
       producer: {
         type: 'object',
         properties: {
           address: {
             type: 'object',
             properties: {
-              city: {type: ['string', 'null']},
-              street: {type: 'string'}
+              city: { type: ['string', 'null'] },
+              street: { type: 'string' }
             }
           }
         }
@@ -117,14 +125,14 @@ describe('Regression: Issues #319 and #354', function() {
     $schema: 'http://json-schema.org/draft-04/schema#',
     type: 'object',
     properties: {
-      id: {type: 'string'},
-      name: {type: 'string'},
-      shoeSize: {type: 'number'},
+      id: { type: 'string' },
+      name: { type: 'string' },
+      shoeSize: { type: 'number' },
       address: {
         type: 'object',
         properties: {
-          city: {type: ['string', 'null']},
-          street: {type: 'string'}
+          city: { type: ['string', 'null'] },
+          street: { type: 'string' }
         }
       }
     }
@@ -139,8 +147,8 @@ describe('Regression: Issues #319 and #354', function() {
     type: 'array'
   };
 
-  describe('Tested app is consistent with the API description', function() {
-    beforeEach(function(done) {
+  describe('Tested app is consistent with the API description', () => {
+    beforeEach((done) => {
       const app = createServer();
 
       // Attaching endpoint for each testing scenario
@@ -155,9 +163,9 @@ describe('Regression: Issues #319 and #354', function() {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--inline-errors',
         '--details',
-        '--no-color',
+        '--no-color'
       ];
-      return runDreddCommandWithServer(args, app, function(err, info) {
+      return runDreddCommandWithServer(args, app, (err, info) => {
         if (info) { results = parseDreddStdout(info.dredd.stdout); }
         return done(err);
       });
@@ -166,32 +174,32 @@ describe('Regression: Issues #319 and #354', function() {
     it('outputs no failures', () =>
       // Intentionally not testing just '.length' as this approach will output the difference
       assert.deepEqual(results.failures, [])
-  );
+    );
     it('results in exactly four tests', () => assert.include(results.summary, '4 total'));
     it('results in four passing tests', () => assert.include(results.summary, '4 passing'));
 
-    describe('Attributes defined in resource are referenced from payload [GET /bricks/XYZ42]', function() {
+    describe('Attributes defined in resource are referenced from payload [GET /bricks/XYZ42]', () => {
       it('has no request body', () => assert.isUndefined(results.bodies[0]));
       it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[1], brickTypePayload));
       it('has correct ‘actual’ response body', () => assert.deepEqual(results.bodies[2], brickTypePayload));
       return it('has correct schema', () => assert.deepEqual(results.schemas[0], brickTypeSchema));
     });
 
-    describe('Attributes defined in resource are referenced from action [POST /bricks]', function() {
+    describe('Attributes defined in resource are referenced from action [POST /bricks]', () => {
       it('has correct request body', () => assert.deepEqual(results.bodies[3], brickTypePayload));
       it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[4], brickTypePayload));
       it('has correct ‘actual’ response body', () => assert.deepEqual(results.bodies[5], brickTypePayload));
       return it('has correct schema', () => assert.deepEqual(results.schemas[1], brickTypeSchema));
     });
 
-    describe('Attributes defined as data structure are referenced from payload [GET /customers]', function() {
+    describe('Attributes defined as data structure are referenced from payload [GET /customers]', () => {
       it('has no request body', () => assert.isUndefined(results.bodies[6]));
       it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[7], userArrayPayload));
       it('has correct ‘actual’ response body', () => assert.deepEqual(results.bodies[8], userArrayPayload));
       return it('has correct schema', () => assert.deepEqual(results.schemas[2], userArraySchema));
     });
 
-    return describe('Attributes defined as data structure are referenced from action [POST /customers]', function() {
+    return describe('Attributes defined as data structure are referenced from action [POST /customers]', () => {
       it('has correct request body', () => assert.deepEqual(results.bodies[9], userPayload));
       it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[10], userPayload));
       it('has correct ‘actual’ response body', () => assert.deepEqual(results.bodies[11], userPayload));
@@ -199,7 +207,7 @@ describe('Regression: Issues #319 and #354', function() {
     });
   });
 
-  return describe('Tested app is inconsistent with the API description', function() {
+  return describe('Tested app is inconsistent with the API description', () => {
     const incorrectBrickTypePayload = clone(brickTypePayload);
     incorrectBrickTypePayload.id = 42;
     delete incorrectBrickTypePayload.name;
@@ -213,7 +221,7 @@ describe('Regression: Issues #319 and #354', function() {
       items: [incorrectUserPayload]
     };
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const app = createServer();
 
       // Attaching endpoint for each testing scenario
@@ -228,9 +236,9 @@ describe('Regression: Issues #319 and #354', function() {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--inline-errors',
         '--details',
-        '--no-color',
+        '--no-color'
       ];
-      return runDreddCommandWithServer(args, app, function(err, info) {
+      return runDreddCommandWithServer(args, app, (err, info) => {
         if (info) { results = parseDreddStdout(info.dredd.stdout); }
         return done(err);
       });
@@ -240,8 +248,8 @@ describe('Regression: Issues #319 and #354', function() {
     it('results in exactly four tests', () => assert.include(results.summary, '4 total'));
     it('results in four failing tests', () => assert.include(results.summary, '4 failing'));
 
-    describe('Attributes defined in resource are referenced from payload [GET /bricks/XYZ42]', function() {
-      it('fails on missing required property and invalid type', function() {
+    describe('Attributes defined in resource are referenced from payload [GET /bricks/XYZ42]', () => {
+      it('fails on missing required property and invalid type', () => {
         assert.include(results.failures[0], 'GET (200) /bricks/XYZ42');
         assert.include(results.failures[1], 'Missing required property: name');
         return assert.include(results.failures[1], 'Invalid type: number');
@@ -252,8 +260,8 @@ describe('Regression: Issues #319 and #354', function() {
       return it('has correct schema', () => assert.deepEqual(results.schemas[0], brickTypeSchema));
     });
 
-    describe('Attributes defined in resource are referenced from action [POST /bricks]', function() {
-      it('fails on missing required property and invalid type', function() {
+    describe('Attributes defined in resource are referenced from action [POST /bricks]', () => {
+      it('fails on missing required property and invalid type', () => {
         assert.include(results.failures[2], 'POST (200) /bricks');
         assert.include(results.failures[3], 'Missing required property: name');
         return assert.include(results.failures[3], 'Invalid type: number');
@@ -264,8 +272,8 @@ describe('Regression: Issues #319 and #354', function() {
       return it('has correct schema', () => assert.deepEqual(results.schemas[1], brickTypeSchema));
     });
 
-    describe('Attributes defined as data structure are referenced from payload [GET /customers]', function() {
-      it('fails on invalid type', function() {
+    describe('Attributes defined as data structure are referenced from payload [GET /customers]', () => {
+      it('fails on invalid type', () => {
         assert.include(results.failures[4], 'GET (200) /customers');
         return assert.include(results.failures[5], 'Invalid type: object');
       });
@@ -275,8 +283,8 @@ describe('Regression: Issues #319 and #354', function() {
       return it('has correct schema', () => assert.deepEqual(results.schemas[2], userArraySchema));
     });
 
-    return describe('Attributes defined as data structure are referenced from action [POST /customers]', function() {
-      it('fails on invalid types', function() {
+    return describe('Attributes defined as data structure are referenced from action [POST /customers]', () => {
+      it('fails on invalid types', () => {
         assert.include(results.failures[6], 'POST (200) /customers');
         assert.include(results.failures[7], 'Invalid type: null');
         return assert.include(results.failures[7], 'Invalid type: string');

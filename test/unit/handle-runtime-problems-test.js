@@ -1,45 +1,51 @@
+/* eslint-disable
+    no-return-assign,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 
-const {assert} = require('chai');
+const { assert } = require('chai');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire');
 const dreddTransactions = require('dredd-transactions');
 
 const logger = require('../../src/logger');
+
 const handleRuntimeProblems = proxyquire('../../src/handle-runtime-problems',
-  {'./logger': logger}
+  { './logger': logger }
 );
 
 
 const prepareData = (apiDescriptionDocument, filename, done) =>
-  dreddTransactions.compile(apiDescriptionDocument, filename, function(err, {annotations}) {
+  dreddTransactions.compile(apiDescriptionDocument, filename, (err, { annotations }) => {
     if (err) { return done(err); }
 
     const data = {};
-    data[filename] = {raw: apiDescriptionDocument, filename, annotations};
+    data[filename] = { raw: apiDescriptionDocument, filename, annotations };
 
     return done(null, data);
   })
 ;
 
 
-describe('handleRuntimeProblems()', function() {
-  let warnOutput = undefined;
-  let errorOutput = undefined;
+describe('handleRuntimeProblems()', () => {
+  let warnOutput;
+  let errorOutput;
 
-  beforeEach( function() {
+  beforeEach(() => {
     warnOutput = '';
     errorOutput = '';
 
     sinon.stub(logger, 'warn').callsFake((...args) => warnOutput += args.join(' ').toLowerCase());
     return sinon.stub(logger, 'error').callsFake((...args) => errorOutput += args.join(' ').toLowerCase());
   });
-  afterEach( function() {
+  afterEach(() => {
     logger.warn.restore();
     return logger.error.restore();
   });
 
-  describe('Prints parser error', function() {
-    let error = undefined;
+  describe('Prints parser error', () => {
+    let error;
 
     const apiDescriptionDocument = `\
 FORMAT: 1A
@@ -49,7 +55,7 @@ FORMAT: 1A
     const filename = 'dummy-filename.apib';
 
     beforeEach(done =>
-      prepareData(apiDescriptionDocument, filename, function(err, data) {
+      prepareData(apiDescriptionDocument, filename, (err, data) => {
         if (err) { return done(err); }
         error = handleRuntimeProblems(data);
         return done();
@@ -59,7 +65,7 @@ FORMAT: 1A
     it('returns error', () => assert.isOk(error));
     it('has no warning output', () => assert.equal(warnOutput, ''));
     it('has error output', () => assert.isOk(errorOutput));
-    return context('the error output', function() {
+    return context('the error output', () => {
       it('mentions it is from parser', () => assert.include(errorOutput, 'parser'));
       it('mentions it is error', () => assert.include(errorOutput, 'error'));
       it('mentions the filename', () => assert.include(errorOutput, filename));
@@ -68,8 +74,8 @@ FORMAT: 1A
     });
   });
 
-  describe('Prints parser warning', function() {
-    let error = undefined;
+  describe('Prints parser warning', () => {
+    let error;
 
     const apiDescriptionDocument = `\
 FORMAT: 1A
@@ -81,7 +87,7 @@ FORMAT: 1A
     const filename = 'dummy-filename.apib';
 
     beforeEach(done =>
-      prepareData(apiDescriptionDocument, filename, function(err, data) {
+      prepareData(apiDescriptionDocument, filename, (err, data) => {
         if (err) { return done(err); }
         error = handleRuntimeProblems(data);
         return done();
@@ -91,7 +97,7 @@ FORMAT: 1A
     it('returns no error', () => assert.notOk(error));
     it('has no error output', () => assert.equal(errorOutput, ''));
     it('has warning output', () => assert.isOk(warnOutput));
-    return context('the warning output', function() {
+    return context('the warning output', () => {
       it('mentions it is from parser', () => assert.include(warnOutput, 'parser'));
       it('mentions it is warning', () => assert.include(warnOutput, 'warn'));
       it('mentions the filename', () => assert.include(warnOutput, filename));
@@ -100,8 +106,8 @@ FORMAT: 1A
     });
   });
 
-  return describe('Prints warning about missing title', function() {
-    let error = undefined;
+  return describe('Prints warning about missing title', () => {
+    let error;
 
     const apiDescriptionDocument = `\
 FORMAT: 1A
@@ -110,7 +116,7 @@ So Long, and Thanks for All the Fish!\
     const filename = 'dummy-filename.apib';
 
     beforeEach(done =>
-      prepareData(apiDescriptionDocument, filename, function(err, data) {
+      prepareData(apiDescriptionDocument, filename, (err, data) => {
         if (err) { return done(err); }
         error = handleRuntimeProblems(data);
         return done();
@@ -120,7 +126,7 @@ So Long, and Thanks for All the Fish!\
     it('returns no error', () => assert.notOk(error));
     it('has no error output', () => assert.equal(errorOutput, ''));
     it('has warning output', () => assert.isOk(warnOutput));
-    return context('the warning output', function() {
+    return context('the warning output', () => {
       it('mentions it is from parser', () => assert.include(warnOutput, 'parser'));
       it('mentions it is warning', () => assert.include(warnOutput, 'warning'));
       it('mentions the filename', () => assert.include(warnOutput, filename));

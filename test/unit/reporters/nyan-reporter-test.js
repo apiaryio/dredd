@@ -1,15 +1,20 @@
-const {assert} = require('chai');
+/* eslint-disable
+    no-return-assign,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire').noCallThru();
 
-const {EventEmitter} = require('events');
+const { EventEmitter } = require('events');
 const loggerStub = require('../../../src/logger');
+
 const NyanCatReporter = proxyquire('../../../src/reporters/nyan-reporter', {
-  './../logger' : loggerStub
+  './../logger': loggerStub
 });
 
-describe('NyanCatReporter', function() {
-
+describe('NyanCatReporter', () => {
   let emitter = {};
   let stats = {};
   let tests = [];
@@ -19,7 +24,7 @@ describe('NyanCatReporter', function() {
 
   after(() => loggerStub.transports.console.silent = false);
 
-  beforeEach(function() {
+  beforeEach(() => {
     emitter = new EventEmitter();
     stats = {
       tests: 0,
@@ -35,22 +40,21 @@ describe('NyanCatReporter', function() {
     return nyanReporter = new NyanCatReporter(emitter, stats, tests);
   });
 
-  describe('when starting', function() {
-
-    beforeEach(function() {
+  describe('when starting', () => {
+    beforeEach(() => {
       sinon.spy(nyanReporter, 'cursorHide');
       sinon.spy(nyanReporter, 'draw');
       return sinon.stub(nyanReporter, 'write');
     });
 
-    afterEach(function() {
+    afterEach(() => {
       nyanReporter.cursorHide.restore();
       nyanReporter.draw.restore();
       return nyanReporter.write.restore();
     });
 
     return it('should hide the cursor and draw the cat', done =>
-      emitter.emit('start', '', function() {
+      emitter.emit('start', '', () => {
         assert.isOk(nyanReporter.cursorHide.calledOnce);
         assert.isOk(nyanReporter.draw.calledOnce);
         return done();
@@ -58,30 +62,28 @@ describe('NyanCatReporter', function() {
     );
   });
 
-  describe('when ending', function() {
-
-    beforeEach(function() {
+  describe('when ending', () => {
+    beforeEach(() => {
       sinon.spy(loggerStub, 'complete');
       sinon.spy(nyanReporter, 'draw');
       return sinon.stub(nyanReporter, 'write');
     });
 
-    afterEach(function() {
+    afterEach(() => {
       loggerStub.complete.restore();
       nyanReporter.draw.restore();
       return nyanReporter.write.restore();
     });
 
     it('should log that testing is complete', done =>
-      emitter.emit('end', function() {
+      emitter.emit('end', () => {
         assert.isOk(loggerStub.complete.calledTwice);
         return done();
       })
     );
 
-    return describe('when there are failures', function() {
-
-      beforeEach(function() {
+    return describe('when there are failures', () => {
+      beforeEach(() => {
         const test = {
           status: 'fail',
           title: 'failing test'
@@ -94,7 +96,7 @@ describe('NyanCatReporter', function() {
       afterEach(() => loggerStub.fail.restore());
 
       return it('should log the failures at the end of testing', done =>
-        emitter.emit('end', function(){
+        emitter.emit('end', () => {
           assert.isOk(loggerStub.fail.calledTwice);
           return done();
         })
@@ -102,11 +104,9 @@ describe('NyanCatReporter', function() {
     });
   });
 
-  return describe('when test finished', function() {
-
-    describe('when test passes', function() {
-
-      beforeEach(function() {
+  return describe('when test finished', () => {
+    describe('when test passes', () => {
+      beforeEach(() => {
         const test = {
           status: 'pass',
           title: 'Passing Test'
@@ -116,7 +116,7 @@ describe('NyanCatReporter', function() {
         return emitter.emit('test pass', test);
       });
 
-      afterEach(function() {
+      afterEach(() => {
         nyanReporter.draw.restore();
         return nyanReporter.write.restore();
       });
@@ -124,8 +124,8 @@ describe('NyanCatReporter', function() {
       return it('should draw the cat', () => assert.isOk(nyanReporter.draw.calledOnce));
     });
 
-    describe('when test is skipped', function() {
-      beforeEach(function() {
+    describe('when test is skipped', () => {
+      beforeEach(() => {
         const test = {
           status: 'skipped',
           title: 'Skipped Test'
@@ -135,7 +135,7 @@ describe('NyanCatReporter', function() {
         return emitter.emit('test skip', test);
       });
 
-      afterEach(function() {
+      afterEach(() => {
         nyanReporter.draw.restore();
         return nyanReporter.write.restore();
       });
@@ -143,9 +143,8 @@ describe('NyanCatReporter', function() {
       return it('should draw the cat', () => assert.isOk(nyanReporter.draw.calledOnce));
     });
 
-    describe('when test fails', function() {
-
-      beforeEach(function() {
+    describe('when test fails', () => {
+      beforeEach(() => {
         const test = {
           status: 'failed',
           title: 'Failed Test'
@@ -155,7 +154,7 @@ describe('NyanCatReporter', function() {
         return emitter.emit('test fail', test);
       });
 
-      afterEach(function() {
+      afterEach(() => {
         nyanReporter.draw.restore();
         return nyanReporter.write.restore();
       });
@@ -163,9 +162,8 @@ describe('NyanCatReporter', function() {
       return it('should draw the cat', () => assert.isOk(nyanReporter.draw.calledOnce));
     });
 
-    return describe('when test errors', function() {
-
-      beforeEach(function() {
+    return describe('when test errors', () => {
+      beforeEach(() => {
         const test = {
           status: 'error',
           title: 'Errored Test'
@@ -175,7 +173,7 @@ describe('NyanCatReporter', function() {
         return emitter.emit('test error', new Error('Error'), test);
       });
 
-      afterEach(function() {
+      afterEach(() => {
         nyanReporter.write.restore();
         return nyanReporter.draw.restore();
       });

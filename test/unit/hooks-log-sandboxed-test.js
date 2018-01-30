@@ -1,4 +1,6 @@
-const {assert} = require('chai');
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
+const { assert } = require('chai');
 const clone = require('clone');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
@@ -10,13 +12,13 @@ const hooksLogSandboxed = proxyquire('../../src/hooks-log-sandboxed', {
 });
 
 
-describe('hooksLogSandboxed()', function() {
+describe('hooksLogSandboxed()', () => {
   const exampleLog = [
-    {content: 'some text'}
+    { content: 'some text' }
   ];
 
-  describe('basic functionality', function() {
-    it('should push message to the passed array and return the new array', function() {
+  describe('basic functionality', () => {
+    it('should push message to the passed array and return the new array', () => {
       const originLogs = [];
       const data = hooksLogSandboxed(originLogs, 'one message');
       assert.isArray(data);
@@ -26,7 +28,7 @@ describe('hooksLogSandboxed()', function() {
       return assert.propertyVal(data[0], 'content', 'one message');
     });
 
-    it('should push message to undefined logs and return new array instead', function() {
+    it('should push message to undefined logs and return new array instead', () => {
       const originLogs = undefined;
       const data = hooksLogSandboxed(originLogs, 'another message');
       assert.isArray(data);
@@ -36,7 +38,7 @@ describe('hooksLogSandboxed()', function() {
       return assert.propertyVal(data[0], 'content', 'another message');
     });
 
-    return it('should append message to an existing logs array', function() {
+    return it('should append message to an existing logs array', () => {
       const originLogs = clone(exampleLog);
       const data = hooksLogSandboxed(originLogs, 'some other idea');
       assert.isArray(data);
@@ -47,10 +49,10 @@ describe('hooksLogSandboxed()', function() {
     });
   });
 
-  return describe('passes arguments further to hooks-log', function() {
+  return describe('passes arguments further to hooks-log', () => {
     beforeEach(() => hooksLogStubSpy.reset());
 
-    return it('should pass two arguments if only two were used', function() {
+    return it('should pass two arguments if only two were used', () => {
       const originLogs = clone(exampleLog);
       const data = hooksLogSandboxed(originLogs, 'writing elsewhere');
       assert.isTrue(hooksLogStubSpy.called);

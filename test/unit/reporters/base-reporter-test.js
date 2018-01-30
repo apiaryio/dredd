@@ -1,22 +1,28 @@
-const {assert} = require('chai');
+/* eslint-disable
+    no-return-assign,
+    no-unused-vars,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire').noCallThru();
 
-const {EventEmitter} = require('events');
+const { EventEmitter } = require('events');
 const loggerStub = require('../../../src/logger');
+
 const BaseReporter = proxyquire('../../../src/reporters/base-reporter', {
-  './../logger' : loggerStub
+  './../logger': loggerStub
 });
 
-describe('BaseReporter', function() {
-
+describe('BaseReporter', () => {
   let stats = {};
   let tests = [];
   let test = {};
   let emitter = {};
   let baseReporter = {};
 
-  beforeEach(function() {
+  beforeEach(() => {
     stats = {
       tests: 0,
       failures: 0,
@@ -32,38 +38,35 @@ describe('BaseReporter', function() {
     return baseReporter = new BaseReporter(emitter, stats, tests);
   });
 
-  describe('when starting', function() {
-
+  describe('when starting', () => {
     before(() =>
       stats =
-        {start: null}
+        { start: null }
     );
 
     return it('should set the start date', done =>
-      emitter.emit('start', '', function() {
+      emitter.emit('start', '', () => {
         assert.isOk(stats.start);
         return done();
       })
     );
   });
 
-  describe('when ending', function() {
-
+  describe('when ending', () => {
     before(() =>
       stats =
-        {end: null}
+        { end: null }
     );
 
     return it('should set the end date', done =>
-      emitter.emit('end', function() {
+      emitter.emit('end', () => {
         assert.isOk(stats.end);
         return done();
       })
     );
   });
 
-  describe('when test starts', function() {
-
+  describe('when test starts', () => {
     before(() =>
       test = {
         status: 'pass',
@@ -71,15 +74,14 @@ describe('BaseReporter', function() {
       }
     );
 
-    return it('should add the test', function() {
+    return it('should add the test', () => {
       emitter.emit('test start', test);
       return assert.isOk(tests.length === 1);
     });
   });
 
-  describe('when test passes', function() {
-
-    beforeEach(function() {
+  describe('when test passes', () => {
+    beforeEach(() => {
       test = {
         status: 'pass',
         title: 'Passing Test'
@@ -93,8 +95,8 @@ describe('BaseReporter', function() {
     return it('should set the end time', () => assert.isOk(tests[0].end));
   });
 
-  describe('when test is skipped', function() {
-    beforeEach(function() {
+  describe('when test is skipped', () => {
+    beforeEach(() => {
       test = {
         status: 'skipped',
         title: 'Skipped Test'
@@ -106,9 +108,8 @@ describe('BaseReporter', function() {
     return it('should increment the counter', () => assert.isOk(stats.skipped === 1));
   });
 
-  describe('when test fails', function() {
-
-    beforeEach(function() {
+  describe('when test fails', () => {
+    beforeEach(() => {
       test = {
         status: 'failed',
         title: 'Failed Test'
@@ -122,9 +123,8 @@ describe('BaseReporter', function() {
     return it('should set the end time', () => assert.isOk(tests[0].end));
   });
 
-  describe('when test errors', function() {
-
-    beforeEach(function() {
+  describe('when test errors', () => {
+    beforeEach(() => {
       test = {
         status: 'error',
         title: 'Errored Test'
@@ -138,9 +138,8 @@ describe('BaseReporter', function() {
     return it('should set the end time', () => assert.isOk(tests[0].end));
   });
 
-  describe('when passing test start is UTC string', function() {
-
-    beforeEach(function() {
+  describe('when passing test start is UTC string', () => {
+    beforeEach(() => {
       test = {
         status: 'pass',
         title: 'Passing Test'
@@ -153,9 +152,8 @@ describe('BaseReporter', function() {
     return it('should set the duration', () => assert.isNotNaN(tests[0].duration));
   });
 
-  describe('when failed test start is UTC string', function() {
-
-    beforeEach(function() {
+  describe('when failed test start is UTC string', () => {
+    beforeEach(() => {
       test = {
         status: 'pass',
         title: 'Failed Test'
@@ -168,9 +166,8 @@ describe('BaseReporter', function() {
     return it('should set the duration', () => assert.isNotNaN(tests[0].duration));
   });
 
-  return describe('when errored test start is UTC string', function() {
-
-    beforeEach(function() {
+  return describe('when errored test start is UTC string', () => {
+    beforeEach(() => {
       test = {
         status: 'pass',
         title: 'Errored Test'

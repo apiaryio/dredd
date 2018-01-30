@@ -1,4 +1,18 @@
-const {assert} = require('chai');
+/* eslint-disable
+    block-scoped-var,
+    guard-for-in,
+    no-cond-assign,
+    no-loop-func,
+    no-return-assign,
+    no-shadow,
+    no-unused-vars,
+    no-var,
+    one-var,
+    vars-on-top,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 const sinon = require('sinon');
 const express = require('express');
 const clone = require('clone');
@@ -28,14 +42,14 @@ const Dredd = proxyquire('../../src/dredd', {
   './logger': loggerStub
 });
 
-const execCommand = function(options = {}, cb) {
+const execCommand = function (options = {}, cb) {
   stdout = '';
   stderr = '';
   exitStatus = null;
   let finished = false;
   if (options.server == null) { options.server = `http://127.0.0.1:${PORT}`; }
   if (options.level == null) { options.level = 'info'; }
-  new Dredd(options).run(function(error, stats = {}) {
+  new Dredd(options).run((error, stats = {}) => {
     if (!finished) {
       finished = true;
       if (error != null ? error.message : undefined) {
@@ -48,16 +62,16 @@ const execCommand = function(options = {}, cb) {
 };
 
 
-describe('Dredd class Integration', function() {
+describe('Dredd class Integration', () => {
   const dreddCommand = null;
   const custom = {};
 
-  before(function() {
+  before(() => {
     for (var method of ['warn', 'error']) { (method => sinon.stub(loggerStub, method).callsFake(chunk => stderr += `\n${method}: ${chunk}`))(method); }
     for (method of ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual']) { (method => sinon.stub(loggerStub, method).callsFake(chunk => stdout += `\n${method}: ${chunk}`))(method); }
   });
 
-  after(function() {
+  after(() => {
     for (var method of ['warn', 'error']) {
       loggerStub[method].restore();
     }
@@ -67,19 +81,18 @@ describe('Dredd class Integration', function() {
   });
 
 
-  describe("when creating Dredd instance with existing API description document and responding server", function() {
-    describe("when the server is responding as specified in the API description", function() {
-
-      before(function(done) {
+  describe('when creating Dredd instance with existing API description document and responding server', () => {
+    describe('when the server is responding as specified in the API description', () => {
+      before((done) => {
         const cmd = {
           options: {
-            path: "./test/fixtures/single-get.apib"
+            path: './test/fixtures/single-get.apib'
           }
         };
 
         const app = express();
 
-        app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
         var server = app.listen(PORT, () =>
           execCommand(cmd, () => server.close())
@@ -91,17 +104,17 @@ describe('Dredd class Integration', function() {
       return it('exit status should be 0', () => assert.equal(exitStatus, 0));
     });
 
-    return describe("when the server is sending different response", function() {
-      before(function(done) {
+    return describe('when the server is sending different response', () => {
+      before((done) => {
         const cmd = {
           options: {
-            path: ["./test/fixtures/single-get.apib"]
+            path: ['./test/fixtures/single-get.apib']
           }
         };
 
         const app = express();
 
-        app.get('/machines', (req, res) => res.status(201).json([{kind: 'bulldozer', imatriculation: 'willy'}]));
+        app.get('/machines', (req, res) => res.status(201).json([{ kind: 'bulldozer', imatriculation: 'willy' }]));
 
         var server = app.listen(PORT, () =>
           execCommand(cmd, () => server.close())
@@ -115,7 +128,7 @@ describe('Dredd class Integration', function() {
   });
 
 
-  describe("when using reporter -r apiary with 'verbose' logging with custom apiaryApiKey and apiaryApiName", function() {
+  describe("when using reporter -r apiary with 'verbose' logging with custom apiaryApiKey and apiaryApiName", () => {
     let server = null;
     let server2 = null;
     let receivedRequest = null;
@@ -124,11 +137,11 @@ describe('Dredd class Integration', function() {
     let receivedHeadersRuns = null;
     exitStatus = null;
 
-    before(function(done) {
+    before((done) => {
       const cmd = {
         options: {
-          path: ["./test/fixtures/single-get.apib"],
-          reporter: ["apiary"],
+          path: ['./test/fixtures/single-get.apib'],
+          reporter: ['apiary'],
           level: 'verbose'
         },
         custom: {
@@ -144,10 +157,11 @@ describe('Dredd class Integration', function() {
       const apiary = express();
       const app = express();
 
-      apiary.use(bodyParser.json({size:'5mb'}));
+      apiary.use(bodyParser.json({ size: '5mb' }));
 
-      apiary.post('/apis/*', function(req, res) {
-        let key, val;
+      apiary.post('/apis/*', (req, res) => {
+        let key,
+          val;
         if (req.body && (req.url.indexOf('/tests/steps') > -1)) {
           if (receivedRequest == null) { receivedRequest = clone(req.body); }
           for (key in req.headers) { val = req.headers[key]; receivedHeaders[key.toLowerCase()] = val; }
@@ -165,7 +179,7 @@ describe('Dredd class Integration', function() {
 
       apiary.all('*', (req, res) => res.json({}));
 
-      app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+      app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
       return server = app.listen(PORT, () =>
         server2 = apiary.listen((PORT + 1), () =>
@@ -180,19 +194,19 @@ describe('Dredd class Integration', function() {
 
     it('should not print warning about missing Apiary API settings', () => assert.notInclude(stderr, 'Apiary API Key or API Project Subdomain were not provided.'));
 
-    it('should contain Authentication header thanks to apiaryApiKey and apiaryApiName configuration', function() {
+    it('should contain Authentication header thanks to apiaryApiKey and apiaryApiName configuration', () => {
       assert.propertyVal(receivedHeaders, 'authentication', 'Token the-key');
       return assert.propertyVal(receivedHeadersRuns, 'authentication', 'Token the-key');
     });
 
-    it('should send the test-run as a non-public one', function() {
+    it('should send the test-run as a non-public one', () => {
       assert.isObject(receivedRequestTestRuns);
       return assert.propertyVal(receivedRequestTestRuns, 'public', false);
     });
 
     it('should print using the new reporter', () => assert.include(stdout, 'http://url.me/test/run/1234_id'));
 
-    return it('should send results from Gavel', function() {
+    return it('should send results from Gavel', () => {
       assert.isObject(receivedRequest);
       assert.nestedProperty(receivedRequest, 'resultData.request');
       assert.nestedProperty(receivedRequest, 'resultData.realResponse');
@@ -206,25 +220,24 @@ describe('Dredd class Integration', function() {
   });
 
 
-  describe("when called with arguments", function() {
-
-    describe('--path argument is a string', function() {
-      before(function(done) {
+  describe('when called with arguments', () => {
+    describe('--path argument is a string', () => {
+      before((done) => {
         const cmd = {
           options: {
-            path: ["./test/fixtures/single-get.apib", './test/fixtures/single-get.apib']
+            path: ['./test/fixtures/single-get.apib', './test/fixtures/single-get.apib']
           }
         };
 
         const app = express();
 
-        app.get('/machines', function(req, res) {
-          const response = [{type: 'bulldozer', name: 'willy'}];
+        app.get('/machines', (req, res) => {
+          const response = [{ type: 'bulldozer', name: 'willy' }];
           return res.json(response);
         });
 
         var server = app.listen(PORT, () =>
-          execCommand(cmd, function(error, stdOut, stdErr, code) {
+          execCommand(cmd, (error, stdOut, stdErr, code) => {
             const err = stdErr;
             const out = stdOut;
             const exitCode = code;
@@ -238,16 +251,16 @@ describe('Dredd class Integration', function() {
       return it('prints out ok', () => assert.equal(exitStatus, 0));
     });
 
-    describe("when using reporter -r apiary and the server isn't running", function() {
+    describe("when using reporter -r apiary and the server isn't running", () => {
       const server = null;
       let server2 = null;
       let receivedRequest = null;
       exitStatus = null;
 
-      before(function(done) {
+      before((done) => {
         const cmd = {
           options: {
-            path: ["./test/fixtures/single-get.apib"],
+            path: ['./test/fixtures/single-get.apib'],
             reporter: ['apiary'],
             level: 'verbose'
           },
@@ -260,9 +273,9 @@ describe('Dredd class Integration', function() {
 
         const apiary = express();
 
-        apiary.use(bodyParser.json({size:'5mb'}));
+        apiary.use(bodyParser.json({ size: '5mb' }));
 
-        apiary.post('/apis/*', function(req, res) {
+        apiary.post('/apis/*', (req, res) => {
           if (req.body && (req.url.indexOf('/tests/steps') > -1)) {
             if (receivedRequest == null) { receivedRequest = clone(req.body); }
           }
@@ -276,7 +289,7 @@ describe('Dredd class Integration', function() {
         apiary.all('*', (req, res) => res.json({}));
 
         server2 = apiary.listen((PORT + 1), () =>
-          execCommand(cmd, () => server2.close(function() {}))
+          execCommand(cmd, () => server2.close(() => {}))
         );
 
         return server2.on('close', done);
@@ -284,29 +297,29 @@ describe('Dredd class Integration', function() {
 
       it('should print using the reporter', () => assert.include(stdout, 'http://url.me/test/run/1234_id'));
 
-      it('should send results from gavel', function() {
+      it('should send results from gavel', () => {
         assert.isObject(receivedRequest);
         assert.nestedProperty(receivedRequest, 'resultData.request');
         assert.nestedProperty(receivedRequest, 'resultData.expectedResponse');
         return assert.nestedProperty(receivedRequest, 'resultData.result.general');
       });
 
-      return it('report should have message about server being down', function() {
-        const message = receivedRequest['resultData']['result']['general'][0]['message'];
+      return it('report should have message about server being down', () => {
+        const message = receivedRequest.resultData.result.general[0].message;
         return assert.include(message, 'connect');
       });
     });
 
-    return describe("when using reporter -r apiary", function() {
+    return describe('when using reporter -r apiary', () => {
       let server = null;
       let server2 = null;
       let receivedRequest = null;
       exitStatus = null;
 
-      before(function(done) {
+      before((done) => {
         const cmd = {
           options: {
-            path: ["./test/fixtures/single-get.apib"],
+            path: ['./test/fixtures/single-get.apib'],
             reporter: ['apiary'],
             level: 'verbose'
           },
@@ -320,9 +333,9 @@ describe('Dredd class Integration', function() {
         const apiary = express();
         const app = express();
 
-        apiary.use(bodyParser.json({size:'5mb'}));
+        apiary.use(bodyParser.json({ size: '5mb' }));
 
-        apiary.post('/apis/*', function(req, res) {
+        apiary.post('/apis/*', (req, res) => {
           if (req.body && (req.url.indexOf('/tests/steps') > -1)) {
             if (receivedRequest == null) { receivedRequest = clone(req.body); }
           }
@@ -335,12 +348,12 @@ describe('Dredd class Integration', function() {
 
         apiary.all('*', (req, res) => res.json({}));
 
-        app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-        server = app.listen(PORT, () => server2 = apiary.listen((PORT + 1), function() {}));
+        server = app.listen(PORT, () => server2 = apiary.listen((PORT + 1), () => {}));
 
         execCommand(cmd, () =>
-          server2.close(() => server.close(function() {}))
+          server2.close(() => server.close(() => {}))
         );
 
         return server.on('close', done);
@@ -352,7 +365,7 @@ describe('Dredd class Integration', function() {
 
       it('should print using the new reporter', () => assert.include(stdout, 'http://url.me/test/run/1234_id'));
 
-      return it('should send results from Gavel', function() {
+      return it('should send results from Gavel', () => {
         assert.isObject(receivedRequest);
         assert.nestedProperty(receivedRequest, 'resultData.request');
         assert.nestedProperty(receivedRequest, 'resultData.realResponse');
@@ -365,7 +378,7 @@ describe('Dredd class Integration', function() {
   });
 
 
-  describe("when API description document should be loaded from 'http(s)://...' url", function() {
+  describe("when API description document should be loaded from 'http(s)://...' url", () => {
     let server = null;
     const loadedFromServer = null;
     let connectedToServer = null;
@@ -393,26 +406,26 @@ describe('Dredd class Integration', function() {
 
     afterEach(() => connectedToServer = null);
 
-    before(function(done) {
+    before((done) => {
       const app = express();
 
-      app.use(function(req, res, next) {
+      app.use((req, res, next) => {
         connectedToServer = true;
         return next();
       });
 
       app.get('/', (req, res) => res.sendStatus(404));
 
-      app.get('/file.apib', function(req, res) {
+      app.get('/file.apib', (req, res) => {
         fileFound = true;
         res.type('text');
         const stream = fs.createReadStream('./test/fixtures/single-get.apib');
         return stream.pipe(res);
       });
 
-      app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+      app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-      app.get('/not-found.apib', function(req, res) {
+      app.get('/not-found.apib', (req, res) => {
         notFound = true;
         return res.status(404).end();
       });
@@ -421,14 +434,14 @@ describe('Dredd class Integration', function() {
     });
 
     after(done =>
-      server.close(function() {
+      server.close(() => {
         const app = null;
         server = null;
         return done();
       })
     );
 
-    describe('and I try to load a file from bad hostname at all', function() {
+    describe('and I try to load a file from bad hostname at all', () => {
       before(done =>
         execCommand(errorCmd, () => done())
       );
@@ -439,14 +452,14 @@ describe('Dredd class Integration', function() {
 
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
-      return it('should print error message to stderr', function() {
+      return it('should print error message to stderr', () => {
         assert.include(stderr, 'Error when loading file from URL');
         assert.include(stderr, 'Is the provided URL correct?');
         return assert.include(stderr, 'connection-error.apib');
       });
     });
 
-    describe('and I try to load a file that does not exist from an existing server', function() {
+    describe('and I try to load a file that does not exist from an existing server', () => {
       before(done =>
         execCommand(wrongCmd, () => done())
       );
@@ -459,14 +472,14 @@ describe('Dredd class Integration', function() {
 
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
-      return it('should print error message to stderr', function() {
+      return it('should print error message to stderr', () => {
         assert.include(stderr, 'Unable to load file from URL');
         assert.include(stderr, 'responded with status code 404');
         return assert.include(stderr, 'not-found.apib');
       });
     });
 
-    return describe('and I try to load a file that actually is there', function() {
+    return describe('and I try to load a file that actually is there', () => {
       before(done =>
         execCommand(goodCmd, () => done())
       );
@@ -480,12 +493,12 @@ describe('Dredd class Integration', function() {
   });
 
   describe('when i use sandbox and hookfiles option', () =>
-    describe('and I run a test', function() {
+    describe('and I run a test', () => {
       let requested = null;
-      before(function(done) {
+      before((done) => {
         const cmd = {
           options: {
-            path: "./test/fixtures/single-get.apib",
+            path: './test/fixtures/single-get.apib',
             sandbox: true,
             hookfiles: './test/fixtures/sandboxed-hook.js'
           }
@@ -493,10 +506,10 @@ describe('Dredd class Integration', function() {
 
         const app = express();
 
-        app.get('/machines', function(req, res) {
+        app.get('/machines', (req, res) => {
           requested = true;
-          return res.json([{type: 'bulldozer', name: 'willy'}]);
-      });
+          return res.json([{ type: 'bulldozer', name: 'willy' }]);
+        });
 
         var server = app.listen(PORT, () =>
           execCommand(cmd, () => server.close())
@@ -516,29 +529,29 @@ describe('Dredd class Integration', function() {
   );
 
   describe('when i use sandbox and hookData option', () =>
-    describe('and I run a test', function() {
+    describe('and I run a test', () => {
       let requested = null;
-      before(function(done) {
+      before((done) => {
         const cmd = {
           hooksData: {
-            "./test/fixtures/single-get.apib": `\
+            './test/fixtures/single-get.apib': `\
 after('Machines > Machines collection > Get Machines', function(transaction){
   transaction['fail'] = 'failed in sandboxed hook from string';
 });\
 `
           },
           options: {
-            path: "./test/fixtures/single-get.apib",
+            path: './test/fixtures/single-get.apib',
             sandbox: true
           }
         };
 
         const app = express();
 
-        app.get('/machines', function(req, res) {
+        app.get('/machines', (req, res) => {
           requested = true;
-          return res.json([{type: 'bulldozer', name: 'willy'}]);
-      });
+          return res.json([{ type: 'bulldozer', name: 'willy' }]);
+        });
 
         var server = app.listen(PORT, () =>
           execCommand(cmd, () => server.close())
@@ -558,12 +571,12 @@ after('Machines > Machines collection > Get Machines', function(transaction){
   );
 
   describe('when use old buggy (#168) path with leading whitespace in hooks', () =>
-    describe('and I run a test', function() {
+    describe('and I run a test', () => {
       let requested = null;
-      before(function(done) {
+      before((done) => {
         const cmd = {
           hooksData: {
-            "hooks.js": `\
+            'hooks.js': `\
 before(' > Machines collection > Get Machines', function(transaction){
   throw(new Error('Whitespace transaction name'));
 });
@@ -575,17 +588,17 @@ before('Machines collection > Get Machines', function(transaction){
 `
           },
           options: {
-            path: "./test/fixtures/single-get-nogroup.apib",
+            path: './test/fixtures/single-get-nogroup.apib',
             sandbox: true
           }
         };
 
         const app = express();
 
-        app.get('/machines', function(req, res) {
+        app.get('/machines', (req, res) => {
           requested = true;
-          return res.json([{type: 'bulldozer', name: 'willy'}]);
-      });
+          return res.json([{ type: 'bulldozer', name: 'willy' }]);
+        });
 
         var server = app.listen(PORT, () =>
           execCommand(cmd, () => server.close())
@@ -600,9 +613,9 @@ before('Machines collection > Get Machines', function(transaction){
     })
   );
 
-  describe('when Swagger document has multiple responses', function() {
+  describe('when Swagger document has multiple responses', () => {
     const reTransaction = /(\w+): (\w+) \((\d+)\) \/honey/g;
-    let actual = undefined;
+    let actual;
 
     before(done =>
       execCommand({
@@ -610,14 +623,14 @@ before('Machines collection > Get Machines', function(transaction){
           path: './test/fixtures/multiple-responses.yaml'
         }
       }
-      , function(err) {
+        , (err) => {
         let groups;
         const matches = [];
         while ((groups = reTransaction.exec(stdout))) { matches.push(groups); }
-        actual = matches.map(function(match) {
-          const keyMap = {'0': 'name', '1': 'action', '2': 'method', '3': 'statusCode'};
-          return match.reduce((result, element, i) => Object.assign(result, {[keyMap[i]]: element})
-          , {});
+        actual = matches.map((match) => {
+          const keyMap = { 0: 'name', 1: 'action', 2: 'method', 3: 'statusCode' };
+          return match.reduce((result, element, i) => Object.assign(result, { [keyMap[i]]: element })
+            , {});
         });
         return done(err);
       })
@@ -626,20 +639,20 @@ before('Machines collection > Get Machines', function(transaction){
     it('recognizes all 3 transactions', () => assert.equal(actual.length, 3));
 
     return [
-      {action: 'skip', statusCode: '400'},
-      {action: 'skip', statusCode: '500'},
-      {action: 'fail', statusCode: '200'}
+      { action: 'skip', statusCode: '400' },
+      { action: 'skip', statusCode: '500' },
+      { action: 'fail', statusCode: '200' }
     ].forEach((expected, i) =>
-      context(`the transaction #${i + 1}`, function() {
+      context(`the transaction #${i + 1}`, () => {
         it(`has status code ${expected.statusCode}`, () => assert.equal(expected.statusCode, actual[i].statusCode));
         return it(`is ${expected.action === 'skip' ? '' : 'not '}skipped by default`, () => assert.equal(expected.action, actual[i].action));
       })
     );
   });
 
-  describe('when Swagger document has multiple responses and hooks unskip some of them', function() {
+  describe('when Swagger document has multiple responses and hooks unskip some of them', () => {
     const reTransaction = /(\w+): (\w+) \((\d+)\) \/honey/g;
-    let actual = undefined;
+    let actual;
 
     before(done =>
       execCommand({
@@ -648,14 +661,14 @@ before('Machines collection > Get Machines', function(transaction){
           hookfiles: './test/fixtures/swagger-multiple-responses.js'
         }
       }
-      , function(err) {
+        , (err) => {
         let groups;
         const matches = [];
         while ((groups = reTransaction.exec(stdout))) { matches.push(groups); }
-        actual = matches.map(function(match) {
-          const keyMap = {'0': 'name', '1': 'action', '2': 'method', '3': 'statusCode'};
-          return match.reduce((result, element, i) => Object.assign(result, {[keyMap[i]]: element})
-          , {});
+        actual = matches.map((match) => {
+          const keyMap = { 0: 'name', 1: 'action', 2: 'method', 3: 'statusCode' };
+          return match.reduce((result, element, i) => Object.assign(result, { [keyMap[i]]: element })
+            , {});
         });
         return done(err);
       })
@@ -664,11 +677,11 @@ before('Machines collection > Get Machines', function(transaction){
     it('recognizes all 3 transactions', () => assert.equal(actual.length, 3));
 
     return [
-      {action: 'skip', statusCode: '400'},
-      {action: 'fail', statusCode: '200'},
-      {action: 'fail', statusCode: '500'} // Unskipped in hooks
+      { action: 'skip', statusCode: '400' },
+      { action: 'fail', statusCode: '200' },
+      { action: 'fail', statusCode: '500' } // Unskipped in hooks
     ].forEach((expected, i) =>
-      context(`the transaction #${i + 1}`, function() {
+      context(`the transaction #${i + 1}`, () => {
         it(`has status code ${expected.statusCode}`, () => assert.equal(expected.statusCode, actual[i].statusCode));
 
         const defaultMessage = `is ${expected.action === 'skip' ? '' : 'not '}skipped by default`;
@@ -678,9 +691,9 @@ before('Machines collection > Get Machines', function(transaction){
     );
   });
 
-  return describe('when using Swagger document with hooks', function() {
+  return describe('when using Swagger document with hooks', () => {
     const reTransactionName = /hook: (.+)/g;
-    let matches = undefined;
+    let matches;
 
     beforeEach(done =>
       execCommand({
@@ -689,7 +702,7 @@ before('Machines collection > Get Machines', function(transaction){
           hookfiles: './test/fixtures/swagger-transaction-names.js'
         }
       }
-      , function(err) {
+        , (err) => {
         let groups;
         matches = [];
         while ((groups = reTransactionName.exec(stdout))) { matches.push(groups[1]); }

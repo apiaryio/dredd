@@ -1,18 +1,24 @@
-const {assert} = require('chai');
+/* eslint-disable
+    no-return-assign,
+    no-unused-vars,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 const sinon = require('sinon');
 
 const loggerStub = require('../../src/logger');
 const prettifyResponse = require('../../src/prettify-response');
 
-describe('prettifyResponse(response)', function() {
-  describe('with a real object without any circular references', function() {
-    it('should print JSON.stringified application/json header based response', function() {
+describe('prettifyResponse(response)', () => {
+  describe('with a real object without any circular references', () => {
+    it('should print JSON.stringified application/json header based response', () => {
       const output = prettifyResponse({
         headers: {
           'content-type': 'application/json'
         },
         body:
-          {'a':'b'}});
+          { a: 'b' } });
 
       const expectedOutput = `\
 headers: \n    content-type: application/json\n
@@ -24,7 +30,7 @@ body: \n{
     });
 
 
-    return it('should print indented XML when content-type is text/html', function() {
+    return it('should print indented XML when content-type is text/html', () => {
       const output = prettifyResponse({
         headers: {
           'content-type': 'text/html'
@@ -42,13 +48,13 @@ body: \n<div>before paragraph
     });
   });
 
-  return describe('with an object in body that references itself (circular)', function() {
+  return describe('with an object in body that references itself (circular)', () => {
     let output = null;
 
-    before(function() {
+    before(() => {
       sinon.stub(loggerStub, 'debug');
 
-      const body = {'a':'b'};
+      const body = { a: 'b' };
       body.c = body;
 
       return output = prettifyResponse({
@@ -61,7 +67,7 @@ body: \n<div>before paragraph
 
     after(() => sinon.stub(loggerStub.debug.restore()));
 
-    return it('should\'ve printed into debug', function() {
+    return it('should\'ve printed into debug', () => {
       assert.isOk(loggerStub.debug.called);
       assert.isObject(loggerStub.debug.firstCall);
       assert.isArray(loggerStub.debug.firstCall.args);

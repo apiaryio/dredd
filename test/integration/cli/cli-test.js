@@ -1,27 +1,34 @@
+/* eslint-disable
+    no-console,
+    no-return-assign,
+    no-unused-vars,
+    one-var,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 const net = require('net');
 const path = require('path');
 
-const {assert} = require('chai');
-const {exec} = require('child_process');
+const { assert } = require('chai');
+const { exec } = require('child_process');
 
-const {isProcessRunning, killAll, createServer, runDreddCommandWithServer, runDreddCommand, DEFAULT_SERVER_PORT} = require('../helpers');
+const { isProcessRunning, killAll, createServer, runDreddCommandWithServer, runDreddCommand, DEFAULT_SERVER_PORT } = require('../helpers');
 
 const COFFEE_BIN = 'node_modules/.bin/coffee';
 const DEFAULT_HOOK_HANDLER_PORT = 61321;
 
 
-describe('CLI', function() {
+describe('CLI', () => {
+  describe('Arguments with existing API description document and responding server', () => {
+    describe('when executing the command and the server is responding as specified in the API description', () => {
+      let runtimeInfo;
 
-  describe("Arguments with existing API description document and responding server", function() {
-    describe("when executing the command and the server is responding as specified in the API description", function() {
-      let runtimeInfo = undefined;
-
-      before(function(done) {
+      before((done) => {
         const app = createServer();
-        app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
         const args = ['./test/fixtures/single-get.apib', `http://127.0.0.1:${DEFAULT_SERVER_PORT}`];
-        return runDreddCommandWithServer(args, app, function(err, info) {
+        return runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           return done(err);
         });
@@ -30,15 +37,15 @@ describe('CLI', function() {
       return it('exit status should be 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
-    describe("when executing the command and the server is responding as specified in the API description, endpoint with path", function() {
-      let runtimeInfo = undefined;
+    describe('when executing the command and the server is responding as specified in the API description, endpoint with path', () => {
+      let runtimeInfo;
 
-      before(function(done) {
+      before((done) => {
         const app = createServer();
-        app.get('/v2/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+        app.get('/v2/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
         const args = ['./test/fixtures/single-get.apib', `http://127.0.0.1:${DEFAULT_SERVER_PORT}/v2/`];
-        return runDreddCommandWithServer(args, app, function(err, info) {
+        return runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           return done(err);
         });
@@ -47,15 +54,15 @@ describe('CLI', function() {
       return it('exit status should be 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
-    return describe("when executing the command and the server is sending different response", function() {
-      let runtimeInfo = undefined;
+    return describe('when executing the command and the server is sending different response', () => {
+      let runtimeInfo;
 
-      before(function(done) {
+      before((done) => {
         const app = createServer();
-        app.get('/machines', (req, res) => res.status(201).json([{kind: 'bulldozer', imatriculation: 'willy'}]));
+        app.get('/machines', (req, res) => res.status(201).json([{ kind: 'bulldozer', imatriculation: 'willy' }]));
 
         const args = ['./test/fixtures/single-get.apib', `http://127.0.0.1:${DEFAULT_SERVER_PORT}`];
-        return runDreddCommandWithServer(args, app, function(err, info) {
+        return runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           return done(err);
         });
@@ -65,15 +72,14 @@ describe('CLI', function() {
     });
   });
 
-  describe("when called with arguments", function() {
+  describe('when called with arguments', () => {
+    describe('when using language hook handler and spawning the server', () => {
+      describe("and handler file doesn't exist", () => {
+        let runtimeInfo;
 
-    describe('when using language hook handler and spawning the server', function() {
-      describe("and handler file doesn't exist", function() {
-        let runtimeInfo = undefined;
-
-        before(function(done) {
+        before((done) => {
           const app = createServer();
-          app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+          app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
           const args = [
             './test/fixtures/single-get.apib',
@@ -82,7 +88,7 @@ describe('CLI', function() {
             '--language=foo/bar/hook-handler',
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ];
-          return runDreddCommandWithServer(args, app, function(err, info) {
+          return runDreddCommandWithServer(args, app, (err, info) => {
             runtimeInfo = info;
             return done(err);
           });
@@ -92,7 +98,7 @@ describe('CLI', function() {
 
         it('should return with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
 
-        it('should not return message containing exited or killed', function() {
+        it('should not return message containing exited or killed', () => {
           assert.notInclude(runtimeInfo.dredd.stderr, 'exited');
           return assert.notInclude(runtimeInfo.dredd.stderr, 'killed');
         });
@@ -100,21 +106,21 @@ describe('CLI', function() {
         it('should not return message announcing the fact', () => assert.include(runtimeInfo.dredd.stderr, 'not found'));
 
         it('should term or kill the server', done =>
-          isProcessRunning('endless-ignore-term', function(err, isRunning) {
+          isProcessRunning('endless-ignore-term', (err, isRunning) => {
             if (!err) { assert.isFalse(isRunning); }
             return done(err);
           })
         );
 
         return it('should not execute any transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, {}));
-    });
+      });
 
-      describe('and handler crashes before execution', function() {
-        let runtimeInfo = undefined;
+      describe('and handler crashes before execution', () => {
+        let runtimeInfo;
 
-        before(function(done) {
+        before((done) => {
           const app = createServer();
-          app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+          app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
           const args = [
             './test/fixtures/single-get.apib',
@@ -123,7 +129,7 @@ describe('CLI', function() {
             `--language=${COFFEE_BIN} ./test/fixtures/scripts/exit-3.coffee`,
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ];
-          return runDreddCommandWithServer(args, app, function(err, info) {
+          return runDreddCommandWithServer(args, app, (err, info) => {
             runtimeInfo = info;
             return done(err);
           });
@@ -136,21 +142,21 @@ describe('CLI', function() {
         it('should return message announcing the fact', () => assert.include(runtimeInfo.dredd.stderr, 'exited'));
 
         it('should term or kill the server', done =>
-          isProcessRunning('endless-ignore-term', function(err, isRunning) {
+          isProcessRunning('endless-ignore-term', (err, isRunning) => {
             if (!err) { assert.isFalse(isRunning); }
             return done(err);
           })
         );
 
         return it('should not execute any transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, {}));
-    });
+      });
 
-      describe("and handler is killed before execution", function() {
-        let runtimeInfo = undefined;
+      describe('and handler is killed before execution', () => {
+        let runtimeInfo;
 
-        before(function(done) {
+        before((done) => {
           const app = createServer();
-          app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+          app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
           const args = [
             './test/fixtures/single-get.apib',
@@ -160,7 +166,7 @@ describe('CLI', function() {
             `--language=${COFFEE_BIN} ./test/fixtures/scripts/kill-self.coffee`,
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ];
-          return runDreddCommandWithServer(args, app, function(err, info) {
+          return runDreddCommandWithServer(args, app, (err, info) => {
             runtimeInfo = info;
             return done(err);
           });
@@ -170,42 +176,41 @@ describe('CLI', function() {
 
         it('should return with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
 
-        it('should return message announcing the fact', function() {
+        it('should return message announcing the fact', () => {
           if (process.platform === 'win32') {
             // On Windows there's no way to detect a process was killed
             return assert.include(runtimeInfo.dredd.stderr, 'exited');
-          } else {
-            return assert.include(runtimeInfo.dredd.stderr, 'killed');
           }
+          return assert.include(runtimeInfo.dredd.stderr, 'killed');
         });
 
         it('should term or kill the server', done =>
-          isProcessRunning('endless-ignore-term', function(err, isRunning) {
+          isProcessRunning('endless-ignore-term', (err, isRunning) => {
             if (!err) { assert.isFalse(isRunning); }
             return done(err);
           })
         );
 
         return it('should not execute any transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, {}));
-    });
+      });
 
-      describe("and handler is killed during execution", function() {
-        let runtimeInfo = undefined;
+      describe('and handler is killed during execution', () => {
+        let runtimeInfo;
 
-        before(function(done) {
+        before((done) => {
           const app = createServer();
-          app.get('/machines', function(req, res) {
+          app.get('/machines', (req, res) => {
             // path.posix|win32.normalize and path.join do not do the job in this case,
             // hence this ingenious hack
             const normalizedPath = path.normalize('test/fixtures/hooks.js').replace(/\\/g, '\\\\');
-            return killAll(`endless-ignore-term.+[^=]${normalizedPath}`, function(err) {
+            return killAll(`endless-ignore-term.+[^=]${normalizedPath}`, (err) => {
               if (err) { done(err); }
-              return res.json([{type: 'bulldozer', name: 'willy'}]);
+              return res.json([{ type: 'bulldozer', name: 'willy' }]);
             });
           });
 
           // TCP server echoing transactions back
-          const hookHandler = net.createServer(function(socket) {
+          const hookHandler = net.createServer((socket) => {
             socket.on('data', data => socket.write(data));
             return socket.on('error', err => console.error(err));
           });
@@ -219,7 +224,7 @@ describe('CLI', function() {
             '--hookfiles=test/fixtures/hooks.js'
           ];
           return hookHandler.listen(DEFAULT_HOOK_HANDLER_PORT, () =>
-            runDreddCommandWithServer(args, app, function(err, info) {
+            runDreddCommandWithServer(args, app, (err, info) => {
               hookHandler.close();
               runtimeInfo = info;
               return done(err);
@@ -231,35 +236,34 @@ describe('CLI', function() {
 
         it('should return with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
 
-        it('should return message announcing the fact', function() {
+        it('should return message announcing the fact', () => {
           if (process.platform === 'win32') {
             // On Windows there's no way to detect a process was killed
             return assert.include(runtimeInfo.dredd.stderr, 'exited');
-          } else {
-            return assert.include(runtimeInfo.dredd.stderr, 'killed');
           }
+          return assert.include(runtimeInfo.dredd.stderr, 'killed');
         });
 
         it('should term or kill the server', done =>
-          isProcessRunning('endless-ignore-term', function(err, isRunning) {
+          isProcessRunning('endless-ignore-term', (err, isRunning) => {
             if (!err) { assert.isFalse(isRunning); }
             return done(err);
           })
         );
 
-        return it('should execute the transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, {'/machines': 1}));
-    });
+        return it('should execute the transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
+      });
 
-      return describe("and handler didn't quit but all Dredd tests were OK", function() {
-        let runtimeInfo = undefined;
+      return describe("and handler didn't quit but all Dredd tests were OK", () => {
+        let runtimeInfo;
 
-        before(function(done) {
+        before((done) => {
           const app = createServer();
 
-          app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+          app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
           // TCP server echoing transactions back
-          const hookHandler = net.createServer(function(socket) {
+          const hookHandler = net.createServer((socket) => {
             socket.on('data', data => socket.write(data));
             return socket.on('error', err => console.error(err));
           });
@@ -273,7 +277,7 @@ describe('CLI', function() {
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ];
           return hookHandler.listen(DEFAULT_HOOK_HANDLER_PORT, () =>
-            runDreddCommandWithServer(args, app, function(err, info) {
+            runDreddCommandWithServer(args, app, (err, info) => {
               hookHandler.close();
               runtimeInfo = info;
               return done(err);
@@ -285,28 +289,28 @@ describe('CLI', function() {
 
         it('should return with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
 
-        it('should not return any killed or exited message', function() {
+        it('should not return any killed or exited message', () => {
           assert.notInclude(runtimeInfo.dredd.stderr, 'killed');
           return assert.notInclude(runtimeInfo.dredd.stderr, 'exited');
         });
 
         it('should kill both the handler and the server', done =>
-          isProcessRunning('endless-ignore-term', function(err, isRunning) {
+          isProcessRunning('endless-ignore-term', (err, isRunning) => {
             if (!err) { assert.isFalse(isRunning); }
             return done(err);
           })
         );
 
-        return it('should execute some transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, {'/machines': 1}));
+        return it('should execute some transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
+      });
     });
-  });
 
-    describe("when adding additional headers with -h", function() {
-      let runtimeInfo = undefined;
+    describe('when adding additional headers with -h', () => {
+      let runtimeInfo;
 
-      before(function(done) {
+      before((done) => {
         const app = createServer();
-        app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
         const args = [
           './test/fixtures/single-get.apib',
@@ -314,7 +318,7 @@ describe('CLI', function() {
           '-h',
           'Accept:application/json'
         ];
-        return runDreddCommandWithServer(args, app, function(err, info) {
+        return runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           return done(err);
         });
@@ -324,12 +328,12 @@ describe('CLI', function() {
     });
 
 
-    describe("when adding basic auth credentials with -u", function() {
-      let runtimeInfo = undefined;
+    describe('when adding basic auth credentials with -u', () => {
+      let runtimeInfo;
 
-      before(function(done) {
+      before((done) => {
         const app = createServer();
-        app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
         const args = [
           './test/fixtures/single-get.apib',
@@ -337,7 +341,7 @@ describe('CLI', function() {
           '-u',
           'username:password'
         ];
-        return runDreddCommandWithServer(args, app, function(err, info) {
+        return runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           return done(err);
         });
@@ -349,69 +353,70 @@ describe('CLI', function() {
     });
 
 
-    describe("when sorting requests with -s", function() {
-      let runtimeInfo = undefined;
+    describe('when sorting requests with -s', () => {
+      let runtimeInfo;
 
-      before(function(done) {
+      before((done) => {
         const app = createServer();
-        app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
         const args = [
           './test/fixtures/apiary.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '-s'
         ];
-        return runDreddCommandWithServer(args, app, function(err, info) {
+        return runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           return done(err);
         });
       });
 
-      return it('should perform the POST, GET, PUT, DELETE in order', function() {
-        let middle, middle1;
+      return it('should perform the POST, GET, PUT, DELETE in order', () => {
+        let middle,
+          middle1;
         return assert.isOk(runtimeInfo.dredd.stdout.indexOf('POST') < (middle = runtimeInfo.dredd.stdout.indexOf('GET')) && middle < (middle1 = runtimeInfo.dredd.stdout.indexOf('PUT')) && middle1 < runtimeInfo.dredd.stdout.indexOf('DELETE'));
       });
     });
 
-    describe('when displaying errors inline with -e', function() {
-      let runtimeInfo = undefined;
+    describe('when displaying errors inline with -e', () => {
+      let runtimeInfo;
 
-      before(function(done) {
+      before((done) => {
         const app = createServer();
-        app.get('/machines', (req, res) => res.status(201).json([{kind: 'bulldozer', imatriculation: 'willy'}]));
+        app.get('/machines', (req, res) => res.status(201).json([{ kind: 'bulldozer', imatriculation: 'willy' }]));
 
         const args = [
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '-e'
         ];
-        return runDreddCommandWithServer(args, app, function(err, info) {
+        return runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           return done(err);
         });
       });
 
-      return it('should display errors inline', function() {
+      return it('should display errors inline', () => {
         // when displayed inline, a single fail request only creates two "fail:" messages,
         // as opposed to the usual three
-        const count = runtimeInfo.dredd.stdout.split("fail").length - 2; //says fail in the epilogue
+        const count = runtimeInfo.dredd.stdout.split('fail').length - 2; // says fail in the epilogue
         return assert.equal(count, 2);
       });
     });
 
-    describe('when showing details for all requests with -d', function() {
-      let runtimeInfo = undefined;
+    describe('when showing details for all requests with -d', () => {
+      let runtimeInfo;
 
-      before(function(done) {
+      before((done) => {
         const app = createServer();
-        app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
         const args = [
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '-d'
         ];
-        return runDreddCommandWithServer(args, app, function(err, info) {
+        return runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           return done(err);
         });
@@ -423,14 +428,13 @@ describe('CLI', function() {
       );
     });
 
-    describe("when filtering request methods with -m", function() {
+    describe('when filtering request methods with -m', () => {
+      describe('when blocking a request', () => {
+        let runtimeInfo;
 
-      describe('when blocking a request', function() {
-        let runtimeInfo = undefined;
-
-        before(function(done) {
+        before((done) => {
           const app = createServer();
-          app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+          app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
           const args = [
             './test/fixtures/single-get.apib',
@@ -438,21 +442,21 @@ describe('CLI', function() {
             '-m',
             'POST'
           ];
-          return runDreddCommandWithServer(args, app, function(err, info) {
+          return runDreddCommandWithServer(args, app, (err, info) => {
             runtimeInfo = info;
             return done(err);
           });
         });
 
         return it('should not send the request request', () => assert.deepEqual(runtimeInfo.server.requestCounts, {}));
-    });
+      });
 
-      return describe('when not blocking a request', function() {
-        let runtimeInfo = undefined;
+      return describe('when not blocking a request', () => {
+        let runtimeInfo;
 
-        before(function(done) {
+        before((done) => {
           const app = createServer();
-          app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+          app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
           const args = [
             './test/fixtures/single-get.apib',
@@ -460,24 +464,24 @@ describe('CLI', function() {
             '-m',
             'GET'
           ];
-          return runDreddCommandWithServer(args, app, function(err, info) {
+          return runDreddCommandWithServer(args, app, (err, info) => {
             runtimeInfo = info;
             return done(err);
           });
         });
 
-        return it('should allow the request to go through', () => assert.deepEqual(runtimeInfo.server.requestCounts, {'/machines': 1}));
+        return it('should allow the request to go through', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
+      });
     });
-  });
 
-    describe("when filtering transaction to particular name with -x or --only", function() {
-      let runtimeInfo = undefined;
+    describe('when filtering transaction to particular name with -x or --only', () => {
+      let runtimeInfo;
 
-      before(function(done) {
+      before((done) => {
         const app = createServer();
-        app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-        app.get('/message', (req, res) => res.type('text/plain').send("Hello World!\n"));
+        app.get('/message', (req, res) => res.type('text/plain').send('Hello World!\n'));
 
         const args = [
           './test/fixtures/single-get.apib',
@@ -486,7 +490,7 @@ describe('CLI', function() {
           '--only=Message API > /message > GET',
           '--no-color'
         ];
-        return runDreddCommandWithServer(args, app, function(err, info) {
+        return runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           return done(err);
         });
@@ -494,24 +498,24 @@ describe('CLI', function() {
 
       it('should notify skipping to the stdout', () => assert.include(runtimeInfo.dredd.stdout, 'skip: GET (200) /machines'));
 
-      it('should hit the only transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, {'/message': 1}));
+      it('should hit the only transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/message': 1 }));
 
       return it('exit status should be 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
-    describe('when suppressing color with --no-color', function() {
-      let runtimeInfo = undefined;
+    describe('when suppressing color with --no-color', () => {
+      let runtimeInfo;
 
-      before(function(done) {
+      before((done) => {
         const app = createServer();
-        app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
         const args = [
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--no-color'
         ];
-        return runDreddCommandWithServer(args, app, function(err, info) {
+        return runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           return done(err);
         });
@@ -524,19 +528,19 @@ describe('CLI', function() {
       );
     });
 
-    describe('when suppressing color with --color=false', function() {
-      let runtimeInfo = undefined;
+    describe('when suppressing color with --color=false', () => {
+      let runtimeInfo;
 
-      before(function(done) {
+      before((done) => {
         const app = createServer();
-        app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
         const args = [
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--color=false'
         ];
-        return runDreddCommandWithServer(args, app, function(err, info) {
+        return runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           return done(err);
         });
@@ -549,19 +553,19 @@ describe('CLI', function() {
       );
     });
 
-    describe('when setting the log output level with -l', function() {
-      let runtimeInfo = undefined;
+    describe('when setting the log output level with -l', () => {
+      let runtimeInfo;
 
-      before(function(done) {
+      before((done) => {
         const app = createServer();
-        app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
         const args = [
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '-l=error'
         ];
-        return runDreddCommandWithServer(args, app, function(err, info) {
+        return runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           return done(err);
         });
@@ -573,19 +577,19 @@ describe('CLI', function() {
       );
     });
 
-    return describe('when showing timestamps with -t', function() {
-      let runtimeInfo = undefined;
+    return describe('when showing timestamps with -t', () => {
+      let runtimeInfo;
 
-      before(function(done) {
+      before((done) => {
         const app = createServer();
-        app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
         const args = [
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '-t'
         ];
-        return runDreddCommandWithServer(args, app, function(err, info) {
+        return runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           return done(err);
         });
@@ -598,33 +602,33 @@ describe('CLI', function() {
     });
   });
 
-  describe('when loading hooks with --hookfiles', function() {
-    let runtimeInfo = undefined;
+  describe('when loading hooks with --hookfiles', () => {
+    let runtimeInfo;
 
-    before(function(done) {
+    before((done) => {
       const app = createServer();
-      app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+      app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
       const args = [
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--hookfiles=./test/fixtures/*_hooks.*'
       ];
-      return runDreddCommandWithServer(args, app, function(err, info) {
+      return runDreddCommandWithServer(args, app, (err, info) => {
         runtimeInfo = info;
         return done(err);
       });
     });
 
-    return it('should modify the transaction with hooks', () => assert.equal(runtimeInfo.server.requests['/machines'][0].headers['header'], '123232323'));
+    return it('should modify the transaction with hooks', () => assert.equal(runtimeInfo.server.requests['/machines'][0].headers.header, '123232323'));
   });
 
-  describe('when describing events in hookfiles', function() {
-    let runtimeInfo = undefined;
+  describe('when describing events in hookfiles', () => {
+    let runtimeInfo;
 
-    const containsLine = function(str, expected) {
+    const containsLine = function (str, expected) {
       const lines = str.split('\n');
-      for (let line of lines) {
+      for (const line of lines) {
         if (line.indexOf(expected) > -1) {
           return true;
         }
@@ -632,34 +636,34 @@ describe('CLI', function() {
       return false;
     };
 
-    before(function(done) {
+    before((done) => {
       const app = createServer();
-      app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+      app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
       const args = [
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--hookfiles=./test/fixtures/*_events.*'
       ];
-      return runDreddCommandWithServer(args, app, function(err, info) {
+      return runDreddCommandWithServer(args, app, (err, info) => {
         runtimeInfo = info;
         return done(err);
       });
     });
 
-    return it('should execute the before and after events', function() {
+    return it('should execute the before and after events', () => {
       assert.isOk(containsLine(runtimeInfo.dredd.stdout, 'hooks.beforeAll'), (runtimeInfo.dredd.stdout));
       return assert.isOk(containsLine(runtimeInfo.dredd.stdout, 'hooks.afterAll'), (runtimeInfo.dredd.stdout));
     });
   });
 
-  describe('when describing both hooks and events in hookfiles', function() {
-    let runtimeInfo = undefined;
+  describe('when describing both hooks and events in hookfiles', () => {
+    let runtimeInfo;
 
-    const getResults = function(str) {
+    const getResults = function (str) {
       const ret = [];
       const lines = str.split('\n');
-      for (let line of lines) {
+      for (const line of lines) {
         if (line.indexOf('*** ') > -1) {
           ret.push(line.substr(line.indexOf('*** ') + 4));
         }
@@ -667,32 +671,32 @@ describe('CLI', function() {
       return ret.join(',');
     };
 
-    before(function(done) {
+    before((done) => {
       const app = createServer();
-      app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+      app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
       const args = [
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--hookfiles=./test/fixtures/*_all.*'
       ];
-      return runDreddCommandWithServer(args, app, function(err, info) {
+      return runDreddCommandWithServer(args, app, (err, info) => {
         runtimeInfo = info;
         return done(err);
       });
     });
 
-    return it('should execute hooks and events in order', function() {
+    return it('should execute hooks and events in order', () => {
       const events = getResults(runtimeInfo.dredd.stdout);
       return assert.isOk(events === 'beforeAll,before,after,afterAll');
     });
   });
 
-  describe("tests an API description containing an endpoint with schema", function() {
-    describe("and server is responding in accordance with the schema", function() {
-      let runtimeInfo = undefined;
+  describe('tests an API description containing an endpoint with schema', () => {
+    describe('and server is responding in accordance with the schema', () => {
+      let runtimeInfo;
 
-      before(function(done) {
+      before((done) => {
         const app = createServer();
         app.get('/', (req, res) =>
           res.json({
@@ -707,7 +711,7 @@ describe('CLI', function() {
           './test/fixtures/schema.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`
         ];
-        return runDreddCommandWithServer(args, app, function(err, info) {
+        return runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           return done(err);
         });
@@ -716,10 +720,10 @@ describe('CLI', function() {
       return it('exit status should be 0 (success)', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
-    return describe("and server is NOT responding in accordance with the schema", function() {
-      let runtimeInfo = undefined;
+    return describe('and server is NOT responding in accordance with the schema', () => {
+      let runtimeInfo;
 
-      before(function(done) {
+      before((done) => {
         const app = createServer();
         app.get('/', (req, res) =>
           res.json({
@@ -734,7 +738,7 @@ describe('CLI', function() {
           './test/fixtures/schema.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`
         ];
-        return runDreddCommandWithServer(args, app, function(err, info) {
+        return runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           return done(err);
         });
@@ -744,23 +748,23 @@ describe('CLI', function() {
     });
   });
 
-  describe("when API description document path is a glob", function() {
-    describe("and called with --names options", function() {
-      let dreddCommandInfo = undefined;
+  describe('when API description document path is a glob', () => {
+    describe('and called with --names options', () => {
+      let dreddCommandInfo;
 
-      before(function(done) {
+      before((done) => {
         const args = [
           './test/fixtures/multifile/*.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--names'
         ];
-        return runDreddCommand(args, function(err, info) {
+        return runDreddCommand(args, (err, info) => {
           dreddCommandInfo = info;
           return done(err);
         });
       });
 
-      it('it should include all paths from all API description documents matching the glob', function() {
+      it('it should include all paths from all API description documents matching the glob', () => {
         assert.include(dreddCommandInfo.stdout, '> /greeting > GET');
         assert.include(dreddCommandInfo.stdout, '> /message > GET');
         return assert.include(dreddCommandInfo.stdout, '> /name > GET');
@@ -769,29 +773,29 @@ describe('CLI', function() {
       return it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
     });
 
-    return describe('and called with hooks', function() {
-      let runtimeInfo = undefined;
+    return describe('and called with hooks', () => {
+      let runtimeInfo;
 
-      before(function(done) {
+      before((done) => {
         const app = createServer();
-        app.get('/name', (req, res) => res.type('text/plain').send("Adam\n"));
+        app.get('/name', (req, res) => res.type('text/plain').send('Adam\n'));
 
-        app.get('/greeting', (req, res) => res.type('text/plain').send("Howdy!\n"));
+        app.get('/greeting', (req, res) => res.type('text/plain').send('Howdy!\n'));
 
-        app.get('/message', (req, res) => res.type('text/plain').send("Hello World!\n"));
+        app.get('/message', (req, res) => res.type('text/plain').send('Hello World!\n'));
 
         const args = [
           './test/fixtures/multifile/*.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--hookfiles=./test/fixtures/multifile/multifile_hooks.coffee'
         ];
-        return runDreddCommandWithServer(args, app, function(err, info) {
+        return runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           return done(err);
         });
       });
 
-      it('should eval the hook for each transaction', function() {
+      it('should eval the hook for each transaction', () => {
         assert.include(runtimeInfo.dredd.stdout, 'after name');
         assert.include(runtimeInfo.dredd.stdout, 'after greeting');
         return assert.include(runtimeInfo.dredd.stdout, 'after message');
@@ -811,24 +815,24 @@ describe('CLI', function() {
   });
 
 
-  describe("when called with additional --path argument which is a glob", () =>
-    describe("and called with --names options", function() {
-      let dreddCommandInfo = undefined;
+  describe('when called with additional --path argument which is a glob', () =>
+    describe('and called with --names options', () => {
+      let dreddCommandInfo;
 
-      before(function(done) {
+      before((done) => {
         const args = [
           './test/fixtures/multiple-examples.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--path=./test/fixtures/multifile/*.apib',
           '--names'
         ];
-        return runDreddCommand(args, function(err, info) {
+        return runDreddCommand(args, (err, info) => {
           dreddCommandInfo = info;
           return done(err);
         });
       });
 
-      it('it should include all paths from all API description documents matching all paths and globs', function() {
+      it('it should include all paths from all API description documents matching all paths and globs', () => {
         assert.include(dreddCommandInfo.stdout, 'Greeting API > /greeting > GET');
         assert.include(dreddCommandInfo.stdout, 'Message API > /message > GET');
         assert.include(dreddCommandInfo.stdout, 'Name API > /name > GET');
@@ -840,12 +844,12 @@ describe('CLI', function() {
     })
   );
 
-  return describe("Using sandboxed hooks", function() {
-    let runtimeInfo = undefined;
+  return describe('Using sandboxed hooks', () => {
+    let runtimeInfo;
 
-    before(function(done) {
+    before((done) => {
       const app = createServer();
-      app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+      app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
       const args = [
         './test/fixtures/single-get.apib',
@@ -853,13 +857,13 @@ describe('CLI', function() {
         '--sandbox',
         '--hookfiles=./test/fixtures/sandboxed-hook.js'
       ];
-      return runDreddCommandWithServer(args, app, function(err, info) {
+      return runDreddCommandWithServer(args, app, (err, info) => {
         runtimeInfo = info;
         return done(err);
       });
     });
 
-    it('should hit the resource', () => assert.deepEqual(runtimeInfo.server.requestCounts, {'/machines': 1}));
+    it('should hit the resource', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
 
     it('exit status should be 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
 

@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-console,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 require('./handle-windows-sigint')();
 
 
@@ -7,4 +12,4 @@ process.on('SIGTERM', ignore);
 process.on('SIGINT', ignore);
 
 
-setInterval(( function() { }), 1000);
+setInterval((() => { }), 1000);

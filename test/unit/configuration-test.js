@@ -1,18 +1,23 @@
-const {assert} = require('chai');
+/* eslint-disable
+    no-return-assign,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 const clone = require('clone');
 
 const configuration = require('../../src/configuration');
 const logger = require('../../src/logger');
 
 
-describe('configuration.applyLoggingOptions()', function() {
-  let loggerSettings = undefined;
-  let config = undefined;
+describe('configuration.applyLoggingOptions()', () => {
+  let loggerSettings;
+  let config;
 
-  beforeEach( () => loggerSettings = clone(logger.transports.console));
-  afterEach( () => logger.transports.console = loggerSettings);
+  beforeEach(() => loggerSettings = clone(logger.transports.console));
+  afterEach(() => logger.transports.console = loggerSettings);
 
-  it('applies logging options', function() {
+  it('applies logging options', () => {
     config = configuration.applyLoggingOptions({
       color: 'true',
       level: 'debug'
@@ -26,29 +31,29 @@ describe('configuration.applyLoggingOptions()', function() {
   });
 
   describe('with color set to legacy \'true\' string value', () =>
-    it('resulting configuration should contain \'color\' set to boolean true', function() {
-      const options = configuration.applyLoggingOptions({color: 'true'});
+    it('resulting configuration should contain \'color\' set to boolean true', () => {
+      const options = configuration.applyLoggingOptions({ color: 'true' });
       return assert.propertyVal(options, 'color', true);
     })
   );
 
   return describe('with color option set to legacy \'false\' string value', () =>
-    it('resulting configuration should contain \'color\' set to boolean false', function() {
-      const options = configuration.applyLoggingOptions({color: 'false'});
+    it('resulting configuration should contain \'color\' set to boolean false', () => {
+      const options = configuration.applyLoggingOptions({ color: 'false' });
       return assert.propertyVal(options, 'color', false);
     })
   );
 });
 
 
-describe('configuration.applyConfiguration()', function() {
-  let loggerSettings = undefined;
-  let config = undefined;
+describe('configuration.applyConfiguration()', () => {
+  let loggerSettings;
+  let config;
 
-  beforeEach( () => loggerSettings = clone(logger.transports.console));
-  afterEach( () => logger.transports.console = loggerSettings);
+  beforeEach(() => loggerSettings = clone(logger.transports.console));
+  afterEach(() => logger.transports.console = loggerSettings);
 
-  return it('applies logging options', function() {
+  return it('applies logging options', () => {
     config = configuration.applyConfiguration({
       options: {
         color: 'true',
