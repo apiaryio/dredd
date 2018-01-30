@@ -42,45 +42,45 @@ describe('mergeSandboxedHooks', () => {
 
   it('should not change origin hooks object', () => {
     mergeSandboxedHooks(originalHooks, hooksToBeMerged);
-    return assert.deepEqual(originalHooks, originObject);
+    assert.deepEqual(originalHooks, originObject);
   });
 
   it('should not change to-be-merged hooks object', () => {
     mergeSandboxedHooks(originalHooks, hooksToBeMerged);
-    return assert.deepEqual(hooksToBeMerged, toBeMergedObject);
+    assert.deepEqual(hooksToBeMerged, toBeMergedObject);
   });
 
-  return describe('returned obejct', () => {
+  describe('returned obejct', () => {
     beforeEach(() => object = mergeSandboxedHooks(originalHooks, hooksToBeMerged));
 
     it('beforeAll property', () => {
       assert.equal(object.beforeAll[0], 'original');
-      return assert.equal(object.beforeAll[1], 'merged');
+      assert.equal(object.beforeAll[1], 'merged');
     });
 
     it('beforeEach property', () => {
       assert.equal(object.beforeEach[0], 'original');
-      return assert.equal(object.beforeEach[1], 'merged');
+      assert.equal(object.beforeEach[1], 'merged');
     });
 
     it('before property', () => {
       assert.equal(object.before['Transaction Name'][0], 'original');
-      return assert.equal(object.before['Transaction Name'][1], 'merged');
+      assert.equal(object.before['Transaction Name'][1], 'merged');
     });
 
     it('after property', () => {
       assert.equal(object.after['Transaction Name'][0], 'original');
-      return assert.equal(object.after['Transaction Name'][1], 'merged');
+      assert.equal(object.after['Transaction Name'][1], 'merged');
     });
 
     it('aferEach property', () => {
       assert.equal(object.afterEach[0], 'original');
-      return assert.equal(object.afterEach[1], 'merged');
+      assert.equal(object.afterEach[1], 'merged');
     });
 
-    return it('afterAll property', () => {
+    it('afterAll property', () => {
       assert.equal(object.afterAll[0], 'original');
-      return assert.equal(object.afterAll[1], 'merged');
+      assert.equal(object.afterAll[1], 'merged');
     });
   });
 });

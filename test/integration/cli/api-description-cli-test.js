@@ -27,7 +27,7 @@ describe('CLI - API Description Document', () => {
       });
 
       it('should request /machines', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
-      return it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
     describe('when file not found', () => {
@@ -46,10 +46,10 @@ describe('CLI - API Description Document', () => {
       });
 
       it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
-      return it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr, 'not found'));
+      it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr, 'not found'));
     });
 
-    return describe('when given path exists, but can\'t be read', () => {
+    describe('when given path exists, but can\'t be read', () => {
       let runtimeInfo;
       const args = [
         os.homedir(),
@@ -65,7 +65,7 @@ describe('CLI - API Description Document', () => {
       });
 
       it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
-      return it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr, 'Error when reading file'));
+      it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr, 'Error when reading file'));
     });
   });
 
@@ -95,7 +95,7 @@ describe('CLI - API Description Document', () => {
 
       it('should download API Description Document from server', () => assert.equal(runtimeInfo.server.requestCounts['/single-get.apib'], 1));
       it('should request /machines', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1, '/single-get.apib': 1 }));
-      return it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
     describe('when URL points to non-existent server', () => {
@@ -115,14 +115,14 @@ describe('CLI - API Description Document', () => {
 
       it('should not request server', () => assert.isFalse(runtimeInfo.server.requested));
       it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
-      return it('should print error message to stderr', () => {
+      it('should print error message to stderr', () => {
         assert.include(runtimeInfo.dredd.stderr, 'Error when loading file from URL');
         assert.include(runtimeInfo.dredd.stderr, 'Is the provided URL correct?');
-        return assert.include(runtimeInfo.dredd.stderr, `http://127.0.0.1:${NON_EXISTENT_PORT}/single-get.apib`);
+        assert.include(runtimeInfo.dredd.stderr, `http://127.0.0.1:${NON_EXISTENT_PORT}/single-get.apib`);
       });
     });
 
-    return describe('when URL points to non-existent resource', () => {
+    describe('when URL points to non-existent resource', () => {
       let runtimeInfo;
       const args = [
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}/__non-existent__.apib`,
@@ -141,16 +141,16 @@ describe('CLI - API Description Document', () => {
 
       it('should request server', () => assert.isTrue(runtimeInfo.server.requested));
       it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
-      return it('should print error message to stderr', () => {
+      it('should print error message to stderr', () => {
         assert.include(runtimeInfo.dredd.stderr, 'Unable to load file from URL');
         assert.include(runtimeInfo.dredd.stderr, 'responded with status code 404');
-        return assert.include(runtimeInfo.dredd.stderr, `http://127.0.0.1:${DEFAULT_SERVER_PORT}/__non-existent__.apib`);
+        assert.include(runtimeInfo.dredd.stderr, `http://127.0.0.1:${DEFAULT_SERVER_PORT}/__non-existent__.apib`);
       });
     });
   });
 
 
-  return describe('when loaded by -p/--path', () => {
+  describe('when loaded by -p/--path', () => {
     describe('when loaded from file', () => {
       let runtimeInfo;
       const args = [
@@ -171,7 +171,7 @@ describe('CLI - API Description Document', () => {
       });
 
       it('should request /machines, /machines/willy', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1, '/machines/willy': 1 }));
-      return it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
     describe('when loaded from URL', () => {
@@ -200,7 +200,7 @@ describe('CLI - API Description Document', () => {
 
       it('should download API Description Document from server', () => assert.equal(runtimeInfo.server.requestCounts['/single-get.yaml'], 1));
       it('should request /machines, /machines/willy', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1, '/machines/willy': 1, '/single-get.yaml': 1 }));
-      return it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
     describe('when used multiple times', () => {
@@ -225,7 +225,7 @@ describe('CLI - API Description Document', () => {
       });
 
       it('should request /machines, /machines/willy, /machines/caterpillar', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1, '/machines/willy': 1, '/machines/caterpillar': 1 }));
-      return it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
     describe('when loaded by glob pattern', () => {
@@ -248,10 +248,10 @@ describe('CLI - API Description Document', () => {
       });
 
       it('should request /machines, /machines/willy', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1, '/machines/willy': 1 }));
-      return it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
-    return describe('when additional file not found', () => {
+    describe('when additional file not found', () => {
       let runtimeInfo;
       const args = [
         './test/fixtures/single-get.apib',
@@ -271,7 +271,7 @@ describe('CLI - API Description Document', () => {
 
       it('should not request server', () => assert.isFalse(runtimeInfo.server.requested));
       it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
-      return it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr, 'not found'));
+      it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr, 'not found'));
     });
   });
 });

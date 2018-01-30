@@ -38,10 +38,10 @@ describe('hooksLog()', () => {
     assert.property(data[1], 'content');
     assert.property(data[1], 'timestamp');
     assert.isString(data[1].content);
-    return assert.strictEqual(data[1].content, util.format({ hello: 'object world' }));
+    assert.strictEqual(data[1].content, util.format({ hello: 'object world' }));
   });
 
-  return describe('functionality', () => {
+  describe('functionality', () => {
     beforeEach(() => {
       loggerStub.log.reset();
       loggerStub.debug.reset();
@@ -55,7 +55,7 @@ describe('hooksLog()', () => {
       assert.lengthOf(data, 1);
       assert.strictEqual(data, originLogs);
       assert.deepEqual(data, originLogs);
-      return assert.propertyVal(data[0], 'content', 'one message');
+      assert.propertyVal(data[0], 'content', 'one message');
     });
 
     it('should push message to undefined logs and return new array instead', () => {
@@ -65,7 +65,7 @@ describe('hooksLog()', () => {
       assert.lengthOf(data, 1);
       assert.isUndefined(originLogs);
       assert.notDeepEqual(data, originLogs);
-      return assert.propertyVal(data[0], 'content', 'another message');
+      assert.propertyVal(data[0], 'content', 'another message');
     });
 
     it('should append message to an existing logs array', () => {
@@ -75,10 +75,10 @@ describe('hooksLog()', () => {
       assert.lengthOf(data, 2);
       assert.deepEqual(data, originLogs);
       assert.deepEqual(data[0], exampleLogs[0]);
-      return assert.propertyVal(data[1], 'content', 'some other idea');
+      assert.propertyVal(data[1], 'content', 'some other idea');
     });
 
-    return it('should use "hook" logger level', () => {
+    it('should use "hook" logger level', () => {
       hooksLog([], loggerStub, 'there is a log');
 
       assert.isTrue(loggerStub.hook.called);
@@ -87,7 +87,7 @@ describe('hooksLog()', () => {
       assert.isFalse(loggerStub.log.called);
       assert.isFalse(loggerStub.debug.called);
 
-      return assert.equal(loggerStub.hook.getCall(0).args[0], 'there is a log');
+      assert.equal(loggerStub.hook.getCall(0).args[0], 'there is a log');
     });
   });
 });

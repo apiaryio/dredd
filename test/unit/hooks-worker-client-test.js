@@ -180,7 +180,7 @@ describe('Hooks worker client', () => {
         }
       );
 
-      return it('should write a hint that native hooks should be used', done =>
+      it('should write a hint that native hooks should be used', done =>
         loadWorkerClient((err) => {
           assert.isOk(err);
           assert.include(err.message, 'native Node.js hooks instead');
@@ -232,7 +232,7 @@ describe('Hooks worker client', () => {
         })
       );
 
-      return it('should pass --hookfiles option as an array of arguments', done =>
+      it('should pass --hookfiles option as an array of arguments', done =>
         loadWorkerClient((err) => {
           assert.isUndefined(err);
 
@@ -260,7 +260,7 @@ describe('Hooks worker client', () => {
       afterEach(() => whichStub.which.restore());
 
 
-      return it('should write a hint how to install', done =>
+      it('should write a hint how to install', done =>
         loadWorkerClient((err) => {
           assert.isOk(err);
           assert.include(err.message, 'gem install dredd_hooks');
@@ -312,7 +312,7 @@ describe('Hooks worker client', () => {
         })
       );
 
-      return it('should pass --hookfiles option as an array of arguments', done =>
+      it('should pass --hookfiles option as an array of arguments', done =>
         loadWorkerClient((err) => {
           assert.isUndefined(err);
 
@@ -339,7 +339,7 @@ describe('Hooks worker client', () => {
 
       afterEach(() => whichStub.which.restore());
 
-      return it('should write a hint how to install', done =>
+      it('should write a hint how to install', done =>
         loadWorkerClient((err) => {
           assert.isOk(err);
           assert.include(err.message, 'pip install dredd_hooks');
@@ -391,7 +391,7 @@ describe('Hooks worker client', () => {
         })
       );
 
-      return it('should pass --hookfiles option as an array of arguments', done =>
+      it('should pass --hookfiles option as an array of arguments', done =>
         loadWorkerClient((err) => {
           assert.isUndefined(err);
 
@@ -418,7 +418,7 @@ describe('Hooks worker client', () => {
 
       afterEach(() => whichStub.which.restore());
 
-      return it('should write a hint how to install', done =>
+      it('should write a hint how to install', done =>
         loadWorkerClient((err) => {
           assert.isOk(err);
           assert.include(err.message, 'composer require ddelnano/dredd-hooks-php --dev');
@@ -451,7 +451,7 @@ describe('Hooks worker client', () => {
         return process.env.GOPATH = goPath;
       });
 
-      return it('should write a hint how to install', done =>
+      it('should write a hint how to install', done =>
         loadWorkerClient((err) => {
           assert.isOk(err);
           assert.include(err.message, 'go get github.com/snikch/goodman/cmd/goodman');
@@ -513,7 +513,7 @@ describe('Hooks worker client', () => {
         })
       );
 
-      return it('should pass --hookfiles option as an array of arguments', done =>
+      it('should pass --hookfiles option as an array of arguments', done =>
         loadWorkerClient((err) => {
           assert.isUndefined(err);
 
@@ -539,7 +539,7 @@ describe('Hooks worker client', () => {
       });
       afterEach(() => whichStub.which.restore());
 
-      return it('should write a hint how to install', done =>
+      it('should write a hint how to install', done =>
         loadWorkerClient((err) => {
           assert.isOk(err);
           assert.include(err.message, 'cargo install dredd-hooks');
@@ -591,7 +591,7 @@ describe('Hooks worker client', () => {
         })
       );
 
-      return it('should pass --hookfiles option as an array of arguments', done =>
+      it('should pass --hookfiles option as an array of arguments', done =>
         loadWorkerClient((err) => {
           assert.isUndefined(err);
 
@@ -647,7 +647,7 @@ describe('Hooks worker client', () => {
         })
       );
 
-      return it('should pass --hookfiles option as an array of arguments', done =>
+      it('should pass --hookfiles option as an array of arguments', done =>
         loadWorkerClient((err) => {
           assert.isUndefined(err);
 
@@ -674,7 +674,7 @@ describe('Hooks worker client', () => {
 
       afterEach(() => whichStub.which.restore());
 
-      return it('should write a hint how to install', done =>
+      it('should write a hint how to install', done =>
         loadWorkerClient((err) => {
           assert.isOk(err);
           assert.include(err.message, 'cpanm Dredd::Hooks');
@@ -726,7 +726,7 @@ describe('Hooks worker client', () => {
         })
       );
 
-      return it('should pass --hookfiles option as an array of arguments', done =>
+      it('should pass --hookfiles option as an array of arguments', done =>
         loadWorkerClient((err) => {
           assert.isUndefined(err);
 
@@ -739,7 +739,7 @@ describe('Hooks worker client', () => {
       );
     });
 
-    return describe('after loading', () => {
+    describe('after loading', () => {
       beforeEach((done) => {
         runner.hooks.configuration = {
           options: {
@@ -785,7 +785,7 @@ describe('Hooks worker client', () => {
       return Array.from(eventTypes).map(eventType => (eventType =>
         it(`should register hook function for hook type ${eventType}`, () => {
           const hookFuncs = runner.hooks[`${eventType}Hooks`];
-          return assert.isAbove(hookFuncs.length, 0);
+          assert.isAbove(hookFuncs.length, 0);
         })
       )(eventType));
     });
@@ -881,7 +881,7 @@ describe('Hooks worker client', () => {
         });
 
 
-        return describe('sent object', () => {
+        describe('sent object', () => {
           let receivedObject = null;
 
           beforeEach(() => receivedObject = JSON.parse(receivedData.replace('\n', '')));
@@ -901,14 +901,14 @@ describe('Hooks worker client', () => {
           it(`key event should have value ${eventType}`, () => assert.equal(receivedObject.event, eventType));
 
           if (eventType.indexOf('All') > -1) {
-            return it('key data should contain array of transaction objects', () => {
+            it('key data should contain array of transaction objects', () => {
               assert.isArray(receivedObject.data);
-              return assert.propertyVal(receivedObject.data[0], 'key', 'value');
+              assert.propertyVal(receivedObject.data[0], 'key', 'value');
             });
           }
-          return it('key data should contain the transaction object', () => {
+          it('key data should contain the transaction object', () => {
             assert.isObject(receivedObject.data);
-            return assert.propertyVal(receivedObject.data, 'key', 'value');
+            assert.propertyVal(receivedObject.data, 'key', 'value');
           });
         });
       })
@@ -941,7 +941,7 @@ describe('Hooks worker client', () => {
         getFirstTransaction = transactionData => transactionData;
       }
 
-      return describe(`when '${eventName}' function is triggered and the hook handler replies`, () => {
+      describe(`when '${eventName}' function is triggered and the hook handler replies`, () => {
         let hookHandler;
 
         beforeEach((done) => {
@@ -996,15 +996,15 @@ describe('Hooks worker client', () => {
           return hooksWorkerClient.stop(done);
         });
 
-        return it('modifications get applied to the original transaction object', () => {
+        it('modifications get applied to the original transaction object', () => {
           transaction = getFirstTransaction(transactionData);
-          return assert.equal(transaction.request.uri, '/message?param=value');
+          assert.equal(transaction.request.uri, '/message?param=value');
         });
       });
     });
   });
 
-  return describe("'hooks-worker-*' configuration options", () => {
+  describe("'hooks-worker-*' configuration options", () => {
     const scenarios = [{
       property: 'timeout',
       option: 'hooks-worker-timeout'
@@ -1047,13 +1047,13 @@ describe('Hooks worker client', () => {
 
           it(`is set to ${defaultValue} by default`, () => {
             hooksWorkerClient = new HooksWorkerClient(runner);
-            return assert.equal(hooksWorkerClient[scenario.property], defaultValue);
+            assert.equal(hooksWorkerClient[scenario.property], defaultValue);
           });
 
-          return it('can be set to a different value', () => {
+          it('can be set to a different value', () => {
             runner.hooks.configuration.options[scenario.option] = changedValue;
             hooksWorkerClient = new HooksWorkerClient(runner);
-            return assert.equal(hooksWorkerClient[scenario.property], changedValue);
+            assert.equal(hooksWorkerClient[scenario.property], changedValue);
           });
         })
       )(scenario));

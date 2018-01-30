@@ -74,7 +74,7 @@ if(typeof(${name}) !== 'function'){
       )(name);
     }
 
-    return it('should pass result object to the second callback argument', (done) => {
+    it('should pass result object to the second callback argument', (done) => {
       const hooksCode = '';
       return sandboxHooksCode(hooksCode, (err, result) => {
         if (err) { return done(err); }
@@ -84,7 +84,7 @@ if(typeof(${name}) !== 'function'){
     });
   });
 
-  return describe('result object', () => {
+  describe('result object', () => {
     const properties = [
       'beforeAllHooks',
       'beforeEachHooks',

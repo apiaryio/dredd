@@ -46,10 +46,10 @@ describe('CLI - Server Process', () => {
       );
 
       it('should request /machines', () => assert.deepEqual(serverRuntimeInfo.requestCounts, { '/machines': 1 }));
-      return it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
     });
 
-    return describe('when is not running', () => {
+    describe('when is not running', () => {
       let dreddCommandInfo;
       const args = ['./test/fixtures/apiary.apib', `http://127.0.0.1:${NON_EXISTENT_PORT}`];
 
@@ -63,15 +63,15 @@ describe('CLI - Server Process', () => {
       it('should return understandable message', () => assert.include(dreddCommandInfo.stdout, 'Error connecting'));
       it('should report error for all transactions', () => {
         const occurences = (dreddCommandInfo.stdout.match(/Error connecting/g) || []).length;
-        return assert.equal(occurences, 5);
+        assert.equal(occurences, 5);
       });
       it('should return stats', () => assert.include(dreddCommandInfo.stdout, '5 errors'));
-      return it('should exit with status 1', () => assert.equal(dreddCommandInfo.exitStatus, 1));
+      it('should exit with status 1', () => assert.equal(dreddCommandInfo.exitStatus, 1));
     });
   });
 
 
-  return describe('when specified by -g/--server', () => {
+  describe('when specified by -g/--server', () => {
     afterEach(done => killAll('test/fixtures/scripts/', done));
 
     describe('when works as expected', () => {
@@ -92,7 +92,7 @@ describe('CLI - Server Process', () => {
 
       it('should inform about starting server with custom command', () => assert.include(dreddCommandInfo.stdout, 'Starting backend server process with command'));
       it('should redirect server\'s welcome message', () => assert.include(dreddCommandInfo.stdout, `Dummy server listening on port ${DEFAULT_SERVER_PORT}`));
-      return it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
     });
 
     describe('when it fails to start', () => {
@@ -113,7 +113,7 @@ describe('CLI - Server Process', () => {
 
       it('should inform about starting server with custom command', () => assert.include(dreddCommandInfo.stdout, 'Starting backend server process with command'));
       it('should report problem with server process spawn', () => assert.include(dreddCommandInfo.stderr, 'Command to start backend server process failed, exiting Dredd'));
-      return it('should exit with status 1', () => assert.equal(dreddCommandInfo.exitStatus, 1));
+      it('should exit with status 1', () => assert.equal(dreddCommandInfo.exitStatus, 1));
     });
 
     for (const scenario of [{
@@ -169,12 +169,12 @@ describe('CLI - Server Process', () => {
             })
           );
           it('should report problems with connection to server', () => assert.include(dreddCommandInfo.stderr, 'Error connecting to server'));
-          return it('should exit with status 1', () => assert.equal(dreddCommandInfo.exitStatus, 1));
+          it('should exit with status 1', () => assert.equal(dreddCommandInfo.exitStatus, 1));
         })
       )(scenario);
     }
 
-    return describe('when didn\'t terminate and had to be killed by Dredd', () => {
+    describe('when didn\'t terminate and had to be killed by Dredd', () => {
       let dreddCommandInfo;
       const args = [
         './test/fixtures/single-get.apib',
@@ -201,7 +201,7 @@ describe('CLI - Server Process', () => {
           return done(err);
         })
       );
-      return it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
     });
   });
 });

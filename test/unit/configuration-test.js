@@ -27,20 +27,20 @@ describe('configuration.applyLoggingOptions()', () => {
     assert.equal(logger.transports.console.colorize, true);
 
     assert.propertyVal(config, 'level', 'debug');
-    return assert.equal(logger.transports.console.level, 'debug');
+    assert.equal(logger.transports.console.level, 'debug');
   });
 
   describe('with color set to legacy \'true\' string value', () =>
     it('resulting configuration should contain \'color\' set to boolean true', () => {
       const options = configuration.applyLoggingOptions({ color: 'true' });
-      return assert.propertyVal(options, 'color', true);
+      assert.propertyVal(options, 'color', true);
     })
   );
 
-  return describe('with color option set to legacy \'false\' string value', () =>
+  describe('with color option set to legacy \'false\' string value', () =>
     it('resulting configuration should contain \'color\' set to boolean false', () => {
       const options = configuration.applyLoggingOptions({ color: 'false' });
-      return assert.propertyVal(options, 'color', false);
+      assert.propertyVal(options, 'color', false);
     })
   );
 });
@@ -53,7 +53,7 @@ describe('configuration.applyConfiguration()', () => {
   beforeEach(() => loggerSettings = clone(logger.transports.console));
   afterEach(() => logger.transports.console = loggerSettings);
 
-  return it('applies logging options', () => {
+  it('applies logging options', () => {
     config = configuration.applyConfiguration({
       options: {
         color: 'true',
@@ -65,6 +65,6 @@ describe('configuration.applyConfiguration()', () => {
     assert.equal(logger.transports.console.colorize, true);
 
     assert.nestedPropertyVal(config, 'options.level', 'debug');
-    return assert.equal(logger.transports.console.level, 'debug');
+    assert.equal(logger.transports.console.level, 'debug');
   });
 });

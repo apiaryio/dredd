@@ -31,6 +31,6 @@ describe('Regression: Issue #152', () =>
       });
     });
 
-    return it('should modify the transaction with hooks', () => assert.deepEqual(Object.keys(runtimeInfo.server.requests), ['/machines?api-key=23456']));
+    it('should modify the transaction with hooks', () => assert.deepEqual(Object.keys(runtimeInfo.server.requests), ['/machines?api-key=23456']));
   })
 );

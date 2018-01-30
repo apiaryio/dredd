@@ -64,7 +64,7 @@ describe('addHooks(runner, transactions, callback)', () => {
     );
 
 
-    return it('should pass runner.logs to runner.hooks.logs', done =>
+    it('should pass runner.logs to runner.hooks.logs', done =>
       addHooks(runner, transactions, (err) => {
         if (err) { return err; }
         assert.isDefined(runner.hooks);
@@ -95,7 +95,7 @@ describe('addHooks(runner, transactions, callback)', () => {
 
     after(() => globStub.sync.restore());
 
-    return it('should not expand any glob', done =>
+    it('should not expand any glob', done =>
       addHooks(runner, transactions, (err) => {
         assert.isOk(globStub.sync.notCalled);
         return done();
@@ -121,7 +121,7 @@ describe('addHooks(runner, transactions, callback)', () => {
 
     afterEach(() => hooksWorkerClientStub.prototype.start.restore());
 
-    return it('should start the hooks worker client', done =>
+    it('should start the hooks worker client', done =>
       addHooks(runner, transactions, (err) => {
         if (err) { return done(err); }
         assert.isTrue(hooksWorkerClientStub.prototype.start.called);
@@ -166,7 +166,7 @@ describe('addHooks(runner, transactions, callback)', () => {
       })
     );
 
-    return describe('when files are valid js/coffeescript', () => {
+    describe('when files are valid js/coffeescript', () => {
       runner = null;
       before(() => {
         runner = {
@@ -193,7 +193,7 @@ describe('addHooks(runner, transactions, callback)', () => {
         })
       );
 
-      return it('should add configuration object to the hooks object proxyquired to the each hookfile', done =>
+      it('should add configuration object to the hooks object proxyquired to the each hookfile', done =>
         addHooks(runner, transactions, (err) => {
           if (err) { return done(err); }
           const call = proxyquireSpy.getCall(0);
@@ -259,7 +259,7 @@ describe('addHooks(runner, transactions, callback)', () => {
         })
       );
 
-      return it('should add hook functions strings to the runner object', done =>
+      it('should add hook functions strings to the runner object', done =>
         addHooks(runner, transactions, (err) => {
           if (err) { return err; }
           assert.property(runner.hooks.afterHooks, 'Machines > Machines collection > Get Machines');
@@ -317,7 +317,7 @@ after('Machines > Machines collection > Get Machines', function(transaction){
         })
       );
 
-      return it('should add hook functions strings to the runner object', done =>
+      it('should add hook functions strings to the runner object', done =>
         addHooks(runner, transactions, (err) => {
           if (err) { return err; }
           assert.property(runner.hooks.afterHooks, 'Machines > Machines collection > Get Machines');
@@ -342,7 +342,7 @@ after('Machines > Machines collection > Get Machines', function(transaction){
           }
         });
 
-      return it('should throw a "not implemented" exception', done =>
+      it('should throw a "not implemented" exception', done =>
         addHooks(runner, transactions, (err) => {
           assert.isDefined(err);
           assert.include(err.message, 'not implemented');
@@ -352,7 +352,7 @@ after('Machines > Machines collection > Get Machines', function(transaction){
     });
 
 
-    return describe('when buggy transaction name is used (#168)', () =>
+    describe('when buggy transaction name is used (#168)', () =>
       describe('when sandboxed', () => {
         it('should remove leading " > " from transaction names', (done) => {
           const runner = {
@@ -380,7 +380,7 @@ before(' > Machines collection > Get Machines', function(transaction){
           });
         });
 
-        return it('should contain transaction with fixed name', (done) => {
+        it('should contain transaction with fixed name', (done) => {
           const runner = {
             configuration: {
               hooksData: {
@@ -409,7 +409,7 @@ before(' > Machines collection > Get Machines', function(transaction){
     );
   });
 
-  return describe('when not sandboxed', () => {
+  describe('when not sandboxed', () => {
     it('should remove leading " > " from transaction names', (done) => {
       const runner = {
         configuration: {
@@ -426,7 +426,7 @@ before(' > Machines collection > Get Machines', function(transaction){
       });
     });
 
-    return it('should contain transaction with fixed name', (done) => {
+    it('should contain transaction with fixed name', (done) => {
       const runner = {
         configuration: {
           options: {

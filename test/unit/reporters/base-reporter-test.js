@@ -44,7 +44,7 @@ describe('BaseReporter', () => {
         { start: null }
     );
 
-    return it('should set the start date', done =>
+    it('should set the start date', done =>
       emitter.emit('start', '', () => {
         assert.isOk(stats.start);
         return done();
@@ -58,7 +58,7 @@ describe('BaseReporter', () => {
         { end: null }
     );
 
-    return it('should set the end date', done =>
+    it('should set the end date', done =>
       emitter.emit('end', () => {
         assert.isOk(stats.end);
         return done();
@@ -74,9 +74,9 @@ describe('BaseReporter', () => {
       }
     );
 
-    return it('should add the test', () => {
+    it('should add the test', () => {
       emitter.emit('test start', test);
-      return assert.isOk(tests.length === 1);
+      assert.isOk(tests.length === 1);
     });
   });
 
@@ -92,7 +92,7 @@ describe('BaseReporter', () => {
 
     it('should increment the counter', () => assert.equal(stats.passes, 1));
 
-    return it('should set the end time', () => assert.isOk(tests[0].end));
+    it('should set the end time', () => assert.isOk(tests[0].end));
   });
 
   describe('when test is skipped', () => {
@@ -105,7 +105,7 @@ describe('BaseReporter', () => {
       return emitter.emit('test skip', test);
     });
 
-    return it('should increment the counter', () => assert.isOk(stats.skipped === 1));
+    it('should increment the counter', () => assert.isOk(stats.skipped === 1));
   });
 
   describe('when test fails', () => {
@@ -120,7 +120,7 @@ describe('BaseReporter', () => {
 
     it('should increment the counter', () => assert.isOk(stats.failures === 1));
 
-    return it('should set the end time', () => assert.isOk(tests[0].end));
+    it('should set the end time', () => assert.isOk(tests[0].end));
   });
 
   describe('when test errors', () => {
@@ -135,7 +135,7 @@ describe('BaseReporter', () => {
 
     it('should increment the counter', () => assert.isOk(stats.errors === 1));
 
-    return it('should set the end time', () => assert.isOk(tests[0].end));
+    it('should set the end time', () => assert.isOk(tests[0].end));
   });
 
   describe('when passing test start is UTC string', () => {
@@ -149,7 +149,7 @@ describe('BaseReporter', () => {
       return emitter.emit('test pass', test);
     });
 
-    return it('should set the duration', () => assert.isNotNaN(tests[0].duration));
+    it('should set the duration', () => assert.isNotNaN(tests[0].duration));
   });
 
   describe('when failed test start is UTC string', () => {
@@ -163,10 +163,10 @@ describe('BaseReporter', () => {
       return emitter.emit('test fail', test);
     });
 
-    return it('should set the duration', () => assert.isNotNaN(tests[0].duration));
+    it('should set the duration', () => assert.isNotNaN(tests[0].duration));
   });
 
-  return describe('when errored test start is UTC string', () => {
+  describe('when errored test start is UTC string', () => {
     beforeEach(() => {
       test = {
         status: 'pass',
@@ -177,6 +177,6 @@ describe('BaseReporter', () => {
       return emitter.emit('test error', new Error('Error'), test);
     });
 
-    return it('should set the duration', () => assert.isNotNaN(tests[0].duration));
+    it('should set the duration', () => assert.isNotNaN(tests[0].duration));
   });
 });

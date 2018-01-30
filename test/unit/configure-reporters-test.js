@@ -70,14 +70,14 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
       return done();
     });
 
-    return describe('when silent', () => {
+    describe('when silent', () => {
       before(() => configuration.options.silent = true);
 
       after(() => configuration.options.silent = false);
 
       beforeEach(() => resetStubs());
 
-      return it('should not add any reporters', (done) => {
+      it('should not add any reporters', (done) => {
         configureReporters(configuration, {}, {}, null);
         assert.notOk(CliReporterStub.called);
         return done();
@@ -98,7 +98,7 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
       return done();
     });
 
-    return it('should not add more than one cli-based reporters', (done) => {
+    it('should not add more than one cli-based reporters', (done) => {
       configureReporters(configuration, {}, {}, null);
       assert.notOk(CliReporterStub.called);
       return done();
@@ -126,7 +126,7 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
 
       beforeEach(() => resetStubs());
 
-      return it('should use the output paths in the order provided', (done) => {
+      it('should use the output paths in the order provided', (done) => {
         configureReporters(configuration, {}, {}, () => {});
         assert.isOk(XUnitReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file1'));
         assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file2'));
@@ -134,14 +134,14 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
       });
     });
 
-    return describe('when the number of outputs is less than the number of reporters', () => {
+    describe('when the number of outputs is less than the number of reporters', () => {
       before(() => configuration.options.output = ['file1']);
 
       after(() => configuration.options.output = []);
 
       beforeEach(() => resetStubs());
 
-      return it('should use the default output paths for the additional reporters', (done) => {
+      it('should use the default output paths for the additional reporters', (done) => {
         configureReporters(configuration, {}, {}, () => {});
         assert.isOk(XUnitReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file1'));
         assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, null));
@@ -150,7 +150,7 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
     });
   });
 
-  return describe('when there are both cli-based and file-based reporters', () => {
+  describe('when there are both cli-based and file-based reporters', () => {
     before(() => configuration.options.reporter = ['nyan', 'markdown', 'html']);
 
     after(() => configuration.options.reporter = []);
@@ -177,7 +177,7 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
 
       beforeEach(() => resetStubs());
 
-      return it('should use the output paths in the order provided', (done) => {
+      it('should use the output paths in the order provided', (done) => {
         configureReporters(configuration, {}, {}, () => {});
         assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file1'));
         assert.isOk(HtmlReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file2'));
@@ -185,14 +185,14 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
       });
     });
 
-    return describe('when the number of outputs is less than the number of file-based reporters', () => {
+    describe('when the number of outputs is less than the number of file-based reporters', () => {
       before(() => configuration.options.output = ['file1']);
 
       after(() => configuration.options.output = []);
 
       beforeEach(() => resetStubs());
 
-      return it('should use the default output paths for the additional reporters', (done) => {
+      it('should use the default output paths for the additional reporters', (done) => {
         configureReporters(configuration, {}, {}, () => {});
         assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file1'));
         assert.isOk(HtmlReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, null));

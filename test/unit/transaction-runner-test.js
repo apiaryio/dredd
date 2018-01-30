@@ -70,7 +70,7 @@ describe('TransactionRunner', () => {
 
     it('should have an empty hookStash object', () => assert.deepEqual(runner.hookStash, {}));
 
-    return it('should have an empty array of logs object', () => assert.deepEqual(runner.logs, []));
+    it('should have an empty array of logs object', () => assert.deepEqual(runner.logs, []));
   });
 
   describe('config(config)', () => {
@@ -92,11 +92,11 @@ describe('TransactionRunner', () => {
         runner = new Runner(configuration);
         runner.config(configuration);
 
-        return assert.notOk(runner.multiBlueprint);
+        assert.notOk(runner.multiBlueprint);
       })
     );
 
-    return describe('when multiple files in data are present', () =>
+    describe('when multiple files in data are present', () =>
       it('should set multiBlueprint to true', () => {
         configuration = {
           server: 'http://127.0.0.1:3000',
@@ -113,7 +113,7 @@ describe('TransactionRunner', () => {
         runner = new Runner(configuration);
         runner.config(configuration);
 
-        return assert.isOk(runner.multiBlueprint);
+        assert.isOk(runner.multiBlueprint);
       })
     );
   });
@@ -237,7 +237,7 @@ describe('TransactionRunner', () => {
             return configuredTransaction = runner.configureTransaction(transaction);
           });
 
-          return it(`the transaction gets configured with fullPath '${expected.fullPath}' and has expected host, port, and protocol`, () =>
+          it(`the transaction gets configured with fullPath '${expected.fullPath}' and has expected host, port, and protocol`, () =>
             assert.deepEqual({
               host: configuredTransaction.host,
               port: configuredTransaction.port,
@@ -267,7 +267,7 @@ describe('TransactionRunner', () => {
             return configuredTransaction = runner.configureTransaction(transaction);
           });
 
-          return it('skips the transaction by default', () => assert.isTrue(configuredTransaction.skip));
+          it('skips the transaction by default', () => assert.isTrue(configuredTransaction.skip));
         })
       );
     });
@@ -289,7 +289,7 @@ describe('TransactionRunner', () => {
             return configuredTransaction = runner.configureTransaction(transaction);
           });
 
-          return it('does not skip the transaction by default', () => assert.isFalse(configuredTransaction.skip));
+          it('does not skip the transaction by default', () => assert.isFalse(configuredTransaction.skip));
         })
       );
     });
@@ -309,14 +309,14 @@ describe('TransactionRunner', () => {
         return configuredTransaction = runner.configureTransaction(transaction);
       });
 
-      return it('does not skip the transaction by default', () => assert.isFalse(configuredTransaction.skip));
+      it('does not skip the transaction by default', () => assert.isFalse(configuredTransaction.skip));
     });
 
     describe('when processing multiple API description documents', () =>
       it('should include api name in the transaction name', () => {
         runner.multiBlueprint = true;
         const configuredTransaction = runner.configureTransaction(transaction);
-        return assert.include(configuredTransaction.name, 'Machines API');
+        assert.include(configuredTransaction.name, 'Machines API');
       })
     );
 
@@ -324,7 +324,7 @@ describe('TransactionRunner', () => {
       it('should not include api name in the transaction name', () => {
         runner.multiBlueprint = false;
         const configuredTransaction = runner.configureTransaction(transaction);
-        return assert.notInclude(configuredTransaction.name, 'Machines API');
+        assert.notInclude(configuredTransaction.name, 'Machines API');
       })
     );
 
@@ -332,7 +332,7 @@ describe('TransactionRunner', () => {
 
       it('should add the Dredd User-Agent', () => {
         const configuredTransaction = runner.configureTransaction(transaction);
-        return assert.isOk(configuredTransaction.request.headers['User-Agent']);
+        assert.isOk(configuredTransaction.request.headers['User-Agent']);
       })
     );
 
@@ -343,9 +343,9 @@ describe('TransactionRunner', () => {
         return runner = new Runner(conf);
       });
 
-      return it('should include the entire value in the header', () => {
+      it('should include the entire value in the header', () => {
         const configuredTransaction = runner.configureTransaction(transaction);
-        return assert.equal(configuredTransaction.request.headers.MyCustomDate, 'Wed, 10 Sep 2014 12:34:26 GMT');
+        assert.equal(configuredTransaction.request.headers.MyCustomDate, 'Wed, 10 Sep 2014 12:34:26 GMT');
       });
     });
 
@@ -358,11 +358,11 @@ describe('TransactionRunner', () => {
         assert.isOk(configuredTransaction.host);
         assert.isOk(configuredTransaction.request);
         assert.isOk(configuredTransaction.expected);
-        return assert.strictEqual(transaction.origin, configuredTransaction.origin);
+        assert.strictEqual(transaction.origin, configuredTransaction.origin);
       })
     );
 
-    return describe('when endpoint URL contains PORT and path', () => {
+    describe('when endpoint URL contains PORT and path', () => {
       beforeEach(() => {
         const configurationWithPath = clone(configuration);
         configurationWithPath.server = 'https://hostname.tld:9876/my/path/to/api/';
@@ -375,14 +375,14 @@ describe('TransactionRunner', () => {
         assert.strictEqual(configuredTransaction.host, 'hostname.tld');
         assert.equal(configuredTransaction.port, 9876);
         assert.strictEqual(configuredTransaction.protocol, 'https:');
-        return assert.strictEqual(configuredTransaction.fullPath, '/my/path/to/api/machines');
+        assert.strictEqual(configuredTransaction.fullPath, '/my/path/to/api/machines');
       });
 
-      return it('should keep trailing slash in url if present', () => {
+      it('should keep trailing slash in url if present', () => {
         transaction.request.uri = '/machines/';
         const configuredTransaction = runner.configureTransaction(transaction);
         assert.equal(configuredTransaction.id, 'POST (202) /machines/');
-        return assert.strictEqual(configuredTransaction.fullPath, '/my/path/to/api/machines/');
+        assert.strictEqual(configuredTransaction.fullPath, '/my/path/to/api/machines/');
       });
     });
   });
@@ -433,7 +433,7 @@ describe('TransactionRunner', () => {
         return configuration.options.names = false;
       });
 
-      return it('should print the names and return', done =>
+      it('should print the names and return', done =>
         runner.executeTransaction(transaction, () => {
           assert.isOk(loggerStub.info.called);
           return done();
@@ -454,7 +454,7 @@ describe('TransactionRunner', () => {
         return runner.performRequest.restore();
       });
 
-      return it('should skip the tests', done =>
+      it('should skip the tests', done =>
         runner.executeTransaction(transaction, () => {
           assert.isOk(runner.performRequest.notCalled);
           return done();
@@ -474,7 +474,7 @@ describe('TransactionRunner', () => {
         return runner.skipTransaction.restore();
       });
 
-      return it('should only perform those requests', done =>
+      it('should only perform those requests', done =>
         runner.executeTransaction(transaction, () => {
           assert.isOk(runner.skipTransaction.called);
           return done();
@@ -508,7 +508,7 @@ describe('TransactionRunner', () => {
         })
       );
 
-      return it('should skip transactions with different names', (done) => {
+      it('should skip transactions with different names', (done) => {
         transaction.name = 'Group Machine > Machine > Delete Message > Bogus different example name';
         return runner.executeTransaction(transaction, () => {
           assert.isOk(runner.skipTransaction.called);
@@ -573,7 +573,7 @@ describe('TransactionRunner', () => {
         })
       );
 
-      return it('should set status `skip` on test passed to the emitter', done =>
+      it('should set status `skip` on test passed to the emitter', done =>
         runner.executeAllTransactions([clonedTransaction], runner.hooks, (err) => {
           const tests = [];
           const callCount = Object.keys(configuration.emitter.emit.args).map((value, index) => {
@@ -603,7 +603,7 @@ describe('TransactionRunner', () => {
 
       afterEach(() => nock.cleanAll());
 
-      return it('should make the request with https', done =>
+      it('should make the request with https', done =>
         runner.executeTransaction(transaction, () => {
           assert.isOk(server.isDone());
           return done();
@@ -625,7 +625,7 @@ describe('TransactionRunner', () => {
 
       afterEach(() => nock.cleanAll());
 
-      return it('should make the request with http', done =>
+      it('should make the request with http', done =>
         runner.executeTransaction(transaction, () => {
           assert.isOk(server.isDone());
           return done();
@@ -652,7 +652,7 @@ describe('TransactionRunner', () => {
         })
       );
 
-      return it('should not return an error', done =>
+      it('should not return an error', done =>
         runner.executeTransaction(transaction, (error) => {
           assert.notOk(error);
           return done();
@@ -672,7 +672,7 @@ describe('TransactionRunner', () => {
 
       afterEach(() => nock.cleanAll());
 
-      return it('should perform the request', done =>
+      it('should perform the request', done =>
         runner.executeTransaction(transaction, () => {
           assert.isOk(server.isDone());
           return done();
@@ -697,7 +697,7 @@ describe('TransactionRunner', () => {
 
       afterEach(() => nock.cleanAll());
 
-      return it('should not follow the redirect', done =>
+      it('should not follow the redirect', done =>
         runner.executeTransaction(transaction, () => {
           assert.equal(transaction.real.statusCode, 303);
           assert.notOk(server.isDone());
@@ -721,7 +721,7 @@ describe('TransactionRunner', () => {
 
       afterEach(() => nock.cleanAll());
 
-      return it('should not follow the redirect', done =>
+      it('should not follow the redirect', done =>
         runner.executeTransaction(transaction, () => {
           assert.equal(transaction.real.statusCode, 303);
           assert.notOk(server.isDone());
@@ -730,7 +730,7 @@ describe('TransactionRunner', () => {
       );
     });
 
-    return describe('when server is not running', () => {
+    describe('when server is not running', () => {
       beforeEach(() => {
         sinon.spy(configuration.emitter, 'emit');
         return runner = new Runner(configuration);
@@ -738,7 +738,7 @@ describe('TransactionRunner', () => {
 
       afterEach(() => configuration.emitter.emit.restore());
 
-      return it('should report a error', done =>
+      it('should report a error', done =>
         runner.executeTransaction(transaction, () => {
           assert.isOk(configuration.emitter.emit.called);
           const events = Object.keys(configuration.emitter.emit.args).map((value, index) => configuration.emitter.emit.args[value][0]);
@@ -866,7 +866,7 @@ describe('TransactionRunner', () => {
 
             const message = loggerSpy.getCall(0).args[0].toLowerCase();
             assert.include(message, `the real body length is ${expectedContentLength}`);
-            return assert.include(message, `using ${expectedContentLength} instead`);
+            assert.include(message, `using ${expectedContentLength} instead`);
           });
         } else {
           it('does not warn', () => assert.isFalse(loggerSpy.called));
@@ -874,7 +874,7 @@ describe('TransactionRunner', () => {
 
         context('the real request', () => {
           it('has the Content-Length header', () => assert.isOk(caseless(realRequest.headers).has('Content-Length')));
-          return it(`has the Content-Length header set to ${expectedContentLength}`, () =>
+          it(`has the Content-Length header set to ${expectedContentLength}`, () =>
             assert.equal(
               caseless(realRequest.headers).get('Content-Length'),
               expectedContentLength
@@ -883,7 +883,7 @@ describe('TransactionRunner', () => {
         });
         return context('the transaction object', () => {
           it('has the Content-Length header', () => assert.isOk(caseless(transaction.request.headers).has('Content-Length')));
-          return it(`has the Content-Length header set to ${expectedContentLength}`, () =>
+          it(`has the Content-Length header set to ${expectedContentLength}`, () =>
             assert.equal(
               caseless(transaction.request.headers).get('Content-Length'),
               expectedContentLength
@@ -1003,7 +1003,7 @@ describe('TransactionRunner', () => {
       return spies = {};
     });
 
-    return describe('when the hooks handler is used', () => {
+    describe('when the hooks handler is used', () => {
       describe("and it doesn't crash", () => {
         it('should perform all transactions', done =>
           runner.executeAllTransactions(transactions, hooks, (error) => {
@@ -1028,7 +1028,7 @@ describe('TransactionRunner', () => {
           })
         );
 
-        return it('should execute all other hooks once', done =>
+        it('should execute all other hooks once', done =>
 
           runner.executeAllTransactions(transactions, hooks, (error) => {
             if (error) { return done(error); }
@@ -1043,7 +1043,7 @@ describe('TransactionRunner', () => {
         );
       });
 
-      return describe('and it crashes (hook handler error was set)', () => {
+      describe('and it crashes (hook handler error was set)', () => {
         describe('before any hook is executed', () => {
           beforeEach((done) => {
             runner.hookHandlerError = new Error('handler died in before everything');
@@ -1056,7 +1056,7 @@ describe('TransactionRunner', () => {
 
           it('should not perform any transaction', () => {
             assert.isFalse(serverNock1.isDone(), 'first resource');
-            return assert.isFalse(serverNock2.isDone(), 'second resource');
+            assert.isFalse(serverNock2.isDone(), 'second resource');
           });
 
           it('should not perform any hooks', () =>
@@ -1070,7 +1070,7 @@ describe('TransactionRunner', () => {
             })()
           );
 
-          return it('should return the error', () => assert.include(returnedError.message, 'everything'));
+          it('should return the error', () => assert.include(returnedError.message, 'everything'));
         });
 
         describe('after ‘beforeAll’ hook is executed', () => {
@@ -1105,10 +1105,10 @@ describe('TransactionRunner', () => {
 
           it('should not perform any transaction', () => {
             assert.isFalse(serverNock1.isDone(), 'first resource');
-            return assert.isFalse(serverNock2.isDone(), 'second resource');
+            assert.isFalse(serverNock2.isDone(), 'second resource');
           });
 
-          return it('should return the error', () => assert.include(returnedError.message, 'beforeAll'));
+          it('should return the error', () => assert.include(returnedError.message, 'beforeAll'));
         });
 
         describe('after ‘beforeEach’ hook is executed', () => {
@@ -1146,10 +1146,10 @@ describe('TransactionRunner', () => {
 
           it('should not perform any transaction', () => {
             assert.isFalse(serverNock1.isDone(), 'first resource');
-            return assert.isFalse(serverNock2.isDone(), 'second resource');
+            assert.isFalse(serverNock2.isDone(), 'second resource');
           });
 
-          return it('should return the error', () => assert.include(returnedError.message, 'beforeEach'));
+          it('should return the error', () => assert.include(returnedError.message, 'beforeEach'));
         });
 
         describe('after ‘before’ hook is executed', () => {
@@ -1190,10 +1190,10 @@ describe('TransactionRunner', () => {
 
           it('should not perform any transaction', () => {
             assert.isFalse(serverNock1.isDone(), 'first resource');
-            return assert.isFalse(serverNock2.isDone(), 'second resource');
+            assert.isFalse(serverNock2.isDone(), 'second resource');
           });
 
-          return it('should return the error', () => assert.include(returnedError.message, 'before 1'));
+          it('should return the error', () => assert.include(returnedError.message, 'before 1'));
         });
 
         describe('after ‘beforeEachValidation’ hook is executed', () => {
@@ -1238,10 +1238,10 @@ describe('TransactionRunner', () => {
 
           it('should perform only the first transaction', () => {
             assert.isTrue(serverNock1.isDone(), 'first resource');
-            return assert.isFalse(serverNock2.isDone(), 'second resource');
+            assert.isFalse(serverNock2.isDone(), 'second resource');
           });
 
-          return it('should return the error', () => assert.include(returnedError.message, 'before each validation'));
+          it('should return the error', () => assert.include(returnedError.message, 'before each validation'));
         });
 
         describe('after ‘beforeValidation’ hook is executed', () => {
@@ -1289,10 +1289,10 @@ describe('TransactionRunner', () => {
 
           it('should perform only first transaction', () => {
             assert.isTrue(serverNock1.isDone(), 'first resource');
-            return assert.isFalse(serverNock2.isDone(), 'second resource');
+            assert.isFalse(serverNock2.isDone(), 'second resource');
           });
 
-          return it('should return the error', () => assert.include(returnedError.message, 'before validation 1'));
+          it('should return the error', () => assert.include(returnedError.message, 'before validation 1'));
         });
 
         describe('after ‘after’ hook is executed', () => {
@@ -1344,10 +1344,10 @@ describe('TransactionRunner', () => {
 
           it('should not perform any other transaction', () => {
             assert.isTrue(serverNock1.isDone(), 'first resource');
-            return assert.isFalse(serverNock2.isDone(), 'second resource');
+            assert.isFalse(serverNock2.isDone(), 'second resource');
           });
 
-          return it('should return the error', () => assert.include(returnedError.message, 'after 1'));
+          it('should return the error', () => assert.include(returnedError.message, 'after 1'));
         });
 
         describe('after ‘afterEach’ hook is executed', () => {
@@ -1398,13 +1398,13 @@ describe('TransactionRunner', () => {
 
           it('should not perform any other transaction', () => {
             assert.isTrue(serverNock1.isDone(), 'first resource');
-            return assert.isFalse(serverNock2.isDone(), 'second resource');
+            assert.isFalse(serverNock2.isDone(), 'second resource');
           });
 
-          return it('should return the error', () => assert.include(returnedError.message, 'after each'));
+          it('should return the error', () => assert.include(returnedError.message, 'after each'));
         });
 
-        return describe('after ‘afterAll’ hook is executed', () => {
+        describe('after ‘afterAll’ hook is executed', () => {
           beforeEach((done) => {
             const hookHandlerError = new Error('handler died in after all');
 
@@ -1438,10 +1438,10 @@ describe('TransactionRunner', () => {
 
           it('should perform both transactions', () => {
             assert.isTrue(serverNock1.isDone(), 'first resource');
-            return assert.isTrue(serverNock2.isDone(), 'second resource');
+            assert.isTrue(serverNock2.isDone(), 'second resource');
           });
 
-          return it('should return the error', () => assert.include(returnedError.message, 'after all'));
+          it('should return the error', () => assert.include(returnedError.message, 'after all'));
         });
       });
     });
@@ -1529,7 +1529,7 @@ describe('TransactionRunner', () => {
 
       afterEach(() => nock.cleanAll());
 
-      return it('should replace line feed in body', done =>
+      it('should replace line feed in body', done =>
         runner.executeTransaction(multiPartTransaction, () => {
           assert.isOk(server.isDone());
           assert.equal(multiPartTransaction.request.body, parsedBody, 'Body');
@@ -1553,7 +1553,7 @@ describe('TransactionRunner', () => {
 
       afterEach(() => nock.cleanAll());
 
-      return it('should replace line feed in body', done =>
+      it('should replace line feed in body', done =>
         runner.executeTransaction(multiPartTransaction, () => {
           assert.isOk(server.isDone());
           assert.equal(multiPartTransaction.request.body, parsedBody, 'Body');
@@ -1574,7 +1574,7 @@ describe('TransactionRunner', () => {
 
       afterEach(() => nock.cleanAll());
 
-      return it('should not add CR again', done =>
+      it('should not add CR again', done =>
         runner.executeTransaction(multiPartTransaction, () => {
           assert.isOk(server.isDone());
           assert.notInclude(multiPartTransaction.request.body, '\r\r');
@@ -1583,7 +1583,7 @@ describe('TransactionRunner', () => {
       );
     });
 
-    return describe('when multipart header is not in request', () => {
+    describe('when multipart header is not in request', () => {
       beforeEach(() => {
         server = nock('http://127.0.0.1:3000')
           .post('/machines/message')
@@ -1593,7 +1593,7 @@ describe('TransactionRunner', () => {
 
       afterEach(() => nock.cleanAll());
 
-      return it('should not include any line-feed in body', done =>
+      it('should not include any line-feed in body', done =>
         runner.executeTransaction(notMultiPartTransaction, () => {
           assert.isOk(server.isDone());
           assert.notInclude(multiPartTransaction.request.body, '\r\n');
@@ -1692,7 +1692,7 @@ describe('TransactionRunner', () => {
 
       afterEach(() => loggerStub.info.restore());
 
-      return it('should run the hooks', done =>
+      it('should run the hooks', done =>
         runner.executeAllTransactions([transaction], runner.hooks, () => {
           assert.isOk(loggerStub.info.calledWith('before'));
           assert.isOk(loggerStub.info.calledWith('beforeValidation'));
@@ -1728,7 +1728,7 @@ describe('TransactionRunner', () => {
 
       afterEach(() => loggerStub.info.restore());
 
-      return it('should run the hooks', (done) => {
+      it('should run the hooks', (done) => {
         runner.hooks.transactions = null;
         return runner.executeAllTransactions([transaction], runner.hooks, () => {
           assert.isOk(loggerStub.info.calledWith('before'));
@@ -1755,7 +1755,7 @@ describe('TransactionRunner', () => {
 
       afterEach(() => loggerStub.info.restore());
 
-      return it('should run all hooks', done =>
+      it('should run all hooks', done =>
         runner.executeAllTransactions([transaction], runner.hooks, () => {
           assert.isOk(loggerStub.info.calledWith('first'));
           assert.isOk(loggerStub.info.calledWith('second'));
@@ -1777,7 +1777,7 @@ describe('TransactionRunner', () => {
           return runner.hooks.beforeAll(beforeAllStubAnother);
         });
 
-        return it('should run the hooks', done =>
+        it('should run the hooks', done =>
           runner.executeAllTransactions([], runner.hooks, () => {
             assert.isOk(beforeAllStub.called);
             assert.isOk(beforeAllStubAnother.called);
@@ -1798,7 +1798,7 @@ describe('TransactionRunner', () => {
           return runner.hooks.afterAll(afterAllStubAnother);
         });
 
-        return it('should run the hooks', done =>
+        it('should run the hooks', done =>
           runner.executeAllTransactions([], runner.hooks, () => {
             assert.isOk(afterAllStub.called);
             assert.isOk(afterAllStubAnother.called);
@@ -1807,7 +1807,7 @@ describe('TransactionRunner', () => {
         );
       });
 
-      return describe('with multiple hooks for the same events', () => {
+      describe('with multiple hooks for the same events', () => {
         const legacyApiFunction = callback => callback();
 
         const beforeAllStub1 = sinon.spy(legacyApiFunction);
@@ -1822,7 +1822,7 @@ describe('TransactionRunner', () => {
           return runner.hooks.beforeAll(beforeAllStub2);
         });
 
-        return it('should run all the events in order', done =>
+        it('should run all the events in order', done =>
           runner.executeAllTransactions([], runner.hooks, () => {
             assert.isOk(beforeAllStub1.calledBefore(beforeAllStub2));
             assert.isOk(beforeAllStub2.called);
@@ -1843,7 +1843,7 @@ describe('TransactionRunner', () => {
 
         beforeEach(() => runner.hooks.beforeAll(beforeAllStub));
 
-        return it('should run the hooks', done =>
+        it('should run the hooks', done =>
           runner.executeAllTransactions([], runner.hooks, () => {
             assert.isOk(beforeAllStub.called);
             return done();
@@ -1858,7 +1858,7 @@ describe('TransactionRunner', () => {
 
         beforeEach(() => runner.hooks.afterAll(afterAllStub));
 
-        return it('should run the hooks', done =>
+        it('should run the hooks', done =>
           runner.executeAllTransactions([], runner.hooks, () => {
             assert.isOk(afterAllStub.called);
             return done();
@@ -1866,7 +1866,7 @@ describe('TransactionRunner', () => {
         );
       });
 
-      return describe('with multiple hooks for the same events', () => {
+      describe('with multiple hooks for the same events', () => {
         const hook = (transactions, callback) => callback();
 
         const beforeAllStub1 = sinon.spy(hook);
@@ -1881,7 +1881,7 @@ describe('TransactionRunner', () => {
           return runner.hooks.beforeAll(beforeAllStub2);
         });
 
-        return it('should run all the events in order', done =>
+        it('should run all the events in order', done =>
           runner.executeAllTransactions([], runner.hooks, () => {
             assert.isOk(beforeAllStub1.calledBefore(beforeAllStub2));
             assert.isOk(beforeAllStub2.called);
@@ -2002,7 +2002,7 @@ function(transactions){
           });
         });
 
-        return it('should be able to call "log" from inside the function', (done) => {
+        it('should be able to call "log" from inside the function', (done) => {
           const functionString = `\
 function(transactions){
   log(transactions[0].name);
@@ -2103,7 +2103,7 @@ function(transactions){
           })
         );
 
-        return it('should run the hook for each transaction', done =>
+        it('should run the hook for each transaction', done =>
           runner.executeAllTransactions(transactionsForExecution, runner.hooks, () => {
             assert.equal(beforeEachStub.callCount, transactionsForExecution.length);
             return done();
@@ -2151,7 +2151,7 @@ function(transactions){
           });
         });
 
-        return it('should run the hook for each transaction', done =>
+        it('should run the hook for each transaction', done =>
           runner.executeAllTransactions(transactionsForExecution, runner.hooks, () => {
             assert.equal(beforeEachValidationStub.callCount, transactionsForExecution.length);
             return done();
@@ -2185,7 +2185,7 @@ function(transactions){
           })
         );
 
-        return it('should run the hook for each transaction', done =>
+        it('should run the hook for each transaction', done =>
           runner.executeAllTransactions(transactionsForExecution, runner.hooks, () => {
             assert.equal(afterEachStub.callCount, transactionsForExecution.length);
             return done();
@@ -2193,7 +2193,7 @@ function(transactions){
         );
       });
 
-      return describe('with multiple hooks for the same events', () => {
+      describe('with multiple hooks for the same events', () => {
         const legacyApiFunction = (transactions, callback) => callback();
 
         const beforeAllStub1 = sinon.spy(legacyApiFunction);
@@ -2208,7 +2208,7 @@ function(transactions){
           return runner.hooks.beforeAll(beforeAllStub2);
         });
 
-        return it('should run all the events in order', done =>
+        it('should run all the events in order', done =>
           runner.executeAllTransactions([], runner.hooks, () => {
             assert.isOk(beforeAllStub1.calledBefore(beforeAllStub2));
             assert.isOk(beforeAllStub2.called);
@@ -2232,7 +2232,7 @@ function(transactions){
 
       afterEach(() => configuration.emitter.emit.restore());
 
-      return it('should report an error with the test', done =>
+      it('should report an error with the test', done =>
         runner.executeAllTransactions([transaction], runner.hooks, () => {
           assert.isOk(configuration.emitter.emit.calledWith('test error'));
           return done();
@@ -2252,7 +2252,7 @@ function(transactions){
 
       afterEach(() => configuration.emitter.emit.restore());
 
-      return it('should report an error with the test', done =>
+      it('should report an error with the test', done =>
         runner.executeAllTransactions([transaction], runner.hooks, () => {
           assert.isOk(configuration.emitter.emit.calledWith('test error'));
           return done();
@@ -2294,7 +2294,7 @@ function(transactions){
         })
       );
 
-      return it('should add fail message as a error under `general` to the results on test passed to the emitter', done =>
+      it('should add fail message as a error under `general` to the results on test passed to the emitter', done =>
         runner.executeAllTransactions([transaction], runner.hooks, () => {
           const messages = [];
           const { callCount } = configuration.emitter.emit;
@@ -2350,7 +2350,7 @@ function(transactions){
         })
       );
 
-      return it('should add fail message as a error under `general` to the results on test passed to the emitter', done =>
+      it('should add fail message as a error under `general` to the results on test passed to the emitter', done =>
         runner.executeAllTransactions([transaction], runner.hooks, () => {
           const messages = [];
           const { callCount } = configuration.emitter.emit;
@@ -2440,7 +2440,7 @@ function(transactions){
           })
         );
 
-        return describe('when message is set to fail also in ‘after’ hook', () => {
+        describe('when message is set to fail also in ‘after’ hook', () => {
           clonedTransaction = null;
           beforeEach(() => {
             clonedTransaction = clone(transaction);
@@ -2483,7 +2483,7 @@ function(transactions){
             })
           );
 
-          return it('should not add fail message as a error under `general` to the results on test passed to the emitter', done =>
+          it('should not add fail message as a error under `general` to the results on test passed to the emitter', done =>
             runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
               const messages = [];
               const { callCount } = configuration.emitter.emit;
@@ -2571,7 +2571,7 @@ function(transactions){
           })
         );
 
-        return it('should not add fail message as a error under `general` to the results on test passed to the emitter', done =>
+        it('should not add fail message as a error under `general` to the results on test passed to the emitter', done =>
           runner.executeAllTransactions([modifiedTransaction], runner.hooks, () => {
             const messages = [];
             const { callCount } = configuration.emitter.emit;
@@ -2586,7 +2586,7 @@ function(transactions){
         );
       });
 
-      return describe('in ‘after’ hook when transaction passes ', () => {
+      describe('in ‘after’ hook when transaction passes ', () => {
         let clonedTransaction = null;
         beforeEach(() => {
           clonedTransaction = clone(transaction);
@@ -2663,7 +2663,7 @@ function(transactions){
           })
         );
 
-        return it('should not add fail message as a error under `general` to the results on test passed to the emitter', done =>
+        it('should not add fail message as a error under `general` to the results on test passed to the emitter', done =>
           runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
             const messages = [];
             const { callCount } = configuration.emitter.emit;
@@ -2691,7 +2691,7 @@ function(transactions){
         runner.executeAllTransactions([transaction], runner.hooks, () => done())
       );
 
-      return it('should pass the transactions', done =>
+      it('should pass the transactions', done =>
         runner.executeAllTransactions([transaction], runner.hooks, (error) => {
           if (error) { done(error); }
           assert.isOk(configuration.emitter.emit.calledWith('test pass'));
@@ -2700,12 +2700,12 @@ function(transactions){
       );
     });
 
-    return describe('with hook modifying the transaction body and backend Express app using the body parser', () => {
+    describe('with hook modifying the transaction body and backend Express app using the body parser', () => {
       before(() => nock.enableNetConnect());
 
       after(() => nock.disableNetConnect());
 
-      return it('should perform the transaction and don\'t hang', (done) => {
+      it('should perform the transaction and don\'t hang', (done) => {
         nock.cleanAll();
 
         const receivedRequests = [];
@@ -2759,7 +2759,7 @@ function(transactions){
 
         after(() => configuration.emitter.emit.restore());
 
-        return it('should be called with warning containing error message', (done) => {
+        it('should be called with warning containing error message', (done) => {
           const hook = `\
 function(transcaction){
   throw(new Error("Throwed message"))
@@ -2780,7 +2780,7 @@ function(transcaction){
     )
   );
 
-  return describe('runHook(hook, transaction, callback)', () =>
+  describe('runHook(hook, transaction, callback)', () =>
     describe('when sandbox mode is on (hook function is a string)', () => {
       before(() => {
         configuration = {};
@@ -2902,7 +2902,7 @@ function(transaction){
         });
       });
 
-      return it('should NOT have access to console', (done) => {
+      it('should NOT have access to console', (done) => {
         const hook = `\
 function(transaction){
   console.log('console test');

@@ -23,7 +23,7 @@ describe('interactiveConfig', () => {
   describe('.prompt(config, callback)', () => {
     it('is a defined function', () => assert.isFunction(interactiveConfig.prompt));
 
-    return describe('when I call it ', () =>
+    describe('when I call it ', () =>
 
       it('should run inquirer', (done) => {
         sinon.stub(inquirerStub, 'prompt').callsFake(questions => ({ then(cb) { return cb(); } }));
@@ -58,7 +58,7 @@ describe('interactiveConfig', () => {
         };
       });
 
-      return describe('config object passed to callback', () => {
+      describe('config object passed to callback', () => {
         let object = {};
 
         before(done =>
@@ -68,18 +68,18 @@ describe('interactiveConfig', () => {
           })
         );
 
-        return it('should have properties set from the config on proper places', () => {
+        it('should have properties set from the config on proper places', () => {
           assert.equal(object._[0], 'apiary.apib');
           assert.equal(object._[1], 'http://127.0.0.1:3000');
           assert.equal(object.server, 'rails server');
           assert.equal(object.reporter, 'apiary');
           assert.equal(object.custom.apiaryApiKey, 'key');
-          return assert.equal(object.custom.apiaryApiName, 'name');
+          assert.equal(object.custom.apiaryApiName, 'name');
         });
       });
     });
 
-    return describe('when apiary config passed from cli', () => {
+    describe('when apiary config passed from cli', () => {
       before(() => {
         answers = {
           blueprint: 'apiary.apib',
@@ -99,7 +99,7 @@ describe('interactiveConfig', () => {
       });
 
 
-      return describe('config object passed to callback', () => {
+      describe('config object passed to callback', () => {
         let object = {};
 
         before(done =>
@@ -109,13 +109,13 @@ describe('interactiveConfig', () => {
           })
         );
 
-        return it('should have properties set from the config on proper places', () => {
+        it('should have properties set from the config on proper places', () => {
           assert.equal(object._[0], 'apiary.apib');
           assert.equal(object._[1], 'http://127.0.0.1:3000');
 
           assert.equal(object.reporter, 'apiary');
           assert.equal(object.custom.apiaryApiKey, '123123123');
-          return assert.equal(object.custom.apiaryApiName, 'asdadqweqweq');
+          assert.equal(object.custom.apiaryApiName, 'asdadqweqweq');
         });
       });
     });
@@ -133,20 +133,20 @@ describe('interactiveConfig', () => {
 
     it('should save the file', () => {
       interactiveConfig.updateCircle();
-      return assert.isTrue(fsStub.writeFileSync.called);
+      assert.isTrue(fsStub.writeFileSync.called);
     });
 
-    return it('should save proper config', () => {});
+    it('should save proper config', () => {});
   });
 
-  return describe('.updateTravis()', () => {
+  describe('.updateTravis()', () => {
     beforeEach(() => sinon.stub(fsStub, 'writeFileSync'));
 
     afterEach(() => fsStub.writeFileSync.restore());
 
-    return it('should save the file', () => {
+    it('should save the file', () => {
       interactiveConfig.updateTravis();
-      return assert.isTrue(fsStub.writeFileSync.called);
+      assert.isTrue(fsStub.writeFileSync.called);
     });
   });
 });

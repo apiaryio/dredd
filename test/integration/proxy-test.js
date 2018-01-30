@@ -150,12 +150,12 @@ const test = function (scenario) {
 
     if (scenario.protocol === 'http') {
       it('requests the proxy with regular HTTP method', () => assert.oneOf(proxyRequestInfo.method, REGULAR_HTTP_METHODS));
-      return it('requests the proxy, using the original URL as a path', () => assert.equal(proxyRequestInfo.url, scenario.expectedUrl));
+      it('requests the proxy, using the original URL as a path', () => assert.equal(proxyRequestInfo.url, scenario.expectedUrl));
     } else if (scenario.protocol === 'https') {
       it('requests the proxy with CONNECT', () => assert.equal(proxyRequestInfo.method, 'CONNECT'));
-      return it('asks the proxy to tunnel SSL connection to the original hostname', () => {
+      it('asks the proxy to tunnel SSL connection to the original hostname', () => {
         const hostname = `${url.parse(scenario.expectedUrl).hostname}:${DEFAULT_SERVER_PORT}`;
-        return assert.equal(proxyRequestInfo.url, hostname);
+        assert.equal(proxyRequestInfo.url, hostname);
       });
     }
     throw new Error(`Unsupported protocol: ${scenario.protocol}`);
@@ -163,7 +163,7 @@ const test = function (scenario) {
     it('does not request the proxy', () => assert.deepEqual(proxyRequestInfo, {}));
     it('does request the server', () => assert.isTrue(serverRuntimeInfo.requestedOnce));
     it('requests the server with regular HTTP method', () => assert.oneOf(serverRuntimeInfo.lastRequest.method, REGULAR_HTTP_METHODS));
-    return it('requests the server with the original path', () => assert.equal(serverRuntimeInfo.lastRequest.url, scenario.expectedUrl));
+    it('requests the server with the original path', () => assert.equal(serverRuntimeInfo.lastRequest.url, scenario.expectedUrl));
   } else {
     throw new Error(`Unsupported destination: ${scenario.expectedDestination}`);
   }
@@ -173,7 +173,7 @@ const test = function (scenario) {
 ['http', 'https'].forEach((protocol) => {
   const serverUrl = `${protocol}://${SERVER_HOST}`;
 
-  return describe(`Respecting ‘${protocol}_proxy’ Environment Variable`, () => {
+  describe(`Respecting ‘${protocol}_proxy’ Environment Variable`, () => {
     const expectedLog = `\
 proxy specified by environment variables: \
 ${protocol}_proxy=${PROXY_URL}\
@@ -212,7 +212,7 @@ ${protocol}_proxy=${PROXY_URL}\
       });
     });
 
-    return describe('Downloading API Description Document', () =>
+    describe('Downloading API Description Document', () =>
       test({
         protocol,
         configureDredd(configuration) {
@@ -274,7 +274,7 @@ http_proxy=${PROXY_URL}, no_proxy=${SERVER_HOST}\
     });
   });
 
-  return describe('Downloading API Description Document', () =>
+  describe('Downloading API Description Document', () =>
     test({
       protocol: 'http',
       configureDredd(configuration) {
