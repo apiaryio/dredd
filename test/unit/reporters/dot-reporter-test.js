@@ -1,15 +1,20 @@
-const {assert} = require('chai');
+/* eslint-disable
+    no-return-assign,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire').noCallThru();
 
-const {EventEmitter} = require('events');
+const { EventEmitter } = require('events');
 const loggerStub = require('../../../src/logger');
+
 const DotReporter = proxyquire('../../../src/reporters/dot-reporter', {
-  './../logger' : loggerStub
+  './../logger': loggerStub
 });
 
-describe('DotReporter', function() {
-
+describe('DotReporter', () => {
   let stats = {};
   let test = [];
   let emitter = {};
@@ -19,7 +24,7 @@ describe('DotReporter', function() {
 
   after(() => loggerStub.transports.console.silent = false);
 
-  beforeEach(function() {
+  beforeEach(() => {
     stats = {
       tests: 0,
       failures: 0,
@@ -35,8 +40,7 @@ describe('DotReporter', function() {
     return dotReporter = new DotReporter(emitter, stats, tests);
   });
 
-  describe('when starting', function() {
-
+  describe('when starting', () => {
     beforeEach(() => sinon.spy(loggerStub, 'info'));
 
     afterEach(() => loggerStub.info.restore());
@@ -46,15 +50,14 @@ describe('DotReporter', function() {
     );
   });
 
-  describe('when ending', function() {
-
-    beforeEach(function() {
+  describe('when ending', () => {
+    beforeEach(() => {
       stats.tests = 1;
       sinon.spy(loggerStub, 'complete');
       return sinon.stub(dotReporter, 'write');
     });
 
-    afterEach(function() {
+    afterEach(() => {
       loggerStub.complete.restore();
       return dotReporter.write.restore();
     });
@@ -63,8 +66,7 @@ describe('DotReporter', function() {
       emitter.emit('end', () => assert.isOk(loggerStub.complete.calledTwice))
     );
 
-    return describe('when there are failures', function() {
-
+    return describe('when there are failures', () => {
       before(() =>
         test = {
           status: 'fail',
@@ -72,7 +74,7 @@ describe('DotReporter', function() {
         }
       );
 
-      beforeEach(function() {
+      beforeEach(() => {
         dotReporter.errors = [test];
         dotReporter.stats.tests = 1;
         emitter.emit('test start', test);
@@ -82,7 +84,7 @@ describe('DotReporter', function() {
       afterEach(() => loggerStub.fail.restore());
 
       return it('should log the failures at the end of testing', done =>
-        emitter.emit('end', function() {
+        emitter.emit('end', () => {
           assert.isOk(loggerStub.fail.called);
           return done();
         })
@@ -90,8 +92,7 @@ describe('DotReporter', function() {
     });
   });
 
-  describe('when test passes', function() {
-
+  describe('when test passes', () => {
     before(() =>
       test = {
         status: 'pass',
@@ -99,7 +100,7 @@ describe('DotReporter', function() {
       }
     );
 
-    beforeEach(function() {
+    beforeEach(() => {
       sinon.stub(dotReporter, 'write');
       emitter.emit('test start', test);
       return emitter.emit('test pass', test);
@@ -110,7 +111,7 @@ describe('DotReporter', function() {
     return it('should write a .', () => assert.isOk(dotReporter.write.calledWith('.')));
   });
 
-  describe('when test is skipped', function() {
+  describe('when test is skipped', () => {
     before(() =>
       test = {
         status: 'skipped',
@@ -118,7 +119,7 @@ describe('DotReporter', function() {
       }
     );
 
-    beforeEach(function() {
+    beforeEach(() => {
       sinon.stub(dotReporter, 'write');
       emitter.emit('test start', test);
       return emitter.emit('test skip', test);
@@ -129,8 +130,7 @@ describe('DotReporter', function() {
     return it('should write a -', () => assert.isOk(dotReporter.write.calledWith('-')));
   });
 
-  describe('when test fails', function() {
-
+  describe('when test fails', () => {
     before(() =>
       test = {
         status: 'failed',
@@ -138,7 +138,7 @@ describe('DotReporter', function() {
       }
     );
 
-    beforeEach(function() {
+    beforeEach(() => {
       sinon.stub(dotReporter, 'write');
       emitter.emit('test start', test);
       return emitter.emit('test fail', test);
@@ -149,8 +149,7 @@ describe('DotReporter', function() {
     return it('should write an F', () => assert.isOk(dotReporter.write.calledWith('F')));
   });
 
-  return describe('when test errors', function() {
-
+  return describe('when test errors', () => {
     before(() =>
       test = {
         status: 'error',
@@ -158,7 +157,7 @@ describe('DotReporter', function() {
       }
     );
 
-    beforeEach(function() {
+    beforeEach(() => {
       sinon.stub(dotReporter, 'write');
       emitter.emit('test start', test);
       return emitter.emit('test error', new Error('Error'), test);

@@ -1,21 +1,27 @@
-const {assert} = require('chai');
+/* eslint-disable
+    no-return-assign,
+    no-unused-vars,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire').noCallThru();
 
-const {EventEmitter} = require('events');
+const { EventEmitter } = require('events');
 const loggerStub = require('../../../src/logger');
 const fsStub = require('fs');
-const fsExtraStub = {mkdirp(path, cb) { return cb(); }};
+
+const fsExtraStub = { mkdirp(path, cb) { return cb(); } };
 
 const HtmlReporter = proxyquire('../../../src/reporters/html-reporter', {
-  './../logger' : loggerStub,
-  'fs' : fsStub,
-  'fs-extra' : fsExtraStub
+  './../logger': loggerStub,
+  fs: fsStub,
+  'fs-extra': fsExtraStub
 });
 
 
-describe('HtmlReporter', function() {
-
+describe('HtmlReporter', () => {
   let test = {};
   let emitter = {};
   let stats = {};
@@ -26,7 +32,7 @@ describe('HtmlReporter', function() {
 
   after(() => loggerStub.transports.console.silent = false);
 
-  beforeEach(function() {
+  beforeEach(() => {
     emitter = new EventEmitter();
     stats = {
       tests: 0,
@@ -39,18 +45,17 @@ describe('HtmlReporter', function() {
       duration: 0
     };
     tests = [];
-    return htmlReporter = new HtmlReporter(emitter, stats, tests, "test.html");
+    return htmlReporter = new HtmlReporter(emitter, stats, tests, 'test.html');
   });
 
-  describe('when starting', function() {
-
-    describe('when file exists', function() {
-      before(function() {
+  describe('when starting', () => {
+    describe('when file exists', () => {
+      before(() => {
         sinon.stub(fsStub, 'existsSync').callsFake(path => true);
         return sinon.stub(loggerStub, 'info');
       });
 
-      after(function() {
+      after(() => {
         fsStub.existsSync.restore();
         return loggerStub.info.restore();
       });
@@ -58,14 +63,13 @@ describe('HtmlReporter', function() {
       return it('should inform about the existing file', () => assert.isOk(loggerStub.info.called));
     });
 
-    describe('when file does not exist', function() {
-
-      before(function() {
+    describe('when file does not exist', () => {
+      before(() => {
         sinon.stub(fsStub, 'existsSync').callsFake(path => false);
         return sinon.stub(fsStub, 'unlinkSync');
       });
 
-      after(function() {
+      after(() => {
         fsStub.existsSync.restore();
         return fsStub.unlinkSync.restore();
       });
@@ -74,31 +78,29 @@ describe('HtmlReporter', function() {
     });
 
     return it('should write the prelude to the buffer', done =>
-      emitter.emit('start', '' , function() {
+      emitter.emit('start', '', () => {
         assert.isOk(~htmlReporter.buf.indexOf('Dredd'));
         return done();
       })
     );
   });
 
-  describe('when ending', function() {
-
+  describe('when ending', () => {
     before(() => stats.tests = 1);
 
-    describe('when can create output directory', function() {
-
-      beforeEach(function() {
+    describe('when can create output directory', () => {
+      beforeEach(() => {
         sinon.stub(fsStub, 'writeFile').callsFake((path, data, callback) => callback());
         return sinon.spy(fsExtraStub, 'mkdirp');
       });
 
-      afterEach(function() {
+      afterEach(() => {
         fsStub.writeFile.restore();
         return fsExtraStub.mkdirp.restore();
       });
 
       return it('should write the file', done =>
-        emitter.emit('end', function() {
+        emitter.emit('end', () => {
           assert.isOk(fsExtraStub.mkdirp.called);
           assert.isOk(fsStub.writeFile.called);
           return done();
@@ -106,22 +108,21 @@ describe('HtmlReporter', function() {
       );
     });
 
-    return describe('when cannot create output directory', function() {
-
-      beforeEach(function() {
+    return describe('when cannot create output directory', () => {
+      beforeEach(() => {
         sinon.stub(loggerStub, 'error');
         sinon.stub(fsStub, 'writeFile').callsFake((path, data, callback) => callback());
         return sinon.stub(fsExtraStub, 'mkdirp').callsFake((path, cb) => cb('error'));
       });
 
-      after(function() {
+      after(() => {
         loggerStub.error.restore();
         fsStub.writeFile.restore();
         return fsExtraStub.mkdirp.restore();
       });
 
       return it('should write to log', done =>
-        emitter.emit('end', function() {
+        emitter.emit('end', () => {
           assert.isOk(fsExtraStub.mkdirp.called);
           assert.isOk(fsStub.writeFile.notCalled);
           assert.isOk(loggerStub.error.called);
@@ -131,8 +132,7 @@ describe('HtmlReporter', function() {
     });
   });
 
-  describe('when test passes', function() {
-
+  describe('when test passes', () => {
     before(() =>
       test = {
         status: 'pass',
@@ -140,7 +140,7 @@ describe('HtmlReporter', function() {
       }
     );
 
-    it('should call the pass event', function() {
+    it('should call the pass event', () => {
       emitter.emit('test start', test);
       emitter.emit('test pass', test);
       return assert.isOk(~htmlReporter.buf.indexOf('Pass'));
@@ -148,7 +148,7 @@ describe('HtmlReporter', function() {
 
     return describe('when details=true', () =>
 
-      it('should write details for passing tests', function() {
+      it('should write details for passing tests', () => {
         htmlReporter.details = true;
         emitter.emit('test pass', test);
         return assert.isOk(~htmlReporter.buf.indexOf('Request'));
@@ -156,7 +156,7 @@ describe('HtmlReporter', function() {
     );
   });
 
-  describe('when test is skipped', function() {
+  describe('when test is skipped', () => {
     before(() =>
       test = {
         status: 'skipped',
@@ -164,15 +164,14 @@ describe('HtmlReporter', function() {
       }
     );
 
-    return it('should call the skip event', function() {
+    return it('should call the skip event', () => {
       emitter.emit('test start', test);
       emitter.emit('test skip', test);
       return assert.isOk(~htmlReporter.buf.indexOf('Skip'));
     });
   });
 
-  describe('when test fails', function() {
-
+  describe('when test fails', () => {
     before(() =>
       test = {
         status: 'failed',
@@ -180,15 +179,14 @@ describe('HtmlReporter', function() {
       }
     );
 
-    return it('should call the fail event', function() {
+    return it('should call the fail event', () => {
       emitter.emit('test start', test);
       emitter.emit('test fail', test);
       return assert.isOk(~htmlReporter.buf.indexOf('Fail'));
     });
   });
 
-  return describe('when test errors', function() {
-
+  return describe('when test errors', () => {
     before(() =>
       test = {
         status: 'error',
@@ -196,7 +194,7 @@ describe('HtmlReporter', function() {
       }
     );
 
-    return it('should call the error event', function() {
+    return it('should call the error event', () => {
       emitter.emit('test start', test);
       emitter.emit('test error', new Error('Error'), test);
       return assert.isOk(~htmlReporter.buf.indexOf('Error'));

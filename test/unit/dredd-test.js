@@ -1,4 +1,11 @@
-const {assert} = require('chai');
+/* eslint-disable
+    no-return-assign,
+    no-unused-vars,
+    no-var,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire').noCallThru();
 const bodyParser = require('body-parser');
@@ -11,14 +18,13 @@ const loggerStub = require('../../src/logger');
 const dreddTransactionsStub = require('dredd-transactions');
 
 const Dredd = proxyquire('../../src/dredd', {
-  'request': requestStub,
+  request: requestStub,
   'dredd-transactions': dreddTransactionsStub,
-  'fs': fsStub,
+  fs: fsStub,
   './logger': loggerStub
 });
 
-describe('Dredd class', function() {
-
+describe('Dredd class', () => {
   let configuration = {};
   let dredd = {};
 
@@ -26,27 +32,26 @@ describe('Dredd class', function() {
 
   afterEach(() => fsStub.readFile.restore());
 
-  describe('with legacy configuration', function() {
-    before(function() {
+  describe('with legacy configuration', () => {
+    before(() => {
       configuration = {
         server: 'http://127.0.0.1:3000/',
         blueprintPath: './test/fixtures/apiary.apib'
       };
-      sinon.stub(loggerStub, 'info').callsFake( function() { });
-      return sinon.stub(loggerStub, 'log').callsFake( function() { });
+      sinon.stub(loggerStub, 'info').callsFake(() => { });
+      return sinon.stub(loggerStub, 'log').callsFake(() => { });
     });
 
-    after(function() {
+    after(() => {
       loggerStub.info.restore();
       return loggerStub.log.restore();
     });
 
-    return it('should not explode and run executeTransaction', function(done) {
-
-      const fn = function() {
+    return it('should not explode and run executeTransaction', (done) => {
+      const fn = function () {
         dredd = new Dredd(configuration);
         sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
-        return dredd.run(function(error) {
+        return dredd.run((error) => {
           assert.isOk(dredd.runner.executeTransaction.called);
           dredd.runner.executeTransaction.restore();
           return done();
@@ -57,7 +62,7 @@ describe('Dredd class', function() {
     });
   });
 
-  describe('with valid configuration', function() {
+  describe('with valid configuration', () => {
     before(() =>
       configuration = {
         server: 'http://127.0.0.1:3000/',
@@ -71,55 +76,55 @@ describe('Dredd class', function() {
         }
       });
 
-    it('should copy configuration on creation', function() {
+    it('should copy configuration on creation', () => {
       dredd = new Dredd(configuration);
       assert.isOk(dredd.configuration.options.silent);
       return assert.notOk(dredd.configuration.options['dry-run']);
     });
 
-    it('should load the file on given path', function(done) {
+    it('should load the file on given path', (done) => {
       dredd = new Dredd(configuration);
       sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
-      return dredd.run(function(error) {
+      return dredd.run((error) => {
         assert.isOk(fsStub.readFile.calledWith(configuration.options.path[0]));
         dredd.runner.executeTransaction.restore();
         return done();
       });
     });
 
-    it('should not pass any error to the callback function', function(done) {
+    it('should not pass any error to the callback function', (done) => {
       dredd = new Dredd(configuration);
       sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
-      return dredd.run(function(error) {
+      return dredd.run((error) => {
         assert.isNull(error);
         dredd.runner.executeTransaction.restore();
         return done();
       });
     });
 
-    it('should pass the reporter as second argument', function(done) {
+    it('should pass the reporter as second argument', (done) => {
       dredd = new Dredd(configuration);
       sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
-      return dredd.run(function(error, reporter) {
+      return dredd.run((error, reporter) => {
         assert.isDefined(reporter);
         dredd.runner.executeTransaction.restore();
         return done();
       });
     });
 
-    it('should convert ast to runtime', function(done) {
+    it('should convert ast to runtime', (done) => {
       sinon.spy(dreddTransactionsStub, 'compile');
       dredd = new Dredd(configuration);
       sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
-      return dredd.run(function(error) {
+      return dredd.run((error) => {
         assert.isOk(dreddTransactionsStub.compile.called);
         dredd.runner.executeTransaction.restore();
         return done();
       });
     });
 
-    describe('when paths specified with glob paterns', function() {
-      before(function() {
+    describe('when paths specified with glob paterns', () => {
+      before(() => {
         configuration = {
           server: 'http://127.0.0.1:3000/',
           options: {
@@ -137,7 +142,7 @@ describe('Dredd class', function() {
       afterEach(() => dredd.runner.executeTransaction.restore());
 
       it('should expand all glob patterns and resolved paths should be unique', done =>
-        dredd.run(function(error) {
+        dredd.run((error) => {
           if (error) { return done(error); }
           assert.equal(dredd.configuration.files.length, 3);
           assert.include(dredd.configuration.files, './test/fixtures/multifile/message.apib');
@@ -146,7 +151,7 @@ describe('Dredd class', function() {
       );
 
       it('should remove globs from config', done =>
-        dredd.run(function(error) {
+        dredd.run((error) => {
           if (error) { return done(error); }
           assert.notInclude(dredd.configuration.files, './test/fixtures/multifile/*.apib');
           return done();
@@ -154,7 +159,7 @@ describe('Dredd class', function() {
       );
 
       it('should load file contents on paths to config', done =>
-        dredd.run(function(error) {
+        dredd.run((error) => {
           if (error) { return done(error); }
           assert.isObject(dredd.configuration.data);
           assert.property(dredd.configuration.data, './test/fixtures/multifile/greeting.apib');
@@ -166,7 +171,7 @@ describe('Dredd class', function() {
       );
 
       return it('should parse loaded files', done =>
-        dredd.run(function(error) {
+        dredd.run((error) => {
           if (error) { return done(error); }
           assert.isObject(dredd.configuration.data['./test/fixtures/multifile/greeting.apib']);
           assert.property(dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'annotations');
@@ -178,8 +183,8 @@ describe('Dredd class', function() {
     });
 
 
-    describe('when a glob pattern does not match any files and another does', function() {
-      before(function() {
+    describe('when a glob pattern does not match any files and another does', () => {
+      before(() => {
         configuration = {
           server: 'http://127.0.0.1:3000/',
           options: {
@@ -197,7 +202,7 @@ describe('Dredd class', function() {
       afterEach(() => dredd.runner.executeTransaction.restore());
 
       return it('should return error', done =>
-        dredd.run(function(error) {
+        dredd.run((error) => {
           assert.isOk(error);
           return done();
         })
@@ -205,8 +210,8 @@ describe('Dredd class', function() {
     });
 
 
-    describe('when glob pattern does not match any files', function() {
-      before(function() {
+    describe('when glob pattern does not match any files', () => {
+      before(() => {
         configuration = {
           server: 'http://127.0.0.1:3000/',
           options: {
@@ -224,7 +229,7 @@ describe('Dredd class', function() {
       afterEach(() => dredd.runner.executeTransaction.restore());
 
       return it('should return error', done =>
-        dredd.run(function(error) {
+        dredd.run((error) => {
           assert.isOk(error);
           return done();
         })
@@ -232,8 +237,8 @@ describe('Dredd class', function() {
     });
 
 
-    describe('when configuration contains data object with "filename" as key, and an API description document contents as value', function() {
-      beforeEach(function() {
+    describe('when configuration contains data object with "filename" as key, and an API description document contents as value', () => {
+      beforeEach(() => {
         configuration = {
           server: 'http://127.0.0.1:3000/',
           options: {
@@ -268,7 +273,7 @@ GET /url
       afterEach(() => dredd.runner.executeTransaction.restore());
 
       it('should not expand any glob patterns', done =>
-        dredd.run(function(error) {
+        dredd.run((error) => {
           if (error) { return done(error); }
           assert.lengthOf(dredd.configuration.files, 0);
           return done();
@@ -276,7 +281,7 @@ GET /url
       );
 
       it('should pass data contents to config', done =>
-        dredd.run(function(error) {
+        dredd.run((error) => {
           if (error) { return done(error); }
           assert.isObject(dredd.configuration.data);
           assert.notNestedProperty(dredd, 'configuration.data.testingDirectObject');
@@ -289,7 +294,7 @@ GET /url
       );
 
       it('should parse passed data contents', done =>
-        dredd.run(function(error) {
+        dredd.run((error) => {
           if (error) { return done(error); }
           assert.nestedProperty(dredd, 'configuration.data.testingDirectObjectFilename.annotations');
           assert.nestedProperty(dredd, 'configuration.data.testingDirectBlueprintString.annotations');
@@ -297,9 +302,9 @@ GET /url
         })
       );
 
-      return describe('and I also set configuration.options.path to an existing file', function() {
+      return describe('and I also set configuration.options.path to an existing file', () => {
         let localdredd = null;
-        beforeEach(function() {
+        beforeEach(() => {
           if (configuration.options == null) { configuration.options = {}; }
           configuration.options.path = ['./test/fixtures/apiary.apib'];
           localdredd = new Dredd(configuration);
@@ -309,7 +314,7 @@ GET /url
         afterEach(() => localdredd.runner.executeTransaction.restore());
 
         return it('should fill configuration data with data and one file at that path', done =>
-          localdredd.run(function(error) {
+          localdredd.run((error) => {
             if (error) { return done(error); }
             assert.lengthOf(localdredd.configuration.files, 1);
             assert.isObject(localdredd.configuration.data);
@@ -331,9 +336,9 @@ GET /url
     });
 
 
-    return describe('when paths are specified as a mix of URLs and a glob path', function() {
+    return describe('when paths are specified as a mix of URLs and a glob path', () => {
       let blueprintCode = null;
-      before(function(done) {
+      before((done) => {
         configuration = {
           server: 'http://127.0.0.1:3000/',
           options: {
@@ -342,7 +347,7 @@ GET /url
           }
         };
         dredd = new Dredd(configuration);
-        return fsStub.readFile('./test/fixtures/single-get.apib', 'utf8', function(err, content) {
+        return fsStub.readFile('./test/fixtures/single-get.apib', 'utf8', (err, content) => {
           blueprintCode = content.toString();
           return done(err);
         });
@@ -354,15 +359,15 @@ GET /url
 
       afterEach(() => dredd.runner.executeTransaction.restore());
 
-      describe('when all URLs can be downloaded', function() {
+      describe('when all URLs can be downloaded', () => {
         before(() =>
-          sinon.stub(requestStub, 'get').callsFake((receivedArgs = {}, cb) => cb(null, {statusCode:200}, blueprintCode))
+          sinon.stub(requestStub, 'get').callsFake((receivedArgs = {}, cb) => cb(null, { statusCode: 200 }, blueprintCode))
         );
 
         after(() => requestStub.get.restore());
 
         it('should expand glob pattern and resolved paths should be unique', done =>
-          dredd.run(function(error) {
+          dredd.run((error) => {
             if (error) { return done(error); }
             assert.lengthOf(dredd.configuration.files, 5);
             assert.sameMembers(dredd.configuration.files, [
@@ -377,7 +382,7 @@ GET /url
         );
 
         it('should remove globs from config', done =>
-          dredd.run(function(error) {
+          dredd.run((error) => {
             if (error) { return done(error); }
             assert.notInclude(dredd.configuration.files, './test/fixtures/multifile/*.apib');
             return done();
@@ -385,7 +390,7 @@ GET /url
         );
 
         return it('should load file contents on paths to config and parse these files', done =>
-          dredd.run(function(error) {
+          dredd.run((error) => {
             if (error) { return done(error); }
             assert.isObject(dredd.configuration.data);
             assert.property(dredd.configuration.data, './test/fixtures/multifile/greeting.apib');
@@ -421,20 +426,20 @@ GET /url
         );
       });
 
-      describe('when an URL for one API description document returns 404 not-found', function() {
+      describe('when an URL for one API description document returns 404 not-found', () => {
         before(() =>
-          sinon.stub(requestStub, 'get').callsFake(function(receivedArgs = {}, cb) {
+          sinon.stub(requestStub, 'get').callsFake((receivedArgs = {}, cb) => {
             if ((receivedArgs != null ? receivedArgs.url : undefined) === 'https://another.path.to/apiary.apib') {
-              return cb(null, {statusCode: 404}, 'Page Not Found');
+              return cb(null, { statusCode: 404 }, 'Page Not Found');
             }
-            return cb(null, {statusCode:200}, blueprintCode);
+            return cb(null, { statusCode: 200 }, blueprintCode);
           })
         );
 
         after(() => requestStub.get.restore());
 
         it('should exit with an error', done =>
-          dredd.run(function(error) {
+          dredd.run((error) => {
             assert.isOk(error);
             assert.instanceOf(error, Error);
             assert.property(error, 'message');
@@ -444,28 +449,28 @@ GET /url
         );
 
         return it('should not execute any transaction', done =>
-          dredd.run(function() {
+          dredd.run(() => {
             assert.notOk(dredd.runner.executeTransaction.called);
             return done();
           })
         );
       });
 
-      return describe('when an URL for one API description document is unreachable (erroneous)', function() {
+      return describe('when an URL for one API description document is unreachable (erroneous)', () => {
         before(() =>
-          sinon.stub(requestStub, 'get').callsFake(function(receivedArgs = {}, cb) {
+          sinon.stub(requestStub, 'get').callsFake((receivedArgs = {}, cb) => {
             if ((receivedArgs != null ? receivedArgs.url : undefined) === 'http://some.path.to/file.apib') {
               // server not found on
-              return cb({code: 'ENOTFOUND'});
+              return cb({ code: 'ENOTFOUND' });
             }
-            return cb(null, {statusCode:200}, blueprintCode);
+            return cb(null, { statusCode: 200 }, blueprintCode);
           })
         );
 
         after(() => requestStub.get.restore());
 
         it('should exit with an error', done =>
-          dredd.run(function(error) {
+          dredd.run((error) => {
             assert.isOk(error);
             assert.instanceOf(error, Error);
             assert.property(error, 'message');
@@ -475,7 +480,7 @@ GET /url
         );
 
         return it('should not execute any transaction', done =>
-          dredd.run(function() {
+          dredd.run(() => {
             assert.notOk(dredd.runner.executeTransaction.called);
             return done();
           })
@@ -484,8 +489,8 @@ GET /url
     });
   });
 
-  describe('when API description document parsing error', function() {
-    before(function() {
+  describe('when API description document parsing error', () => {
+    before(() => {
       configuration = {
         url: 'http://127.0.0.1:3000/',
         options: {
@@ -503,22 +508,22 @@ GET /url
     afterEach(() => dredd.runner.executeTransaction.restore());
 
     it('should exit with an error', done =>
-      dredd.run(function(error) {
+      dredd.run((error) => {
         assert.isOk(error);
         return done();
       })
     );
 
     return it('should NOT execute any transaction', done =>
-      dredd.run(function() {
+      dredd.run(() => {
         assert.notOk(dredd.runner.executeTransaction.called);
         return done();
       })
     );
   });
 
-  describe('when API description document parsing warning', function() {
-    before(function() {
+  describe('when API description document parsing warning', () => {
+    before(() => {
       configuration = {
         url: 'http://127.0.0.1:3000/',
         options: {
@@ -529,33 +534,33 @@ GET /url
       return dredd = new Dredd(configuration);
     });
 
-    beforeEach(function() {
+    beforeEach(() => {
       sinon.stub(dredd.runner, 'run').callsFake((transaction, callback) => callback());
       return sinon.spy(loggerStub, 'warn');
     });
 
-    afterEach(function() {
+    afterEach(() => {
       dredd.runner.run.restore();
       return loggerStub.warn.restore();
     });
 
     it('should execute the runtime', done =>
-      dredd.run(function() {
+      dredd.run(() => {
         assert.isOk(dredd.runner.run.called);
         return done();
       })
     );
 
     return it('should write warnings to warn logger', done =>
-      dredd.run(function() {
+      dredd.run(() => {
         assert.isOk(loggerStub.warn.called);
         return done();
       })
     );
   });
 
-  describe('when non existing API description document path', function() {
-    beforeEach(function() {
+  describe('when non existing API description document path', () => {
+    beforeEach(() => {
       configuration = {
         url: 'http://127.0.0.1:3000/',
         options: {
@@ -570,22 +575,22 @@ GET /url
     afterEach(() => dredd.runner.executeTransaction.reset());
 
     it('should pass the error to the callback function', done =>
-      dredd.run(function(error) {
+      dredd.run((error) => {
         assert.isOk(error);
         return done();
       })
     );
 
     return it('should NOT execute any transaction', done =>
-      dredd.run(function(error) {
+      dredd.run((error) => {
         assert.notOk(dredd.runner.executeTransaction.called);
         return done();
       })
     );
   });
 
-  describe('when runtime contains any error', function() {
-    beforeEach(function() {
+  describe('when runtime contains any error', () => {
+    beforeEach(() => {
       configuration = {
         server: 'http://127.0.0.1:3000/',
         options: {
@@ -601,22 +606,22 @@ GET /url
     afterEach(() => dredd.runner.executeTransaction.reset());
 
     it('should NOT execute any transaction', done =>
-      dredd.run(function(error) {
+      dredd.run((error) => {
         assert.notOk(dredd.runner.executeTransaction.called);
         return done();
       })
     );
 
     return it('should exit with an error', done =>
-      dredd.run(function(error) {
+      dredd.run((error) => {
         assert.isOk(error);
         return done();
       })
     );
   });
 
-  describe('when runtime contains any warning', function() {
-    beforeEach(function() {
+  describe('when runtime contains any warning', () => {
+    beforeEach(() => {
       configuration = {
         server: 'http://127.0.0.1:3000/',
         options: {
@@ -629,35 +634,35 @@ GET /url
       return sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
     });
 
-    afterEach(function() {
+    afterEach(() => {
       dredd.runner.executeTransaction.reset();
       return loggerStub.warn.restore();
     });
 
     it('should execute some transaction', done =>
-      dredd.run(function(error) {
+      dredd.run((error) => {
         assert.isOk(dredd.runner.executeTransaction.called);
         return done();
       })
     );
 
     it('should print runtime warnings to stdout', done =>
-      dredd.run(function(error) {
+      dredd.run((error) => {
         assert.isOk(loggerStub.warn.called);
         return done();
       })
     );
 
     return it('should not exit', done =>
-      dredd.run(function(error) {
+      dredd.run((error) => {
         assert.notOk(error);
         return done();
       })
     );
   });
 
-  describe('when runtime is without errors and warnings', function() {
-    beforeEach(function() {
+  describe('when runtime is without errors and warnings', () => {
+    beforeEach(() => {
       configuration = {
         server: 'http://127.0.0.1:3000/',
         options: {
@@ -672,21 +677,20 @@ GET /url
     afterEach(() => dredd.runner.executeTransaction.reset());
 
     return it('should execute the runtime', done =>
-      dredd.run(function(error) {
+      dredd.run((error) => {
         assert.isOk(dredd.runner.executeTransaction.called);
         return done();
       })
     );
   });
 
-  describe("#emitStart", function() {
-
-    describe('no error in reporter occurs', function() {
+  describe('#emitStart', () => {
+    describe('no error in reporter occurs', () => {
       const PORT = 9876;
       dredd = null;
       let apiaryServer = null;
 
-      beforeEach(function(done) {
+      beforeEach((done) => {
         configuration = {
           server: 'http://127.0.0.1:3000/',
           options: {
@@ -694,7 +698,7 @@ GET /url
             reporter: ['apiary'],
             path: ['./test/fixtures/apiary.apib'],
             custom: {
-              apiaryApiUrl: `http://127.0.0.1:${PORT+1}`,
+              apiaryApiUrl: `http://127.0.0.1:${PORT + 1}`,
               apiaryApiKey: 'the-key',
               apiaryApiName: 'the-api-name',
               dreddRestDebug: '1'
@@ -705,7 +709,7 @@ GET /url
         dredd = new Dredd(configuration);
 
         const apiary = express();
-        apiary.use(bodyParser.json({size:'5mb'}));
+        apiary.use(bodyParser.json({ size: '5mb' }));
 
         apiary.post('/apis/*', (req, res) =>
           res.status(201).json({
@@ -717,7 +721,7 @@ GET /url
 
         apiary.all('*', (req, res) => res.json({}));
 
-        return apiaryServer = apiary.listen((PORT+1), () => done());
+        return apiaryServer = apiary.listen((PORT + 1), () => done());
       });
 
       afterEach(done =>
@@ -725,8 +729,8 @@ GET /url
       );
 
 
-      return it('should call the callback', function(done) {
-        var callback = sinon.spy(function(error) {
+      return it('should call the callback', (done) => {
+        var callback = sinon.spy((error) => {
           if (error) { done(error); }
           assert.isOk(callback.called);
           return done();
@@ -736,13 +740,13 @@ GET /url
       });
     });
 
-    return describe('an error in the apiary reporter occurs', function() {
+    return describe('an error in the apiary reporter occurs', () => {
       const PORT = 9876;
       dredd = null;
       const apiaryServer = null;
-      let errorLogger = undefined;
+      let errorLogger;
 
-      beforeEach(function() {
+      beforeEach(() => {
         errorLogger = sinon.spy(loggerStub, 'error');
         configuration = {
           server: 'http://127.0.0.1:3000/',
@@ -751,7 +755,7 @@ GET /url
             reporter: ['apiary'],
             path: ['./test/fixtures/apiary.apib'],
             custom: {
-              apiaryApiUrl: `http://127.0.0.1:${PORT+1}`,
+              apiaryApiUrl: `http://127.0.0.1:${PORT + 1}`,
               apiaryApiKey: 'the-key',
               apiaryApiName: 'the-api-name',
               dreddRestDebug: '1'
@@ -764,8 +768,8 @@ GET /url
 
       afterEach(() => loggerStub.error.restore());
 
-      it('should call the callback without the error', function(done) {
-        var callback = sinon.spy(function(error) {
+      it('should call the callback without the error', (done) => {
+        var callback = sinon.spy((error) => {
           assert.isNull(error);
           assert.isOk(callback.called);
           return done();
@@ -774,7 +778,7 @@ GET /url
       });
 
       return it('should print the error', done =>
-        dredd.emitStart(function() {
+        dredd.emitStart(() => {
           assert.isTrue(errorLogger.called);
           return done();
         })
@@ -782,18 +786,18 @@ GET /url
     });
   });
 
-  return describe('#logProxySettings', function() {
-    let verboseLogger = undefined;
+  return describe('#logProxySettings', () => {
+    let verboseLogger;
 
-    beforeEach( () => verboseLogger = sinon.spy(loggerStub, 'verbose'));
-    afterEach( () => loggerStub.verbose.restore());
+    beforeEach(() => verboseLogger = sinon.spy(loggerStub, 'verbose'));
+    afterEach(() => loggerStub.verbose.restore());
 
-    describe('when the proxy is set by lowercase environment variable', function() {
-      beforeEach( function() {
+    describe('when the proxy is set by lowercase environment variable', () => {
+      beforeEach(() => {
         process.env.http_proxy = 'http://proxy.example.com';
-        return dredd = new Dredd({options: {}});
+        return dredd = new Dredd({ options: {} });
       });
-      afterEach( () => delete process.env.http_proxy);
+      afterEach(() => delete process.env.http_proxy);
 
       return it('logs about the setting', () =>
         assert.include(verboseLogger.lastCall.args[0],
@@ -802,12 +806,12 @@ GET /url
       );
     });
 
-    describe('when the proxy is set by uppercase environment variable', function() {
-      beforeEach( function() {
+    describe('when the proxy is set by uppercase environment variable', () => {
+      beforeEach(() => {
         process.env.HTTPS_PROXY = 'http://proxy.example.com';
-        return dredd = new Dredd({options: {}});
+        return dredd = new Dredd({ options: {} });
       });
-      afterEach( () => delete process.env.HTTPS_PROXY);
+      afterEach(() => delete process.env.HTTPS_PROXY);
 
       return it('logs about the setting', () =>
         assert.include(verboseLogger.lastCall.args[0],
@@ -817,13 +821,13 @@ GET /url
       );
     });
 
-    describe('when NO_PROXY environment variable is set', function() {
-      beforeEach( function() {
+    describe('when NO_PROXY environment variable is set', () => {
+      beforeEach(() => {
         process.env.HTTPS_PROXY = 'http://proxy.example.com';
         process.env.NO_PROXY = 'whitelisted.example.com';
-        return dredd = new Dredd({options: {}});
+        return dredd = new Dredd({ options: {} });
       });
-      afterEach( function() {
+      afterEach(() => {
         delete process.env.HTTPS_PROXY;
         return delete process.env.NO_PROXY;
       });
@@ -837,13 +841,13 @@ GET /url
       );
     });
 
-    return describe('when DUMMY_PROXY environment variable is set', function() {
-      beforeEach( function() {
+    return describe('when DUMMY_PROXY environment variable is set', () => {
+      beforeEach(() => {
         process.env.DUMMY_PROXY = 'http://proxy.example.com';
         process.env.NO_PROXY = 'whitelisted.example.com';
-        return dredd = new Dredd({options: {}});
+        return dredd = new Dredd({ options: {} });
       });
-      afterEach( function() {
+      afterEach(() => {
         delete process.env.DUMMY_PROXY;
         return delete process.env.NO_PROXY;
       });

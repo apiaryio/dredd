@@ -1,4 +1,16 @@
-const {assert} = require('chai');
+/* eslint-disable
+    block-scoped-var,
+    new-cap,
+    no-loop-func,
+    no-return-assign,
+    no-shadow,
+    no-unused-vars,
+    no-var,
+    vars-on-top,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 const sinon = require('sinon');
 const express = require('express');
 const proxyquire = require('proxyquire').noCallThru();
@@ -35,41 +47,41 @@ const dreddStub = proxyquire('../../src/dredd', {
 
 const DreddCommand = proxyquire('../../src/dredd-command', {
   './dredd': dreddStub,
-  'console': loggerStub,
+  console: loggerStub,
   './logger': loggerStub,
   './interactive-init': interactiveConfigStub,
   './config-utils': configUtilsStub,
-  'fs': fsStub,
+  fs: fsStub,
   'cross-spawn': crossSpawnStub
 });
 
 
-const execCommand = function(custom = {}, cb) {
+const execCommand = function (custom = {}, cb) {
   stdout = '';
   stderr = '';
   exitStatus = null;
   let finished = false;
   const dreddCommand = new DreddCommand({
     custom
-  }, function(code) {
-    if (!finished) {
-      finished = true;
-      exitStatus = (code != null ? code : 0);
-      return cb(null, stdout, stderr, (code != null ? code : 0));
-    }
-  }).run();
+  }, ((code) => {
+      if (!finished) {
+        finished = true;
+        exitStatus = (code != null ? code : 0);
+        return cb(null, stdout, stderr, (code != null ? code : 0));
+      }
+    })).run();
 };
 
-describe("DreddCommand class", function() {
+describe('DreddCommand class', () => {
   const dreddCommand = null;
   const env = {};
 
-  before(function() {
+  before(() => {
     for (var method of ['warn', 'error']) { (method => sinon.stub(loggerStub, method).callsFake(chunk => stderr += `\n${method}: ${chunk}`))(method); }
     for (method of ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual']) { (method => sinon.stub(loggerStub, method).callsFake(chunk => stdout += `\n${method}: ${chunk}`))(method); }
   });
 
-  after(function() {
+  after(() => {
     for (var method of ['warn', 'error']) {
       loggerStub[method].restore();
     }
@@ -79,20 +91,20 @@ describe("DreddCommand class", function() {
   });
 
 
-  describe('when initialized without "new" keyword', function() {
+  describe('when initialized without "new" keyword', () => {
     let dc = null;
-    before(() => dc = new DreddCommand);
+    before(() => dc = new DreddCommand());
 
     it('sets finished to false', () => assert.isFalse(dc.finished));
 
-    it('sets custom to an Object with "argv" and "cwd" keys', function() {
+    it('sets custom to an Object with "argv" and "cwd" keys', () => {
       assert.isObject(dc.custom);
       assert.lengthOf(Object.keys(dc.custom), 2);
       assert.property(dc.custom, 'cwd');
       return assert.property(dc.custom, 'argv');
     });
 
-    it('sets custom argv to an Array with process.argv', function() {
+    it('sets custom argv to an Array with process.argv', () => {
       assert.isArray(dc.custom != null ? dc.custom.argv : undefined);
       return assert.equal(dc.custom != null ? dc.custom.argv.length : undefined, 0);
     });
@@ -101,23 +113,23 @@ describe("DreddCommand class", function() {
   });
 
 
-  describe('when initialized with options containing exit callback', function() {
+  describe('when initialized with options containing exit callback', () => {
     let dc = null;
     let hasCalledExit = null;
 
-    before(function() {
-      dc = new DreddCommand({exit(code) {
+    before(() => {
+      dc = new DreddCommand({ exit(code) {
         return hasCalledExit = true;
       }
       });
       return dc.run();
     });
 
-    it('has argv property set to object with properties from optimist', function() {
+    it('has argv property set to object with properties from optimist', () => {
       assert.isObject(dc.argv);
       assert.property(dc.argv, '_');
-      return assert.isArray(dc.argv['_']);
-  });
+      return assert.isArray(dc.argv._);
+    });
 
     it('should set finished to true (keeps false)', () => assert.isTrue(dc.finished));
 
@@ -129,23 +141,23 @@ describe("DreddCommand class", function() {
   });
 
 
-  describe('run', function() {
+  describe('run', () => {
     let dc = null;
     let initDreddStub = null;
     let initConfigSpy = null;
     let lastArgvIsApiEndpointSpy = null;
     let takeRestOfParamsAsPathSpy = null;
 
-    before(function() {
+    before(() => {
       dc = new DreddCommand({
         exit() {},
         custom: {
           argv: ['./file.apib', 'http://127.0.0.1:3000'],
-          env: {'NO_KEY': 'NO_VAL'}
+          env: { NO_KEY: 'NO_VAL' }
         }
       });
 
-      initDreddStub = sinon.stub(dc, 'initDredd').callsFake(function(configuration) {
+      initDreddStub = sinon.stub(dc, 'initDredd').callsFake((configuration) => {
         const dredd = new dreddStub(configuration);
         sinon.stub(dredd, 'run');
         return dredd;
@@ -156,24 +168,24 @@ describe("DreddCommand class", function() {
       return takeRestOfParamsAsPathSpy = sinon.spy(dc, 'takeRestOfParamsAsPath');
     });
 
-    after(function() {
+    after(() => {
       dc.initDredd.restore();
       dc.initConfig.restore();
       dc.lastArgvIsApiEndpoint.restore();
       return dc.takeRestOfParamsAsPath.restore();
     });
 
-    return describe('with mocked initDredd', function() {
+    return describe('with mocked initDredd', () => {
       before(() => dc.run());
 
       it('should call initConfig', () => assert.equal(initConfigSpy.called, 1));
 
-      it('should call susequent helpers as part of initConfig', function() {
+      it('should call susequent helpers as part of initConfig', () => {
         assert.equal(lastArgvIsApiEndpointSpy.called, 1);
         return assert.equal(takeRestOfParamsAsPathSpy.called, 1);
       });
 
-      return it('should call initDredd with configuration object', function() {
+      return it('should call initDredd with configuration object', () => {
         assert.equal(dc.initDredd.called, 1);
         assert.isArray(dc.initDredd.firstCall.args);
         assert.lengthOf(dc.initDredd.firstCall.args, 1);
@@ -186,21 +198,20 @@ describe("DreddCommand class", function() {
     });
   });
 
-  describe('run with argv set to load regular blueprint', function() {
+  describe('run with argv set to load regular blueprint', () => {
     let dc = null;
     const runDreddStub = null;
     let returnGood = true;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const app = express();
 
-      app.get('/machines', function(req, res) {
+      app.get('/machines', (req, res) => {
         if (returnGood) {
-          return res.json([{type: 'bulldozer', name: 'willy'}]);
-        } else {
-          return res.json([{my: 'another', world: 'service'}]);
+          return res.json([{ type: 'bulldozer', name: 'willy' }]);
         }
-    });
+        return res.json([{ my: 'another', world: 'service' }]);
+      });
 
       dc = new DreddCommand({
         custom: {
@@ -221,61 +232,60 @@ describe("DreddCommand class", function() {
       return server.on('close', done);
     });
 
-    describe('with server returning good things', function() {
+    describe('with server returning good things', () => {
       before(() => returnGood = true);
 
       it('returns exit code 0', () => assert.equal(exitStatus, 0));
 
-      return it('propagates configuration options to Dredd class', function() {
-        assert.equal(dc.dreddInstance.configuration.options.path[0], "./test/fixtures/single-get.apib");
+      return it('propagates configuration options to Dredd class', () => {
+        assert.equal(dc.dreddInstance.configuration.options.path[0], './test/fixtures/single-get.apib');
         return assert.equal(dc.dreddInstance.configuration.server, `http://127.0.0.1:${PORT}`);
       });
     });
 
-    return describe('with server returning wrong things', function() {
-
+    return describe('with server returning wrong things', () => {
       before(() => returnGood = false);
 
       it('returns exit code 1', () => assert.equal(exitStatus, 1));
 
-      return it('propagates configuration options to Dredd class', function() {
-        assert.equal(dc.dreddInstance.configuration.options.path[0], "./test/fixtures/single-get.apib");
+      return it('propagates configuration options to Dredd class', () => {
+        assert.equal(dc.dreddInstance.configuration.options.path[0], './test/fixtures/single-get.apib');
         return assert.equal(dc.dreddInstance.configuration.server, `http://127.0.0.1:${PORT}`);
       });
     });
   });
 
 
-  describe("when called w/ OR wo/ exiting arguments", function() {
-    describe('--help', function() {
+  describe('when called w/ OR wo/ exiting arguments', () => {
+    describe('--help', () => {
       before(done =>
-        execCommand({argv: ['--help']}, () => done())
+        execCommand({ argv: ['--help'] }, () => done())
       );
 
-      return it('prints out some really nice help text with all options descriptions', function() {
+      return it('prints out some really nice help text with all options descriptions', () => {
         assert.include(stderr, 'Usage:');
         assert.include(stderr, 'Example:');
         assert.include(stderr, '[OPTIONS]');
-        return Array.from(Object.keys(options)).map((optionKey) => (optionKey => assert.include(stderr, optionKey))(optionKey));
+        return Array.from(Object.keys(options)).map(optionKey => (optionKey => assert.include(stderr, optionKey))(optionKey));
       });
     });
 
-    describe('--version', function() {
+    describe('--version', () => {
       before(done =>
-        execCommand({argv: ['--version']}, () => done())
+        execCommand({ argv: ['--version'] }, () => done())
       );
 
       return it('prints out version', () => assert.include(stdout, `${packageData.name} v${packageData.version}`));
     });
 
-    describe('"init" (nodejs)', function() {
-      before(function(done) {
-        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({language: 'nodejs'}));
+    describe('"init" (nodejs)', () => {
+      before((done) => {
+        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({ language: 'nodejs' }));
         sinon.stub(configUtilsStub, 'save');
-        return execCommand({argv: ['init']}, () => done());
+        return execCommand({ argv: ['init'] }, () => done());
       });
 
-      after(function() {
+      after(() => {
         interactiveConfigStub.run.restore();
         return configUtilsStub.save.restore();
       });
@@ -285,14 +295,14 @@ describe("DreddCommand class", function() {
       return it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
     });
 
-    describe('"init" (python)', function() {
-      before(function(done) {
-        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({language: 'python'}));
+    describe('"init" (python)', () => {
+      before((done) => {
+        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({ language: 'python' }));
         sinon.stub(configUtilsStub, 'save');
-        return execCommand({argv: ['init']}, () => done());
+        return execCommand({ argv: ['init'] }, () => done());
       });
 
-      after(function() {
+      after(() => {
         interactiveConfigStub.run.restore();
         return configUtilsStub.save.restore();
       });
@@ -303,14 +313,14 @@ describe("DreddCommand class", function() {
     });
 
 
-    describe('"init" (php)', function() {
-      before(function(done) {
-        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({language: 'php'}));
+    describe('"init" (php)', () => {
+      before((done) => {
+        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({ language: 'php' }));
         sinon.stub(configUtilsStub, 'save');
-        return execCommand({argv: ['init']}, () => done());
+        return execCommand({ argv: ['init'] }, () => done());
       });
 
-      after(function() {
+      after(() => {
         interactiveConfigStub.run.restore();
         return configUtilsStub.save.restore();
       });
@@ -320,14 +330,14 @@ describe("DreddCommand class", function() {
       return it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
     });
 
-    describe('"init" (ruby)', function() {
-      before(function(done) {
-        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({language: 'ruby'}));
+    describe('"init" (ruby)', () => {
+      before((done) => {
+        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({ language: 'ruby' }));
         sinon.stub(configUtilsStub, 'save');
-        return execCommand({argv: ['init']}, () => done());
+        return execCommand({ argv: ['init'] }, () => done());
       });
 
-      after(function() {
+      after(() => {
         interactiveConfigStub.run.restore();
         return configUtilsStub.save.restore();
       });
@@ -337,14 +347,14 @@ describe("DreddCommand class", function() {
       return it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
     });
 
-    describe('"init" (perl)', function() {
-      before(function(done) {
-        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({language: 'perl'}));
+    describe('"init" (perl)', () => {
+      before((done) => {
+        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({ language: 'perl' }));
         sinon.stub(configUtilsStub, 'save');
-        return execCommand({argv: ['init']}, () => done());
+        return execCommand({ argv: ['init'] }, () => done());
       });
 
-      after(function() {
+      after(() => {
         interactiveConfigStub.run.restore();
         return configUtilsStub.save.restore();
       });
@@ -354,14 +364,14 @@ describe("DreddCommand class", function() {
       return it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
     });
 
-    describe('"init" (go)', function() {
-      before(function(done) {
-        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({language: 'go'}));
+    describe('"init" (go)', () => {
+      before((done) => {
+        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({ language: 'go' }));
         sinon.stub(configUtilsStub, 'save');
-        return execCommand({argv: ['init']}, () => done());
+        return execCommand({ argv: ['init'] }, () => done());
       });
 
-      after(function() {
+      after(() => {
         interactiveConfigStub.run.restore();
         return configUtilsStub.save.restore();
       });
@@ -371,14 +381,14 @@ describe("DreddCommand class", function() {
       return it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
     });
 
-    describe('"init" (rust)', function() {
-      before(function(done) {
-        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({language: 'rust'}));
+    describe('"init" (rust)', () => {
+      before((done) => {
+        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({ language: 'rust' }));
         sinon.stub(configUtilsStub, 'save');
-        return execCommand({argv: ['init']}, () => done());
+        return execCommand({ argv: ['init'] }, () => done());
       });
 
-      after(function() {
+      after(() => {
         interactiveConfigStub.run.restore();
         return configUtilsStub.save.restore();
       });
@@ -388,9 +398,9 @@ describe("DreddCommand class", function() {
       return it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
     });
 
-    return describe('without argv', function() {
+    return describe('without argv', () => {
       before(done =>
-        execCommand({argv: []}, () => done())
+        execCommand({ argv: [] }, () => done())
       );
 
       return it('prints out an error message', () => assert.include(stderr, 'Error: Must specify'));
@@ -398,10 +408,10 @@ describe("DreddCommand class", function() {
   });
 
 
-  describe('when configuration was saved', function() {
-    before(function(done) {
+  describe('when configuration was saved', () => {
+    before((done) => {
       sinon.spy(dreddStub.prototype, 'init');
-      sinon.stub(dreddStub.prototype, 'run').callsFake(function(cb) {
+      sinon.stub(dreddStub.prototype, 'run').callsFake((cb) => {
         const stats = {
           tests: 0,
           failures: 0,
@@ -421,7 +431,7 @@ describe("DreddCommand class", function() {
 
       sinon.stub(configUtilsStub, 'load').callsFake(() =>
         ({
-          "_": [ 'blueprint', 'endpoint' ],
+          _: ['blueprint', 'endpoint'],
           'dry-run': true,
           hookfiles: null,
           sandbox: false,
@@ -445,13 +455,13 @@ describe("DreddCommand class", function() {
           timestamp: false,
           silent: false,
           path: [],
-          '$0': 'node ./bin/dredd'
+          $0: 'node ./bin/dredd'
         }));
 
-      return execCommand({argv: ['--names']}, () => done());
+      return execCommand({ argv: ['--names'] }, () => done());
     });
 
-    after(function() {
+    after(() => {
       dreddStub.prototype.run.restore();
       dreddStub.prototype.init.restore();
       interactiveConfigStub.run.restore();
@@ -459,12 +469,12 @@ describe("DreddCommand class", function() {
       return fsStub.existsSync.restore();
     });
 
-    return describe('and I pass another CLI argument', function() {
+    return describe('and I pass another CLI argument', () => {
       it('should want to exit with status 0', () => assert.equal(exitStatus, 0));
 
       it('should call dredd run', () => assert.isTrue(dreddStub.prototype.run.called));
 
-      return it('should override existing configuration', function() {
+      return it('should override existing configuration', () => {
         assert.isTrue(dreddStub.prototype.init.called);
         const call = dreddStub.prototype.init.getCall(0);
         const passedConf = call.args[0];
@@ -473,18 +483,17 @@ describe("DreddCommand class", function() {
     });
   });
 
-  return describe('when using --server', function() {
-
-    beforeEach(function(done) {
+  return describe('when using --server', () => {
+    beforeEach((done) => {
       sinon.spy(crossSpawnStub, 'spawn');
       sinon.stub(transactionRunner.prototype, 'executeAllTransactions').callsFake((transactions, hooks, cb) => cb());
-      return execCommand({argv: [
+      return execCommand({ argv: [
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${PORT}`,
         '--server',
         'foo/bar'
       ]
-    }, () => done());
+      }, () => done());
     });
 
     afterEach(() => crossSpawnStub.spawn.restore());

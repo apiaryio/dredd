@@ -1,18 +1,23 @@
-const {assert} = require('chai');
+/* eslint-disable
+    prefer-const,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 
 const Dredd = require('../../../src/dredd');
-const {runDreddWithServer, createServer} = require('../helpers');
+const { runDreddWithServer, createServer } = require('../helpers');
 
 
-describe('Regression: Issue #615', function() {
-  let runtimeInfo = undefined;
+describe('Regression: Issue #615', () => {
+  let runtimeInfo;
 
-  before(function(done) {
+  before((done) => {
     const app = createServer();
     app.all('/honey', (req, res) => res.status(200).type('text/plain').send(''));
 
-    const dredd = new Dredd({options: {path: './test/fixtures/regression-615.apib'}});
-    return runDreddWithServer(dredd, app, function(...args) {
+    const dredd = new Dredd({ options: { path: './test/fixtures/regression-615.apib' } });
+    return runDreddWithServer(dredd, app, (...args) => {
       let err;
       [err, runtimeInfo] = Array.from(args);
       return done(err);

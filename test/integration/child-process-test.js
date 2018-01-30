@@ -1,15 +1,21 @@
-const {assert} = require('chai');
+/* eslint-disable
+    no-return-assign,
+    no-unused-vars,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 const sinon = require('sinon');
 
 const helpers = require('./helpers');
-const {spawn, signalTerm, signalKill} = require('../../src/child-process');
+const { spawn, signalTerm, signalKill } = require('../../src/child-process');
 
 const COFFEE_BIN = 'node_modules/.bin/coffee';
 const WAIT_AFTER_COMMAND_SPAWNED_MS = 500;
 const WAIT_AFTER_COMMAND_TERMINATED_MS = 1500;
 
 
-const runChildProcess = function(command, fn, callback) {
+const runChildProcess = function (command, fn, callback) {
   const onCrash = sinon.spy();
 
   const processInfo = {
@@ -27,7 +33,7 @@ const runChildProcess = function(command, fn, callback) {
   childProcess.stdout.on('data', data => processInfo.stdout += data.toString());
   childProcess.stderr.on('data', data => processInfo.stderr += data.toString());
 
-  const onExit = function(exitStatus, signal) {
+  const onExit = function (exitStatus, signal) {
     processInfo.terminated = true;
     processInfo.exitStatus = exitStatus;
     return processInfo.signal = signal;
@@ -39,10 +45,10 @@ const runChildProcess = function(command, fn, callback) {
 
   childProcess.on('crash', onCrash);
 
-  return setTimeout( function() {
+  return setTimeout(() => {
     fn(childProcess);
 
-    return setTimeout( function() {
+    return setTimeout(() => {
       childProcess.removeListener('exit', onExit);
       childProcess.removeListener('error', onError);
       childProcess.removeListener('crash', onCrash);
@@ -50,23 +56,23 @@ const runChildProcess = function(command, fn, callback) {
       processInfo.childProcess = childProcess;
       return callback(null, processInfo);
     }
-    , WAIT_AFTER_COMMAND_TERMINATED_MS);
+      , WAIT_AFTER_COMMAND_TERMINATED_MS);
   }
-  , WAIT_AFTER_COMMAND_SPAWNED_MS);
+    , WAIT_AFTER_COMMAND_SPAWNED_MS);
 };
 
 
-describe('Babysitting Child Processes', function() {
-  describe('when forcefully killed by childProcess.signalKill()', function() {
-    describe('process with support for graceful termination', function() {
-      let processInfo = undefined;
+describe('Babysitting Child Processes', () => {
+  describe('when forcefully killed by childProcess.signalKill()', () => {
+    describe('process with support for graceful termination', () => {
+      let processInfo;
 
       before(done =>
         runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess.signalKill()
-        , function(err, info) {
-          processInfo = info;
-          return done(err);
-        })
+          , (err, info) => {
+            processInfo = info;
+            return done(err);
+          })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -81,15 +87,15 @@ describe('Babysitting Child Processes', function() {
       return it('does not emit an error', () => assert.isUndefined(processInfo.error));
     });
 
-    return describe('process without support for graceful termination', function() {
-      let processInfo = undefined;
+    return describe('process without support for graceful termination', () => {
+      let processInfo;
 
       before(done =>
         runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', childProcess => childProcess.signalKill()
-        , function(err, info) {
-          processInfo = info;
-          return done(err);
-        })
+          , (err, info) => {
+            processInfo = info;
+            return done(err);
+          })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -106,16 +112,16 @@ describe('Babysitting Child Processes', function() {
   });
 
   ['signalTerm', 'terminate'].forEach(functionName =>
-    describe(`when gracefully terminated by childProcess.${functionName}()`, function() {
-      describe('process with support for graceful termination', function() {
-        let processInfo = undefined;
+    describe(`when gracefully terminated by childProcess.${functionName}()`, () => {
+      describe('process with support for graceful termination', () => {
+        let processInfo;
 
         before(done =>
           runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess[functionName]()
-          , function(err, info) {
-            processInfo = info;
-            return done(err);
-          })
+            , (err, info) => {
+              processInfo = info;
+              return done(err);
+            })
         );
         after(done => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -128,15 +134,15 @@ describe('Babysitting Child Processes', function() {
         return it('does not emit an error', () => assert.isUndefined(processInfo.error));
       });
 
-      return describe('process without support for graceful termination', function() {
-        let processInfo = undefined;
+      return describe('process without support for graceful termination', () => {
+        let processInfo;
 
         before(done =>
           runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', childProcess => childProcess.terminate()
-          , function(err, info) {
-            processInfo = info;
-            return done(err);
-          })
+            , (err, info) => {
+              processInfo = info;
+              return done(err);
+            })
         );
         after(done => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -154,16 +160,16 @@ describe('Babysitting Child Processes', function() {
     })
   );
 
-  describe('when gracefully terminated by childProcess.terminate({\'force\': true})', function() {
-    describe('process with support for graceful termination', function() {
-      let processInfo = undefined;
+  describe('when gracefully terminated by childProcess.terminate({\'force\': true})', () => {
+    describe('process with support for graceful termination', () => {
+      let processInfo;
 
       before(done =>
-        runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess.terminate({force: true})
-        , function(err, info) {
-          processInfo = info;
-          return done(err);
-        })
+        runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess.terminate({ force: true })
+          , (err, info) => {
+            processInfo = info;
+            return done(err);
+          })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -176,15 +182,15 @@ describe('Babysitting Child Processes', function() {
       return it('does not emit an error', () => assert.isUndefined(processInfo.error));
     });
 
-    return describe('process without support for graceful termination', function() {
-      let processInfo = undefined;
+    return describe('process without support for graceful termination', () => {
+      let processInfo;
 
       before(done =>
-        runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', childProcess => childProcess.terminate({force: true})
-        , function(err, info) {
-          processInfo = info;
-          return done(err);
-        })
+        runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', childProcess => childProcess.terminate({ force: true })
+          , (err, info) => {
+            processInfo = info;
+            return done(err);
+          })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -202,16 +208,16 @@ describe('Babysitting Child Processes', function() {
     });
   });
 
-  return describe('when child process terminates', function() {
-    describe('normally with zero status code', function() {
-      let processInfo = undefined;
+  return describe('when child process terminates', () => {
+    describe('normally with zero status code', () => {
+      let processInfo;
 
       before(done =>
         runChildProcess('test/fixtures/scripts/exit-0.coffee', childProcess => true
-        , function(err, info) {
-          processInfo = info;
-          return done(err);
-        })
+          , (err, info) => {
+            processInfo = info;
+            return done(err);
+          })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -222,15 +228,15 @@ describe('Babysitting Child Processes', function() {
       return it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
     });
 
-    describe('normally with non-zero status code', function() {
-      let processInfo = undefined;
+    describe('normally with non-zero status code', () => {
+      let processInfo;
 
       before(done =>
         runChildProcess('test/fixtures/scripts/exit-3.coffee', childProcess => true
-        , function(err, info) {
-          processInfo = info;
-          return done(err);
-        })
+          , (err, info) => {
+            processInfo = info;
+            return done(err);
+          })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -243,15 +249,15 @@ describe('Babysitting Child Processes', function() {
       return it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
     });
 
-    describe('intentionally gracefully with zero status code', function() {
-      let processInfo = undefined;
+    describe('intentionally gracefully with zero status code', () => {
+      let processInfo;
 
       before(done =>
         runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess.signalTerm()
-        , function(err, info) {
-          processInfo = info;
-          return done(err);
-        })
+          , (err, info) => {
+            processInfo = info;
+            return done(err);
+          })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -262,15 +268,15 @@ describe('Babysitting Child Processes', function() {
       return it('is flagged as intentionally terminated', () => assert.isTrue(processInfo.childProcess.terminatedIntentionally));
     });
 
-    describe('intentionally gracefully with non-zero status code', function() {
-      let processInfo = undefined;
+    describe('intentionally gracefully with non-zero status code', () => {
+      let processInfo;
 
       before(done =>
         runChildProcess('test/fixtures/scripts/stdout-exit-3.coffee', childProcess => childProcess.signalTerm()
-        , function(err, info) {
-          processInfo = info;
-          return done(err);
-        })
+          , (err, info) => {
+            processInfo = info;
+            return done(err);
+          })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -281,15 +287,15 @@ describe('Babysitting Child Processes', function() {
       return it('is flagged as intentionally terminated', () => assert.isTrue(processInfo.childProcess.terminatedIntentionally));
     });
 
-    describe('intentionally forcefully', function() {
-      let processInfo = undefined;
+    describe('intentionally forcefully', () => {
+      let processInfo;
 
       before(done =>
         runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess.signalKill()
-        , function(err, info) {
-          processInfo = info;
-          return done(err);
-        })
+          , (err, info) => {
+            processInfo = info;
+            return done(err);
+          })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -305,17 +311,17 @@ describe('Babysitting Child Processes', function() {
       return it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
     });
 
-    describe('gracefully with zero status code', function() {
-      let processInfo = undefined;
+    describe('gracefully with zero status code', () => {
+      let processInfo;
 
       before(done =>
-        runChildProcess('test/fixtures/scripts/stdout.coffee', function(childProcess) {
+        runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) => {
           // simulate that the process was terminated externally
           const emit = sinon.stub(childProcess, 'emit');
-          signalTerm(childProcess, function() {} );
+          signalTerm(childProcess, () => {});
           return emit.restore();
         }
-        , function(err, info) {
+          , (err, info) => {
           processInfo = info;
           return done(err);
         })
@@ -329,17 +335,17 @@ describe('Babysitting Child Processes', function() {
       return it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
     });
 
-    describe('gracefully with non-zero status code', function() {
-      let processInfo = undefined;
+    describe('gracefully with non-zero status code', () => {
+      let processInfo;
 
       before(done =>
-        runChildProcess('test/fixtures/scripts/stdout-exit-3.coffee', function(childProcess) {
+        runChildProcess('test/fixtures/scripts/stdout-exit-3.coffee', (childProcess) => {
           // simulate that the process was terminated externally
           const emit = sinon.stub(childProcess, 'emit');
-          signalTerm(childProcess, function() {} );
+          signalTerm(childProcess, () => {});
           return emit.restore();
         }
-        , function(err, info) {
+          , (err, info) => {
           processInfo = info;
           return done(err);
         })
@@ -355,17 +361,17 @@ describe('Babysitting Child Processes', function() {
       return it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
     });
 
-    return describe('forcefully', function() {
-      let processInfo = undefined;
+    return describe('forcefully', () => {
+      let processInfo;
 
       before(done =>
-        runChildProcess('test/fixtures/scripts/stdout.coffee', function(childProcess) {
+        runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) => {
           // simulate that the process was killed externally
           const emit = sinon.stub(childProcess, 'emit');
-          signalKill(childProcess, function() {} );
+          signalKill(childProcess, () => {});
           return emit.restore();
         }
-        , function(err, info) {
+          , (err, info) => {
           processInfo = info;
           return done(err);
         })

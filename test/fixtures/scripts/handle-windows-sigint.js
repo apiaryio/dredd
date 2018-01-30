@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 const readline = require('readline');
 
 
@@ -6,13 +8,13 @@ const ASCII_CTRL_C = 3;
 
 // To learn about why this is needed and how it works, see
 // the 'src/child-process.coffee' file, function 'signalTerm'.
-module.exports = function() {
+module.exports = function () {
   // Handling programmatic interruption (Dredd sends '\u0003'
   // to stdin)
   process.stdin.on('data', chunk =>
     (() => {
       const result = [];
-      for (let char of chunk.toString()) {
+      for (const char of chunk.toString()) {
         if (char.charCodeAt(0) === ASCII_CTRL_C) {
           process.emit('SIGINT');
           break;

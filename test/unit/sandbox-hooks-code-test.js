@@ -1,41 +1,47 @@
-const {assert} = require('chai');
+/* eslint-disable
+    no-multi-str,
+    no-shadow,
+    no-unused-vars,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 
 const sandboxHooksCode = require('../../src/sandbox-hooks-code');
 
-describe('sandboxHooksCode(hooksCode, callback)', function() {
-
+describe('sandboxHooksCode(hooksCode, callback)', () => {
   it('should be a defined function', () => assert.isFunction(sandboxHooksCode));
 
   describe('when hookscode explodes', () =>
-    it('should return an error in callback', function(done) {
-      const hooksCode = `\
+    it('should return an error in callback', (done) => {
+      const hooksCode = '\
 throw(new Error("Exploded during sandboxed processing of hook file"));\
-`;
-      return sandboxHooksCode(hooksCode, function(err, result) {
+';
+      return sandboxHooksCode(hooksCode, (err, result) => {
         assert.include(err, 'sandbox');
         return done();
       });
     })
   );
 
-  describe('context of code adding hooks', function() {
-    it('should not have access to this context', function(done) {
+  describe('context of code adding hooks', () => {
+    it('should not have access to this context', (done) => {
       const contextVar = 'a';
-      const hooksCode = `\
+      const hooksCode = '\
 contextVar = "b";\
-`;
-      return sandboxHooksCode(hooksCode, function(err, result) {
+';
+      return sandboxHooksCode(hooksCode, (err, result) => {
         assert.equal(contextVar, 'a');
         return done();
       });
     });
 
-    it('should not have access to require', function(done) {
+    it('should not have access to require', (done) => {
       const contextVar = '';
-      const hooksCode = `\
-require('fs');\
-`;
-      return sandboxHooksCode(hooksCode, function(err, result) {
+      const hooksCode = '\
+require(\'fs\');\
+';
+      return sandboxHooksCode(hooksCode, (err, result) => {
         assert.include(err, 'require');
         return done();
       });
@@ -52,23 +58,25 @@ require('fs');\
       'beforeValidation'
     ];
 
-    for (let name of functions) { (name =>
-      it(`should have defined function '${name}'`, function(done) {
-        const hooksCode = `\
+    for (const name of functions) {
+      (name =>
+        it(`should have defined function '${name}'`, (done) => {
+          const hooksCode = `\
 if(typeof(${name}) !== 'function'){
   throw(new Error('${name} is not a function'))
 }\
 `;
-        return sandboxHooksCode(hooksCode, function(err, result) {
-          assert.isUndefined(err);
-          return done();
-        });
-      })
-    )(name); }
+          return sandboxHooksCode(hooksCode, (err, result) => {
+            assert.isUndefined(err);
+            return done();
+          });
+        })
+      )(name);
+    }
 
-    return it('should pass result object to the second callback argument', function(done) {
-      const hooksCode = "";
-      return sandboxHooksCode(hooksCode, function(err, result) {
+    return it('should pass result object to the second callback argument', (done) => {
+      const hooksCode = '';
+      return sandboxHooksCode(hooksCode, (err, result) => {
         if (err) { return done(err); }
         assert.isObject(result);
         return done();
@@ -76,7 +84,7 @@ if(typeof(${name}) !== 'function'){
     });
   });
 
-  return describe('result object', function() {
+  return describe('result object', () => {
     const properties = [
       'beforeAllHooks',
       'beforeEachHooks',
@@ -88,8 +96,8 @@ if(typeof(${name}) !== 'function'){
       'beforeEachValidationHooks'
     ];
 
-    return Array.from(properties).map((property) => (property =>
-      it(`should have property ${property}`, function(done) {
+    return Array.from(properties).map(property => (property =>
+      it(`should have property ${property}`, (done) => {
         const hooksCode = `\
 var dummyFunc = function(data){
   return true;
@@ -105,7 +113,7 @@ beforeEachValidation(dummyFunc);
 beforeValidation('Transaction Name', dummyFunc);\
 `;
 
-        return sandboxHooksCode(hooksCode, function(err, result) {
+        return sandboxHooksCode(hooksCode, (err, result) => {
           if (err) { return done(err); }
           assert.property(result, property);
           return done();
@@ -114,5 +122,4 @@ beforeValidation('Transaction Name', dummyFunc);\
     )(property));
   });
 });
-
 

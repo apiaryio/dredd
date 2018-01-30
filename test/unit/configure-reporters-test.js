@@ -1,6 +1,11 @@
-const {EventEmitter} = require('events');
+/* eslint-disable
+    no-return-assign,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { EventEmitter } = require('events');
 
-const {assert} = require('chai');
+const { assert } = require('chai');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire').noCallThru();
 
@@ -17,7 +22,7 @@ const ApiaryReporterStub = sinon.spy(require('../../src/reporters/apiary-reporte
 const emitterStub = new EventEmitter();
 
 const configureReporters = proxyquire('../../src/configure-reporters', {
-  './logger' : loggerStub,
+  './logger': loggerStub,
   './reporters/base-reporter': BaseReporterStub,
   './reporters/x-unit-reporter': XUnitReporterStub,
   './reporters/cli-reporter': CliReporterStub,
@@ -28,7 +33,7 @@ const configureReporters = proxyquire('../../src/configure-reporters', {
   './reporters/apiary-reporter': ApiaryReporterStub
 });
 
-const resetStubs = function() {
+const resetStubs = function () {
   emitterStub.removeAllListeners();
   BaseReporterStub.reset();
   CliReporterStub.reset();
@@ -41,8 +46,7 @@ const resetStubs = function() {
 };
 
 
-describe('configureReporters(config, stats, tests, onSaveCallback)', function() {
-
+describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
   const configuration = {
     emitter: emitterStub,
     options: {
@@ -57,25 +61,23 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', function() 
 
   after(() => loggerStub.transports.console.silent = false);
 
-  describe('when there are no reporters', function() {
-
+  describe('when there are no reporters', () => {
     beforeEach(() => resetStubs());
 
-    it('should only add a CliReporter', function(done) {
+    it('should only add a CliReporter', (done) => {
       configureReporters(configuration, {}, {}, null);
       assert.isOk(CliReporterStub.called);
       return done();
     });
 
-    return describe('when silent', function(){
-
+    return describe('when silent', () => {
       before(() => configuration.options.silent = true);
 
       after(() => configuration.options.silent = false);
 
       beforeEach(() => resetStubs());
 
-      return it('should not add any reporters', function(done) {
+      return it('should not add any reporters', (done) => {
         configureReporters(configuration, {}, {}, null);
         assert.notOk(CliReporterStub.called);
         return done();
@@ -83,21 +85,20 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', function() 
     });
   });
 
-  describe('when there are only cli-based reporters', function() {
-
+  describe('when there are only cli-based reporters', () => {
     before(() => configuration.options.reporter = ['dot', 'nyan']);
 
     after(() => configuration.options.reporter = []);
 
     beforeEach(() => resetStubs());
 
-    it('should add a cli-based reporter', function(done) {
+    it('should add a cli-based reporter', (done) => {
       configureReporters(configuration, {}, {}, null);
       assert.isOk(DotReporterStub.called);
       return done();
     });
 
-    return it('should not add more than one cli-based reporters', function(done) {
+    return it('should not add more than one cli-based reporters', (done) => {
       configureReporters(configuration, {}, {}, null);
       assert.notOk(CliReporterStub.called);
       return done();
@@ -105,101 +106,96 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', function() 
   });
 
 
-  describe('when there are only file-based reporters', function() {
-
+  describe('when there are only file-based reporters', () => {
     before(() => configuration.options.reporter = ['xunit', 'markdown']);
 
     after(() => configuration.options.reporter = []);
 
     beforeEach(() => resetStubs());
 
-    it('should add a CliReporter', function(done) {
-      configureReporters(configuration, {}, {}, function() {} );
+    it('should add a CliReporter', (done) => {
+      configureReporters(configuration, {}, {}, () => {});
       assert.isOk(CliReporterStub.called);
       return done();
     });
 
-    describe('when the number of outputs is greater than or equals the number of reporters', function() {
-
+    describe('when the number of outputs is greater than or equals the number of reporters', () => {
       before(() => configuration.options.output = ['file1', 'file2', 'file3']);
 
       after(() => configuration.options.output = []);
 
       beforeEach(() => resetStubs());
 
-      return it('should use the output paths in the order provided', function(done) {
-        configureReporters(configuration, {}, {}, function() {} );
-        assert.isOk(XUnitReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file1'));
-        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file2'));
+      return it('should use the output paths in the order provided', (done) => {
+        configureReporters(configuration, {}, {}, () => {});
+        assert.isOk(XUnitReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file1'));
+        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file2'));
         return done();
       });
     });
 
-    return describe('when the number of outputs is less than the number of reporters', function() {
-
+    return describe('when the number of outputs is less than the number of reporters', () => {
       before(() => configuration.options.output = ['file1']);
 
       after(() => configuration.options.output = []);
 
       beforeEach(() => resetStubs());
 
-      return it('should use the default output paths for the additional reporters', function(done) {
-        configureReporters(configuration, {}, {}, function() {} );
-        assert.isOk(XUnitReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file1'));
-        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, null));
+      return it('should use the default output paths for the additional reporters', (done) => {
+        configureReporters(configuration, {}, {}, () => {});
+        assert.isOk(XUnitReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file1'));
+        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, null));
         return done();
       });
     });
   });
 
-  return describe('when there are both cli-based and file-based reporters', function() {
-
+  return describe('when there are both cli-based and file-based reporters', () => {
     before(() => configuration.options.reporter = ['nyan', 'markdown', 'html']);
 
     after(() => configuration.options.reporter = []);
 
     beforeEach(() => resetStubs());
 
-    it('should add a cli-based reporter', function(done) {
-      configureReporters(configuration, {}, {}, function() {});
+    it('should add a cli-based reporter', (done) => {
+      configureReporters(configuration, {}, {}, () => {});
       assert.isOk(NyanCatReporterStub.called);
       return done();
     });
 
-    it('should not add more than one cli-based reporters', function(done) {
-      configureReporters(configuration, {}, {}, function() {});
+    it('should not add more than one cli-based reporters', (done) => {
+      configureReporters(configuration, {}, {}, () => {});
       assert.notOk(CliReporterStub.called);
       assert.notOk(DotReporterStub.called);
       return done();
     });
 
-    describe('when the number of outputs is greather than or equals the number of file-based reporters', function() {
-
+    describe('when the number of outputs is greather than or equals the number of file-based reporters', () => {
       before(() => configuration.options.output = ['file1', 'file2']);
 
       after(() => configuration.options.output = []);
 
       beforeEach(() => resetStubs());
 
-      return it('should use the output paths in the order provided', function(done) {
-        configureReporters(configuration, {}, {}, function() {} );
-        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file1'));
-        assert.isOk(HtmlReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file2'));
+      return it('should use the output paths in the order provided', (done) => {
+        configureReporters(configuration, {}, {}, () => {});
+        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file1'));
+        assert.isOk(HtmlReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file2'));
         return done();
       });
     });
 
-    return describe('when the number of outputs is less than the number of file-based reporters', function() {
+    return describe('when the number of outputs is less than the number of file-based reporters', () => {
       before(() => configuration.options.output = ['file1']);
 
       after(() => configuration.options.output = []);
 
       beforeEach(() => resetStubs());
 
-      return it('should use the default output paths for the additional reporters', function(done) {
-        configureReporters(configuration, {}, {}, function() {} );
-        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, 'file1'));
-        assert.isOk(HtmlReporterStub.calledWith(emitterStub, {'fileBasedReporters': 2}, {}, null));
+      return it('should use the default output paths for the additional reporters', (done) => {
+        configureReporters(configuration, {}, {}, () => {});
+        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file1'));
+        assert.isOk(HtmlReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, null));
         return done();
       });
     });
