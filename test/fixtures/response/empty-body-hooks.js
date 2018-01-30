@@ -1,7 +1,6 @@
-var hooks = require('hooks');
+const hooks = require('hooks');
 
-
-hooks.beforeEachValidation(function (transaction, done) {
+hooks.beforeEachValidation((transaction, done) => {
   if (transaction.real.body) {
     transaction.fail = 'The response body must be empty';
   }

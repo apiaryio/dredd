@@ -1,23 +1,22 @@
-var hooks = require('hooks');
-var assert = require('chai').assert;
-var tokenPattern = /([0-9]|[a-f]){24,}/g;
+const assert = require('chai').assert;
+const hooks = require('hooks');
 
-hooks.beforeEach(function(transaction, done) {
+const tokenPattern = /([0-9]|[a-f]){24,}/g;
+
+hooks.beforeEach((transaction, done) => {
   transaction.id = transaction.id.replace(tokenPattern, 'CENSORED');
   transaction.origin.resourceName = transaction.origin.resourceName.replace(tokenPattern, 'CENSORED');
   done();
 });
 
-hooks.afterEach(function(transaction, done) {
+hooks.afterEach((transaction, done) => {
   try {
-
-    JSON.stringify(transaction.test, function(key, value) {
+    JSON.stringify(transaction.test, (key, value) => {
       if (typeof value === 'string') {
         assert.notMatch(value, tokenPattern);
       }
       return value;
     });
-
   } catch (error) {
     transaction.fail = 'Sensitive data would be sent to Dredd reporter';
     transaction.test = {
@@ -25,7 +24,7 @@ hooks.afterEach(function(transaction, done) {
       end: transaction.test.end,
       duration: transaction.test.duration,
       startedAt: transaction.test.startedAt,
-      message: transaction.fail,
+      message: transaction.fail
     };
   }
   done();

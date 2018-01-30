@@ -1,3 +1,3 @@
-after('Machines > Machines collection > Get Machines', function(transaction){
-  transaction['fail'] = 'failed in sandboxed hook';
+after('Machines > Machines collection > Get Machines', (transaction) => {
+  transaction.fail = 'failed in sandboxed hook';
 });
