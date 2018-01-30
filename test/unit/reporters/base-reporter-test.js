@@ -1,159 +1,185 @@
-{assert} = require 'chai'
-sinon = require 'sinon'
-proxyquire = require('proxyquire').noCallThru()
+const {assert} = require('chai');
+const sinon = require('sinon');
+const proxyquire = require('proxyquire').noCallThru();
 
-{EventEmitter} = require 'events'
-loggerStub = require '../../../src/logger'
-BaseReporter = proxyquire '../../../src/reporters/base-reporter', {
+const {EventEmitter} = require('events');
+const loggerStub = require('../../../src/logger');
+const BaseReporter = proxyquire('../../../src/reporters/base-reporter', {
   './../logger' : loggerStub
-}
+});
 
-describe 'BaseReporter', () ->
+describe('BaseReporter', function() {
 
-  stats = {}
-  tests = []
-  test = {}
-  emitter = {}
-  baseReporter = {}
+  let stats = {};
+  let tests = [];
+  let test = {};
+  let emitter = {};
+  let baseReporter = {};
 
-  beforeEach () ->
-    stats =
-      tests: 0
-      failures: 0
-      errors: 0
-      passes: 0
-      skipped: 0
-      start: 0
-      end: 0
+  beforeEach(function() {
+    stats = {
+      tests: 0,
+      failures: 0,
+      errors: 0,
+      passes: 0,
+      skipped: 0,
+      start: 0,
+      end: 0,
       duration: 0
-    tests = []
-    emitter = new EventEmitter()
-    baseReporter = new BaseReporter(emitter, stats, tests)
+    };
+    tests = [];
+    emitter = new EventEmitter();
+    return baseReporter = new BaseReporter(emitter, stats, tests);
+  });
 
-  describe 'when starting', () ->
+  describe('when starting', function() {
 
-    before () ->
+    before(() =>
       stats =
-        start: null
+        {start: null}
+    );
 
-    it 'should set the start date', (done) ->
-      emitter.emit 'start', '', () ->
-        assert.isOk stats.start
-        done()
+    return it('should set the start date', done =>
+      emitter.emit('start', '', function() {
+        assert.isOk(stats.start);
+        return done();
+      })
+    );
+  });
 
-  describe 'when ending', () ->
+  describe('when ending', function() {
 
-    before () ->
+    before(() =>
       stats =
-        end: null
+        {end: null}
+    );
 
-    it 'should set the end date', (done) ->
-      emitter.emit 'end', () ->
-        assert.isOk stats.end
-        done()
+    return it('should set the end date', done =>
+      emitter.emit('end', function() {
+        assert.isOk(stats.end);
+        return done();
+      })
+    );
+  });
 
-  describe 'when test starts', () ->
+  describe('when test starts', function() {
 
-    before () ->
-      test =
-        status: 'pass'
+    before(() =>
+      test = {
+        status: 'pass',
         title: 'Passing Test'
+      }
+    );
 
-    it 'should add the test', () ->
-      emitter.emit 'test start', test
-      assert.isOk tests.length is 1
+    return it('should add the test', function() {
+      emitter.emit('test start', test);
+      return assert.isOk(tests.length === 1);
+    });
+  });
 
-  describe 'when test passes', () ->
+  describe('when test passes', function() {
 
-    beforeEach () ->
-      test =
-        status: 'pass'
+    beforeEach(function() {
+      test = {
+        status: 'pass',
         title: 'Passing Test'
-      emitter.emit 'test start', test
-      emitter.emit 'test pass', test
+      };
+      emitter.emit('test start', test);
+      return emitter.emit('test pass', test);
+    });
 
-    it 'should increment the counter', () ->
-      assert.equal stats.passes, 1
+    it('should increment the counter', () => assert.equal(stats.passes, 1));
 
-    it 'should set the end time', () ->
-      assert.isOk tests[0].end
+    return it('should set the end time', () => assert.isOk(tests[0].end));
+  });
 
-  describe 'when test is skipped', () ->
-    beforeEach () ->
-      test =
-        status: 'skipped'
+  describe('when test is skipped', function() {
+    beforeEach(function() {
+      test = {
+        status: 'skipped',
         title: 'Skipped Test'
-      emitter.emit 'test start', test
-      emitter.emit 'test skip', test
+      };
+      emitter.emit('test start', test);
+      return emitter.emit('test skip', test);
+    });
 
-    it 'should increment the counter', () ->
-      assert.isOk stats.skipped is 1
+    return it('should increment the counter', () => assert.isOk(stats.skipped === 1));
+  });
 
-  describe 'when test fails', () ->
+  describe('when test fails', function() {
 
-    beforeEach () ->
-      test =
-        status: 'failed'
+    beforeEach(function() {
+      test = {
+        status: 'failed',
         title: 'Failed Test'
-      emitter.emit 'test start', test
-      emitter.emit 'test fail', test
+      };
+      emitter.emit('test start', test);
+      return emitter.emit('test fail', test);
+    });
 
-    it 'should increment the counter', () ->
-      assert.isOk stats.failures is 1
+    it('should increment the counter', () => assert.isOk(stats.failures === 1));
 
-    it 'should set the end time', () ->
-      assert.isOk tests[0].end
+    return it('should set the end time', () => assert.isOk(tests[0].end));
+  });
 
-  describe 'when test errors', () ->
+  describe('when test errors', function() {
 
-    beforeEach () ->
-      test =
-        status: 'error'
+    beforeEach(function() {
+      test = {
+        status: 'error',
         title: 'Errored Test'
-      emitter.emit 'test start', test
-      emitter.emit 'test error', new Error('Error'), test
+      };
+      emitter.emit('test start', test);
+      return emitter.emit('test error', new Error('Error'), test);
+    });
 
-    it 'should increment the counter', () ->
-      assert.isOk stats.errors is 1
+    it('should increment the counter', () => assert.isOk(stats.errors === 1));
 
-    it 'should set the end time', () ->
-      assert.isOk tests[0].end
+    return it('should set the end time', () => assert.isOk(tests[0].end));
+  });
 
-  describe 'when passing test start is UTC string', () ->
+  describe('when passing test start is UTC string', function() {
 
-    beforeEach () ->
-      test =
-        status: 'pass'
+    beforeEach(function() {
+      test = {
+        status: 'pass',
         title: 'Passing Test'
-      emitter.emit 'test start', test
-      test.start = '2017-06-15T09:29:50.588Z'
-      emitter.emit 'test pass', test
+      };
+      emitter.emit('test start', test);
+      test.start = '2017-06-15T09:29:50.588Z';
+      return emitter.emit('test pass', test);
+    });
 
-    it 'should set the duration', () ->
-      assert.isNotNaN tests[0].duration
+    return it('should set the duration', () => assert.isNotNaN(tests[0].duration));
+  });
 
-  describe 'when failed test start is UTC string', () ->
+  describe('when failed test start is UTC string', function() {
 
-    beforeEach () ->
-      test =
-        status: 'pass'
+    beforeEach(function() {
+      test = {
+        status: 'pass',
         title: 'Failed Test'
-      emitter.emit 'test start', test
-      test.start = '2017-06-15T09:29:50.588Z'
-      emitter.emit 'test fail', test
+      };
+      emitter.emit('test start', test);
+      test.start = '2017-06-15T09:29:50.588Z';
+      return emitter.emit('test fail', test);
+    });
 
-    it 'should set the duration', () ->
-      assert.isNotNaN tests[0].duration
+    return it('should set the duration', () => assert.isNotNaN(tests[0].duration));
+  });
 
-  describe 'when errored test start is UTC string', () ->
+  return describe('when errored test start is UTC string', function() {
 
-    beforeEach () ->
-      test =
-        status: 'pass'
+    beforeEach(function() {
+      test = {
+        status: 'pass',
         title: 'Errored Test'
-      emitter.emit 'test start', test
-      test.start = '2017-06-15T09:29:50.588Z'
-      emitter.emit 'test error', new Error('Error'), test
+      };
+      emitter.emit('test start', test);
+      test.start = '2017-06-15T09:29:50.588Z';
+      return emitter.emit('test error', new Error('Error'), test);
+    });
 
-    it 'should set the duration', () ->
-      assert.isNotNaN tests[0].duration
+    return it('should set the duration', () => assert.isNotNaN(tests[0].duration));
+  });
+});

@@ -1,8 +1,8 @@
-{before, after, log} = require 'hooks'
+const {before, after, log} = require('hooks');
 
-before "Machines > Machines collection > Get Machines", (transaction) ->
-  log {err: 'Error object!'}
-  log true
+before("Machines > Machines collection > Get Machines", function(transaction) {
+  log({err: 'Error object!'});
+  return log(true);
+});
 
-after "Machines > Machines collection > Get Machines", (transaction) ->
-  log "using hooks.log to debug"
+after("Machines > Machines collection > Get Machines", transaction => log("using hooks.log to debug"));
