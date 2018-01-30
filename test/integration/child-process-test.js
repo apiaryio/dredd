@@ -84,10 +84,10 @@ describe('Babysitting Child Processes', () => {
         it('gets killed', () => assert.equal(processInfo.signal, 'SIGKILL'));
         it('returns no status code', () => assert.isNull(processInfo.exitStatus));
       }
-      return it('does not emit an error', () => assert.isUndefined(processInfo.error));
+      it('does not emit an error', () => assert.isUndefined(processInfo.error));
     });
 
-    return describe('process without support for graceful termination', () => {
+    describe('process without support for graceful termination', () => {
       let processInfo;
 
       before(done =>
@@ -107,7 +107,7 @@ describe('Babysitting Child Processes', () => {
         it('gets killed', () => assert.equal(processInfo.signal, 'SIGKILL'));
         it('returns no status code', () => assert.isNull(processInfo.exitStatus));
       }
-      return it('does not emit an error', () => assert.isUndefined(processInfo.error));
+      it('does not emit an error', () => assert.isUndefined(processInfo.error));
     });
   });
 
@@ -131,10 +131,10 @@ describe('Babysitting Child Processes', () => {
           it('does not get terminated directly by the signal', () => assert.isNull(processInfo.signal));
         }
         it('returns zero status code', () => assert.equal(processInfo.exitStatus, 0));
-        return it('does not emit an error', () => assert.isUndefined(processInfo.error));
+        it('does not emit an error', () => assert.isUndefined(processInfo.error));
       });
 
-      return describe('process without support for graceful termination', () => {
+      describe('process without support for graceful termination', () => {
         let processInfo;
 
         before(done =>
@@ -150,7 +150,7 @@ describe('Babysitting Child Processes', () => {
         it('does not get terminated', () => assert.isFalse(processInfo.terminated));
         it('has undefined status code', () => assert.isUndefined(processInfo.exitStatus));
         it('emits an error', () => assert.instanceOf(processInfo.error, Error));
-        return it('the error has a message about unsuccessful termination', () =>
+        it('the error has a message about unsuccessful termination', () =>
           assert.equal(
             processInfo.error.message,
             `Unable to gracefully terminate process ${processInfo.childProcess.pid}`
@@ -179,10 +179,10 @@ describe('Babysitting Child Processes', () => {
         it('does not get terminated directly by the signal', () => assert.isNull(processInfo.signal));
       }
       it('returns zero status code', () => assert.equal(processInfo.exitStatus, 0));
-      return it('does not emit an error', () => assert.isUndefined(processInfo.error));
+      it('does not emit an error', () => assert.isUndefined(processInfo.error));
     });
 
-    return describe('process without support for graceful termination', () => {
+    describe('process without support for graceful termination', () => {
       let processInfo;
 
       before(done =>
@@ -204,11 +204,11 @@ describe('Babysitting Child Processes', () => {
         it('gets killed', () => assert.equal(processInfo.signal, 'SIGKILL'));
         it('returns no status code', () => assert.isNull(processInfo.exitStatus));
       }
-      return it('does not emit an error', () => assert.isUndefined(processInfo.error));
+      it('does not emit an error', () => assert.isUndefined(processInfo.error));
     });
   });
 
-  return describe('when child process terminates', () => {
+  describe('when child process terminates', () => {
     describe('normally with zero status code', () => {
       let processInfo;
 
@@ -225,7 +225,7 @@ describe('Babysitting Child Processes', () => {
       it('does not emit the \'crash\' event', () => assert.isFalse(processInfo.onCrash.called));
       it('is flagged as terminated', () => assert.isTrue(processInfo.childProcess.terminated));
       it('is not flagged as intentionally killed', () => assert.isFalse(processInfo.childProcess.killedIntentionally));
-      return it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
+      it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
     });
 
     describe('normally with non-zero status code', () => {
@@ -246,7 +246,7 @@ describe('Babysitting Child Processes', () => {
       it('the \'crash\' event is not provided with killed flag', () => assert.isFalse(processInfo.onCrash.getCall(0).args[1]));
       it('is flagged as terminated', () => assert.isTrue(processInfo.childProcess.terminated));
       it('is not flagged as intentionally killed', () => assert.isFalse(processInfo.childProcess.killedIntentionally));
-      return it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
+      it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
     });
 
     describe('intentionally gracefully with zero status code', () => {
@@ -265,7 +265,7 @@ describe('Babysitting Child Processes', () => {
       it('does not emit the \'crash\' event', () => assert.isFalse(processInfo.onCrash.called));
       it('is flagged as terminated', () => assert.isTrue(processInfo.childProcess.terminated));
       it('is not flagged as intentionally killed', () => assert.isFalse(processInfo.childProcess.killedIntentionally));
-      return it('is flagged as intentionally terminated', () => assert.isTrue(processInfo.childProcess.terminatedIntentionally));
+      it('is flagged as intentionally terminated', () => assert.isTrue(processInfo.childProcess.terminatedIntentionally));
     });
 
     describe('intentionally gracefully with non-zero status code', () => {
@@ -284,7 +284,7 @@ describe('Babysitting Child Processes', () => {
       it('does not emit the \'crash\' event', () => assert.isFalse(processInfo.onCrash.called));
       it('is flagged as terminated', () => assert.isTrue(processInfo.childProcess.terminated));
       it('is not flagged as intentionally killed', () => assert.isFalse(processInfo.childProcess.killedIntentionally));
-      return it('is flagged as intentionally terminated', () => assert.isTrue(processInfo.childProcess.terminatedIntentionally));
+      it('is flagged as intentionally terminated', () => assert.isTrue(processInfo.childProcess.terminatedIntentionally));
     });
 
     describe('intentionally forcefully', () => {
@@ -308,7 +308,7 @@ describe('Babysitting Child Processes', () => {
       it('does not emit the \'crash\' event', () => assert.isFalse(processInfo.onCrash.called));
       it('is flagged as terminated', () => assert.isTrue(processInfo.childProcess.terminated));
       it('is flagged as intentionally killed', () => assert.isTrue(processInfo.childProcess.killedIntentionally));
-      return it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
+      it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
     });
 
     describe('gracefully with zero status code', () => {
@@ -332,7 +332,7 @@ describe('Babysitting Child Processes', () => {
       it('does not emit the \'crash\' event', () => assert.isFalse(processInfo.onCrash.called));
       it('is flagged as terminated', () => assert.isTrue(processInfo.childProcess.terminated));
       it('is not flagged as intentionally killed', () => assert.isFalse(processInfo.childProcess.killedIntentionally));
-      return it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
+      it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
     });
 
     describe('gracefully with non-zero status code', () => {
@@ -358,10 +358,10 @@ describe('Babysitting Child Processes', () => {
       it('the \'crash\' event is not provided with killed flag', () => assert.isFalse(processInfo.onCrash.getCall(0).args[1]));
       it('is flagged as terminated', () => assert.isTrue(processInfo.childProcess.terminated));
       it('is not flagged as intentionally killed', () => assert.isFalse(processInfo.childProcess.killedIntentionally));
-      return it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
+      it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
     });
 
-    return describe('forcefully', () => {
+    describe('forcefully', () => {
       let processInfo;
 
       before(done =>
@@ -394,7 +394,7 @@ describe('Babysitting Child Processes', () => {
       }
       it('is flagged as terminated', () => assert.isTrue(processInfo.childProcess.terminated));
       it('is not flagged as intentionally killed', () => assert.isFalse(processInfo.childProcess.killedIntentionally));
-      return it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
+      it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
     });
   });
 });

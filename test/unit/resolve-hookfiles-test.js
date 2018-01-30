@@ -16,7 +16,7 @@ describe('resolveHookfiles()', () => {
   describe('when given no paths', () =>
     it('produces no results', () => {
       const paths = resolveHookfiles([], (cwd = cwd));
-      return assert.deepEqual(paths, []);
+      assert.deepEqual(paths, []);
     })
   );
 
@@ -27,14 +27,14 @@ describe('resolveHookfiles()', () => {
         path.join(cwd, 'non-js-hooks.rb')
       ];
       const paths = resolveHookfiles(hookfiles, (cwd = cwd));
-      return assert.deepEqual(paths, hookfiles);
+      assert.deepEqual(paths, hookfiles);
     })
   );
 
   describe('when given existing relative filenames', () =>
     it('resolves them into absolute paths', () => {
       const paths = resolveHookfiles(['./hooks.js', './non-js-hooks.rb'], (cwd = cwd));
-      return assert.deepEqual(paths, [
+      assert.deepEqual(paths, [
         path.join(cwd, 'hooks.js'),
         path.join(cwd, 'non-js-hooks.rb')
       ]);
@@ -51,7 +51,7 @@ describe('resolveHookfiles()', () => {
   describe('when given glob pattern resolving to existing files', () =>
     it('resolves them into absolute paths', () => {
       const paths = resolveHookfiles(['./**/hooks.js'], (cwd = cwd));
-      return assert.deepEqual(paths, [
+      assert.deepEqual(paths, [
         path.join(cwd, 'hooks.js')
       ]);
     })
@@ -64,10 +64,10 @@ describe('resolveHookfiles()', () => {
     )
   );
 
-  return describe('when given both globs and filenames', () => {
+  describe('when given both globs and filenames', () => {
     it('resolves them into absolute paths', () => {
       const paths = resolveHookfiles(['./non-js-hooks.rb', './**/hooks.js'], (cwd = cwd));
-      return assert.deepEqual(paths, [
+      assert.deepEqual(paths, [
         path.join(cwd, 'hooks.js'),
         path.join(cwd, 'non-js-hooks.rb')
       ]);
@@ -83,7 +83,7 @@ describe('resolveHookfiles()', () => {
         , './**/foo/bar/foobar.js')
     );
 
-    return it('returns the absolute paths alphabetically sorted', () => {
+    it('returns the absolute paths alphabetically sorted', () => {
       const paths = resolveHookfiles([
         './**/*_hooks.*',
         './hooks-glob/baz/x.js',
@@ -95,7 +95,7 @@ describe('resolveHookfiles()', () => {
         './hooks-glob/foo/o.js',
         './hooks-glob/bar/p.js'
       ], (cwd = cwd));
-      return assert.deepEqual(paths, [
+      assert.deepEqual(paths, [
         path.join(cwd, 'hooks-glob/foo/a.js'),
         path.join(cwd, 'hooks-glob/bar/b.js'),
         path.join(cwd, 'hooks-glob/baz/c.js'),

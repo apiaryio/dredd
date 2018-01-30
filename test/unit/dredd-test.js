@@ -47,7 +47,7 @@ describe('Dredd class', () => {
       return loggerStub.log.restore();
     });
 
-    return it('should not explode and run executeTransaction', (done) => {
+    it('should not explode and run executeTransaction', (done) => {
       const fn = function () {
         dredd = new Dredd(configuration);
         sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
@@ -58,7 +58,7 @@ describe('Dredd class', () => {
         });
       };
 
-      return assert.doesNotThrow(fn);
+      assert.doesNotThrow(fn);
     });
   });
 
@@ -79,7 +79,7 @@ describe('Dredd class', () => {
     it('should copy configuration on creation', () => {
       dredd = new Dredd(configuration);
       assert.isOk(dredd.configuration.options.silent);
-      return assert.notOk(dredd.configuration.options['dry-run']);
+      assert.notOk(dredd.configuration.options['dry-run']);
     });
 
     it('should load the file on given path', (done) => {
@@ -170,7 +170,7 @@ describe('Dredd class', () => {
         })
       );
 
-      return it('should parse loaded files', done =>
+      it('should parse loaded files', done =>
         dredd.run((error) => {
           if (error) { return done(error); }
           assert.isObject(dredd.configuration.data['./test/fixtures/multifile/greeting.apib']);
@@ -201,7 +201,7 @@ describe('Dredd class', () => {
 
       afterEach(() => dredd.runner.executeTransaction.restore());
 
-      return it('should return error', done =>
+      it('should return error', done =>
         dredd.run((error) => {
           assert.isOk(error);
           return done();
@@ -228,7 +228,7 @@ describe('Dredd class', () => {
 
       afterEach(() => dredd.runner.executeTransaction.restore());
 
-      return it('should return error', done =>
+      it('should return error', done =>
         dredd.run((error) => {
           assert.isOk(error);
           return done();
@@ -302,7 +302,7 @@ GET /url
         })
       );
 
-      return describe('and I also set configuration.options.path to an existing file', () => {
+      describe('and I also set configuration.options.path to an existing file', () => {
         let localdredd = null;
         beforeEach(() => {
           if (configuration.options == null) { configuration.options = {}; }
@@ -313,7 +313,7 @@ GET /url
 
         afterEach(() => localdredd.runner.executeTransaction.restore());
 
-        return it('should fill configuration data with data and one file at that path', done =>
+        it('should fill configuration data with data and one file at that path', done =>
           localdredd.run((error) => {
             if (error) { return done(error); }
             assert.lengthOf(localdredd.configuration.files, 1);
@@ -336,7 +336,7 @@ GET /url
     });
 
 
-    return describe('when paths are specified as a mix of URLs and a glob path', () => {
+    describe('when paths are specified as a mix of URLs and a glob path', () => {
       let blueprintCode = null;
       before((done) => {
         configuration = {
@@ -389,7 +389,7 @@ GET /url
           })
         );
 
-        return it('should load file contents on paths to config and parse these files', done =>
+        it('should load file contents on paths to config and parse these files', done =>
           dredd.run((error) => {
             if (error) { return done(error); }
             assert.isObject(dredd.configuration.data);
@@ -448,7 +448,7 @@ GET /url
           })
         );
 
-        return it('should not execute any transaction', done =>
+        it('should not execute any transaction', done =>
           dredd.run(() => {
             assert.notOk(dredd.runner.executeTransaction.called);
             return done();
@@ -456,7 +456,7 @@ GET /url
         );
       });
 
-      return describe('when an URL for one API description document is unreachable (erroneous)', () => {
+      describe('when an URL for one API description document is unreachable (erroneous)', () => {
         before(() =>
           sinon.stub(requestStub, 'get').callsFake((receivedArgs = {}, cb) => {
             if ((receivedArgs != null ? receivedArgs.url : undefined) === 'http://some.path.to/file.apib') {
@@ -479,7 +479,7 @@ GET /url
           })
         );
 
-        return it('should not execute any transaction', done =>
+        it('should not execute any transaction', done =>
           dredd.run(() => {
             assert.notOk(dredd.runner.executeTransaction.called);
             return done();
@@ -514,7 +514,7 @@ GET /url
       })
     );
 
-    return it('should NOT execute any transaction', done =>
+    it('should NOT execute any transaction', done =>
       dredd.run(() => {
         assert.notOk(dredd.runner.executeTransaction.called);
         return done();
@@ -551,7 +551,7 @@ GET /url
       })
     );
 
-    return it('should write warnings to warn logger', done =>
+    it('should write warnings to warn logger', done =>
       dredd.run(() => {
         assert.isOk(loggerStub.warn.called);
         return done();
@@ -581,7 +581,7 @@ GET /url
       })
     );
 
-    return it('should NOT execute any transaction', done =>
+    it('should NOT execute any transaction', done =>
       dredd.run((error) => {
         assert.notOk(dredd.runner.executeTransaction.called);
         return done();
@@ -612,7 +612,7 @@ GET /url
       })
     );
 
-    return it('should exit with an error', done =>
+    it('should exit with an error', done =>
       dredd.run((error) => {
         assert.isOk(error);
         return done();
@@ -653,7 +653,7 @@ GET /url
       })
     );
 
-    return it('should not exit', done =>
+    it('should not exit', done =>
       dredd.run((error) => {
         assert.notOk(error);
         return done();
@@ -676,7 +676,7 @@ GET /url
 
     afterEach(() => dredd.runner.executeTransaction.reset());
 
-    return it('should execute the runtime', done =>
+    it('should execute the runtime', done =>
       dredd.run((error) => {
         assert.isOk(dredd.runner.executeTransaction.called);
         return done();
@@ -729,7 +729,7 @@ GET /url
       );
 
 
-      return it('should call the callback', (done) => {
+      it('should call the callback', (done) => {
         var callback = sinon.spy((error) => {
           if (error) { done(error); }
           assert.isOk(callback.called);
@@ -740,7 +740,7 @@ GET /url
       });
     });
 
-    return describe('an error in the apiary reporter occurs', () => {
+    describe('an error in the apiary reporter occurs', () => {
       const PORT = 9876;
       dredd = null;
       const apiaryServer = null;
@@ -777,7 +777,7 @@ GET /url
         return dredd.emitStart(callback);
       });
 
-      return it('should print the error', done =>
+      it('should print the error', done =>
         dredd.emitStart(() => {
           assert.isTrue(errorLogger.called);
           return done();
@@ -786,7 +786,7 @@ GET /url
     });
   });
 
-  return describe('#logProxySettings', () => {
+  describe('#logProxySettings', () => {
     let verboseLogger;
 
     beforeEach(() => verboseLogger = sinon.spy(loggerStub, 'verbose'));
@@ -799,7 +799,7 @@ GET /url
       });
       afterEach(() => delete process.env.http_proxy);
 
-      return it('logs about the setting', () =>
+      it('logs about the setting', () =>
         assert.include(verboseLogger.lastCall.args[0],
           'HTTP(S) proxy specified by environment variables: http_proxy=http://proxy.example.com'
         )
@@ -813,7 +813,7 @@ GET /url
       });
       afterEach(() => delete process.env.HTTPS_PROXY);
 
-      return it('logs about the setting', () =>
+      it('logs about the setting', () =>
         assert.include(verboseLogger.lastCall.args[0],
           'HTTP(S) proxy specified by environment variables: ' +
           'HTTPS_PROXY=http://proxy.example.com'
@@ -832,7 +832,7 @@ GET /url
         return delete process.env.NO_PROXY;
       });
 
-      return it('logs about the setting', () =>
+      it('logs about the setting', () =>
         assert.include(verboseLogger.lastCall.args[0],
           'HTTP(S) proxy specified by environment variables: ' +
           'HTTPS_PROXY=http://proxy.example.com, ' +
@@ -841,7 +841,7 @@ GET /url
       );
     });
 
-    return describe('when DUMMY_PROXY environment variable is set', () => {
+    describe('when DUMMY_PROXY environment variable is set', () => {
       beforeEach(() => {
         process.env.DUMMY_PROXY = 'http://proxy.example.com';
         process.env.NO_PROXY = 'whitelisted.example.com';
@@ -852,7 +852,7 @@ GET /url
         return delete process.env.NO_PROXY;
       });
 
-      return it('is ignored', () =>
+      it('is ignored', () =>
         assert.include(verboseLogger.lastCall.args[0],
           'HTTP(S) proxy specified by environment variables: ' +
           'NO_PROXY=whitelisted.example.com'

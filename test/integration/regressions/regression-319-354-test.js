@@ -182,32 +182,32 @@ describe('Regression: Issues #319 and #354', () => {
       it('has no request body', () => assert.isUndefined(results.bodies[0]));
       it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[1], brickTypePayload));
       it('has correct ‘actual’ response body', () => assert.deepEqual(results.bodies[2], brickTypePayload));
-      return it('has correct schema', () => assert.deepEqual(results.schemas[0], brickTypeSchema));
+      it('has correct schema', () => assert.deepEqual(results.schemas[0], brickTypeSchema));
     });
 
     describe('Attributes defined in resource are referenced from action [POST /bricks]', () => {
       it('has correct request body', () => assert.deepEqual(results.bodies[3], brickTypePayload));
       it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[4], brickTypePayload));
       it('has correct ‘actual’ response body', () => assert.deepEqual(results.bodies[5], brickTypePayload));
-      return it('has correct schema', () => assert.deepEqual(results.schemas[1], brickTypeSchema));
+      it('has correct schema', () => assert.deepEqual(results.schemas[1], brickTypeSchema));
     });
 
     describe('Attributes defined as data structure are referenced from payload [GET /customers]', () => {
       it('has no request body', () => assert.isUndefined(results.bodies[6]));
       it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[7], userArrayPayload));
       it('has correct ‘actual’ response body', () => assert.deepEqual(results.bodies[8], userArrayPayload));
-      return it('has correct schema', () => assert.deepEqual(results.schemas[2], userArraySchema));
+      it('has correct schema', () => assert.deepEqual(results.schemas[2], userArraySchema));
     });
 
-    return describe('Attributes defined as data structure are referenced from action [POST /customers]', () => {
+    describe('Attributes defined as data structure are referenced from action [POST /customers]', () => {
       it('has correct request body', () => assert.deepEqual(results.bodies[9], userPayload));
       it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[10], userPayload));
       it('has correct ‘actual’ response body', () => assert.deepEqual(results.bodies[11], userPayload));
-      return it('has correct schema', () => assert.deepEqual(results.schemas[3], userSchema));
+      it('has correct schema', () => assert.deepEqual(results.schemas[3], userSchema));
     });
   });
 
-  return describe('Tested app is inconsistent with the API description', () => {
+  describe('Tested app is inconsistent with the API description', () => {
     const incorrectBrickTypePayload = clone(brickTypePayload);
     incorrectBrickTypePayload.id = 42;
     delete incorrectBrickTypePayload.name;
@@ -252,47 +252,47 @@ describe('Regression: Issues #319 and #354', () => {
       it('fails on missing required property and invalid type', () => {
         assert.include(results.failures[0], 'GET (200) /bricks/XYZ42');
         assert.include(results.failures[1], 'Missing required property: name');
-        return assert.include(results.failures[1], 'Invalid type: number');
+        assert.include(results.failures[1], 'Invalid type: number');
       });
       it('has no request body', () => assert.isUndefined(results.bodies[0]));
       it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[1], brickTypePayload));
       it('has incorrect ‘actual’ response body', () => assert.deepEqual(results.bodies[2], incorrectBrickTypePayload));
-      return it('has correct schema', () => assert.deepEqual(results.schemas[0], brickTypeSchema));
+      it('has correct schema', () => assert.deepEqual(results.schemas[0], brickTypeSchema));
     });
 
     describe('Attributes defined in resource are referenced from action [POST /bricks]', () => {
       it('fails on missing required property and invalid type', () => {
         assert.include(results.failures[2], 'POST (200) /bricks');
         assert.include(results.failures[3], 'Missing required property: name');
-        return assert.include(results.failures[3], 'Invalid type: number');
+        assert.include(results.failures[3], 'Invalid type: number');
       });
       it('has correct request body', () => assert.deepEqual(results.bodies[3], brickTypePayload));
       it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[4], brickTypePayload));
       it('has incorrect ‘actual’ response body', () => assert.deepEqual(results.bodies[5], incorrectBrickTypePayload));
-      return it('has correct schema', () => assert.deepEqual(results.schemas[1], brickTypeSchema));
+      it('has correct schema', () => assert.deepEqual(results.schemas[1], brickTypeSchema));
     });
 
     describe('Attributes defined as data structure are referenced from payload [GET /customers]', () => {
       it('fails on invalid type', () => {
         assert.include(results.failures[4], 'GET (200) /customers');
-        return assert.include(results.failures[5], 'Invalid type: object');
+        assert.include(results.failures[5], 'Invalid type: object');
       });
       it('has no request body', () => assert.isUndefined(results.bodies[6]));
       it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[7], userArrayPayload));
       it('has incorrect ‘actual’ response body', () => assert.deepEqual(results.bodies[8], incorrectUserArrayPayload));
-      return it('has correct schema', () => assert.deepEqual(results.schemas[2], userArraySchema));
+      it('has correct schema', () => assert.deepEqual(results.schemas[2], userArraySchema));
     });
 
-    return describe('Attributes defined as data structure are referenced from action [POST /customers]', () => {
+    describe('Attributes defined as data structure are referenced from action [POST /customers]', () => {
       it('fails on invalid types', () => {
         assert.include(results.failures[6], 'POST (200) /customers');
         assert.include(results.failures[7], 'Invalid type: null');
-        return assert.include(results.failures[7], 'Invalid type: string');
+        assert.include(results.failures[7], 'Invalid type: string');
       });
       it('has correct request body', () => assert.deepEqual(results.bodies[9], userPayload));
       it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[10], userPayload));
       it('has incorrect ‘actual’ response body', () => assert.deepEqual(results.bodies[11], incorrectUserPayload));
-      return it('has correct schema', () => assert.deepEqual(results.schemas[3], userSchema));
+      it('has correct schema', () => assert.deepEqual(results.schemas[3], userSchema));
     });
   });
 });

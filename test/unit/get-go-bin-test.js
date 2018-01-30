@@ -37,7 +37,7 @@ describe('getGoBin()', () => {
       });
     });
 
-    return it('resolves as $GOBIN', () => assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gobin', 'path')]));
+    it('resolves as $GOBIN', () => assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gobin', 'path')]));
   });
 
   describe('when $GOPATH is set', () => {
@@ -51,7 +51,7 @@ describe('getGoBin()', () => {
       });
     });
 
-    return it('resolves as $GOPATH + /bin', () => assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gopath', 'path', 'bin')]));
+    it('resolves as $GOPATH + /bin', () => assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gopath', 'path', 'bin')]));
   });
 
   describe('when both $GOBIN and $GOPATH are set', () => {
@@ -66,7 +66,7 @@ describe('getGoBin()', () => {
       });
     });
 
-    return it('resolves as $GOBIN', () => assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gobin', 'path')]));
+    it('resolves as $GOBIN', () => assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gobin', 'path')]));
   });
 
   describe('when neither $GOBIN nor $GOPATH are set', () => {
@@ -81,10 +81,10 @@ describe('getGoBin()', () => {
     });
     afterEach(() => childProcess.exec.restore());
 
-    return it('calls \'go env GOPATH\' + /bin', () => assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gopath', 'path', 'bin')]));
+    it('calls \'go env GOPATH\' + /bin', () => assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gopath', 'path', 'bin')]));
   });
 
-  return describe('when \'go env GOPATH\' fails', () => {
+  describe('when \'go env GOPATH\' fails', () => {
     const error = new Error('Ouch!');
     let callbackArgs;
 
@@ -97,6 +97,6 @@ describe('getGoBin()', () => {
     });
     afterEach(() => childProcess.exec.restore());
 
-    return it('propagates the error', () => assert.deepEqual(callbackArgs, [error]));
+    it('propagates the error', () => assert.deepEqual(callbackArgs, [error]));
   });
 });

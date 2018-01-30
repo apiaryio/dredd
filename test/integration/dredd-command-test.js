@@ -102,7 +102,7 @@ describe('DreddCommand class Integration', () => {
 
       it('should call fs.existsSync with given path', () => assert.isTrue(fsExistsSync.calledWith(configPath)));
       it('should call configUtils.load with given path', () => assert.isTrue(configUtilsLoad.calledWith(configPath)));
-      return it('should print message about using given configuration file', () => assert.include(stdout, `info: Configuration '${configPath}' found`));
+      it('should print message about using given configuration file', () => assert.include(stdout, `info: Configuration '${configPath}' found`));
     });
 
     describe('When dredd.yml exists', () => {
@@ -125,10 +125,10 @@ describe('DreddCommand class Integration', () => {
 
       it('should call fs.existsSync with dredd.yml', () => assert.isTrue(fsExistsSync.calledWith(configPath)));
       it('should call configUtils.load with dredd.yml', () => assert.isTrue(configUtilsLoad.calledWith(configPath)));
-      return it('should print message about using dredd.yml', () => assert.include(stdout, `info: Configuration '${configPath}' found`));
+      it('should print message about using dredd.yml', () => assert.include(stdout, `info: Configuration '${configPath}' found`));
     });
 
-    return describe('When dredd.yml does not exist', () => {
+    describe('When dredd.yml does not exist', () => {
       const configPath = './dredd.yml';
       const cmd = { argv: [] };
       const options = { _: ['api-description.apib', 'http://127.0.0.1'] };
@@ -148,11 +148,11 @@ describe('DreddCommand class Integration', () => {
 
       it('should call fs.existsSync with dredd.yml', () => assert.isTrue(fsExistsSync.calledWith(configPath)));
       it('should never call configUtils.load', () => assert.isFalse(configUtilsLoad.called));
-      return it('should not print message about using configuration file', () => assert.notInclude(stdout, 'info: Configuration'));
+      it('should not print message about using configuration file', () => assert.notInclude(stdout, 'info: Configuration'));
     });
   });
 
-  return describe("to test various Errors - When API description document should be loaded from 'http(s)://...' url", () => {
+  describe("to test various Errors - When API description document should be loaded from 'http(s)://...' url", () => {
     let server = null;
 
     const errorCmd = { argv: [
@@ -203,10 +203,10 @@ describe('DreddCommand class Integration', () => {
 
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
-      return it('should print error message to stderr', () => {
+      it('should print error message to stderr', () => {
         assert.include(stderr, 'Error when loading file from URL');
         assert.include(stderr, 'Is the provided URL correct?');
-        return assert.include(stderr, 'connection-error.apib');
+        assert.include(stderr, 'connection-error.apib');
       });
     });
 
@@ -217,19 +217,19 @@ describe('DreddCommand class Integration', () => {
 
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
-      return it('should print error message to stderr', () => {
+      it('should print error message to stderr', () => {
         assert.include(stderr, 'Unable to load file from URL');
         assert.include(stderr, 'responded with status code 404');
-        return assert.include(stderr, 'not-found.apib');
+        assert.include(stderr, 'not-found.apib');
       });
     });
 
-    return describe('and I try to load a file that actually is there', () => {
+    describe('and I try to load a file that actually is there', () => {
       before(done =>
         execCommand(goodCmd, () => done())
       );
 
-      return it('should exit with status 0', () => assert.equal(exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(exitStatus, 0));
     });
   });
 });

@@ -101,10 +101,10 @@ describe('Dredd class Integration', () => {
         return server.on('close', done);
       });
 
-      return it('exit status should be 0', () => assert.equal(exitStatus, 0));
+      it('exit status should be 0', () => assert.equal(exitStatus, 0));
     });
 
-    return describe('when the server is sending different response', () => {
+    describe('when the server is sending different response', () => {
       before((done) => {
         const cmd = {
           options: {
@@ -123,7 +123,7 @@ describe('Dredd class Integration', () => {
         return server.on('close', done);
       });
 
-      return it('exit status should be 1', () => assert.equal(exitStatus, 1));
+      it('exit status should be 1', () => assert.equal(exitStatus, 1));
     });
   });
 
@@ -196,17 +196,17 @@ describe('Dredd class Integration', () => {
 
     it('should contain Authentication header thanks to apiaryApiKey and apiaryApiName configuration', () => {
       assert.propertyVal(receivedHeaders, 'authentication', 'Token the-key');
-      return assert.propertyVal(receivedHeadersRuns, 'authentication', 'Token the-key');
+      assert.propertyVal(receivedHeadersRuns, 'authentication', 'Token the-key');
     });
 
     it('should send the test-run as a non-public one', () => {
       assert.isObject(receivedRequestTestRuns);
-      return assert.propertyVal(receivedRequestTestRuns, 'public', false);
+      assert.propertyVal(receivedRequestTestRuns, 'public', false);
     });
 
     it('should print using the new reporter', () => assert.include(stdout, 'http://url.me/test/run/1234_id'));
 
-    return it('should send results from Gavel', () => {
+    it('should send results from Gavel', () => {
       assert.isObject(receivedRequest);
       assert.nestedProperty(receivedRequest, 'resultData.request');
       assert.nestedProperty(receivedRequest, 'resultData.realResponse');
@@ -215,7 +215,7 @@ describe('Dredd class Integration', () => {
       assert.nestedProperty(receivedRequest, 'resultData.result.headers.validator');
       assert.nestedProperty(receivedRequest, 'resultData.result.statusCode.validator');
 
-      return it('prints out an error message', () => assert.notEqual(exitStatus, 0));
+      it('prints out an error message', () => assert.notEqual(exitStatus, 0));
     });
   });
 
@@ -248,7 +248,7 @@ describe('Dredd class Integration', () => {
         return server.on('close', done);
       });
 
-      return it('prints out ok', () => assert.equal(exitStatus, 0));
+      it('prints out ok', () => assert.equal(exitStatus, 0));
     });
 
     describe("when using reporter -r apiary and the server isn't running", () => {
@@ -301,16 +301,16 @@ describe('Dredd class Integration', () => {
         assert.isObject(receivedRequest);
         assert.nestedProperty(receivedRequest, 'resultData.request');
         assert.nestedProperty(receivedRequest, 'resultData.expectedResponse');
-        return assert.nestedProperty(receivedRequest, 'resultData.result.general');
+        assert.nestedProperty(receivedRequest, 'resultData.result.general');
       });
 
-      return it('report should have message about server being down', () => {
+      it('report should have message about server being down', () => {
         const message = receivedRequest.resultData.result.general[0].message;
-        return assert.include(message, 'connect');
+        assert.include(message, 'connect');
       });
     });
 
-    return describe('when using reporter -r apiary', () => {
+    describe('when using reporter -r apiary', () => {
       let server = null;
       let server2 = null;
       let receivedRequest = null;
@@ -365,14 +365,14 @@ describe('Dredd class Integration', () => {
 
       it('should print using the new reporter', () => assert.include(stdout, 'http://url.me/test/run/1234_id'));
 
-      return it('should send results from Gavel', () => {
+      it('should send results from Gavel', () => {
         assert.isObject(receivedRequest);
         assert.nestedProperty(receivedRequest, 'resultData.request');
         assert.nestedProperty(receivedRequest, 'resultData.realResponse');
         assert.nestedProperty(receivedRequest, 'resultData.expectedResponse');
         assert.nestedProperty(receivedRequest, 'resultData.result.body.validator');
         assert.nestedProperty(receivedRequest, 'resultData.result.headers.validator');
-        return assert.nestedProperty(receivedRequest, 'resultData.result.statusCode.validator');
+        assert.nestedProperty(receivedRequest, 'resultData.result.statusCode.validator');
       });
     });
   });
@@ -452,10 +452,10 @@ describe('Dredd class Integration', () => {
 
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
-      return it('should print error message to stderr', () => {
+      it('should print error message to stderr', () => {
         assert.include(stderr, 'Error when loading file from URL');
         assert.include(stderr, 'Is the provided URL correct?');
-        return assert.include(stderr, 'connection-error.apib');
+        assert.include(stderr, 'connection-error.apib');
       });
     });
 
@@ -472,14 +472,14 @@ describe('Dredd class Integration', () => {
 
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
-      return it('should print error message to stderr', () => {
+      it('should print error message to stderr', () => {
         assert.include(stderr, 'Unable to load file from URL');
         assert.include(stderr, 'responded with status code 404');
-        return assert.include(stderr, 'not-found.apib');
+        assert.include(stderr, 'not-found.apib');
       });
     });
 
-    return describe('and I try to load a file that actually is there', () => {
+    describe('and I try to load a file that actually is there', () => {
       before(done =>
         execCommand(goodCmd, () => done())
       );
@@ -488,7 +488,7 @@ describe('Dredd class Integration', () => {
 
       it('should send a GET to server at good URL', () => assert.isTrue(fileFound));
 
-      return it('should exit with status 0', () => assert.equal(exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(exitStatus, 0));
     });
   });
 
@@ -524,7 +524,7 @@ describe('Dredd class Integration', () => {
 
       it('stdout should contain sandbox messagae', () => assert.include(stdout, 'Loading hook files in sandboxed context'));
 
-      return it('should perform the request', () => assert.isTrue(requested));
+      it('should perform the request', () => assert.isTrue(requested));
     })
   );
 
@@ -566,7 +566,7 @@ after('Machines > Machines collection > Get Machines', function(transaction){
 
       it('stdout should not sandbox messagae', () => assert.notInclude(stdout, 'Loading hook files in sandboxed context'));
 
-      return it('should perform the request', () => assert.isTrue(requested));
+      it('should perform the request', () => assert.isTrue(requested));
     })
   );
 
@@ -609,7 +609,7 @@ before('Machines collection > Get Machines', function(transaction){
 
       it('should execute hook with whitespaced name', () => assert.include(stderr, 'Whitespace transaction name'));
 
-      return it('should execute hook with fuxed name', () => assert.include(stderr, 'Fixed transaction name'));
+      it('should execute hook with fuxed name', () => assert.include(stderr, 'Fixed transaction name'));
     })
   );
 
@@ -645,7 +645,7 @@ before('Machines collection > Get Machines', function(transaction){
     ].forEach((expected, i) =>
       context(`the transaction #${i + 1}`, () => {
         it(`has status code ${expected.statusCode}`, () => assert.equal(expected.statusCode, actual[i].statusCode));
-        return it(`is ${expected.action === 'skip' ? '' : 'not '}skipped by default`, () => assert.equal(expected.action, actual[i].action));
+        it(`is ${expected.action === 'skip' ? '' : 'not '}skipped by default`, () => assert.equal(expected.action, actual[i].action));
       })
     );
   });
@@ -686,12 +686,12 @@ before('Machines collection > Get Machines', function(transaction){
 
         const defaultMessage = `is ${expected.action === 'skip' ? '' : 'not '}skipped by default`;
         const unskippedMessage = 'is unskipped in hooks';
-        return it(`${expected.statusCode === '500' ? unskippedMessage : defaultMessage}`, () => assert.equal(expected.action, actual[i].action));
+        it(`${expected.statusCode === '500' ? unskippedMessage : defaultMessage}`, () => assert.equal(expected.action, actual[i].action));
       })
     );
   });
 
-  return describe('when using Swagger document with hooks', () => {
+  describe('when using Swagger document with hooks', () => {
     const reTransactionName = /hook: (.+)/g;
     let matches;
 
@@ -710,7 +710,7 @@ before('Machines collection > Get Machines', function(transaction){
       })
     );
 
-    return it('transaction names contain status code and content type', () =>
+    it('transaction names contain status code and content type', () =>
       assert.deepEqual(matches, [
         '/honey > GET > 200 > application/json',
         '/honey > GET > 400 > application/json',

@@ -53,7 +53,7 @@ describe('NyanCatReporter', () => {
       return nyanReporter.write.restore();
     });
 
-    return it('should hide the cursor and draw the cat', done =>
+    it('should hide the cursor and draw the cat', done =>
       emitter.emit('start', '', () => {
         assert.isOk(nyanReporter.cursorHide.calledOnce);
         assert.isOk(nyanReporter.draw.calledOnce);
@@ -82,7 +82,7 @@ describe('NyanCatReporter', () => {
       })
     );
 
-    return describe('when there are failures', () => {
+    describe('when there are failures', () => {
       beforeEach(() => {
         const test = {
           status: 'fail',
@@ -95,7 +95,7 @@ describe('NyanCatReporter', () => {
 
       afterEach(() => loggerStub.fail.restore());
 
-      return it('should log the failures at the end of testing', done =>
+      it('should log the failures at the end of testing', done =>
         emitter.emit('end', () => {
           assert.isOk(loggerStub.fail.calledTwice);
           return done();
@@ -104,7 +104,7 @@ describe('NyanCatReporter', () => {
     });
   });
 
-  return describe('when test finished', () => {
+  describe('when test finished', () => {
     describe('when test passes', () => {
       beforeEach(() => {
         const test = {
@@ -121,7 +121,7 @@ describe('NyanCatReporter', () => {
         return nyanReporter.write.restore();
       });
 
-      return it('should draw the cat', () => assert.isOk(nyanReporter.draw.calledOnce));
+      it('should draw the cat', () => assert.isOk(nyanReporter.draw.calledOnce));
     });
 
     describe('when test is skipped', () => {
@@ -140,7 +140,7 @@ describe('NyanCatReporter', () => {
         return nyanReporter.write.restore();
       });
 
-      return it('should draw the cat', () => assert.isOk(nyanReporter.draw.calledOnce));
+      it('should draw the cat', () => assert.isOk(nyanReporter.draw.calledOnce));
     });
 
     describe('when test fails', () => {
@@ -159,10 +159,10 @@ describe('NyanCatReporter', () => {
         return nyanReporter.write.restore();
       });
 
-      return it('should draw the cat', () => assert.isOk(nyanReporter.draw.calledOnce));
+      it('should draw the cat', () => assert.isOk(nyanReporter.draw.calledOnce));
     });
 
-    return describe('when test errors', () => {
+    describe('when test errors', () => {
       beforeEach(() => {
         const test = {
           status: 'error',
@@ -178,7 +178,7 @@ describe('NyanCatReporter', () => {
         return nyanReporter.draw.restore();
       });
 
-      return it('should draw the cat', () => assert.isOk(nyanReporter.draw.calledOnce));
+      it('should draw the cat', () => assert.isOk(nyanReporter.draw.calledOnce));
     });
   });
 });

@@ -101,15 +101,15 @@ describe('DreddCommand class', () => {
       assert.isObject(dc.custom);
       assert.lengthOf(Object.keys(dc.custom), 2);
       assert.property(dc.custom, 'cwd');
-      return assert.property(dc.custom, 'argv');
+      assert.property(dc.custom, 'argv');
     });
 
     it('sets custom argv to an Array with process.argv', () => {
       assert.isArray(dc.custom != null ? dc.custom.argv : undefined);
-      return assert.equal(dc.custom != null ? dc.custom.argv.length : undefined, 0);
+      assert.equal(dc.custom != null ? dc.custom.argv.length : undefined, 0);
     });
 
-    return it('returns an instanceof DreddCommand', () => assert.instanceOf(dc, DreddCommand));
+    it('returns an instanceof DreddCommand', () => assert.instanceOf(dc, DreddCommand));
   });
 
 
@@ -128,7 +128,7 @@ describe('DreddCommand class', () => {
     it('has argv property set to object with properties from optimist', () => {
       assert.isObject(dc.argv);
       assert.property(dc.argv, '_');
-      return assert.isArray(dc.argv._);
+      assert.isArray(dc.argv._);
     });
 
     it('should set finished to true (keeps false)', () => assert.isTrue(dc.finished));
@@ -137,7 +137,7 @@ describe('DreddCommand class', () => {
 
     it('ends with an error message about missing api endpoint.', () => assert.include(stderr, 'Must specify URL of the tested API instance.'));
 
-    return it('calls exit callback', () => assert.isNotNull(hasCalledExit));
+    it('calls exit callback', () => assert.isNotNull(hasCalledExit));
   });
 
 
@@ -175,17 +175,17 @@ describe('DreddCommand class', () => {
       return dc.takeRestOfParamsAsPath.restore();
     });
 
-    return describe('with mocked initDredd', () => {
+    describe('with mocked initDredd', () => {
       before(() => dc.run());
 
       it('should call initConfig', () => assert.equal(initConfigSpy.called, 1));
 
       it('should call susequent helpers as part of initConfig', () => {
         assert.equal(lastArgvIsApiEndpointSpy.called, 1);
-        return assert.equal(takeRestOfParamsAsPathSpy.called, 1);
+        assert.equal(takeRestOfParamsAsPathSpy.called, 1);
       });
 
-      return it('should call initDredd with configuration object', () => {
+      it('should call initDredd with configuration object', () => {
         assert.equal(dc.initDredd.called, 1);
         assert.isArray(dc.initDredd.firstCall.args);
         assert.lengthOf(dc.initDredd.firstCall.args, 1);
@@ -193,7 +193,7 @@ describe('DreddCommand class', () => {
         assert.property(dc.initDredd.firstCall.args[0], 'options');
         assert.property(dc.initDredd.firstCall.args[0], 'custom');
 
-        return assert.isObject(dc.dreddInstance);
+        assert.isObject(dc.dreddInstance);
       });
     });
   });
@@ -237,20 +237,20 @@ describe('DreddCommand class', () => {
 
       it('returns exit code 0', () => assert.equal(exitStatus, 0));
 
-      return it('propagates configuration options to Dredd class', () => {
+      it('propagates configuration options to Dredd class', () => {
         assert.equal(dc.dreddInstance.configuration.options.path[0], './test/fixtures/single-get.apib');
-        return assert.equal(dc.dreddInstance.configuration.server, `http://127.0.0.1:${PORT}`);
+        assert.equal(dc.dreddInstance.configuration.server, `http://127.0.0.1:${PORT}`);
       });
     });
 
-    return describe('with server returning wrong things', () => {
+    describe('with server returning wrong things', () => {
       before(() => returnGood = false);
 
       it('returns exit code 1', () => assert.equal(exitStatus, 1));
 
-      return it('propagates configuration options to Dredd class', () => {
+      it('propagates configuration options to Dredd class', () => {
         assert.equal(dc.dreddInstance.configuration.options.path[0], './test/fixtures/single-get.apib');
-        return assert.equal(dc.dreddInstance.configuration.server, `http://127.0.0.1:${PORT}`);
+        assert.equal(dc.dreddInstance.configuration.server, `http://127.0.0.1:${PORT}`);
       });
     });
   });
@@ -262,7 +262,7 @@ describe('DreddCommand class', () => {
         execCommand({ argv: ['--help'] }, () => done())
       );
 
-      return it('prints out some really nice help text with all options descriptions', () => {
+      it('prints out some really nice help text with all options descriptions', () => {
         assert.include(stderr, 'Usage:');
         assert.include(stderr, 'Example:');
         assert.include(stderr, '[OPTIONS]');
@@ -275,7 +275,7 @@ describe('DreddCommand class', () => {
         execCommand({ argv: ['--version'] }, () => done())
       );
 
-      return it('prints out version', () => assert.include(stdout, `${packageData.name} v${packageData.version}`));
+      it('prints out version', () => assert.include(stdout, `${packageData.name} v${packageData.version}`));
     });
 
     describe('"init" (nodejs)', () => {
@@ -292,7 +292,7 @@ describe('DreddCommand class', () => {
 
       it('should run interactive config', () => assert.isTrue(interactiveConfigStub.run.called));
 
-      return it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
+      it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
     });
 
     describe('"init" (python)', () => {
@@ -309,7 +309,7 @@ describe('DreddCommand class', () => {
 
       it('should run interactive config', () => assert.isTrue(interactiveConfigStub.run.called));
 
-      return it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
+      it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
     });
 
 
@@ -327,7 +327,7 @@ describe('DreddCommand class', () => {
 
       it('should run interactive config', () => assert.isTrue(interactiveConfigStub.run.called));
 
-      return it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
+      it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
     });
 
     describe('"init" (ruby)', () => {
@@ -344,7 +344,7 @@ describe('DreddCommand class', () => {
 
       it('should run interactive config', () => assert.isTrue(interactiveConfigStub.run.called));
 
-      return it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
+      it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
     });
 
     describe('"init" (perl)', () => {
@@ -361,7 +361,7 @@ describe('DreddCommand class', () => {
 
       it('should run interactive config', () => assert.isTrue(interactiveConfigStub.run.called));
 
-      return it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
+      it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
     });
 
     describe('"init" (go)', () => {
@@ -378,7 +378,7 @@ describe('DreddCommand class', () => {
 
       it('should run interactive config', () => assert.isTrue(interactiveConfigStub.run.called));
 
-      return it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
+      it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
     });
 
     describe('"init" (rust)', () => {
@@ -395,15 +395,15 @@ describe('DreddCommand class', () => {
 
       it('should run interactive config', () => assert.isTrue(interactiveConfigStub.run.called));
 
-      return it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
+      it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
     });
 
-    return describe('without argv', () => {
+    describe('without argv', () => {
       before(done =>
         execCommand({ argv: [] }, () => done())
       );
 
-      return it('prints out an error message', () => assert.include(stderr, 'Error: Must specify'));
+      it('prints out an error message', () => assert.include(stderr, 'Error: Must specify'));
     });
   });
 
@@ -469,21 +469,21 @@ describe('DreddCommand class', () => {
       return fsStub.existsSync.restore();
     });
 
-    return describe('and I pass another CLI argument', () => {
+    describe('and I pass another CLI argument', () => {
       it('should want to exit with status 0', () => assert.equal(exitStatus, 0));
 
       it('should call dredd run', () => assert.isTrue(dreddStub.prototype.run.called));
 
-      return it('should override existing configuration', () => {
+      it('should override existing configuration', () => {
         assert.isTrue(dreddStub.prototype.init.called);
         const call = dreddStub.prototype.init.getCall(0);
         const passedConf = call.args[0];
-        return assert.propertyVal(passedConf.options, 'names', true);
+        assert.propertyVal(passedConf.options, 'names', true);
       });
     });
   });
 
-  return describe('when using --server', () => {
+  describe('when using --server', () => {
     beforeEach((done) => {
       sinon.spy(crossSpawnStub, 'spawn');
       sinon.stub(transactionRunner.prototype, 'executeAllTransactions').callsFake((transactions, hooks, cb) => cb());
@@ -498,6 +498,6 @@ describe('DreddCommand class', () => {
 
     afterEach(() => crossSpawnStub.spawn.restore());
 
-    return it('should run child process', () => assert.isTrue(crossSpawnStub.spawn.called));
+    it('should run child process', () => assert.isTrue(crossSpawnStub.spawn.called));
   });
 });

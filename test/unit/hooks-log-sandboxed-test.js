@@ -25,7 +25,7 @@ describe('hooksLogSandboxed()', () => {
       assert.lengthOf(data, 1);
       assert.strictEqual(data, originLogs);
       assert.deepEqual(data, originLogs);
-      return assert.propertyVal(data[0], 'content', 'one message');
+      assert.propertyVal(data[0], 'content', 'one message');
     });
 
     it('should push message to undefined logs and return new array instead', () => {
@@ -35,24 +35,24 @@ describe('hooksLogSandboxed()', () => {
       assert.lengthOf(data, 1);
       assert.isUndefined(originLogs);
       assert.notDeepEqual(data, originLogs);
-      return assert.propertyVal(data[0], 'content', 'another message');
+      assert.propertyVal(data[0], 'content', 'another message');
     });
 
-    return it('should append message to an existing logs array', () => {
+    it('should append message to an existing logs array', () => {
       const originLogs = clone(exampleLog);
       const data = hooksLogSandboxed(originLogs, 'some other idea');
       assert.isArray(data);
       assert.lengthOf(data, 2);
       assert.deepEqual(data, originLogs);
       assert.deepEqual(data[0], exampleLog[0]);
-      return assert.propertyVal(data[1], 'content', 'some other idea');
+      assert.propertyVal(data[1], 'content', 'some other idea');
     });
   });
 
-  return describe('passes arguments further to hooks-log', () => {
+  describe('passes arguments further to hooks-log', () => {
     beforeEach(() => hooksLogStubSpy.reset());
 
-    return it('should pass two arguments if only two were used', () => {
+    it('should pass two arguments if only two were used', () => {
       const originLogs = clone(exampleLog);
       const data = hooksLogSandboxed(originLogs, 'writing elsewhere');
       assert.isTrue(hooksLogStubSpy.called);
@@ -64,7 +64,7 @@ describe('hooksLogSandboxed()', () => {
       assert.isUndefined(call.args[3]);
       assert.isUndefined(call.args[4]);
       assert.isArray(data);
-      return assert.lengthOf(data, 2);
+      assert.lengthOf(data, 2);
     });
   });
 });

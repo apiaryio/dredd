@@ -28,11 +28,11 @@ describe('Sending \'application/json\' request', () => {
   it('the request has the expected Content-Type', () => assert.equal(runtimeInfo.server.lastRequest.headers['content-type'], contentType));
   it('the request has the expected format', () => {
     const { body } = runtimeInfo.server.lastRequest;
-    return assert.deepEqual(JSON.parse(body), { test: 42 });
+    assert.deepEqual(JSON.parse(body), { test: 42 });
   });
-  return it('results in one passing test', () => {
+  it('results in one passing test', () => {
     assert.equal(runtimeInfo.dredd.stats.tests, 1);
-    return assert.equal(runtimeInfo.dredd.stats.passes, 1);
+    assert.equal(runtimeInfo.dredd.stats.passes, 1);
   });
 });
 
@@ -85,11 +85,11 @@ describe('Sending \'application/json\' request', () => {
         lines = lines.filter(line => !line.match(/^Content-Type:/));
       }
 
-      return assert.equal(runtimeInfo.server.lastRequest.body, lines.join('\r\n'));
+      assert.equal(runtimeInfo.server.lastRequest.body, lines.join('\r\n'));
     });
-    return it('results in one passing test', () => {
+    it('results in one passing test', () => {
       assert.equal(runtimeInfo.dredd.stats.tests, 1);
-      return assert.equal(runtimeInfo.dredd.stats.passes, 1);
+      assert.equal(runtimeInfo.dredd.stats.passes, 1);
     });
   })
 );
@@ -125,9 +125,9 @@ describe('Sending \'application/json\' request', () => {
       // API Blueprint adds extra \n at the end: https://github.com/apiaryio/dredd/issues/67
       assert.equal(runtimeInfo.server.lastRequest.body.trim(), 'test=42')
     );
-    return it('results in one passing test', () => {
+    it('results in one passing test', () => {
       assert.equal(runtimeInfo.dredd.stats.tests, 1);
-      return assert.equal(runtimeInfo.dredd.stats.passes, 1);
+      assert.equal(runtimeInfo.dredd.stats.passes, 1);
     });
   })
 );
@@ -153,8 +153,8 @@ describe('Sending \'text/plain\' request', () => {
   it('results in one request being delivered to the server', () => assert.isTrue(runtimeInfo.server.requestedOnce));
   it('the request has the expected Content-Type', () => assert.equal(runtimeInfo.server.lastRequest.headers['content-type'], contentType));
   it('the request has the expected format', () => assert.equal(runtimeInfo.server.lastRequest.body, 'test equals to 42\n'));
-  return it('results in one passing test', () => {
+  it('results in one passing test', () => {
     assert.equal(runtimeInfo.dredd.stats.tests, 1);
-    return assert.equal(runtimeInfo.dredd.stats.passes, 1);
+    assert.equal(runtimeInfo.dredd.stats.passes, 1);
   });
 });

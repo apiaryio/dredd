@@ -27,7 +27,7 @@ describe('Regression: Issue #893 and #897', () => {
 
     it('outputs no failures or errors', () => assert.equal(runtimeInfo.dredd.stats.failures + runtimeInfo.dredd.stats.errors, 0));
     it('results in exactly one test', () => assert.equal(runtimeInfo.dredd.stats.tests, 1));
-    return it('results in one passing test (HTTP 200 is assumed)', () => assert.equal(runtimeInfo.dredd.stats.passes, 1));
+    it('results in one passing test (HTTP 200 is assumed)', () => assert.equal(runtimeInfo.dredd.stats.passes, 1));
   });
 
   describe('when the response has no explicit schema and it has empty body', () => {
@@ -48,10 +48,10 @@ describe('Regression: Issue #893 and #897', () => {
 
     it('outputs no failures or errors', () => assert.equal(runtimeInfo.dredd.stats.failures + runtimeInfo.dredd.stats.errors, 0));
     it('results in exactly two tests', () => assert.equal(runtimeInfo.dredd.stats.tests, 2));
-    return it('results in two passing tests (body is not validated)', () => assert.equal(runtimeInfo.dredd.stats.passes, 2));
+    it('results in two passing tests (body is not validated)', () => assert.equal(runtimeInfo.dredd.stats.passes, 2));
   });
 
-  return describe('when the response has no explicit schema', () => {
+  describe('when the response has no explicit schema', () => {
     let runtimeInfo;
 
     before((done) => {
@@ -69,6 +69,6 @@ describe('Regression: Issue #893 and #897', () => {
 
     it('outputs no failures or errors', () => assert.equal(runtimeInfo.dredd.stats.failures + runtimeInfo.dredd.stats.errors, 0));
     it('results in exactly two tests', () => assert.equal(runtimeInfo.dredd.stats.tests, 2));
-    return it('results in two passing tests', () => assert.equal(runtimeInfo.dredd.stats.passes, 2));
+    it('results in two passing tests', () => assert.equal(runtimeInfo.dredd.stats.passes, 2));
   });
 });

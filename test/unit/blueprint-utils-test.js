@@ -14,15 +14,15 @@ describe('blueprintUtils', () => {
       it('returns an object with non-zero-based row', () => {
         const str = 'first\nsecond\nthird lines\ncontent continues';
         const position = blueprintUtils.characterIndexToPosition(str.indexOf('lines', str), str);
-        return assert.deepEqual(position, { row: 3 });
+        assert.deepEqual(position, { row: 3 });
       })
     );
 
-    return describe('when given one-line input and zero index', () =>
+    describe('when given one-line input and zero index', () =>
       it('returns an object with row 1', () => {
         const str = 'hello\n';
         const position = blueprintUtils.characterIndexToPosition(str.indexOf('hello', str), str);
-        return assert.deepEqual(position, { row: 1 });
+        assert.deepEqual(position, { row: 1 });
       })
     );
   });
@@ -47,7 +47,7 @@ describe('blueprintUtils', () => {
       const ranges = blueprintUtils.warningLocationToRanges(location, str);
       assert.isArray(ranges);
       assert.lengthOf(ranges, 3);
-      return assert.deepEqual(ranges, [
+      assert.deepEqual(ranges, [
         { start: 2, end: 4 },
         { start: 6, end: 8 },
         { start: 10, end: 10 }
@@ -91,10 +91,10 @@ describe('blueprintUtils', () => {
 
     it('returns an empty Array for empty locations', () => assert.deepEqual(blueprintUtils.warningLocationToRanges([], placeholderText), []));
 
-    return it('returns an empty Array for undefined locations', () => assert.deepEqual(blueprintUtils.warningLocationToRanges(undefined, placeholderText), []));
+    it('returns an empty Array for undefined locations', () => assert.deepEqual(blueprintUtils.warningLocationToRanges(undefined, placeholderText), []));
   });
 
-  return describe('rangesToLinesText()', () => {
+  describe('rangesToLinesText()', () => {
     describe('when tested on fake locations', () =>
 
       it('should return a string of line(s) separated with comma', () => {
@@ -103,11 +103,11 @@ describe('blueprintUtils', () => {
           { start: 8, end: 8 },
           { start: 10, end: 15 }
         ]);
-        return assert.strictEqual(line, 'lines 2-4, line 8, lines 10-15');
+        assert.strictEqual(line, 'lines 2-4, line 8, lines 10-15');
       })
     );
 
-    return describe('for a real API description document', () => {
+    describe('for a real API description document', () => {
       let warnings = 0;
       let blueprint = null;
       const allRanges = [];
@@ -160,7 +160,7 @@ describe('blueprintUtils', () => {
 
       it('shows ~ 4 warnings', () => assert.equal(warnings, 4));
 
-      return it('prints lines for those warnings', () => {
+      it('prints lines for those warnings', () => {
         const expectedLines = [
           'lines 5-6',
           'line 12',
