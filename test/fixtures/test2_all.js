@@ -1,13 +1,11 @@
-var hooks;
+const hooks = require('hooks');
 
-hooks = require('hooks');
-
-hooks.beforeAll(function(done) {
+hooks.beforeAll((done) => {
   console.log('*** beforeAll');
   done();
 });
 
-hooks.before('Machines > Machines collection > Get Machines', function(transaction, done) {
+hooks.before('Machines > Machines collection > Get Machines', (transaction, done) => {
   console.log('*** before');
-  return done();
+  done();
 });

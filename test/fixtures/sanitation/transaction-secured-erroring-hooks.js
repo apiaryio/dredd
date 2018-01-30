@@ -1,10 +1,8 @@
-var hooks = require('hooks');
+const hooks = require('hooks');
 
-hooks.after('Resource > Update Resource', function(transaction, done) {
+hooks.after('Resource > Update Resource', (transaction, done) => {
   try {
-
     JSON.parse('💥 boom 💥');
-
   } catch (error) {
     transaction.fail = 'Unexpected exception in hooks';
     transaction.test = {
@@ -12,7 +10,7 @@ hooks.after('Resource > Update Resource', function(transaction, done) {
       end: transaction.test.end,
       duration: transaction.test.duration,
       startedAt: transaction.test.startedAt,
-      message: transaction.fail,
+      message: transaction.fail
     };
   }
   done();

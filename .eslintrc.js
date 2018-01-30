@@ -10,6 +10,8 @@ module.exports = {
     'comma-dangle': ['error', 'never'],
     'consistent-return': 'off',
     'func-names': 'off',
+    'import/no-extraneous-dependencies': 'off',
+    'import/no-unresolved': 'off',
     'max-len': 'off',
     'no-bitwise': 'off',
     'no-continue': 'off',
