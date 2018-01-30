@@ -1,22 +1,29 @@
-const {assert} = require('chai');
+/* eslint-disable
+    guard-for-in,
+    no-unused-vars,
+    prefer-const,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 const clone = require('clone');
-const {EventEmitter} = require('events');
+const { EventEmitter } = require('events');
 
-const {runDredd, createServer, runDreddWithServer} = require('./helpers');
+const { runDredd, createServer, runDreddWithServer } = require('./helpers');
 const Dredd = require('../../src/dredd');
 
 
-describe('Sanitation of Reported Data', function() {
+describe('Sanitation of Reported Data', () => {
   // sample sensitive data (this value is used in API Blueprint fixtures as well)
   const sensitiveKey = 'token';
   const sensitiveHeaderName = 'authorization';
   const sensitiveValue = '5229c6e8e4b0bd7dbb07e29c';
 
   // recording events sent to reporters
-  let events = undefined;
-  let emitter = undefined;
+  let events;
+  let emitter;
 
-  beforeEach( function() {
+  beforeEach(() => {
     events = [];
     emitter = new EventEmitter();
 
@@ -25,16 +32,16 @@ describe('Sanitation of Reported Data', function() {
     // the emitted events. We're using 'clone' to prevent propagation of subsequent
     // modifications of the 'test' object (Dredd can change the data after they're
     // reported and by reference they would change also here in the 'events' array).
-    emitter.on('test start', test => events.push({name: 'test start', test: clone(test)}));
-    emitter.on('test pass', test => events.push({name: 'test pass', test: clone(test)}));
-    emitter.on('test skip', test => events.push({name: 'test skip', test: clone(test)}));
-    emitter.on('test fail', test => events.push({name: 'test fail', test: clone(test)}));
-    emitter.on('test error', (err, test) => events.push({name: 'test error', test: clone(test), err}));
+    emitter.on('test start', test => events.push({ name: 'test start', test: clone(test) }));
+    emitter.on('test pass', test => events.push({ name: 'test pass', test: clone(test) }));
+    emitter.on('test skip', test => events.push({ name: 'test skip', test: clone(test) }));
+    emitter.on('test fail', test => events.push({ name: 'test fail', test: clone(test) }));
+    emitter.on('test error', (err, test) => events.push({ name: 'test error', test: clone(test), err }));
 
     // 'start' and 'end' events are asynchronous and they do not carry any data
     // significant for following scenarios
-    emitter.on('start', function(apiDescription, cb) { events.push({name: 'start'}); return cb();  });
-    return emitter.on('end', function(cb) { events.push({name: 'end'}); return cb();  });
+    emitter.on('start', (apiDescription, cb) => { events.push({ name: 'start' }); return cb(); });
+    return emitter.on('end', (cb) => { events.push({ name: 'end' }); return cb(); });
   });
 
   // helper for preparing Dredd instance with our custom emitter
@@ -49,189 +56,189 @@ describe('Sanitation of Reported Data', function() {
   ;
 
   // helper for preparing the server under test
-  const createServerFromResponse = function(response) {
+  const createServerFromResponse = function (response) {
     const app = createServer();
     app.put('/resource', (req, res) => res.json(response));
     return app;
   };
 
 
-  describe('Sanitation of the Entire Request Body', function() {
-    let dreddRuntimeInfo = undefined;
+  describe('Sanitation of the Entire Request Body', () => {
+    let dreddRuntimeInfo;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dredd = createDreddFromFixture('entire-request-body');
-      const app = createServerFromResponse({name: 123}); // 'name' should be string → failing test
+      const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
-      return runDreddWithServer(dredd, app, function(err, runtimeInfo) {
+      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
         return done();
       });
     });
 
-    it('results in one failed test', function() {
+    it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
       return assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
-      assert.deepEqual((Array.from(events).map((event) => event.name)), [
+      assert.deepEqual((Array.from(events).map(event => event.name)), [
         'start', 'test start', 'test fail', 'end'
       ])
     );
     it('emitted test data does not contain request body', () => assert.equal(events[2].test.request.body, ''));
-    it('sensitive data cannot be found anywhere in the emitted test data', function() {
+    it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
       return assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', function() {
+    return it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
       return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
-  describe('Sanitation of the Entire Response Body', function() {
-    let dreddRuntimeInfo = undefined;
+  describe('Sanitation of the Entire Response Body', () => {
+    let dreddRuntimeInfo;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dredd = createDreddFromFixture('entire-response-body');
-      const app = createServerFromResponse({token: 123}); // 'token' should be string → failing test
+      const app = createServerFromResponse({ token: 123 }); // 'token' should be string → failing test
 
-      return runDreddWithServer(dredd, app, function(err, runtimeInfo) {
+      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
         return done();
       });
     });
 
-    it('results in one failed test', function() {
+    it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
       return assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
-      assert.deepEqual((Array.from(events).map((event) => event.name)), [
+      assert.deepEqual((Array.from(events).map(event => event.name)), [
         'start', 'test start', 'test fail', 'end'
       ])
     );
-    it('emitted test data does not contain response body', function() {
+    it('emitted test data does not contain response body', () => {
       assert.equal(events[2].test.actual.body, '');
       return assert.equal(events[2].test.expected.body, '');
     });
-    it('sensitive data cannot be found anywhere in the emitted test data', function() {
+    it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
       return assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', function() {
+    return it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
       return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
-  describe('Sanitation of a Request Body Attribute', function() {
-    let dreddRuntimeInfo = undefined;
+  describe('Sanitation of a Request Body Attribute', () => {
+    let dreddRuntimeInfo;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dredd = createDreddFromFixture('request-body-attribute');
-      const app = createServerFromResponse({name: 123}); // 'name' should be string → failing test
+      const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
-      return runDreddWithServer(dredd, app, function(err, runtimeInfo) {
+      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
         return done();
       });
     });
 
-    it('results in one failed test', function() {
+    it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
       return assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
-      assert.deepEqual((Array.from(events).map((event) => event.name)), [
+      assert.deepEqual((Array.from(events).map(event => event.name)), [
         'start', 'test start', 'test fail', 'end'
       ])
     );
-    it('emitted test data does not contain confidential body attribute', function() {
+    it('emitted test data does not contain confidential body attribute', () => {
       const attrs = Object.keys(JSON.parse(events[2].test.request.body));
       return assert.deepEqual(attrs, ['name']);
     });
-    it('sensitive data cannot be found anywhere in the emitted test data', function() {
+    it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
       return assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', function() {
+    return it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
       return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
-  describe('Sanitation of a Response Body Attribute', function() {
-    let dreddRuntimeInfo = undefined;
+  describe('Sanitation of a Response Body Attribute', () => {
+    let dreddRuntimeInfo;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dredd = createDreddFromFixture('response-body-attribute');
-      const app = createServerFromResponse({token: 123, name: 'Bob'}); // 'token' should be string → failing test
+      const app = createServerFromResponse({ token: 123, name: 'Bob' }); // 'token' should be string → failing test
 
-      return runDreddWithServer(dredd, app, function(err, runtimeInfo) {
+      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
         return done();
       });
     });
 
-    it('results in one failed test', function() {
+    it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
       return assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
-      assert.deepEqual((Array.from(events).map((event) => event.name)), [
+      assert.deepEqual((Array.from(events).map(event => event.name)), [
         'start', 'test start', 'test fail', 'end'
       ])
     );
-    it('emitted test data does not contain confidential body attribute', function() {
+    it('emitted test data does not contain confidential body attribute', () => {
       let attrs = Object.keys(JSON.parse(events[2].test.actual.body));
       assert.deepEqual(attrs, ['name']);
 
       attrs = Object.keys(JSON.parse(events[2].test.expected.body));
       return assert.deepEqual(attrs, ['name']);
     });
-    it('sensitive data cannot be found anywhere in the emitted test data', function() {
+    it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
       return assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', function() {
+    return it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
       return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
-  describe('Sanitation of Plain Text Response Body by Pattern Matching', function() {
-    let dreddRuntimeInfo = undefined;
+  describe('Sanitation of Plain Text Response Body by Pattern Matching', () => {
+    let dreddRuntimeInfo;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dredd = createDreddFromFixture('plain-text-response-body');
       const app = createServerFromResponse(`${sensitiveKey}=42${sensitiveValue}`); // should be without '42' → failing test
 
-      return runDreddWithServer(dredd, app, function(err, runtimeInfo) {
+      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
         return done();
       });
     });
 
-    it('results in one failed test', function() {
+    it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
       return assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
-      assert.deepEqual((Array.from(events).map((event) => event.name)), [
+      assert.deepEqual((Array.from(events).map(event => event.name)), [
         'start', 'test start', 'test fail', 'end'
       ])
     );
-    it('emitted test data does contain the sensitive data censored', function() {
+    it('emitted test data does contain the sensitive data censored', () => {
       assert.include(events[2].test.actual.body, '--- CENSORED ---');
       return assert.include(events[2].test.expected.body, '--- CENSORED ---');
     });
@@ -239,75 +246,75 @@ describe('Sanitation of Reported Data', function() {
     return it('sensitive data cannot be found anywhere in Dredd output', () => assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue));
   });
 
-  describe('Sanitation of Request Headers', function() {
-    let dreddRuntimeInfo = undefined;
+  describe('Sanitation of Request Headers', () => {
+    let dreddRuntimeInfo;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dredd = createDreddFromFixture('request-headers');
-      const app = createServerFromResponse({name: 123}); // 'name' should be string → failing test
+      const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
-      return runDreddWithServer(dredd, app, function(err, runtimeInfo) {
+      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
         return done();
       });
     });
 
-    it('results in one failed test', function() {
+    it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
       return assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
-      assert.deepEqual((Array.from(events).map((event) => event.name)), [
+      assert.deepEqual((Array.from(events).map(event => event.name)), [
         'start', 'test start', 'test fail', 'end'
       ])
     );
-    it('emitted test data does not contain confidential header', function() {
+    it('emitted test data does not contain confidential header', () => {
       const names = ((() => {
         const result = [];
-        for (let name in events[2].test.request.headers) {
+        for (const name in events[2].test.request.headers) {
           result.push(name.toLowerCase());
         }
         return result;
       })());
       return assert.notInclude(names, sensitiveHeaderName);
     });
-    it('sensitive data cannot be found anywhere in the emitted test data', function() {
+    it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events).toLowerCase();
       assert.notInclude(test, sensitiveHeaderName);
       return assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', function() {
+    return it('sensitive data cannot be found anywhere in Dredd output', () => {
       const logging = dreddRuntimeInfo.logging.toLowerCase();
       assert.notInclude(logging, sensitiveHeaderName);
       return assert.notInclude(logging, sensitiveValue);
     });
   });
 
-  describe('Sanitation of Response Headers', function() {
-    let dreddRuntimeInfo = undefined;
+  describe('Sanitation of Response Headers', () => {
+    let dreddRuntimeInfo;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dredd = createDreddFromFixture('response-headers');
-      const app = createServerFromResponse({name: 'Bob'}); // Authorization header is missing → failing test
+      const app = createServerFromResponse({ name: 'Bob' }); // Authorization header is missing → failing test
 
-      return runDreddWithServer(dredd, app, function(err, runtimeInfo) {
+      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
         return done();
       });
     });
 
-    it('results in one failed test', function() {
+    it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
       return assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
-      assert.deepEqual((Array.from(events).map((event) => event.name)), [
+      assert.deepEqual((Array.from(events).map(event => event.name)), [
         'start', 'test start', 'test fail', 'end'
       ])
     );
-    it('emitted test data does not contain confidential header', function() {
+    it('emitted test data does not contain confidential header', () => {
       let name;
       let names = ((() => {
         const result = [];
@@ -327,38 +334,38 @@ describe('Sanitation of Reported Data', function() {
       })());
       return assert.notInclude(names, sensitiveHeaderName);
     });
-    it('sensitive data cannot be found anywhere in the emitted test data', function() {
+    it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events).toLowerCase();
       assert.notInclude(test, sensitiveHeaderName);
       return assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', function() {
+    return it('sensitive data cannot be found anywhere in Dredd output', () => {
       const logging = dreddRuntimeInfo.logging.toLowerCase();
       assert.notInclude(logging, sensitiveHeaderName);
       return assert.notInclude(logging, sensitiveValue);
     });
   });
 
-  describe('Sanitation of URI Parameters by Pattern Matching', function() {
-    let dreddRuntimeInfo = undefined;
+  describe('Sanitation of URI Parameters by Pattern Matching', () => {
+    let dreddRuntimeInfo;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dredd = createDreddFromFixture('uri-parameters');
-      const app = createServerFromResponse({name: 123}); // 'name' should be string → failing test
+      const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
-      return runDreddWithServer(dredd, app, function(err, runtimeInfo) {
+      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
         return done();
       });
     });
 
-    it('results in one failed test', function() {
+    it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
       return assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
-      assert.deepEqual((Array.from(events).map((event) => event.name)), [
+      assert.deepEqual((Array.from(events).map(event => event.name)), [
         'start', 'test start', 'test fail', 'end'
       ])
     );
@@ -369,26 +376,26 @@ describe('Sanitation of Reported Data', function() {
 
   // This fails because it's not possible to do 'transaction.test = myOwnTestObject;'
   // at the moment, Dredd ignores the new object.
-  describe('Sanitation of Any Content by Pattern Matching', function() {
-    let dreddRuntimeInfo = undefined;
+  describe('Sanitation of Any Content by Pattern Matching', () => {
+    let dreddRuntimeInfo;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dredd = createDreddFromFixture('any-content-pattern-matching');
-      const app = createServerFromResponse({name: 123}); // 'name' should be string → failing test
+      const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
-      return runDreddWithServer(dredd, app, function(err, runtimeInfo) {
+      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
         return done();
       });
     });
 
-    it('results in one failed test', function() {
+    it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
       return assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
-      assert.deepEqual((Array.from(events).map((event) => event.name)), [
+      assert.deepEqual((Array.from(events).map(event => event.name)), [
         'start', 'test start', 'test fail', 'end'
       ])
     );
@@ -397,30 +404,30 @@ describe('Sanitation of Reported Data', function() {
     return it('sensitive data cannot be found anywhere in Dredd output', () => assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue));
   });
 
-  describe('Ultimate \'afterEach\' Guard Using Pattern Matching', function() {
-    let dreddRuntimeInfo = undefined;
+  describe('Ultimate \'afterEach\' Guard Using Pattern Matching', () => {
+    let dreddRuntimeInfo;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dredd = createDreddFromFixture('any-content-guard-pattern-matching');
-      const app = createServerFromResponse({name: 123}); // 'name' should be string → failing test
+      const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
-      return runDreddWithServer(dredd, app, function(err, runtimeInfo) {
+      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
         return done();
       });
     });
 
-    it('results in one failed test', function() {
+    it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
       return assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
-      assert.deepEqual((Array.from(events).map((event) => event.name)), [
+      assert.deepEqual((Array.from(events).map(event => event.name)), [
         'start', 'test start', 'test fail', 'end'
       ])
     );
-    it('sensitive data cannot be found anywhere in the emitted test data', function() {
+    it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       return assert.notInclude(test, sensitiveValue);
     });
@@ -428,220 +435,220 @@ describe('Sanitation of Reported Data', function() {
     return it('custom error message is printed', () => assert.include(dreddRuntimeInfo.logging, 'Sensitive data would be sent to Dredd reporter'));
   });
 
-  describe('Sanitation of Test Data of Passing Transaction', function() {
-    let dreddRuntimeInfo = undefined;
+  describe('Sanitation of Test Data of Passing Transaction', () => {
+    let dreddRuntimeInfo;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dredd = createDreddFromFixture('transaction-passing');
-      const app = createServerFromResponse({name: 'Bob'}); // passing test
+      const app = createServerFromResponse({ name: 'Bob' }); // passing test
 
-      return runDreddWithServer(dredd, app, function(err, runtimeInfo) {
+      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
         return done();
       });
     });
 
-    it('results in one passing test', function() {
+    it('results in one passing test', () => {
       assert.equal(dreddRuntimeInfo.stats.passes, 1);
       return assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
-      assert.deepEqual((Array.from(events).map((event) => event.name)), [
+      assert.deepEqual((Array.from(events).map(event => event.name)), [
         'start', 'test start', 'test pass', 'end'
       ])
     );
     it('emitted test data does not contain request body', () => assert.equal(events[2].test.request.body, ''));
-    it('sensitive data cannot be found anywhere in the emitted test data', function() {
+    it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
       return assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', function() {
+    return it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
       return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
-  describe('Sanitation of Test Data When Transaction Is Marked as Failed in \'before\' Hook', function() {
-    let dreddRuntimeInfo = undefined;
+  describe('Sanitation of Test Data When Transaction Is Marked as Failed in \'before\' Hook', () => {
+    let dreddRuntimeInfo;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dredd = createDreddFromFixture('transaction-marked-failed-before');
 
-      return runDredd(dredd, function(...args) {
+      return runDredd(dredd, (...args) => {
         let err;
         [err, dreddRuntimeInfo] = Array.from(args);
         return done();
       });
     });
 
-    it('results in one failed test', function() {
+    it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
       return assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
-      assert.deepEqual((Array.from(events).map((event) => event.name)), [
+      assert.deepEqual((Array.from(events).map(event => event.name)), [
         'start', 'test start', 'test fail', 'end'
       ])
     );
-    it('emitted test is failed', function() {
+    it('emitted test is failed', () => {
       assert.equal(events[2].test.status, 'fail');
       return assert.include(events[2].test.results.general.results[0].message.toLowerCase(), 'fail');
     });
     it('emitted test data results contain just \'general\' section', () => assert.deepEqual(Object.keys(events[2].test.results), ['general']));
-    it('sensitive data cannot be found anywhere in the emitted test data', function() {
+    it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
       return assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', function() {
+    return it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
       return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
-  describe('Sanitation of Test Data When Transaction Is Marked as Failed in \'after\' Hook', function() {
-    let dreddRuntimeInfo = undefined;
+  describe('Sanitation of Test Data When Transaction Is Marked as Failed in \'after\' Hook', () => {
+    let dreddRuntimeInfo;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dredd = createDreddFromFixture('transaction-marked-failed-after');
-      const app = createServerFromResponse({name: 'Bob'}); // passing test
+      const app = createServerFromResponse({ name: 'Bob' }); // passing test
 
-      return runDreddWithServer(dredd, app, function(err, runtimeInfo) {
+      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
         return done();
       });
     });
 
-    it('results in one failed test', function() {
+    it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
       return assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
-      assert.deepEqual((Array.from(events).map((event) => event.name)), [
+      assert.deepEqual((Array.from(events).map(event => event.name)), [
         'start', 'test start', 'test fail', 'end'
       ])
     );
     it('emitted test data does not contain request body', () => assert.equal(events[2].test.request.body, ''));
-    it('emitted test is failed', function() {
+    it('emitted test is failed', () => {
       assert.equal(events[2].test.status, 'fail');
       return assert.include(events[2].test.results.general.results[0].message.toLowerCase(), 'fail');
     });
     it('emitted test data results contain all regular sections', () => assert.deepEqual(Object.keys(events[2].test.results), ['general', 'headers', 'body', 'statusCode']));
-    it('sensitive data cannot be found anywhere in the emitted test data', function() {
+    it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
       return assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', function() {
+    return it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
       return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
-  describe('Sanitation of Test Data When Transaction Is Marked as Skipped', function() {
-    let dreddRuntimeInfo = undefined;
+  describe('Sanitation of Test Data When Transaction Is Marked as Skipped', () => {
+    let dreddRuntimeInfo;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dredd = createDreddFromFixture('transaction-marked-skipped');
 
-      return runDredd(dredd, function(...args) {
+      return runDredd(dredd, (...args) => {
         let err;
         [err, dreddRuntimeInfo] = Array.from(args);
         return done();
       });
     });
 
-    it('results in one skipped test', function() {
+    it('results in one skipped test', () => {
       assert.equal(dreddRuntimeInfo.stats.skipped, 1);
       return assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
-      assert.deepEqual((Array.from(events).map((event) => event.name)), [
+      assert.deepEqual((Array.from(events).map(event => event.name)), [
         'start', 'test start', 'test skip', 'end'
       ])
     );
-    it('emitted test is skipped', function() {
+    it('emitted test is skipped', () => {
       assert.equal(events[2].test.status, 'skip');
       assert.deepEqual(Object.keys(events[2].test.results), ['general']);
       return assert.include(events[2].test.results.general.results[0].message.toLowerCase(), 'skip');
     });
-    it('sensitive data cannot be found anywhere in the emitted test data', function() {
+    it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
       return assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', function() {
+    return it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
       return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
-  describe('Sanitation of Test Data of Transaction With Erroring Hooks', function() {
-    let dreddRuntimeInfo = undefined;
+  describe('Sanitation of Test Data of Transaction With Erroring Hooks', () => {
+    let dreddRuntimeInfo;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dredd = createDreddFromFixture('transaction-erroring-hooks');
-      const app = createServerFromResponse({name: 'Bob'}); // passing test
+      const app = createServerFromResponse({ name: 'Bob' }); // passing test
 
-      return runDreddWithServer(dredd, app, function(err, runtimeInfo) {
+      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
         return done();
       });
     });
 
-    it('results in one erroring test', function() {
+    it('results in one erroring test', () => {
       assert.equal(dreddRuntimeInfo.stats.errors, 1);
       return assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
-      assert.deepEqual((Array.from(events).map((event) => event.name)), [
+      assert.deepEqual((Array.from(events).map(event => event.name)), [
         'start', 'test start', 'test error', 'end'
       ])
     );
-    it('sensitive data leak to emitted test data', function() {
+    it('sensitive data leak to emitted test data', () => {
       const test = JSON.stringify(events);
       assert.include(test, sensitiveKey);
       return assert.include(test, sensitiveValue);
     });
-    return it('sensitive data leak to Dredd output', function() {
+    return it('sensitive data leak to Dredd output', () => {
       assert.include(dreddRuntimeInfo.logging, sensitiveKey);
       return assert.include(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
-  return describe('Sanitation of Test Data of Transaction With Secured Erroring Hooks', function() {
-    let dreddRuntimeInfo = undefined;
+  return describe('Sanitation of Test Data of Transaction With Secured Erroring Hooks', () => {
+    let dreddRuntimeInfo;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       const dredd = createDreddFromFixture('transaction-secured-erroring-hooks');
-      const app = createServerFromResponse({name: 'Bob'}); // passing test
+      const app = createServerFromResponse({ name: 'Bob' }); // passing test
 
-      return runDreddWithServer(dredd, app, function(err, runtimeInfo) {
+      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
         return done();
       });
     });
 
-    it('results in one failed test', function() {
+    it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
       return assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
-      assert.deepEqual((Array.from(events).map((event) => event.name)), [
+      assert.deepEqual((Array.from(events).map(event => event.name)), [
         'start', 'test start', 'test fail', 'end'
       ])
     );
-    it('sensitive data cannot be found anywhere in the emitted test data', function() {
+    it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
       return assert.notInclude(test, sensitiveValue);
     });
-    it('sensitive data cannot be found anywhere in Dredd output', function() {
+    it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
       return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });

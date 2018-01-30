@@ -1,23 +1,32 @@
+/* eslint-disable
+    block-scoped-var,
+    guard-for-in,
+    no-loop-func,
+    no-shadow,
+    no-unused-vars,
+    no-var,
+    vars-on-top,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 const clone = require('clone');
 const sinon = require('sinon');
-const {assert} = require('chai');
+const { assert } = require('chai');
 
 
 const Hooks = require('../../src/hooks');
 
-describe('Hooks', function() {
-
-  describe('constructor', function() {
-
-    it('should not add @logs or @logger when constructor options are empty', function() {
+describe('Hooks', () => {
+  describe('constructor', () => {
+    it('should not add @logs or @logger when constructor options are empty', () => {
       const hooks = new Hooks();
       assert.isUndefined(hooks.logs);
       return assert.isUndefined(hooks.logger);
     });
 
-    return it('should add @logs and @logger from passed options', function() {
+    return it('should add @logs and @logger from passed options', () => {
       const options = {
-        logs: [{content: 'message1'}, {content: 'message2'}],
+        logs: [{ content: 'message1' }, { content: 'message2' }],
         logger: {
           hook() {},
           error() {}
@@ -30,12 +39,12 @@ describe('Hooks', function() {
     });
   });
 
-  describe('#log', function() {
+  describe('#log', () => {
     let options = null;
 
-    beforeEach(function() {
+    beforeEach(() => {
       options = {
-        logs: [{content: 'message1'}, {content: 'message2'}],
+        logs: [{ content: 'message1' }, { content: 'message2' }],
         logger: {
           hook() {},
           error() {}
@@ -45,12 +54,12 @@ describe('Hooks', function() {
       return sinon.spy(options.logger, 'error');
     });
 
-    afterEach(function() {
+    afterEach(() => {
       options.logger.hook.restore();
       return options.logger.error.restore();
     });
 
-    return it('should call @logger.hook when hooks.log is called with 1 argument', function() {
+    return it('should call @logger.hook when hooks.log is called with 1 argument', () => {
       const hooks = new Hooks(options);
       hooks.log('messageX');
       assert.isTrue(options.logger.hook.called);
@@ -62,99 +71,99 @@ describe('Hooks', function() {
     });
   });
 
-  describe('#before', function() {
+  describe('#before', () => {
     let hooks = null;
 
-    before(function() {
+    before(() => {
       hooks = new Hooks();
-      return hooks.before('beforeHook', () => "");
+      return hooks.before('beforeHook', () => '');
     });
 
     return it('should add to hook collection', () => assert.property(hooks.beforeHooks, 'beforeHook'));
   });
 
-  describe('#beforeValidation', function() {
+  describe('#beforeValidation', () => {
     let hooks = null;
 
-    before(function() {
+    before(() => {
       hooks = new Hooks();
-      return hooks.beforeValidation('beforeValidationHook', () => "");
+      return hooks.beforeValidation('beforeValidationHook', () => '');
     });
 
     return it('should add to hook collection', () => assert.property(hooks.beforeValidationHooks, 'beforeValidationHook'));
   });
 
-  describe('#after', function() {
+  describe('#after', () => {
     let hooks = null;
 
-    before(function() {
+    before(() => {
       hooks = new Hooks();
-      return hooks.after('afterHook', () => "");
+      return hooks.after('afterHook', () => '');
     });
 
     return it('should add to hook collection', () => assert.property(hooks.afterHooks, 'afterHook'));
   });
 
-  describe('#beforeAll', function() {
+  describe('#beforeAll', () => {
     let hooks = null;
 
-    before(function() {
+    before(() => {
       hooks = new Hooks();
-      return hooks.beforeAll(() => "");
+      return hooks.beforeAll(() => '');
     });
 
     return it('should add to hook collection', () => assert.lengthOf(hooks.beforeAllHooks, 1));
   });
 
-  describe('#afterAll', function() {
+  describe('#afterAll', () => {
     let hooks = null;
 
-    before(function() {
+    before(() => {
       hooks = new Hooks();
-      return hooks.afterAll(() => "");
+      return hooks.afterAll(() => '');
     });
 
     return it('should add to hook collection', () => assert.lengthOf(hooks.afterAllHooks, 1));
   });
 
-  describe('#beforeEach', function() {
+  describe('#beforeEach', () => {
     let hooks = null;
 
-    before(function() {
+    before(() => {
       hooks = new Hooks();
-      return hooks.beforeEach(() => "");
+      return hooks.beforeEach(() => '');
     });
 
     return it('should add to hook collection', () => assert.lengthOf(hooks.beforeEachHooks, 1));
   });
 
-  describe('#beforeEachValidation', function() {
+  describe('#beforeEachValidation', () => {
     let hooks = null;
 
-    before(function() {
+    before(() => {
       hooks = new Hooks();
-      return hooks.beforeEachValidation(() => "");
+      return hooks.beforeEachValidation(() => '');
     });
 
     return it('should add to hook collection', () => assert.lengthOf(hooks.beforeEachValidationHooks, 1));
   });
 
 
-  describe('#afterEach', function() {
+  describe('#afterEach', () => {
     let hooks = null;
 
-    before(function() {
+    before(() => {
       hooks = new Hooks();
-      return hooks.afterEach(() => "");
+      return hooks.afterEach(() => '');
     });
 
     return it('should add to hook collection', () => assert.lengthOf(hooks.afterEachHooks, 1));
   });
 
-  return describe('#dumpHooksFunctionsToStrings', function() {
+  return describe('#dumpHooksFunctionsToStrings', () => {
     let hooks = null;
 
-    beforeEach(function() {
+    beforeEach(() => {
       hooks = new Hooks();
       const hook = (data, callback) => true;
 
@@ -169,7 +178,7 @@ describe('Hooks', function() {
 
     it('should return an object', () => assert.isObject(hooks.dumpHooksFunctionsToStrings()));
 
-    return describe('returned object', function() {
+    return describe('returned object', () => {
       let properties = [
         'beforeAllHooks',
         'beforeEachHooks',
@@ -178,31 +187,33 @@ describe('Hooks', function() {
         'beforeEachValidationHooks'
       ];
 
-      for (var property of properties) { (function(property) {
-        it(`should have property '${property}'`, function() {
-          const object = hooks.dumpHooksFunctionsToStrings();
-          return assert.property(object, property);
-        });
-
-        it('should be an array', function() {
-          const object = hooks.dumpHooksFunctionsToStrings();
-          return assert.isArray(object[property]);
-      });
-
-        return describe(`all array members under property '${property}'`, () =>
-          it('should be a string', function() {
+      for (var property of properties) {
+        (function (property) {
+          it(`should have property '${property}'`, () => {
             const object = hooks.dumpHooksFunctionsToStrings();
-            return (() => {
-              const result = [];
-              for (let key in object[property]) {
-                const value = object[property][key];
-                result.push(((key, value) => assert.isString(value, `on ${property}['${key}']`))(key, value));
-              }
-              return result;
-            })();
-          })
-        );
-      })(property); }
+            return assert.property(object, property);
+          });
+
+          it('should be an array', () => {
+            const object = hooks.dumpHooksFunctionsToStrings();
+            return assert.isArray(object[property]);
+          });
+
+          return describe(`all array members under property '${property}'`, () =>
+            it('should be a string', () => {
+              const object = hooks.dumpHooksFunctionsToStrings();
+              return (() => {
+                const result = [];
+                for (const key in object[property]) {
+                  const value = object[property][key];
+                  result.push(((key, value) => assert.isString(value, `on ${property}['${key}']`))(key, value));
+                }
+                return result;
+              })();
+            })
+          );
+        }(property));
+      }
 
       properties = [
         'beforeHooks',
@@ -212,23 +223,24 @@ describe('Hooks', function() {
 
       return (() => {
         const result = [];
-        for (property of properties) {           result.push((function(property) {
-            it(`should have property '${property}'`, function() {
+        for (property of properties) {
+          result.push((function (property) {
+            it(`should have property '${property}'`, () => {
               const object = hooks.dumpHooksFunctionsToStrings();
               return assert.property(object, property);
             });
 
-            it('should be an object', function() {
+            it('should be an object', () => {
               const object = hooks.dumpHooksFunctionsToStrings();
               return assert.isObject(object[property]);
-          });
+            });
 
             describe('each object value', () =>
-              it('should be an array', function() {
+              it('should be an array', () => {
                 const object = hooks.dumpHooksFunctionsToStrings();
                 return (() => {
                   const result1 = [];
-                  for (let key in object[property]) {
+                  for (const key in object[property]) {
                     const value = object[property][key];
                     result1.push(((key, value) => assert.isArray(object[property][key], `at hooks.dumpHooksFunctionsToStrings()[${property}][${key}]`))(key, value));
                   }
@@ -238,16 +250,16 @@ describe('Hooks', function() {
             );
 
             return describe('each member in that array', () =>
-              it('should be a string', function() {
+              it('should be a string', () => {
                 const object = hooks.dumpHooksFunctionsToStrings();
                 return (() => {
                   const result1 = [];
-                  for (let transactionName in object[property]) {
+                  for (const transactionName in object[property]) {
                     const funcArray = object[property][transactionName];
                     result1.push(((transactionName, funcArray) =>
                       (() => {
                         const result2 = [];
-                        for (let index in funcArray) {
+                        for (const index in funcArray) {
                           const func = funcArray[index];
                           result2.push(assert.isString(object[property][transactionName][index], `at hooks.dumpHooksFunctionsToStrings()[${property}][${transactionName}][${index}]`));
                         }

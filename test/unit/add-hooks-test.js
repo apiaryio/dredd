@@ -1,4 +1,10 @@
-const {assert} = require('chai');
+/* eslint-disable
+    no-return-assign,
+    no-unused-vars,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 const clone = require('clone');
@@ -10,6 +16,7 @@ const hooksStub = require('../../src/hooks');
 const hooksWorkerClientStub = require('../../src/hooks-worker-client');
 
 const proxyquireStub = require('proxyquire');
+
 const proxyquireSpy = sinon.spy(proxyquireStub.noCallThru());
 proxyquireStub.noCallThru = () => proxyquireSpy;
 
@@ -17,18 +24,17 @@ const sandboxHooksCodeSpy = sinon.spy(require('../../src/sandbox-hooks-code'));
 const fsStub = require('fs');
 
 const addHooks = proxyquire('../../src/add-hooks', {
-  'logger': loggerStub,
-  'glob': globStub,
-  'pathStub': pathStub,
-  'hooks': hooksStub,
-  'proxyquire': proxyquireStub,
+  logger: loggerStub,
+  glob: globStub,
+  pathStub,
+  hooks: hooksStub,
+  proxyquire: proxyquireStub,
   './sandbox-hooks-code': sandboxHooksCodeSpy,
   './hooks-worker-client': hooksWorkerClientStub,
-  'fs': fsStub
+  fs: fsStub
 });
 
-describe('addHooks(runner, transactions, callback)', function() {
-
+describe('addHooks(runner, transactions, callback)', () => {
   const transactions = {};
   const server = null;
 
@@ -36,7 +42,7 @@ describe('addHooks(runner, transactions, callback)', function() {
 
   after(() => loggerStub.transports.console.silent = false);
 
-  describe('constructor', function() {
+  describe('constructor', () => {
     const runner = {
       logs: ['item'],
       configuration: {
@@ -46,8 +52,8 @@ describe('addHooks(runner, transactions, callback)', function() {
       }
     };
 
-    it('should create hooks instance at runner.hooks', done=>
-      addHooks(runner, transactions, function(err) {
+    it('should create hooks instance at runner.hooks', done =>
+      addHooks(runner, transactions, (err) => {
         if (err) { return err; }
         assert.isDefined(runner.hooks);
         assert.instanceOf(runner.hooks, hooksStub);
@@ -58,8 +64,8 @@ describe('addHooks(runner, transactions, callback)', function() {
     );
 
 
-    return it('should pass runner.logs to runner.hooks.logs', done=>
-      addHooks(runner, transactions, function(err) {
+    return it('should pass runner.logs to runner.hooks.logs', done =>
+      addHooks(runner, transactions, (err) => {
         if (err) { return err; }
         assert.isDefined(runner.hooks);
         assert.instanceOf(runner.hooks, hooksStub);
@@ -72,11 +78,10 @@ describe('addHooks(runner, transactions, callback)', function() {
   });
 
 
-  describe('with no pattern', function() {
-
+  describe('with no pattern', () => {
     let runner = null;
 
-    before(function() {
+    before(() => {
       runner = {
         configuration: {
           options: {
@@ -91,17 +96,17 @@ describe('addHooks(runner, transactions, callback)', function() {
     after(() => globStub.sync.restore());
 
     return it('should not expand any glob', done =>
-      addHooks(runner, transactions, function(err) {
+      addHooks(runner, transactions, (err) => {
         assert.isOk(globStub.sync.notCalled);
         return done();
       })
     );
   });
 
-  describe('with non `nodejs` language option', function() {
+  describe('with non `nodejs` language option', () => {
     let runner = null;
 
-    beforeEach(function() {
+    beforeEach(() => {
       runner = {
         configuration: {
           options: {
@@ -117,7 +122,7 @@ describe('addHooks(runner, transactions, callback)', function() {
     afterEach(() => hooksWorkerClientStub.prototype.start.restore());
 
     return it('should start the hooks worker client', done =>
-      addHooks(runner, transactions, function(err) {
+      addHooks(runner, transactions, (err) => {
         if (err) { return done(err); }
         assert.isTrue(hooksWorkerClientStub.prototype.start.called);
         return done();
@@ -126,7 +131,7 @@ describe('addHooks(runner, transactions, callback)', function() {
   });
 
 
-  describe('with valid pattern', function() {
+  describe('with valid pattern', () => {
     let runner = null;
     beforeEach(() =>
       runner = {
@@ -138,9 +143,9 @@ describe('addHooks(runner, transactions, callback)', function() {
       }
     );
 
-    it('should return files', function(done) {
+    it('should return files', (done) => {
       sinon.spy(globStub, 'sync');
-      return addHooks(runner, transactions, function(err) {
+      return addHooks(runner, transactions, (err) => {
         if (err) { return done(err); }
         assert.isOk(globStub.sync.called);
         globStub.sync.restore();
@@ -149,7 +154,7 @@ describe('addHooks(runner, transactions, callback)', function() {
     });
 
     it('should return files with resolved paths', done =>
-      addHooks(runner, transactions, function(err) {
+      addHooks(runner, transactions, (err) => {
         if (err) { return done(err); }
 
         assert.deepEqual(runner.hooks.configuration.options.hookfiles, [
@@ -161,9 +166,9 @@ describe('addHooks(runner, transactions, callback)', function() {
       })
     );
 
-    return describe('when files are valid js/coffeescript', function() {
+    return describe('when files are valid js/coffeescript', () => {
       runner = null;
-      before(function() {
+      before(() => {
         runner = {
           configuration: {
             options: {
@@ -175,13 +180,13 @@ describe('addHooks(runner, transactions, callback)', function() {
         return sinon.stub(pathStub, 'resolve').callsFake((path, rel) => '/Users/netmilk/projects/dredd/file2.coffee');
       });
 
-      after(function() {
+      after(() => {
         globStub.sync.restore();
         return pathStub.resolve.restore();
       });
 
       it('should load the files', done =>
-        addHooks(runner, transactions, function(err) {
+        addHooks(runner, transactions, (err) => {
           if (err) { return done(err); }
           assert.isOk(pathStub.resolve.called);
           return done();
@@ -189,10 +194,10 @@ describe('addHooks(runner, transactions, callback)', function() {
       );
 
       return it('should add configuration object to the hooks object proxyquired to the each hookfile', done =>
-        addHooks(runner, transactions, function(err) {
+        addHooks(runner, transactions, (err) => {
           if (err) { return done(err); }
           const call = proxyquireSpy.getCall(0);
-          const hooksObject = call.args[1]['hooks'];
+          const hooksObject = call.args[1].hooks;
           assert.property(hooksObject, 'configuration');
           return done();
         })
@@ -200,10 +205,10 @@ describe('addHooks(runner, transactions, callback)', function() {
     });
   });
 
-  describe('when sandboxed mode is on', function() {
-    describe('when hookfiles option is given', function() {
+  describe('when sandboxed mode is on', () => {
+    describe('when hookfiles option is given', () => {
       let runner = {};
-      beforeEach(function(done) {
+      beforeEach((done) => {
         runner = {
           configuration: {
             options: {
@@ -221,7 +226,7 @@ describe('addHooks(runner, transactions, callback)', function() {
         return done();
       });
 
-      afterEach(function(done) {
+      afterEach((done) => {
         loggerStub.warn.restore();
         loggerStub.info.restore();
         fsStub.readFile.restore();
@@ -231,7 +236,7 @@ describe('addHooks(runner, transactions, callback)', function() {
       });
 
       it('should not use proxyquire', done =>
-        addHooks(runner, transactions, function(err) {
+        addHooks(runner, transactions, (err) => {
           if (err) { return done(err); }
           assert.isFalse(proxyquireSpy.called);
           return done();
@@ -239,7 +244,7 @@ describe('addHooks(runner, transactions, callback)', function() {
       );
 
       it('should load files from the filesystem', done =>
-        addHooks(runner, transactions, function(err) {
+        addHooks(runner, transactions, (err) => {
           if (err) { return done(err); }
           assert.isTrue(fsStub.readFile.called);
           return done();
@@ -247,7 +252,7 @@ describe('addHooks(runner, transactions, callback)', function() {
       );
 
       it('should run the loaded code', done =>
-        addHooks(runner, transactions, function(err) {
+        addHooks(runner, transactions, (err) => {
           if (err) { return err; }
           assert.isTrue(sandboxHooksCodeSpy.called);
           return done();
@@ -255,7 +260,7 @@ describe('addHooks(runner, transactions, callback)', function() {
       );
 
       return it('should add hook functions strings to the runner object', done =>
-        addHooks(runner, transactions, function(err) {
+        addHooks(runner, transactions, (err) => {
           if (err) { return err; }
           assert.property(runner.hooks.afterHooks, 'Machines > Machines collection > Get Machines');
           return done();
@@ -263,13 +268,13 @@ describe('addHooks(runner, transactions, callback)', function() {
       );
     });
 
-    describe('when hookfiles option is not given and hooks are passed as a string from Dredd class', function() {
+    describe('when hookfiles option is not given and hooks are passed as a string from Dredd class', () => {
       let runner = {};
-      beforeEach(function() {
+      beforeEach(() => {
         runner = {
           configuration: {
             hooksData: {
-              "some-filename.js": `\
+              'some-filename.js': `\
 after('Machines > Machines collection > Get Machines', function(transaction){
   transaction['fail'] = 'failed in sandboxed hook';
 });\
@@ -288,7 +293,7 @@ after('Machines > Machines collection > Get Machines', function(transaction){
         return sandboxHooksCodeSpy.reset();
       });
 
-      afterEach(function() {
+      afterEach(() => {
         loggerStub.warn.restore();
         loggerStub.info.restore();
         fsStub.readFile.restore();
@@ -297,7 +302,7 @@ after('Machines > Machines collection > Get Machines', function(transaction){
       });
 
       it('should not use proxyquire', done =>
-        addHooks(runner, transactions, function(err) {
+        addHooks(runner, transactions, (err) => {
           if (err) { return done(err); }
           assert.isFalse(proxyquireSpy.called);
           return done();
@@ -305,7 +310,7 @@ after('Machines > Machines collection > Get Machines', function(transaction){
       );
 
       it('should run the loaded code', done =>
-        addHooks(runner, transactions, function(err) {
+        addHooks(runner, transactions, (err) => {
           if (err) { return err; }
           assert.isTrue(sandboxHooksCodeSpy.called);
           return done();
@@ -313,7 +318,7 @@ after('Machines > Machines collection > Get Machines', function(transaction){
       );
 
       return it('should add hook functions strings to the runner object', done =>
-        addHooks(runner, transactions, function(err) {
+        addHooks(runner, transactions, (err) => {
           if (err) { return err; }
           assert.property(runner.hooks.afterHooks, 'Machines > Machines collection > Get Machines');
           return done();
@@ -321,13 +326,13 @@ after('Machines > Machines collection > Get Machines', function(transaction){
       );
     });
 
-    describe('when hooks are passed as a string from Dredd class', function() {
+    describe('when hooks are passed as a string from Dredd class', () => {
       let runner = {};
       beforeEach(() =>
         runner = {
           configuration: {
             hooksData: {
-              "some-filename.js": `\
+              'some-filename.js': `\
 after('Machines > Machines collection > Get Machines', function(transaction){
   transaction['fail'] = 'failed in sandboxed hook';
 });\
@@ -338,7 +343,7 @@ after('Machines > Machines collection > Get Machines', function(transaction){
         });
 
       return it('should throw a "not implemented" exception', done =>
-        addHooks(runner, transactions, function(err) {
+        addHooks(runner, transactions, (err) => {
           assert.isDefined(err);
           assert.include(err.message, 'not implemented');
           return done();
@@ -348,12 +353,12 @@ after('Machines > Machines collection > Get Machines', function(transaction){
 
 
     return describe('when buggy transaction name is used (#168)', () =>
-      describe('when sandboxed', function() {
-        it('should remove leading " > " from transaction names', function(done) {
+      describe('when sandboxed', () => {
+        it('should remove leading " > " from transaction names', (done) => {
           const runner = {
             configuration: {
               hooksData: {
-                "hookfile.js": `\
+                'hookfile.js': `\
 after(' > Machines collection > Get Machines', function(transaction){
   transaction['fail'] = 'failed in sandboxed hook';
 });
@@ -368,18 +373,18 @@ before(' > Machines collection > Get Machines', function(transaction){
             }
           };
 
-          return addHooks(runner, transactions, function(err) {
+          return addHooks(runner, transactions, (err) => {
             assert.notProperty(runner.hooks.afterHooks, ' > Machines collection > Get Machines');
             assert.notProperty(runner.hooks.afterHooks, ' > Machines collection > Get Machines');
             return done();
           });
         });
 
-        return it('should contain transaction with fixed name', function(done) {
+        return it('should contain transaction with fixed name', (done) => {
           const runner = {
             configuration: {
               hooksData: {
-                "hookfile.js": `\
+                'hookfile.js': `\
 after(' > Machines collection > Get Machines', function(transaction){
   transaction['fail'] = 'failed in sandboxed hook';
 });
@@ -394,7 +399,7 @@ before(' > Machines collection > Get Machines', function(transaction){
             }
           };
 
-          return addHooks(runner, transactions, function(err) {
+          return addHooks(runner, transactions, (err) => {
             assert.property(runner.hooks.afterHooks, 'Machines collection > Get Machines');
             assert.property(runner.hooks.afterHooks, 'Machines collection > Get Machines');
             return done();
@@ -404,8 +409,8 @@ before(' > Machines collection > Get Machines', function(transaction){
     );
   });
 
-  return describe('when not sandboxed', function() {
-    it('should remove leading " > " from transaction names', function(done) {
+  return describe('when not sandboxed', () => {
+    it('should remove leading " > " from transaction names', (done) => {
       const runner = {
         configuration: {
           options: {
@@ -414,14 +419,14 @@ before(' > Machines collection > Get Machines', function(transaction){
         }
       };
 
-      return addHooks(runner, transactions, function(err) {
+      return addHooks(runner, transactions, (err) => {
         assert.notProperty(runner.hooks.afterHooks, ' > Machines collection > Get Machines');
         assert.notProperty(runner.hooks.afterHooks, ' > Machines collection > Get Machines');
         return done();
       });
     });
 
-    return it('should contain transaction with fixed name', function(done) {
+    return it('should contain transaction with fixed name', (done) => {
       const runner = {
         configuration: {
           options: {
@@ -430,7 +435,7 @@ before(' > Machines collection > Get Machines', function(transaction){
         }
       };
 
-      return addHooks(runner, transactions, function(err) {
+      return addHooks(runner, transactions, (err) => {
         assert.property(runner.hooks.afterHooks, 'Machines collection > Get Machines');
         assert.property(runner.hooks.afterHooks, 'Machines collection > Get Machines');
         return done();

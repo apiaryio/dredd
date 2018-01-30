@@ -1,4 +1,15 @@
-const {assert} = require('chai');
+/* eslint-disable
+    block-scoped-var,
+    no-loop-func,
+    no-return-assign,
+    no-shadow,
+    no-unused-vars,
+    no-var,
+    vars-on-top,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 const sinon = require('sinon');
 const express = require('express');
 const clone = require('clone');
@@ -31,37 +42,37 @@ const dreddStub = proxyquire('../../src/dredd', {
 const DreddCommand = proxyquire('../../src/dredd-command', {
   './dredd': dreddStub,
   './config-utils': configUtils,
-  'console': loggerStub,
-  'fs': fs
+  console: loggerStub,
+  fs
 });
 
-const execCommand = function(custom = {}, cb) {
+const execCommand = function (custom = {}, cb) {
   stdout = '';
   stderr = '';
   exitStatus = null;
   let finished = false;
-  const dreddCommand = new DreddCommand({custom}, function(exitStatusCode) {
+  const dreddCommand = new DreddCommand({ custom }, ((exitStatusCode) => {
     if (!finished) {
       finished = true;
       exitStatus = (exitStatusCode != null ? exitStatusCode : 0);
       return cb(null, stdout, stderr, (exitStatusCode != null ? exitStatusCode : 0));
     }
-  });
+  }));
 
 
   dreddCommand.run();
 };
 
-describe("DreddCommand class Integration", function() {
+describe('DreddCommand class Integration', () => {
   const dreddCommand = null;
   const custom = {};
 
-  before(function() {
+  before(() => {
     for (var method of ['warn', 'error']) { (method => sinon.stub(loggerStub, method).callsFake(chunk => stderr += `\n${method}: ${chunk}`))(method); }
     for (method of ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual']) { (method => sinon.stub(loggerStub, method).callsFake(chunk => stdout += `\n${method}: ${chunk}`))(method); }
   });
 
-  after(function() {
+  after(() => {
     for (var method of ['warn', 'error']) {
       loggerStub[method].restore();
     }
@@ -70,21 +81,21 @@ describe("DreddCommand class Integration", function() {
     }
   });
 
-  describe('When using configuration file', function() {
-    describe('When specifying custom configuration file by --config', function() {
+  describe('When using configuration file', () => {
+    describe('When specifying custom configuration file by --config', () => {
       const configPath = '../../custom-dredd-config-path.yaml';
-      const cmd = {argv: ['--config', configPath]};
-      const options = {_: ['api-description.apib', 'http://127.0.0.1']};
+      const cmd = { argv: ['--config', configPath] };
+      const options = { _: ['api-description.apib', 'http://127.0.0.1'] };
 
-      let fsExistsSync = undefined;
-      let configUtilsLoad = undefined;
+      let fsExistsSync;
+      let configUtilsLoad;
 
-      before(function(done) {
-        fsExistsSync = sinon.stub(fs, 'existsSync').callsFake( () => true);
-        configUtilsLoad = sinon.stub(configUtils, 'load').callsFake( () => options);
+      before((done) => {
+        fsExistsSync = sinon.stub(fs, 'existsSync').callsFake(() => true);
+        configUtilsLoad = sinon.stub(configUtils, 'load').callsFake(() => options);
         return execCommand(cmd, done);
       });
-      after( function() {
+      after(() => {
         fsExistsSync.restore();
         return configUtilsLoad.restore();
       });
@@ -94,20 +105,20 @@ describe("DreddCommand class Integration", function() {
       return it('should print message about using given configuration file', () => assert.include(stdout, `info: Configuration '${configPath}' found`));
     });
 
-    describe('When dredd.yml exists', function() {
+    describe('When dredd.yml exists', () => {
       const configPath = './dredd.yml';
-      const cmd = {argv: []};
-      const options = {_: ['api-description.apib', 'http://127.0.0.1']};
+      const cmd = { argv: [] };
+      const options = { _: ['api-description.apib', 'http://127.0.0.1'] };
 
-      let fsExistsSync = undefined;
-      let configUtilsLoad = undefined;
+      let fsExistsSync;
+      let configUtilsLoad;
 
-      before(function(done) {
-        fsExistsSync = sinon.stub(fs, 'existsSync').callsFake( () => true);
-        configUtilsLoad = sinon.stub(configUtils, 'load').callsFake( () => options);
+      before((done) => {
+        fsExistsSync = sinon.stub(fs, 'existsSync').callsFake(() => true);
+        configUtilsLoad = sinon.stub(configUtils, 'load').callsFake(() => options);
         return execCommand(cmd, done);
       });
-      after( function() {
+      after(() => {
         fsExistsSync.restore();
         return configUtilsLoad.restore();
       });
@@ -117,20 +128,20 @@ describe("DreddCommand class Integration", function() {
       return it('should print message about using dredd.yml', () => assert.include(stdout, `info: Configuration '${configPath}' found`));
     });
 
-    return describe('When dredd.yml does not exist', function() {
+    return describe('When dredd.yml does not exist', () => {
       const configPath = './dredd.yml';
-      const cmd = {argv: []};
-      const options = {_: ['api-description.apib', 'http://127.0.0.1']};
+      const cmd = { argv: [] };
+      const options = { _: ['api-description.apib', 'http://127.0.0.1'] };
 
-      let fsExistsSync = undefined;
-      let configUtilsLoad = undefined;
+      let fsExistsSync;
+      let configUtilsLoad;
 
-      before(function(done) {
-        fsExistsSync = sinon.stub(fs, 'existsSync').callsFake( () => false);
+      before((done) => {
+        fsExistsSync = sinon.stub(fs, 'existsSync').callsFake(() => false);
         configUtilsLoad = sinon.spy(configUtils, 'load');
         return execCommand(cmd, done);
       });
-      after( function() {
+      after(() => {
         fsExistsSync.restore();
         return configUtilsLoad.restore();
       });
@@ -141,36 +152,36 @@ describe("DreddCommand class Integration", function() {
     });
   });
 
-  return describe("to test various Errors - When API description document should be loaded from 'http(s)://...' url", function() {
+  return describe("to test various Errors - When API description document should be loaded from 'http(s)://...' url", () => {
     let server = null;
 
     const errorCmd = { argv: [
-      `http://127.0.0.1:${PORT+1}/connection-error.apib`,
-      `http://127.0.0.1:${PORT+1}`
+      `http://127.0.0.1:${PORT + 1}/connection-error.apib`,
+      `http://127.0.0.1:${PORT + 1}`
     ]
-  };
+    };
     const wrongCmd = { argv: [
       `http://127.0.0.1:${PORT}/not-found.apib`,
       `http://127.0.0.1:${PORT}`
     ]
-  };
+    };
     const goodCmd = { argv: [
       `http://127.0.0.1:${PORT}/file.apib`,
       `http://127.0.0.1:${PORT}`
     ]
-  };
+    };
 
-    before(function(done) {
+    before((done) => {
       const app = express();
 
       app.get('/', (req, res) => res.sendStatus(404));
 
-      app.get('/file.apib', function(req, res) {
+      app.get('/file.apib', (req, res) => {
         const stream = fs.createReadStream('./test/fixtures/single-get.apib');
         return stream.pipe(res.type('text'));
       });
 
-      app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+      app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
       app.get('/not-found.apib', (req, res) => res.status(404).end());
 
@@ -178,42 +189,42 @@ describe("DreddCommand class Integration", function() {
     });
 
     after(done =>
-      server.close(function() {
+      server.close(() => {
         const app = null;
         server = null;
         return done();
       })
     );
 
-    describe('and I try to load a file from bad hostname at all', function() {
+    describe('and I try to load a file from bad hostname at all', () => {
       before(done =>
         execCommand(errorCmd, () => done())
       );
 
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
-      return it('should print error message to stderr', function() {
+      return it('should print error message to stderr', () => {
         assert.include(stderr, 'Error when loading file from URL');
         assert.include(stderr, 'Is the provided URL correct?');
         return assert.include(stderr, 'connection-error.apib');
       });
     });
 
-    describe('and I try to load a file that does not exist from an existing server', function() {
+    describe('and I try to load a file that does not exist from an existing server', () => {
       before(done =>
         execCommand(wrongCmd, () => done())
       );
 
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
-      return it('should print error message to stderr', function() {
+      return it('should print error message to stderr', () => {
         assert.include(stderr, 'Unable to load file from URL');
         assert.include(stderr, 'responded with status code 404');
         return assert.include(stderr, 'not-found.apib');
       });
     });
 
-    return describe('and I try to load a file that actually is there', function() {
+    return describe('and I try to load a file that actually is there', () => {
       before(done =>
         execCommand(goodCmd, () => done())
       );

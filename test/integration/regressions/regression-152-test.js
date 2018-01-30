@@ -1,16 +1,21 @@
-const {assert} = require('chai');
+/* eslint-disable
+    prefer-const,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+const { assert } = require('chai');
 
 const Dredd = require('../../../src/dredd');
-const {runDreddWithServer, createServer} = require('../helpers');
+const { runDreddWithServer, createServer } = require('../helpers');
 
 
 describe('Regression: Issue #152', () =>
-  describe('Modify transaction object inside beforeAll combined with beforeEach helper', function() {
-    let runtimeInfo = undefined;
+  describe('Modify transaction object inside beforeAll combined with beforeEach helper', () => {
+    let runtimeInfo;
 
-    before(function(done) {
+    before((done) => {
       const app = createServer();
-      app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
+      app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
       const dredd = new Dredd({
         options: {
@@ -19,7 +24,7 @@ describe('Regression: Issue #152', () =>
         }
       });
 
-      return runDreddWithServer(dredd, app, function(...args) {
+      return runDreddWithServer(dredd, app, (...args) => {
         let err;
         [err, runtimeInfo] = Array.from(args);
         return done(err);

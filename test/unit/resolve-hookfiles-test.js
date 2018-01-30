@@ -1,24 +1,30 @@
+/* eslint-disable
+    no-return-assign,
+    no-self-assign,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 const path = require('path');
-const {assert} = require('chai');
+const { assert } = require('chai');
 
 const resolveHookfiles = require('../../src/resolve-hookfiles');
 
 
-describe('resolveHookfiles()', function() {
+describe('resolveHookfiles()', () => {
   let cwd = path.join(__filename, '..', '..', 'fixtures');
 
   describe('when given no paths', () =>
-    it('produces no results', function() {
+    it('produces no results', () => {
       const paths = resolveHookfiles([], (cwd = cwd));
       return assert.deepEqual(paths, []);
     })
   );
 
   describe('when given existing absolute filenames', () =>
-    it('resolves them into absolute paths', function() {
+    it('resolves them into absolute paths', () => {
       const hookfiles = [
         path.join(cwd, 'hooks.js'),
-        path.join(cwd, 'non-js-hooks.rb'),
+        path.join(cwd, 'non-js-hooks.rb')
       ];
       const paths = resolveHookfiles(hookfiles, (cwd = cwd));
       return assert.deepEqual(paths, hookfiles);
@@ -26,58 +32,58 @@ describe('resolveHookfiles()', function() {
   );
 
   describe('when given existing relative filenames', () =>
-    it('resolves them into absolute paths', function() {
+    it('resolves them into absolute paths', () => {
       const paths = resolveHookfiles(['./hooks.js', './non-js-hooks.rb'], (cwd = cwd));
       return assert.deepEqual(paths, [
         path.join(cwd, 'hooks.js'),
-        path.join(cwd, 'non-js-hooks.rb'),
+        path.join(cwd, 'non-js-hooks.rb')
       ]);
     })
   );
 
   describe('when given non-existing filenames', () =>
     it('throws an error', () =>
-      assert.throws( () => resolveHookfiles(['./hooks.js', './foo/bar/42'], (cwd = cwd))
-      , './foo/bar/42')
+      assert.throws(() => resolveHookfiles(['./hooks.js', './foo/bar/42'], (cwd = cwd))
+        , './foo/bar/42')
     )
   );
 
   describe('when given glob pattern resolving to existing files', () =>
-    it('resolves them into absolute paths', function() {
+    it('resolves them into absolute paths', () => {
       const paths = resolveHookfiles(['./**/hooks.js'], (cwd = cwd));
       return assert.deepEqual(paths, [
-        path.join(cwd, 'hooks.js'),
+        path.join(cwd, 'hooks.js')
       ]);
     })
   );
 
   describe('when given glob pattern resolving to no files', () =>
     it('throws an error', () =>
-      assert.throws( () => resolveHookfiles(['./**/hooks.js', './**/foo/bar/foobar.js'], (cwd = cwd))
-      , './**/foo/bar/foobar.js')
+      assert.throws(() => resolveHookfiles(['./**/hooks.js', './**/foo/bar/foobar.js'], (cwd = cwd))
+        , './**/foo/bar/foobar.js')
     )
   );
 
-  return describe('when given both globs and filenames', function() {
-    it('resolves them into absolute paths', function() {
+  return describe('when given both globs and filenames', () => {
+    it('resolves them into absolute paths', () => {
       const paths = resolveHookfiles(['./non-js-hooks.rb', './**/hooks.js'], (cwd = cwd));
       return assert.deepEqual(paths, [
         path.join(cwd, 'hooks.js'),
-        path.join(cwd, 'non-js-hooks.rb'),
+        path.join(cwd, 'non-js-hooks.rb')
       ]);
     });
 
     it('throws an error on non-existing filenams', () =>
-      assert.throws( () => resolveHookfiles(['./**/hooks.js', './foo/bar/42'], (cwd = cwd))
-      , './foo/bar/42')
+      assert.throws(() => resolveHookfiles(['./**/hooks.js', './foo/bar/42'], (cwd = cwd))
+        , './foo/bar/42')
     );
 
     it('throws an error on globs resolving to no files', () =>
-      assert.throws( () => resolveHookfiles(['./hooks.js', './**/foo/bar/foobar.js'], (cwd = cwd))
-      , './**/foo/bar/foobar.js')
+      assert.throws(() => resolveHookfiles(['./hooks.js', './**/foo/bar/foobar.js'], (cwd = cwd))
+        , './**/foo/bar/foobar.js')
     );
 
-    return it('returns the absolute paths alphabetically sorted', function() {
+    return it('returns the absolute paths alphabetically sorted', () => {
       const paths = resolveHookfiles([
         './**/*_hooks.*',
         './hooks-glob/baz/x.js',
@@ -87,7 +93,7 @@ describe('resolveHookfiles()', function() {
         './hooks-glob/bar/b.js',
         './hooks-glob/baz/c.js',
         './hooks-glob/foo/o.js',
-        './hooks-glob/bar/p.js',
+        './hooks-glob/bar/p.js'
       ], (cwd = cwd));
       return assert.deepEqual(paths, [
         path.join(cwd, 'hooks-glob/foo/a.js'),
@@ -100,7 +106,7 @@ describe('resolveHookfiles()', function() {
         path.join(cwd, 'test_hooks.coffee'),
         path.join(cwd, 'hooks-glob/baz/x.js'),
         path.join(cwd, 'hooks-glob/foo/y.js'),
-        path.join(cwd, 'hooks-glob/bar/z.js'),
+        path.join(cwd, 'hooks-glob/bar/z.js')
       ]);
     });
   });
