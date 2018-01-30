@@ -1,659 +1,708 @@
-{assert} = require 'chai'
-sinon = require 'sinon'
-express = require 'express'
-clone = require 'clone'
-fs = require 'fs'
-bodyParser = require 'body-parser'
+const {assert} = require('chai');
+const sinon = require('sinon');
+const express = require('express');
+const clone = require('clone');
+const fs = require('fs');
+const bodyParser = require('body-parser');
 
-proxyquire = require('proxyquire').noCallThru()
+const proxyquire = require('proxyquire').noCallThru();
 
-loggerStub = require '../../src/logger'
+const loggerStub = require('../../src/logger');
 
-PORT = 9876
+const PORT = 9876;
 
-exitStatus = null
+let exitStatus = null;
 
-stderr = ''
-stdout = ''
+let stderr = '';
+let stdout = '';
 
-addHooksStub = proxyquire '../../src/add-hooks', {
+const addHooksStub = proxyquire('../../src/add-hooks', {
   './logger': loggerStub
-}
-transactionRunner = proxyquire '../../src/transaction-runner', {
-  './add-hooks': addHooksStub
+});
+const transactionRunner = proxyquire('../../src/transaction-runner', {
+  './add-hooks': addHooksStub,
   './logger': loggerStub
-}
-Dredd = proxyquire '../../src/dredd', {
-  './transaction-runner': transactionRunner
+});
+const Dredd = proxyquire('../../src/dredd', {
+  './transaction-runner': transactionRunner,
   './logger': loggerStub
-}
+});
 
-execCommand = (options = {}, cb) ->
-  stdout = ''
-  stderr = ''
-  exitStatus = null
-  finished = false
-  options.server ?= "http://127.0.0.1:#{PORT}"
-  options.level ?= 'info'
-  new Dredd(options).run (error, stats = {}) ->
-    if not finished
-      finished = true
-      if error?.message
-        stderr += error.message
-      exitStatus = if (error or (1 * stats.failures + 1 * stats.errors) > 0) then 1 else 0
-      cb null, stdout, stderr, exitStatus
-  return
-
-
-describe 'Dredd class Integration', ->
-  dreddCommand = null
-  custom = {}
-
-  before ->
-    for method in ['warn', 'error'] then do (method) ->
-      sinon.stub(loggerStub, method).callsFake (chunk) -> stderr += "\n#{method}: #{chunk}"
-    for method in ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual'] then do (method) ->
-      sinon.stub(loggerStub, method).callsFake (chunk) -> stdout += "\n#{method}: #{chunk}"
-    return
-
-  after ->
-    for method in ['warn', 'error']
-      loggerStub[method].restore()
-    for method in ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual']
-      loggerStub[method].restore()
-    return
+const execCommand = function(options = {}, cb) {
+  stdout = '';
+  stderr = '';
+  exitStatus = null;
+  let finished = false;
+  if (options.server == null) { options.server = `http://127.0.0.1:${PORT}`; }
+  if (options.level == null) { options.level = 'info'; }
+  new Dredd(options).run(function(error, stats = {}) {
+    if (!finished) {
+      finished = true;
+      if (error != null ? error.message : undefined) {
+        stderr += error.message;
+      }
+      exitStatus = (error || (((1 * stats.failures) + (1 * stats.errors)) > 0)) ? 1 : 0;
+      return cb(null, stdout, stderr, exitStatus);
+    }
+  });
+};
 
 
-  describe "when creating Dredd instance with existing API description document and responding server", () ->
-    describe "when the server is responding as specified in the API description", () ->
+describe('Dredd class Integration', function() {
+  const dreddCommand = null;
+  const custom = {};
 
-      before (done) ->
-        cmd =
-          options:
+  before(function() {
+    for (var method of ['warn', 'error']) { (method => sinon.stub(loggerStub, method).callsFake(chunk => stderr += `\n${method}: ${chunk}`))(method); }
+    for (method of ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual']) { (method => sinon.stub(loggerStub, method).callsFake(chunk => stdout += `\n${method}: ${chunk}`))(method); }
+  });
+
+  after(function() {
+    for (var method of ['warn', 'error']) {
+      loggerStub[method].restore();
+    }
+    for (method of ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual']) {
+      loggerStub[method].restore();
+    }
+  });
+
+
+  describe("when creating Dredd instance with existing API description document and responding server", function() {
+    describe("when the server is responding as specified in the API description", function() {
+
+      before(function(done) {
+        const cmd = {
+          options: {
             path: "./test/fixtures/single-get.apib"
+          }
+        };
 
-        app = express()
+        const app = express();
 
-        app.get '/machines', (req, res) ->
-          res.json [type: 'bulldozer', name: 'willy']
+        app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
 
-        server = app.listen PORT, () ->
-          execCommand cmd, ->
-            server.close()
+        var server = app.listen(PORT, () =>
+          execCommand(cmd, () => server.close())
+        );
 
-        server.on 'close', done
+        return server.on('close', done);
+      });
 
-      it 'exit status should be 0', () ->
-        assert.equal exitStatus, 0
+      return it('exit status should be 0', () => assert.equal(exitStatus, 0));
+    });
 
-    describe "when the server is sending different response", () ->
-      before (done) ->
-        cmd =
-          options:
+    return describe("when the server is sending different response", function() {
+      before(function(done) {
+        const cmd = {
+          options: {
             path: ["./test/fixtures/single-get.apib"]
+          }
+        };
 
-        app = express()
+        const app = express();
 
-        app.get '/machines', (req, res) ->
-          res.status(201).json [kind: 'bulldozer', imatriculation: 'willy']
+        app.get('/machines', (req, res) => res.status(201).json([{kind: 'bulldozer', imatriculation: 'willy'}]));
 
-        server = app.listen PORT, () ->
-          execCommand cmd, () ->
-            server.close()
+        var server = app.listen(PORT, () =>
+          execCommand(cmd, () => server.close())
+        );
 
-        server.on 'close', done
+        return server.on('close', done);
+      });
 
-      it 'exit status should be 1', () ->
-        assert.equal exitStatus, 1
+      return it('exit status should be 1', () => assert.equal(exitStatus, 1));
+    });
+  });
 
 
-  describe "when using reporter -r apiary with 'verbose' logging with custom apiaryApiKey and apiaryApiName", () ->
-    server = null
-    server2 = null
-    receivedRequest = null
-    receivedRequestTestRuns = null
-    receivedHeaders = null
-    receivedHeadersRuns = null
-    exitStatus = null
+  describe("when using reporter -r apiary with 'verbose' logging with custom apiaryApiKey and apiaryApiName", function() {
+    let server = null;
+    let server2 = null;
+    let receivedRequest = null;
+    let receivedRequestTestRuns = null;
+    let receivedHeaders = null;
+    let receivedHeadersRuns = null;
+    exitStatus = null;
 
-    before (done) ->
-      cmd =
-        options:
-          path: ["./test/fixtures/single-get.apib"]
-          reporter: ["apiary"]
+    before(function(done) {
+      const cmd = {
+        options: {
+          path: ["./test/fixtures/single-get.apib"],
+          reporter: ["apiary"],
           level: 'verbose'
-        custom:
-          apiaryApiUrl: "http://127.0.0.1:#{PORT + 1}"
-          apiaryApiKey: 'the-key'
+        },
+        custom: {
+          apiaryApiUrl: `http://127.0.0.1:${PORT + 1}`,
+          apiaryApiKey: 'the-key',
           apiaryApiName: 'the-api-name'
+        }
+      };
 
-      receivedHeaders = {}
-      receivedHeadersRuns = {}
+      receivedHeaders = {};
+      receivedHeadersRuns = {};
 
-      apiary = express()
-      app = express()
+      const apiary = express();
+      const app = express();
 
-      apiary.use bodyParser.json(size:'5mb')
+      apiary.use(bodyParser.json({size:'5mb'}));
 
-      apiary.post '/apis/*', (req, res) ->
-        if req.body and req.url.indexOf('/tests/steps') > -1
-          receivedRequest ?= clone(req.body)
-          receivedHeaders[key.toLowerCase()] = val for key, val of req.headers
-        if req.body and req.url.indexOf('/tests/runs') > -1
-          receivedRequestTestRuns ?= clone(req.body)
-          receivedHeadersRuns[key.toLowerCase()] = val for key, val of req.headers
-        res.status(201).json
-          _id: '1234_id'
-          testRunId: '6789_testRunId'
+      apiary.post('/apis/*', function(req, res) {
+        let key, val;
+        if (req.body && (req.url.indexOf('/tests/steps') > -1)) {
+          if (receivedRequest == null) { receivedRequest = clone(req.body); }
+          for (key in req.headers) { val = req.headers[key]; receivedHeaders[key.toLowerCase()] = val; }
+        }
+        if (req.body && (req.url.indexOf('/tests/runs') > -1)) {
+          if (receivedRequestTestRuns == null) { receivedRequestTestRuns = clone(req.body); }
+          for (key in req.headers) { val = req.headers[key]; receivedHeadersRuns[key.toLowerCase()] = val; }
+        }
+        return res.status(201).json({
+          _id: '1234_id',
+          testRunId: '6789_testRunId',
           reportUrl: 'http://url.me/test/run/1234_id'
+        });
+      });
 
-      apiary.all '*', (req, res) ->
-        res.json {}
+      apiary.all('*', (req, res) => res.json({}));
 
-      app.get '/machines', (req, res) ->
-        res.json [type: 'bulldozer', name: 'willy']
+      app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
 
-      server = app.listen PORT, () ->
-        server2 = apiary.listen (PORT + 1), ->
-          execCommand cmd, () ->
-            server2.close ->
-              server.close () ->
-                done()
+      return server = app.listen(PORT, () =>
+        server2 = apiary.listen((PORT + 1), () =>
+          execCommand(cmd, () =>
+            server2.close(() =>
+              server.close(() => done())
+            )
+          )
+        )
+      );
+    });
 
-    it 'should not print warning about missing Apiary API settings', ->
-      assert.notInclude stderr, 'Apiary API Key or API Project Subdomain were not provided.'
+    it('should not print warning about missing Apiary API settings', () => assert.notInclude(stderr, 'Apiary API Key or API Project Subdomain were not provided.'));
 
-    it 'should contain Authentication header thanks to apiaryApiKey and apiaryApiName configuration', ->
-      assert.propertyVal receivedHeaders, 'authentication', 'Token the-key'
-      assert.propertyVal receivedHeadersRuns, 'authentication', 'Token the-key'
+    it('should contain Authentication header thanks to apiaryApiKey and apiaryApiName configuration', function() {
+      assert.propertyVal(receivedHeaders, 'authentication', 'Token the-key');
+      return assert.propertyVal(receivedHeadersRuns, 'authentication', 'Token the-key');
+    });
 
-    it 'should send the test-run as a non-public one', ->
-      assert.isObject receivedRequestTestRuns
-      assert.propertyVal receivedRequestTestRuns, 'public', false
+    it('should send the test-run as a non-public one', function() {
+      assert.isObject(receivedRequestTestRuns);
+      return assert.propertyVal(receivedRequestTestRuns, 'public', false);
+    });
 
-    it 'should print using the new reporter', ->
-      assert.include stdout, 'http://url.me/test/run/1234_id'
+    it('should print using the new reporter', () => assert.include(stdout, 'http://url.me/test/run/1234_id'));
 
-    it 'should send results from Gavel', ->
-      assert.isObject receivedRequest
-      assert.nestedProperty receivedRequest, 'resultData.request'
-      assert.nestedProperty receivedRequest, 'resultData.realResponse'
-      assert.nestedProperty receivedRequest, 'resultData.expectedResponse'
-      assert.nestedProperty receivedRequest, 'resultData.result.body.validator'
-      assert.nestedProperty receivedRequest, 'resultData.result.headers.validator'
-      assert.nestedProperty receivedRequest, 'resultData.result.statusCode.validator'
+    return it('should send results from Gavel', function() {
+      assert.isObject(receivedRequest);
+      assert.nestedProperty(receivedRequest, 'resultData.request');
+      assert.nestedProperty(receivedRequest, 'resultData.realResponse');
+      assert.nestedProperty(receivedRequest, 'resultData.expectedResponse');
+      assert.nestedProperty(receivedRequest, 'resultData.result.body.validator');
+      assert.nestedProperty(receivedRequest, 'resultData.result.headers.validator');
+      assert.nestedProperty(receivedRequest, 'resultData.result.statusCode.validator');
 
-      it 'prints out an error message', ->
-        assert.notEqual exitStatus, 0
+      return it('prints out an error message', () => assert.notEqual(exitStatus, 0));
+    });
+  });
 
 
-  describe "when called with arguments", () ->
+  describe("when called with arguments", function() {
 
-    describe '--path argument is a string', ->
-      before (done) ->
-        cmd =
-          options:
+    describe('--path argument is a string', function() {
+      before(function(done) {
+        const cmd = {
+          options: {
             path: ["./test/fixtures/single-get.apib", './test/fixtures/single-get.apib']
+          }
+        };
 
-        app = express()
+        const app = express();
 
-        app.get '/machines', (req, res) ->
-          response = [type: 'bulldozer', name: 'willy']
-          res.json response
+        app.get('/machines', function(req, res) {
+          const response = [{type: 'bulldozer', name: 'willy'}];
+          return res.json(response);
+        });
 
-        server = app.listen PORT, () ->
-          execCommand cmd, (error, stdOut, stdErr, code) ->
-            err = stdErr
-            out = stdOut
-            exitCode = code
-            server.close()
+        var server = app.listen(PORT, () =>
+          execCommand(cmd, function(error, stdOut, stdErr, code) {
+            const err = stdErr;
+            const out = stdOut;
+            const exitCode = code;
+            return server.close();
+          })
+        );
 
-        server.on 'close', done
+        return server.on('close', done);
+      });
 
-      it 'prints out ok', ->
-        assert.equal exitStatus, 0
+      return it('prints out ok', () => assert.equal(exitStatus, 0));
+    });
 
-    describe "when using reporter -r apiary and the server isn't running", () ->
-      server = null
-      server2 = null
-      receivedRequest = null
-      exitStatus = null
+    describe("when using reporter -r apiary and the server isn't running", function() {
+      const server = null;
+      let server2 = null;
+      let receivedRequest = null;
+      exitStatus = null;
 
-      before (done) ->
-        cmd =
-          options:
-            path: ["./test/fixtures/single-get.apib"]
-            reporter: ['apiary']
+      before(function(done) {
+        const cmd = {
+          options: {
+            path: ["./test/fixtures/single-get.apib"],
+            reporter: ['apiary'],
             level: 'verbose'
-          custom:
-            apiaryReporterEnv:
-              APIARY_API_URL: "http://127.0.0.1:#{PORT + 1}"
+          },
+          custom: {
+            apiaryReporterEnv: {
+              APIARY_API_URL: `http://127.0.0.1:${PORT + 1}`
+            }
+          }
+        };
 
-        apiary = express()
+        const apiary = express();
 
-        apiary.use bodyParser.json(size:'5mb')
+        apiary.use(bodyParser.json({size:'5mb'}));
 
-        apiary.post '/apis/*', (req, res) ->
-          if req.body and req.url.indexOf('/tests/steps') > -1
-            receivedRequest ?= clone(req.body)
-          res.status(201).json
-            _id: '1234_id'
-            testRunId: '6789_testRunId'
+        apiary.post('/apis/*', function(req, res) {
+          if (req.body && (req.url.indexOf('/tests/steps') > -1)) {
+            if (receivedRequest == null) { receivedRequest = clone(req.body); }
+          }
+          return res.status(201).json({
+            _id: '1234_id',
+            testRunId: '6789_testRunId',
             reportUrl: 'http://url.me/test/run/1234_id'
+          });
+        });
 
-        apiary.all '*', (req, res) ->
-          res.json {}
+        apiary.all('*', (req, res) => res.json({}));
 
-        server2 = apiary.listen (PORT + 1), ->
-          execCommand cmd, () ->
-            server2.close ->
+        server2 = apiary.listen((PORT + 1), () =>
+          execCommand(cmd, () => server2.close(function() {}))
+        );
 
-        server2.on 'close', done
+        return server2.on('close', done);
+      });
 
-      it 'should print using the reporter', () ->
-        assert.include stdout, 'http://url.me/test/run/1234_id'
+      it('should print using the reporter', () => assert.include(stdout, 'http://url.me/test/run/1234_id'));
 
-      it 'should send results from gavel', () ->
-        assert.isObject receivedRequest
-        assert.nestedProperty receivedRequest, 'resultData.request'
-        assert.nestedProperty receivedRequest, 'resultData.expectedResponse'
-        assert.nestedProperty receivedRequest, 'resultData.result.general'
+      it('should send results from gavel', function() {
+        assert.isObject(receivedRequest);
+        assert.nestedProperty(receivedRequest, 'resultData.request');
+        assert.nestedProperty(receivedRequest, 'resultData.expectedResponse');
+        return assert.nestedProperty(receivedRequest, 'resultData.result.general');
+      });
 
-      it 'report should have message about server being down', () ->
-        message = receivedRequest['resultData']['result']['general'][0]['message']
-        assert.include message, 'connect'
+      return it('report should have message about server being down', function() {
+        const message = receivedRequest['resultData']['result']['general'][0]['message'];
+        return assert.include(message, 'connect');
+      });
+    });
 
-    describe "when using reporter -r apiary", () ->
-      server = null
-      server2 = null
-      receivedRequest = null
-      exitStatus = null
+    return describe("when using reporter -r apiary", function() {
+      let server = null;
+      let server2 = null;
+      let receivedRequest = null;
+      exitStatus = null;
 
-      before (done) ->
-        cmd =
-          options:
-            path: ["./test/fixtures/single-get.apib"]
-            reporter: ['apiary']
+      before(function(done) {
+        const cmd = {
+          options: {
+            path: ["./test/fixtures/single-get.apib"],
+            reporter: ['apiary'],
             level: 'verbose'
-          custom:
-            apiaryReporterEnv:
-              APIARY_API_URL: "http://127.0.0.1:#{PORT + 1}"
+          },
+          custom: {
+            apiaryReporterEnv: {
+              APIARY_API_URL: `http://127.0.0.1:${PORT + 1}`
+            }
+          }
+        };
 
-        apiary = express()
-        app = express()
+        const apiary = express();
+        const app = express();
 
-        apiary.use bodyParser.json(size:'5mb')
+        apiary.use(bodyParser.json({size:'5mb'}));
 
-        apiary.post '/apis/*', (req, res) ->
-          if req.body and req.url.indexOf('/tests/steps') > -1
-            receivedRequest ?= clone(req.body)
-          res.status(201).json
-            _id: '1234_id'
-            testRunId: '6789_testRunId'
+        apiary.post('/apis/*', function(req, res) {
+          if (req.body && (req.url.indexOf('/tests/steps') > -1)) {
+            if (receivedRequest == null) { receivedRequest = clone(req.body); }
+          }
+          return res.status(201).json({
+            _id: '1234_id',
+            testRunId: '6789_testRunId',
             reportUrl: 'http://url.me/test/run/1234_id'
+          });
+        });
 
-        apiary.all '*', (req, res) ->
-          res.json {}
+        apiary.all('*', (req, res) => res.json({}));
 
-        app.get '/machines', (req, res) ->
-          res.json [type: 'bulldozer', name: 'willy']
+        app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
 
-        server = app.listen PORT, () ->
-          server2 = apiary.listen (PORT + 1), ->
+        server = app.listen(PORT, () => server2 = apiary.listen((PORT + 1), function() {}));
 
-        execCommand cmd, () ->
-          server2.close ->
-            server.close ->
+        execCommand(cmd, () =>
+          server2.close(() => server.close(function() {}))
+        );
 
-        server.on 'close', done
+        return server.on('close', done);
+      });
 
-      it 'should print warning about missing Apiary API settings', ->
-        assert.include stderr, 'Apiary API Key or API Project Subdomain were not provided.'
+      it('should print warning about missing Apiary API settings', () => assert.include(stderr, 'Apiary API Key or API Project Subdomain were not provided.'));
 
-      it 'should print link to documentation', ->
-        assert.include stderr, 'https://dredd.readthedocs.io/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests'
+      it('should print link to documentation', () => assert.include(stderr, 'https://dredd.readthedocs.io/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests'));
 
-      it 'should print using the new reporter', ->
-        assert.include stdout, 'http://url.me/test/run/1234_id'
+      it('should print using the new reporter', () => assert.include(stdout, 'http://url.me/test/run/1234_id'));
 
-      it 'should send results from Gavel', ->
-        assert.isObject receivedRequest
-        assert.nestedProperty receivedRequest, 'resultData.request'
-        assert.nestedProperty receivedRequest, 'resultData.realResponse'
-        assert.nestedProperty receivedRequest, 'resultData.expectedResponse'
-        assert.nestedProperty receivedRequest, 'resultData.result.body.validator'
-        assert.nestedProperty receivedRequest, 'resultData.result.headers.validator'
-        assert.nestedProperty receivedRequest, 'resultData.result.statusCode.validator'
+      return it('should send results from Gavel', function() {
+        assert.isObject(receivedRequest);
+        assert.nestedProperty(receivedRequest, 'resultData.request');
+        assert.nestedProperty(receivedRequest, 'resultData.realResponse');
+        assert.nestedProperty(receivedRequest, 'resultData.expectedResponse');
+        assert.nestedProperty(receivedRequest, 'resultData.result.body.validator');
+        assert.nestedProperty(receivedRequest, 'resultData.result.headers.validator');
+        return assert.nestedProperty(receivedRequest, 'resultData.result.statusCode.validator');
+      });
+    });
+  });
 
 
-  describe "when API description document should be loaded from 'http(s)://...' url", ->
-    server = null
-    loadedFromServer = null
-    connectedToServer = null
-    notFound = null
-    fileFound = null
+  describe("when API description document should be loaded from 'http(s)://...' url", function() {
+    let server = null;
+    const loadedFromServer = null;
+    let connectedToServer = null;
+    let notFound = null;
+    let fileFound = null;
 
-    errorCmd =
-      server: "http://127.0.0.1:#{PORT + 1}"
-      options:
-        path: ["http://127.0.0.1:#{PORT + 1}/connection-error.apib"]
+    const errorCmd = {
+      server: `http://127.0.0.1:${PORT + 1}`,
+      options: {
+        path: [`http://127.0.0.1:${PORT + 1}/connection-error.apib`]
+      }
+    };
 
-    wrongCmd =
-      options:
-        path: ["http://127.0.0.1:#{PORT}/not-found.apib"]
+    const wrongCmd = {
+      options: {
+        path: [`http://127.0.0.1:${PORT}/not-found.apib`]
+      }
+    };
 
-    goodCmd =
-      options:
-        path: ["http://127.0.0.1:#{PORT}/file.apib"]
+    const goodCmd = {
+      options: {
+        path: [`http://127.0.0.1:${PORT}/file.apib`]
+      }
+    };
 
-    afterEach ->
-      connectedToServer = null
+    afterEach(() => connectedToServer = null);
 
-    before (done) ->
-      app = express()
+    before(function(done) {
+      const app = express();
 
-      app.use (req, res, next) ->
-        connectedToServer = true
-        next()
+      app.use(function(req, res, next) {
+        connectedToServer = true;
+        return next();
+      });
 
-      app.get '/', (req, res) ->
-        res.sendStatus 404
+      app.get('/', (req, res) => res.sendStatus(404));
 
-      app.get '/file.apib', (req, res) ->
-        fileFound = true
-        res.type('text')
-        stream = fs.createReadStream './test/fixtures/single-get.apib'
-        stream.pipe res
+      app.get('/file.apib', function(req, res) {
+        fileFound = true;
+        res.type('text');
+        const stream = fs.createReadStream('./test/fixtures/single-get.apib');
+        return stream.pipe(res);
+      });
 
-      app.get '/machines', (req, res) ->
-        res.json [type: 'bulldozer', name: 'willy']
+      app.get('/machines', (req, res) => res.json([{type: 'bulldozer', name: 'willy'}]));
 
-      app.get '/not-found.apib', (req, res) ->
-        notFound = true
-        res.status(404).end()
+      app.get('/not-found.apib', function(req, res) {
+        notFound = true;
+        return res.status(404).end();
+      });
 
-      server = app.listen PORT, ->
-        done()
+      return server = app.listen(PORT, () => done());
+    });
 
-    after (done) ->
-      server.close ->
-        app = null
-        server = null
-        done()
+    after(done =>
+      server.close(function() {
+        const app = null;
+        server = null;
+        return done();
+      })
+    );
 
-    describe 'and I try to load a file from bad hostname at all', ->
-      before (done) ->
-        execCommand errorCmd, ->
-          done()
+    describe('and I try to load a file from bad hostname at all', function() {
+      before(done =>
+        execCommand(errorCmd, () => done())
+      );
 
-      after ->
-        connectedToServer = null
+      after(() => connectedToServer = null);
 
-      it 'should not send a GET to the server', ->
-        assert.isNull connectedToServer
+      it('should not send a GET to the server', () => assert.isNull(connectedToServer));
 
-      it 'should exit with status 1', ->
-        assert.equal exitStatus, 1
+      it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
-      it 'should print error message to stderr', ->
-        assert.include stderr, 'Error when loading file from URL'
-        assert.include stderr, 'Is the provided URL correct?'
-        assert.include stderr, 'connection-error.apib'
+      return it('should print error message to stderr', function() {
+        assert.include(stderr, 'Error when loading file from URL');
+        assert.include(stderr, 'Is the provided URL correct?');
+        return assert.include(stderr, 'connection-error.apib');
+      });
+    });
 
-    describe 'and I try to load a file that does not exist from an existing server', ->
-      before (done) ->
-        execCommand wrongCmd, ->
-          done()
+    describe('and I try to load a file that does not exist from an existing server', function() {
+      before(done =>
+        execCommand(wrongCmd, () => done())
+      );
 
-      after ->
-        connectedToServer = null
+      after(() => connectedToServer = null);
 
-      it 'should connect to the right server', ->
-        assert.isTrue connectedToServer
+      it('should connect to the right server', () => assert.isTrue(connectedToServer));
 
-      it 'should send a GET to server at wrong URL', ->
-        assert.isTrue notFound
+      it('should send a GET to server at wrong URL', () => assert.isTrue(notFound));
 
-      it 'should exit with status 1', ->
-        assert.equal exitStatus, 1
+      it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
-      it 'should print error message to stderr', ->
-        assert.include stderr, 'Unable to load file from URL'
-        assert.include stderr, 'responded with status code 404'
-        assert.include stderr, 'not-found.apib'
+      return it('should print error message to stderr', function() {
+        assert.include(stderr, 'Unable to load file from URL');
+        assert.include(stderr, 'responded with status code 404');
+        return assert.include(stderr, 'not-found.apib');
+      });
+    });
 
-    describe 'and I try to load a file that actually is there', ->
-      before (done) ->
-        execCommand goodCmd, ->
-          done()
+    return describe('and I try to load a file that actually is there', function() {
+      before(done =>
+        execCommand(goodCmd, () => done())
+      );
 
-      it 'should send a GET to the right server', ->
-        assert.isTrue connectedToServer
+      it('should send a GET to the right server', () => assert.isTrue(connectedToServer));
 
-      it 'should send a GET to server at good URL', ->
-        assert.isTrue fileFound
+      it('should send a GET to server at good URL', () => assert.isTrue(fileFound));
 
-      it 'should exit with status 0', ->
-        assert.equal exitStatus, 0
+      return it('should exit with status 0', () => assert.equal(exitStatus, 0));
+    });
+  });
 
-  describe 'when i use sandbox and hookfiles option', () ->
-    describe 'and I run a test', () ->
-      requested = null
-      before (done) ->
-        cmd =
-          options:
-            path: "./test/fixtures/single-get.apib"
-            sandbox: true
+  describe('when i use sandbox and hookfiles option', () =>
+    describe('and I run a test', function() {
+      let requested = null;
+      before(function(done) {
+        const cmd = {
+          options: {
+            path: "./test/fixtures/single-get.apib",
+            sandbox: true,
             hookfiles: './test/fixtures/sandboxed-hook.js'
+          }
+        };
 
-        app = express()
+        const app = express();
 
-        app.get '/machines', (req, res) ->
-          requested = true
-          res.json [type: 'bulldozer', name: 'willy']
+        app.get('/machines', function(req, res) {
+          requested = true;
+          return res.json([{type: 'bulldozer', name: 'willy'}]);
+      });
 
-        server = app.listen PORT, () ->
-          execCommand cmd, ->
-            server.close()
+        var server = app.listen(PORT, () =>
+          execCommand(cmd, () => server.close())
+        );
 
-        server.on 'close', done
+        return server.on('close', done);
+      });
 
-      it 'exit status should be 1', () ->
-        assert.equal exitStatus, 1
+      it('exit status should be 1', () => assert.equal(exitStatus, 1));
 
-      it 'stdout should contain fail message', () ->
-        assert.include stdout, 'failed in sandboxed hook'
+      it('stdout should contain fail message', () => assert.include(stdout, 'failed in sandboxed hook'));
 
-      it 'stdout should contain sandbox messagae', () ->
-        assert.include stdout, 'Loading hook files in sandboxed context'
+      it('stdout should contain sandbox messagae', () => assert.include(stdout, 'Loading hook files in sandboxed context'));
 
-      it 'should perform the request', () ->
-        assert.isTrue requested
+      return it('should perform the request', () => assert.isTrue(requested));
+    })
+  );
 
-  describe 'when i use sandbox and hookData option', () ->
-    describe 'and I run a test', () ->
-      requested = null
-      before (done) ->
-        cmd =
-          hooksData:
-            "./test/fixtures/single-get.apib": """
-            after('Machines > Machines collection > Get Machines', function(transaction){
-              transaction['fail'] = 'failed in sandboxed hook from string';
-            });
-            """
-          options:
-            path: "./test/fixtures/single-get.apib"
+  describe('when i use sandbox and hookData option', () =>
+    describe('and I run a test', function() {
+      let requested = null;
+      before(function(done) {
+        const cmd = {
+          hooksData: {
+            "./test/fixtures/single-get.apib": `\
+after('Machines > Machines collection > Get Machines', function(transaction){
+  transaction['fail'] = 'failed in sandboxed hook from string';
+});\
+`
+          },
+          options: {
+            path: "./test/fixtures/single-get.apib",
             sandbox: true
+          }
+        };
 
-        app = express()
+        const app = express();
 
-        app.get '/machines', (req, res) ->
-          requested = true
-          res.json [type: 'bulldozer', name: 'willy']
+        app.get('/machines', function(req, res) {
+          requested = true;
+          return res.json([{type: 'bulldozer', name: 'willy'}]);
+      });
 
-        server = app.listen PORT, () ->
-          execCommand cmd, ->
-            server.close()
+        var server = app.listen(PORT, () =>
+          execCommand(cmd, () => server.close())
+        );
 
-        server.on 'close', done
+        return server.on('close', done);
+      });
 
-      it 'exit status should be 1', () ->
-        assert.equal exitStatus, 1
+      it('exit status should be 1', () => assert.equal(exitStatus, 1));
 
-      it 'stdout should contain fail message', () ->
-        assert.include stdout, 'failed in sandboxed hook from string'
+      it('stdout should contain fail message', () => assert.include(stdout, 'failed in sandboxed hook from string'));
 
-      it 'stdout should not sandbox messagae', () ->
-        assert.notInclude stdout, 'Loading hook files in sandboxed context'
+      it('stdout should not sandbox messagae', () => assert.notInclude(stdout, 'Loading hook files in sandboxed context'));
 
-      it 'should perform the request', () ->
-        assert.isTrue requested
+      return it('should perform the request', () => assert.isTrue(requested));
+    })
+  );
 
-  describe 'when use old buggy (#168) path with leading whitespace in hooks', () ->
-    describe 'and I run a test', () ->
-      requested = null
-      before (done) ->
-        cmd =
-          hooksData:
-            "hooks.js": """
-            before(' > Machines collection > Get Machines', function(transaction){
-              throw(new Error('Whitespace transaction name'));
-            });
+  describe('when use old buggy (#168) path with leading whitespace in hooks', () =>
+    describe('and I run a test', function() {
+      let requested = null;
+      before(function(done) {
+        const cmd = {
+          hooksData: {
+            "hooks.js": `\
+before(' > Machines collection > Get Machines', function(transaction){
+  throw(new Error('Whitespace transaction name'));
+});
 
-            before('Machines collection > Get Machines', function(transaction){
-              throw(new Error('Fixed transaction name'));
-            });
-
-            """
-          options:
-            path: "./test/fixtures/single-get-nogroup.apib"
+before('Machines collection > Get Machines', function(transaction){
+  throw(new Error('Fixed transaction name'));
+});
+\
+`
+          },
+          options: {
+            path: "./test/fixtures/single-get-nogroup.apib",
             sandbox: true
+          }
+        };
 
-        app = express()
+        const app = express();
 
-        app.get '/machines', (req, res) ->
-          requested = true
-          res.json [type: 'bulldozer', name: 'willy']
+        app.get('/machines', function(req, res) {
+          requested = true;
+          return res.json([{type: 'bulldozer', name: 'willy'}]);
+      });
 
-        server = app.listen PORT, () ->
-          execCommand cmd, ->
-            server.close()
+        var server = app.listen(PORT, () =>
+          execCommand(cmd, () => server.close())
+        );
 
-        server.on 'close', done
+        return server.on('close', done);
+      });
 
-      it 'should execute hook with whitespaced name', () ->
-        assert.include stderr, 'Whitespace transaction name'
+      it('should execute hook with whitespaced name', () => assert.include(stderr, 'Whitespace transaction name'));
 
-      it 'should execute hook with fuxed name', () ->
-        assert.include stderr, 'Fixed transaction name'
+      return it('should execute hook with fuxed name', () => assert.include(stderr, 'Fixed transaction name'));
+    })
+  );
 
-  describe('when Swagger document has multiple responses', ->
-    reTransaction = /(\w+): (\w+) \((\d+)\) \/honey/g
-    actual = undefined
+  describe('when Swagger document has multiple responses', function() {
+    const reTransaction = /(\w+): (\w+) \((\d+)\) \/honey/g;
+    let actual = undefined;
 
-    before((done) ->
-      execCommand(
-        options:
+    before(done =>
+      execCommand({
+        options: {
           path: './test/fixtures/multiple-responses.yaml'
-      , (err) ->
-        matches = []
-        matches.push(groups) while groups = reTransaction.exec(stdout)
-        actual = matches.map((match) ->
-          keyMap = {'0': 'name', '1': 'action', '2': 'method', '3': 'statusCode'}
-          match.reduce((result, element, i) ->
-            Object.assign(result, "#{keyMap[i]}": element)
-          , {})
-        )
-        done(err)
-      )
-    )
+        }
+      }
+      , function(err) {
+        let groups;
+        const matches = [];
+        while ((groups = reTransaction.exec(stdout))) { matches.push(groups); }
+        actual = matches.map(function(match) {
+          const keyMap = {'0': 'name', '1': 'action', '2': 'method', '3': 'statusCode'};
+          return match.reduce((result, element, i) => Object.assign(result, {[keyMap[i]]: element})
+          , {});
+        });
+        return done(err);
+      })
+    );
 
-    it('recognizes all 3 transactions', ->
-      assert.equal(actual.length, 3)
-    )
+    it('recognizes all 3 transactions', () => assert.equal(actual.length, 3));
 
-    [
-      {action: 'skip', statusCode: '400'}
-      {action: 'skip', statusCode: '500'}
+    return [
+      {action: 'skip', statusCode: '400'},
+      {action: 'skip', statusCode: '500'},
       {action: 'fail', statusCode: '200'}
-    ].forEach((expected, i) ->
-      context("the transaction ##{i + 1}", ->
-        it("has status code #{expected.statusCode}", ->
-          assert.equal(expected.statusCode, actual[i].statusCode)
-        )
-        it("is #{if expected.action is 'skip' then '' else 'not '}skipped by default", ->
-          assert.equal(expected.action, actual[i].action)
-        )
-      )
-    )
-  )
+    ].forEach((expected, i) =>
+      context(`the transaction #${i + 1}`, function() {
+        it(`has status code ${expected.statusCode}`, () => assert.equal(expected.statusCode, actual[i].statusCode));
+        return it(`is ${expected.action === 'skip' ? '' : 'not '}skipped by default`, () => assert.equal(expected.action, actual[i].action));
+      })
+    );
+  });
 
-  describe('when Swagger document has multiple responses and hooks unskip some of them', ->
-    reTransaction = /(\w+): (\w+) \((\d+)\) \/honey/g
-    actual = undefined
+  describe('when Swagger document has multiple responses and hooks unskip some of them', function() {
+    const reTransaction = /(\w+): (\w+) \((\d+)\) \/honey/g;
+    let actual = undefined;
 
-    before((done) ->
-      execCommand(
-        options:
-          path: './test/fixtures/multiple-responses.yaml'
+    before(done =>
+      execCommand({
+        options: {
+          path: './test/fixtures/multiple-responses.yaml',
           hookfiles: './test/fixtures/swagger-multiple-responses.js'
-      , (err) ->
-        matches = []
-        matches.push(groups) while groups = reTransaction.exec(stdout)
-        actual = matches.map((match) ->
-          keyMap = {'0': 'name', '1': 'action', '2': 'method', '3': 'statusCode'}
-          match.reduce((result, element, i) ->
-            Object.assign(result, "#{keyMap[i]}": element)
-          , {})
-        )
-        done(err)
-      )
-    )
+        }
+      }
+      , function(err) {
+        let groups;
+        const matches = [];
+        while ((groups = reTransaction.exec(stdout))) { matches.push(groups); }
+        actual = matches.map(function(match) {
+          const keyMap = {'0': 'name', '1': 'action', '2': 'method', '3': 'statusCode'};
+          return match.reduce((result, element, i) => Object.assign(result, {[keyMap[i]]: element})
+          , {});
+        });
+        return done(err);
+      })
+    );
 
-    it('recognizes all 3 transactions', ->
-      assert.equal(actual.length, 3)
-    )
+    it('recognizes all 3 transactions', () => assert.equal(actual.length, 3));
 
-    [
-      {action: 'skip', statusCode: '400'}
-      {action: 'fail', statusCode: '200'}
-      {action: 'fail', statusCode: '500'} # Unskipped in hooks
-    ].forEach((expected, i) ->
-      context("the transaction ##{i + 1}", ->
-        it("has status code #{expected.statusCode}", ->
-          assert.equal(expected.statusCode, actual[i].statusCode)
-        )
+    return [
+      {action: 'skip', statusCode: '400'},
+      {action: 'fail', statusCode: '200'},
+      {action: 'fail', statusCode: '500'} // Unskipped in hooks
+    ].forEach((expected, i) =>
+      context(`the transaction #${i + 1}`, function() {
+        it(`has status code ${expected.statusCode}`, () => assert.equal(expected.statusCode, actual[i].statusCode));
 
-        defaultMessage = "is #{if expected.action is 'skip' then '' else 'not '}skipped by default"
-        unskippedMessage = 'is unskipped in hooks'
-        it("#{if expected.statusCode is '500' then unskippedMessage else defaultMessage}", ->
-          assert.equal(expected.action, actual[i].action)
-        )
-      )
-    )
-  )
+        const defaultMessage = `is ${expected.action === 'skip' ? '' : 'not '}skipped by default`;
+        const unskippedMessage = 'is unskipped in hooks';
+        return it(`${expected.statusCode === '500' ? unskippedMessage : defaultMessage}`, () => assert.equal(expected.action, actual[i].action));
+      })
+    );
+  });
 
-  describe('when using Swagger document with hooks', ->
-    reTransactionName = /hook: (.+)/g
-    matches = undefined
+  return describe('when using Swagger document with hooks', function() {
+    const reTransactionName = /hook: (.+)/g;
+    let matches = undefined;
 
-    beforeEach((done) ->
-      execCommand(
-        options:
-          path: './test/fixtures/multiple-responses.yaml'
+    beforeEach(done =>
+      execCommand({
+        options: {
+          path: './test/fixtures/multiple-responses.yaml',
           hookfiles: './test/fixtures/swagger-transaction-names.js'
-      , (err) ->
-        matches = []
-        matches.push(groups[1]) while groups = reTransactionName.exec(stdout)
-        done(err)
-      )
-    )
+        }
+      }
+      , function(err) {
+        let groups;
+        matches = [];
+        while ((groups = reTransactionName.exec(stdout))) { matches.push(groups[1]); }
+        return done(err);
+      })
+    );
 
-    it('transaction names contain status code and content type', ->
+    return it('transaction names contain status code and content type', () =>
       assert.deepEqual(matches, [
-        '/honey > GET > 200 > application/json'
-        '/honey > GET > 400 > application/json'
+        '/honey > GET > 200 > application/json',
+        '/honey > GET > 400 > application/json',
         '/honey > GET > 500 > application/json'
       ])
-    )
-  )
+    );
+  });
+});

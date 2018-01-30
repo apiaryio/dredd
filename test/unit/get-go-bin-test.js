@@ -1,115 +1,97 @@
-{assert} = require('chai')
-sinon = require('sinon')
-path = require('path')
-childProcess = require('child_process')
+const {assert} = require('chai');
+const sinon = require('sinon');
+const path = require('path');
+const childProcess = require('child_process');
 
-getGoBin = require('../../src/get-go-bin')
+const getGoBin = require('../../src/get-go-bin');
 
 
-describe('getGoBin()', ->
-  goBin = undefined
-  goPath = undefined
+describe('getGoBin()', function() {
+  let goBin = undefined;
+  let goPath = undefined;
 
-  beforeEach( ->
-    goBin = process.env.GOBIN
-    delete process.env.GOBIN
-    goPath = process.env.GOPATH
-    delete process.env.GOPATH
-  )
-  afterEach( ->
-    process.env.GOBIN = goBin
-    process.env.GOPATH = goPath
-  )
+  beforeEach( function() {
+    goBin = process.env.GOBIN;
+    delete process.env.GOBIN;
+    goPath = process.env.GOPATH;
+    return delete process.env.GOPATH;
+  });
+  afterEach( function() {
+    process.env.GOBIN = goBin;
+    return process.env.GOPATH = goPath;
+  });
 
-  describe('when $GOBIN is set', ->
-    callbackArgs = undefined
+  describe('when $GOBIN is set', function() {
+    let callbackArgs = undefined;
 
-    beforeEach((done) ->
-      process.env.GOBIN = path.join('dummy', 'gobin', 'path')
-      getGoBin((args...) ->
-        callbackArgs = args
-        done()
-      )
-    )
+    beforeEach(function(done) {
+      process.env.GOBIN = path.join('dummy', 'gobin', 'path');
+      return getGoBin(function(...args) {
+        callbackArgs = args;
+        return done();
+      });
+    });
 
-    it('resolves as $GOBIN', ->
-      assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gobin', 'path')])
-    )
-  )
+    return it('resolves as $GOBIN', () => assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gobin', 'path')]));
+  });
 
-  describe('when $GOPATH is set', ->
-    callbackArgs = undefined
+  describe('when $GOPATH is set', function() {
+    let callbackArgs = undefined;
 
-    beforeEach((done) ->
-      process.env.GOPATH = path.join('dummy', 'gopath', 'path')
-      getGoBin((args...) ->
-        callbackArgs = args
-        done()
-      )
-    )
+    beforeEach(function(done) {
+      process.env.GOPATH = path.join('dummy', 'gopath', 'path');
+      return getGoBin(function(...args) {
+        callbackArgs = args;
+        return done();
+      });
+    });
 
-    it('resolves as $GOPATH + /bin', ->
-      assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gopath', 'path', 'bin')])
-    )
-  )
+    return it('resolves as $GOPATH + /bin', () => assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gopath', 'path', 'bin')]));
+  });
 
-  describe('when both $GOBIN and $GOPATH are set', ->
-    callbackArgs = undefined
+  describe('when both $GOBIN and $GOPATH are set', function() {
+    let callbackArgs = undefined;
 
-    beforeEach((done) ->
-      process.env.GOBIN = path.join('dummy', 'gobin', 'path')
-      process.env.GOPATH = path.join('dummy', 'gopath', 'path')
-      getGoBin((args...) ->
-        callbackArgs = args
-        done()
-      )
-    )
+    beforeEach(function(done) {
+      process.env.GOBIN = path.join('dummy', 'gobin', 'path');
+      process.env.GOPATH = path.join('dummy', 'gopath', 'path');
+      return getGoBin(function(...args) {
+        callbackArgs = args;
+        return done();
+      });
+    });
 
-    it('resolves as $GOBIN', ->
-      assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gobin', 'path')])
-    )
-  )
+    return it('resolves as $GOBIN', () => assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gobin', 'path')]));
+  });
 
-  describe('when neither $GOBIN nor $GOPATH are set', ->
-    callbackArgs = undefined
+  describe('when neither $GOBIN nor $GOPATH are set', function() {
+    let callbackArgs = undefined;
 
-    beforeEach((done) ->
-      sinon.stub(childProcess, 'exec').callsFake((command, callback) ->
-        callback(null, path.join('dummy', 'gopath', 'path'))
-      )
-      getGoBin((args...) ->
-        callbackArgs = args
-        done()
-      )
-    )
-    afterEach( ->
-      childProcess.exec.restore()
-    )
+    beforeEach(function(done) {
+      sinon.stub(childProcess, 'exec').callsFake((command, callback) => callback(null, path.join('dummy', 'gopath', 'path')));
+      return getGoBin(function(...args) {
+        callbackArgs = args;
+        return done();
+      });
+    });
+    afterEach( () => childProcess.exec.restore());
 
-    it('calls \'go env GOPATH\' + /bin', ->
-      assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gopath', 'path', 'bin')])
-    )
-  )
+    return it('calls \'go env GOPATH\' + /bin', () => assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gopath', 'path', 'bin')]));
+  });
 
-  describe('when \'go env GOPATH\' fails', ->
-    error = new Error('Ouch!')
-    callbackArgs = undefined
+  return describe('when \'go env GOPATH\' fails', function() {
+    const error = new Error('Ouch!');
+    let callbackArgs = undefined;
 
-    beforeEach((done) ->
-      sinon.stub(childProcess, 'exec').callsFake((command, callback) ->
-        callback(error)
-      )
-      getGoBin((args...) ->
-        callbackArgs = args
-        done()
-      )
-    )
-    afterEach( ->
-      childProcess.exec.restore()
-    )
+    beforeEach(function(done) {
+      sinon.stub(childProcess, 'exec').callsFake((command, callback) => callback(error));
+      return getGoBin(function(...args) {
+        callbackArgs = args;
+        return done();
+      });
+    });
+    afterEach( () => childProcess.exec.restore());
 
-    it('propagates the error', ->
-      assert.deepEqual(callbackArgs, [error])
-    )
-  )
-)
+    return it('propagates the error', () => assert.deepEqual(callbackArgs, [error]));
+  });
+});

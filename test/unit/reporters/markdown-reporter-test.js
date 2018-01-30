@@ -1,177 +1,214 @@
-{assert} = require 'chai'
-sinon = require 'sinon'
-proxyquire = require('proxyquire').noCallThru()
+const {assert} = require('chai');
+const sinon = require('sinon');
+const proxyquire = require('proxyquire').noCallThru();
 
-{EventEmitter} = require 'events'
-loggerStub = require '../../../src/logger'
-fsStub = require 'fs'
-fsExtraStub = {mkdirp: (path, cb) -> cb()}
+const {EventEmitter} = require('events');
+const loggerStub = require('../../../src/logger');
+const fsStub = require('fs');
+const fsExtraStub = {mkdirp(path, cb) { return cb(); }};
 
-MarkdownReporter = proxyquire '../../../src/reporters/markdown-reporter', {
-  './../logger' : loggerStub
-  'fs' : fsStub
+const MarkdownReporter = proxyquire('../../../src/reporters/markdown-reporter', {
+  './../logger' : loggerStub,
+  'fs' : fsStub,
   'fs-extra' : fsExtraStub
-}
+});
 
 
-describe 'MarkdownReporter', () ->
+describe('MarkdownReporter', function() {
 
-  test = {}
-  emitter = {}
-  stats = {}
-  tests = []
-  mdReporter = {}
+  let test = {};
+  let emitter = {};
+  let stats = {};
+  let tests = [];
+  let mdReporter = {};
 
-  before () ->
-    loggerStub.transports.console.silent = true
+  before(() => loggerStub.transports.console.silent = true);
 
-  after () ->
-    loggerStub.transports.console.silent = false
+  after(() => loggerStub.transports.console.silent = false);
 
-  beforeEach () ->
-    emitter = new EventEmitter()
-    stats =
-      tests: 0
-      failures: 0
-      errors: 0
-      passes: 0
-      skipped: 0
-      start: 0
-      end: 0
+  beforeEach(function() {
+    emitter = new EventEmitter();
+    stats = {
+      tests: 0,
+      failures: 0,
+      errors: 0,
+      passes: 0,
+      skipped: 0,
+      start: 0,
+      end: 0,
       duration: 0
-    tests = []
-    mdReporter = new MarkdownReporter(emitter, stats, tests, "test.md")
+    };
+    tests = [];
+    return mdReporter = new MarkdownReporter(emitter, stats, tests, "test.md");
+  });
 
 
-  describe 'when creating', () ->
+  describe('when creating', function() {
 
-    describe 'when file exists', () ->
-      before () ->
-        sinon.stub(fsStub, 'existsSync').callsFake (path) ->
-          return true
-        sinon.stub loggerStub, 'info'
+    describe('when file exists', function() {
+      before(function() {
+        sinon.stub(fsStub, 'existsSync').callsFake(path => true);
+        return sinon.stub(loggerStub, 'info');
+      });
 
-      after () ->
-        fsStub.existsSync.restore()
-        loggerStub.info.restore()
+      after(function() {
+        fsStub.existsSync.restore();
+        return loggerStub.info.restore();
+      });
 
-      it 'should inform about the existing file', () ->
-        assert.isOk loggerStub.info.called
+      return it('should inform about the existing file', () => assert.isOk(loggerStub.info.called));
+    });
 
-    describe 'when file does not exist', () ->
+    return describe('when file does not exist', function() {
 
-      before () ->
-        sinon.stub(fsStub, 'existsSync').callsFake (path) ->
-          return false
-        sinon.stub fsStub, 'unlinkSync'
+      before(function() {
+        sinon.stub(fsStub, 'existsSync').callsFake(path => false);
+        return sinon.stub(fsStub, 'unlinkSync');
+      });
 
-      after () ->
-        fsStub.existsSync.restore()
-        fsStub.unlinkSync.restore()
+      after(function() {
+        fsStub.existsSync.restore();
+        return fsStub.unlinkSync.restore();
+      });
 
-      it 'should create the file', (done) ->
-        assert.isOk fsStub.unlinkSync.notCalled
-        done()
+      return it('should create the file', function(done) {
+        assert.isOk(fsStub.unlinkSync.notCalled);
+        return done();
+      });
+    });
+  });
 
-  describe 'when starting', () ->
+  describe('when starting', () =>
 
-    it 'should write the title to the buffer', (done) ->
-      emitter.emit 'start', '', () ->
-        assert.isOk ~mdReporter.buf.indexOf 'Dredd'
-        done()
+    it('should write the title to the buffer', done =>
+      emitter.emit('start', '', function() {
+        assert.isOk(~mdReporter.buf.indexOf('Dredd'));
+        return done();
+      })
+    )
+  );
 
-  describe 'when ending', () ->
+  describe('when ending', function() {
 
-    describe 'when can create output directory', () ->
+    describe('when can create output directory', function() {
 
-      beforeEach () ->
-        sinon.stub fsStub, 'writeFile'
-        sinon.spy fsExtraStub, 'mkdirp'
+      beforeEach(function() {
+        sinon.stub(fsStub, 'writeFile');
+        return sinon.spy(fsExtraStub, 'mkdirp');
+      });
 
-      afterEach () ->
-        fsStub.writeFile.restore()
-        fsExtraStub.mkdirp.restore()
+      afterEach(function() {
+        fsStub.writeFile.restore();
+        return fsExtraStub.mkdirp.restore();
+      });
 
-      it 'should write buffer to file', (done) ->
-        emitter.emit 'end'
-        assert.isOk fsExtraStub.mkdirp.called
-        assert.isOk fsStub.writeFile.called
-        done()
+      return it('should write buffer to file', function(done) {
+        emitter.emit('end');
+        assert.isOk(fsExtraStub.mkdirp.called);
+        assert.isOk(fsStub.writeFile.called);
+        return done();
+      });
+    });
 
-    describe 'when cannot create output directory', () ->
+    return describe('when cannot create output directory', function() {
 
-      beforeEach () ->
-        sinon.stub fsStub, 'writeFile'
-        sinon.stub loggerStub, 'error'
-        sinon.stub(fsExtraStub, 'mkdirp').callsFake((path, cb) -> cb('error'))
+      beforeEach(function() {
+        sinon.stub(fsStub, 'writeFile');
+        sinon.stub(loggerStub, 'error');
+        return sinon.stub(fsExtraStub, 'mkdirp').callsFake((path, cb) => cb('error'));
+      });
 
-      after () ->
-        fsStub.writeFile.restore()
-        loggerStub.error.restore()
-        fsExtraStub.mkdirp.restore()
+      after(function() {
+        fsStub.writeFile.restore();
+        loggerStub.error.restore();
+        return fsExtraStub.mkdirp.restore();
+      });
 
-      it 'should write to log', (done) ->
-        emitter.emit 'end', () ->
-          assert.isOk fsExtraStub.mkdirp.called
-          assert.isOk fsStub.writeFile.notCalled
-          assert.isOk loggerStub.error.called
-          done()
+      return it('should write to log', done =>
+        emitter.emit('end', function() {
+          assert.isOk(fsExtraStub.mkdirp.called);
+          assert.isOk(fsStub.writeFile.notCalled);
+          assert.isOk(loggerStub.error.called);
+          return done();
+        })
+      );
+    });
+  });
 
-  describe 'when test passes', () ->
+  describe('when test passes', function() {
 
-    beforeEach () ->
-      test =
-        status: 'pass'
+    beforeEach(function() {
+      test = {
+        status: 'pass',
         title: 'Passing Test'
-      emitter.emit 'test start', test
-      emitter.emit 'test pass', test
+      };
+      emitter.emit('test start', test);
+      return emitter.emit('test pass', test);
+    });
 
-    it 'should write pass to the buffer', (done) ->
-      assert.isOk ~mdReporter.buf.indexOf 'Pass'
-      done()
+    it('should write pass to the buffer', function(done) {
+      assert.isOk(~mdReporter.buf.indexOf('Pass'));
+      return done();
+    });
 
-    describe 'when details=true', () ->
+    return describe('when details=true', () =>
 
-      it 'should write details for passing tests', (done) ->
-        mdReporter.details = true
-        emitter.emit 'test pass', test
-        assert.isOk ~mdReporter.buf.indexOf 'Request'
-        done()
+      it('should write details for passing tests', function(done) {
+        mdReporter.details = true;
+        emitter.emit('test pass', test);
+        assert.isOk(~mdReporter.buf.indexOf('Request'));
+        return done();
+      })
+    );
+  });
 
-  describe 'when test is skipped', () ->
-    beforeEach () ->
-      test =
-        status: 'skipped'
+  describe('when test is skipped', function() {
+    beforeEach(function() {
+      test = {
+        status: 'skipped',
         title: 'Skipped Test'
-      emitter.emit 'test start', test
-      emitter.emit 'test skip', test
+      };
+      emitter.emit('test start', test);
+      return emitter.emit('test skip', test);
+    });
 
-    it 'should write skip to the buffer', (done) ->
-      assert.isOk ~mdReporter.buf.indexOf 'Skip'
-      done()
+    return it('should write skip to the buffer', function(done) {
+      assert.isOk(~mdReporter.buf.indexOf('Skip'));
+      return done();
+    });
+  });
 
-  describe 'when test fails', () ->
+  describe('when test fails', function() {
 
-    beforeEach () ->
-      test =
-        status: 'failed'
+    beforeEach(function() {
+      test = {
+        status: 'failed',
         title: 'Failed Test'
-      emitter.emit 'test start', test
-      emitter.emit 'test fail', test
+      };
+      emitter.emit('test start', test);
+      return emitter.emit('test fail', test);
+    });
 
-    it 'should write fail to the buffer', (done) ->
-      assert.isOk ~mdReporter.buf.indexOf 'Fail'
-      done()
+    return it('should write fail to the buffer', function(done) {
+      assert.isOk(~mdReporter.buf.indexOf('Fail'));
+      return done();
+    });
+  });
 
-  describe 'when test errors', () ->
+  return describe('when test errors', function() {
 
-    beforeEach () ->
-      test =
-        status: 'error'
+    beforeEach(function() {
+      test = {
+        status: 'error',
         title: 'Errored Test'
-      emitter.emit 'test start', test
-      emitter.emit 'test error', new Error('Error'), test
+      };
+      emitter.emit('test start', test);
+      return emitter.emit('test error', new Error('Error'), test);
+    });
 
-    it 'should write error to the buffer', (done) ->
-      assert.isOk ~mdReporter.buf.indexOf 'Error'
-      done()
+    return it('should write error to the buffer', function(done) {
+      assert.isOk(~mdReporter.buf.indexOf('Error'));
+      return done();
+    });
+  });
+});

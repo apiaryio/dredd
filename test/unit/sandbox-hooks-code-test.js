@@ -1,101 +1,118 @@
-{assert} = require 'chai'
+const {assert} = require('chai');
 
-sandboxHooksCode = require '../../src/sandbox-hooks-code'
+const sandboxHooksCode = require('../../src/sandbox-hooks-code');
 
-describe 'sandboxHooksCode(hooksCode, callback)', () ->
+describe('sandboxHooksCode(hooksCode, callback)', function() {
 
-  it 'should be a defined function', () ->
-    assert.isFunction sandboxHooksCode
+  it('should be a defined function', () => assert.isFunction(sandboxHooksCode));
 
-  describe 'when hookscode explodes', () ->
-    it 'should return an error in callback', (done) ->
-      hooksCode = """
-      throw(new Error("Exploded during sandboxed processing of hook file"));
-      """
-      sandboxHooksCode hooksCode, (err, result) ->
-        assert.include err, 'sandbox'
-        done()
+  describe('when hookscode explodes', () =>
+    it('should return an error in callback', function(done) {
+      const hooksCode = `\
+throw(new Error("Exploded during sandboxed processing of hook file"));\
+`;
+      return sandboxHooksCode(hooksCode, function(err, result) {
+        assert.include(err, 'sandbox');
+        return done();
+      });
+    })
+  );
 
-  describe 'context of code adding hooks', () ->
-    it 'should not have access to this context', (done) ->
-      contextVar = 'a'
-      hooksCode = """
-      contextVar = "b";
-      """
-      sandboxHooksCode hooksCode, (err, result) ->
-        assert.equal contextVar, 'a'
-        done()
+  describe('context of code adding hooks', function() {
+    it('should not have access to this context', function(done) {
+      const contextVar = 'a';
+      const hooksCode = `\
+contextVar = "b";\
+`;
+      return sandboxHooksCode(hooksCode, function(err, result) {
+        assert.equal(contextVar, 'a');
+        return done();
+      });
+    });
 
-    it 'should not have access to require', (done) ->
-      contextVar = ''
-      hooksCode = """
-      require('fs');
-      """
-      sandboxHooksCode hooksCode, (err, result) ->
-        assert.include err, 'require'
-        done()
+    it('should not have access to require', function(done) {
+      const contextVar = '';
+      const hooksCode = `\
+require('fs');\
+`;
+      return sandboxHooksCode(hooksCode, function(err, result) {
+        assert.include(err, 'require');
+        return done();
+      });
+    });
 
-    functions = [
-      'before'
-      'after'
-      'beforeAll'
-      'afterAll'
-      'beforeEach'
-      'afterEach'
-      'beforeEachValidation'
+    const functions = [
+      'before',
+      'after',
+      'beforeAll',
+      'afterAll',
+      'beforeEach',
+      'afterEach',
+      'beforeEachValidation',
       'beforeValidation'
-    ]
+    ];
 
-    for name in functions then do (name) ->
-      it "should have defined function '#{name}'", (done) ->
-        hooksCode = """
-        if(typeof(#{name}) !== 'function'){
-          throw(new Error('#{name} is not a function'))
-        }
-        """
-        sandboxHooksCode hooksCode, (err, result) ->
-          assert.isUndefined err
-          done()
+    for (let name of functions) { (name =>
+      it(`should have defined function '${name}'`, function(done) {
+        const hooksCode = `\
+if(typeof(${name}) !== 'function'){
+  throw(new Error('${name} is not a function'))
+}\
+`;
+        return sandboxHooksCode(hooksCode, function(err, result) {
+          assert.isUndefined(err);
+          return done();
+        });
+      })
+    )(name); }
 
-    it 'should pass result object to the second callback argument', (done) ->
-      hooksCode = ""
-      sandboxHooksCode hooksCode, (err, result) ->
-        return done(err) if err
-        assert.isObject result
-        done()
+    return it('should pass result object to the second callback argument', function(done) {
+      const hooksCode = "";
+      return sandboxHooksCode(hooksCode, function(err, result) {
+        if (err) { return done(err); }
+        assert.isObject(result);
+        return done();
+      });
+    });
+  });
 
-  describe 'result object', () ->
-    properties = [
-      'beforeAllHooks'
-      'beforeEachHooks'
-      'beforeHooks'
-      'afterHooks'
-      'afterEachHooks'
-      'afterAllHooks'
-      'beforeValidationHooks'
+  return describe('result object', function() {
+    const properties = [
+      'beforeAllHooks',
+      'beforeEachHooks',
+      'beforeHooks',
+      'afterHooks',
+      'afterEachHooks',
+      'afterAllHooks',
+      'beforeValidationHooks',
       'beforeEachValidationHooks'
-    ]
+    ];
 
-    for property in properties then do (property) ->
-      it "should have property #{property}", (done) ->
-        hooksCode = """
-        var dummyFunc = function(data){
-          return true;
-        }
+    return Array.from(properties).map((property) => (property =>
+      it(`should have property ${property}`, function(done) {
+        const hooksCode = `\
+var dummyFunc = function(data){
+  return true;
+}
 
-        beforeAll(dummyFunc);
-        beforeEach(dummyFunc);
-        before('Transaction Name', dummyFunc);
-        after('Transaction Name', dummyFunc);
-        beforeEach(dummyFunc);
-        afterEach(dummyFunc);
-        beforeEachValidation(dummyFunc);
-        beforeValidation('Transaction Name', dummyFunc);
-        """
+beforeAll(dummyFunc);
+beforeEach(dummyFunc);
+before('Transaction Name', dummyFunc);
+after('Transaction Name', dummyFunc);
+beforeEach(dummyFunc);
+afterEach(dummyFunc);
+beforeEachValidation(dummyFunc);
+beforeValidation('Transaction Name', dummyFunc);\
+`;
 
-        sandboxHooksCode hooksCode, (err, result) ->
-          return done(err) if err
-          assert.property result, property
-          done()
+        return sandboxHooksCode(hooksCode, function(err, result) {
+          if (err) { return done(err); }
+          assert.property(result, property);
+          return done();
+        });
+      })
+    )(property));
+  });
+});
 
 

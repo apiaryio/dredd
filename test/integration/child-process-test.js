@@ -1,586 +1,394 @@
-{assert} = require('chai')
-sinon = require('sinon')
+const {assert} = require('chai');
+const sinon = require('sinon');
 
-helpers = require('./helpers')
-{spawn, signalTerm, signalKill} = require('../../src/child-process')
+const helpers = require('./helpers');
+const {spawn, signalTerm, signalKill} = require('../../src/child-process');
 
-COFFEE_BIN = 'node_modules/.bin/coffee'
-WAIT_AFTER_COMMAND_SPAWNED_MS = 500
-WAIT_AFTER_COMMAND_TERMINATED_MS = 1500
-
-
-runChildProcess = (command, fn, callback) ->
-  onCrash = sinon.spy()
-
-  processInfo =
-    pid: undefined
-    stdout: ''
-    stderr: ''
-    terminated: false
-    exitStatus: undefined
-    signal: undefined
-    onCrash: onCrash
-
-  childProcess = spawn(COFFEE_BIN, [command])
-
-  childProcess.stdout.on('data', (data) -> processInfo.stdout += data.toString())
-  childProcess.stderr.on('data', (data) -> processInfo.stderr += data.toString())
-
-  onExit = (exitStatus, signal) ->
-    processInfo.terminated = true
-    processInfo.exitStatus = exitStatus
-    processInfo.signal = signal
-  childProcess.on('exit', onExit)
-
-  onError = (err) ->
-    processInfo.error = err
-  childProcess.on('error', onError)
-
-  childProcess.on('crash', onCrash)
-
-  setTimeout( ->
-    fn(childProcess)
-
-    setTimeout( ->
-      childProcess.removeListener('exit', onExit)
-      childProcess.removeListener('error', onError)
-      childProcess.removeListener('crash', onCrash)
-
-      processInfo.childProcess = childProcess
-      callback(null, processInfo)
-    , WAIT_AFTER_COMMAND_TERMINATED_MS)
-  , WAIT_AFTER_COMMAND_SPAWNED_MS)
+const COFFEE_BIN = 'node_modules/.bin/coffee';
+const WAIT_AFTER_COMMAND_SPAWNED_MS = 500;
+const WAIT_AFTER_COMMAND_TERMINATED_MS = 1500;
 
 
-describe('Babysitting Child Processes', ->
-  describe('when forcefully killed by childProcess.signalKill()', ->
-    describe('process with support for graceful termination', ->
-      processInfo = undefined
+const runChildProcess = function(command, fn, callback) {
+  const onCrash = sinon.spy();
 
-      before((done) ->
-        runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) ->
-          childProcess.signalKill()
-        , (err, info) ->
-          processInfo = info
-          done(err)
-        )
-      )
-      after((done) ->
-        helpers.kill(processInfo.childProcess.pid, done)
-      )
+  const processInfo = {
+    pid: undefined,
+    stdout: '',
+    stderr: '',
+    terminated: false,
+    exitStatus: undefined,
+    signal: undefined,
+    onCrash
+  };
 
-      it('does not log a message about being gracefully terminated', ->
-        assert.notInclude(processInfo.stdout, 'exiting')
-      )
-      it('gets terminated', ->
-        assert.isTrue(processInfo.terminated)
-      )
-      if process.platform is 'win32'
-        it('returns non-zero status code', ->
-          assert.isAbove(processInfo.exitStatus, 0)
-        )
-      else
-        it('gets killed', ->
-          assert.equal(processInfo.signal, 'SIGKILL')
-        )
-        it('returns no status code', ->
-          assert.isNull(processInfo.exitStatus)
-        )
-      it('does not emit an error', ->
-        assert.isUndefined(processInfo.error)
-      )
-    )
+  const childProcess = spawn(COFFEE_BIN, [command]);
 
-    describe('process without support for graceful termination', ->
-      processInfo = undefined
+  childProcess.stdout.on('data', data => processInfo.stdout += data.toString());
+  childProcess.stderr.on('data', data => processInfo.stderr += data.toString());
 
-      before((done) ->
-        runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', (childProcess) ->
-          childProcess.signalKill()
-        , (err, info) ->
-          processInfo = info
-          done(err)
-        )
-      )
-      after((done) ->
-        helpers.kill(processInfo.childProcess.pid, done)
-      )
+  const onExit = function(exitStatus, signal) {
+    processInfo.terminated = true;
+    processInfo.exitStatus = exitStatus;
+    return processInfo.signal = signal;
+  };
+  childProcess.on('exit', onExit);
 
-      it('does not log a message about ignoring graceful termination', ->
-        assert.notInclude(processInfo.stdout, 'ignoring')
-      )
-      it('gets terminated', ->
-        assert.isTrue(processInfo.terminated)
-      )
-      if process.platform is 'win32'
-        it('returns non-zero status code', ->
-          assert.isAbove(processInfo.exitStatus, 0)
-        )
-      else
-        it('gets killed', ->
-          assert.equal(processInfo.signal, 'SIGKILL')
-        )
-        it('returns no status code', ->
-          assert.isNull(processInfo.exitStatus)
-        )
-      it('does not emit an error', ->
-        assert.isUndefined(processInfo.error)
-      )
-    )
-  )
+  const onError = err => processInfo.error = err;
+  childProcess.on('error', onError);
 
-  ['signalTerm', 'terminate'].forEach((functionName) ->
-    describe("when gracefully terminated by childProcess.#{functionName}()", ->
-      describe('process with support for graceful termination', ->
-        processInfo = undefined
+  childProcess.on('crash', onCrash);
 
-        before((done) ->
-          runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) ->
-            childProcess[functionName]()
-          , (err, info) ->
-            processInfo = info
-            done(err)
-          )
-        )
-        after((done) ->
-          helpers.kill(processInfo.childProcess.pid, done)
-        )
+  return setTimeout( function() {
+    fn(childProcess);
 
-        it('logs a message about being gracefully terminated', ->
-          assert.include(processInfo.stdout, 'exiting')
-        )
-        it('gets terminated', ->
-          assert.isTrue(processInfo.terminated)
-        )
-        if process.platform isnt 'win32' # Windows does not have signals
-          it('does not get terminated directly by the signal', ->
-            assert.isNull(processInfo.signal)
-          )
-        it('returns zero status code', ->
-          assert.equal(processInfo.exitStatus, 0)
-        )
-        it('does not emit an error', ->
-          assert.isUndefined(processInfo.error)
-        )
-      )
+    return setTimeout( function() {
+      childProcess.removeListener('exit', onExit);
+      childProcess.removeListener('error', onError);
+      childProcess.removeListener('crash', onCrash);
 
-      describe('process without support for graceful termination', ->
-        processInfo = undefined
+      processInfo.childProcess = childProcess;
+      return callback(null, processInfo);
+    }
+    , WAIT_AFTER_COMMAND_TERMINATED_MS);
+  }
+  , WAIT_AFTER_COMMAND_SPAWNED_MS);
+};
 
-        before((done) ->
-          runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', (childProcess) ->
-            childProcess.terminate()
-          , (err, info) ->
-            processInfo = info
-            done(err)
-          )
-        )
-        after((done) ->
-          helpers.kill(processInfo.childProcess.pid, done)
-        )
 
-        it('logs a message about ignoring the graceful termination attempt', ->
-          assert.include(processInfo.stdout, 'ignoring')
-        )
-        it('does not get terminated', ->
-          assert.isFalse(processInfo.terminated)
-        )
-        it('has undefined status code', ->
-          assert.isUndefined(processInfo.exitStatus)
-        )
-        it('emits an error', ->
-          assert.instanceOf(processInfo.error, Error)
-        )
-        it('the error has a message about unsuccessful termination', ->
+describe('Babysitting Child Processes', function() {
+  describe('when forcefully killed by childProcess.signalKill()', function() {
+    describe('process with support for graceful termination', function() {
+      let processInfo = undefined;
+
+      before(done =>
+        runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess.signalKill()
+        , function(err, info) {
+          processInfo = info;
+          return done(err);
+        })
+      );
+      after(done => helpers.kill(processInfo.childProcess.pid, done));
+
+      it('does not log a message about being gracefully terminated', () => assert.notInclude(processInfo.stdout, 'exiting'));
+      it('gets terminated', () => assert.isTrue(processInfo.terminated));
+      if (process.platform === 'win32') {
+        it('returns non-zero status code', () => assert.isAbove(processInfo.exitStatus, 0));
+      } else {
+        it('gets killed', () => assert.equal(processInfo.signal, 'SIGKILL'));
+        it('returns no status code', () => assert.isNull(processInfo.exitStatus));
+      }
+      return it('does not emit an error', () => assert.isUndefined(processInfo.error));
+    });
+
+    return describe('process without support for graceful termination', function() {
+      let processInfo = undefined;
+
+      before(done =>
+        runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', childProcess => childProcess.signalKill()
+        , function(err, info) {
+          processInfo = info;
+          return done(err);
+        })
+      );
+      after(done => helpers.kill(processInfo.childProcess.pid, done));
+
+      it('does not log a message about ignoring graceful termination', () => assert.notInclude(processInfo.stdout, 'ignoring'));
+      it('gets terminated', () => assert.isTrue(processInfo.terminated));
+      if (process.platform === 'win32') {
+        it('returns non-zero status code', () => assert.isAbove(processInfo.exitStatus, 0));
+      } else {
+        it('gets killed', () => assert.equal(processInfo.signal, 'SIGKILL'));
+        it('returns no status code', () => assert.isNull(processInfo.exitStatus));
+      }
+      return it('does not emit an error', () => assert.isUndefined(processInfo.error));
+    });
+  });
+
+  ['signalTerm', 'terminate'].forEach(functionName =>
+    describe(`when gracefully terminated by childProcess.${functionName}()`, function() {
+      describe('process with support for graceful termination', function() {
+        let processInfo = undefined;
+
+        before(done =>
+          runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess[functionName]()
+          , function(err, info) {
+            processInfo = info;
+            return done(err);
+          })
+        );
+        after(done => helpers.kill(processInfo.childProcess.pid, done));
+
+        it('logs a message about being gracefully terminated', () => assert.include(processInfo.stdout, 'exiting'));
+        it('gets terminated', () => assert.isTrue(processInfo.terminated));
+        if (process.platform !== 'win32') { // Windows does not have signals
+          it('does not get terminated directly by the signal', () => assert.isNull(processInfo.signal));
+        }
+        it('returns zero status code', () => assert.equal(processInfo.exitStatus, 0));
+        return it('does not emit an error', () => assert.isUndefined(processInfo.error));
+      });
+
+      return describe('process without support for graceful termination', function() {
+        let processInfo = undefined;
+
+        before(done =>
+          runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', childProcess => childProcess.terminate()
+          , function(err, info) {
+            processInfo = info;
+            return done(err);
+          })
+        );
+        after(done => helpers.kill(processInfo.childProcess.pid, done));
+
+        it('logs a message about ignoring the graceful termination attempt', () => assert.include(processInfo.stdout, 'ignoring'));
+        it('does not get terminated', () => assert.isFalse(processInfo.terminated));
+        it('has undefined status code', () => assert.isUndefined(processInfo.exitStatus));
+        it('emits an error', () => assert.instanceOf(processInfo.error, Error));
+        return it('the error has a message about unsuccessful termination', () =>
           assert.equal(
             processInfo.error.message,
-            "Unable to gracefully terminate process #{processInfo.childProcess.pid}"
+            `Unable to gracefully terminate process ${processInfo.childProcess.pid}`
           )
-        )
-      )
-    )
-  )
+        );
+      });
+    })
+  );
 
-  describe('when gracefully terminated by childProcess.terminate({\'force\': true})', ->
-    describe('process with support for graceful termination', ->
-      processInfo = undefined
+  describe('when gracefully terminated by childProcess.terminate({\'force\': true})', function() {
+    describe('process with support for graceful termination', function() {
+      let processInfo = undefined;
 
-      before((done) ->
-        runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) ->
-          childProcess.terminate({force: true})
-        , (err, info) ->
-          processInfo = info
-          done(err)
-        )
-      )
-      after((done) ->
-        helpers.kill(processInfo.childProcess.pid, done)
-      )
+      before(done =>
+        runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess.terminate({force: true})
+        , function(err, info) {
+          processInfo = info;
+          return done(err);
+        })
+      );
+      after(done => helpers.kill(processInfo.childProcess.pid, done));
 
-      it('logs a message about being gracefully terminated', ->
-        assert.include(processInfo.stdout, 'exiting')
-      )
-      it('gets terminated', ->
-        assert.isTrue(processInfo.terminated)
-      )
-      if process.platform isnt 'win32' # Windows does not have signals
-        it('does not get terminated directly by the signal', ->
-          assert.isNull(processInfo.signal)
-        )
-      it('returns zero status code', ->
-        assert.equal(processInfo.exitStatus, 0)
-      )
-      it('does not emit an error', ->
-        assert.isUndefined(processInfo.error)
-      )
-    )
+      it('logs a message about being gracefully terminated', () => assert.include(processInfo.stdout, 'exiting'));
+      it('gets terminated', () => assert.isTrue(processInfo.terminated));
+      if (process.platform !== 'win32') { // Windows does not have signals
+        it('does not get terminated directly by the signal', () => assert.isNull(processInfo.signal));
+      }
+      it('returns zero status code', () => assert.equal(processInfo.exitStatus, 0));
+      return it('does not emit an error', () => assert.isUndefined(processInfo.error));
+    });
 
-    describe('process without support for graceful termination', ->
-      processInfo = undefined
+    return describe('process without support for graceful termination', function() {
+      let processInfo = undefined;
 
-      before((done) ->
-        runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', (childProcess) ->
-          childProcess.terminate({force: true})
-        , (err, info) ->
-          processInfo = info
-          done(err)
-        )
-      )
-      after((done) ->
-        helpers.kill(processInfo.childProcess.pid, done)
-      )
+      before(done =>
+        runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', childProcess => childProcess.terminate({force: true})
+        , function(err, info) {
+          processInfo = info;
+          return done(err);
+        })
+      );
+      after(done => helpers.kill(processInfo.childProcess.pid, done));
 
-      it('logs a message about ignoring the graceful termination attempt', ->
-        assert.include(processInfo.stdout, 'ignoring')
-      )
-      it('gets terminated', ->
-        assert.isTrue(processInfo.terminated)
-      )
-      if process.platform is 'win32'
-        # Windows does not have signals and when a process gets
-        # forcefully terminated, it has a non-zero status code.
-        it('returns non-zero status code', ->
-          assert.isAbove(processInfo.exitStatus, 0)
-        )
-      else
-        it('gets killed', ->
-          assert.equal(processInfo.signal, 'SIGKILL')
-        )
-        it('returns no status code', ->
-          assert.isNull(processInfo.exitStatus)
-        )
-      it('does not emit an error', ->
-        assert.isUndefined(processInfo.error)
-      )
-    )
-  )
+      it('logs a message about ignoring the graceful termination attempt', () => assert.include(processInfo.stdout, 'ignoring'));
+      it('gets terminated', () => assert.isTrue(processInfo.terminated));
+      if (process.platform === 'win32') {
+        // Windows does not have signals and when a process gets
+        // forcefully terminated, it has a non-zero status code.
+        it('returns non-zero status code', () => assert.isAbove(processInfo.exitStatus, 0));
+      } else {
+        it('gets killed', () => assert.equal(processInfo.signal, 'SIGKILL'));
+        it('returns no status code', () => assert.isNull(processInfo.exitStatus));
+      }
+      return it('does not emit an error', () => assert.isUndefined(processInfo.error));
+    });
+  });
 
-  describe('when child process terminates', ->
-    describe('normally with zero status code', ->
-      processInfo = undefined
+  return describe('when child process terminates', function() {
+    describe('normally with zero status code', function() {
+      let processInfo = undefined;
 
-      before((done) ->
-        runChildProcess('test/fixtures/scripts/exit-0.coffee', (childProcess) ->
-          true
-        , (err, info) ->
-          processInfo = info
-          done(err)
-        )
-      )
-      after((done) ->
-        helpers.kill(processInfo.childProcess.pid, done)
-      )
+      before(done =>
+        runChildProcess('test/fixtures/scripts/exit-0.coffee', childProcess => true
+        , function(err, info) {
+          processInfo = info;
+          return done(err);
+        })
+      );
+      after(done => helpers.kill(processInfo.childProcess.pid, done));
 
-      it('returns zero status code', ->
-        assert.equal(processInfo.exitStatus, 0)
-      )
-      it('does not emit the \'crash\' event', ->
-        assert.isFalse(processInfo.onCrash.called)
-      )
-      it('is flagged as terminated', ->
-        assert.isTrue(processInfo.childProcess.terminated)
-      )
-      it('is not flagged as intentionally killed', ->
-        assert.isFalse(processInfo.childProcess.killedIntentionally)
-      )
-      it('is not flagged as intentionally terminated', ->
-        assert.isFalse(processInfo.childProcess.terminatedIntentionally)
-      )
-    )
+      it('returns zero status code', () => assert.equal(processInfo.exitStatus, 0));
+      it('does not emit the \'crash\' event', () => assert.isFalse(processInfo.onCrash.called));
+      it('is flagged as terminated', () => assert.isTrue(processInfo.childProcess.terminated));
+      it('is not flagged as intentionally killed', () => assert.isFalse(processInfo.childProcess.killedIntentionally));
+      return it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
+    });
 
-    describe('normally with non-zero status code', ->
-      processInfo = undefined
+    describe('normally with non-zero status code', function() {
+      let processInfo = undefined;
 
-      before((done) ->
-        runChildProcess('test/fixtures/scripts/exit-3.coffee', (childProcess) ->
-          true
-        , (err, info) ->
-          processInfo = info
-          done(err)
-        )
-      )
-      after((done) ->
-        helpers.kill(processInfo.childProcess.pid, done)
-      )
+      before(done =>
+        runChildProcess('test/fixtures/scripts/exit-3.coffee', childProcess => true
+        , function(err, info) {
+          processInfo = info;
+          return done(err);
+        })
+      );
+      after(done => helpers.kill(processInfo.childProcess.pid, done));
 
-      it('returns non-zero status code', ->
-        assert.isAbove(processInfo.exitStatus, 0)
-      )
-      it('does emit the \'crash\' event', ->
-        assert.isTrue(processInfo.onCrash.called)
-      )
-      it('the \'crash\' event is provided with non-zero status code', ->
-        assert.isAbove(processInfo.onCrash.getCall(0).args[0], 0)
-      )
-      it('the \'crash\' event is not provided with killed flag', ->
-        assert.isFalse(processInfo.onCrash.getCall(0).args[1])
-      )
-      it('is flagged as terminated', ->
-        assert.isTrue(processInfo.childProcess.terminated)
-      )
-      it('is not flagged as intentionally killed', ->
-        assert.isFalse(processInfo.childProcess.killedIntentionally)
-      )
-      it('is not flagged as intentionally terminated', ->
-        assert.isFalse(processInfo.childProcess.terminatedIntentionally)
-      )
-    )
+      it('returns non-zero status code', () => assert.isAbove(processInfo.exitStatus, 0));
+      it('does emit the \'crash\' event', () => assert.isTrue(processInfo.onCrash.called));
+      it('the \'crash\' event is provided with non-zero status code', () => assert.isAbove(processInfo.onCrash.getCall(0).args[0], 0));
+      it('the \'crash\' event is not provided with killed flag', () => assert.isFalse(processInfo.onCrash.getCall(0).args[1]));
+      it('is flagged as terminated', () => assert.isTrue(processInfo.childProcess.terminated));
+      it('is not flagged as intentionally killed', () => assert.isFalse(processInfo.childProcess.killedIntentionally));
+      return it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
+    });
 
-    describe('intentionally gracefully with zero status code', ->
-      processInfo = undefined
+    describe('intentionally gracefully with zero status code', function() {
+      let processInfo = undefined;
 
-      before((done) ->
-        runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) ->
-          childProcess.signalTerm()
-        , (err, info) ->
-          processInfo = info
-          done(err)
-        )
-      )
-      after((done) ->
-        helpers.kill(processInfo.childProcess.pid, done)
-      )
+      before(done =>
+        runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess.signalTerm()
+        , function(err, info) {
+          processInfo = info;
+          return done(err);
+        })
+      );
+      after(done => helpers.kill(processInfo.childProcess.pid, done));
 
-      it('returns zero status code', ->
-        assert.equal(processInfo.exitStatus, 0)
-      )
-      it('does not emit the \'crash\' event', ->
-        assert.isFalse(processInfo.onCrash.called)
-      )
-      it('is flagged as terminated', ->
-        assert.isTrue(processInfo.childProcess.terminated)
-      )
-      it('is not flagged as intentionally killed', ->
-        assert.isFalse(processInfo.childProcess.killedIntentionally)
-      )
-      it('is flagged as intentionally terminated', ->
-        assert.isTrue(processInfo.childProcess.terminatedIntentionally)
-      )
-    )
+      it('returns zero status code', () => assert.equal(processInfo.exitStatus, 0));
+      it('does not emit the \'crash\' event', () => assert.isFalse(processInfo.onCrash.called));
+      it('is flagged as terminated', () => assert.isTrue(processInfo.childProcess.terminated));
+      it('is not flagged as intentionally killed', () => assert.isFalse(processInfo.childProcess.killedIntentionally));
+      return it('is flagged as intentionally terminated', () => assert.isTrue(processInfo.childProcess.terminatedIntentionally));
+    });
 
-    describe('intentionally gracefully with non-zero status code', ->
-      processInfo = undefined
+    describe('intentionally gracefully with non-zero status code', function() {
+      let processInfo = undefined;
 
-      before((done) ->
-        runChildProcess('test/fixtures/scripts/stdout-exit-3.coffee', (childProcess) ->
-          childProcess.signalTerm()
-        , (err, info) ->
-          processInfo = info
-          done(err)
-        )
-      )
-      after((done) ->
-        helpers.kill(processInfo.childProcess.pid, done)
-      )
+      before(done =>
+        runChildProcess('test/fixtures/scripts/stdout-exit-3.coffee', childProcess => childProcess.signalTerm()
+        , function(err, info) {
+          processInfo = info;
+          return done(err);
+        })
+      );
+      after(done => helpers.kill(processInfo.childProcess.pid, done));
 
-      it('returns non-zero status code', ->
-        assert.isAbove(processInfo.exitStatus, 0)
-      )
-      it('does not emit the \'crash\' event', ->
-        assert.isFalse(processInfo.onCrash.called)
-      )
-      it('is flagged as terminated', ->
-        assert.isTrue(processInfo.childProcess.terminated)
-      )
-      it('is not flagged as intentionally killed', ->
-        assert.isFalse(processInfo.childProcess.killedIntentionally)
-      )
-      it('is flagged as intentionally terminated', ->
-        assert.isTrue(processInfo.childProcess.terminatedIntentionally)
-      )
-    )
+      it('returns non-zero status code', () => assert.isAbove(processInfo.exitStatus, 0));
+      it('does not emit the \'crash\' event', () => assert.isFalse(processInfo.onCrash.called));
+      it('is flagged as terminated', () => assert.isTrue(processInfo.childProcess.terminated));
+      it('is not flagged as intentionally killed', () => assert.isFalse(processInfo.childProcess.killedIntentionally));
+      return it('is flagged as intentionally terminated', () => assert.isTrue(processInfo.childProcess.terminatedIntentionally));
+    });
 
-    describe('intentionally forcefully', ->
-      processInfo = undefined
+    describe('intentionally forcefully', function() {
+      let processInfo = undefined;
 
-      before((done) ->
-        runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) ->
-          childProcess.signalKill()
-        , (err, info) ->
-          processInfo = info
-          done(err)
-        )
-      )
-      after((done) ->
-        helpers.kill(processInfo.childProcess.pid, done)
-      )
+      before(done =>
+        runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess.signalKill()
+        , function(err, info) {
+          processInfo = info;
+          return done(err);
+        })
+      );
+      after(done => helpers.kill(processInfo.childProcess.pid, done));
 
-      if process.platform is 'win32'
-        it('returns non-zero status code', ->
-          assert.isAbove(processInfo.exitStatus, 0)
-        )
-      else
-        it('gets killed', ->
-          assert.equal(processInfo.signal, 'SIGKILL')
-        )
-        it('returns no status code', ->
-          assert.isNull(processInfo.exitStatus)
-        )
-      it('does not emit the \'crash\' event', ->
-        assert.isFalse(processInfo.onCrash.called)
-      )
-      it('is flagged as terminated', ->
-        assert.isTrue(processInfo.childProcess.terminated)
-      )
-      it('is flagged as intentionally killed', ->
-        assert.isTrue(processInfo.childProcess.killedIntentionally)
-      )
-      it('is not flagged as intentionally terminated', ->
-        assert.isFalse(processInfo.childProcess.terminatedIntentionally)
-      )
-    )
+      if (process.platform === 'win32') {
+        it('returns non-zero status code', () => assert.isAbove(processInfo.exitStatus, 0));
+      } else {
+        it('gets killed', () => assert.equal(processInfo.signal, 'SIGKILL'));
+        it('returns no status code', () => assert.isNull(processInfo.exitStatus));
+      }
+      it('does not emit the \'crash\' event', () => assert.isFalse(processInfo.onCrash.called));
+      it('is flagged as terminated', () => assert.isTrue(processInfo.childProcess.terminated));
+      it('is flagged as intentionally killed', () => assert.isTrue(processInfo.childProcess.killedIntentionally));
+      return it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
+    });
 
-    describe('gracefully with zero status code', ->
-      processInfo = undefined
+    describe('gracefully with zero status code', function() {
+      let processInfo = undefined;
 
-      before((done) ->
-        runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) ->
-          # simulate that the process was terminated externally
-          emit = sinon.stub(childProcess, 'emit')
-          signalTerm(childProcess, -> )
-          emit.restore()
-        , (err, info) ->
-          processInfo = info
-          done(err)
-        )
-      )
-      after((done) ->
-        helpers.kill(processInfo.childProcess.pid, done)
-      )
+      before(done =>
+        runChildProcess('test/fixtures/scripts/stdout.coffee', function(childProcess) {
+          // simulate that the process was terminated externally
+          const emit = sinon.stub(childProcess, 'emit');
+          signalTerm(childProcess, function() {} );
+          return emit.restore();
+        }
+        , function(err, info) {
+          processInfo = info;
+          return done(err);
+        })
+      );
+      after(done => helpers.kill(processInfo.childProcess.pid, done));
 
-      it('returns zero status code', ->
-        assert.equal(processInfo.exitStatus, 0)
-      )
-      it('does not emit the \'crash\' event', ->
-        assert.isFalse(processInfo.onCrash.called)
-      )
-      it('is flagged as terminated', ->
-        assert.isTrue(processInfo.childProcess.terminated)
-      )
-      it('is not flagged as intentionally killed', ->
-        assert.isFalse(processInfo.childProcess.killedIntentionally)
-      )
-      it('is not flagged as intentionally terminated', ->
-        assert.isFalse(processInfo.childProcess.terminatedIntentionally)
-      )
-    )
+      it('returns zero status code', () => assert.equal(processInfo.exitStatus, 0));
+      it('does not emit the \'crash\' event', () => assert.isFalse(processInfo.onCrash.called));
+      it('is flagged as terminated', () => assert.isTrue(processInfo.childProcess.terminated));
+      it('is not flagged as intentionally killed', () => assert.isFalse(processInfo.childProcess.killedIntentionally));
+      return it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
+    });
 
-    describe('gracefully with non-zero status code', ->
-      processInfo = undefined
+    describe('gracefully with non-zero status code', function() {
+      let processInfo = undefined;
 
-      before((done) ->
-        runChildProcess('test/fixtures/scripts/stdout-exit-3.coffee', (childProcess) ->
-          # simulate that the process was terminated externally
-          emit = sinon.stub(childProcess, 'emit')
-          signalTerm(childProcess, -> )
-          emit.restore()
-        , (err, info) ->
-          processInfo = info
-          done(err)
-        )
-      )
-      after((done) ->
-        helpers.kill(processInfo.childProcess.pid, done)
-      )
+      before(done =>
+        runChildProcess('test/fixtures/scripts/stdout-exit-3.coffee', function(childProcess) {
+          // simulate that the process was terminated externally
+          const emit = sinon.stub(childProcess, 'emit');
+          signalTerm(childProcess, function() {} );
+          return emit.restore();
+        }
+        , function(err, info) {
+          processInfo = info;
+          return done(err);
+        })
+      );
+      after(done => helpers.kill(processInfo.childProcess.pid, done));
 
-      it('returns non-zero status code', ->
-        assert.isAbove(processInfo.exitStatus, 0)
-      )
-      it('does emit the \'crash\' event', ->
-        assert.isTrue(processInfo.onCrash.called)
-      )
-      it('the \'crash\' event is provided with non-zero status code', ->
-        assert.isAbove(processInfo.onCrash.getCall(0).args[0], 0)
-      )
-      it('the \'crash\' event is not provided with killed flag', ->
-        assert.isFalse(processInfo.onCrash.getCall(0).args[1])
-      )
-      it('is flagged as terminated', ->
-        assert.isTrue(processInfo.childProcess.terminated)
-      )
-      it('is not flagged as intentionally killed', ->
-        assert.isFalse(processInfo.childProcess.killedIntentionally)
-      )
-      it('is not flagged as intentionally terminated', ->
-        assert.isFalse(processInfo.childProcess.terminatedIntentionally)
-      )
-    )
+      it('returns non-zero status code', () => assert.isAbove(processInfo.exitStatus, 0));
+      it('does emit the \'crash\' event', () => assert.isTrue(processInfo.onCrash.called));
+      it('the \'crash\' event is provided with non-zero status code', () => assert.isAbove(processInfo.onCrash.getCall(0).args[0], 0));
+      it('the \'crash\' event is not provided with killed flag', () => assert.isFalse(processInfo.onCrash.getCall(0).args[1]));
+      it('is flagged as terminated', () => assert.isTrue(processInfo.childProcess.terminated));
+      it('is not flagged as intentionally killed', () => assert.isFalse(processInfo.childProcess.killedIntentionally));
+      return it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
+    });
 
-    describe('forcefully', ->
-      processInfo = undefined
+    return describe('forcefully', function() {
+      let processInfo = undefined;
 
-      before((done) ->
-        runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) ->
-          # simulate that the process was killed externally
-          emit = sinon.stub(childProcess, 'emit')
-          signalKill(childProcess, -> )
-          emit.restore()
-        , (err, info) ->
-          processInfo = info
-          done(err)
-        )
-      )
-      after((done) ->
-        helpers.kill(processInfo.childProcess.pid, done)
-      )
+      before(done =>
+        runChildProcess('test/fixtures/scripts/stdout.coffee', function(childProcess) {
+          // simulate that the process was killed externally
+          const emit = sinon.stub(childProcess, 'emit');
+          signalKill(childProcess, function() {} );
+          return emit.restore();
+        }
+        , function(err, info) {
+          processInfo = info;
+          return done(err);
+        })
+      );
+      after(done => helpers.kill(processInfo.childProcess.pid, done));
 
-      if process.platform is 'win32'
-        it('returns non-zero status code', ->
-          assert.isAbove(processInfo.exitStatus, 0)
-        )
-      else
-        it('gets killed', ->
-          assert.equal(processInfo.signal, 'SIGKILL')
-        )
-        it('returns no status code', ->
-          assert.isNull(processInfo.exitStatus)
-        )
-      it('does emit the \'crash\' event', ->
-        assert.isTrue(processInfo.onCrash.called)
-      )
-      if process.platform is 'win32'
-        it('the \'crash\' event is provided with non-zero status code', ->
-          assert.isAbove(processInfo.onCrash.getCall(0).args[0], 0)
-        )
-        it('the \'crash\' event is not provided with killed flag (cannot be detected on Windows)', ->
-          assert.isFalse(processInfo.onCrash.getCall(0).args[1])
-        )
-      else
-        it('the \'crash\' event is provided with no status code', ->
-          assert.isNull(processInfo.onCrash.getCall(0).args[0])
-        )
-        it('the \'crash\' event is provided with killed flag', ->
-          assert.isTrue(processInfo.onCrash.getCall(0).args[1])
-        )
-      it('is flagged as terminated', ->
-        assert.isTrue(processInfo.childProcess.terminated)
-      )
-      it('is not flagged as intentionally killed', ->
-        assert.isFalse(processInfo.childProcess.killedIntentionally)
-      )
-      it('is not flagged as intentionally terminated', ->
-        assert.isFalse(processInfo.childProcess.terminatedIntentionally)
-      )
-    )
-  )
-)
+      if (process.platform === 'win32') {
+        it('returns non-zero status code', () => assert.isAbove(processInfo.exitStatus, 0));
+      } else {
+        it('gets killed', () => assert.equal(processInfo.signal, 'SIGKILL'));
+        it('returns no status code', () => assert.isNull(processInfo.exitStatus));
+      }
+      it('does emit the \'crash\' event', () => assert.isTrue(processInfo.onCrash.called));
+      if (process.platform === 'win32') {
+        it('the \'crash\' event is provided with non-zero status code', () => assert.isAbove(processInfo.onCrash.getCall(0).args[0], 0));
+        it('the \'crash\' event is not provided with killed flag (cannot be detected on Windows)', () => assert.isFalse(processInfo.onCrash.getCall(0).args[1]));
+      } else {
+        it('the \'crash\' event is provided with no status code', () => assert.isNull(processInfo.onCrash.getCall(0).args[0]));
+        it('the \'crash\' event is provided with killed flag', () => assert.isTrue(processInfo.onCrash.getCall(0).args[1]));
+      }
+      it('is flagged as terminated', () => assert.isTrue(processInfo.childProcess.terminated));
+      it('is not flagged as intentionally killed', () => assert.isFalse(processInfo.childProcess.killedIntentionally));
+      return it('is not flagged as intentionally terminated', () => assert.isFalse(processInfo.childProcess.terminatedIntentionally));
+    });
+  });
+});
