@@ -48,7 +48,7 @@ describe('CLI - Reporters', () => {
       })
     );
 
-    return it('should use given reporter', () =>
+    it('should use given reporter', () =>
       // nyan cat ears should exist in stdout
       assert.include(dreddCommandInfo.stdout, '/\\_/\\')
     );
@@ -111,14 +111,14 @@ describe('CLI - Reporters', () => {
         }
         )
       );
-      return it('should send results from gavel', () => {
+      it('should send results from gavel', () => {
         assert.isObject(stepRequest.body);
         assert.nestedProperty(stepRequest.body, 'resultData.request');
         assert.nestedProperty(stepRequest.body, 'resultData.realResponse');
         assert.nestedProperty(stepRequest.body, 'resultData.expectedResponse');
         assert.nestedProperty(stepRequest.body, 'resultData.result.body.validator');
         assert.nestedProperty(stepRequest.body, 'resultData.result.headers.validator');
-        return assert.nestedProperty(stepRequest.body, 'resultData.result.statusCode.validator');
+        assert.nestedProperty(stepRequest.body, 'resultData.result.statusCode.validator');
       });
     });
 
@@ -151,15 +151,15 @@ describe('CLI - Reporters', () => {
 
       it('should request Apiary API to start a test run', () => {
         assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/runs'], 1);
-        return assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/runs'][0].method, 'POST');
+        assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/runs'][0].method, 'POST');
       });
       it('should request Apiary API to create a test step', () => {
         assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/steps?testRunId=1234_id'], 1);
-        return assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0].method, 'POST');
+        assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0].method, 'POST');
       });
       it('should request Apiary API to update the test run', () => {
         assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/run/1234_id'], 1);
-        return assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0].method, 'PATCH');
+        assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0].method, 'PATCH');
       });
 
       return context('the update request', () => {
@@ -181,23 +181,23 @@ describe('CLI - Reporters', () => {
           assert.nestedProperty(updateRequest.body, 'result.errors');
           assert.nestedProperty(updateRequest.body, 'result.passes');
           assert.nestedProperty(updateRequest.body, 'result.start');
-          return assert.nestedProperty(updateRequest.body, 'result.end');
+          assert.nestedProperty(updateRequest.body, 'result.end');
         });
         it('should have startedAt larger than \'before\' hook log timestamp', () => {
           assert.isObject(stepRequest.body);
           assert.isNumber(stepRequest.body.startedAt);
           assert.operator(stepRequest.body.startedAt, '>=', updateRequest.body.logs[0].timestamp);
-          return assert.operator(stepRequest.body.startedAt, '>=', updateRequest.body.logs[1].timestamp);
+          assert.operator(stepRequest.body.startedAt, '>=', updateRequest.body.logs[1].timestamp);
         });
-        return it('should have startedAt smaller than \'after\' hook log timestamp', () => {
+        it('should have startedAt smaller than \'after\' hook log timestamp', () => {
           assert.isObject(stepRequest.body);
           assert.isNumber(stepRequest.body.startedAt);
-          return assert.operator(stepRequest.body.startedAt, '<=', updateRequest.body.logs[2].timestamp);
+          assert.operator(stepRequest.body.startedAt, '<=', updateRequest.body.logs[2].timestamp);
         });
       });
     });
 
-    return describe('when hooks file uses hooks.log function for logging and hooks are in sandbox mode', () => {
+    describe('when hooks file uses hooks.log function for logging and hooks are in sandbox mode', () => {
       let dreddCommandInfo;
       let updateRequest;
       let stepRequest;
@@ -222,21 +222,21 @@ describe('CLI - Reporters', () => {
       it('hooks.log should not print also to console', () => {
         // because we are running in sandboxed mode with higher --level
         assert.notInclude(dreddCommandInfo.output, 'using sandboxed hooks.log');
-        return assert.notInclude(dreddCommandInfo.output, 'shall not print');
+        assert.notInclude(dreddCommandInfo.output, 'shall not print');
       });
       it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
 
       it('should request Apiary API to start a test run', () => {
         assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/runs'], 1);
-        return assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/runs'][0].method, 'POST');
+        assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/runs'][0].method, 'POST');
       });
       it('should request Apiary API to create a test step', () => {
         assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/steps?testRunId=1234_id'], 1);
-        return assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0].method, 'POST');
+        assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0].method, 'POST');
       });
       it('should request Apiary API to update the test run', () => {
         assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/run/1234_id'], 1);
-        return assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0].method, 'PATCH');
+        assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0].method, 'PATCH');
       });
 
       return context('the update request', () => {
@@ -250,17 +250,17 @@ describe('CLI - Reporters', () => {
           assert.property(updateRequest.body.logs[0], 'timestamp');
           assert.nestedPropertyVal(updateRequest.body.logs[0], 'content', 'shall not print, but be present in logs');
           assert.property(updateRequest.body.logs[1], 'timestamp');
-          return assert.nestedPropertyVal(updateRequest.body.logs[1], 'content', 'using sandboxed hooks.log');
+          assert.nestedPropertyVal(updateRequest.body.logs[1], 'content', 'using sandboxed hooks.log');
         });
         it('should have startedAt larger than \'before\' hook log timestamp', () => {
           assert.isObject(stepRequest.body);
           assert.isNumber(stepRequest.body.startedAt);
-          return assert.operator(stepRequest.body.startedAt, '>=', updateRequest.body.logs[0].timestamp);
+          assert.operator(stepRequest.body.startedAt, '>=', updateRequest.body.logs[0].timestamp);
         });
-        return it('should have startedAt smaller than \'after\' hook log timestamp', () => {
+        it('should have startedAt smaller than \'after\' hook log timestamp', () => {
           assert.isObject(stepRequest.body);
           assert.isNumber(stepRequest.body.startedAt);
-          return assert.operator(stepRequest.body.startedAt, '<=', updateRequest.body.logs[1].timestamp);
+          assert.operator(stepRequest.body.startedAt, '<=', updateRequest.body.logs[1].timestamp);
         });
       });
     });
@@ -284,7 +284,7 @@ describe('CLI - Reporters', () => {
 
     afterEach(() => fs.unlinkSync(`${process.cwd()}/__test_file_output__.xml`));
 
-    return it('should create given file', () => assert.isOk(fs.existsSync(`${process.cwd()}/__test_file_output__.xml`)));
+    it('should create given file', () => assert.isOk(fs.existsSync(`${process.cwd()}/__test_file_output__.xml`)));
   });
 
   describe('when -o/--output is used multiple times to specify output files', () => {
@@ -310,9 +310,9 @@ describe('CLI - Reporters', () => {
       return fs.unlinkSync(`${process.cwd()}/__test_file_output2__.xml`);
     });
 
-    return it('should create given files', () => {
+    it('should create given files', () => {
       assert.isOk(fs.existsSync(`${process.cwd()}/__test_file_output1__.xml`));
-      return assert.isOk(fs.existsSync(`${process.cwd()}/__test_file_output2__.xml`));
+      assert.isOk(fs.existsSync(`${process.cwd()}/__test_file_output2__.xml`));
     });
   });
 
@@ -339,10 +339,10 @@ describe('CLI - Reporters', () => {
 
     afterEach(() => fs.unlinkSync(`${process.cwd()}/__test_directory/__test_file_output__.xml`));
 
-    return it('should create given file', () => assert.isOk(fs.existsSync(`${process.cwd()}/__test_directory/__test_file_output__.xml`)));
+    it('should create given file', () => assert.isOk(fs.existsSync(`${process.cwd()}/__test_directory/__test_file_output__.xml`)));
   });
 
-  return describe('when the \'apiary\' reporter fails', () => {
+  describe('when the \'apiary\' reporter fails', () => {
     let apiaryApiUrl;
     let dreddCommandInfo;
     const args = [
@@ -365,6 +365,6 @@ describe('CLI - Reporters', () => {
     afterEach(() => process.env.APIARY_API_URL = apiaryApiUrl);
 
     it('ends successfully', () => assert.equal(dreddCommandInfo.exitStatus, 0));
-    return it('prints error about Apiary API connection issues', () => assert.include(dreddCommandInfo.stderr, 'Apiary reporter could not connect to Apiary API'));
+    it('prints error about Apiary API connection issues', () => assert.include(dreddCommandInfo.stderr, 'Apiary reporter could not connect to Apiary API'));
   });
 });

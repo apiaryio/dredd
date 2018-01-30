@@ -92,14 +92,14 @@ describe('configUtils', () => {
       configUtils.save(argv);
       const call = fsStub.writeFileSync.getCall(0);
       const { args } = call;
-      return assert.property(yamlStub.safeLoad(args[1]), 'endpoint');
+      assert.property(yamlStub.safeLoad(args[1]), 'endpoint');
     });
 
     it('should add blueprint key', () => {
       configUtils.save(argv);
       const call = fsStub.writeFileSync.getCall(0);
       const { args } = call;
-      return assert.property(yamlStub.safeLoad(args[1]), 'blueprint');
+      assert.property(yamlStub.safeLoad(args[1]), 'blueprint');
     });
 
     it('should remove aliases', () => {
@@ -107,28 +107,28 @@ describe('configUtils', () => {
       const call = fsStub.writeFileSync.getCall(0);
       const { args } = call;
       assert.notProperty(yamlStub.safeLoad(args[1]), 'p');
-      return assert.notProperty(yamlStub.safeLoad(args[1]), 'q');
+      assert.notProperty(yamlStub.safeLoad(args[1]), 'q');
     });
 
     it('should remove _', () => {
       configUtils.save(argv);
       const call = fsStub.writeFileSync.getCall(0);
       const { args } = call;
-      return assert.notProperty(yamlStub.safeLoad(args[1]), '_');
+      assert.notProperty(yamlStub.safeLoad(args[1]), '_');
     });
 
     it('should remove $0', () => {
       configUtils.save(argv);
       const call = fsStub.writeFileSync.getCall(0);
       const { args } = call;
-      return assert.notProperty(yamlStub.safeLoad(args[1]), '_');
+      assert.notProperty(yamlStub.safeLoad(args[1]), '_');
     });
 
     it('should save an object', () => {
       configUtils.save(argv);
       const call = fsStub.writeFileSync.getCall(0);
       const { args } = call;
-      return assert.notProperty(yamlStub.safeLoad(args[1]), '_');
+      assert.notProperty(yamlStub.safeLoad(args[1]), '_');
     });
 
     it('should call YAML.dump', () => {
@@ -142,18 +142,18 @@ describe('configUtils', () => {
         configUtils.save(argv);
         const call = fsStub.writeFileSync.getCall(0);
         const { args } = call;
-        return assert.include(args[0], 'dredd.yml');
+        assert.include(args[0], 'dredd.yml');
       })
     );
 
 
-    return describe('when path is given', () =>
+    describe('when path is given', () =>
       it('should save to that path', () => {
         const path = 'some-other-location.yml ';
         configUtils.save(argv, path);
         const call = fsStub.writeFileSync.getCall(0);
         const { args } = call;
-        return assert.include(args[0], path);
+        assert.include(args[0], path);
       })
     );
   });
@@ -198,7 +198,7 @@ endpoint: endpoint\
         configUtils.load();
         const call = fsStub.readFileSync.getCall(0);
         const { args } = call;
-        return assert.include(args[0], 'dredd.yml');
+        assert.include(args[0], 'dredd.yml');
       })
     );
 
@@ -208,7 +208,7 @@ endpoint: endpoint\
         configUtils.load(path);
         const call = fsStub.readFileSync.getCall(0);
         const { args } = call;
-        return assert.include(args[0], path);
+        assert.include(args[0], path);
       })
     );
 
@@ -216,22 +216,22 @@ endpoint: endpoint\
       const output = configUtils.load();
       assert.isArray(output._);
       assert.equal(output._[0], 'blueprint');
-      return assert.equal(output._[1], 'endpoint');
+      assert.equal(output._[1], 'endpoint');
     });
 
     it('should remove blueprint and endpoint keys', () => {
       const output = configUtils.load();
       assert.notProperty(output, 'blueprint');
-      return assert.notProperty(output, 'endpoint');
+      assert.notProperty(output, 'endpoint');
     });
 
-    return it('should return an object', () => {
+    it('should return an object', () => {
       const output = configUtils.load();
-      return assert.isObject(output);
+      assert.isObject(output);
     });
   });
 
-  return describe('parseCustom(arrayOfCustoms)', () => {
+  describe('parseCustom(arrayOfCustoms)', () => {
     const custom = [
       'customOpt:itsValue:can:contain:delimiters',
       'customOpt2:itsValue'
@@ -242,13 +242,13 @@ endpoint: endpoint\
       return output = {};
     });
 
-    return it('should split values by first ":"', () => {
+    it('should split values by first ":"', () => {
       const output = configUtils.parseCustom(custom);
 
       assert.property(output, 'customOpt');
       assert.property(output, 'customOpt2');
       assert.equal(output.customOpt, 'itsValue:can:contain:delimiters');
-      return assert.equal(output.customOpt2, 'itsValue');
+      assert.equal(output.customOpt2, 'itsValue');
     });
   });
 });

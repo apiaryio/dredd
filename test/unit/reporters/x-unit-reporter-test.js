@@ -42,14 +42,14 @@ describe('XUnitReporter', () => {
         return loggerStub.info.restore();
       });
 
-      return it('should inform about the existing file', () => {
+      it('should inform about the existing file', () => {
         const emitter = new EventEmitter();
         const xUnitReporter = new XUnitReporter(emitter, {}, {}, 'test.xml');
-        return assert.isOk(loggerStub.info.called);
+        assert.isOk(loggerStub.info.called);
       });
     });
 
-    return describe('when file does not exist', () => {
+    describe('when file does not exist', () => {
       before(() => {
         sinon.stub(fsStub, 'existsSync').callsFake(path => false);
         return sinon.stub(fsStub, 'unlinkSync');
@@ -60,10 +60,10 @@ describe('XUnitReporter', () => {
         return fsStub.unlinkSync.restore();
       });
 
-      return it('should create the file', () => {
+      it('should create the file', () => {
         const emitter = new EventEmitter();
         const xUnitReporter = new XUnitReporter(emitter, {}, {}, 'test.xml');
-        return assert.isOk(fsStub.unlinkSync.notCalled);
+        assert.isOk(fsStub.unlinkSync.notCalled);
       });
     });
   });
@@ -80,7 +80,7 @@ describe('XUnitReporter', () => {
         return fsExtraStub.mkdirp.restore();
       });
 
-      return it('should write opening to file', (done) => {
+      it('should write opening to file', (done) => {
         const emitter = new EventEmitter();
         const xUnitReporter = new XUnitReporter(emitter, {}, {}, 'test.xml');
         return emitter.emit('start', '', () => {
@@ -91,7 +91,7 @@ describe('XUnitReporter', () => {
       });
     });
 
-    return describe('when cannot create output directory', () => {
+    describe('when cannot create output directory', () => {
       beforeEach(() => {
         sinon.stub(fsStub, 'appendFileSync');
         sinon.stub(loggerStub, 'error');
@@ -104,7 +104,7 @@ describe('XUnitReporter', () => {
         return fsExtraStub.mkdirp.restore();
       });
 
-      return it('should write to log', (done) => {
+      it('should write to log', (done) => {
         const emitter = new EventEmitter();
         const xUnitReporter = new XUnitReporter(emitter, {}, {}, 'test.xml');
         return emitter.emit('start', '', () => {
@@ -139,10 +139,10 @@ describe('XUnitReporter', () => {
         xUnitReporter.tests = [test];
         xUnitReporter.stats.tests = 1;
         emitter.emit('test pass', test);
-        return assert.isOk(fsStub.appendFileSync.called);
+        assert.isOk(fsStub.appendFileSync.called);
       });
 
-      return describe('when the file writes successfully', () =>
+      describe('when the file writes successfully', () =>
 
         it('should read the file and update the stats', (done) => {
           const emitter = new EventEmitter();
@@ -158,7 +158,7 @@ describe('XUnitReporter', () => {
       );
     });
 
-    return describe('when there are no tests', () =>
+    describe('when there are no tests', () =>
 
       it('should write empty suite', (done) => {
         const emitter = new EventEmitter();
@@ -208,17 +208,17 @@ describe('XUnitReporter', () => {
       const xUnitReporter = new XUnitReporter(emitter, {}, {}, 'test.xml');
       emitter.emit('test start', test);
       emitter.emit('test pass', test);
-      return assert.isOk(fsStub.appendFileSync.called);
+      assert.isOk(fsStub.appendFileSync.called);
     });
 
-    return describe('when details=true', () =>
+    describe('when details=true', () =>
 
       it('should write details for passing tests', () => {
         const emitter = new EventEmitter();
         const cliReporter = new XUnitReporter(emitter, {}, {}, 'test.xml', true);
         emitter.emit('test start', test);
         emitter.emit('test pass', test);
-        return assert.isOk(fsStub.appendFileSync.called);
+        assert.isOk(fsStub.appendFileSync.called);
       })
     );
   });
@@ -235,12 +235,12 @@ describe('XUnitReporter', () => {
 
     afterEach(() => fsStub.appendFileSync.restore());
 
-    return it('should write a skipped test', () => {
+    it('should write a skipped test', () => {
       const emitter = new EventEmitter();
       const xUnitReporter = new XUnitReporter(emitter, {}, {}, 'test.xml');
       emitter.emit('test start', test);
       emitter.emit('test skip', test);
-      return assert.isOk(fsStub.appendFileSync.called);
+      assert.isOk(fsStub.appendFileSync.called);
     });
   });
 
@@ -256,16 +256,16 @@ describe('XUnitReporter', () => {
 
     afterEach(() => fsStub.appendFileSync.restore());
 
-    return it('should write a failed test', () => {
+    it('should write a failed test', () => {
       const emitter = new EventEmitter();
       const xUnitReporter = new XUnitReporter(emitter, {}, {}, 'test.xml');
       emitter.emit('test start', test);
       emitter.emit('test fail', test);
-      return assert.isOk(fsStub.appendFileSync.called);
+      assert.isOk(fsStub.appendFileSync.called);
     });
   });
 
-  return describe('when test errors', () => {
+  describe('when test errors', () => {
     before(() =>
       test = {
         status: 'error',
@@ -277,12 +277,12 @@ describe('XUnitReporter', () => {
 
     afterEach(() => fsStub.appendFileSync.restore());
 
-    return it('should write an error test', () => {
+    it('should write an error test', () => {
       const emitter = new EventEmitter();
       const xUnitReporter = new XUnitReporter(emitter, {}, {}, 'test.xml');
       emitter.emit('test start', test);
       emitter.emit('test error', new Error('Error'), test);
-      return assert.isOk(fsStub.appendFileSync.called);
+      assert.isOk(fsStub.appendFileSync.called);
     });
   });
 });

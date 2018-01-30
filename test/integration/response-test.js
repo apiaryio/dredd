@@ -30,10 +30,10 @@ const Dredd = require('../../src/dredd');
         });
       });
 
-      return it('evaluates the responses as valid', () => assert.deepInclude(runtimeInfo.dredd.stats, { tests: 2, passes: 2 }));
+      it('evaluates the responses as valid', () => assert.deepInclude(runtimeInfo.dredd.stats, { tests: 2, passes: 2 }));
     });
 
-    return describe('when the server returns empty responses', () => {
+    describe('when the server returns empty responses', () => {
       let runtimeInfo;
 
       before((done) => {
@@ -47,7 +47,7 @@ const Dredd = require('../../src/dredd');
         });
       });
 
-      return it('evaluates the responses as valid', () => assert.deepInclude(runtimeInfo.dredd.stats, { tests: 2, passes: 2 }));
+      it('evaluates the responses as valid', () => assert.deepInclude(runtimeInfo.dredd.stats, { tests: 2, passes: 2 }));
     });
   })
 );
@@ -77,10 +77,10 @@ const Dredd = require('../../src/dredd');
       });
 
       it('evaluates the response as invalid', () => assert.deepInclude(runtimeInfo.dredd.stats, { tests: 1, failures: 1 }));
-      return it('prints JSON Schema validation error', () => assert.include(runtimeInfo.dredd.logging, 'At \'/name\' Invalid type: number (expected string)'));
+      it('prints JSON Schema validation error', () => assert.include(runtimeInfo.dredd.logging, 'At \'/name\' Invalid type: number (expected string)'));
     });
 
-    return describe('when the server returns a response valid according to the schema', () => {
+    describe('when the server returns a response valid according to the schema', () => {
       let runtimeInfo;
 
       before((done) => {
@@ -93,7 +93,7 @@ const Dredd = require('../../src/dredd');
         });
       });
 
-      return it('evaluates the response as valid', () => assert.deepInclude(runtimeInfo.dredd.stats, { tests: 1, passes: 1 }));
+      it('evaluates the response as valid', () => assert.deepInclude(runtimeInfo.dredd.stats, { tests: 1, passes: 1 }));
     });
   })
 );
@@ -129,10 +129,10 @@ const Dredd = require('../../src/dredd');
       });
 
       it('evaluates the responses as invalid', () => assert.deepInclude(runtimeInfo.dredd.stats, { tests: 2, failures: 2 }));
-      return it('prints the error message from hooks', () => assert.include(runtimeInfo.dredd.logging, 'The response body must be empty'));
+      it('prints the error message from hooks', () => assert.include(runtimeInfo.dredd.logging, 'The response body must be empty'));
     });
 
-    return describe('when the server returns an empty responses', () => {
+    describe('when the server returns an empty responses', () => {
       let runtimeInfo;
 
       before((done) => {
@@ -151,7 +151,7 @@ const Dredd = require('../../src/dredd');
         });
       });
 
-      return it('evaluates the responses as valid', () => assert.deepInclude(runtimeInfo.dredd.stats, { tests: 2, passes: 2 }));
+      it('evaluates the responses as valid', () => assert.deepInclude(runtimeInfo.dredd.stats, { tests: 2, passes: 2 }));
     });
   })
 );
@@ -187,10 +187,10 @@ const Dredd = require('../../src/dredd');
       });
 
       it('evaluates the responses as invalid', () => assert.deepInclude(runtimeInfo.dredd.stats, { tests: 2, failures: 2 }));
-      return it('prints the error message from hooks', () => assert.include(runtimeInfo.dredd.logging, 'The response body must be empty'));
+      it('prints the error message from hooks', () => assert.include(runtimeInfo.dredd.logging, 'The response body must be empty'));
     });
 
-    return describe('when the server returns empty responses', () => {
+    describe('when the server returns empty responses', () => {
       let runtimeInfo;
 
       before((done) => {
@@ -209,7 +209,7 @@ const Dredd = require('../../src/dredd');
         });
       });
 
-      return it('evaluates the responses as valid', () => assert.deepInclude(runtimeInfo.dredd.stats, { tests: 2, passes: 2 }));
+      it('evaluates the responses as valid', () => assert.deepInclude(runtimeInfo.dredd.stats, { tests: 2, passes: 2 }));
     });
   })
 );
@@ -254,10 +254,10 @@ const Dredd = require('../../src/dredd');
           /fail: statusCode: Status code is not/g
         ).length, 4)
       );
-      return it('does not print any failures regarding response bodies', () => assert.isNull(runtimeInfo.dredd.logging.match(/fail: body:/g)));
+      it('does not print any failures regarding response bodies', () => assert.isNull(runtimeInfo.dredd.logging.match(/fail: body:/g)));
     });
 
-    return describe('when the actual response is empty', () => {
+    describe('when the actual response is empty', () => {
       let runtimeInfo;
 
       before((done) => {
@@ -287,7 +287,7 @@ const Dredd = require('../../src/dredd');
           /fail: body: Real and expected data does not match.\nstatusCode: Status code is not/g
         ).length, 2)
       );
-      return it('prints two failures for each non-matching status code', () =>
+      it('prints two failures for each non-matching status code', () =>
         assert.equal(runtimeInfo.dredd.logging.match(
           /fail: statusCode: Status code is not/g
         ).length, 2)

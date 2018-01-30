@@ -34,7 +34,7 @@ describe('CLI', () => {
         });
       });
 
-      return it('exit status should be 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('exit status should be 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
     describe('when executing the command and the server is responding as specified in the API description, endpoint with path', () => {
@@ -51,10 +51,10 @@ describe('CLI', () => {
         });
       });
 
-      return it('exit status should be 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('exit status should be 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
-    return describe('when executing the command and the server is sending different response', () => {
+    describe('when executing the command and the server is sending different response', () => {
       let runtimeInfo;
 
       before((done) => {
@@ -68,7 +68,7 @@ describe('CLI', () => {
         });
       });
 
-      return it('exit status should be 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
+      it('exit status should be 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
     });
   });
 
@@ -100,7 +100,7 @@ describe('CLI', () => {
 
         it('should not return message containing exited or killed', () => {
           assert.notInclude(runtimeInfo.dredd.stderr, 'exited');
-          return assert.notInclude(runtimeInfo.dredd.stderr, 'killed');
+          assert.notInclude(runtimeInfo.dredd.stderr, 'killed');
         });
 
         it('should not return message announcing the fact', () => assert.include(runtimeInfo.dredd.stderr, 'not found'));
@@ -112,7 +112,7 @@ describe('CLI', () => {
           })
         );
 
-        return it('should not execute any transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, {}));
+        it('should not execute any transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, {}));
       });
 
       describe('and handler crashes before execution', () => {
@@ -148,7 +148,7 @@ describe('CLI', () => {
           })
         );
 
-        return it('should not execute any transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, {}));
+        it('should not execute any transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, {}));
       });
 
       describe('and handler is killed before execution', () => {
@@ -179,9 +179,9 @@ describe('CLI', () => {
         it('should return message announcing the fact', () => {
           if (process.platform === 'win32') {
             // On Windows there's no way to detect a process was killed
-            return assert.include(runtimeInfo.dredd.stderr, 'exited');
+            assert.include(runtimeInfo.dredd.stderr, 'exited');
           }
-          return assert.include(runtimeInfo.dredd.stderr, 'killed');
+          assert.include(runtimeInfo.dredd.stderr, 'killed');
         });
 
         it('should term or kill the server', done =>
@@ -191,7 +191,7 @@ describe('CLI', () => {
           })
         );
 
-        return it('should not execute any transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, {}));
+        it('should not execute any transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, {}));
       });
 
       describe('and handler is killed during execution', () => {
@@ -239,9 +239,9 @@ describe('CLI', () => {
         it('should return message announcing the fact', () => {
           if (process.platform === 'win32') {
             // On Windows there's no way to detect a process was killed
-            return assert.include(runtimeInfo.dredd.stderr, 'exited');
+            assert.include(runtimeInfo.dredd.stderr, 'exited');
           }
-          return assert.include(runtimeInfo.dredd.stderr, 'killed');
+          assert.include(runtimeInfo.dredd.stderr, 'killed');
         });
 
         it('should term or kill the server', done =>
@@ -251,10 +251,10 @@ describe('CLI', () => {
           })
         );
 
-        return it('should execute the transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
+        it('should execute the transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
       });
 
-      return describe("and handler didn't quit but all Dredd tests were OK", () => {
+      describe("and handler didn't quit but all Dredd tests were OK", () => {
         let runtimeInfo;
 
         before((done) => {
@@ -291,7 +291,7 @@ describe('CLI', () => {
 
         it('should not return any killed or exited message', () => {
           assert.notInclude(runtimeInfo.dredd.stderr, 'killed');
-          return assert.notInclude(runtimeInfo.dredd.stderr, 'exited');
+          assert.notInclude(runtimeInfo.dredd.stderr, 'exited');
         });
 
         it('should kill both the handler and the server', done =>
@@ -301,7 +301,7 @@ describe('CLI', () => {
           })
         );
 
-        return it('should execute some transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
+        it('should execute some transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
       });
     });
 
@@ -324,7 +324,7 @@ describe('CLI', () => {
         });
       });
 
-      return it('should have an additional header in the request', () => assert.nestedPropertyVal(runtimeInfo.server.requests['/machines'][0], 'headers.accept', 'application/json'));
+      it('should have an additional header in the request', () => assert.nestedPropertyVal(runtimeInfo.server.requests['/machines'][0], 'headers.accept', 'application/json'));
     });
 
 
@@ -349,7 +349,7 @@ describe('CLI', () => {
 
       it('should have an authorization header in the request', () => assert.isOk(runtimeInfo.server.requests['/machines'][0].headers.authorization));
 
-      return it('should contain a base64 encoded string of the username and password', () => assert.isOk(runtimeInfo.server.requests['/machines'][0].headers.authorization === (`Basic ${new Buffer('username:password').toString('base64')}`)));
+      it('should contain a base64 encoded string of the username and password', () => assert.isOk(runtimeInfo.server.requests['/machines'][0].headers.authorization === (`Basic ${new Buffer('username:password').toString('base64')}`)));
     });
 
 
@@ -371,10 +371,10 @@ describe('CLI', () => {
         });
       });
 
-      return it('should perform the POST, GET, PUT, DELETE in order', () => {
+      it('should perform the POST, GET, PUT, DELETE in order', () => {
         let middle,
           middle1;
-        return assert.isOk(runtimeInfo.dredd.stdout.indexOf('POST') < (middle = runtimeInfo.dredd.stdout.indexOf('GET')) && middle < (middle1 = runtimeInfo.dredd.stdout.indexOf('PUT')) && middle1 < runtimeInfo.dredd.stdout.indexOf('DELETE'));
+        assert.isOk(runtimeInfo.dredd.stdout.indexOf('POST') < (middle = runtimeInfo.dredd.stdout.indexOf('GET')) && middle < (middle1 = runtimeInfo.dredd.stdout.indexOf('PUT')) && middle1 < runtimeInfo.dredd.stdout.indexOf('DELETE'));
       });
     });
 
@@ -396,11 +396,11 @@ describe('CLI', () => {
         });
       });
 
-      return it('should display errors inline', () => {
+      it('should display errors inline', () => {
         // when displayed inline, a single fail request only creates two "fail:" messages,
         // as opposed to the usual three
         const count = runtimeInfo.dredd.stdout.split('fail').length - 2; // says fail in the epilogue
-        return assert.equal(count, 2);
+        assert.equal(count, 2);
       });
     });
 
@@ -422,7 +422,7 @@ describe('CLI', () => {
         });
       });
 
-      return it('should display details on passing tests', () =>
+      it('should display details on passing tests', () =>
         // the request: block is not shown for passing tests normally
         assert.isOk(runtimeInfo.dredd.stdout.indexOf('request') > -1)
       );
@@ -448,10 +448,10 @@ describe('CLI', () => {
           });
         });
 
-        return it('should not send the request request', () => assert.deepEqual(runtimeInfo.server.requestCounts, {}));
+        it('should not send the request request', () => assert.deepEqual(runtimeInfo.server.requestCounts, {}));
       });
 
-      return describe('when not blocking a request', () => {
+      describe('when not blocking a request', () => {
         let runtimeInfo;
 
         before((done) => {
@@ -470,7 +470,7 @@ describe('CLI', () => {
           });
         });
 
-        return it('should allow the request to go through', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
+        it('should allow the request to go through', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
       });
     });
 
@@ -500,7 +500,7 @@ describe('CLI', () => {
 
       it('should hit the only transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/message': 1 }));
 
-      return it('exit status should be 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('exit status should be 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
     describe('when suppressing color with --no-color', () => {
@@ -521,7 +521,7 @@ describe('CLI', () => {
         });
       });
 
-      return it('should print without colors', () =>
+      it('should print without colors', () =>
         // if colors are not on, there is no closing color code between
         // the "pass" and the ":"
         assert.include(runtimeInfo.dredd.stdout, 'pass:')
@@ -546,7 +546,7 @@ describe('CLI', () => {
         });
       });
 
-      return it('should print without colors', () =>
+      it('should print without colors', () =>
         // if colors are not on, there is no closing color code between
         // the "pass" and the ":"
         assert.include(runtimeInfo.dredd.stdout, 'pass:')
@@ -571,13 +571,13 @@ describe('CLI', () => {
         });
       });
 
-      return it('should not display anything', () =>
+      it('should not display anything', () =>
         // at the "error" level, complete should not be shown
         assert.isOk(runtimeInfo.dredd.stdout.indexOf('complete') === -1)
       );
     });
 
-    return describe('when showing timestamps with -t', () => {
+    describe('when showing timestamps with -t', () => {
       let runtimeInfo;
 
       before((done) => {
@@ -595,7 +595,7 @@ describe('CLI', () => {
         });
       });
 
-      return it('should display timestamps', () =>
+      it('should display timestamps', () =>
         // look for the prefix for cli output with timestamps
         assert.notEqual(runtimeInfo.dredd.stdout.indexOf('Z -'), -1)
       );
@@ -620,7 +620,7 @@ describe('CLI', () => {
       });
     });
 
-    return it('should modify the transaction with hooks', () => assert.equal(runtimeInfo.server.requests['/machines'][0].headers.header, '123232323'));
+    it('should modify the transaction with hooks', () => assert.equal(runtimeInfo.server.requests['/machines'][0].headers.header, '123232323'));
   });
 
   describe('when describing events in hookfiles', () => {
@@ -651,9 +651,9 @@ describe('CLI', () => {
       });
     });
 
-    return it('should execute the before and after events', () => {
+    it('should execute the before and after events', () => {
       assert.isOk(containsLine(runtimeInfo.dredd.stdout, 'hooks.beforeAll'), (runtimeInfo.dredd.stdout));
-      return assert.isOk(containsLine(runtimeInfo.dredd.stdout, 'hooks.afterAll'), (runtimeInfo.dredd.stdout));
+      assert.isOk(containsLine(runtimeInfo.dredd.stdout, 'hooks.afterAll'), (runtimeInfo.dredd.stdout));
     });
   });
 
@@ -686,9 +686,9 @@ describe('CLI', () => {
       });
     });
 
-    return it('should execute hooks and events in order', () => {
+    it('should execute hooks and events in order', () => {
       const events = getResults(runtimeInfo.dredd.stdout);
-      return assert.isOk(events === 'beforeAll,before,after,afterAll');
+      assert.isOk(events === 'beforeAll,before,after,afterAll');
     });
   });
 
@@ -717,10 +717,10 @@ describe('CLI', () => {
         });
       });
 
-      return it('exit status should be 0 (success)', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('exit status should be 0 (success)', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
-    return describe('and server is NOT responding in accordance with the schema', () => {
+    describe('and server is NOT responding in accordance with the schema', () => {
       let runtimeInfo;
 
       before((done) => {
@@ -744,7 +744,7 @@ describe('CLI', () => {
         });
       });
 
-      return it('exit status should be 1 (failure)', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
+      it('exit status should be 1 (failure)', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
     });
   });
 
@@ -767,13 +767,13 @@ describe('CLI', () => {
       it('it should include all paths from all API description documents matching the glob', () => {
         assert.include(dreddCommandInfo.stdout, '> /greeting > GET');
         assert.include(dreddCommandInfo.stdout, '> /message > GET');
-        return assert.include(dreddCommandInfo.stdout, '> /name > GET');
+        assert.include(dreddCommandInfo.stdout, '> /name > GET');
       });
 
-      return it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
     });
 
-    return describe('and called with hooks', () => {
+    describe('and called with hooks', () => {
       let runtimeInfo;
 
       before((done) => {
@@ -798,12 +798,12 @@ describe('CLI', () => {
       it('should eval the hook for each transaction', () => {
         assert.include(runtimeInfo.dredd.stdout, 'after name');
         assert.include(runtimeInfo.dredd.stdout, 'after greeting');
-        return assert.include(runtimeInfo.dredd.stdout, 'after message');
+        assert.include(runtimeInfo.dredd.stdout, 'after message');
       });
 
       it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0, (runtimeInfo.dredd.output)));
 
-      return it('server should receive 3 requests', () =>
+      it('server should receive 3 requests', () =>
         assert.deepEqual(runtimeInfo.server.requestCounts, {
           '/name': 1,
           '/greeting': 1,
@@ -837,14 +837,14 @@ describe('CLI', () => {
         assert.include(dreddCommandInfo.stdout, 'Message API > /message > GET');
         assert.include(dreddCommandInfo.stdout, 'Name API > /name > GET');
         assert.include(dreddCommandInfo.stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 1');
-        return assert.include(dreddCommandInfo.stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 2');
+        assert.include(dreddCommandInfo.stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 2');
       });
 
-      return it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
     })
   );
 
-  return describe('Using sandboxed hooks', () => {
+  describe('Using sandboxed hooks', () => {
     let runtimeInfo;
 
     before((done) => {
@@ -869,6 +869,6 @@ describe('CLI', () => {
 
     it('stdout should contain fail message', () => assert.include(runtimeInfo.dredd.stdout, 'failed in sandboxed hook'));
 
-    return it('stdout should contain sandbox messagae', () => assert.include(runtimeInfo.dredd.stdout, 'Loading hook files in sandboxed context'));
+    it('stdout should contain sandbox messagae', () => assert.include(runtimeInfo.dredd.stdout, 'Loading hook files in sandboxed context'));
   });
 });

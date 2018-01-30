@@ -23,7 +23,7 @@ describe('CLI - API Blueprint Document', () =>
       });
 
       it('should request /machines', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
-      return it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
     describe('when API Blueprint is loaded with errors', () => {
@@ -42,10 +42,10 @@ describe('CLI - API Blueprint Document', () =>
       });
 
       it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
-      return it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr, 'Error when processing API description'));
+      it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr, 'Error when processing API description'));
     });
 
-    return describe('when API Blueprint is loaded with warnings', () => {
+    describe('when API Blueprint is loaded with warnings', () => {
       let runtimeInfo;
       const args = [
         './test/fixtures/warning-blueprint.apib',
@@ -62,7 +62,7 @@ describe('CLI - API Blueprint Document', () =>
       });
 
       it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
-      return it('should print warning to stdout', () => assert.include(runtimeInfo.dredd.stdout, 'warn: Compilation warning'));
+      it('should print warning to stdout', () => assert.include(runtimeInfo.dredd.stdout, 'warn: Compilation warning'));
     });
   })
 );

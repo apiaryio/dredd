@@ -26,11 +26,11 @@ body: \n{
   "a": "b"
 }\n\
 `;
-      return assert.equal(output, expectedOutput);
+      assert.equal(output, expectedOutput);
     });
 
 
-    return it('should print indented XML when content-type is text/html', () => {
+    it('should print indented XML when content-type is text/html', () => {
       const output = prettifyResponse({
         headers: {
           'content-type': 'text/html'
@@ -44,11 +44,11 @@ body: \n<div>before paragraph
   <p>in para <i>italics</i>
     <br /><b>bold</b> afterwords</p>
 </div>\n`;
-      return assert.equal(output, expectedOutput);
+      assert.equal(output, expectedOutput);
     });
   });
 
-  return describe('with an object in body that references itself (circular)', () => {
+  describe('with an object in body that references itself (circular)', () => {
     let output = null;
 
     before(() => {
@@ -67,12 +67,12 @@ body: \n<div>before paragraph
 
     after(() => sinon.stub(loggerStub.debug.restore()));
 
-    return it('should\'ve printed into debug', () => {
+    it('should\'ve printed into debug', () => {
       assert.isOk(loggerStub.debug.called);
       assert.isObject(loggerStub.debug.firstCall);
       assert.isArray(loggerStub.debug.firstCall.args);
       assert.lengthOf(loggerStub.debug.firstCall.args, 1);
-      return assert.equal(loggerStub.debug.firstCall.args[0], 'Could not stringify: [object Object]');
+      assert.equal(loggerStub.debug.firstCall.args[0], 'Could not stringify: [object Object]');
     });
   });
 });

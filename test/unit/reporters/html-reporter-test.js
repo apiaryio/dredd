@@ -60,7 +60,7 @@ describe('HtmlReporter', () => {
         return loggerStub.info.restore();
       });
 
-      return it('should inform about the existing file', () => assert.isOk(loggerStub.info.called));
+      it('should inform about the existing file', () => assert.isOk(loggerStub.info.called));
     });
 
     describe('when file does not exist', () => {
@@ -74,10 +74,10 @@ describe('HtmlReporter', () => {
         return fsStub.unlinkSync.restore();
       });
 
-      return it('should not attempt to delete a file', () => assert.isOk(fsStub.unlinkSync.notCalled));
+      it('should not attempt to delete a file', () => assert.isOk(fsStub.unlinkSync.notCalled));
     });
 
-    return it('should write the prelude to the buffer', done =>
+    it('should write the prelude to the buffer', done =>
       emitter.emit('start', '', () => {
         assert.isOk(~htmlReporter.buf.indexOf('Dredd'));
         return done();
@@ -99,7 +99,7 @@ describe('HtmlReporter', () => {
         return fsExtraStub.mkdirp.restore();
       });
 
-      return it('should write the file', done =>
+      it('should write the file', done =>
         emitter.emit('end', () => {
           assert.isOk(fsExtraStub.mkdirp.called);
           assert.isOk(fsStub.writeFile.called);
@@ -108,7 +108,7 @@ describe('HtmlReporter', () => {
       );
     });
 
-    return describe('when cannot create output directory', () => {
+    describe('when cannot create output directory', () => {
       beforeEach(() => {
         sinon.stub(loggerStub, 'error');
         sinon.stub(fsStub, 'writeFile').callsFake((path, data, callback) => callback());
@@ -121,7 +121,7 @@ describe('HtmlReporter', () => {
         return fsExtraStub.mkdirp.restore();
       });
 
-      return it('should write to log', done =>
+      it('should write to log', done =>
         emitter.emit('end', () => {
           assert.isOk(fsExtraStub.mkdirp.called);
           assert.isOk(fsStub.writeFile.notCalled);
@@ -143,15 +143,15 @@ describe('HtmlReporter', () => {
     it('should call the pass event', () => {
       emitter.emit('test start', test);
       emitter.emit('test pass', test);
-      return assert.isOk(~htmlReporter.buf.indexOf('Pass'));
+      assert.isOk(~htmlReporter.buf.indexOf('Pass'));
     });
 
-    return describe('when details=true', () =>
+    describe('when details=true', () =>
 
       it('should write details for passing tests', () => {
         htmlReporter.details = true;
         emitter.emit('test pass', test);
-        return assert.isOk(~htmlReporter.buf.indexOf('Request'));
+        assert.isOk(~htmlReporter.buf.indexOf('Request'));
       })
     );
   });
@@ -164,10 +164,10 @@ describe('HtmlReporter', () => {
       }
     );
 
-    return it('should call the skip event', () => {
+    it('should call the skip event', () => {
       emitter.emit('test start', test);
       emitter.emit('test skip', test);
-      return assert.isOk(~htmlReporter.buf.indexOf('Skip'));
+      assert.isOk(~htmlReporter.buf.indexOf('Skip'));
     });
   });
 
@@ -179,14 +179,14 @@ describe('HtmlReporter', () => {
       }
     );
 
-    return it('should call the fail event', () => {
+    it('should call the fail event', () => {
       emitter.emit('test start', test);
       emitter.emit('test fail', test);
-      return assert.isOk(~htmlReporter.buf.indexOf('Fail'));
+      assert.isOk(~htmlReporter.buf.indexOf('Fail'));
     });
   });
 
-  return describe('when test errors', () => {
+  describe('when test errors', () => {
     before(() =>
       test = {
         status: 'error',
@@ -194,10 +194,10 @@ describe('HtmlReporter', () => {
       }
     );
 
-    return it('should call the error event', () => {
+    it('should call the error event', () => {
       emitter.emit('test start', test);
       emitter.emit('test error', new Error('Error'), test);
-      return assert.isOk(~htmlReporter.buf.indexOf('Error'));
+      assert.isOk(~htmlReporter.buf.indexOf('Error'));
     });
   });
 });

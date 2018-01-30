@@ -70,7 +70,7 @@ FORMAT: 1A
       it('mentions it is error', () => assert.include(errorOutput, 'error'));
       it('mentions the filename', () => assert.include(errorOutput, filename));
       it('mentions the line', () => assert.include(errorOutput, 'on line 3'));
-      return it('does not contain any NaNs', () => assert.notInclude(errorOutput, 'nan'));
+      it('does not contain any NaNs', () => assert.notInclude(errorOutput, 'nan'));
     });
   });
 
@@ -102,11 +102,11 @@ FORMAT: 1A
       it('mentions it is warning', () => assert.include(warnOutput, 'warn'));
       it('mentions the filename', () => assert.include(warnOutput, filename));
       it('mentions the line', () => assert.include(warnOutput, 'on line 5'));
-      return it('does not contain any NaNs', () => assert.notInclude(warnOutput, 'nan'));
+      it('does not contain any NaNs', () => assert.notInclude(warnOutput, 'nan'));
     });
   });
 
-  return describe('Prints warning about missing title', () => {
+  describe('Prints warning about missing title', () => {
     let error;
 
     const apiDescriptionDocument = `\
@@ -131,7 +131,7 @@ So Long, and Thanks for All the Fish!\
       it('mentions it is warning', () => assert.include(warnOutput, 'warning'));
       it('mentions the filename', () => assert.include(warnOutput, filename));
       it('mentions the line', () => assert.include(warnOutput, 'on line 1'));
-      return it('does not contain any NaNs', () => assert.notInclude(warnOutput, 'nan'));
+      it('does not contain any NaNs', () => assert.notInclude(warnOutput, 'nan'));
     });
   });
 });

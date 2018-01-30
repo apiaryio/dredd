@@ -189,26 +189,26 @@ describe('ApiaryReporter', () => {
           apiaryApiUrl: 'https://api.example.com:1234'
         };
 
-        return it('uses the provided API URL in configuration', () => {
+        it('uses the provided API URL in configuration', () => {
           emitter = new EventEmitter();
           const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom });
-          return assert.equal(
+          assert.equal(
             apiaryReporter.configuration.apiUrl,
             'https://api.example.com:1234'
           );
         });
       });
 
-      return describe('when custom settings contain API URL with trailing slash', () => {
+      describe('when custom settings contain API URL with trailing slash', () => {
         const custom = {
           apiaryReporterEnv: env,
           apiaryApiUrl: 'https://api.example.com:1234/'
         };
 
-        return it('uses the provided API URL in configuration, without trailing slash', () => {
+        it('uses the provided API URL in configuration, without trailing slash', () => {
           emitter = new EventEmitter();
           const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom });
-          return assert.equal(
+          assert.equal(
             apiaryReporter.configuration.apiUrl,
             'https://api.example.com:1234'
           );
@@ -223,7 +223,7 @@ describe('ApiaryReporter', () => {
           apiaryApiUrl: 'https://api.example.com:1234'
         };
 
-        return it('should use API URL without double slashes', (done) => {
+        it('should use API URL without double slashes', (done) => {
           emitter = new EventEmitter();
           const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom });
           return apiaryReporter._performRequestAsync('/', 'POST', '', (error) => {
@@ -250,7 +250,7 @@ describe('ApiaryReporter', () => {
           })
         );
 
-        return describe('when provided with non-root path', () =>
+        describe('when provided with non-root path', () =>
           it('should use API URL without double slashes', (done) => {
             emitter = new EventEmitter();
             const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom });
@@ -262,7 +262,7 @@ describe('ApiaryReporter', () => {
         );
       });
 
-      return describe('when server is not available', () => {
+      describe('when server is not available', () => {
         beforeEach(() => {
           nock.enableNetConnect();
           return nock.cleanAll();
@@ -277,7 +277,7 @@ describe('ApiaryReporter', () => {
           });
         });
 
-        return it('should set server error to true', (done) => {
+        it('should set server error to true', (done) => {
           emitter = new EventEmitter();
           const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
           return apiaryReporter._performRequestAsync('/', 'POST', '', () => {
@@ -394,7 +394,7 @@ describe('ApiaryReporter', () => {
         });
       });
 
-      return describe('serverError is true', () =>
+      describe('serverError is true', () =>
         it('should not do anything', (done) => {
           emitter = new EventEmitter();
           const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
@@ -461,7 +461,7 @@ describe('ApiaryReporter', () => {
         });
       });
 
-      return describe('serverError is true', () =>
+      describe('serverError is true', () =>
         it('should not do anything', (done) => {
           emitter = new EventEmitter();
           const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
@@ -497,7 +497,7 @@ describe('ApiaryReporter', () => {
         });
       });
 
-      return describe('when serverError is true', () =>
+      describe('when serverError is true', () =>
         it('should not do anything', (done) => {
           emitter = new EventEmitter();
           const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
@@ -556,7 +556,7 @@ describe('ApiaryReporter', () => {
         });
       });
 
-      return describe('when serverError is true', () =>
+      describe('when serverError is true', () =>
         it('should not do anything', (done) => {
           emitter = new EventEmitter();
           const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
@@ -625,7 +625,7 @@ describe('ApiaryReporter', () => {
             });
 
 
-            return it('should set error message', (done) => {
+            it('should set error message', (done) => {
               emitter = new EventEmitter();
               const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
               apiaryReporter.remoteId = runId;
@@ -665,7 +665,7 @@ describe('ApiaryReporter', () => {
           });
         });
 
-        return it('should set descriptive error', (done) => {
+        it('should set descriptive error', (done) => {
           emitter = new EventEmitter();
           const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
           apiaryReporter.remoteId = runId;
@@ -680,7 +680,7 @@ describe('ApiaryReporter', () => {
       });
 
 
-      return describe('when serverError is true', () =>
+      describe('when serverError is true', () =>
         it('should not do anything', (done) => {
           emitter = new EventEmitter();
           const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
@@ -695,7 +695,7 @@ describe('ApiaryReporter', () => {
       );
     });
 
-    return describe('when ending', () => {
+    describe('when ending', () => {
       let call = null;
       const runId = '507f1f77bcf86cd799439011';
       let requestBody = null;
@@ -761,7 +761,7 @@ describe('ApiaryReporter', () => {
         });
       });
 
-      return describe('serverError is true', () =>
+      describe('serverError is true', () =>
         it('should not do enything', (done) => {
           emitter = new EventEmitter();
           const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
@@ -776,7 +776,7 @@ describe('ApiaryReporter', () => {
     });
   });
 
-  return describe('with Apiary API token and suite id', () => {
+  describe('with Apiary API token and suite id', () => {
     let stats = {};
     let tests = [];
     let test = {};
@@ -968,7 +968,7 @@ describe('ApiaryReporter', () => {
         });
       });
 
-      return it('should send the test-run as non-public', (done) => {
+      it('should send the test-run as non-public', (done) => {
         emitter = new EventEmitter();
         const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { server: 'http://my.server.co:8080', custom: { apiaryReporterEnv: env } });
         return emitter.emit('start', blueprintData, () => {
@@ -992,7 +992,7 @@ describe('ApiaryReporter', () => {
           .reply(201, { _id: runId });
       });
 
-      return it('should call "create new test step" HTTP resource', (done) => {
+      it('should call "create new test step" HTTP resource', (done) => {
         emitter = new EventEmitter();
         const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
         apiaryReporter.remoteId = runId;
@@ -1016,7 +1016,7 @@ describe('ApiaryReporter', () => {
           .reply(201, { _id: runId });
       });
 
-      return it('should call "create new test step" HTTP resource', (done) => {
+      it('should call "create new test step" HTTP resource', (done) => {
         emitter = new EventEmitter();
         const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
         apiaryReporter.remoteId = runId;
@@ -1028,7 +1028,7 @@ describe('ApiaryReporter', () => {
     });
 
 
-    return describe('when ending', () => {
+    describe('when ending', () => {
       let call = null;
       const runId = '507f1f77bcf86cd799439011';
 
@@ -1060,7 +1060,7 @@ describe('ApiaryReporter', () => {
         });
       });
 
-      return it('should return reportUrl from testRun entity', (done) => {
+      it('should return reportUrl from testRun entity', (done) => {
         emitter = new EventEmitter();
         const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
         apiaryReporter.remoteId = runId;

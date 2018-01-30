@@ -79,7 +79,7 @@ describe('Sanitation of Reported Data', () => {
 
     it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
-      return assert.equal(dreddRuntimeInfo.stats.tests, 1);
+      assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
@@ -90,11 +90,11 @@ describe('Sanitation of Reported Data', () => {
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
-      return assert.notInclude(test, sensitiveValue);
+      assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', () => {
+    it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
-      return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
@@ -114,7 +114,7 @@ describe('Sanitation of Reported Data', () => {
 
     it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
-      return assert.equal(dreddRuntimeInfo.stats.tests, 1);
+      assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
@@ -123,16 +123,16 @@ describe('Sanitation of Reported Data', () => {
     );
     it('emitted test data does not contain response body', () => {
       assert.equal(events[2].test.actual.body, '');
-      return assert.equal(events[2].test.expected.body, '');
+      assert.equal(events[2].test.expected.body, '');
     });
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
-      return assert.notInclude(test, sensitiveValue);
+      assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', () => {
+    it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
-      return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
@@ -152,7 +152,7 @@ describe('Sanitation of Reported Data', () => {
 
     it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
-      return assert.equal(dreddRuntimeInfo.stats.tests, 1);
+      assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
@@ -161,16 +161,16 @@ describe('Sanitation of Reported Data', () => {
     );
     it('emitted test data does not contain confidential body attribute', () => {
       const attrs = Object.keys(JSON.parse(events[2].test.request.body));
-      return assert.deepEqual(attrs, ['name']);
+      assert.deepEqual(attrs, ['name']);
     });
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
-      return assert.notInclude(test, sensitiveValue);
+      assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', () => {
+    it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
-      return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
@@ -190,7 +190,7 @@ describe('Sanitation of Reported Data', () => {
 
     it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
-      return assert.equal(dreddRuntimeInfo.stats.tests, 1);
+      assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
@@ -202,16 +202,16 @@ describe('Sanitation of Reported Data', () => {
       assert.deepEqual(attrs, ['name']);
 
       attrs = Object.keys(JSON.parse(events[2].test.expected.body));
-      return assert.deepEqual(attrs, ['name']);
+      assert.deepEqual(attrs, ['name']);
     });
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
-      return assert.notInclude(test, sensitiveValue);
+      assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', () => {
+    it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
-      return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
@@ -231,7 +231,7 @@ describe('Sanitation of Reported Data', () => {
 
     it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
-      return assert.equal(dreddRuntimeInfo.stats.tests, 1);
+      assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
@@ -240,10 +240,10 @@ describe('Sanitation of Reported Data', () => {
     );
     it('emitted test data does contain the sensitive data censored', () => {
       assert.include(events[2].test.actual.body, '--- CENSORED ---');
-      return assert.include(events[2].test.expected.body, '--- CENSORED ---');
+      assert.include(events[2].test.expected.body, '--- CENSORED ---');
     });
     it('sensitive data cannot be found anywhere in the emitted test data', () => assert.notInclude(JSON.stringify(events), sensitiveValue));
-    return it('sensitive data cannot be found anywhere in Dredd output', () => assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue));
+    it('sensitive data cannot be found anywhere in Dredd output', () => assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue));
   });
 
   describe('Sanitation of Request Headers', () => {
@@ -262,7 +262,7 @@ describe('Sanitation of Reported Data', () => {
 
     it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
-      return assert.equal(dreddRuntimeInfo.stats.tests, 1);
+      assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
@@ -277,17 +277,17 @@ describe('Sanitation of Reported Data', () => {
         }
         return result;
       })());
-      return assert.notInclude(names, sensitiveHeaderName);
+      assert.notInclude(names, sensitiveHeaderName);
     });
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events).toLowerCase();
       assert.notInclude(test, sensitiveHeaderName);
-      return assert.notInclude(test, sensitiveValue);
+      assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', () => {
+    it('sensitive data cannot be found anywhere in Dredd output', () => {
       const logging = dreddRuntimeInfo.logging.toLowerCase();
       assert.notInclude(logging, sensitiveHeaderName);
-      return assert.notInclude(logging, sensitiveValue);
+      assert.notInclude(logging, sensitiveValue);
     });
   });
 
@@ -307,7 +307,7 @@ describe('Sanitation of Reported Data', () => {
 
     it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
-      return assert.equal(dreddRuntimeInfo.stats.tests, 1);
+      assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
@@ -332,17 +332,17 @@ describe('Sanitation of Reported Data', () => {
         }
         return result1;
       })());
-      return assert.notInclude(names, sensitiveHeaderName);
+      assert.notInclude(names, sensitiveHeaderName);
     });
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events).toLowerCase();
       assert.notInclude(test, sensitiveHeaderName);
-      return assert.notInclude(test, sensitiveValue);
+      assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', () => {
+    it('sensitive data cannot be found anywhere in Dredd output', () => {
       const logging = dreddRuntimeInfo.logging.toLowerCase();
       assert.notInclude(logging, sensitiveHeaderName);
-      return assert.notInclude(logging, sensitiveValue);
+      assert.notInclude(logging, sensitiveValue);
     });
   });
 
@@ -362,7 +362,7 @@ describe('Sanitation of Reported Data', () => {
 
     it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
-      return assert.equal(dreddRuntimeInfo.stats.tests, 1);
+      assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
@@ -371,7 +371,7 @@ describe('Sanitation of Reported Data', () => {
     );
     it('emitted test data does contain the sensitive data censored', () => assert.include(events[2].test.request.uri, 'CENSORED'));
     it('sensitive data cannot be found anywhere in the emitted test data', () => assert.notInclude(JSON.stringify(events), sensitiveValue));
-    return it('sensitive data cannot be found anywhere in Dredd output', () => assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue));
+    it('sensitive data cannot be found anywhere in Dredd output', () => assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue));
   });
 
   // This fails because it's not possible to do 'transaction.test = myOwnTestObject;'
@@ -392,7 +392,7 @@ describe('Sanitation of Reported Data', () => {
 
     it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
-      return assert.equal(dreddRuntimeInfo.stats.tests, 1);
+      assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
@@ -401,7 +401,7 @@ describe('Sanitation of Reported Data', () => {
     );
     it('emitted test data does contain the sensitive data censored', () => assert.include(JSON.stringify(events), 'CENSORED'));
     it('sensitive data cannot be found anywhere in the emitted test data', () => assert.notInclude(JSON.stringify(events), sensitiveValue));
-    return it('sensitive data cannot be found anywhere in Dredd output', () => assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue));
+    it('sensitive data cannot be found anywhere in Dredd output', () => assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue));
   });
 
   describe('Ultimate \'afterEach\' Guard Using Pattern Matching', () => {
@@ -420,7 +420,7 @@ describe('Sanitation of Reported Data', () => {
 
     it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
-      return assert.equal(dreddRuntimeInfo.stats.tests, 1);
+      assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
@@ -429,10 +429,10 @@ describe('Sanitation of Reported Data', () => {
     );
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
-      return assert.notInclude(test, sensitiveValue);
+      assert.notInclude(test, sensitiveValue);
     });
     it('sensitive data cannot be found anywhere in Dredd output', () => assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue));
-    return it('custom error message is printed', () => assert.include(dreddRuntimeInfo.logging, 'Sensitive data would be sent to Dredd reporter'));
+    it('custom error message is printed', () => assert.include(dreddRuntimeInfo.logging, 'Sensitive data would be sent to Dredd reporter'));
   });
 
   describe('Sanitation of Test Data of Passing Transaction', () => {
@@ -451,7 +451,7 @@ describe('Sanitation of Reported Data', () => {
 
     it('results in one passing test', () => {
       assert.equal(dreddRuntimeInfo.stats.passes, 1);
-      return assert.equal(dreddRuntimeInfo.stats.tests, 1);
+      assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
@@ -462,11 +462,11 @@ describe('Sanitation of Reported Data', () => {
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
-      return assert.notInclude(test, sensitiveValue);
+      assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', () => {
+    it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
-      return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
@@ -485,7 +485,7 @@ describe('Sanitation of Reported Data', () => {
 
     it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
-      return assert.equal(dreddRuntimeInfo.stats.tests, 1);
+      assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
@@ -494,17 +494,17 @@ describe('Sanitation of Reported Data', () => {
     );
     it('emitted test is failed', () => {
       assert.equal(events[2].test.status, 'fail');
-      return assert.include(events[2].test.results.general.results[0].message.toLowerCase(), 'fail');
+      assert.include(events[2].test.results.general.results[0].message.toLowerCase(), 'fail');
     });
     it('emitted test data results contain just \'general\' section', () => assert.deepEqual(Object.keys(events[2].test.results), ['general']));
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
-      return assert.notInclude(test, sensitiveValue);
+      assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', () => {
+    it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
-      return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
@@ -524,7 +524,7 @@ describe('Sanitation of Reported Data', () => {
 
     it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
-      return assert.equal(dreddRuntimeInfo.stats.tests, 1);
+      assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
@@ -534,17 +534,17 @@ describe('Sanitation of Reported Data', () => {
     it('emitted test data does not contain request body', () => assert.equal(events[2].test.request.body, ''));
     it('emitted test is failed', () => {
       assert.equal(events[2].test.status, 'fail');
-      return assert.include(events[2].test.results.general.results[0].message.toLowerCase(), 'fail');
+      assert.include(events[2].test.results.general.results[0].message.toLowerCase(), 'fail');
     });
     it('emitted test data results contain all regular sections', () => assert.deepEqual(Object.keys(events[2].test.results), ['general', 'headers', 'body', 'statusCode']));
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
-      return assert.notInclude(test, sensitiveValue);
+      assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', () => {
+    it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
-      return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
@@ -563,7 +563,7 @@ describe('Sanitation of Reported Data', () => {
 
     it('results in one skipped test', () => {
       assert.equal(dreddRuntimeInfo.stats.skipped, 1);
-      return assert.equal(dreddRuntimeInfo.stats.tests, 1);
+      assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
@@ -573,16 +573,16 @@ describe('Sanitation of Reported Data', () => {
     it('emitted test is skipped', () => {
       assert.equal(events[2].test.status, 'skip');
       assert.deepEqual(Object.keys(events[2].test.results), ['general']);
-      return assert.include(events[2].test.results.general.results[0].message.toLowerCase(), 'skip');
+      assert.include(events[2].test.results.general.results[0].message.toLowerCase(), 'skip');
     });
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
-      return assert.notInclude(test, sensitiveValue);
+      assert.notInclude(test, sensitiveValue);
     });
-    return it('sensitive data cannot be found anywhere in Dredd output', () => {
+    it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
-      return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
@@ -602,7 +602,7 @@ describe('Sanitation of Reported Data', () => {
 
     it('results in one erroring test', () => {
       assert.equal(dreddRuntimeInfo.stats.errors, 1);
-      return assert.equal(dreddRuntimeInfo.stats.tests, 1);
+      assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
@@ -612,15 +612,15 @@ describe('Sanitation of Reported Data', () => {
     it('sensitive data leak to emitted test data', () => {
       const test = JSON.stringify(events);
       assert.include(test, sensitiveKey);
-      return assert.include(test, sensitiveValue);
+      assert.include(test, sensitiveValue);
     });
-    return it('sensitive data leak to Dredd output', () => {
+    it('sensitive data leak to Dredd output', () => {
       assert.include(dreddRuntimeInfo.logging, sensitiveKey);
-      return assert.include(dreddRuntimeInfo.logging, sensitiveValue);
+      assert.include(dreddRuntimeInfo.logging, sensitiveValue);
     });
   });
 
-  return describe('Sanitation of Test Data of Transaction With Secured Erroring Hooks', () => {
+  describe('Sanitation of Test Data of Transaction With Secured Erroring Hooks', () => {
     let dreddRuntimeInfo;
 
     beforeEach((done) => {
@@ -636,7 +636,7 @@ describe('Sanitation of Reported Data', () => {
 
     it('results in one failed test', () => {
       assert.equal(dreddRuntimeInfo.stats.failures, 1);
-      return assert.equal(dreddRuntimeInfo.stats.tests, 1);
+      assert.equal(dreddRuntimeInfo.stats.tests, 1);
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
@@ -646,12 +646,12 @@ describe('Sanitation of Reported Data', () => {
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
-      return assert.notInclude(test, sensitiveValue);
+      assert.notInclude(test, sensitiveValue);
     });
     it('sensitive data cannot be found anywhere in Dredd output', () => {
       assert.notInclude(dreddRuntimeInfo.logging, sensitiveKey);
-      return assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
+      assert.notInclude(dreddRuntimeInfo.logging, sensitiveValue);
     });
-    return it('custom error message is printed', () => assert.include(dreddRuntimeInfo.logging, 'Unexpected exception in hooks'));
+    it('custom error message is printed', () => assert.include(dreddRuntimeInfo.logging, 'Unexpected exception in hooks'));
   });
 });

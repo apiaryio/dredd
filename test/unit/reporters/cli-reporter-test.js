@@ -29,7 +29,7 @@ describe('CliReporter', () => {
 
     afterEach(() => loggerStub.info.restore());
 
-    return it('should write starting to the console', (done) => {
+    it('should write starting to the console', (done) => {
       const emitter = new EventEmitter();
       const cliReporter = new CliReporter(emitter, {}, {}, true);
       return emitter.emit('start', '', () => {
@@ -55,19 +55,19 @@ describe('CliReporter', () => {
       const emitter = new EventEmitter();
       const cliReporter = new CliReporter(emitter, {}, {}, true);
       emitter.emit('test pass', test);
-      return assert.isOk(loggerStub.pass.calledOnce);
+      assert.isOk(loggerStub.pass.calledOnce);
     });
 
-    return describe('when details=true', () => {
+    describe('when details=true', () => {
       beforeEach(() => sinon.spy(loggerStub, 'request'));
 
       afterEach(() => loggerStub.request.restore());
 
-      return it('should write details for passing tests', () => {
+      it('should write details for passing tests', () => {
         const emitter = new EventEmitter();
         const cliReporter = new CliReporter(emitter, {}, {}, true, true);
         emitter.emit('test pass', test);
-        return assert.isOk(loggerStub.request.calledOnce);
+        assert.isOk(loggerStub.request.calledOnce);
       });
     });
   });
@@ -85,15 +85,15 @@ describe('CliReporter', () => {
 
       afterEach(() => loggerStub.fail.restore());
 
-      return it('should write fail to the console', () => {
+      it('should write fail to the console', () => {
         const emitter = new EventEmitter();
         const cliReporter = new CliReporter(emitter, {}, {}, true);
         emitter.emit('test fail', test);
-        return assert.isOk(loggerStub.fail.calledTwice);
+        assert.isOk(loggerStub.fail.calledTwice);
       });
     });
 
-    return describe('when errors are aggregated', () => {
+    describe('when errors are aggregated', () => {
       beforeEach(() => sinon.spy(loggerStub, 'fail'));
 
       afterEach(() => loggerStub.fail.restore());
@@ -102,10 +102,10 @@ describe('CliReporter', () => {
         const emitter = new EventEmitter();
         const cliReporter = new CliReporter(emitter, {}, {}, false);
         emitter.emit('test fail', test);
-        return assert.isOk(loggerStub.fail.calledOnce);
+        assert.isOk(loggerStub.fail.calledOnce);
       });
 
-      return it('should write full failure to the console after execution is complete', (done) => {
+      it('should write full failure to the console after execution is complete', (done) => {
         const emitter = new EventEmitter();
         const cliReporter = new CliReporter(emitter, {}, {}, false);
         cliReporter.errors = [test];
@@ -129,11 +129,11 @@ describe('CliReporter', () => {
 
     afterEach(() => loggerStub.error.restore());
 
-    return it('should write error to the console', () => {
+    it('should write error to the console', () => {
       const emitter = new EventEmitter();
       const cliReporter = new CliReporter(emitter, {}, {}, false);
       emitter.emit('test error', new Error('Error'), test);
-      return assert.isOk(loggerStub.error.calledTwice);
+      assert.isOk(loggerStub.error.calledTwice);
     });
   });
 
@@ -163,7 +163,7 @@ describe('CliReporter', () => {
 
           const messages = Object.keys(loggerStub.error.args).map((value, index) => loggerStub.error.args[index][0]);
 
-          return assert.include(messages.join(), 'Error connecting');
+          assert.include(messages.join(), 'Error connecting');
         })
       )
     )(errType));
@@ -181,16 +181,16 @@ describe('CliReporter', () => {
 
     afterEach(() => loggerStub.skip.restore());
 
-    return it('should write skip to the console', () => {
+    it('should write skip to the console', () => {
       const emitter = new EventEmitter();
       const cliReporter = new CliReporter(emitter, {}, {}, false);
       emitter.emit('test skip', test);
-      return assert.isOk(loggerStub.skip.calledOnce);
+      assert.isOk(loggerStub.skip.calledOnce);
     });
   });
 
 
-  return describe('when creating report', () => {
+  describe('when creating report', () => {
     before(() =>
       test = {
         status: 'fail',
@@ -216,7 +216,7 @@ describe('CliReporter', () => {
       })
     );
 
-    return describe('when there are no tests', () =>
+    describe('when there are no tests', () =>
 
       it('should write to the console', (done) => {
         const emitter = new EventEmitter();

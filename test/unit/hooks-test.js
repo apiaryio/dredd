@@ -21,10 +21,10 @@ describe('Hooks', () => {
     it('should not add @logs or @logger when constructor options are empty', () => {
       const hooks = new Hooks();
       assert.isUndefined(hooks.logs);
-      return assert.isUndefined(hooks.logger);
+      assert.isUndefined(hooks.logger);
     });
 
-    return it('should add @logs and @logger from passed options', () => {
+    it('should add @logs and @logger from passed options', () => {
       const options = {
         logs: [{ content: 'message1' }, { content: 'message2' }],
         logger: {
@@ -35,7 +35,7 @@ describe('Hooks', () => {
 
       const hooks = new Hooks(options);
       assert.strictEqual(hooks.logs, options.logs);
-      return assert.strictEqual(hooks.logger, options.logger);
+      assert.strictEqual(hooks.logger, options.logger);
     });
   });
 
@@ -59,7 +59,7 @@ describe('Hooks', () => {
       return options.logger.error.restore();
     });
 
-    return it('should call @logger.hook when hooks.log is called with 1 argument', () => {
+    it('should call @logger.hook when hooks.log is called with 1 argument', () => {
       const hooks = new Hooks(options);
       hooks.log('messageX');
       assert.isTrue(options.logger.hook.called);
@@ -67,7 +67,7 @@ describe('Hooks', () => {
       assert.property(hooks.logs[2], 'timestamp');
       assert.propertyVal(hooks.logs[0], 'content', 'message1');
       assert.propertyVal(hooks.logs[1], 'content', 'message2');
-      return assert.propertyVal(hooks.logs[2], 'content', 'messageX');
+      assert.propertyVal(hooks.logs[2], 'content', 'messageX');
     });
   });
 
@@ -79,7 +79,7 @@ describe('Hooks', () => {
       return hooks.before('beforeHook', () => '');
     });
 
-    return it('should add to hook collection', () => assert.property(hooks.beforeHooks, 'beforeHook'));
+    it('should add to hook collection', () => assert.property(hooks.beforeHooks, 'beforeHook'));
   });
 
   describe('#beforeValidation', () => {
@@ -90,7 +90,7 @@ describe('Hooks', () => {
       return hooks.beforeValidation('beforeValidationHook', () => '');
     });
 
-    return it('should add to hook collection', () => assert.property(hooks.beforeValidationHooks, 'beforeValidationHook'));
+    it('should add to hook collection', () => assert.property(hooks.beforeValidationHooks, 'beforeValidationHook'));
   });
 
   describe('#after', () => {
@@ -101,7 +101,7 @@ describe('Hooks', () => {
       return hooks.after('afterHook', () => '');
     });
 
-    return it('should add to hook collection', () => assert.property(hooks.afterHooks, 'afterHook'));
+    it('should add to hook collection', () => assert.property(hooks.afterHooks, 'afterHook'));
   });
 
   describe('#beforeAll', () => {
@@ -112,7 +112,7 @@ describe('Hooks', () => {
       return hooks.beforeAll(() => '');
     });
 
-    return it('should add to hook collection', () => assert.lengthOf(hooks.beforeAllHooks, 1));
+    it('should add to hook collection', () => assert.lengthOf(hooks.beforeAllHooks, 1));
   });
 
   describe('#afterAll', () => {
@@ -123,7 +123,7 @@ describe('Hooks', () => {
       return hooks.afterAll(() => '');
     });
 
-    return it('should add to hook collection', () => assert.lengthOf(hooks.afterAllHooks, 1));
+    it('should add to hook collection', () => assert.lengthOf(hooks.afterAllHooks, 1));
   });
 
   describe('#beforeEach', () => {
@@ -134,7 +134,7 @@ describe('Hooks', () => {
       return hooks.beforeEach(() => '');
     });
 
-    return it('should add to hook collection', () => assert.lengthOf(hooks.beforeEachHooks, 1));
+    it('should add to hook collection', () => assert.lengthOf(hooks.beforeEachHooks, 1));
   });
 
   describe('#beforeEachValidation', () => {
@@ -145,7 +145,7 @@ describe('Hooks', () => {
       return hooks.beforeEachValidation(() => '');
     });
 
-    return it('should add to hook collection', () => assert.lengthOf(hooks.beforeEachValidationHooks, 1));
+    it('should add to hook collection', () => assert.lengthOf(hooks.beforeEachValidationHooks, 1));
   });
 
 
@@ -157,10 +157,10 @@ describe('Hooks', () => {
       return hooks.afterEach(() => '');
     });
 
-    return it('should add to hook collection', () => assert.lengthOf(hooks.afterEachHooks, 1));
+    it('should add to hook collection', () => assert.lengthOf(hooks.afterEachHooks, 1));
   });
 
-  return describe('#dumpHooksFunctionsToStrings', () => {
+  describe('#dumpHooksFunctionsToStrings', () => {
     let hooks = null;
 
     beforeEach(() => {
@@ -178,7 +178,7 @@ describe('Hooks', () => {
 
     it('should return an object', () => assert.isObject(hooks.dumpHooksFunctionsToStrings()));
 
-    return describe('returned object', () => {
+    describe('returned object', () => {
       let properties = [
         'beforeAllHooks',
         'beforeEachHooks',
@@ -191,15 +191,15 @@ describe('Hooks', () => {
         (function (property) {
           it(`should have property '${property}'`, () => {
             const object = hooks.dumpHooksFunctionsToStrings();
-            return assert.property(object, property);
+            assert.property(object, property);
           });
 
           it('should be an array', () => {
             const object = hooks.dumpHooksFunctionsToStrings();
-            return assert.isArray(object[property]);
+            assert.isArray(object[property]);
           });
 
-          return describe(`all array members under property '${property}'`, () =>
+          describe(`all array members under property '${property}'`, () =>
             it('should be a string', () => {
               const object = hooks.dumpHooksFunctionsToStrings();
               return (() => {
@@ -227,12 +227,12 @@ describe('Hooks', () => {
           result.push((function (property) {
             it(`should have property '${property}'`, () => {
               const object = hooks.dumpHooksFunctionsToStrings();
-              return assert.property(object, property);
+              assert.property(object, property);
             });
 
             it('should be an object', () => {
               const object = hooks.dumpHooksFunctionsToStrings();
-              return assert.isObject(object[property]);
+              assert.isObject(object[property]);
             });
 
             describe('each object value', () =>
@@ -249,7 +249,7 @@ describe('Hooks', () => {
               })
             );
 
-            return describe('each member in that array', () =>
+            describe('each member in that array', () =>
               it('should be a string', () => {
                 const object = hooks.dumpHooksFunctionsToStrings();
                 return (() => {
