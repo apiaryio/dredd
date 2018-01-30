@@ -1,11 +1,10 @@
-require('./handle-windows-sigint')()
+require('./handle-windows-sigint')();
 
 
-ignore = ->
-  console.log('ignoring termination')
+const ignore = () => console.log('ignoring termination');
 
-process.on('SIGTERM', ignore)
-process.on('SIGINT', ignore)
+process.on('SIGTERM', ignore);
+process.on('SIGINT', ignore);
 
 
-setInterval(( -> ), 1000)
+setInterval(( function() { }), 1000);

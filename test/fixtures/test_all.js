@@ -1,8 +1,8 @@
-{after,afterAll} = require 'hooks'
+const {after,afterAll} = require('hooks');
 
-after "Machines > Machines collection > Get Machines", (transaction) ->
-  console.log "*** after"
+after("Machines > Machines collection > Get Machines", transaction => console.log("*** after"));
 
-afterAll (done) ->
-  console.log "*** afterAll"
-  done()
+afterAll(function(done) {
+  console.log("*** afterAll");
+  return done();
+});

@@ -1,13 +1,14 @@
-require('./handle-windows-sigint')()
+require('./handle-windows-sigint')();
 
 
-exit = ->
-  process.stdout.write('exiting\n')
-  process.exit(3)
+const exit = function() {
+  process.stdout.write('exiting\n');
+  return process.exit(3);
+};
 
-process.on('SIGTERM', exit)
-process.on('SIGINT', exit)
+process.on('SIGTERM', exit);
+process.on('SIGINT', exit);
 
 
-process.stdout.write('standard output text\n')
-setInterval(( -> ), 100)
+process.stdout.write('standard output text\n');
+setInterval(( function() { }), 100);

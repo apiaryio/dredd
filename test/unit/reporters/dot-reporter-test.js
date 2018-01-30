@@ -1,155 +1,171 @@
-{assert} = require 'chai'
-sinon = require 'sinon'
-proxyquire = require('proxyquire').noCallThru()
+const {assert} = require('chai');
+const sinon = require('sinon');
+const proxyquire = require('proxyquire').noCallThru();
 
-{EventEmitter} = require 'events'
-loggerStub = require '../../../src/logger'
-DotReporter = proxyquire '../../../src/reporters/dot-reporter', {
+const {EventEmitter} = require('events');
+const loggerStub = require('../../../src/logger');
+const DotReporter = proxyquire('../../../src/reporters/dot-reporter', {
   './../logger' : loggerStub
-}
+});
 
-describe 'DotReporter', () ->
+describe('DotReporter', function() {
 
-  stats = {}
-  test = []
-  emitter = {}
-  dotReporter = {}
+  let stats = {};
+  let test = [];
+  let emitter = {};
+  let dotReporter = {};
 
-  before () ->
-    loggerStub.transports.console.silent = true
+  before(() => loggerStub.transports.console.silent = true);
 
-  after () ->
-    loggerStub.transports.console.silent = false
+  after(() => loggerStub.transports.console.silent = false);
 
-  beforeEach () ->
-    stats =
-      tests: 0
-      failures: 0
-      errors: 0
-      passes: 0
-      skipped: 0
-      start: 0
-      end: 0
+  beforeEach(function() {
+    stats = {
+      tests: 0,
+      failures: 0,
+      errors: 0,
+      passes: 0,
+      skipped: 0,
+      start: 0,
+      end: 0,
       duration: 0
-    tests = []
-    emitter = new EventEmitter()
-    dotReporter = new DotReporter(emitter, stats, tests)
+    };
+    const tests = [];
+    emitter = new EventEmitter();
+    return dotReporter = new DotReporter(emitter, stats, tests);
+  });
 
-  describe 'when starting', () ->
+  describe('when starting', function() {
 
-    beforeEach () ->
-      sinon.spy loggerStub, 'info'
+    beforeEach(() => sinon.spy(loggerStub, 'info'));
 
-    afterEach () ->
-      loggerStub.info.restore()
+    afterEach(() => loggerStub.info.restore());
 
-    it 'should log that testing has begun', () ->
-      emitter.emit 'start', '', () ->
-        assert.isOk loggerStub.info.called
+    return it('should log that testing has begun', () =>
+      emitter.emit('start', '', () => assert.isOk(loggerStub.info.called))
+    );
+  });
 
-  describe 'when ending', () ->
+  describe('when ending', function() {
 
-    beforeEach () ->
-      stats.tests = 1
-      sinon.spy loggerStub, 'complete'
-      sinon.stub dotReporter, 'write'
+    beforeEach(function() {
+      stats.tests = 1;
+      sinon.spy(loggerStub, 'complete');
+      return sinon.stub(dotReporter, 'write');
+    });
 
-    afterEach () ->
-      loggerStub.complete.restore()
-      dotReporter.write.restore()
+    afterEach(function() {
+      loggerStub.complete.restore();
+      return dotReporter.write.restore();
+    });
 
-    it 'should log that testing is complete', () ->
-      emitter.emit 'end', () ->
-        assert.isOk loggerStub.complete.calledTwice
+    it('should log that testing is complete', () =>
+      emitter.emit('end', () => assert.isOk(loggerStub.complete.calledTwice))
+    );
 
-    describe 'when there are failures', () ->
+    return describe('when there are failures', function() {
 
-      before () ->
-        test =
-          status: 'fail'
+      before(() =>
+        test = {
+          status: 'fail',
           title: 'failing test'
+        }
+      );
 
-      beforeEach () ->
-        dotReporter.errors = [test]
-        dotReporter.stats.tests = 1
-        emitter.emit 'test start', test
-        sinon.spy loggerStub, 'fail'
+      beforeEach(function() {
+        dotReporter.errors = [test];
+        dotReporter.stats.tests = 1;
+        emitter.emit('test start', test);
+        return sinon.spy(loggerStub, 'fail');
+      });
 
-      afterEach () ->
-        loggerStub.fail.restore()
+      afterEach(() => loggerStub.fail.restore());
 
-      it 'should log the failures at the end of testing', (done) ->
-        emitter.emit 'end', () ->
-          assert.isOk loggerStub.fail.called
-          done()
+      return it('should log the failures at the end of testing', done =>
+        emitter.emit('end', function() {
+          assert.isOk(loggerStub.fail.called);
+          return done();
+        })
+      );
+    });
+  });
 
-  describe 'when test passes', () ->
+  describe('when test passes', function() {
 
-    before () ->
-      test =
-        status: 'pass'
+    before(() =>
+      test = {
+        status: 'pass',
         title: 'Passing Test'
+      }
+    );
 
-    beforeEach () ->
-      sinon.stub dotReporter, 'write'
-      emitter.emit 'test start', test
-      emitter.emit 'test pass', test
+    beforeEach(function() {
+      sinon.stub(dotReporter, 'write');
+      emitter.emit('test start', test);
+      return emitter.emit('test pass', test);
+    });
 
-    after () ->
-      dotReporter.write.restore()
+    after(() => dotReporter.write.restore());
 
-    it 'should write a .', () ->
-      assert.isOk dotReporter.write.calledWith '.'
+    return it('should write a .', () => assert.isOk(dotReporter.write.calledWith('.')));
+  });
 
-  describe 'when test is skipped', () ->
-    before () ->
-      test =
-        status: 'skipped'
+  describe('when test is skipped', function() {
+    before(() =>
+      test = {
+        status: 'skipped',
         title: 'Skipped Test'
+      }
+    );
 
-    beforeEach () ->
-      sinon.stub dotReporter, 'write'
-      emitter.emit 'test start', test
-      emitter.emit 'test skip', test
+    beforeEach(function() {
+      sinon.stub(dotReporter, 'write');
+      emitter.emit('test start', test);
+      return emitter.emit('test skip', test);
+    });
 
-    after () ->
-      dotReporter.write.restore()
+    after(() => dotReporter.write.restore());
 
-    it 'should write a -', () ->
-      assert.isOk dotReporter.write.calledWith('-')
+    return it('should write a -', () => assert.isOk(dotReporter.write.calledWith('-')));
+  });
 
-  describe 'when test fails', () ->
+  describe('when test fails', function() {
 
-    before () ->
-      test =
-        status: 'failed'
+    before(() =>
+      test = {
+        status: 'failed',
         title: 'Failed Test'
+      }
+    );
 
-    beforeEach () ->
-      sinon.stub dotReporter, 'write'
-      emitter.emit 'test start', test
-      emitter.emit 'test fail', test
+    beforeEach(function() {
+      sinon.stub(dotReporter, 'write');
+      emitter.emit('test start', test);
+      return emitter.emit('test fail', test);
+    });
 
-    after () ->
-      dotReporter.write.restore()
+    after(() => dotReporter.write.restore());
 
-    it 'should write an F', () ->
-      assert.isOk dotReporter.write.calledWith('F')
+    return it('should write an F', () => assert.isOk(dotReporter.write.calledWith('F')));
+  });
 
-  describe 'when test errors', () ->
+  return describe('when test errors', function() {
 
-    before () ->
-      test =
-        status: 'error'
+    before(() =>
+      test = {
+        status: 'error',
         title: 'Errored Test'
+      }
+    );
 
-    beforeEach () ->
-      sinon.stub dotReporter, 'write'
-      emitter.emit 'test start', test
-      emitter.emit 'test error', new Error('Error'), test
+    beforeEach(function() {
+      sinon.stub(dotReporter, 'write');
+      emitter.emit('test start', test);
+      return emitter.emit('test error', new Error('Error'), test);
+    });
 
-    after () ->
-      dotReporter.write.restore()
+    after(() => dotReporter.write.restore());
 
-    it 'should write an E', () ->
-      assert.isOk dotReporter.write.calledWith('E')
+    return it('should write an E', () => assert.isOk(dotReporter.write.calledWith('E')));
+  });
+});

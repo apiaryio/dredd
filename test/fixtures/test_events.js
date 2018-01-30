@@ -1,5 +1,6 @@
-{afterAll} = require 'hooks'
+const {afterAll} = require('hooks');
 
-afterAll (done) ->
-  console.log "hooks.afterAll"
-  done()
+afterAll(function(done) {
+  console.log("hooks.afterAll");
+  return done();
+});
