@@ -1,6 +1,6 @@
-var hooks = require('hooks');
+const hooks = require('hooks');
 
-hooks.after('Resource > Update Resource', function(transaction, done) {
+hooks.after('Resource > Update Resource', (transaction, done) => {
   JSON.parse('💥 boom 💥');
   done();
 });

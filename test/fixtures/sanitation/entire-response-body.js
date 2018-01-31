@@ -1,6 +1,6 @@
-var hooks = require('hooks');
+const hooks = require('hooks');
 
-hooks.after('Resource > Update Resource', function(transaction, done) {
+hooks.after('Resource > Update Resource', (transaction, done) => {
   transaction.test.actual.body = '';
   transaction.test.expected.body = '';
   transaction.test.expected.bodySchema = '';

@@ -1,8 +1,6 @@
 readline = require('readline')
 
-
 ASCII_CTRL_C = 3
-
 
 # To learn about why this is needed and how it works, see
 # the 'src/child-process.coffee' file, function 'signalTerm'.
