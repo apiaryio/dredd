@@ -1,16 +1,11 @@
-/* eslint-disable
-    no-return-assign,
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
-const sinon = require('sinon');
-const proxyquire = require('proxyquire').noCallThru();
-
-const { EventEmitter } = require('events');
-const loggerStub = require('../../../src/logger');
 const fsStub = require('fs');
+const proxyquire = require('proxyquire').noCallThru();
+const sinon = require('sinon');
+
+const { assert } = require('chai');
+const { EventEmitter } = require('events');
+
+const loggerStub = require('../../../src/logger');
 
 const fsExtraStub = { mkdirp(path, cb) { return cb(); } };
 
@@ -20,17 +15,16 @@ const MarkdownReporter = proxyquire('../../../src/reporters/markdown-reporter', 
   'fs-extra': fsExtraStub
 });
 
-
 describe('MarkdownReporter', () => {
+  let mdReporter;
+  let emitter;
+  let stats;
   let test = {};
-  let emitter = {};
-  let stats = {};
-  let tests = [];
-  let mdReporter = {};
+  let tests;
 
-  before(() => loggerStub.transports.console.silent = true);
+  before(() => { loggerStub.transports.console.silent = true; });
 
-  after(() => loggerStub.transports.console.silent = false);
+  after(() => { loggerStub.transports.console.silent = false; });
 
   beforeEach(() => {
     emitter = new EventEmitter();
@@ -45,20 +39,20 @@ describe('MarkdownReporter', () => {
       duration: 0
     };
     tests = [];
-    return mdReporter = new MarkdownReporter(emitter, stats, tests, 'test.md');
+    mdReporter = new MarkdownReporter(emitter, stats, tests, 'test.md');
   });
 
 
   describe('when creating', () => {
     describe('when file exists', () => {
       before(() => {
-        sinon.stub(fsStub, 'existsSync').callsFake(path => true);
-        return sinon.stub(loggerStub, 'info');
+        sinon.stub(fsStub, 'existsSync').callsFake(() => true);
+        sinon.stub(loggerStub, 'info');
       });
 
       after(() => {
         fsStub.existsSync.restore();
-        return loggerStub.info.restore();
+        loggerStub.info.restore();
       });
 
       it('should inform about the existing file', () => assert.isOk(loggerStub.info.called));
@@ -66,18 +60,18 @@ describe('MarkdownReporter', () => {
 
     describe('when file does not exist', () => {
       before(() => {
-        sinon.stub(fsStub, 'existsSync').callsFake(path => false);
-        return sinon.stub(fsStub, 'unlinkSync');
+        sinon.stub(fsStub, 'existsSync').callsFake(() => false);
+        sinon.stub(fsStub, 'unlinkSync');
       });
 
       after(() => {
         fsStub.existsSync.restore();
-        return fsStub.unlinkSync.restore();
+        fsStub.unlinkSync.restore();
       });
 
       it('should create the file', (done) => {
         assert.isOk(fsStub.unlinkSync.notCalled);
-        return done();
+        done();
       });
     });
   });
@@ -87,7 +81,7 @@ describe('MarkdownReporter', () => {
     it('should write the title to the buffer', done =>
       emitter.emit('start', '', () => {
         assert.isOk(~mdReporter.buf.indexOf('Dredd'));
-        return done();
+        done();
       })
     )
   );
@@ -96,19 +90,19 @@ describe('MarkdownReporter', () => {
     describe('when can create output directory', () => {
       beforeEach(() => {
         sinon.stub(fsStub, 'writeFile');
-        return sinon.spy(fsExtraStub, 'mkdirp');
+        sinon.spy(fsExtraStub, 'mkdirp');
       });
 
       afterEach(() => {
         fsStub.writeFile.restore();
-        return fsExtraStub.mkdirp.restore();
+        fsExtraStub.mkdirp.restore();
       });
 
       it('should write buffer to file', (done) => {
         emitter.emit('end');
         assert.isOk(fsExtraStub.mkdirp.called);
         assert.isOk(fsStub.writeFile.called);
-        return done();
+        done();
       });
     });
 
@@ -116,13 +110,13 @@ describe('MarkdownReporter', () => {
       beforeEach(() => {
         sinon.stub(fsStub, 'writeFile');
         sinon.stub(loggerStub, 'error');
-        return sinon.stub(fsExtraStub, 'mkdirp').callsFake((path, cb) => cb('error'));
+        sinon.stub(fsExtraStub, 'mkdirp').callsFake((path, cb) => cb('error'));
       });
 
       after(() => {
         fsStub.writeFile.restore();
         loggerStub.error.restore();
-        return fsExtraStub.mkdirp.restore();
+        fsExtraStub.mkdirp.restore();
       });
 
       it('should write to log', done =>
@@ -130,7 +124,7 @@ describe('MarkdownReporter', () => {
           assert.isOk(fsExtraStub.mkdirp.called);
           assert.isOk(fsStub.writeFile.notCalled);
           assert.isOk(loggerStub.error.called);
-          return done();
+          done();
         })
       );
     });
@@ -143,12 +137,12 @@ describe('MarkdownReporter', () => {
         title: 'Passing Test'
       };
       emitter.emit('test start', test);
-      return emitter.emit('test pass', test);
+      emitter.emit('test pass', test);
     });
 
     it('should write pass to the buffer', (done) => {
       assert.isOk(~mdReporter.buf.indexOf('Pass'));
-      return done();
+      done();
     });
 
     describe('when details=true', () =>
@@ -157,7 +151,7 @@ describe('MarkdownReporter', () => {
         mdReporter.details = true;
         emitter.emit('test pass', test);
         assert.isOk(~mdReporter.buf.indexOf('Request'));
-        return done();
+        done();
       })
     );
   });
@@ -169,12 +163,12 @@ describe('MarkdownReporter', () => {
         title: 'Skipped Test'
       };
       emitter.emit('test start', test);
-      return emitter.emit('test skip', test);
+      emitter.emit('test skip', test);
     });
 
     it('should write skip to the buffer', (done) => {
       assert.isOk(~mdReporter.buf.indexOf('Skip'));
-      return done();
+      done();
     });
   });
 
@@ -185,12 +179,12 @@ describe('MarkdownReporter', () => {
         title: 'Failed Test'
       };
       emitter.emit('test start', test);
-      return emitter.emit('test fail', test);
+      emitter.emit('test fail', test);
     });
 
     it('should write fail to the buffer', (done) => {
       assert.isOk(~mdReporter.buf.indexOf('Fail'));
-      return done();
+      done();
     });
   });
 
@@ -201,12 +195,12 @@ describe('MarkdownReporter', () => {
         title: 'Errored Test'
       };
       emitter.emit('test start', test);
-      return emitter.emit('test error', new Error('Error'), test);
+      emitter.emit('test error', new Error('Error'), test);
     });
 
     it('should write error to the buffer', (done) => {
       assert.isOk(~mdReporter.buf.indexOf('Error'));
-      return done();
+      done();
     });
   });
 });

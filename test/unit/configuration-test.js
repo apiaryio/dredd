@@ -1,21 +1,15 @@
-/* eslint-disable
-    no-return-assign,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
 const clone = require('clone');
+const { assert } = require('chai');
 
 const configuration = require('../../src/configuration');
 const logger = require('../../src/logger');
-
 
 describe('configuration.applyLoggingOptions()', () => {
   let loggerSettings;
   let config;
 
-  beforeEach(() => loggerSettings = clone(logger.transports.console));
-  afterEach(() => logger.transports.console = loggerSettings);
+  beforeEach(() => { loggerSettings = clone(logger.transports.console); });
+  afterEach(() => { logger.transports.console = loggerSettings; });
 
   it('applies logging options', () => {
     config = configuration.applyLoggingOptions({
@@ -45,13 +39,12 @@ describe('configuration.applyLoggingOptions()', () => {
   );
 });
 
-
 describe('configuration.applyConfiguration()', () => {
   let loggerSettings;
   let config;
 
-  beforeEach(() => loggerSettings = clone(logger.transports.console));
-  afterEach(() => logger.transports.console = loggerSettings);
+  beforeEach(() => { loggerSettings = clone(logger.transports.console); });
+  afterEach(() => { logger.transports.console = loggerSettings; });
 
   it('applies logging options', () => {
     config = configuration.applyConfiguration({

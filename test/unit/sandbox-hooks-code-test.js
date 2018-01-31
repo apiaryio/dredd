@@ -1,10 +1,3 @@
-/* eslint-disable
-    no-multi-str,
-    no-shadow,
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
 const { assert } = require('chai');
 
 const sandboxHooksCode = require('../../src/sandbox-hooks-code');
@@ -14,12 +7,10 @@ describe('sandboxHooksCode(hooksCode, callback)', () => {
 
   describe('when hookscode explodes', () =>
     it('should return an error in callback', (done) => {
-      const hooksCode = '\
-throw(new Error("Exploded during sandboxed processing of hook file"));\
-';
-      return sandboxHooksCode(hooksCode, (err, result) => {
+      const hooksCode = '\nthrow(new Error("Exploded during sandboxed processing of hook file"));\n';
+      sandboxHooksCode(hooksCode, (err) => {
         assert.include(err, 'sandbox');
-        return done();
+        done();
       });
     })
   );
@@ -27,23 +18,18 @@ throw(new Error("Exploded during sandboxed processing of hook file"));\
   describe('context of code adding hooks', () => {
     it('should not have access to this context', (done) => {
       const contextVar = 'a';
-      const hooksCode = '\
-contextVar = "b";\
-';
-      return sandboxHooksCode(hooksCode, (err, result) => {
+      const hooksCode = '\ncontextVar = "b";\n';
+      sandboxHooksCode(hooksCode, () => {
         assert.equal(contextVar, 'a');
-        return done();
+        done();
       });
     });
 
     it('should not have access to require', (done) => {
-      const contextVar = '';
-      const hooksCode = '\
-require(\'fs\');\
-';
-      return sandboxHooksCode(hooksCode, (err, result) => {
+      const hooksCode = '\nrequire(\'fs\');\n';
+      sandboxHooksCode(hooksCode, (err) => {
         assert.include(err, 'require');
-        return done();
+        done();
       });
     });
 
@@ -58,28 +44,26 @@ require(\'fs\');\
       'beforeValidation'
     ];
 
-    for (const name of functions) {
-      (name =>
-        it(`should have defined function '${name}'`, (done) => {
-          const hooksCode = `\
+    functions.forEach((name) => {
+      it(`should have defined function '${name}'`, (done) => {
+        const hooksCode = `\
 if(typeof(${name}) !== 'function'){
-  throw(new Error('${name} is not a function'))
+throw(new Error('${name} is not a function'))
 }\
 `;
-          return sandboxHooksCode(hooksCode, (err, result) => {
-            assert.isUndefined(err);
-            return done();
-          });
-        })
-      )(name);
-    }
+        sandboxHooksCode(hooksCode, (err) => {
+          assert.isUndefined(err);
+          done();
+        });
+      });
+    });
 
     it('should pass result object to the second callback argument', (done) => {
       const hooksCode = '';
-      return sandboxHooksCode(hooksCode, (err, result) => {
+      sandboxHooksCode(hooksCode, (err, result) => {
         if (err) { return done(err); }
         assert.isObject(result);
-        return done();
+        done();
       });
     });
   });
@@ -96,7 +80,7 @@ if(typeof(${name}) !== 'function'){
       'beforeEachValidationHooks'
     ];
 
-    return Array.from(properties).map(property => (property =>
+    properties.forEach((property) => {
       it(`should have property ${property}`, (done) => {
         const hooksCode = `\
 var dummyFunc = function(data){
@@ -113,13 +97,12 @@ beforeEachValidation(dummyFunc);
 beforeValidation('Transaction Name', dummyFunc);\
 `;
 
-        return sandboxHooksCode(hooksCode, (err, result) => {
+        sandboxHooksCode(hooksCode, (err, result) => {
           if (err) { return done(err); }
           assert.property(result, property);
-          return done();
+          done();
         });
-      })
-    )(property));
+      });
+    });
   });
 });
-

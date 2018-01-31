@@ -1,16 +1,13 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-const { assert } = require('chai');
 const clone = require('clone');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
+const { assert } = require('chai');
 
 const hooksLogStubSpy = sinon.spy(require('../../src/hooks-log'));
 
 const hooksLogSandboxed = proxyquire('../../src/hooks-log-sandboxed', {
   './hooks-log': hooksLogStubSpy
 });
-
 
 describe('hooksLogSandboxed()', () => {
   const exampleLog = [
@@ -59,7 +56,7 @@ describe('hooksLogSandboxed()', () => {
       assert.equal(hooksLogStubSpy.callCount, 1);
       const call = hooksLogStubSpy.getCall(0);
       assert.deepEqual(call.args[0][0], exampleLog[0]);
-      assert.isNull(call.args[1]); // second argument is logger, but sandbox log does not use it
+      assert.isNull(call.args[1]); // Second argument is logger, but sandbox log does not use it
       assert.equal(call.args[2], 'writing elsewhere');
       assert.isUndefined(call.args[3]);
       assert.isUndefined(call.args[4]);

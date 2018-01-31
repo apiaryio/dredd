@@ -1,16 +1,11 @@
-/* eslint-disable
-    no-return-assign,
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
-const sinon = require('sinon');
-const proxyquire = require('proxyquire').noCallThru();
-
-const { EventEmitter } = require('events');
-const loggerStub = require('../../../src/logger');
 const fsStub = require('fs');
+const proxyquire = require('proxyquire').noCallThru();
+const sinon = require('sinon');
+
+const { assert } = require('chai');
+const { EventEmitter } = require('events');
+
+const loggerStub = require('../../../src/logger');
 
 const fsExtraStub = { mkdirp(path, cb) { return cb(); } };
 
@@ -20,17 +15,16 @@ const HtmlReporter = proxyquire('../../../src/reporters/html-reporter', {
   'fs-extra': fsExtraStub
 });
 
-
 describe('HtmlReporter', () => {
+  let emitter;
+  let htmlReporter;
+  let stats;
   let test = {};
-  let emitter = {};
-  let stats = {};
-  let tests = [];
-  let htmlReporter = {};
+  let tests;
 
-  before(() => loggerStub.transports.console.silent = true);
+  before(() => { loggerStub.transports.console.silent = true; });
 
-  after(() => loggerStub.transports.console.silent = false);
+  after(() => { loggerStub.transports.console.silent = false; });
 
   beforeEach(() => {
     emitter = new EventEmitter();
@@ -45,19 +39,19 @@ describe('HtmlReporter', () => {
       duration: 0
     };
     tests = [];
-    return htmlReporter = new HtmlReporter(emitter, stats, tests, 'test.html');
+    htmlReporter = new HtmlReporter(emitter, stats, tests, 'test.html');
   });
 
   describe('when starting', () => {
     describe('when file exists', () => {
       before(() => {
-        sinon.stub(fsStub, 'existsSync').callsFake(path => true);
-        return sinon.stub(loggerStub, 'info');
+        sinon.stub(fsStub, 'existsSync').callsFake(() => true);
+        sinon.stub(loggerStub, 'info');
       });
 
       after(() => {
         fsStub.existsSync.restore();
-        return loggerStub.info.restore();
+        loggerStub.info.restore();
       });
 
       it('should inform about the existing file', () => assert.isOk(loggerStub.info.called));
@@ -65,13 +59,13 @@ describe('HtmlReporter', () => {
 
     describe('when file does not exist', () => {
       before(() => {
-        sinon.stub(fsStub, 'existsSync').callsFake(path => false);
-        return sinon.stub(fsStub, 'unlinkSync');
+        sinon.stub(fsStub, 'existsSync').callsFake(() => false);
+        sinon.stub(fsStub, 'unlinkSync');
       });
 
       after(() => {
         fsStub.existsSync.restore();
-        return fsStub.unlinkSync.restore();
+        fsStub.unlinkSync.restore();
       });
 
       it('should not attempt to delete a file', () => assert.isOk(fsStub.unlinkSync.notCalled));
@@ -80,30 +74,30 @@ describe('HtmlReporter', () => {
     it('should write the prelude to the buffer', done =>
       emitter.emit('start', '', () => {
         assert.isOk(~htmlReporter.buf.indexOf('Dredd'));
-        return done();
+        done();
       })
     );
   });
 
   describe('when ending', () => {
-    before(() => stats.tests = 1);
+    before(() => { stats.tests = 1; });
 
     describe('when can create output directory', () => {
       beforeEach(() => {
         sinon.stub(fsStub, 'writeFile').callsFake((path, data, callback) => callback());
-        return sinon.spy(fsExtraStub, 'mkdirp');
+        sinon.spy(fsExtraStub, 'mkdirp');
       });
 
       afterEach(() => {
         fsStub.writeFile.restore();
-        return fsExtraStub.mkdirp.restore();
+        fsExtraStub.mkdirp.restore();
       });
 
       it('should write the file', done =>
         emitter.emit('end', () => {
           assert.isOk(fsExtraStub.mkdirp.called);
           assert.isOk(fsStub.writeFile.called);
-          return done();
+          done();
         })
       );
     });
@@ -112,13 +106,13 @@ describe('HtmlReporter', () => {
       beforeEach(() => {
         sinon.stub(loggerStub, 'error');
         sinon.stub(fsStub, 'writeFile').callsFake((path, data, callback) => callback());
-        return sinon.stub(fsExtraStub, 'mkdirp').callsFake((path, cb) => cb('error'));
+        sinon.stub(fsExtraStub, 'mkdirp').callsFake((path, cb) => cb('error'));
       });
 
       after(() => {
         loggerStub.error.restore();
         fsStub.writeFile.restore();
-        return fsExtraStub.mkdirp.restore();
+        fsExtraStub.mkdirp.restore();
       });
 
       it('should write to log', done =>
@@ -126,19 +120,19 @@ describe('HtmlReporter', () => {
           assert.isOk(fsExtraStub.mkdirp.called);
           assert.isOk(fsStub.writeFile.notCalled);
           assert.isOk(loggerStub.error.called);
-          return done();
+          done();
         })
       );
     });
   });
 
   describe('when test passes', () => {
-    before(() =>
+    before(() => {
       test = {
         status: 'pass',
         title: 'Passing Test'
-      }
-    );
+      };
+    });
 
     it('should call the pass event', () => {
       emitter.emit('test start', test);
@@ -157,12 +151,12 @@ describe('HtmlReporter', () => {
   });
 
   describe('when test is skipped', () => {
-    before(() =>
+    before(() => {
       test = {
         status: 'skipped',
         title: 'Skipped Test'
-      }
-    );
+      };
+    });
 
     it('should call the skip event', () => {
       emitter.emit('test start', test);
@@ -172,12 +166,12 @@ describe('HtmlReporter', () => {
   });
 
   describe('when test fails', () => {
-    before(() =>
+    before(() => {
       test = {
         status: 'failed',
         title: 'Failed Test'
-      }
-    );
+      };
+    });
 
     it('should call the fail event', () => {
       emitter.emit('test start', test);
@@ -187,12 +181,12 @@ describe('HtmlReporter', () => {
   });
 
   describe('when test errors', () => {
-    before(() =>
+    before(() => {
       test = {
         status: 'error',
         title: 'Errored Test'
-      }
-    );
+      };
+    });
 
     it('should call the error event', () => {
       emitter.emit('test start', test);

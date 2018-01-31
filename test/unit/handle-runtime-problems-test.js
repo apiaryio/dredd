@@ -1,12 +1,7 @@
-/* eslint-disable
-    no-return-assign,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-
-const { assert } = require('chai');
-const sinon = require('sinon');
 const proxyquire = require('proxyquire');
+const sinon = require('sinon');
+const { assert } = require('chai');
+
 const dreddTransactions = require('dredd-transactions');
 
 const logger = require('../../src/logger');
@@ -15,18 +10,16 @@ const handleRuntimeProblems = proxyquire('../../src/handle-runtime-problems',
   { './logger': logger }
 );
 
-
-const prepareData = (apiDescriptionDocument, filename, done) =>
+function prepareData(apiDescriptionDocument, filename, done) {
   dreddTransactions.compile(apiDescriptionDocument, filename, (err, { annotations }) => {
     if (err) { return done(err); }
 
     const data = {};
     data[filename] = { raw: apiDescriptionDocument, filename, annotations };
 
-    return done(null, data);
-  })
-;
-
+    done(null, data);
+  });
+}
 
 describe('handleRuntimeProblems()', () => {
   let warnOutput;
@@ -36,12 +29,13 @@ describe('handleRuntimeProblems()', () => {
     warnOutput = '';
     errorOutput = '';
 
-    sinon.stub(logger, 'warn').callsFake((...args) => warnOutput += args.join(' ').toLowerCase());
-    return sinon.stub(logger, 'error').callsFake((...args) => errorOutput += args.join(' ').toLowerCase());
+    sinon.stub(logger, 'warn').callsFake((...args) => { warnOutput += args.join(' ').toLowerCase(); });
+    sinon.stub(logger, 'error').callsFake((...args) => { errorOutput += args.join(' ').toLowerCase(); });
   });
+
   afterEach(() => {
     logger.warn.restore();
-    return logger.error.restore();
+    logger.error.restore();
   });
 
   describe('Prints parser error', () => {
@@ -58,14 +52,14 @@ FORMAT: 1A
       prepareData(apiDescriptionDocument, filename, (err, data) => {
         if (err) { return done(err); }
         error = handleRuntimeProblems(data);
-        return done();
+        done();
       })
     );
 
     it('returns error', () => assert.isOk(error));
     it('has no warning output', () => assert.equal(warnOutput, ''));
     it('has error output', () => assert.isOk(errorOutput));
-    return context('the error output', () => {
+    context('the error output', () => {
       it('mentions it is from parser', () => assert.include(errorOutput, 'parser'));
       it('mentions it is error', () => assert.include(errorOutput, 'error'));
       it('mentions the filename', () => assert.include(errorOutput, filename));
@@ -90,14 +84,14 @@ FORMAT: 1A
       prepareData(apiDescriptionDocument, filename, (err, data) => {
         if (err) { return done(err); }
         error = handleRuntimeProblems(data);
-        return done();
+        done();
       })
     );
 
     it('returns no error', () => assert.notOk(error));
     it('has no error output', () => assert.equal(errorOutput, ''));
     it('has warning output', () => assert.isOk(warnOutput));
-    return context('the warning output', () => {
+    context('the warning output', () => {
       it('mentions it is from parser', () => assert.include(warnOutput, 'parser'));
       it('mentions it is warning', () => assert.include(warnOutput, 'warn'));
       it('mentions the filename', () => assert.include(warnOutput, filename));
@@ -119,14 +113,14 @@ So Long, and Thanks for All the Fish!\
       prepareData(apiDescriptionDocument, filename, (err, data) => {
         if (err) { return done(err); }
         error = handleRuntimeProblems(data);
-        return done();
+        done();
       })
     );
 
     it('returns no error', () => assert.notOk(error));
     it('has no error output', () => assert.equal(errorOutput, ''));
     it('has warning output', () => assert.isOk(warnOutput));
-    return context('the warning output', () => {
+    context('the warning output', () => {
       it('mentions it is from parser', () => assert.include(warnOutput, 'parser'));
       it('mentions it is warning', () => assert.include(warnOutput, 'warning'));
       it('mentions the filename', () => assert.include(warnOutput, filename));

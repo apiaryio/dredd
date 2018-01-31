@@ -1,17 +1,9 @@
-/* eslint-disable
-    no-return-assign,
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
+const clone = require('clone');
+const fsStub = require('fs');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
-const clone = require('clone');
-
-const fsStub = require('fs');
-
 const yamlStub = require('js-yaml');
+const { assert } = require('chai');
 
 const configUtils = proxyquire('../../src/config-utils', {
   fs: fsStub,
@@ -71,19 +63,19 @@ const argvData = {
 
 describe('configUtils', () => {
   let argv = null;
-  beforeEach(() => argv = clone(argvData));
+  beforeEach(() => { argv = clone(argvData); });
 
   it('it should export an object', () => assert.isObject(configUtils));
 
   describe('save(args, path)', () => {
     beforeEach(() => {
       sinon.stub(fsStub, 'writeFileSync');
-      return sinon.spy(yamlStub, 'safeDump');
+      sinon.spy(yamlStub, 'dump');
     });
 
     afterEach(() => {
       fsStub.writeFileSync.restore();
-      return yamlStub.safeDump.restore();
+      yamlStub.dump.restore();
     });
 
     it('should be a defined function', () => assert.isFunction(configUtils.save));
@@ -132,9 +124,8 @@ describe('configUtils', () => {
     });
 
     it('should call YAML.dump', () => {
-      let call;
       configUtils.save(argv);
-      return call = yamlStub.safeDump.called;
+      assert.isOk(yamlStub.dump.called);
     });
 
     describe('when path is not given', () =>
@@ -145,7 +136,6 @@ describe('configUtils', () => {
         assert.include(args[0], 'dredd.yml');
       })
     );
-
 
     describe('when path is given', () =>
       it('should save to that path', () => {
@@ -187,7 +177,7 @@ blueprint: blueprint
 endpoint: endpoint\
 `;
 
-    beforeEach(() => sinon.stub(fsStub, 'readFileSync').callsFake(file => yamlData));
+    beforeEach(() => sinon.stub(fsStub, 'readFileSync').callsFake(() => yamlData));
 
     afterEach(() => fsStub.readFileSync.restore());
 
@@ -237,9 +227,8 @@ endpoint: endpoint\
       'customOpt2:itsValue'
     ];
 
-    it('shold return an obejct', () => {
-      let output = configUtils.parseCustom(custom);
-      return output = {};
+    it('shold return an object', () => {
+      assert.isObject(configUtils.parseCustom(custom));
     });
 
     it('should split values by first ":"', () => {

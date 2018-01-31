@@ -1,13 +1,9 @@
-/* eslint-disable
-    no-return-assign,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
-const sinon = require('sinon');
 const proxyquire = require('proxyquire').noCallThru();
+const sinon = require('sinon');
 
+const { assert } = require('chai');
 const { EventEmitter } = require('events');
+
 const loggerStub = require('../../../src/logger');
 
 const DotReporter = proxyquire('../../../src/reporters/dot-reporter', {
@@ -17,12 +13,13 @@ const DotReporter = proxyquire('../../../src/reporters/dot-reporter', {
 describe('DotReporter', () => {
   let stats = {};
   let test = [];
-  let emitter = {};
-  let dotReporter = {};
+  let tests;
+  let emitter;
+  let dotReporter;
 
-  before(() => loggerStub.transports.console.silent = true);
+  before(() => { loggerStub.transports.console.silent = true; });
 
-  after(() => loggerStub.transports.console.silent = false);
+  after(() => { loggerStub.transports.console.silent = false; });
 
   beforeEach(() => {
     stats = {
@@ -35,9 +32,9 @@ describe('DotReporter', () => {
       end: 0,
       duration: 0
     };
-    const tests = [];
+    tests = [];
     emitter = new EventEmitter();
-    return dotReporter = new DotReporter(emitter, stats, tests);
+    dotReporter = new DotReporter(emitter, stats, tests);
   });
 
   describe('when starting', () => {
@@ -54,12 +51,12 @@ describe('DotReporter', () => {
     beforeEach(() => {
       stats.tests = 1;
       sinon.spy(loggerStub, 'complete');
-      return sinon.stub(dotReporter, 'write');
+      sinon.stub(dotReporter, 'write');
     });
 
     afterEach(() => {
       loggerStub.complete.restore();
-      return dotReporter.write.restore();
+      dotReporter.write.restore();
     });
 
     it('should log that testing is complete', () =>
@@ -67,18 +64,18 @@ describe('DotReporter', () => {
     );
 
     describe('when there are failures', () => {
-      before(() =>
+      before(() => {
         test = {
           status: 'fail',
           title: 'failing test'
-        }
-      );
+        };
+      });
 
       beforeEach(() => {
         dotReporter.errors = [test];
         dotReporter.stats.tests = 1;
         emitter.emit('test start', test);
-        return sinon.spy(loggerStub, 'fail');
+        sinon.spy(loggerStub, 'fail');
       });
 
       afterEach(() => loggerStub.fail.restore());
@@ -86,24 +83,24 @@ describe('DotReporter', () => {
       it('should log the failures at the end of testing', done =>
         emitter.emit('end', () => {
           assert.isOk(loggerStub.fail.called);
-          return done();
+          done();
         })
       );
     });
   });
 
   describe('when test passes', () => {
-    before(() =>
+    before(() => {
       test = {
         status: 'pass',
         title: 'Passing Test'
-      }
-    );
+      };
+    });
 
     beforeEach(() => {
       sinon.stub(dotReporter, 'write');
       emitter.emit('test start', test);
-      return emitter.emit('test pass', test);
+      emitter.emit('test pass', test);
     });
 
     after(() => dotReporter.write.restore());
@@ -112,17 +109,17 @@ describe('DotReporter', () => {
   });
 
   describe('when test is skipped', () => {
-    before(() =>
+    before(() => {
       test = {
         status: 'skipped',
         title: 'Skipped Test'
-      }
-    );
+      };
+    });
 
     beforeEach(() => {
       sinon.stub(dotReporter, 'write');
       emitter.emit('test start', test);
-      return emitter.emit('test skip', test);
+      emitter.emit('test skip', test);
     });
 
     after(() => dotReporter.write.restore());
@@ -131,17 +128,17 @@ describe('DotReporter', () => {
   });
 
   describe('when test fails', () => {
-    before(() =>
+    before(() => {
       test = {
         status: 'failed',
         title: 'Failed Test'
-      }
-    );
+      };
+    });
 
     beforeEach(() => {
       sinon.stub(dotReporter, 'write');
       emitter.emit('test start', test);
-      return emitter.emit('test fail', test);
+      emitter.emit('test fail', test);
     });
 
     after(() => dotReporter.write.restore());
@@ -150,17 +147,17 @@ describe('DotReporter', () => {
   });
 
   describe('when test errors', () => {
-    before(() =>
+    before(() => {
       test = {
         status: 'error',
         title: 'Errored Test'
-      }
-    );
+      };
+    });
 
     beforeEach(() => {
       sinon.stub(dotReporter, 'write');
       emitter.emit('test start', test);
-      return emitter.emit('test error', new Error('Error'), test);
+      emitter.emit('test error', new Error('Error'), test);
     });
 
     after(() => dotReporter.write.restore());

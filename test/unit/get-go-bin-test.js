@@ -1,15 +1,9 @@
-/* eslint-disable
-    no-return-assign,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
-const sinon = require('sinon');
-const path = require('path');
 const childProcess = require('child_process');
+const path = require('path');
+const sinon = require('sinon');
+const { assert } = require('chai');
 
 const getGoBin = require('../../src/get-go-bin');
-
 
 describe('getGoBin()', () => {
   let goBin;
@@ -19,11 +13,12 @@ describe('getGoBin()', () => {
     goBin = process.env.GOBIN;
     delete process.env.GOBIN;
     goPath = process.env.GOPATH;
-    return delete process.env.GOPATH;
+    delete process.env.GOPATH;
   });
+
   afterEach(() => {
     process.env.GOBIN = goBin;
-    return process.env.GOPATH = goPath;
+    process.env.GOPATH = goPath;
   });
 
   describe('when $GOBIN is set', () => {
@@ -31,9 +26,9 @@ describe('getGoBin()', () => {
 
     beforeEach((done) => {
       process.env.GOBIN = path.join('dummy', 'gobin', 'path');
-      return getGoBin((...args) => {
+      getGoBin((...args) => {
         callbackArgs = args;
-        return done();
+        done();
       });
     });
 
@@ -45,9 +40,9 @@ describe('getGoBin()', () => {
 
     beforeEach((done) => {
       process.env.GOPATH = path.join('dummy', 'gopath', 'path');
-      return getGoBin((...args) => {
+      getGoBin((...args) => {
         callbackArgs = args;
-        return done();
+        done();
       });
     });
 
@@ -60,9 +55,9 @@ describe('getGoBin()', () => {
     beforeEach((done) => {
       process.env.GOBIN = path.join('dummy', 'gobin', 'path');
       process.env.GOPATH = path.join('dummy', 'gopath', 'path');
-      return getGoBin((...args) => {
+      getGoBin((...args) => {
         callbackArgs = args;
-        return done();
+        done();
       });
     });
 
@@ -74,9 +69,9 @@ describe('getGoBin()', () => {
 
     beforeEach((done) => {
       sinon.stub(childProcess, 'exec').callsFake((command, callback) => callback(null, path.join('dummy', 'gopath', 'path')));
-      return getGoBin((...args) => {
+      getGoBin((...args) => {
         callbackArgs = args;
-        return done();
+        done();
       });
     });
     afterEach(() => childProcess.exec.restore());
@@ -90,9 +85,9 @@ describe('getGoBin()', () => {
 
     beforeEach((done) => {
       sinon.stub(childProcess, 'exec').callsFake((command, callback) => callback(error));
-      return getGoBin((...args) => {
+      getGoBin((...args) => {
         callbackArgs = args;
-        return done();
+        done();
       });
     });
     afterEach(() => childProcess.exec.restore());

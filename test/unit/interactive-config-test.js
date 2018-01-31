@@ -1,15 +1,8 @@
-/* eslint-disable
-    no-return-assign,
-    no-shadow,
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
-const sinon = require('sinon');
-const proxyquire = require('proxyquire');
-const inquirerStub = require('inquirer');
 const fsStub = require('fs');
+const inquirerStub = require('inquirer');
+const proxyquire = require('proxyquire');
+const sinon = require('sinon');
+const { assert } = require('chai');
 
 const interactiveConfig = proxyquire('../../src/interactive-config', {
   inquirer: inquirerStub,
@@ -19,26 +12,25 @@ const interactiveConfig = proxyquire('../../src/interactive-config', {
 describe('interactiveConfig', () => {
   it('exports a object', () => assert.isObject(interactiveConfig));
 
-
   describe('.prompt(config, callback)', () => {
     it('is a defined function', () => assert.isFunction(interactiveConfig.prompt));
 
     describe('when I call it ', () =>
 
       it('should run inquirer', (done) => {
-        sinon.stub(inquirerStub, 'prompt').callsFake(questions => ({ then(cb) { return cb(); } }));
+        sinon.stub(inquirerStub, 'prompt').callsFake(() => ({ then(cb) { return cb(); } }));
 
-        return interactiveConfig.prompt({}, () => {
+        interactiveConfig.prompt({}, () => {
           assert.isTrue(inquirerStub.prompt.called);
-          return done();
+          done();
         });
       })
     );
   });
 
   describe('.processAnswers(config, answers, callback)', () => {
-    let answers = {};
-    let config = {};
+    let answers;
+    let config;
 
     describe('when no apiary config passed', () => {
       before(() => {
@@ -52,19 +44,19 @@ describe('interactiveConfig', () => {
           ciAdd: true
         };
 
-        return config = {
+        config = {
           _: [],
           custom: {}
         };
       });
 
       describe('config object passed to callback', () => {
-        let object = {};
+        let object;
 
         before(done =>
-          interactiveConfig.processAnswers(config, answers, (config) => {
+          interactiveConfig.processAnswers(config, answers, () => {
             object = config;
-            return done();
+            done();
           })
         );
 
@@ -88,7 +80,7 @@ describe('interactiveConfig', () => {
           ciAdd: true
         };
 
-        return config = {
+        config = {
           _: [],
           reporter: 'apiary',
           custom: {
@@ -100,12 +92,12 @@ describe('interactiveConfig', () => {
 
 
       describe('config object passed to callback', () => {
-        let object = {};
+        let object;
 
         before(done =>
-          interactiveConfig.processAnswers(config, answers, (config) => {
+          interactiveConfig.processAnswers(config, answers, () => {
             object = config;
-            return done();
+            done();
           })
         );
 

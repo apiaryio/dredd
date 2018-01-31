@@ -1,8 +1,6 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
+const drafter = require('drafter');
 const { assert } = require('chai');
 
-const drafter = require('drafter');
 const blueprintUtils = require('../../src/blueprint-utils');
 
 describe('blueprintUtils', () => {
@@ -37,11 +35,11 @@ describe('blueprintUtils', () => {
         [str.indexOf('two'), 2],
         [str.indexOf('three'), 2],
         [str.indexOf('four'), 2],
-        // keep some lines of
+        // Keep some lines of
         [str.indexOf('six'), 2],
         [str.indexOf('seven'), 2],
         [str.indexOf('eight'), 2],
-        // also add just one single line warning location
+        // Also add just one single line warning location
         [str.indexOf('ten'), 3]
       ];
       const ranges = blueprintUtils.warningLocationToRanges(location, str);
@@ -85,7 +83,7 @@ describe('blueprintUtils', () => {
         assert.isArray(ranges);
         assert.lengthOf(ranges, 1);
         assert.deepEqual(ranges, [{ start: 6, end: 7 }]);
-        return done();
+        done();
       });
     });
 
@@ -141,7 +139,7 @@ describe('blueprintUtils', () => {
 
         yup!\
 `;
-        return drafter.parse(blueprint, options, (err, parseResult) => {
+        drafter.parse(blueprint, options, (err, parseResult) => {
           if (err) { return done(err); }
 
           const annotations = (Array.from(parseResult.content).filter(node => node.element === 'annotation'));
@@ -154,7 +152,7 @@ describe('blueprintUtils', () => {
             }
             allRanges.push(blueprintUtils.warningLocationToRanges(location, blueprint));
           }
-          return done();
+          done();
         });
       });
 
@@ -167,16 +165,14 @@ describe('blueprintUtils', () => {
           'line 16',
           'lines 21-23'
         ];
-        return (() => {
-          const result = [];
-          for (let lineIndex = 0; lineIndex < expectedLines.length; lineIndex++) {
-            const expectedLine = expectedLines[lineIndex];
-            const generatedLine = blueprintUtils.rangesToLinesText(allRanges[lineIndex]);
-            assert.isString(expectedLine);
-            result.push(assert.strictEqual(generatedLine, expectedLine));
-          }
-          return result;
-        })();
+        const result = [];
+        for (let lineIndex = 0; lineIndex < expectedLines.length; lineIndex++) {
+          const expectedLine = expectedLines[lineIndex];
+          const generatedLine = blueprintUtils.rangesToLinesText(allRanges[lineIndex]);
+          assert.isString(expectedLine);
+          result.push(assert.strictEqual(generatedLine, expectedLine));
+        }
+        return result;
       });
     });
   });

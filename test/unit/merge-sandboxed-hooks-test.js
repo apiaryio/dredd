@@ -1,10 +1,5 @@
-/* eslint-disable
-    no-return-assign,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
 const clone = require('clone');
+const { assert } = require('chai');
 
 const mergeSandboxedHooks = require('../../src/merge-sandboxed-hooks');
 
@@ -29,13 +24,13 @@ describe('mergeSandboxedHooks', () => {
     afterAll: ['merged']
   };
 
-  let originalHooks = {};
-  let hooksToBeMerged = {};
-  let object = null;
+  let originalHooks;
+  let hooksToBeMerged;
+  let object;
 
   beforeEach(() => {
     originalHooks = clone(originObject);
-    return hooksToBeMerged = clone(toBeMergedObject);
+    hooksToBeMerged = clone(toBeMergedObject);
   });
 
   it('should return an object', () => assert.isObject(mergeSandboxedHooks(originalHooks, hooksToBeMerged)));
@@ -51,7 +46,7 @@ describe('mergeSandboxedHooks', () => {
   });
 
   describe('returned obejct', () => {
-    beforeEach(() => object = mergeSandboxedHooks(originalHooks, hooksToBeMerged));
+    beforeEach(() => { object = mergeSandboxedHooks(originalHooks, hooksToBeMerged); });
 
     it('beforeAll property', () => {
       assert.equal(object.beforeAll[0], 'original');

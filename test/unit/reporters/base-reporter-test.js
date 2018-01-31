@@ -1,14 +1,7 @@
-/* eslint-disable
-    no-return-assign,
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
-const sinon = require('sinon');
 const proxyquire = require('proxyquire').noCallThru();
-
+const { assert } = require('chai');
 const { EventEmitter } = require('events');
+
 const loggerStub = require('../../../src/logger');
 
 const BaseReporter = proxyquire('../../../src/reporters/base-reporter', {
@@ -20,7 +13,6 @@ describe('BaseReporter', () => {
   let tests = [];
   let test = {};
   let emitter = {};
-  let baseReporter = {};
 
   beforeEach(() => {
     stats = {
@@ -35,44 +27,42 @@ describe('BaseReporter', () => {
     };
     tests = [];
     emitter = new EventEmitter();
-    return baseReporter = new BaseReporter(emitter, stats, tests);
+    (new BaseReporter(emitter, stats, tests));
   });
 
   describe('when starting', () => {
-    before(() =>
-      stats =
-        { start: null }
-    );
+    before(() => {
+      stats = { start: null };
+    });
 
     it('should set the start date', done =>
       emitter.emit('start', '', () => {
         assert.isOk(stats.start);
-        return done();
+        done();
       })
     );
   });
 
   describe('when ending', () => {
-    before(() =>
-      stats =
-        { end: null }
-    );
+    before(() => {
+      stats = { start: null };
+    });
 
     it('should set the end date', done =>
       emitter.emit('end', () => {
         assert.isOk(stats.end);
-        return done();
+        done();
       })
     );
   });
 
   describe('when test starts', () => {
-    before(() =>
+    before(() => {
       test = {
         status: 'pass',
         title: 'Passing Test'
-      }
-    );
+      };
+    });
 
     it('should add the test', () => {
       emitter.emit('test start', test);
@@ -87,7 +77,7 @@ describe('BaseReporter', () => {
         title: 'Passing Test'
       };
       emitter.emit('test start', test);
-      return emitter.emit('test pass', test);
+      emitter.emit('test pass', test);
     });
 
     it('should increment the counter', () => assert.equal(stats.passes, 1));
@@ -102,7 +92,7 @@ describe('BaseReporter', () => {
         title: 'Skipped Test'
       };
       emitter.emit('test start', test);
-      return emitter.emit('test skip', test);
+      emitter.emit('test skip', test);
     });
 
     it('should increment the counter', () => assert.isOk(stats.skipped === 1));
@@ -115,7 +105,7 @@ describe('BaseReporter', () => {
         title: 'Failed Test'
       };
       emitter.emit('test start', test);
-      return emitter.emit('test fail', test);
+      emitter.emit('test fail', test);
     });
 
     it('should increment the counter', () => assert.isOk(stats.failures === 1));
@@ -130,7 +120,7 @@ describe('BaseReporter', () => {
         title: 'Errored Test'
       };
       emitter.emit('test start', test);
-      return emitter.emit('test error', new Error('Error'), test);
+      emitter.emit('test error', new Error('Error'), test);
     });
 
     it('should increment the counter', () => assert.isOk(stats.errors === 1));
@@ -146,7 +136,7 @@ describe('BaseReporter', () => {
       };
       emitter.emit('test start', test);
       test.start = '2017-06-15T09:29:50.588Z';
-      return emitter.emit('test pass', test);
+      emitter.emit('test pass', test);
     });
 
     it('should set the duration', () => assert.isNotNaN(tests[0].duration));
@@ -160,7 +150,7 @@ describe('BaseReporter', () => {
       };
       emitter.emit('test start', test);
       test.start = '2017-06-15T09:29:50.588Z';
-      return emitter.emit('test fail', test);
+      emitter.emit('test fail', test);
     });
 
     it('should set the duration', () => assert.isNotNaN(tests[0].duration));
@@ -174,7 +164,7 @@ describe('BaseReporter', () => {
       };
       emitter.emit('test start', test);
       test.start = '2017-06-15T09:29:50.588Z';
-      return emitter.emit('test error', new Error('Error'), test);
+      emitter.emit('test error', new Error('Error'), test);
     });
 
     it('should set the duration', () => assert.isNotNaN(tests[0].duration));

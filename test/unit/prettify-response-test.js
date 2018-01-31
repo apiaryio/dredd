@@ -1,11 +1,5 @@
-/* eslint-disable
-    no-return-assign,
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
 const sinon = require('sinon');
+const { assert } = require('chai');
 
 const loggerStub = require('../../src/logger');
 const prettifyResponse = require('../../src/prettify-response');
@@ -49,15 +43,13 @@ body: \n<div>before paragraph
   });
 
   describe('with an object in body that references itself (circular)', () => {
-    let output = null;
-
     before(() => {
       sinon.stub(loggerStub, 'debug');
 
       const body = { a: 'b' };
       body.c = body;
 
-      return output = prettifyResponse({
+      prettifyResponse({
         headers: {
           'content-type': 'application/json'
         },

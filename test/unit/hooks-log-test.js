@@ -1,16 +1,11 @@
-/* eslint-disable
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
 const clone = require('clone');
-const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 const util = require('util');
 
-const loggerStub = require('../../src/logger');
+const { assert } = require('chai');
+
 const hooksLog = require('../../src/hooks-log');
+const loggerStub = require('../../src/logger');
 
 describe('hooksLog()', () => {
   const exampleLogs = [
@@ -20,13 +15,13 @@ describe('hooksLog()', () => {
   before(() => {
     sinon.stub(loggerStub, 'log').callsFake(() => { });
     sinon.stub(loggerStub, 'debug').callsFake(() => { });
-    return sinon.stub(loggerStub, 'hook').callsFake(() => { });
+    sinon.stub(loggerStub, 'hook').callsFake(() => { });
   });
 
   after(() => {
     loggerStub.log.restore();
     loggerStub.debug.restore();
-    return loggerStub.hook.restore();
+    loggerStub.hook.restore();
   });
 
   it('should print using util.format only when content is an object type', () => {
@@ -45,7 +40,7 @@ describe('hooksLog()', () => {
     beforeEach(() => {
       loggerStub.log.reset();
       loggerStub.debug.reset();
-      return loggerStub.hook.reset();
+      loggerStub.hook.reset();
     });
 
     it('should push message to the passed array and return the new array', () => {

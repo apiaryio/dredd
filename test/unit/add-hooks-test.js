@@ -1,27 +1,19 @@
-/* eslint-disable
-    no-return-assign,
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
-const proxyquire = require('proxyquire');
-const sinon = require('sinon');
-const clone = require('clone');
-
+const fsStub = require('fs');
 const globStub = require('glob');
+const sinon = require('sinon');
 const pathStub = require('path');
+const proxyquire = require('proxyquire');
+const proxyquireStub = require('proxyquire');
+const { assert } = require('chai');
+
 const loggerStub = require('../../src/logger');
 const hooksStub = require('../../src/hooks');
 const hooksWorkerClientStub = require('../../src/hooks-worker-client');
-
-const proxyquireStub = require('proxyquire');
 
 const proxyquireSpy = sinon.spy(proxyquireStub.noCallThru());
 proxyquireStub.noCallThru = () => proxyquireSpy;
 
 const sandboxHooksCodeSpy = sinon.spy(require('../../src/sandbox-hooks-code'));
-const fsStub = require('fs');
 
 const addHooks = proxyquire('../../src/add-hooks', {
   logger: loggerStub,
@@ -36,11 +28,10 @@ const addHooks = proxyquire('../../src/add-hooks', {
 
 describe('addHooks(runner, transactions, callback)', () => {
   const transactions = {};
-  const server = null;
 
-  before(() => loggerStub.transports.console.silent = true);
+  before(() => { loggerStub.transports.console.silent = true; });
 
-  after(() => loggerStub.transports.console.silent = false);
+  after(() => { loggerStub.transports.console.silent = false; });
 
   describe('constructor', () => {
     const runner = {
@@ -59,7 +50,7 @@ describe('addHooks(runner, transactions, callback)', () => {
         assert.instanceOf(runner.hooks, hooksStub);
         assert.strictEqual(runner.hooks, runner.hooks);
         assert.nestedProperty(runner, 'hooks.transactions');
-        return done();
+        done();
       })
     );
 
@@ -72,7 +63,7 @@ describe('addHooks(runner, transactions, callback)', () => {
         assert.nestedProperty(runner, 'hooks.logs');
         assert.isDefined(runner.hooks.logs);
         assert.strictEqual(runner.hooks.logs, runner.logs);
-        return done();
+        done();
       })
     );
   });
@@ -90,15 +81,15 @@ describe('addHooks(runner, transactions, callback)', () => {
         }
       };
 
-      return sinon.spy(globStub, 'sync');
+      sinon.spy(globStub, 'sync');
     });
 
     after(() => globStub.sync.restore());
 
     it('should not expand any glob', done =>
-      addHooks(runner, transactions, (err) => {
+      addHooks(runner, transactions, () => {
         assert.isOk(globStub.sync.notCalled);
-        return done();
+        done();
       })
     );
   });
@@ -116,7 +107,7 @@ describe('addHooks(runner, transactions, callback)', () => {
         }
       };
 
-      return sinon.stub(hooksWorkerClientStub.prototype, 'start').callsFake(cb => cb());
+      sinon.stub(hooksWorkerClientStub.prototype, 'start').callsFake(cb => cb());
     });
 
     afterEach(() => hooksWorkerClientStub.prototype.start.restore());
@@ -125,7 +116,7 @@ describe('addHooks(runner, transactions, callback)', () => {
       addHooks(runner, transactions, (err) => {
         if (err) { return done(err); }
         assert.isTrue(hooksWorkerClientStub.prototype.start.called);
-        return done();
+        done();
       })
     );
   });
@@ -133,23 +124,23 @@ describe('addHooks(runner, transactions, callback)', () => {
 
   describe('with valid pattern', () => {
     let runner = null;
-    beforeEach(() =>
+    beforeEach(() => {
       runner = {
         configuration: {
           options: {
             hookfiles: './test/**/*_hooks.*'
           }
         }
-      }
-    );
+      };
+    });
 
     it('should return files', (done) => {
       sinon.spy(globStub, 'sync');
-      return addHooks(runner, transactions, (err) => {
+      addHooks(runner, transactions, (err) => {
         if (err) { return done(err); }
         assert.isOk(globStub.sync.called);
         globStub.sync.restore();
-        return done();
+        done();
       });
     });
 
@@ -162,7 +153,7 @@ describe('addHooks(runner, transactions, callback)', () => {
           pathStub.resolve(process.cwd(), './test/fixtures/test2_hooks.js'),
           pathStub.resolve(process.cwd(), './test/fixtures/test_hooks.coffee')
         ]);
-        return done();
+        done();
       })
     );
 
@@ -176,20 +167,20 @@ describe('addHooks(runner, transactions, callback)', () => {
             }
           }
         };
-        sinon.stub(globStub, 'sync').callsFake(pattern => ['file1.js', 'file2.coffee']);
-        return sinon.stub(pathStub, 'resolve').callsFake((path, rel) => '/Users/netmilk/projects/dredd/file2.coffee');
+        sinon.stub(globStub, 'sync').callsFake(() => ['file1.js', 'file2.coffee']);
+        sinon.stub(pathStub, 'resolve').callsFake(() => '/Users/netmilk/projects/dredd/file2.coffee');
       });
 
       after(() => {
         globStub.sync.restore();
-        return pathStub.resolve.restore();
+        pathStub.resolve.restore();
       });
 
       it('should load the files', done =>
         addHooks(runner, transactions, (err) => {
           if (err) { return done(err); }
           assert.isOk(pathStub.resolve.called);
-          return done();
+          done();
         })
       );
 
@@ -199,7 +190,7 @@ describe('addHooks(runner, transactions, callback)', () => {
           const call = proxyquireSpy.getCall(0);
           const hooksObject = call.args[1].hooks;
           assert.property(hooksObject, 'configuration');
-          return done();
+          done();
         })
       );
     });
@@ -223,7 +214,7 @@ describe('addHooks(runner, transactions, callback)', () => {
         sinon.spy(fsStub, 'readFile');
         proxyquireSpy.reset();
         sandboxHooksCodeSpy.reset();
-        return done();
+        done();
       });
 
       afterEach((done) => {
@@ -232,14 +223,14 @@ describe('addHooks(runner, transactions, callback)', () => {
         fsStub.readFile.restore();
         proxyquireSpy.reset();
         sandboxHooksCodeSpy.reset();
-        return done();
+        done();
       });
 
       it('should not use proxyquire', done =>
         addHooks(runner, transactions, (err) => {
           if (err) { return done(err); }
           assert.isFalse(proxyquireSpy.called);
-          return done();
+          done();
         })
       );
 
@@ -247,7 +238,7 @@ describe('addHooks(runner, transactions, callback)', () => {
         addHooks(runner, transactions, (err) => {
           if (err) { return done(err); }
           assert.isTrue(fsStub.readFile.called);
-          return done();
+          done();
         })
       );
 
@@ -255,7 +246,7 @@ describe('addHooks(runner, transactions, callback)', () => {
         addHooks(runner, transactions, (err) => {
           if (err) { return err; }
           assert.isTrue(sandboxHooksCodeSpy.called);
-          return done();
+          done();
         })
       );
 
@@ -263,7 +254,7 @@ describe('addHooks(runner, transactions, callback)', () => {
         addHooks(runner, transactions, (err) => {
           if (err) { return err; }
           assert.property(runner.hooks.afterHooks, 'Machines > Machines collection > Get Machines');
-          return done();
+          done();
         })
       );
     });
@@ -290,7 +281,7 @@ after('Machines > Machines collection > Get Machines', function(transaction){
         sinon.spy(loggerStub, 'info');
         sinon.spy(fsStub, 'readFile');
         proxyquireSpy.reset();
-        return sandboxHooksCodeSpy.reset();
+        sandboxHooksCodeSpy.reset();
       });
 
       afterEach(() => {
@@ -298,14 +289,14 @@ after('Machines > Machines collection > Get Machines', function(transaction){
         loggerStub.info.restore();
         fsStub.readFile.restore();
         proxyquireSpy.reset();
-        return sandboxHooksCodeSpy.reset();
+        sandboxHooksCodeSpy.reset();
       });
 
       it('should not use proxyquire', done =>
         addHooks(runner, transactions, (err) => {
           if (err) { return done(err); }
           assert.isFalse(proxyquireSpy.called);
-          return done();
+          done();
         })
       );
 
@@ -313,7 +304,7 @@ after('Machines > Machines collection > Get Machines', function(transaction){
         addHooks(runner, transactions, (err) => {
           if (err) { return err; }
           assert.isTrue(sandboxHooksCodeSpy.called);
-          return done();
+          done();
         })
       );
 
@@ -321,14 +312,14 @@ after('Machines > Machines collection > Get Machines', function(transaction){
         addHooks(runner, transactions, (err) => {
           if (err) { return err; }
           assert.property(runner.hooks.afterHooks, 'Machines > Machines collection > Get Machines');
-          return done();
+          done();
         })
       );
     });
 
     describe('when hooks are passed as a string from Dredd class', () => {
       let runner = {};
-      beforeEach(() =>
+      beforeEach(() => {
         runner = {
           configuration: {
             hooksData: {
@@ -340,13 +331,14 @@ after('Machines > Machines collection > Get Machines', function(transaction){
             },
             options: {}
           }
-        });
+        };
+      });
 
       it('should throw a "not implemented" exception', done =>
         addHooks(runner, transactions, (err) => {
           assert.isDefined(err);
           assert.include(err.message, 'not implemented');
-          return done();
+          done();
         })
       );
     });
@@ -373,10 +365,10 @@ before(' > Machines collection > Get Machines', function(transaction){
             }
           };
 
-          return addHooks(runner, transactions, (err) => {
+          addHooks(runner, transactions, () => {
             assert.notProperty(runner.hooks.afterHooks, ' > Machines collection > Get Machines');
             assert.notProperty(runner.hooks.afterHooks, ' > Machines collection > Get Machines');
-            return done();
+            done();
           });
         });
 
@@ -399,10 +391,10 @@ before(' > Machines collection > Get Machines', function(transaction){
             }
           };
 
-          return addHooks(runner, transactions, (err) => {
+          addHooks(runner, transactions, () => {
             assert.property(runner.hooks.afterHooks, 'Machines collection > Get Machines');
             assert.property(runner.hooks.afterHooks, 'Machines collection > Get Machines');
-            return done();
+            done();
           });
         });
       })
@@ -419,10 +411,10 @@ before(' > Machines collection > Get Machines', function(transaction){
         }
       };
 
-      return addHooks(runner, transactions, (err) => {
+      addHooks(runner, transactions, () => {
         assert.notProperty(runner.hooks.afterHooks, ' > Machines collection > Get Machines');
         assert.notProperty(runner.hooks.afterHooks, ' > Machines collection > Get Machines');
-        return done();
+        done();
       });
     });
 
@@ -435,10 +427,10 @@ before(' > Machines collection > Get Machines', function(transaction){
         }
       };
 
-      return addHooks(runner, transactions, (err) => {
+      addHooks(runner, transactions, () => {
         assert.property(runner.hooks.afterHooks, 'Machines collection > Get Machines');
         assert.property(runner.hooks.afterHooks, 'Machines collection > Get Machines');
-        return done();
+        done();
       });
     });
   });

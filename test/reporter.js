@@ -1,9 +1,8 @@
-fs = require('fs');
-path = require('path');
+const fs = require('fs');
+const path = require('path');
 
-Spec = require('mocha').reporters.Spec;
-LCov = require('mocha-lcov-reporter');
-
+const Spec = require('mocha').reporters.Spec;
+const LCov = require('mocha-lcov-reporter');
 
 /**
  * Combined reporter
@@ -22,9 +21,9 @@ module.exports = function (runner, options) {
     // Monkey-patching the 'LCov.prototype.write' so we could save
     // the LCov output to a file instead of a standard output
     LCov.prototype.write = function (string) {
-      var file = path.join(process.env.COVERAGE_DIR, 'mocha.info');
+      const file = path.join(process.env.COVERAGE_DIR, 'mocha.info');
       fs.appendFileSync(file, string);
-    }
+    };
     new LCov(runner, options);
   }
 };

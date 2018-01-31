@@ -1,28 +1,20 @@
-/* eslint-disable
-    no-return-assign,
-    no-shadow,
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
-const sinon = require('sinon');
 const proxyquire = require('proxyquire').noCallThru();
-
+const sinon = require('sinon');
+const { assert } = require('chai');
 const { EventEmitter } = require('events');
+
 const loggerStub = require('../../../src/logger');
 
 const CliReporter = proxyquire('../../../src/reporters/cli-reporter', {
   './../logger': loggerStub
 });
 
-
 describe('CliReporter', () => {
   let test = {};
 
-  before(() => loggerStub.transports.console.silent = true);
+  before(() => { loggerStub.transports.console.silent = true; });
 
-  after(() => loggerStub.transports.console.silent = false);
+  after(() => { loggerStub.transports.console.silent = false; });
 
   describe('when starting', () => {
     beforeEach(() => sinon.spy(loggerStub, 'info'));
@@ -31,21 +23,21 @@ describe('CliReporter', () => {
 
     it('should write starting to the console', (done) => {
       const emitter = new EventEmitter();
-      const cliReporter = new CliReporter(emitter, {}, {}, true);
-      return emitter.emit('start', '', () => {
+      (new CliReporter(emitter, {}, {}, true));
+      emitter.emit('start', '', () => {
         assert.isOk(loggerStub.info.calledOnce);
-        return done();
+        done();
       });
     });
   });
 
   describe('when adding passing test', () => {
-    before(() =>
+    before(() => {
       test = {
         status: 'pass',
         title: 'Passing Test'
-      }
-    );
+      };
+    });
 
     beforeEach(() => sinon.spy(loggerStub, 'pass'));
 
@@ -53,7 +45,7 @@ describe('CliReporter', () => {
 
     it('should write pass to the console', () => {
       const emitter = new EventEmitter();
-      const cliReporter = new CliReporter(emitter, {}, {}, true);
+      (new CliReporter(emitter, {}, {}, true));
       emitter.emit('test pass', test);
       assert.isOk(loggerStub.pass.calledOnce);
     });
@@ -65,7 +57,7 @@ describe('CliReporter', () => {
 
       it('should write details for passing tests', () => {
         const emitter = new EventEmitter();
-        const cliReporter = new CliReporter(emitter, {}, {}, true, true);
+        (new CliReporter(emitter, {}, {}, true, true));
         emitter.emit('test pass', test);
         assert.isOk(loggerStub.request.calledOnce);
       });
@@ -73,12 +65,12 @@ describe('CliReporter', () => {
   });
 
   describe('when adding failing test', () => {
-    before(() =>
+    before(() => {
       test = {
         status: 'fail',
         title: 'Failing Test'
-      }
-    );
+      };
+    });
 
     describe('when errors are inline', () => {
       beforeEach(() => sinon.spy(loggerStub, 'fail'));
@@ -87,7 +79,7 @@ describe('CliReporter', () => {
 
       it('should write fail to the console', () => {
         const emitter = new EventEmitter();
-        const cliReporter = new CliReporter(emitter, {}, {}, true);
+        (new CliReporter(emitter, {}, {}, true));
         emitter.emit('test fail', test);
         assert.isOk(loggerStub.fail.calledTwice);
       });
@@ -100,7 +92,7 @@ describe('CliReporter', () => {
 
       it('should not write full failure to the console at the time of failure', () => {
         const emitter = new EventEmitter();
-        const cliReporter = new CliReporter(emitter, {}, {}, false);
+        (new CliReporter(emitter, {}, {}, false));
         emitter.emit('test fail', test);
         assert.isOk(loggerStub.fail.calledOnce);
       });
@@ -109,21 +101,21 @@ describe('CliReporter', () => {
         const emitter = new EventEmitter();
         const cliReporter = new CliReporter(emitter, {}, {}, false);
         cliReporter.errors = [test];
-        return emitter.emit('end', () => {
+        emitter.emit('end', () => {
           assert.isOk(loggerStub.fail.calledTwice);
-          return done();
+          done();
         });
       });
     });
   });
 
   describe('when adding error test', () => {
-    before(() =>
+    before(() => {
       test = {
         status: 'error',
         title: 'Error Test'
-      }
-    );
+      };
+    });
 
     beforeEach(() => sinon.spy(loggerStub, 'error'));
 
@@ -131,7 +123,7 @@ describe('CliReporter', () => {
 
     it('should write error to the console', () => {
       const emitter = new EventEmitter();
-      const cliReporter = new CliReporter(emitter, {}, {}, false);
+      (new CliReporter(emitter, {}, {}, false));
       emitter.emit('test error', new Error('Error'), test);
       assert.isOk(loggerStub.error.calledTwice);
     });
@@ -139,12 +131,12 @@ describe('CliReporter', () => {
 
 
   describe('when adding error test with connection refused', () => {
-    before(() =>
+    before(() => {
       test = {
         status: 'error',
         title: 'Error Test'
-      }
-    );
+      };
+    });
 
     beforeEach(() => sinon.spy(loggerStub, 'error'));
 
@@ -152,11 +144,11 @@ describe('CliReporter', () => {
 
     const connectionErrors = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE'];
 
-    return Array.from(connectionErrors).map(errType => (errType =>
+    Array.from(connectionErrors).forEach(errType =>
       describe(`when error type ${errType}`, () =>
         it('should write error to the console', () => {
           const emitter = new EventEmitter();
-          const cliReporter = new CliReporter(emitter, {}, {}, false);
+          (new CliReporter(emitter, {}, {}, false));
           const error = new Error('connect');
           error.code = errType;
           emitter.emit('test error', error, test);
@@ -166,16 +158,16 @@ describe('CliReporter', () => {
           assert.include(messages.join(), 'Error connecting');
         })
       )
-    )(errType));
+    );
   });
 
   describe('when adding skipped test', () => {
-    before(() =>
+    before(() => {
       test = {
         status: 'skip',
         title: 'Skipped Test'
-      }
-    );
+      };
+    });
 
     beforeEach(() => sinon.spy(loggerStub, 'skip'));
 
@@ -183,7 +175,7 @@ describe('CliReporter', () => {
 
     it('should write skip to the console', () => {
       const emitter = new EventEmitter();
-      const cliReporter = new CliReporter(emitter, {}, {}, false);
+      (new CliReporter(emitter, {}, {}, false));
       emitter.emit('test skip', test);
       assert.isOk(loggerStub.skip.calledOnce);
     });
@@ -191,12 +183,12 @@ describe('CliReporter', () => {
 
 
   describe('when creating report', () => {
-    before(() =>
+    before(() => {
       test = {
         status: 'fail',
         title: 'Failing Test'
-      }
-    );
+      };
+    });
 
     beforeEach(() => sinon.spy(loggerStub, 'complete'));
 
@@ -209,9 +201,9 @@ describe('CliReporter', () => {
         const cliReporter = new CliReporter(emitter, {}, {}, false);
         cliReporter.tests = [test];
         cliReporter.stats.tests = 1;
-        return emitter.emit('end', () => {
+        emitter.emit('end', () => {
           assert.isOk(loggerStub.complete.calledTwice);
-          return done();
+          done();
         });
       })
     );
@@ -220,13 +212,12 @@ describe('CliReporter', () => {
 
       it('should write to the console', (done) => {
         const emitter = new EventEmitter();
-        const cliReporter = new CliReporter(emitter, {}, {}, false);
-        return emitter.emit('end', () => {
+        (new CliReporter(emitter, {}, {}, false));
+        emitter.emit('end', () => {
           assert.isOk(loggerStub.complete.calledOnce);
-          return done();
+          done();
         });
       })
     );
   });
 });
-
