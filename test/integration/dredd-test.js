@@ -1,31 +1,16 @@
-/* eslint-disable
-    block-scoped-var,
-    guard-for-in,
-    no-cond-assign,
-    no-loop-func,
-    no-return-assign,
-    no-shadow,
-    no-unused-vars,
-    no-var,
-    one-var,
-    vars-on-top,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
-const sinon = require('sinon');
-const express = require('express');
-const clone = require('clone');
-const fs = require('fs');
 const bodyParser = require('body-parser');
-
+const clone = require('clone');
+const express = require('express');
+const fs = require('fs');
 const proxyquire = require('proxyquire').noCallThru();
+const sinon = require('sinon');
+const { assert } = require('chai');
 
 const loggerStub = require('../../src/logger');
 
 const PORT = 9876;
 
-let exitStatus = null;
+let exitStatus;
 
 let stderr = '';
 let stdout = '';
@@ -33,51 +18,61 @@ let stdout = '';
 const addHooksStub = proxyquire('../../src/add-hooks', {
   './logger': loggerStub
 });
+
 const transactionRunner = proxyquire('../../src/transaction-runner', {
   './add-hooks': addHooksStub,
   './logger': loggerStub
 });
+
 const Dredd = proxyquire('../../src/dredd', {
   './transaction-runner': transactionRunner,
   './logger': loggerStub
 });
 
-const execCommand = function (options = {}, cb) {
+function execCommand(options = {}, cb) {
   stdout = '';
   stderr = '';
   exitStatus = null;
   let finished = false;
-  if (options.server == null) { options.server = `http://127.0.0.1:${PORT}`; }
-  if (options.level == null) { options.level = 'info'; }
+  if (!options.server) { options.server = `http://127.0.0.1:${PORT}`; }
+  if (!options.level) { options.level = 'info'; }
   new Dredd(options).run((error, stats = {}) => {
     if (!finished) {
       finished = true;
-      if (error != null ? error.message : undefined) {
+      if (error ? error.message : undefined) {
         stderr += error.message;
       }
       exitStatus = (error || (((1 * stats.failures) + (1 * stats.errors)) > 0)) ? 1 : 0;
-      return cb(null, stdout, stderr, exitStatus);
+      cb(null, stdout, stderr, exitStatus);
     }
   });
-};
-
+}
 
 describe('Dredd class Integration', () => {
-  const dreddCommand = null;
-  const custom = {};
-
   before(() => {
-    for (var method of ['warn', 'error']) { (method => sinon.stub(loggerStub, method).callsFake(chunk => stderr += `\n${method}: ${chunk}`))(method); }
-    for (method of ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual']) { (method => sinon.stub(loggerStub, method).callsFake(chunk => stdout += `\n${method}: ${chunk}`))(method); }
+    ['warn', 'error'].forEach((method) => {
+      sinon.stub(loggerStub, method).callsFake((chunk) => { stderr += `\n${method}: ${chunk}`; });
+    });
+    [
+      'log', 'info', 'silly', 'verbose', 'test',
+      'hook', 'complete', 'pass', 'skip', 'debug',
+      'fail', 'request', 'expected', 'actual'
+    ].forEach((method) => {
+      sinon.stub(loggerStub, method).callsFake((chunk) => { stdout += `\n${method}: ${chunk}`; });
+    });
   });
 
   after(() => {
-    for (var method of ['warn', 'error']) {
+    ['warn', 'error'].forEach((method) => {
       loggerStub[method].restore();
-    }
-    for (method of ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual']) {
+    });
+    [
+      'log', 'info', 'silly', 'verbose', 'test',
+      'hook', 'complete', 'pass', 'skip', 'debug',
+      'fail', 'request', 'expected', 'actual'
+    ].forEach((method) => {
       loggerStub[method].restore();
-    }
+    });
   });
 
 
@@ -94,11 +89,11 @@ describe('Dredd class Integration', () => {
 
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-        var server = app.listen(PORT, () =>
+        const server = app.listen(PORT, () =>
           execCommand(cmd, () => server.close())
         );
 
-        return server.on('close', done);
+        server.on('close', done);
       });
 
       it('exit status should be 0', () => assert.equal(exitStatus, 0));
@@ -116,11 +111,11 @@ describe('Dredd class Integration', () => {
 
         app.get('/machines', (req, res) => res.status(201).json([{ kind: 'bulldozer', imatriculation: 'willy' }]));
 
-        var server = app.listen(PORT, () =>
+        const server = app.listen(PORT, () =>
           execCommand(cmd, () => server.close())
         );
 
-        return server.on('close', done);
+        server.on('close', done);
       });
 
       it('exit status should be 1', () => assert.equal(exitStatus, 1));
@@ -129,12 +124,12 @@ describe('Dredd class Integration', () => {
 
 
   describe("when using reporter -r apiary with 'verbose' logging with custom apiaryApiKey and apiaryApiName", () => {
-    let server = null;
-    let server2 = null;
-    let receivedRequest = null;
-    let receivedRequestTestRuns = null;
-    let receivedHeaders = null;
-    let receivedHeadersRuns = null;
+    let server;
+    let server2;
+    let receivedRequest;
+    let receivedRequestTestRuns;
+    let receivedHeaders;
+    let receivedHeadersRuns;
     exitStatus = null;
 
     before((done) => {
@@ -160,17 +155,19 @@ describe('Dredd class Integration', () => {
       apiary.use(bodyParser.json({ size: '5mb' }));
 
       apiary.post('/apis/*', (req, res) => {
-        let key,
-          val;
         if (req.body && (req.url.indexOf('/tests/steps') > -1)) {
-          if (receivedRequest == null) { receivedRequest = clone(req.body); }
-          for (key in req.headers) { val = req.headers[key]; receivedHeaders[key.toLowerCase()] = val; }
+          if (!receivedRequest) { receivedRequest = clone(req.body); }
+          Object.keys(req.headers).forEach((name) => {
+            receivedHeaders[name.toLowerCase()] = req.headers[name];
+          });
         }
         if (req.body && (req.url.indexOf('/tests/runs') > -1)) {
-          if (receivedRequestTestRuns == null) { receivedRequestTestRuns = clone(req.body); }
-          for (key in req.headers) { val = req.headers[key]; receivedHeadersRuns[key.toLowerCase()] = val; }
+          if (!receivedRequestTestRuns) { receivedRequestTestRuns = clone(req.body); }
+          Object.keys(req.headers).forEach((name) => {
+            receivedHeadersRuns[name.toLowerCase()] = req.headers[name];
+          });
         }
-        return res.status(201).json({
+        res.status(201).json({
           _id: '1234_id',
           testRunId: '6789_testRunId',
           reportUrl: 'http://url.me/test/run/1234_id'
@@ -181,15 +178,13 @@ describe('Dredd class Integration', () => {
 
       app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-      return server = app.listen(PORT, () =>
-        server2 = apiary.listen((PORT + 1), () =>
+      server = app.listen(PORT, () => {
+        server2 = apiary.listen((PORT + 1), () => {
           execCommand(cmd, () =>
-            server2.close(() =>
-              server.close(() => done())
-            )
-          )
-        )
-      );
+            server2.close(() => server.close(() => done()))
+          );
+        });
+      });
     });
 
     it('should not print warning about missing Apiary API settings', () => assert.notInclude(stderr, 'Apiary API Key or API Project Subdomain were not provided.'));
@@ -233,28 +228,24 @@ describe('Dredd class Integration', () => {
 
         app.get('/machines', (req, res) => {
           const response = [{ type: 'bulldozer', name: 'willy' }];
-          return res.json(response);
+          res.json(response);
         });
 
-        var server = app.listen(PORT, () =>
-          execCommand(cmd, (error, stdOut, stdErr, code) => {
-            const err = stdErr;
-            const out = stdOut;
-            const exitCode = code;
-            return server.close();
+        const server = app.listen(PORT, () =>
+          execCommand(cmd, () => {
+            server.close();
           })
         );
 
-        return server.on('close', done);
+        server.on('close', done);
       });
 
       it('prints out ok', () => assert.equal(exitStatus, 0));
     });
 
     describe("when using reporter -r apiary and the server isn't running", () => {
-      const server = null;
-      let server2 = null;
-      let receivedRequest = null;
+      let server2;
+      let receivedRequest;
       exitStatus = null;
 
       before((done) => {
@@ -277,9 +268,9 @@ describe('Dredd class Integration', () => {
 
         apiary.post('/apis/*', (req, res) => {
           if (req.body && (req.url.indexOf('/tests/steps') > -1)) {
-            if (receivedRequest == null) { receivedRequest = clone(req.body); }
+            if (!receivedRequest) { receivedRequest = clone(req.body); }
           }
-          return res.status(201).json({
+          res.status(201).json({
             _id: '1234_id',
             testRunId: '6789_testRunId',
             reportUrl: 'http://url.me/test/run/1234_id'
@@ -292,7 +283,7 @@ describe('Dredd class Integration', () => {
           execCommand(cmd, () => server2.close(() => {}))
         );
 
-        return server2.on('close', done);
+        server2.on('close', done);
       });
 
       it('should print using the reporter', () => assert.include(stdout, 'http://url.me/test/run/1234_id'));
@@ -311,9 +302,9 @@ describe('Dredd class Integration', () => {
     });
 
     describe('when using reporter -r apiary', () => {
-      let server = null;
-      let server2 = null;
-      let receivedRequest = null;
+      let server;
+      let server2;
+      let receivedRequest;
       exitStatus = null;
 
       before((done) => {
@@ -337,9 +328,9 @@ describe('Dredd class Integration', () => {
 
         apiary.post('/apis/*', (req, res) => {
           if (req.body && (req.url.indexOf('/tests/steps') > -1)) {
-            if (receivedRequest == null) { receivedRequest = clone(req.body); }
+            if (!receivedRequest) { receivedRequest = clone(req.body); }
           }
-          return res.status(201).json({
+          res.status(201).json({
             _id: '1234_id',
             testRunId: '6789_testRunId',
             reportUrl: 'http://url.me/test/run/1234_id'
@@ -350,13 +341,13 @@ describe('Dredd class Integration', () => {
 
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-        server = app.listen(PORT, () => server2 = apiary.listen((PORT + 1), () => {}));
+        server = app.listen(PORT, () => { server2 = apiary.listen((PORT + 1), () => {}); });
 
         execCommand(cmd, () =>
           server2.close(() => server.close(() => {}))
         );
 
-        return server.on('close', done);
+        server.on('close', done);
       });
 
       it('should print warning about missing Apiary API settings', () => assert.include(stderr, 'Apiary API Key or API Project Subdomain were not provided.'));
@@ -379,11 +370,11 @@ describe('Dredd class Integration', () => {
 
 
   describe("when API description document should be loaded from 'http(s)://...' url", () => {
-    let server = null;
-    const loadedFromServer = null;
+    let app;
+    let server;
     let connectedToServer = null;
-    let notFound = null;
-    let fileFound = null;
+    let notFound;
+    let fileFound;
 
     const errorCmd = {
       server: `http://127.0.0.1:${PORT + 1}`,
@@ -404,14 +395,14 @@ describe('Dredd class Integration', () => {
       }
     };
 
-    afterEach(() => connectedToServer = null);
+    afterEach(() => { connectedToServer = null; });
 
     before((done) => {
-      const app = express();
+      app = express();
 
       app.use((req, res, next) => {
         connectedToServer = true;
-        return next();
+        next();
       });
 
       app.get('/', (req, res) => res.sendStatus(404));
@@ -419,25 +410,24 @@ describe('Dredd class Integration', () => {
       app.get('/file.apib', (req, res) => {
         fileFound = true;
         res.type('text');
-        const stream = fs.createReadStream('./test/fixtures/single-get.apib');
-        return stream.pipe(res);
+        fs.createReadStream('./test/fixtures/single-get.apib').pipe(res);
       });
 
       app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
       app.get('/not-found.apib', (req, res) => {
         notFound = true;
-        return res.status(404).end();
+        res.status(404).end();
       });
 
-      return server = app.listen(PORT, () => done());
+      server = app.listen(PORT, () => done());
     });
 
     after(done =>
       server.close(() => {
-        const app = null;
+        app = null;
         server = null;
-        return done();
+        done();
       })
     );
 
@@ -446,7 +436,7 @@ describe('Dredd class Integration', () => {
         execCommand(errorCmd, () => done())
       );
 
-      after(() => connectedToServer = null);
+      after(() => { connectedToServer = null; });
 
       it('should not send a GET to the server', () => assert.isNull(connectedToServer));
 
@@ -464,7 +454,7 @@ describe('Dredd class Integration', () => {
         execCommand(wrongCmd, () => done())
       );
 
-      after(() => connectedToServer = null);
+      after(() => { connectedToServer = null; });
 
       it('should connect to the right server', () => assert.isTrue(connectedToServer));
 
@@ -494,7 +484,7 @@ describe('Dredd class Integration', () => {
 
   describe('when i use sandbox and hookfiles option', () =>
     describe('and I run a test', () => {
-      let requested = null;
+      let requested;
       before((done) => {
         const cmd = {
           options: {
@@ -508,14 +498,14 @@ describe('Dredd class Integration', () => {
 
         app.get('/machines', (req, res) => {
           requested = true;
-          return res.json([{ type: 'bulldozer', name: 'willy' }]);
+          res.json([{ type: 'bulldozer', name: 'willy' }]);
         });
 
-        var server = app.listen(PORT, () =>
+        const server = app.listen(PORT, () =>
           execCommand(cmd, () => server.close())
         );
 
-        return server.on('close', done);
+        server.on('close', done);
       });
 
       it('exit status should be 1', () => assert.equal(exitStatus, 1));
@@ -530,7 +520,7 @@ describe('Dredd class Integration', () => {
 
   describe('when i use sandbox and hookData option', () =>
     describe('and I run a test', () => {
-      let requested = null;
+      let requested;
       before((done) => {
         const cmd = {
           hooksData: {
@@ -550,14 +540,14 @@ after('Machines > Machines collection > Get Machines', function(transaction){
 
         app.get('/machines', (req, res) => {
           requested = true;
-          return res.json([{ type: 'bulldozer', name: 'willy' }]);
+          res.json([{ type: 'bulldozer', name: 'willy' }]);
         });
 
-        var server = app.listen(PORT, () =>
+        const server = app.listen(PORT, () =>
           execCommand(cmd, () => server.close())
         );
 
-        return server.on('close', done);
+        server.on('close', done);
       });
 
       it('exit status should be 1', () => assert.equal(exitStatus, 1));
@@ -572,7 +562,6 @@ after('Machines > Machines collection > Get Machines', function(transaction){
 
   describe('when use old buggy (#168) path with leading whitespace in hooks', () =>
     describe('and I run a test', () => {
-      let requested = null;
       before((done) => {
         const cmd = {
           hooksData: {
@@ -596,15 +585,14 @@ before('Machines collection > Get Machines', function(transaction){
         const app = express();
 
         app.get('/machines', (req, res) => {
-          requested = true;
-          return res.json([{ type: 'bulldozer', name: 'willy' }]);
+          res.json([{ type: 'bulldozer', name: 'willy' }]);
         });
 
-        var server = app.listen(PORT, () =>
+        const server = app.listen(PORT, () =>
           execCommand(cmd, () => server.close())
         );
 
-        return server.on('close', done);
+        server.on('close', done);
       });
 
       it('should execute hook with whitespaced name', () => assert.include(stderr, 'Whitespace transaction name'));
@@ -626,19 +614,20 @@ before('Machines collection > Get Machines', function(transaction){
         , (err) => {
         let groups;
         const matches = [];
-        while ((groups = reTransaction.exec(stdout))) { matches.push(groups); }
+        // eslint-disable-next-line
+        while (groups = reTransaction.exec(stdout)) { matches.push(groups); }
         actual = matches.map((match) => {
           const keyMap = { 0: 'name', 1: 'action', 2: 'method', 3: 'statusCode' };
           return match.reduce((result, element, i) => Object.assign(result, { [keyMap[i]]: element })
             , {});
         });
-        return done(err);
+        done(err);
       })
     );
 
     it('recognizes all 3 transactions', () => assert.equal(actual.length, 3));
 
-    return [
+    [
       { action: 'skip', statusCode: '400' },
       { action: 'skip', statusCode: '500' },
       { action: 'fail', statusCode: '200' }
@@ -664,19 +653,20 @@ before('Machines collection > Get Machines', function(transaction){
         , (err) => {
         let groups;
         const matches = [];
-        while ((groups = reTransaction.exec(stdout))) { matches.push(groups); }
+        // eslint-disable-next-line
+        while (groups = reTransaction.exec(stdout)) { matches.push(groups); }
         actual = matches.map((match) => {
           const keyMap = { 0: 'name', 1: 'action', 2: 'method', 3: 'statusCode' };
           return match.reduce((result, element, i) => Object.assign(result, { [keyMap[i]]: element })
             , {});
         });
-        return done(err);
+        done(err);
       })
     );
 
     it('recognizes all 3 transactions', () => assert.equal(actual.length, 3));
 
-    return [
+    [
       { action: 'skip', statusCode: '400' },
       { action: 'fail', statusCode: '200' },
       { action: 'fail', statusCode: '500' } // Unskipped in hooks
@@ -705,8 +695,9 @@ before('Machines collection > Get Machines', function(transaction){
         , (err) => {
         let groups;
         matches = [];
-        while ((groups = reTransactionName.exec(stdout))) { matches.push(groups[1]); }
-        return done(err);
+        // eslint-disable-next-line
+        while (groups = reTransactionName.exec(stdout)) { matches.push(groups[1]); }
+        done(err);
       })
     );
 

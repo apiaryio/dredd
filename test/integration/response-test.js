@@ -1,10 +1,7 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 const { assert } = require('chai');
 
 const { runDreddWithServer, createServer } = require('./helpers');
 const Dredd = require('../../src/dredd');
-
 
 [{
   name: 'API Blueprint',
@@ -24,9 +21,9 @@ const Dredd = require('../../src/dredd');
         app.get('/resource.json', (req, res) => res.json({ test: 'OK' }));
         app.get('/resource.csv', (req, res) => res.type('text/csv').send('test,OK\n'));
         const dredd = new Dredd({ options: { path: apiDescription.path } });
-        return runDreddWithServer(dredd, app, (err, info) => {
+        runDreddWithServer(dredd, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -41,9 +38,9 @@ const Dredd = require('../../src/dredd');
         app.get('/resource.json', (req, res) => res.type('json').send());
         app.get('/resource.csv', (req, res) => res.type('text/csv').send());
         const dredd = new Dredd({ options: { path: apiDescription.path } });
-        return runDreddWithServer(dredd, app, (err, info) => {
+        runDreddWithServer(dredd, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -51,7 +48,6 @@ const Dredd = require('../../src/dredd');
     });
   })
 );
-
 
 [{
   name: 'API Blueprint',
@@ -70,9 +66,9 @@ const Dredd = require('../../src/dredd');
         const app = createServer();
         app.get('/resource', (req, res) => res.json({ name: 123 }));
         const dredd = new Dredd({ options: { path: apiDescription.path } });
-        return runDreddWithServer(dredd, app, (err, info) => {
+        runDreddWithServer(dredd, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -87,9 +83,9 @@ const Dredd = require('../../src/dredd');
         const app = createServer();
         app.get('/resource', (req, res) => res.json({ name: 'test' }));
         const dredd = new Dredd({ options: { path: apiDescription.path } });
-        return runDreddWithServer(dredd, app, (err, info) => {
+        runDreddWithServer(dredd, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -97,7 +93,6 @@ const Dredd = require('../../src/dredd');
     });
   })
 );
-
 
 [{
   name: 'API Blueprint',
@@ -122,9 +117,9 @@ const Dredd = require('../../src/dredd');
             hookfiles: './test/fixtures/response/empty-body-hooks.js'
           }
         });
-        return runDreddWithServer(dredd, app, (err, info) => {
+        runDreddWithServer(dredd, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -145,9 +140,9 @@ const Dredd = require('../../src/dredd');
             hookfiles: './test/fixtures/response/empty-body-hooks.js'
           }
         });
-        return runDreddWithServer(dredd, app, (err, info) => {
+        runDreddWithServer(dredd, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -155,7 +150,6 @@ const Dredd = require('../../src/dredd');
     });
   })
 );
-
 
 [{
   name: 'API Blueprint',
@@ -180,9 +174,9 @@ const Dredd = require('../../src/dredd');
             hookfiles: './test/fixtures/response/empty-body-hooks.js'
           }
         });
-        return runDreddWithServer(dredd, app, (err, info) => {
+        runDreddWithServer(dredd, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -203,9 +197,9 @@ const Dredd = require('../../src/dredd');
             hookfiles: './test/fixtures/response/empty-body-hooks.js'
           }
         });
-        return runDreddWithServer(dredd, app, (err, info) => {
+        runDreddWithServer(dredd, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -213,7 +207,6 @@ const Dredd = require('../../src/dredd');
     });
   })
 );
-
 
 [{
   name: 'API Blueprint',
@@ -237,9 +230,9 @@ const Dredd = require('../../src/dredd');
         app.get('*', (req, res) => res.type('text/plain').send('test\n'));
 
         const dredd = new Dredd({ options: { path: apiDescription.path } });
-        return runDreddWithServer(dredd, app, (err, info) => {
+        runDreddWithServer(dredd, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -270,9 +263,9 @@ const Dredd = require('../../src/dredd');
         app.get('*', (req, res) => res.type('text/plain').send());
 
         const dredd = new Dredd({ options: { path: apiDescription.path } });
-        return runDreddWithServer(dredd, app, (err, info) => {
+        runDreddWithServer(dredd, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 

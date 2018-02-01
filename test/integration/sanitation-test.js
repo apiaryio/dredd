@@ -1,25 +1,17 @@
-/* eslint-disable
-    guard-for-in,
-    no-unused-vars,
-    prefer-const,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
 const clone = require('clone');
+const { assert } = require('chai');
 const { EventEmitter } = require('events');
 
 const { runDredd, createServer, runDreddWithServer } = require('./helpers');
 const Dredd = require('../../src/dredd');
 
-
 describe('Sanitation of Reported Data', () => {
-  // sample sensitive data (this value is used in API Blueprint fixtures as well)
+  // Sample sensitive data (this value is used in API Blueprint fixtures as well)
   const sensitiveKey = 'token';
   const sensitiveHeaderName = 'authorization';
   const sensitiveValue = '5229c6e8e4b0bd7dbb07e29c';
 
-  // recording events sent to reporters
+  // Recording events sent to reporters
   let events;
   let emitter;
 
@@ -41,27 +33,26 @@ describe('Sanitation of Reported Data', () => {
     // 'start' and 'end' events are asynchronous and they do not carry any data
     // significant for following scenarios
     emitter.on('start', (apiDescription, cb) => { events.push({ name: 'start' }); return cb(); });
-    return emitter.on('end', (cb) => { events.push({ name: 'end' }); return cb(); });
+    emitter.on('end', (cb) => { events.push({ name: 'end' }); return cb(); });
   });
 
-  // helper for preparing Dredd instance with our custom emitter
-  const createDreddFromFixture = fixtureName =>
-    new Dredd({
+  // Helper for preparing Dredd instance with our custom emitter
+  function createDreddFromFixture(fixtureName) {
+    return new Dredd({
       emitter,
       options: {
         path: `./test/fixtures/sanitation/${fixtureName}.apib`,
         hookfiles: `./test/fixtures/sanitation/${fixtureName}.js`
       }
-    })
-  ;
+    });
+  }
 
-  // helper for preparing the server under test
-  const createServerFromResponse = function (response) {
+  // Helper for preparing the server under test
+  function createServerFromResponse(response) {
     const app = createServer();
     app.put('/resource', (req, res) => res.json(response));
     return app;
-  };
-
+  }
 
   describe('Sanitation of the Entire Request Body', () => {
     let dreddRuntimeInfo;
@@ -70,10 +61,10 @@ describe('Sanitation of Reported Data', () => {
       const dredd = createDreddFromFixture('entire-request-body');
       const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
-      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
+      runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
-        return done();
+        done();
       });
     });
 
@@ -105,10 +96,10 @@ describe('Sanitation of Reported Data', () => {
       const dredd = createDreddFromFixture('entire-response-body');
       const app = createServerFromResponse({ token: 123 }); // 'token' should be string → failing test
 
-      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
+      runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
-        return done();
+        done();
       });
     });
 
@@ -143,10 +134,10 @@ describe('Sanitation of Reported Data', () => {
       const dredd = createDreddFromFixture('request-body-attribute');
       const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
-      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
+      runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
-        return done();
+        done();
       });
     });
 
@@ -181,10 +172,10 @@ describe('Sanitation of Reported Data', () => {
       const dredd = createDreddFromFixture('response-body-attribute');
       const app = createServerFromResponse({ token: 123, name: 'Bob' }); // 'token' should be string → failing test
 
-      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
+      runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
-        return done();
+        done();
       });
     });
 
@@ -222,10 +213,10 @@ describe('Sanitation of Reported Data', () => {
       const dredd = createDreddFromFixture('plain-text-response-body');
       const app = createServerFromResponse(`${sensitiveKey}=42${sensitiveValue}`); // should be without '42' → failing test
 
-      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
+      runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
-        return done();
+        done();
       });
     });
 
@@ -253,10 +244,10 @@ describe('Sanitation of Reported Data', () => {
       const dredd = createDreddFromFixture('request-headers');
       const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
-      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
+      runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
-        return done();
+        done();
       });
     });
 
@@ -270,13 +261,7 @@ describe('Sanitation of Reported Data', () => {
       ])
     );
     it('emitted test data does not contain confidential header', () => {
-      const names = ((() => {
-        const result = [];
-        for (const name in events[2].test.request.headers) {
-          result.push(name.toLowerCase());
-        }
-        return result;
-      })());
+      const names = Object.keys(events[2].test.request.headers).map(name => name.toLowerCase());
       assert.notInclude(names, sensitiveHeaderName);
     });
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
@@ -298,10 +283,10 @@ describe('Sanitation of Reported Data', () => {
       const dredd = createDreddFromFixture('response-headers');
       const app = createServerFromResponse({ name: 'Bob' }); // Authorization header is missing → failing test
 
-      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
+      runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
-        return done();
+        done();
       });
     });
 
@@ -315,23 +300,10 @@ describe('Sanitation of Reported Data', () => {
       ])
     );
     it('emitted test data does not contain confidential header', () => {
-      let name;
-      let names = ((() => {
-        const result = [];
-        for (name in events[2].test.actual.headers) {
-          result.push(name.toLowerCase());
-        }
-        return result;
-      })());
+      let names = Object.keys(events[2].test.actual.headers).map(name => name.toLowerCase());
       assert.notInclude(names, sensitiveHeaderName);
 
-      names = ((() => {
-        const result1 = [];
-        for (name in events[2].test.expected.headers) {
-          result1.push(name.toLowerCase());
-        }
-        return result1;
-      })());
+      names = Object.keys(events[2].test.expected.headers).map(name => name.toLowerCase());
       assert.notInclude(names, sensitiveHeaderName);
     });
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
@@ -353,10 +325,10 @@ describe('Sanitation of Reported Data', () => {
       const dredd = createDreddFromFixture('uri-parameters');
       const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
-      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
+      runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
-        return done();
+        done();
       });
     });
 
@@ -383,10 +355,10 @@ describe('Sanitation of Reported Data', () => {
       const dredd = createDreddFromFixture('any-content-pattern-matching');
       const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
-      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
+      runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
-        return done();
+        done();
       });
     });
 
@@ -411,10 +383,10 @@ describe('Sanitation of Reported Data', () => {
       const dredd = createDreddFromFixture('any-content-guard-pattern-matching');
       const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
-      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
+      runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
-        return done();
+        done();
       });
     });
 
@@ -440,12 +412,12 @@ describe('Sanitation of Reported Data', () => {
 
     beforeEach((done) => {
       const dredd = createDreddFromFixture('transaction-passing');
-      const app = createServerFromResponse({ name: 'Bob' }); // passing test
+      const app = createServerFromResponse({ name: 'Bob' }); // Passing test
 
-      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
+      runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
-        return done();
+        done();
       });
     });
 
@@ -476,10 +448,11 @@ describe('Sanitation of Reported Data', () => {
     beforeEach((done) => {
       const dredd = createDreddFromFixture('transaction-marked-failed-before');
 
-      return runDredd(dredd, (...args) => {
+      runDredd(dredd, (...args) => {
         let err;
+        // eslint-disable-next-line
         [err, dreddRuntimeInfo] = Array.from(args);
-        return done();
+        done(err);
       });
     });
 
@@ -513,12 +486,12 @@ describe('Sanitation of Reported Data', () => {
 
     beforeEach((done) => {
       const dredd = createDreddFromFixture('transaction-marked-failed-after');
-      const app = createServerFromResponse({ name: 'Bob' }); // passing test
+      const app = createServerFromResponse({ name: 'Bob' }); // Passing test
 
-      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
+      runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
-        return done();
+        done();
       });
     });
 
@@ -554,10 +527,11 @@ describe('Sanitation of Reported Data', () => {
     beforeEach((done) => {
       const dredd = createDreddFromFixture('transaction-marked-skipped');
 
-      return runDredd(dredd, (...args) => {
+      runDredd(dredd, (...args) => {
         let err;
+        // eslint-disable-next-line
         [err, dreddRuntimeInfo] = Array.from(args);
-        return done();
+        done(err);
       });
     });
 
@@ -593,10 +567,10 @@ describe('Sanitation of Reported Data', () => {
       const dredd = createDreddFromFixture('transaction-erroring-hooks');
       const app = createServerFromResponse({ name: 'Bob' }); // passing test
 
-      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
+      runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
-        return done();
+        done();
       });
     });
 
@@ -627,10 +601,10 @@ describe('Sanitation of Reported Data', () => {
       const dredd = createDreddFromFixture('transaction-secured-erroring-hooks');
       const app = createServerFromResponse({ name: 'Bob' }); // passing test
 
-      return runDreddWithServer(dredd, app, (err, runtimeInfo) => {
+      runDreddWithServer(dredd, app, (err, runtimeInfo) => {
         if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
-        return done();
+        done();
       });
     });
 

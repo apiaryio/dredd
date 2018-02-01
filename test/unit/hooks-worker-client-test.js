@@ -910,10 +910,12 @@ describe('Hooks worker client', () => {
         // the hooks which are called '*All' recieve an array of transactions
         // as a parameter
         transactionData = clone([transaction]);
+        // eslint-disable-next-line
         getFirstTransaction = transactionData => transactionData[0];
       } else {
         // all the other hooks recieve a single transaction as a parameter
         transactionData = clone(transaction);
+        // eslint-disable-next-line
         getFirstTransaction = transactionData => transactionData;
       }
 

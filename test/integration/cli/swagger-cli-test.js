@@ -1,16 +1,8 @@
-/* eslint-disable
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const fs = require('fs');
 const { assert } = require('chai');
 
 const { runDreddCommandWithServer, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
 
-
-describe('CLI - Swagger Document', () =>
-
+describe('CLI - Swagger Document', () => {
   describe('when loaded from file', () => {
     describe('when successfully loaded', () => {
       let runtimeInfo;
@@ -20,9 +12,9 @@ describe('CLI - Swagger Document', () =>
         const app = createServer();
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -39,9 +31,9 @@ describe('CLI - Swagger Document', () =>
 
       beforeEach((done) => {
         const app = createServer();
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -61,14 +53,14 @@ describe('CLI - Swagger Document', () =>
         const app = createServer();
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
       it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
       it('should print warning to stdout', () => assert.include(runtimeInfo.dredd.stdout, 'warn: Parser warning'));
     });
-  })
-);
+  });
+});

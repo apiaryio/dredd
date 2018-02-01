@@ -1,29 +1,15 @@
-/* eslint-disable
-    block-scoped-var,
-    no-loop-func,
-    no-return-assign,
-    no-shadow,
-    no-unused-vars,
-    no-var,
-    vars-on-top,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
-const sinon = require('sinon');
 const express = require('express');
-const clone = require('clone');
 const fs = require('fs');
-const bodyParser = require('body-parser');
-
 const proxyquire = require('proxyquire').noCallThru();
+const sinon = require('sinon');
+const { assert } = require('chai');
 
 const loggerStub = require('../../src/logger');
 const configUtils = require('../../src/config-utils');
 
 const PORT = 9876;
 
-let exitStatus = null;
+let exitStatus;
 
 let stderr = '';
 let stdout = '';
@@ -31,14 +17,17 @@ let stdout = '';
 const addHooksStub = proxyquire('../../src/add-hooks', {
   './logger': loggerStub
 });
+
 const transactionRunner = proxyquire('../../src/transaction-runner', {
   './add-hooks': addHooksStub,
   './logger': loggerStub
 });
+
 const dreddStub = proxyquire('../../src/dredd', {
   './transaction-runner': transactionRunner,
   './logger': loggerStub
 });
+
 const DreddCommand = proxyquire('../../src/dredd-command', {
   './dredd': dreddStub,
   './config-utils': configUtils,
@@ -46,7 +35,7 @@ const DreddCommand = proxyquire('../../src/dredd-command', {
   fs
 });
 
-const execCommand = function (custom = {}, cb) {
+function execCommand(custom = {}, cb) {
   stdout = '';
   stderr = '';
   exitStatus = null;
@@ -55,30 +44,35 @@ const execCommand = function (custom = {}, cb) {
     if (!finished) {
       finished = true;
       exitStatus = (exitStatusCode != null ? exitStatusCode : 0);
-      return cb(null, stdout, stderr, (exitStatusCode != null ? exitStatusCode : 0));
+      cb(null, stdout, stderr, (exitStatusCode != null ? exitStatusCode : 0));
     }
   }));
 
-
   dreddCommand.run();
-};
+}
 
 describe('DreddCommand class Integration', () => {
-  const dreddCommand = null;
-  const custom = {};
-
   before(() => {
-    for (var method of ['warn', 'error']) { (method => sinon.stub(loggerStub, method).callsFake(chunk => stderr += `\n${method}: ${chunk}`))(method); }
-    for (method of ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual']) { (method => sinon.stub(loggerStub, method).callsFake(chunk => stdout += `\n${method}: ${chunk}`))(method); }
+    ['warn', 'error'].forEach((method) => {
+      sinon.stub(loggerStub, method).callsFake((chunk) => { stderr += `\n${method}: ${chunk}`; });
+    });
+    [
+      'log', 'info', 'silly', 'verbose', 'test',
+      'hook', 'complete', 'pass', 'skip', 'debug',
+      'fail', 'request', 'expected', 'actual'
+    ].forEach((method) => {
+      sinon.stub(loggerStub, method).callsFake((chunk) => { stdout += `\n${method}: ${chunk}`; });
+    });
   });
 
   after(() => {
-    for (var method of ['warn', 'error']) {
-      loggerStub[method].restore();
-    }
-    for (method of ['log', 'info', 'silly', 'verbose', 'test', 'hook', 'complete', 'pass', 'skip', 'debug', 'fail', 'request', 'expected', 'actual']) {
-      loggerStub[method].restore();
-    }
+    ['warn', 'error'].forEach((method) => { loggerStub[method].restore(); });
+
+    [
+      'log', 'info', 'silly', 'verbose', 'test',
+      'hook', 'complete', 'pass', 'skip', 'debug',
+      'fail', 'request', 'expected', 'actual'
+    ].forEach((method) => { loggerStub[method].restore(); });
   });
 
   describe('When using configuration file', () => {
@@ -93,11 +87,11 @@ describe('DreddCommand class Integration', () => {
       before((done) => {
         fsExistsSync = sinon.stub(fs, 'existsSync').callsFake(() => true);
         configUtilsLoad = sinon.stub(configUtils, 'load').callsFake(() => options);
-        return execCommand(cmd, done);
+        execCommand(cmd, done);
       });
       after(() => {
         fsExistsSync.restore();
-        return configUtilsLoad.restore();
+        configUtilsLoad.restore();
       });
 
       it('should call fs.existsSync with given path', () => assert.isTrue(fsExistsSync.calledWith(configPath)));
@@ -116,11 +110,11 @@ describe('DreddCommand class Integration', () => {
       before((done) => {
         fsExistsSync = sinon.stub(fs, 'existsSync').callsFake(() => true);
         configUtilsLoad = sinon.stub(configUtils, 'load').callsFake(() => options);
-        return execCommand(cmd, done);
+        execCommand(cmd, done);
       });
       after(() => {
         fsExistsSync.restore();
-        return configUtilsLoad.restore();
+        configUtilsLoad.restore();
       });
 
       it('should call fs.existsSync with dredd.yml', () => assert.isTrue(fsExistsSync.calledWith(configPath)));
@@ -131,7 +125,6 @@ describe('DreddCommand class Integration', () => {
     describe('When dredd.yml does not exist', () => {
       const configPath = './dredd.yml';
       const cmd = { argv: [] };
-      const options = { _: ['api-description.apib', 'http://127.0.0.1'] };
 
       let fsExistsSync;
       let configUtilsLoad;
@@ -139,11 +132,11 @@ describe('DreddCommand class Integration', () => {
       before((done) => {
         fsExistsSync = sinon.stub(fs, 'existsSync').callsFake(() => false);
         configUtilsLoad = sinon.spy(configUtils, 'load');
-        return execCommand(cmd, done);
+        execCommand(cmd, done);
       });
       after(() => {
         fsExistsSync.restore();
-        return configUtilsLoad.restore();
+        configUtilsLoad.restore();
       });
 
       it('should call fs.existsSync with dredd.yml', () => assert.isTrue(fsExistsSync.calledWith(configPath)));
@@ -153,6 +146,7 @@ describe('DreddCommand class Integration', () => {
   });
 
   describe("to test various Errors - When API description document should be loaded from 'http(s)://...' url", () => {
+    let app = null;
     let server = null;
 
     const errorCmd = { argv: [
@@ -172,27 +166,26 @@ describe('DreddCommand class Integration', () => {
     };
 
     before((done) => {
-      const app = express();
+      app = express();
 
       app.get('/', (req, res) => res.sendStatus(404));
 
       app.get('/file.apib', (req, res) => {
-        const stream = fs.createReadStream('./test/fixtures/single-get.apib');
-        return stream.pipe(res.type('text'));
+        fs.createReadStream('./test/fixtures/single-get.apib').pipe(res.type('text'));
       });
 
       app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
       app.get('/not-found.apib', (req, res) => res.status(404).end());
 
-      return server = app.listen(PORT, () => done());
+      server = app.listen(PORT, () => done());
     });
 
     after(done =>
       server.close(() => {
-        const app = null;
+        app = null;
         server = null;
-        return done();
+        done();
       })
     );
 

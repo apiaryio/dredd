@@ -1,11 +1,8 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-const { assert } = require('chai');
 const bodyParser = require('body-parser');
+const { assert } = require('chai');
 
 const { runDreddWithServer, createServer } = require('./helpers');
 const Dredd = require('../../src/dredd');
-
 
 describe('Sending \'application/json\' request', () => {
   let runtimeInfo;
@@ -18,9 +15,9 @@ describe('Sending \'application/json\' request', () => {
     const path = './test/fixtures/request/application-json.apib';
     const dredd = new Dredd({ options: { path } });
 
-    return runDreddWithServer(dredd, app, (err, info) => {
+    runDreddWithServer(dredd, app, (err, info) => {
       runtimeInfo = info;
-      return done(err);
+      done(err);
     });
   });
 
@@ -35,7 +32,6 @@ describe('Sending \'application/json\' request', () => {
     assert.equal(runtimeInfo.dredd.stats.passes, 1);
   });
 });
-
 
 [{
   name: 'API Blueprint',
@@ -57,9 +53,9 @@ describe('Sending \'application/json\' request', () => {
       app.post('/data', (req, res) => res.json({ test: 'OK' }));
       const dredd = new Dredd({ options: { path: apiDescription.path } });
 
-      return runDreddWithServer(dredd, app, (err, info) => {
+      runDreddWithServer(dredd, app, (err, info) => {
         runtimeInfo = info;
-        return done(err);
+        done(err);
       });
     });
 
@@ -94,7 +90,6 @@ describe('Sending \'application/json\' request', () => {
   })
 );
 
-
 [{
   name: 'API Blueprint',
   path: './test/fixtures/request/application-x-www-form-urlencoded.apib'
@@ -113,9 +108,9 @@ describe('Sending \'application/json\' request', () => {
       app.post('/data', (req, res) => res.json({ test: 'OK' }));
       const dredd = new Dredd({ options: { path: apiDescription.path } });
 
-      return runDreddWithServer(dredd, app, (err, info) => {
+      runDreddWithServer(dredd, app, (err, info) => {
         runtimeInfo = info;
-        return done(err);
+        done(err);
       });
     });
 
@@ -132,7 +127,6 @@ describe('Sending \'application/json\' request', () => {
   })
 );
 
-
 describe('Sending \'text/plain\' request', () => {
   let runtimeInfo;
   const contentType = 'text/plain';
@@ -144,9 +138,9 @@ describe('Sending \'text/plain\' request', () => {
     app.post('/data', (req, res) => res.json({ test: 'OK' }));
     const dredd = new Dredd({ options: { path } });
 
-    return runDreddWithServer(dredd, app, (err, info) => {
+    runDreddWithServer(dredd, app, (err, info) => {
       runtimeInfo = info;
-      return done(err);
+      done(err);
     });
   });
 

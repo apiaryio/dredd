@@ -1,11 +1,5 @@
-/* eslint-disable
-    no-return-assign,
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
 const sinon = require('sinon');
+const { assert } = require('chai');
 
 const helpers = require('./helpers');
 const { spawn, signalTerm, signalKill } = require('../../src/child-process');
@@ -14,8 +8,7 @@ const COFFEE_BIN = 'node_modules/.bin/coffee';
 const WAIT_AFTER_COMMAND_SPAWNED_MS = 500;
 const WAIT_AFTER_COMMAND_TERMINATED_MS = 1500;
 
-
-const runChildProcess = function (command, fn, callback) {
+function runChildProcess(command, fn, callback) {
   const onCrash = sinon.spy();
 
   const processInfo = {
@@ -30,37 +23,36 @@ const runChildProcess = function (command, fn, callback) {
 
   const childProcess = spawn(COFFEE_BIN, [command]);
 
-  childProcess.stdout.on('data', data => processInfo.stdout += data.toString());
-  childProcess.stderr.on('data', data => processInfo.stderr += data.toString());
+  childProcess.stdout.on('data', (data) => { processInfo.stdout += data.toString(); });
+  childProcess.stderr.on('data', (data) => { processInfo.stderr += data.toString(); });
 
   const onExit = function (exitStatus, signal) {
     processInfo.terminated = true;
     processInfo.exitStatus = exitStatus;
-    return processInfo.signal = signal;
+    processInfo.signal = signal;
   };
   childProcess.on('exit', onExit);
 
-  const onError = err => processInfo.error = err;
+  const onError = (err) => { processInfo.error = err; };
   childProcess.on('error', onError);
 
   childProcess.on('crash', onCrash);
 
-  return setTimeout(() => {
+  setTimeout(() => {
     fn(childProcess);
 
-    return setTimeout(() => {
+    setTimeout(() => {
       childProcess.removeListener('exit', onExit);
       childProcess.removeListener('error', onError);
       childProcess.removeListener('crash', onCrash);
 
       processInfo.childProcess = childProcess;
-      return callback(null, processInfo);
+      callback(null, processInfo);
     }
       , WAIT_AFTER_COMMAND_TERMINATED_MS);
   }
     , WAIT_AFTER_COMMAND_SPAWNED_MS);
-};
-
+}
 
 describe('Babysitting Child Processes', () => {
   describe('when forcefully killed by childProcess.signalKill()', () => {
@@ -71,7 +63,7 @@ describe('Babysitting Child Processes', () => {
         runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess.signalKill()
           , (err, info) => {
             processInfo = info;
-            return done(err);
+            done(err);
           })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
@@ -94,7 +86,7 @@ describe('Babysitting Child Processes', () => {
         runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', childProcess => childProcess.signalKill()
           , (err, info) => {
             processInfo = info;
-            return done(err);
+            done(err);
           })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
@@ -120,7 +112,7 @@ describe('Babysitting Child Processes', () => {
           runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess[functionName]()
             , (err, info) => {
               processInfo = info;
-              return done(err);
+              done(err);
             })
         );
         after(done => helpers.kill(processInfo.childProcess.pid, done));
@@ -141,7 +133,7 @@ describe('Babysitting Child Processes', () => {
           runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', childProcess => childProcess.terminate()
             , (err, info) => {
               processInfo = info;
-              return done(err);
+              done(err);
             })
         );
         after(done => helpers.kill(processInfo.childProcess.pid, done));
@@ -168,7 +160,7 @@ describe('Babysitting Child Processes', () => {
         runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess.terminate({ force: true })
           , (err, info) => {
             processInfo = info;
-            return done(err);
+            done(err);
           })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
@@ -189,7 +181,7 @@ describe('Babysitting Child Processes', () => {
         runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', childProcess => childProcess.terminate({ force: true })
           , (err, info) => {
             processInfo = info;
-            return done(err);
+            done(err);
           })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
@@ -213,10 +205,11 @@ describe('Babysitting Child Processes', () => {
       let processInfo;
 
       before(done =>
+        // eslint-disable-next-line
         runChildProcess('test/fixtures/scripts/exit-0.coffee', childProcess => true
           , (err, info) => {
             processInfo = info;
-            return done(err);
+            done(err);
           })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
@@ -232,10 +225,11 @@ describe('Babysitting Child Processes', () => {
       let processInfo;
 
       before(done =>
+        // eslint-disable-next-line
         runChildProcess('test/fixtures/scripts/exit-3.coffee', childProcess => true
           , (err, info) => {
             processInfo = info;
-            return done(err);
+            done(err);
           })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
@@ -256,7 +250,7 @@ describe('Babysitting Child Processes', () => {
         runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess.signalTerm()
           , (err, info) => {
             processInfo = info;
-            return done(err);
+            done(err);
           })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
@@ -275,7 +269,7 @@ describe('Babysitting Child Processes', () => {
         runChildProcess('test/fixtures/scripts/stdout-exit-3.coffee', childProcess => childProcess.signalTerm()
           , (err, info) => {
             processInfo = info;
-            return done(err);
+            done(err);
           })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
@@ -294,7 +288,7 @@ describe('Babysitting Child Processes', () => {
         runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess.signalKill()
           , (err, info) => {
             processInfo = info;
-            return done(err);
+            done(err);
           })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
@@ -316,14 +310,14 @@ describe('Babysitting Child Processes', () => {
 
       before(done =>
         runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) => {
-          // simulate that the process was terminated externally
+          // Simulate that the process was terminated externally
           const emit = sinon.stub(childProcess, 'emit');
           signalTerm(childProcess, () => {});
-          return emit.restore();
+          emit.restore();
         }
           , (err, info) => {
           processInfo = info;
-          return done(err);
+          done(err);
         })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
@@ -340,14 +334,14 @@ describe('Babysitting Child Processes', () => {
 
       before(done =>
         runChildProcess('test/fixtures/scripts/stdout-exit-3.coffee', (childProcess) => {
-          // simulate that the process was terminated externally
+          // Simulate that the process was terminated externally
           const emit = sinon.stub(childProcess, 'emit');
           signalTerm(childProcess, () => {});
-          return emit.restore();
+          emit.restore();
         }
           , (err, info) => {
           processInfo = info;
-          return done(err);
+          done(err);
         })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));
@@ -366,14 +360,14 @@ describe('Babysitting Child Processes', () => {
 
       before(done =>
         runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) => {
-          // simulate that the process was killed externally
+          // Simulate that the process was killed externally
           const emit = sinon.stub(childProcess, 'emit');
           signalKill(childProcess, () => {});
-          return emit.restore();
+          emit.restore();
         }
           , (err, info) => {
           processInfo = info;
-          return done(err);
+          done(err);
         })
       );
       after(done => helpers.kill(processInfo.childProcess.pid, done));

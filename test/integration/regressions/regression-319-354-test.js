@@ -1,17 +1,7 @@
-/* eslint-disable
-    default-case,
-    no-shadow,
-    no-unused-vars,
-    prefer-const,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-const { assert } = require('chai');
 const clone = require('clone');
+const { assert } = require('chai');
 
-const Dredd = require('../../../src/dredd');
-let { runDreddCommandWithServer, createServer, parseDreddStdout, DEFAULT_SERVER_PORT } = require('../helpers');
-
+const { runDreddCommandWithServer, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
 
 // Helper, tries to parse given HTTP body and in case it can be parsed as JSON,
 // it returns the resulting JS object, otherwise it returns whatever came in.
@@ -24,9 +14,8 @@ const parseIfJson = function (body) {
   }
 };
 
-
 // This can be removed once https://github.com/apiaryio/dredd/issues/341 is done
-parseDreddStdout = function (stdout) {
+function parseDreddStdout(stdout) {
   // Parse individual entries (deals also with multi-line entries)
   let entries = [];
   let entry;
@@ -48,10 +37,10 @@ parseDreddStdout = function (stdout) {
   // fail: POST /customers duration: 13ms
   // fail: body: At '/name' Invalid type: null (expected string)
   // body: At '/shoeSize' Invalid type: string (expected number)
-  entries = entries.filter((entry, i) => {
+  entries = entries.filter((item, i) => {
     const previousEntry = entries[i - 1];
-    if ((entry.label === 'body') && (previousEntry.label === 'fail')) {
-      previousEntry.body += `\n${entry.body}`;
+    if ((item.label === 'body') && (previousEntry.label === 'fail')) {
+      previousEntry.body += `\n${item.body}`;
       return false;
     }
     return true;
@@ -65,11 +54,11 @@ parseDreddStdout = function (stdout) {
       case 'bodySchema': results.schemas.push(parseIfJson(entry.body)); break;
       case 'complete': results.summary = entry.body; break;
       case 'fail': results.failures.push(entry.body); break;
+      default: continue;
     }
   }
   return results;
-};
-
+}
 
 describe('Regression: Issues #319 and #354', () => {
   let results;
@@ -165,9 +154,9 @@ describe('Regression: Issues #319 and #354', () => {
         '--details',
         '--no-color'
       ];
-      return runDreddCommandWithServer(args, app, (err, info) => {
+      runDreddCommandWithServer(args, app, (err, info) => {
         if (info) { results = parseDreddStdout(info.dredd.stdout); }
-        return done(err);
+        done(err);
       });
     });
 
@@ -238,9 +227,9 @@ describe('Regression: Issues #319 and #354', () => {
         '--details',
         '--no-color'
       ];
-      return runDreddCommandWithServer(args, app, (err, info) => {
+      runDreddCommandWithServer(args, app, (err, info) => {
         if (info) { results = parseDreddStdout(info.dredd.stdout); }
-        return done(err);
+        done(err);
       });
     });
 

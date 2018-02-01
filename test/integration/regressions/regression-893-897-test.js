@@ -1,13 +1,7 @@
-/* eslint-disable
-    prefer-const,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
 const { assert } = require('chai');
 
 const Dredd = require('../../../src/dredd');
 const { runDreddWithServer, createServer } = require('../helpers');
-
 
 describe('Regression: Issue #893 and #897', () => {
   describe('when the response has no explicit status code', () => {
@@ -18,10 +12,11 @@ describe('Regression: Issue #893 and #897', () => {
       app.get('/resource', (req, res) => res.json({ name: 'Honza', color: 'green' }));
 
       const dredd = new Dredd({ options: { path: './test/fixtures/regression-893.yaml' } });
-      return runDreddWithServer(dredd, app, (...args) => {
+      runDreddWithServer(dredd, app, (...args) => {
         let err;
+        // eslint-disable-next-line
         [err, runtimeInfo] = Array.from(args);
-        return done(err);
+        done(err);
       });
     });
 
@@ -39,10 +34,11 @@ describe('Regression: Issue #893 and #897', () => {
       app.get('/resource.csv', (req, res) => res.type('text/csv').send('name,color\nHonza,green\n'));
 
       const dredd = new Dredd({ options: { path: './test/fixtures/regression-897-body.yaml' } });
-      return runDreddWithServer(dredd, app, (...args) => {
+      runDreddWithServer(dredd, app, (...args) => {
         let err;
+        // eslint-disable-next-line
         [err, runtimeInfo] = Array.from(args);
-        return done(err);
+        done(err);
       });
     });
 
@@ -60,10 +56,11 @@ describe('Regression: Issue #893 and #897', () => {
       app.get('/resource.csv', (req, res) => res.type('text/csv').send('name,color\nHonza,green\n'));
 
       const dredd = new Dredd({ options: { path: './test/fixtures/regression-897-schema.yaml' } });
-      return runDreddWithServer(dredd, app, (...args) => {
+      runDreddWithServer(dredd, app, (...args) => {
         let err;
+        // eslint-disable-next-line
         [err, runtimeInfo] = Array.from(args);
-        return done(err);
+        done(err);
       });
     });
 

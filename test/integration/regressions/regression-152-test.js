@@ -1,13 +1,7 @@
-/* eslint-disable
-    prefer-const,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
 const { assert } = require('chai');
 
 const Dredd = require('../../../src/dredd');
 const { runDreddWithServer, createServer } = require('../helpers');
-
 
 describe('Regression: Issue #152', () =>
   describe('Modify transaction object inside beforeAll combined with beforeEach helper', () => {
@@ -24,10 +18,11 @@ describe('Regression: Issue #152', () =>
         }
       });
 
-      return runDreddWithServer(dredd, app, (...args) => {
+      runDreddWithServer(dredd, app, (...args) => {
         let err;
+        // eslint-disable-next-line
         [err, runtimeInfo] = Array.from(args);
-        return done(err);
+        done(err);
       });
     });
 

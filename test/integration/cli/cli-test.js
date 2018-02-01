@@ -1,22 +1,11 @@
-/* eslint-disable
-    no-console,
-    no-return-assign,
-    no-unused-vars,
-    one-var,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
 const net = require('net');
 const path = require('path');
-
 const { assert } = require('chai');
-const { exec } = require('child_process');
 
 const { isProcessRunning, killAll, createServer, runDreddCommandWithServer, runDreddCommand, DEFAULT_SERVER_PORT } = require('../helpers');
 
 const COFFEE_BIN = 'node_modules/.bin/coffee';
 const DEFAULT_HOOK_HANDLER_PORT = 61321;
-
 
 describe('CLI', () => {
   describe('Arguments with existing API description document and responding server', () => {
@@ -28,9 +17,9 @@ describe('CLI', () => {
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
         const args = ['./test/fixtures/single-get.apib', `http://127.0.0.1:${DEFAULT_SERVER_PORT}`];
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -45,9 +34,9 @@ describe('CLI', () => {
         app.get('/v2/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
         const args = ['./test/fixtures/single-get.apib', `http://127.0.0.1:${DEFAULT_SERVER_PORT}/v2/`];
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -62,9 +51,9 @@ describe('CLI', () => {
         app.get('/machines', (req, res) => res.status(201).json([{ kind: 'bulldozer', imatriculation: 'willy' }]));
 
         const args = ['./test/fixtures/single-get.apib', `http://127.0.0.1:${DEFAULT_SERVER_PORT}`];
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -88,9 +77,9 @@ describe('CLI', () => {
             '--language=foo/bar/hook-handler',
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ];
-          return runDreddCommandWithServer(args, app, (err, info) => {
+          runDreddCommandWithServer(args, app, (err, info) => {
             runtimeInfo = info;
-            return done(err);
+            done(err);
           });
         });
 
@@ -129,9 +118,9 @@ describe('CLI', () => {
             `--language=${COFFEE_BIN} ./test/fixtures/scripts/exit-3.coffee`,
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ];
-          return runDreddCommandWithServer(args, app, (err, info) => {
+          runDreddCommandWithServer(args, app, (err, info) => {
             runtimeInfo = info;
-            return done(err);
+            done(err);
           });
         });
 
@@ -144,7 +133,7 @@ describe('CLI', () => {
         it('should term or kill the server', done =>
           isProcessRunning('endless-ignore-term', (err, isRunning) => {
             if (!err) { assert.isFalse(isRunning); }
-            return done(err);
+            done(err);
           })
         );
 
@@ -166,9 +155,9 @@ describe('CLI', () => {
             `--language=${COFFEE_BIN} ./test/fixtures/scripts/kill-self.coffee`,
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ];
-          return runDreddCommandWithServer(args, app, (err, info) => {
+          runDreddCommandWithServer(args, app, (err, info) => {
             runtimeInfo = info;
-            return done(err);
+            done(err);
           });
         });
 
@@ -187,7 +176,7 @@ describe('CLI', () => {
         it('should term or kill the server', done =>
           isProcessRunning('endless-ignore-term', (err, isRunning) => {
             if (!err) { assert.isFalse(isRunning); }
-            return done(err);
+            done(err);
           })
         );
 
@@ -203,16 +192,16 @@ describe('CLI', () => {
             // path.posix|win32.normalize and path.join do not do the job in this case,
             // hence this ingenious hack
             const normalizedPath = path.normalize('test/fixtures/hooks.js').replace(/\\/g, '\\\\');
-            return killAll(`endless-ignore-term.+[^=]${normalizedPath}`, (err) => {
+            killAll(`endless-ignore-term.+[^=]${normalizedPath}`, (err) => {
               if (err) { done(err); }
-              return res.json([{ type: 'bulldozer', name: 'willy' }]);
+              res.json([{ type: 'bulldozer', name: 'willy' }]);
             });
           });
 
           // TCP server echoing transactions back
           const hookHandler = net.createServer((socket) => {
             socket.on('data', data => socket.write(data));
-            return socket.on('error', err => console.error(err));
+            socket.on('error', err => console.error(err));
           });
 
           const args = [
@@ -223,11 +212,11 @@ describe('CLI', () => {
             `--language=${COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee`,
             '--hookfiles=test/fixtures/hooks.js'
           ];
-          return hookHandler.listen(DEFAULT_HOOK_HANDLER_PORT, () =>
+          hookHandler.listen(DEFAULT_HOOK_HANDLER_PORT, () =>
             runDreddCommandWithServer(args, app, (err, info) => {
               hookHandler.close();
               runtimeInfo = info;
-              return done(err);
+              done(err);
             })
           );
         });
@@ -247,7 +236,7 @@ describe('CLI', () => {
         it('should term or kill the server', done =>
           isProcessRunning('endless-ignore-term', (err, isRunning) => {
             if (!err) { assert.isFalse(isRunning); }
-            return done(err);
+            done(err);
           })
         );
 
@@ -265,7 +254,7 @@ describe('CLI', () => {
           // TCP server echoing transactions back
           const hookHandler = net.createServer((socket) => {
             socket.on('data', data => socket.write(data));
-            return socket.on('error', err => console.error(err));
+            socket.on('error', err => console.error(err));
           });
 
           const args = [
@@ -276,11 +265,11 @@ describe('CLI', () => {
             `--language=${COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee`,
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ];
-          return hookHandler.listen(DEFAULT_HOOK_HANDLER_PORT, () =>
+          hookHandler.listen(DEFAULT_HOOK_HANDLER_PORT, () =>
             runDreddCommandWithServer(args, app, (err, info) => {
               hookHandler.close();
               runtimeInfo = info;
-              return done(err);
+              done(err);
             })
           );
         });
@@ -297,7 +286,7 @@ describe('CLI', () => {
         it('should kill both the handler and the server', done =>
           isProcessRunning('endless-ignore-term', (err, isRunning) => {
             if (!err) { assert.isFalse(isRunning); }
-            return done(err);
+            done(err);
           })
         );
 
@@ -318,9 +307,9 @@ describe('CLI', () => {
           '-h',
           'Accept:application/json'
         ];
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -341,9 +330,9 @@ describe('CLI', () => {
           '-u',
           'username:password'
         ];
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -365,16 +354,19 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '-s'
         ];
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
       it('should perform the POST, GET, PUT, DELETE in order', () => {
-        let middle,
-          middle1;
-        assert.isOk(runtimeInfo.dredd.stdout.indexOf('POST') < (middle = runtimeInfo.dredd.stdout.indexOf('GET')) && middle < (middle1 = runtimeInfo.dredd.stdout.indexOf('PUT')) && middle1 < runtimeInfo.dredd.stdout.indexOf('DELETE'));
+        assert.isOk(
+          runtimeInfo.dredd.stdout.indexOf('POST') <
+          runtimeInfo.dredd.stdout.indexOf('GET') <
+          runtimeInfo.dredd.stdout.indexOf('PUT') <
+          runtimeInfo.dredd.stdout.indexOf('DELETE')
+        );
       });
     });
 
@@ -390,16 +382,16 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '-e'
         ];
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
       it('should display errors inline', () => {
-        // when displayed inline, a single fail request only creates two "fail:" messages,
+        // When displayed inline, a single fail request only creates two "fail:" messages,
         // as opposed to the usual three
-        const count = runtimeInfo.dredd.stdout.split('fail').length - 2; // says fail in the epilogue
+        const count = runtimeInfo.dredd.stdout.split('fail').length - 2; // Says fail in the epilogue
         assert.equal(count, 2);
       });
     });
@@ -416,14 +408,14 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '-d'
         ];
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
       it('should display details on passing tests', () =>
-        // the request: block is not shown for passing tests normally
+        // The request: block is not shown for passing tests normally
         assert.isOk(runtimeInfo.dredd.stdout.indexOf('request') > -1)
       );
     });
@@ -442,9 +434,9 @@ describe('CLI', () => {
             '-m',
             'POST'
           ];
-          return runDreddCommandWithServer(args, app, (err, info) => {
+          runDreddCommandWithServer(args, app, (err, info) => {
             runtimeInfo = info;
-            return done(err);
+            done(err);
           });
         });
 
@@ -464,9 +456,9 @@ describe('CLI', () => {
             '-m',
             'GET'
           ];
-          return runDreddCommandWithServer(args, app, (err, info) => {
+          runDreddCommandWithServer(args, app, (err, info) => {
             runtimeInfo = info;
-            return done(err);
+            done(err);
           });
         });
 
@@ -490,9 +482,9 @@ describe('CLI', () => {
           '--only=Message API > /message > GET',
           '--no-color'
         ];
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -515,14 +507,14 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--no-color'
         ];
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
       it('should print without colors', () =>
-        // if colors are not on, there is no closing color code between
+        // If colors are not on, there is no closing color code between
         // the "pass" and the ":"
         assert.include(runtimeInfo.dredd.stdout, 'pass:')
       );
@@ -540,14 +532,14 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--color=false'
         ];
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
       it('should print without colors', () =>
-        // if colors are not on, there is no closing color code between
+        // If colors are not on, there is no closing color code between
         // the "pass" and the ":"
         assert.include(runtimeInfo.dredd.stdout, 'pass:')
       );
@@ -565,14 +557,14 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '-l=error'
         ];
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
       it('should not display anything', () =>
-        // at the "error" level, complete should not be shown
+        // At the "error" level, complete should not be shown
         assert.isOk(runtimeInfo.dredd.stdout.indexOf('complete') === -1)
       );
     });
@@ -589,14 +581,14 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '-t'
         ];
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
       it('should display timestamps', () =>
-        // look for the prefix for cli output with timestamps
+        // Look for the prefix for cli output with timestamps
         assert.notEqual(runtimeInfo.dredd.stdout.indexOf('Z -'), -1)
       );
     });
@@ -614,9 +606,9 @@ describe('CLI', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--hookfiles=./test/fixtures/*_hooks.*'
       ];
-      return runDreddCommandWithServer(args, app, (err, info) => {
+      runDreddCommandWithServer(args, app, (err, info) => {
         runtimeInfo = info;
-        return done(err);
+        done(err);
       });
     });
 
@@ -645,9 +637,9 @@ describe('CLI', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--hookfiles=./test/fixtures/*_events.*'
       ];
-      return runDreddCommandWithServer(args, app, (err, info) => {
+      runDreddCommandWithServer(args, app, (err, info) => {
         runtimeInfo = info;
-        return done(err);
+        done(err);
       });
     });
 
@@ -680,9 +672,9 @@ describe('CLI', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--hookfiles=./test/fixtures/*_all.*'
       ];
-      return runDreddCommandWithServer(args, app, (err, info) => {
+      runDreddCommandWithServer(args, app, (err, info) => {
         runtimeInfo = info;
-        return done(err);
+        done(err);
       });
     });
 
@@ -711,9 +703,9 @@ describe('CLI', () => {
           './test/fixtures/schema.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`
         ];
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -738,9 +730,9 @@ describe('CLI', () => {
           './test/fixtures/schema.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`
         ];
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -758,9 +750,9 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--names'
         ];
-        return runDreddCommand(args, (err, info) => {
+        runDreddCommand(args, (err, info) => {
           dreddCommandInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -789,9 +781,9 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--hookfiles=./test/fixtures/multifile/multifile_hooks.coffee'
         ];
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -803,14 +795,13 @@ describe('CLI', () => {
 
       it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0, (runtimeInfo.dredd.output)));
 
-      it('server should receive 3 requests', () =>
+      it('server should receive 3 requests', () => {
         assert.deepEqual(runtimeInfo.server.requestCounts, {
           '/name': 1,
           '/greeting': 1,
           '/message': 1
-        }
-        )
-      );
+        });
+      });
     });
   });
 
@@ -826,9 +817,9 @@ describe('CLI', () => {
           '--path=./test/fixtures/multifile/*.apib',
           '--names'
         ];
-        return runDreddCommand(args, (err, info) => {
+        runDreddCommand(args, (err, info) => {
           dreddCommandInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -857,9 +848,9 @@ describe('CLI', () => {
         '--sandbox',
         '--hookfiles=./test/fixtures/sandboxed-hook.js'
       ];
-      return runDreddCommandWithServer(args, app, (err, info) => {
+      runDreddCommandWithServer(args, app, (err, info) => {
         runtimeInfo = info;
-        return done(err);
+        done(err);
       });
     });
 

@@ -1,14 +1,10 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 const fs = require('fs');
 const os = require('os');
 const { assert } = require('chai');
 
 const { runDreddCommandWithServer, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
 
-
 const NON_EXISTENT_PORT = DEFAULT_SERVER_PORT + 1;
-
 
 describe('CLI - API Description Document', () => {
   describe('when loaded from file', () => {
@@ -20,9 +16,9 @@ describe('CLI - API Description Document', () => {
         const app = createServer();
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -39,9 +35,9 @@ describe('CLI - API Description Document', () => {
 
       beforeEach((done) => {
         const app = createServer();
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -58,9 +54,9 @@ describe('CLI - API Description Document', () => {
 
       beforeEach((done) => {
         const app = createServer();
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -82,14 +78,13 @@ describe('CLI - API Description Document', () => {
         const app = createServer();
         app.get('/single-get.apib', (req, res) => {
           res.type('text/vnd.apiblueprint');
-          const stream = fs.createReadStream('./test/fixtures/single-get.apib');
-          return stream.pipe(res);
+          fs.createReadStream('./test/fixtures/single-get.apib').pipe(res);
         });
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -107,9 +102,9 @@ describe('CLI - API Description Document', () => {
 
       beforeEach((done) => {
         const app = createServer();
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -133,9 +128,9 @@ describe('CLI - API Description Document', () => {
         const app = createServer();
         app.get('/__non-existent__.apib', (req, res) => res.sendStatus(404));
 
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -164,9 +159,9 @@ describe('CLI - API Description Document', () => {
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
         app.get('/machines/willy', (req, res) => res.json({ type: 'bulldozer', name: 'willy' }));
 
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -186,15 +181,14 @@ describe('CLI - API Description Document', () => {
         const app = createServer();
         app.get('/single-get.yaml', (req, res) => {
           res.type('application/yaml');
-          const stream = fs.createReadStream('./test/fixtures/single-get.yaml');
-          return stream.pipe(res);
+          fs.createReadStream('./test/fixtures/single-get.yaml').pipe(res);
         });
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
         app.get('/machines/willy', (req, res) => res.json({ type: 'bulldozer', name: 'willy' }));
 
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -218,9 +212,9 @@ describe('CLI - API Description Document', () => {
         app.get('/machines/willy', (req, res) => res.json({ type: 'bulldozer', name: 'willy' }));
         app.get('/machines/caterpillar', (req, res) => res.json({ type: 'bulldozer', name: 'caterpillar' }));
 
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -241,9 +235,9 @@ describe('CLI - API Description Document', () => {
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
         app.get('/machines/willy', (req, res) => res.json({ type: 'bulldozer', name: 'willy' }));
 
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -263,9 +257,9 @@ describe('CLI - API Description Document', () => {
         const app = createServer();
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 

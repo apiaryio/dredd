@@ -1,12 +1,8 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 const { assert } = require('chai');
 
 const { runDreddCommandWithServer, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
 
-
-describe('CLI - API Blueprint Document', () =>
-
+describe('CLI - API Blueprint Document', () => {
   describe('when loaded from file', () => {
     describe('when successfully loaded', () => {
       let runtimeInfo;
@@ -16,9 +12,9 @@ describe('CLI - API Blueprint Document', () =>
         const app = createServer();
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -35,9 +31,9 @@ describe('CLI - API Blueprint Document', () =>
 
       beforeEach((done) => {
         const app = createServer();
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
@@ -55,14 +51,14 @@ describe('CLI - API Blueprint Document', () =>
 
       beforeEach((done) => {
         const app = createServer();
-        return runDreddCommandWithServer(args, app, (err, info) => {
+        runDreddCommandWithServer(args, app, (err, info) => {
           runtimeInfo = info;
-          return done(err);
+          done(err);
         });
       });
 
       it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
       it('should print warning to stdout', () => assert.include(runtimeInfo.dredd.stdout, 'warn: Compilation warning'));
     });
-  })
-);
+  });
+});

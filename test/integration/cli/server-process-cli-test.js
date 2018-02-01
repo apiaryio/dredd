@@ -1,17 +1,8 @@
-/* eslint-disable
-    no-return-assign,
-    no-shadow,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
 const { assert } = require('chai');
-
 const { isProcessRunning, killAll, runDreddCommand, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
-
 
 const COFFEE_BIN = 'node_modules/.bin/coffee';
 const NON_EXISTENT_PORT = DEFAULT_SERVER_PORT + 1;
-
 
 describe('CLI - Server Process', () => {
   describe('when specified by URL', () => {
@@ -25,9 +16,9 @@ describe('CLI - Server Process', () => {
 
       app.get('/machines/willy', (req, res) => res.json({ type: 'bulldozer', name: 'willy' }));
 
-      return server = app.listen((err, info) => {
+      server = app.listen((err, info) => {
         serverRuntimeInfo = info;
-        return done(err);
+        done(err);
       });
     });
 
@@ -41,7 +32,7 @@ describe('CLI - Server Process', () => {
       beforeEach(done =>
         runDreddCommand(args, (err, info) => {
           dreddCommandInfo = info;
-          return done(err);
+          done(err);
         })
       );
 
@@ -56,7 +47,7 @@ describe('CLI - Server Process', () => {
       beforeEach(done =>
         runDreddCommand(args, (err, info) => {
           dreddCommandInfo = info;
-          return done(err);
+          done(err);
         })
       );
 
@@ -86,7 +77,7 @@ describe('CLI - Server Process', () => {
       beforeEach(done =>
         runDreddCommand(args, (err, info) => {
           dreddCommandInfo = info;
-          return done(err);
+          done(err);
         })
       );
 
@@ -107,7 +98,7 @@ describe('CLI - Server Process', () => {
       beforeEach(done =>
         runDreddCommand(args, (err, info) => {
           dreddCommandInfo = info;
-          return done(err);
+          done(err);
         })
       );
 
@@ -141,37 +132,35 @@ describe('CLI - Server Process', () => {
       expectServerBoot: true
     }
     ]) {
-      (scenario =>
-        describe(scenario.description, () => {
-          let dreddCommandInfo;
-          const args = [
-            scenario.apiDescriptionDocument,
-            `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-            `--server=${scenario.server}`,
-            '--server-wait=1'
-          ];
+      describe(scenario.description, () => {
+        let dreddCommandInfo;
+        const args = [
+          scenario.apiDescriptionDocument,
+          `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
+          `--server=${scenario.server}`,
+          '--server-wait=1'
+        ];
 
-          beforeEach(done =>
-            runDreddCommand(args, (err, info) => {
-              dreddCommandInfo = info;
-              return done(err);
-            })
-          );
+        beforeEach(done =>
+          runDreddCommand(args, (err, info) => {
+            dreddCommandInfo = info;
+            done(err);
+          })
+        );
 
-          it('should inform about starting server with custom command', () => assert.include(dreddCommandInfo.stdout, 'Starting backend server process with command'));
-          if (scenario.expectServerBoot) {
-            it('should redirect server\'s boot message', () => assert.include(dreddCommandInfo.stdout, `Dummy server listening on port ${DEFAULT_SERVER_PORT}`));
-          }
-          it('the server should not be running', done =>
-            isProcessRunning('test/fixtures/scripts/', (err, isRunning) => {
-              if (!err) { assert.isFalse(isRunning); }
-              return done(err);
-            })
-          );
-          it('should report problems with connection to server', () => assert.include(dreddCommandInfo.stderr, 'Error connecting to server'));
-          it('should exit with status 1', () => assert.equal(dreddCommandInfo.exitStatus, 1));
-        })
-      )(scenario);
+        it('should inform about starting server with custom command', () => assert.include(dreddCommandInfo.stdout, 'Starting backend server process with command'));
+        if (scenario.expectServerBoot) {
+          it('should redirect server\'s boot message', () => assert.include(dreddCommandInfo.stdout, `Dummy server listening on port ${DEFAULT_SERVER_PORT}`));
+        }
+        it('the server should not be running', done =>
+          isProcessRunning('test/fixtures/scripts/', (err, isRunning) => {
+            if (!err) { assert.isFalse(isRunning); }
+            done(err);
+          })
+        );
+        it('should report problems with connection to server', () => assert.include(dreddCommandInfo.stderr, 'Error connecting to server'));
+        it('should exit with status 1', () => assert.equal(dreddCommandInfo.exitStatus, 1));
+      });
     }
 
     describe('when didn\'t terminate and had to be killed by Dredd', () => {
@@ -187,7 +176,7 @@ describe('CLI - Server Process', () => {
       beforeEach(done =>
         runDreddCommand(args, (err, info) => {
           dreddCommandInfo = info;
-          return done(err);
+          done(err);
         })
       );
 
@@ -198,7 +187,7 @@ describe('CLI - Server Process', () => {
       it('the server should not be running', done =>
         isProcessRunning('test/fixtures/scripts/', (err, isRunning) => {
           if (!err) { assert.isFalse(isRunning); }
-          return done(err);
+          done(err);
         })
       );
       it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
