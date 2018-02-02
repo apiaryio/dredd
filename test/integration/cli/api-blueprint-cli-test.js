@@ -1,0 +1,64 @@
+const { assert } = require('chai');
+
+const { runDreddCommandWithServer, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
+
+describe('CLI - API Blueprint Document', () => {
+  describe('when loaded from file', () => {
+    describe('when successfully loaded', () => {
+      let runtimeInfo;
+      const args = ['./test/fixtures/single-get.apib', `http://127.0.0.1:${DEFAULT_SERVER_PORT}`];
+
+      beforeEach((done) => {
+        const app = createServer();
+        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
+
+        runDreddCommandWithServer(args, app, (err, info) => {
+          runtimeInfo = info;
+          done(err);
+        });
+      });
+
+      it('should request /machines', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
+      it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+    });
+
+    describe('when API Blueprint is loaded with errors', () => {
+      let runtimeInfo;
+      const args = [
+        './test/fixtures/error-blueprint.apib',
+        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`
+      ];
+
+      beforeEach((done) => {
+        const app = createServer();
+        runDreddCommandWithServer(args, app, (err, info) => {
+          runtimeInfo = info;
+          done(err);
+        });
+      });
+
+      it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
+      it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr, 'Error when processing API description'));
+    });
+
+    describe('when API Blueprint is loaded with warnings', () => {
+      let runtimeInfo;
+      const args = [
+        './test/fixtures/warning-blueprint.apib',
+        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
+        '--no-color'
+      ];
+
+      beforeEach((done) => {
+        const app = createServer();
+        runDreddCommandWithServer(args, app, (err, info) => {
+          runtimeInfo = info;
+          done(err);
+        });
+      });
+
+      it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('should print warning to stdout', () => assert.include(runtimeInfo.dredd.stdout, 'warn: Compilation warning'));
+    });
+  });
+});

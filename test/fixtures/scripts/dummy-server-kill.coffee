@@ -1,7 +1,5 @@
-
 express = require 'express'
 app = express()
-
 
 app.get '/machines', (req, res) ->
   res.json [{type: 'bulldozer', name: 'willy'}]

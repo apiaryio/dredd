@@ -1,6 +1,6 @@
-var hooks = require('hooks');
+const hooks = require('hooks');
 
-hooks.before('/honey > GET > 500 > application/json', function (transaction, done) {
+hooks.before('/honey > GET > 500 > application/json', (transaction, done) => {
   transaction.skip = false;
   done();
 });

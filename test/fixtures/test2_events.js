@@ -1,6 +1,6 @@
-var hooks = require('hooks');
+const hooks = require('hooks');
 
-hooks.beforeAll(function(done) {
+hooks.beforeAll((done) => {
   console.log('hooks.beforeAll');
   done();
 });

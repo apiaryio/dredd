@@ -23,7 +23,7 @@ export COVERAGE_DIR
 # Testing & coverage
 # Add missing coverage for ./bin/dredd https://github.com/apiaryio/dredd/issues/958
 istanbul cover ./node_modules/.bin/_mocha -- \
-  "test/**/*-test.coffee" \
+  "test/**/*-test.js" \
   --reporter=test/reporter.js \
   --recursive
 

@@ -2,13 +2,11 @@ express = require('express')
 
 require('./handle-windows-sigint')()
 
-
 ignore = ->
   console.log('ignoring termination')
 
 process.on('SIGTERM', ignore)
 process.on('SIGINT', ignore)
-
 
 app = express()
 
