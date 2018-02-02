@@ -207,7 +207,7 @@ function isProcessRunning(pattern, callback) {
 function kill(pid, callback) {
   if (process.platform === 'win32') {
     const taskkill = spawn('taskkill', ['/F', '/T', '/PID', pid]);
-    taskkill.on('exit', () => callback());
+    return taskkill.on('exit', () => callback());
     // No error handling - we don't care about the result of the command
   }
   try {

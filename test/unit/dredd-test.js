@@ -424,7 +424,7 @@ GET /url
         before(() =>
           sinon.stub(requestStub, 'get').callsFake((receivedArgs = {}, cb) => {
             if ((receivedArgs ? receivedArgs.url : undefined) === 'https://another.path.to/apiary.apib') {
-              cb(null, { statusCode: 404 }, 'Page Not Found');
+              return cb(null, { statusCode: 404 }, 'Page Not Found');
             }
             cb(null, { statusCode: 200 }, blueprintCode);
           })
@@ -455,7 +455,7 @@ GET /url
           sinon.stub(requestStub, 'get').callsFake((receivedArgs = {}, cb) => {
             if ((receivedArgs ? receivedArgs.url : undefined) === 'http://some.path.to/file.apib') {
               // Server not found on
-              cb({ code: 'ENOTFOUND' });
+              return cb({ code: 'ENOTFOUND' });
             }
             cb(null, { statusCode: 200 }, blueprintCode);
           })
@@ -725,7 +725,7 @@ GET /url
 
       it('should call the callback', (done) => {
         const callback = sinon.spy((error) => {
-          if (error) { done(error); }
+          if (error) { return done(error); }
           assert.isOk(callback.called);
           done();
         });

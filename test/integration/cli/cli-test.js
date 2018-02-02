@@ -97,7 +97,7 @@ describe('CLI', () => {
         it('should term or kill the server', done =>
           isProcessRunning('endless-ignore-term', (err, isRunning) => {
             if (!err) { assert.isFalse(isRunning); }
-            return done(err);
+            done(err);
           })
         );
 
@@ -168,7 +168,7 @@ describe('CLI', () => {
         it('should return message announcing the fact', () => {
           if (process.platform === 'win32') {
             // On Windows there's no way to detect a process was killed
-            assert.include(runtimeInfo.dredd.stderr, 'exited');
+            return assert.include(runtimeInfo.dredd.stderr, 'exited');
           }
           assert.include(runtimeInfo.dredd.stderr, 'killed');
         });
@@ -228,7 +228,7 @@ describe('CLI', () => {
         it('should return message announcing the fact', () => {
           if (process.platform === 'win32') {
             // On Windows there's no way to detect a process was killed
-            assert.include(runtimeInfo.dredd.stderr, 'exited');
+            return assert.include(runtimeInfo.dredd.stderr, 'exited');
           }
           assert.include(runtimeInfo.dredd.stderr, 'killed');
         });
