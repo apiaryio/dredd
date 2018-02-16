@@ -48,7 +48,7 @@
     "clone": "2.1.1",
     "coffee-script": "1.12.6",
     "cross-spawn": "5.0.1",
-    "dredd-transactions": "5.0.4",
+    "dredd-transactions": "6.0.1",
     "file": "0.2.2",
     "fs-extra": "5.0.0",
     "gavel": "1.1.1",
