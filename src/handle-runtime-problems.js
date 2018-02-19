@@ -22,7 +22,7 @@ module.exports = function handleRuntimeProblems(blueprintData) {
         const ranges = blueprintUtils.warningLocationToRanges(annotation.location, apiDescriptionDocument);
         message = `Parser ${annotation.type} in file '${filename}': ${annotation.message}`;
         if (ranges && ranges.length) {
-          message += `on ${blueprintUtils.rangesToLinesText(ranges)}`;
+          message += ` on ${blueprintUtils.rangesToLinesText(ranges)}`;
         }
         log(message);
       } else {
