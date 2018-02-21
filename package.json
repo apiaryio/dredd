@@ -61,7 +61,7 @@
     "optimist": "0.6.1",
     "pitboss-ng": "0.3.3",
     "proxyquire": "1.7.10",
-    "request": "2.81.0",
+    "request": "2.83.0",
     "spawn-args": "0.2.0",
     "uuid": "3.0.0",
     "which": "1.2.14",
