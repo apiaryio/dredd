@@ -35,9 +35,7 @@ HtmlReporter.prototype.sanitizedPath = function (path) {
 };
 
 HtmlReporter.prototype.configureEmitter = function (emitter) {
-  function title(str) {
-    return `${Array(this.level).join('#')} ${str}`;
-  }
+  const title = str => `${Array(this.level).join('#')} ${str}`;
 
   emitter.on('start', (rawBlueprint, callback) => {
     this.level++;
