@@ -1,4 +1,4 @@
-require('coffee-script/register');
+require('coffeescript/register');
 
 const async = require('async');
 const clone = require('clone');
