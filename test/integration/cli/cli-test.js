@@ -338,7 +338,7 @@ describe('CLI', () => {
 
       it('should have an authorization header in the request', () => assert.isOk(runtimeInfo.server.requests['/machines'][0].headers.authorization));
 
-      it('should contain a base64 encoded string of the username and password', () => assert.isOk(runtimeInfo.server.requests['/machines'][0].headers.authorization === (`Basic ${new Buffer('username:password').toString('base64')}`)));
+      it('should contain a base64 encoded string of the username and password', () => assert.isOk(runtimeInfo.server.requests['/machines'][0].headers.authorization === (`Basic ${Buffer.from('username:password').toString('base64')}`)));
     });
 
 

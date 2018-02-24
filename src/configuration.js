@@ -104,7 +104,7 @@ function applyConfiguration(config) {
   configuration.options.method = configuration.options.method.map(method => method.toUpperCase());
 
   if (configuration.options.user) {
-    const authHeader = `Authorization:Basic ${new Buffer(configuration.options.user).toString('base64')}`;
+    const authHeader = `Authorization:Basic ${Buffer.from(configuration.options.user).toString('base64')}`;
     configuration.options.header.push(authHeader);
   }
 
