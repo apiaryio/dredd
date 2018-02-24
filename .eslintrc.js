@@ -21,7 +21,8 @@ module.exports = {
     'no-param-reassign': 'off',
     'no-plusplus': 'off',
     'no-restricted-syntax': 'off',
-    'no-underscore-dangle': 'off', // https://github.com/apiaryio/dredd-transactions/pull/179#discussion_r206852270
-    'no-use-before-define': 'off'
+    'no-underscore-dangle': 'off',
+    'no-use-before-define': 'off',
+    'prefer-destructuring': 'off'
   }
 };
