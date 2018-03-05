@@ -26,6 +26,7 @@ You can interact with your server implementation in following languages:
 - [PHP](hooks-php.md)
 - [Python](hooks-python.md)
 - [Ruby](hooks-ruby.md)
+- [Rust](hooks-rust.md)
 
 Dredd doesn't speak your language? [**It's very easy to write support for your language.**](hooks-new-language.md) Your contribution is more than welcome!
 
