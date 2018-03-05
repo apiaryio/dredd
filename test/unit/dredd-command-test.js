@@ -36,7 +36,7 @@ const DreddCommand = proxyquire('../../src/dredd-command', {
   './dredd': DreddStub,
   console: loggerStub,
   './logger': loggerStub,
-  './interactive-init': interactiveConfigStub,
+  './interactive-config': interactiveConfigStub,
   './config-utils': configUtilsStub,
   fs: fsStub,
   'cross-spawn': crossSpawnStub
