@@ -500,7 +500,7 @@ Use `user` setting in your configuration file or `--user` argument to provide HT
 Most of the authentication schemes use HTTP header for carrying the authentication data. If you don't want to add authentication HTTP header to every request in the API description, you can instruct Dredd to do it for you:
 
 ```
---headers="Authorization: Basic YmVuOnBhc3M="
+--header="Authorization: Basic YmVuOnBhc3M="
 ```
 
 ## Sending Multipart Requests
