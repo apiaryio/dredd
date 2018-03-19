@@ -89,7 +89,7 @@
     "nock": "9.1.6",
     "ps-node": "0.1.5",
     "semantic-release": "7.0.2",
-    "sinon": "2.1.0"
+    "sinon": "4.4.10"
   },
   "keywords": [
     "api",
