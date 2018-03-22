@@ -24,7 +24,7 @@ numbers accumulated throughout the Dredd run.
 
 ### Configuration Object for Dredd Class
 
-Let's have a look at an example configuration first. (Please also see [options source](https://github.com/apiaryio/dredd/blob/master/src/options.coffee) to read detailed information about the `options` attributes).
+Let's have a look at an example configuration first. (Please also see [options source](https://github.com/apiaryio/dredd/blob/master/src/options.js) to read detailed information about the `options` attributes).
 
 ```javascript
 {
