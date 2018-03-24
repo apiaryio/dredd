@@ -152,7 +152,7 @@ describe('CLI', () => {
             `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
             `--server=${COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee`,
             '--server-wait=0',
-            `--language=${COFFEE_BIN} ./test/fixtures/scripts/kill-self.coffee`,
+            '--language=node ./test/fixtures/scripts/kill-self.js',
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ];
           runDreddCommandWithServer(args, app, (err, info) => {
