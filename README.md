@@ -25,7 +25,7 @@ documentation.
 ### Supported API Description Formats
 
 - [API Blueprint][]
-- [Swagger][]
+- [OpenAPI (fka Swagger)](https://github.com/OAI/OpenAPI-Specification)
 
 ### Supported Hooks Languages
 
