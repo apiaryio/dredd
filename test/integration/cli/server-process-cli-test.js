@@ -70,7 +70,7 @@ describe('CLI - Server Process', () => {
       const args = [
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-        `--server=${COFFEE_BIN} ./test/fixtures/scripts/dummy-server.coffee ${DEFAULT_SERVER_PORT}`,
+        `--server=node ./test/fixtures/scripts/dummy-server.js ${DEFAULT_SERVER_PORT}`,
         '--server-wait=1'
       ];
 
@@ -110,25 +110,25 @@ describe('CLI - Server Process', () => {
     for (const scenario of [{
       description: 'When crashes before requests',
       apiDescriptionDocument: './test/fixtures/single-get.apib',
-      server: `${COFFEE_BIN} test/fixtures/scripts/exit-3.coffee`,
+      server: 'node test/fixtures/scripts/exit-3.js',
       expectServerBoot: false
     },
     {
       description: 'When crashes during requests',
       apiDescriptionDocument: './test/fixtures/apiary.apib',
-      server: `${COFFEE_BIN} test/fixtures/scripts/dummy-server-crash.coffee ${DEFAULT_SERVER_PORT}`,
+      server: `node test/fixtures/scripts/dummy-server-crash.js ${DEFAULT_SERVER_PORT}`,
       expectServerBoot: true
     },
     {
       description: 'When killed before requests',
       apiDescriptionDocument: './test/fixtures/single-get.apib',
-      server: `${COFFEE_BIN} test/fixtures/scripts/kill-self.coffee`,
+      server: 'node test/fixtures/scripts/kill-self.js',
       expectServerBoot: false
     },
     {
       description: 'When killed during requests',
       apiDescriptionDocument: './test/fixtures/apiary.apib',
-      server: `${COFFEE_BIN} test/fixtures/scripts/dummy-server-kill.coffee ${DEFAULT_SERVER_PORT}`,
+      server: `node test/fixtures/scripts/dummy-server-kill.js ${DEFAULT_SERVER_PORT}`,
       expectServerBoot: true
     }
     ]) {
