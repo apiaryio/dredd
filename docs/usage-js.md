@@ -51,6 +51,7 @@ Let's have a look at an example configuration first. (Please also see [options s
     'output': [],     // Array of Strings, filepaths to files used for output of file-based reporters
 
     'inline-errors': false, // Boolean, If failures/errors are display immediately in Dredd run
+    'hide-errors': false, // Boolean, Hide all errors in the cli. Useful if another reporter is reporting the errors (eg. html or apiary). Setting this to true will override the inline-errors option.
 
     'color': true,
     'timestamp': false

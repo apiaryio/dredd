@@ -43,6 +43,7 @@ const argvData = {
   user: null,
   u: null,
   'inline-errors': false,
+  'hide-errors': false,
   e: false,
   details: false,
   d: false,
@@ -166,6 +167,7 @@ header: []
 sorted: false
 user: null
 inline-errors: false
+hide-errors: false
 details: false
 method: []
 color: true

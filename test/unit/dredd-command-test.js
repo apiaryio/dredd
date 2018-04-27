@@ -441,6 +441,7 @@ describe('DreddCommand class', () => {
           sorted: false,
           user: null,
           'inline-errors': false,
+          'hide-errors': false,
           details: false,
           method: [],
           color: true,

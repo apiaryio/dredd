@@ -37,13 +37,13 @@ function configureReporters(config, stats, tests, runner) {
       const usedCliReporters = intersection(reportersArr, cliReporters);
       if (usedCliReporters.length === 0) {
         return new CliReporter(
-          config.emitter, stats, tests, config.options['inline-errors'], config.options.details
+          config.emitter, stats, tests, config.options['inline-errors'], config.options.details, config.options['hide-errors']
         );
       }
       return addReporter(usedCliReporters[0], config.emitter, stats, tests);
     }
     return new CliReporter(
-      config.emitter, stats, tests, config.options['inline-errors'], config.options.details
+      config.emitter, stats, tests, config.options['inline-errors'], config.options.details, config.options['hide-errors']
     );
   }
 

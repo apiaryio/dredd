@@ -60,6 +60,7 @@ header: []
 sorted: false
 user: null
 inline-errors: false
+hide-errors: false
 details: false
 method: []
 level: info
