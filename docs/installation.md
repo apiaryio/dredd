@@ -92,19 +92,12 @@ The installation process features compilation of some C++ components, which may 
 
 The `--no-optional` option avoids any compilation attempts when installing Dredd, but causes slower reading of the API Blueprint files, especially the large ones.
 
-### Windows Support
-
-There are still [several known limitations][Windows Issues] when using Dredd on Windows, but the intention is to support it without any compromises. If you find any new issues, please [file them in the bug tracker][New Issue].
-
 
 [API Blueprint]: https://apiblueprint.org/
 [Swagger]: https://swagger.io/
 
 [CoffeeScript]: http://coffeescript.org/
 [CI]: how-to-guides.md#continuous-integration
-
-[Windows Issues]: https://github.com/apiaryio/dredd/issues?utf8=%E2%9C%93&q=is%3Aissue%20is%3Aopen%20label%3AWindows%20
-[New Issue]: https://github.com/apiaryio/dredd/issues/new
 
 [Homebrew]: https://brew.sh/
 [Node.js]: https://nodejs.org/en/

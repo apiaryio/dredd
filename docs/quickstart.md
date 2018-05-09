@@ -10,8 +10,6 @@ $ npm install -g dredd
 
 If you're not familiar with the Node.js ecosystem or you bump into any issues, follow the [installation guide](installation.md).
 
-**Note:** While Dredd seems to work on Windows for many users, it's not officially supported on the platform yet. See [details](installation.md#windows-support).
-
 ## Document Your API
 
 First, let's design the API we are about to build and test. That means you will need to create an API description file, which will document how your API should look like. Dredd supports two formats of API description documents:
