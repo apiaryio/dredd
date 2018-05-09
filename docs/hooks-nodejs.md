@@ -188,6 +188,28 @@ before("Machines > Machines collection > Get Machines", function (transaction) {
   transaction.request.body = JSON.stringify(requestBody);
 });
 ```
+### Modifying Multipart Transaction Request Body Prior to Execution
+Dependencies:
+- [multipart](https://www.npmjs.com/package/multi-part)
+- [stream-to-string](https://www.npmjs.com/package/stream-to-string)
+
+```javascript
+const hooks = require('hooks');
+const fs = require('fs');
+const Multipart = require('multi-part');
+const streamToString = require('stream-to-string');
+
+var before = hooks.before;
+
+before("Machines > Machines collection > Create Machines", async function (transaction, done) {
+    const form = new Multipart();
+    form.append('title', 'Foo');
+    form.append('photo', fs.createReadStream('./bar.jpg'));
+    transaction.request.body = await streamToString(form.getStream());
+    transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];
+    done();
+});
+```
 
 ### Adding or Changing URI Query Parameters to All Requests
 
