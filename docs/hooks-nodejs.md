@@ -188,6 +188,25 @@ before("Machines > Machines collection > Get Machines", function (transaction) {
   transaction.request.body = JSON.stringify(requestBody);
 });
 ```
+### Modifying Multipart Transaction Request Body Prior to Execution
+
+```javascript
+const hooks = require('hooks');
+const Multipart = require('multi-part');
+const fs = require('fs');
+const streamToString = require('stream-to-string');
+
+var before = hooks.before;
+
+before("Machines > Machines collection > POST Machines", async function (transaction, done) {
+    const form = new Multipart();
+    form.append('title', 'Paykan Jvanan Gojeii');
+    form.append('photo', fs.createReadStream('./peykan.jpg'));
+    transaction.request.body = await streamToString(form.getStream());
+    transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];
+    done();
+});
+```
 
 ### Adding or Changing URI Query Parameters to All Requests
 
