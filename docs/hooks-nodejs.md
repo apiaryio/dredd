@@ -188,9 +188,11 @@ before("Machines > Machines collection > Get Machines", function (transaction) {
   transaction.request.body = JSON.stringify(requestBody);
 });
 ```
+
 ### Modifying Multipart Transaction Request Body Prior to Execution
+
 Dependencies:
-- [multipart](https://www.npmjs.com/package/multi-part)
+- [multi-part](https://www.npmjs.com/package/multi-part)
 - [stream-to-string](https://www.npmjs.com/package/stream-to-string)
 
 ```javascript
