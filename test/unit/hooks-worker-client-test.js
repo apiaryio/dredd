@@ -84,15 +84,19 @@ describe('Hooks worker client', () => {
 
         // The handler sometimes doesn't write to stdout or stderr until it
         // finishes, so we need to manually stop it. However, it could happen
-        // we'll stop it before it actually manages to do what we test here, so
-        // we add some timeout here.
-        setTimeout(() =>
-          hooksWorkerClient.stop((stopError) => {
-            if (stopError) { return done(stopError); }
-            assert.include(logs, 'Hooks handler stdout: standard output text\n');
-            done();
-          })
-          , MIN_COMMAND_EXECUTION_DURATION_MS);
+        // before it actually manages to do what we test here, so we wait
+        // until it writes some data into stdout
+        hooksWorkerClient.handler.stdout.on('data', (data) => {
+          if (data.toString() !== 'exiting\n') {
+            process.nextTick(() => {
+              hooksWorkerClient.stop((stopError) => {
+                if (stopError) { return done(stopError); }
+                assert.include(logs, 'Hooks handler stdout: standard output text\n');
+                done();
+              });
+            });
+          }
+        });
       });
     });
 
@@ -103,16 +107,19 @@ describe('Hooks worker client', () => {
 
         // The handler sometimes doesn't write to stdout or stderr until it
         // finishes, so we need to manually stop it. However, it could happen
-        // we'll stop it before it actually manages to do what we test here, so
-        // we add some timeout here.
-        setTimeout(() =>
-          hooksWorkerClient.stop((stopError) => {
-            if (stopError) { return done(stopError); }
-            assert.include(logs, 'Hooks handler stderr: error output text\n');
-            done();
-          })
-
-          , MIN_COMMAND_EXECUTION_DURATION_MS);
+        // before it actually manages to do what we test here, so we wait
+        // until it writes some data into stdout
+        hooksWorkerClient.handler.stderr.on('data', (data) => {
+          if (data.toString() !== 'exiting\n') {
+            process.nextTick(() => {
+              hooksWorkerClient.stop((stopError) => {
+                if (stopError) { return done(stopError); }
+                assert.include(logs, 'Hooks handler stderr: error output text\n');
+                done();
+              });
+            });
+          }
+        });
       });
     });
 
