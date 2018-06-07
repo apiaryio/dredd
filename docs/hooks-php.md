@@ -183,14 +183,14 @@ use Dredd\Hooks;
 
 $stash = [];
 
-Hooks::after("Auth > /remoteauto/userpass", function(&$transaction) use ($stash) {
+Hooks::after("Auth > /remoteauto/userpass", function(&$transaction) use (&$stash) {
 
     $parsedBody = json_decode($transaction->real->body);
 
     $stash['token'] = $parseBody->sessionId;
 });
 
-Hooks::beforeEach(function(&$transaction) use ($stash) {
+Hooks::beforeEach(function(&$transaction) use (&$stash) {
 
     if ($transaction->token) {
 
