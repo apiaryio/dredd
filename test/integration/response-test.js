@@ -244,7 +244,7 @@ const Dredd = require('../../src/dredd');
       );
       it('prints four failures for each non-matching status code', () =>
         assert.equal(runtimeInfo.dredd.logging.match(
-          /fail: statusCode: Status code is not/g
+          /fail: statusCode: Status code is '200' instead of/g
         ).length, 4)
       );
       it('does not print any failures regarding response bodies', () => assert.isNull(runtimeInfo.dredd.logging.match(/fail: body:/g)));
@@ -277,12 +277,12 @@ const Dredd = require('../../src/dredd');
       );
       it('prints two failures for each non-matching body (and status code)', () =>
         assert.equal(runtimeInfo.dredd.logging.match(
-          /fail: body: Real and expected data does not match.\nstatusCode: Status code is not/g
+          /fail: body: Real and expected data does not match.\nstatusCode: Status code is '200' instead of/g
         ).length, 2)
       );
       it('prints two failures for each non-matching status code', () =>
         assert.equal(runtimeInfo.dredd.logging.match(
-          /fail: statusCode: Status code is not/g
+          /fail: statusCode: Status code is '200' instead of/g
         ).length, 2)
       );
     });
