@@ -254,6 +254,11 @@ ${packageData.name} v${packageData.version} \
         this._processExit(1);
       });
 
+      // Fixes https://github.com/apiaryio/dredd/issues/1030
+      process.stdin.on('error', (err) => {
+        logger.error(`Error in stdin: ${err}`);
+      });
+
       // Ensure server is not running when dredd exits prematurely somewhere
       process.on('beforeExit', () => {
         if (this.serverProcess && !this.serverProcess.terminated) {
