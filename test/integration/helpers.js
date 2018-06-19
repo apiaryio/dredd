@@ -181,18 +181,18 @@ function runCommand(command, args, spawnOptions = {}, callback) {
 }
 
 // Runs Dredd as a CLI command, with given arguments.
-const runDreddCommand = (args, spawnOptions, callback) => runCommand('node', [DREDD_BIN].concat(args), spawnOptions, callback);
+const runCLI = (args, spawnOptions, callback) => runCommand('node', [DREDD_BIN].concat(args), spawnOptions, callback);
 
 // Runs given Express.js server instance and then runs Dredd command with given
 // arguments. Collects their runtime information and provides it to the callback.
-function runDreddCommandWithServer(args, app, serverPort, callback) {
+function runCLIWithServer(args, app, serverPort, callback) {
   if (typeof serverPort === 'function') { [callback, serverPort] = Array.from([serverPort, DEFAULT_SERVER_PORT]); }
 
   const server = app.listen(serverPort, (err, serverRuntimeInfo) => {
     if (err) { return callback(err); }
 
-    runDreddCommand(args, (error, dreddCommandInfo) =>
-      server.close(() => callback(error, { server: serverRuntimeInfo, dredd: dreddCommandInfo }))
+    runCLI(args, (error, CLIInfo) =>
+      server.close(() => callback(error, { server: serverRuntimeInfo, dredd: CLIInfo }))
     );
   });
 }
@@ -235,8 +235,8 @@ module.exports = {
   createServer,
   runDredd,
   runDreddWithServer,
-  runDreddCommand,
-  runDreddCommandWithServer,
+  runCLI,
+  runCLIWithServer,
   isProcessRunning,
   kill,
   killAll

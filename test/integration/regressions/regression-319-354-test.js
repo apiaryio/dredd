@@ -1,7 +1,7 @@
 const clone = require('clone');
 const { assert } = require('chai');
 
-const { runDreddCommandWithServer, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
+const { runCLIWithServer, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
 
 // Helper, tries to parse given HTTP body and in case it can be parsed as JSON,
 // it returns the resulting JS object, otherwise it returns whatever came in.
@@ -154,7 +154,7 @@ describe('Regression: Issues #319 and #354', () => {
         '--details',
         '--no-color'
       ];
-      runDreddCommandWithServer(args, app, (err, info) => {
+      runCLIWithServer(args, app, (err, info) => {
         if (info) { results = parseDreddStdout(info.dredd.stdout); }
         done(err);
       });
@@ -227,7 +227,7 @@ describe('Regression: Issues #319 and #354', () => {
         '--details',
         '--no-color'
       ];
-      runDreddCommandWithServer(args, app, (err, info) => {
+      runCLIWithServer(args, app, (err, info) => {
         if (info) { results = parseDreddStdout(info.dredd.stdout); }
         done(err);
       });

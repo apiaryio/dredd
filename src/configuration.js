@@ -38,7 +38,7 @@ function applyConfiguration(config) {
     emitter: new EventEmitter(),
     hooksCode: null,
     custom: { // Used for custom settings of various APIs or reporters
-      // Keep commented-out, so these values are actually set by DreddCommand
+      // Keep commented-out, so these values are actually set by CLI
       // cwd: process.cwd()
     },
     options: {

@@ -2,7 +2,7 @@ const clone = require('clone');
 const fs = require('fs');
 const { assert } = require('chai');
 
-const { runDreddCommand, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
+const { runCLI, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
 
 const APIARY_PORT = DEFAULT_SERVER_PORT + 1;
 
@@ -23,7 +23,7 @@ describe('CLI - Reporters', () => {
 
 
   describe('when -r/--reporter is provided to use additional reporters', () => {
-    let dreddCommandInfo;
+    let CLIInfo;
     const args = [
       './test/fixtures/single-get.apib',
       `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
@@ -31,15 +31,15 @@ describe('CLI - Reporters', () => {
     ];
 
     beforeEach(done =>
-      runDreddCommand(args, (err, info) => {
-        dreddCommandInfo = info;
+      runCLI(args, (err, info) => {
+        CLIInfo = info;
         done(err);
       })
     );
 
     it('should use given reporter', () =>
       // Nyan cat ears should exist in stdout
-      assert.include(dreddCommandInfo.stdout, '/\\_/\\')
+      assert.include(CLIInfo.stdout, '/\\_/\\')
     );
   });
 
@@ -73,7 +73,7 @@ describe('CLI - Reporters', () => {
     afterEach(done => apiary.close(done));
 
     describe('when Dredd successfully performs requests to Apiary', () => {
-      let dreddCommandInfo;
+      let CLIInfo;
       let stepRequest;
       const args = [
         './test/fixtures/single-get.apib',
@@ -82,16 +82,16 @@ describe('CLI - Reporters', () => {
       ];
 
       beforeEach(done =>
-        runDreddCommand(args, { env }, (err, info) => {
-          dreddCommandInfo = info;
+        runCLI(args, { env }, (err, info) => {
+          CLIInfo = info;
           stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
           done(err);
         })
       );
 
-      it('should print URL of the test report', () => assert.include(dreddCommandInfo.stdout, 'http://example.com/test/run/1234_id'));
-      it('should print warning about missing Apiary API settings', () => assert.include(dreddCommandInfo.stdout, 'Apiary API Key or API Project Subdomain were not provided.'));
-      it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
+      it('should print URL of the test report', () => assert.include(CLIInfo.stdout, 'http://example.com/test/run/1234_id'));
+      it('should print warning about missing Apiary API settings', () => assert.include(CLIInfo.stdout, 'Apiary API Key or API Project Subdomain were not provided.'));
+      it('should exit with status 0', () => assert.equal(CLIInfo.exitStatus, 0));
       it('should perform 3 requests to Apiary', () => {
         assert.deepEqual(apiaryRuntimeInfo.requestCounts, {
           '/apis/public/tests/runs': 1,
@@ -111,7 +111,7 @@ describe('CLI - Reporters', () => {
     });
 
     describe('when hooks file uses hooks.log function for logging', () => {
-      let dreddCommandInfo;
+      let CLIInfo;
       let updateRequest;
       let stepRequest;
       const args = [
@@ -122,8 +122,8 @@ describe('CLI - Reporters', () => {
       ];
 
       beforeEach(done =>
-        runDreddCommand(args, { env }, (err, info) => {
-          dreddCommandInfo = info;
+        runCLI(args, { env }, (err, info) => {
+          CLIInfo = info;
           updateRequest = apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0];
           stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
           return done(err);
@@ -132,10 +132,10 @@ describe('CLI - Reporters', () => {
 
       it('hooks.log should print also to console', () =>
         // Because --level=info is lower than --level=hook
-        assert.include(dreddCommandInfo.output, 'using hooks.log to debug')
+        assert.include(CLIInfo.output, 'using hooks.log to debug')
       );
-      it('hooks.log should use toString on objects', () => assert.include(dreddCommandInfo.output, 'Error object!'));
-      it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
+      it('hooks.log should use toString on objects', () => assert.include(CLIInfo.output, 'Error object!'));
+      it('should exit with status 0', () => assert.equal(CLIInfo.exitStatus, 0));
 
       it('should request Apiary API to start a test run', () => {
         assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/runs'], 1);
@@ -186,7 +186,7 @@ describe('CLI - Reporters', () => {
     });
 
     describe('when hooks file uses hooks.log function for logging and hooks are in sandbox mode', () => {
-      let dreddCommandInfo;
+      let CLIInfo;
       let updateRequest;
       let stepRequest;
       const args = [
@@ -199,8 +199,8 @@ describe('CLI - Reporters', () => {
       ];
 
       beforeEach(done =>
-        runDreddCommand(args, { env }, (err, info) => {
-          dreddCommandInfo = info;
+        runCLI(args, { env }, (err, info) => {
+          CLIInfo = info;
           updateRequest = apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0];
           stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
           done(err);
@@ -209,10 +209,10 @@ describe('CLI - Reporters', () => {
 
       it('hooks.log should not print also to console', () => {
         // Because we are running in sandboxed mode with higher --level
-        assert.notInclude(dreddCommandInfo.output, 'using sandboxed hooks.log');
-        assert.notInclude(dreddCommandInfo.output, 'shall not print');
+        assert.notInclude(CLIInfo.output, 'using sandboxed hooks.log');
+        assert.notInclude(CLIInfo.output, 'shall not print');
       });
-      it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(CLIInfo.exitStatus, 0));
 
       it('should request Apiary API to start a test run', () => {
         assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/runs'], 1);
@@ -263,7 +263,7 @@ describe('CLI - Reporters', () => {
     ];
 
     beforeEach(done =>
-      runDreddCommand(args, (err) => {
+      runCLI(args, (err) => {
         done(err);
       })
     );
@@ -284,7 +284,7 @@ describe('CLI - Reporters', () => {
     ];
 
     beforeEach(done =>
-      runDreddCommand(args, (err) => {
+      runCLI(args, (err) => {
         done(err);
       })
     );
@@ -315,7 +315,7 @@ describe('CLI - Reporters', () => {
         // Do nothing
       }
 
-      runDreddCommand(args, (err) => {
+      runCLI(args, (err) => {
         done(err);
       });
     });
@@ -327,7 +327,7 @@ describe('CLI - Reporters', () => {
 
   describe('when the \'apiary\' reporter fails', () => {
     let apiaryApiUrl;
-    let dreddCommandInfo;
+    let CLIInfo;
     const args = [
       './test/fixtures/single-get.apib',
       `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
@@ -340,14 +340,14 @@ describe('CLI - Reporters', () => {
       const nonExistentPort = DEFAULT_SERVER_PORT + 42;
       process.env.APIARY_API_URL = `http://127.0.0.1:${nonExistentPort}`;
 
-      runDreddCommand(args, (err, info) => {
-        dreddCommandInfo = info;
+      runCLI(args, (err, info) => {
+        CLIInfo = info;
         done(err);
       });
     });
     afterEach(() => { process.env.APIARY_API_URL = apiaryApiUrl; });
 
-    it('ends successfully', () => assert.equal(dreddCommandInfo.exitStatus, 0));
-    it('prints error about Apiary API connection issues', () => assert.include(dreddCommandInfo.stderr, 'Apiary reporter could not connect to Apiary API'));
+    it('ends successfully', () => assert.equal(CLIInfo.exitStatus, 0));
+    it('prints error about Apiary API connection issues', () => assert.include(CLIInfo.stderr, 'Apiary reporter could not connect to Apiary API'));
   });
 });

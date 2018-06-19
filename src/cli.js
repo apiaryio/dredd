@@ -14,7 +14,7 @@ const { spawn } = require('./child-process');
 
 const packageData = require('../package.json');
 
-class DreddCommand {
+class CLI {
   constructor(options = {}, cb) {
     this.cb = cb;
     this.finished = false;
@@ -400,4 +400,4 @@ ${packageData.name} v${packageData.version} \
   }
 }
 
-module.exports = DreddCommand;
+module.exports = CLI;

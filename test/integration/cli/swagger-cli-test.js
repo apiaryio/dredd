@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const { runDreddCommandWithServer, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
+const { runCLIWithServer, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
 
 describe('CLI - Swagger Document', () => {
   describe('when loaded from file', () => {
@@ -12,7 +12,7 @@ describe('CLI - Swagger Document', () => {
         const app = createServer();
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -31,7 +31,7 @@ describe('CLI - Swagger Document', () => {
 
       beforeEach((done) => {
         const app = createServer();
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -53,7 +53,7 @@ describe('CLI - Swagger Document', () => {
         const app = createServer();
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });

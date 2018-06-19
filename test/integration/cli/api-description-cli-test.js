@@ -2,7 +2,7 @@ const fs = require('fs');
 const os = require('os');
 const { assert } = require('chai');
 
-const { runDreddCommandWithServer, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
+const { runCLIWithServer, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
 
 const NON_EXISTENT_PORT = DEFAULT_SERVER_PORT + 1;
 
@@ -16,7 +16,7 @@ describe('CLI - API Description Document', () => {
         const app = createServer();
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -35,7 +35,7 @@ describe('CLI - API Description Document', () => {
 
       beforeEach((done) => {
         const app = createServer();
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -54,7 +54,7 @@ describe('CLI - API Description Document', () => {
 
       beforeEach((done) => {
         const app = createServer();
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -82,7 +82,7 @@ describe('CLI - API Description Document', () => {
         });
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -102,7 +102,7 @@ describe('CLI - API Description Document', () => {
 
       beforeEach((done) => {
         const app = createServer();
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -128,7 +128,7 @@ describe('CLI - API Description Document', () => {
         const app = createServer();
         app.get('/__non-existent__.apib', (req, res) => res.sendStatus(404));
 
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -159,7 +159,7 @@ describe('CLI - API Description Document', () => {
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
         app.get('/machines/willy', (req, res) => res.json({ type: 'bulldozer', name: 'willy' }));
 
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -186,7 +186,7 @@ describe('CLI - API Description Document', () => {
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
         app.get('/machines/willy', (req, res) => res.json({ type: 'bulldozer', name: 'willy' }));
 
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -212,7 +212,7 @@ describe('CLI - API Description Document', () => {
         app.get('/machines/willy', (req, res) => res.json({ type: 'bulldozer', name: 'willy' }));
         app.get('/machines/caterpillar', (req, res) => res.json({ type: 'bulldozer', name: 'caterpillar' }));
 
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -235,7 +235,7 @@ describe('CLI - API Description Document', () => {
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
         app.get('/machines/willy', (req, res) => res.json({ type: 'bulldozer', name: 'willy' }));
 
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -257,7 +257,7 @@ describe('CLI - API Description Document', () => {
         const app = createServer();
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });

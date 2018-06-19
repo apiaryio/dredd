@@ -28,7 +28,7 @@ const dreddStub = proxyquire('../../src/dredd', {
   './logger': loggerStub
 });
 
-const DreddCommand = proxyquire('../../src/cli', {
+const CLIStub = proxyquire('../../src/cli', {
   './dredd': dreddStub,
   './config-utils': configUtils,
   console: loggerStub,
@@ -40,7 +40,7 @@ function execCommand(custom = {}, cb) {
   stderr = '';
   exitStatus = null;
   let finished = false;
-  const dreddCommand = new DreddCommand({ custom }, ((exitStatusCode) => {
+  const cli = new CLIStub({ custom }, ((exitStatusCode) => {
     if (!finished) {
       finished = true;
       exitStatus = (exitStatusCode != null ? exitStatusCode : 0);
@@ -48,10 +48,10 @@ function execCommand(custom = {}, cb) {
     }
   }));
 
-  dreddCommand.run();
+  cli.run();
 }
 
-describe('DreddCommand class Integration', () => {
+describe('CLI class Integration', () => {
   before(() => {
     ['warn', 'error'].forEach((method) => {
       sinon.stub(loggerStub, method).callsFake((chunk) => { stderr += `\n${method}: ${chunk}`; });
