@@ -31,6 +31,11 @@ class DreddCommand {
     if (!this.custom.argv || !Array.isArray(this.custom.argv)) {
       this.custom.argv = [];
     }
+
+    // Fixes https://github.com/apiaryio/dredd/issues/1030
+    process.stdin.on('error', (err) => {
+      logger.error(`Error in stdin: ${err}`);
+    });
   }
 
   setOptimistArgv() {
