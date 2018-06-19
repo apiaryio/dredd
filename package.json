@@ -74,7 +74,6 @@
     "body-parser": "1.18.2",
     "conventional-changelog-lint": "1.1.9",
     "coveralls": "2.13.0",
-    "cz-conventional-changelog": "2.0.0",
     "drafter": "1.2.0",
     "ect": "0.5.9",
     "eslint": "4.4.1",
@@ -100,10 +99,5 @@
     "acceptance"
   ],
   "author": "Apiary Czech Republic, s.r.o. <support@apiary.io>",
-  "license": "MIT",
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  }
+  "license": "MIT"
 }
