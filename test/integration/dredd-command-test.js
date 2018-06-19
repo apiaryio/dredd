@@ -28,7 +28,7 @@ const dreddStub = proxyquire('../../src/dredd', {
   './logger': loggerStub
 });
 
-const DreddCommand = proxyquire('../../src/dredd-command', {
+const DreddCommand = proxyquire('../../src/cli', {
   './dredd': dreddStub,
   './config-utils': configUtils,
   console: loggerStub,
