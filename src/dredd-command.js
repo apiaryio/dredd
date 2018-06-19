@@ -31,6 +31,11 @@ class DreddCommand {
     if (!this.custom.argv || !Array.isArray(this.custom.argv)) {
       this.custom.argv = [];
     }
+
+    // Fixes https://github.com/apiaryio/dredd/issues/1030
+    process.stdin.on('error', (err) => {
+      logger.error(`Error in stdin: ${err}`);
+    });
   }
 
   setOptimistArgv() {
@@ -252,11 +257,6 @@ ${packageData.name} v${packageData.version} \
       this.serverProcess.on('error', (err) => {
         logger.error('Command to start backend server process failed, exiting Dredd', err);
         this._processExit(1);
-      });
-
-      // Fixes https://github.com/apiaryio/dredd/issues/1030
-      process.stdin.on('error', (err) => {
-        logger.error(`Error in stdin: ${err}`);
       });
 
       // Ensure server is not running when dredd exits prematurely somewhere
