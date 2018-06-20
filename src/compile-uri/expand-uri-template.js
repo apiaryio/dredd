@@ -45,9 +45,9 @@ Parameter not defined in API description document: ${uriParameter}\
       uriParameters.forEach((uriParameter) => {
         param = params[uriParameter];
 
-        if (param.example) {
+        if ('example' in param) {
           toExpand[uriParameter] = param.example;
-        } else if (param.default) {
+        } else if ('default' in param) {
           toExpand[uriParameter] = param.default;
         } else if (param.required) {
           ambiguous = true;
@@ -58,7 +58,7 @@ document: ${uriParameter}\
 `);
         }
 
-        if (param.required && param.default) {
+        if (param.required && 'default' in param) {
           result.warnings.push(`\
 Required URI parameter '${uriParameter}' has a default value.
 Default value for a required parameter doesn't make sense from \

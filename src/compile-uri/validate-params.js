@@ -5,7 +5,7 @@ module.exports = function validateParams(params) {
     let text;
     const param = params[paramName];
 
-    if (param.required && !param.example && !param.default) {
+    if (param.required && !('example' in param) && !('default' in param)) {
       text = `Required URI parameter '${paramName}' has no example or default value.`;
       result.errors.push(text);
     }
