@@ -10,6 +10,7 @@ const Dredd = require('./dredd');
 const interactiveConfig = require('./interactive-config');
 const logger = require('./logger');
 const { applyLoggingOptions } = require('./configuration');
+const { ignorePipeErrors } = require('./common');
 const { spawn } = require('./child-process');
 
 const packageData = require('../package.json');
@@ -318,6 +319,12 @@ ${packageData.name} v${packageData.version} \
     const configurationForDredd = this.initConfig();
     this.logDebuggingInfo(configurationForDredd);
     this.dreddInstance = this.initDredd(configurationForDredd);
+
+    // On Windows, killing stdin / stdout / stderr pipes intentionally
+    // on either side can result `uncaughtException` causing
+    // dredd main process exiting with exitCode 7 instead of 1. This _fix_
+    // remedies the issue.
+    ignorePipeErrors(process);
 
     try {
       this.runServerAndThenDredd();
