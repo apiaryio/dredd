@@ -1,6 +1,6 @@
 const crossSpawn = require('cross-spawn');
 
-const { ignorePipeErrors } = require('./common');
+const ignorePipeErrors = require('./ignore-pipe-errors');
 
 const ASCII_CTRL_C = 3;
 const IS_WINDOWS = process.platform === 'win32';
