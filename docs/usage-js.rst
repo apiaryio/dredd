@@ -55,6 +55,8 @@ Let’s have a look at an example configuration first. (Please also see the :ref
 
        'inline-errors': false, // Boolean, If failures/errors are display immediately in Dredd run
 
+       'require': null, // String, When using nodejs hooks, require the given module before executing hooks
+
        'color': true,
        'timestamp': false
      },

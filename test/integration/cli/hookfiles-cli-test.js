@@ -658,6 +658,7 @@ describe('CLI', () => {
       const args = [
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
+        '--require=coffeescript/register',
         '--hookfiles=./test/fixtures/*_all.*',
       ];
       runCLIWithServer(args, app, (err, info) => {
@@ -763,6 +764,7 @@ describe('CLI', () => {
         const args = [
           './test/fixtures/multifile/*.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
+          '--require=coffeescript/register',
           '--hookfiles=./test/fixtures/multifile/multifile_hooks.coffee',
         ];
         runCLIWithServer(args, app, (err, info) => {

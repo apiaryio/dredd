@@ -287,10 +287,19 @@ Remove trailing newline character in expected *plain text* bodies
 Using Babel
 ~~~~~~~~~~~
 
-With this workaround you can use `Babel <https://babeljs.io/>`__ for support of all the latest JS syntactic coolness in Dredd hooks:
+You can use `Babel <https://babeljs.io/>`__ for support of all the latest JS syntactic coolness in Dredd by using `babel-register <https://www.npmjs.com/package/@babel/register>`__:
 
 ::
 
-   npm install -g babel-cli babel-preset-es2015
-   echo '{ "presets": ["es2015"] }' > .babelrc
-   babel-node `which dredd` test/fixtures/single-get.apib http://127.0.0.1:3000 --hookfiles=./es2015.js
+   npm install -g babel-register @babel/preset-env
+   echo '{ "presets": [["env", { "target": { "node":6 } }]] }' > .babelrc
+   dredd test/fixtures/single-get.apib http://127.0.0.1:3000 --hookfiles=./es2015.js --require=@babel/register
+
+Using CoffeScript
+~~~~~~~~~~~~~~~~~
+
+You can use `CoffeeScript <https://coffeescript.org>`__  in hooks by registering it as a compiler.
+
+::
+
+   dredd test/fixtures/single-get.apib http://127.0.0.1:3000 --hookfiles=./hooks.coffee --require=coffeescript/register
