@@ -1,5 +1,7 @@
 const crossSpawn = require('cross-spawn');
 
+const ignorePipeErrors = require('./ignore-pipe-errors');
+
 const ASCII_CTRL_C = 3;
 const IS_WINDOWS = process.platform === 'win32';
 const TERM_FIRST_CHECK_TIMEOUT_MS = 1;
@@ -124,6 +126,8 @@ function terminate(childProcess, options = {}, callback) {
 
 const spawn = function (...args) {
   const childProcess = crossSpawn.spawn.apply(null, args);
+
+  ignorePipeErrors(childProcess);
 
   childProcess.spawned = true;
   childProcess.terminated = false;

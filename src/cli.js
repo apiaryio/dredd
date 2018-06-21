@@ -7,6 +7,7 @@ const spawnSync = require('cross-spawn').sync;
 
 const configUtils = require('./config-utils');
 const Dredd = require('./dredd');
+const ignorePipeErrors = require('./ignore-pipe-errors');
 const interactiveConfig = require('./interactive-config');
 const logger = require('./logger');
 const { applyLoggingOptions } = require('./configuration');
@@ -31,11 +32,6 @@ class CLI {
     if (!this.custom.argv || !Array.isArray(this.custom.argv)) {
       this.custom.argv = [];
     }
-
-    // Fixes https://github.com/apiaryio/dredd/issues/1030
-    process.stdin.on('error', (err) => {
-      logger.error(`Error in stdin: ${err}`);
-    });
   }
 
   setOptimistArgv() {
@@ -318,6 +314,8 @@ ${packageData.name} v${packageData.version} \
     const configurationForDredd = this.initConfig();
     this.logDebuggingInfo(configurationForDredd);
     this.dreddInstance = this.initDredd(configurationForDredd);
+
+    ignorePipeErrors(process);
 
     try {
       this.runServerAndThenDredd();
