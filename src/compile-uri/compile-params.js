@@ -8,10 +8,11 @@ module.exports = function compileParams(hrefVariablesElement) {
     const typeAttributes = memberElement.attributes.getValue('typeAttributes') || [];
     const values = valueElement.attributes.getValue('enumerations') || [];
 
+    const example = valueElement.toValue();
     params[name] = {
       required: Array.from(typeAttributes).includes('required'),
       default: valueElement.attributes.getValue('default'),
-      example: valueElement.toValue() || values[0],
+      example: typeof example === 'undefined' || example === null ? values[0] : example,
       values
     };
 
