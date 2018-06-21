@@ -127,10 +127,6 @@ function terminate(childProcess, options = {}, callback) {
 const spawn = function (...args) {
   const childProcess = crossSpawn.spawn.apply(null, args);
 
-  // On Windows, killing stdin / stdout / stderr pipes intentionally
-  // on either side can result `uncaughtException` causing
-  // dredd main process exiting with exitCode 7 instead of 1. This _fix_
-  // remedies the issue.
   ignorePipeErrors(childProcess);
 
   childProcess.spawned = true;

@@ -315,10 +315,6 @@ ${packageData.name} v${packageData.version} \
     this.logDebuggingInfo(configurationForDredd);
     this.dreddInstance = this.initDredd(configurationForDredd);
 
-    // On Windows, killing stdin / stdout / stderr pipes intentionally
-    // on either side can result `uncaughtException` causing
-    // dredd main process exiting with exitCode 7 instead of 1. This _fix_
-    // remedies the issue.
     ignorePipeErrors(process);
 
     try {
