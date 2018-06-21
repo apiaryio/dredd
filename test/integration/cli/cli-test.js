@@ -742,7 +742,7 @@ describe('CLI', () => {
 
   describe('when API description document path is a glob', () => {
     describe('and called with --names options', () => {
-      let CLIInfo;
+      let cliInfo;
 
       before((done) => {
         const args = [
@@ -751,18 +751,18 @@ describe('CLI', () => {
           '--names'
         ];
         runCLI(args, (err, info) => {
-          CLIInfo = info;
+          cliInfo = info;
           done(err);
         });
       });
 
       it('it should include all paths from all API description documents matching the glob', () => {
-        assert.include(CLIInfo.stdout, '> /greeting > GET');
-        assert.include(CLIInfo.stdout, '> /message > GET');
-        assert.include(CLIInfo.stdout, '> /name > GET');
+        assert.include(cliInfo.stdout, '> /greeting > GET');
+        assert.include(cliInfo.stdout, '> /message > GET');
+        assert.include(cliInfo.stdout, '> /name > GET');
       });
 
-      it('should exit with status 0', () => assert.equal(CLIInfo.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
     });
 
     describe('and called with hooks', () => {
@@ -808,7 +808,7 @@ describe('CLI', () => {
 
   describe('when called with additional --path argument which is a glob', () =>
     describe('and called with --names options', () => {
-      let CLIInfo;
+      let cliInfo;
 
       before((done) => {
         const args = [
@@ -818,20 +818,20 @@ describe('CLI', () => {
           '--names'
         ];
         runCLI(args, (err, info) => {
-          CLIInfo = info;
+          cliInfo = info;
           done(err);
         });
       });
 
       it('it should include all paths from all API description documents matching all paths and globs', () => {
-        assert.include(CLIInfo.stdout, 'Greeting API > /greeting > GET');
-        assert.include(CLIInfo.stdout, 'Message API > /message > GET');
-        assert.include(CLIInfo.stdout, 'Name API > /name > GET');
-        assert.include(CLIInfo.stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 1');
-        assert.include(CLIInfo.stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 2');
+        assert.include(cliInfo.stdout, 'Greeting API > /greeting > GET');
+        assert.include(cliInfo.stdout, 'Message API > /message > GET');
+        assert.include(cliInfo.stdout, 'Name API > /name > GET');
+        assert.include(cliInfo.stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 1');
+        assert.include(cliInfo.stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 2');
       });
 
-      it('should exit with status 0', () => assert.equal(CLIInfo.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
     })
   );
 

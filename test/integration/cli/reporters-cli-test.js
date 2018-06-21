@@ -23,7 +23,7 @@ describe('CLI - Reporters', () => {
 
 
   describe('when -r/--reporter is provided to use additional reporters', () => {
-    let CLIInfo;
+    let cliInfo;
     const args = [
       './test/fixtures/single-get.apib',
       `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
@@ -32,14 +32,14 @@ describe('CLI - Reporters', () => {
 
     beforeEach(done =>
       runCLI(args, (err, info) => {
-        CLIInfo = info;
+        cliInfo = info;
         done(err);
       })
     );
 
     it('should use given reporter', () =>
       // Nyan cat ears should exist in stdout
-      assert.include(CLIInfo.stdout, '/\\_/\\')
+      assert.include(cliInfo.stdout, '/\\_/\\')
     );
   });
 
@@ -73,7 +73,7 @@ describe('CLI - Reporters', () => {
     afterEach(done => apiary.close(done));
 
     describe('when Dredd successfully performs requests to Apiary', () => {
-      let CLIInfo;
+      let cliInfo;
       let stepRequest;
       const args = [
         './test/fixtures/single-get.apib',
@@ -83,15 +83,15 @@ describe('CLI - Reporters', () => {
 
       beforeEach(done =>
         runCLI(args, { env }, (err, info) => {
-          CLIInfo = info;
+          cliInfo = info;
           stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
           done(err);
         })
       );
 
-      it('should print URL of the test report', () => assert.include(CLIInfo.stdout, 'http://example.com/test/run/1234_id'));
-      it('should print warning about missing Apiary API settings', () => assert.include(CLIInfo.stdout, 'Apiary API Key or API Project Subdomain were not provided.'));
-      it('should exit with status 0', () => assert.equal(CLIInfo.exitStatus, 0));
+      it('should print URL of the test report', () => assert.include(cliInfo.stdout, 'http://example.com/test/run/1234_id'));
+      it('should print warning about missing Apiary API settings', () => assert.include(cliInfo.stdout, 'Apiary API Key or API Project Subdomain were not provided.'));
+      it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
       it('should perform 3 requests to Apiary', () => {
         assert.deepEqual(apiaryRuntimeInfo.requestCounts, {
           '/apis/public/tests/runs': 1,
@@ -111,7 +111,7 @@ describe('CLI - Reporters', () => {
     });
 
     describe('when hooks file uses hooks.log function for logging', () => {
-      let CLIInfo;
+      let cliInfo;
       let updateRequest;
       let stepRequest;
       const args = [
@@ -123,7 +123,7 @@ describe('CLI - Reporters', () => {
 
       beforeEach(done =>
         runCLI(args, { env }, (err, info) => {
-          CLIInfo = info;
+          cliInfo = info;
           updateRequest = apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0];
           stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
           return done(err);
@@ -132,10 +132,10 @@ describe('CLI - Reporters', () => {
 
       it('hooks.log should print also to console', () =>
         // Because --level=info is lower than --level=hook
-        assert.include(CLIInfo.output, 'using hooks.log to debug')
+        assert.include(cliInfo.output, 'using hooks.log to debug')
       );
-      it('hooks.log should use toString on objects', () => assert.include(CLIInfo.output, 'Error object!'));
-      it('should exit with status 0', () => assert.equal(CLIInfo.exitStatus, 0));
+      it('hooks.log should use toString on objects', () => assert.include(cliInfo.output, 'Error object!'));
+      it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
 
       it('should request Apiary API to start a test run', () => {
         assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/runs'], 1);
@@ -186,7 +186,7 @@ describe('CLI - Reporters', () => {
     });
 
     describe('when hooks file uses hooks.log function for logging and hooks are in sandbox mode', () => {
-      let CLIInfo;
+      let cliInfo;
       let updateRequest;
       let stepRequest;
       const args = [
@@ -200,7 +200,7 @@ describe('CLI - Reporters', () => {
 
       beforeEach(done =>
         runCLI(args, { env }, (err, info) => {
-          CLIInfo = info;
+          cliInfo = info;
           updateRequest = apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0];
           stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
           done(err);
@@ -209,10 +209,10 @@ describe('CLI - Reporters', () => {
 
       it('hooks.log should not print also to console', () => {
         // Because we are running in sandboxed mode with higher --level
-        assert.notInclude(CLIInfo.output, 'using sandboxed hooks.log');
-        assert.notInclude(CLIInfo.output, 'shall not print');
+        assert.notInclude(cliInfo.output, 'using sandboxed hooks.log');
+        assert.notInclude(cliInfo.output, 'shall not print');
       });
-      it('should exit with status 0', () => assert.equal(CLIInfo.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
 
       it('should request Apiary API to start a test run', () => {
         assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/runs'], 1);
@@ -327,7 +327,7 @@ describe('CLI - Reporters', () => {
 
   describe('when the \'apiary\' reporter fails', () => {
     let apiaryApiUrl;
-    let CLIInfo;
+    let cliInfo;
     const args = [
       './test/fixtures/single-get.apib',
       `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
@@ -341,13 +341,13 @@ describe('CLI - Reporters', () => {
       process.env.APIARY_API_URL = `http://127.0.0.1:${nonExistentPort}`;
 
       runCLI(args, (err, info) => {
-        CLIInfo = info;
+        cliInfo = info;
         done(err);
       });
     });
     afterEach(() => { process.env.APIARY_API_URL = apiaryApiUrl; });
 
-    it('ends successfully', () => assert.equal(CLIInfo.exitStatus, 0));
-    it('prints error about Apiary API connection issues', () => assert.include(CLIInfo.stderr, 'Apiary reporter could not connect to Apiary API'));
+    it('ends successfully', () => assert.equal(cliInfo.exitStatus, 0));
+    it('prints error about Apiary API connection issues', () => assert.include(cliInfo.stderr, 'Apiary reporter could not connect to Apiary API'));
   });
 });

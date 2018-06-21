@@ -191,8 +191,8 @@ function runCLIWithServer(args, app, serverPort, callback) {
   const server = app.listen(serverPort, (err, serverRuntimeInfo) => {
     if (err) { return callback(err); }
 
-    runCLI(args, (error, CLIInfo) =>
-      server.close(() => callback(error, { server: serverRuntimeInfo, dredd: CLIInfo }))
+    runCLI(args, (error, cliInfo) =>
+      server.close(() => callback(error, { server: serverRuntimeInfo, dredd: cliInfo }))
     );
   });
 }
