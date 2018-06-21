@@ -50,6 +50,7 @@ function applyConfiguration(config) {
       header: null,
       user: null,
       'inline-errors': false,
+      'hide-errors': false,
       details: false,
       method: [],
       only: [],

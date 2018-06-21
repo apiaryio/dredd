@@ -1,12 +1,13 @@
 const logger = require('./../logger');
 const prettifyResponse = require('./../prettify-response');
 
-function CliReporter(emitter, stats, tests, inlineErrors, details) {
+function CliReporter(emitter, stats, tests, inlineErrors, details, hideErrors) {
   this.type = 'cli';
   this.stats = stats;
   this.tests = tests;
   this.inlineErrors = inlineErrors;
   this.details = details;
+  this.hideErrors = hideErrors;
   this.errors = [];
 
   this.configureEmitter(emitter);
@@ -21,7 +22,7 @@ CliReporter.prototype.configureEmitter = function (emitter) {
   });
 
   emitter.on('end', (callback) => {
-    if (!this.inlineErrors) {
+    if (!this.inlineErrors && !this.hideErrors) {
       if (this.errors.length !== 0) { logger.info('Displaying failed tests...'); }
       for (const test of this.errors) {
         logger.fail(`${test.title} duration: ${test.duration}ms`);
@@ -58,13 +59,15 @@ CliReporter.prototype.configureEmitter = function (emitter) {
 
   emitter.on('test fail', (test) => {
     logger.fail(`${test.title} duration: ${test.duration}ms`);
-    if (this.inlineErrors) {
-      logger.fail(test.message);
-      if (test.request) { logger.request(`\n${prettifyResponse(test.request)}\n`); }
-      if (test.expected) { logger.expected(`\n${prettifyResponse(test.expected)}\n`); }
-      if (test.actual) { logger.actual(`\n${prettifyResponse(test.actual)}\n\n`); }
-    } else {
-      this.errors.push(test);
+    if (!this.hideErrors) {
+      if (this.inlineErrors) {
+        logger.fail(test.message);
+        if (test.request) { logger.request(`\n${prettifyResponse(test.request)}\n`); }
+        if (test.expected) { logger.expected(`\n${prettifyResponse(test.expected)}\n`); }
+        if (test.actual) { logger.actual(`\n${prettifyResponse(test.actual)}\n\n`); }
+      } else {
+        this.errors.push(test);
+      }
     }
   });
 
@@ -83,7 +86,7 @@ CliReporter.prototype.configureEmitter = function (emitter) {
       test.message = 'Error connecting to server under test!';
     }
 
-    if (!this.inlineErrors) {
+    if (!this.inlineErrors && !this.hideErrors) {
       this.errors.push(test);
     }
 

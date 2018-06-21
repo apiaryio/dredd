@@ -105,6 +105,13 @@ occur (true) or aggregated and displayed at the end (false).\n`,
     default: false
   },
 
+  'hide-errors': {
+    description: `
+Determines whether failures and errors are displayed on the
+cli (true) or hidden from the cli (false).\n`,
+    default: false
+  },
+
   details: {
     alias: 'd',
     description: 'Determines whether request/response details are included in passing tests.\n',

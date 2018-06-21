@@ -53,7 +53,8 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
       reporter: [],
       output: [],
       silent: false,
-      'inline-errors': false
+      'inline-errors': false,
+      'hide-errors': false
     }
   };
 
