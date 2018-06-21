@@ -32,7 +32,7 @@ const DreddStub = proxyquire('../../src/dredd', {
   './logger': loggerStub
 });
 
-const DreddCommand = proxyquire('../../src/dredd-command', {
+const CLIStub = proxyquire('../../src/cli', {
   './dredd': DreddStub,
   console: loggerStub,
   './logger': loggerStub,
@@ -46,7 +46,7 @@ function execCommand(custom = {}, cb) {
   stdout = '';
   stderr = '';
   let finished = false;
-  (new DreddCommand({
+  (new CLIStub({
     custom
   }, ((code) => {
       if (!finished) {
@@ -57,7 +57,7 @@ function execCommand(custom = {}, cb) {
     })).run());
 }
 
-describe('DreddCommand class', () => {
+describe('CLI class', () => {
   before(() => {
     ['warn', 'error'].forEach((method) => {
       sinon.stub(loggerStub, method).callsFake((chunk) => { stderr += `\n${method}: ${chunk}`; });
@@ -88,7 +88,7 @@ describe('DreddCommand class', () => {
 
   describe('when initialized without "new" keyword', () => {
     let dc = null;
-    before(() => { dc = new DreddCommand(); });
+    before(() => { dc = new CLIStub(); });
 
     it('sets finished to false', () => assert.isFalse(dc.finished));
 
@@ -104,7 +104,7 @@ describe('DreddCommand class', () => {
       assert.equal(dc.custom != null ? dc.custom.argv.length : undefined, 0);
     });
 
-    it('returns an instanceof DreddCommand', () => assert.instanceOf(dc, DreddCommand));
+    it('returns an instanceof CLI', () => assert.instanceOf(dc, CLIStub));
   });
 
 
@@ -113,7 +113,7 @@ describe('DreddCommand class', () => {
     let hasCalledExit;
 
     before(() => {
-      dc = new DreddCommand({ exit() {
+      dc = new CLIStub({ exit() {
         hasCalledExit = true;
       }
       });
@@ -143,7 +143,7 @@ describe('DreddCommand class', () => {
     let takeRestOfParamsAsPathSpy;
 
     before(() => {
-      dc = new DreddCommand({
+      dc = new CLIStub({
         exit() {},
         custom: {
           argv: ['./file.apib', 'http://127.0.0.1:3000'],
@@ -206,7 +206,7 @@ describe('DreddCommand class', () => {
         res.json([{ my: 'another', world: 'service' }]);
       });
 
-      dc = new DreddCommand({
+      dc = new CLIStub({
         custom: {
           argv: [
             './test/fixtures/single-get.apib',

@@ -4,8 +4,8 @@ const proxyquire = require('proxyquire').noCallThru();
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const loggerStub = require('../../src/logger');
-const configUtils = require('../../src/config-utils');
+const loggerStub = require('../../../src/logger');
+const configUtils = require('../../../src/config-utils');
 
 const PORT = 9876;
 
@@ -14,21 +14,21 @@ let exitStatus;
 let stderr = '';
 let stdout = '';
 
-const addHooksStub = proxyquire('../../src/add-hooks', {
+const addHooksStub = proxyquire('../../../src/add-hooks', {
   './logger': loggerStub
 });
 
-const transactionRunner = proxyquire('../../src/transaction-runner', {
+const transactionRunner = proxyquire('../../../src/transaction-runner', {
   './add-hooks': addHooksStub,
   './logger': loggerStub
 });
 
-const dreddStub = proxyquire('../../src/dredd', {
+const dreddStub = proxyquire('../../../src/dredd', {
   './transaction-runner': transactionRunner,
   './logger': loggerStub
 });
 
-const DreddCommand = proxyquire('../../src/dredd-command', {
+const CLIStub = proxyquire('../../../src/cli', {
   './dredd': dreddStub,
   './config-utils': configUtils,
   console: loggerStub,
@@ -40,7 +40,7 @@ function execCommand(custom = {}, cb) {
   stderr = '';
   exitStatus = null;
   let finished = false;
-  const dreddCommand = new DreddCommand({ custom }, ((exitStatusCode) => {
+  const cli = new CLIStub({ custom }, ((exitStatusCode) => {
     if (!finished) {
       finished = true;
       exitStatus = (exitStatusCode != null ? exitStatusCode : 0);
@@ -48,10 +48,10 @@ function execCommand(custom = {}, cb) {
     }
   }));
 
-  dreddCommand.run();
+  cli.run();
 }
 
-describe('DreddCommand class Integration', () => {
+describe('CLI class Integration', () => {
   before(() => {
     ['warn', 'error'].forEach((method) => {
       sinon.stub(loggerStub, method).callsFake((chunk) => { stderr += `\n${method}: ${chunk}`; });
@@ -77,7 +77,7 @@ describe('DreddCommand class Integration', () => {
 
   describe('When using configuration file', () => {
     describe('When specifying custom configuration file by --config', () => {
-      const configPath = '../../custom-dredd-config-path.yaml';
+      const configPath = '../../../custom-dredd-config-path.yaml';
       const cmd = { argv: ['--config', configPath] };
       const options = { _: ['api-description.apib', 'http://127.0.0.1'] };
 

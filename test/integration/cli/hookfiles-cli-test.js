@@ -2,7 +2,7 @@ const net = require('net');
 const path = require('path');
 const { assert } = require('chai');
 
-const { isProcessRunning, killAll, createServer, runDreddCommandWithServer, runDreddCommand, DEFAULT_SERVER_PORT } = require('../helpers');
+const { isProcessRunning, killAll, createServer, runCLIWithServer, runCLI, DEFAULT_SERVER_PORT } = require('../helpers');
 
 const COFFEE_BIN = 'node_modules/.bin/coffee';
 const DEFAULT_HOOK_HANDLER_PORT = 61321;
@@ -17,7 +17,7 @@ describe('CLI', () => {
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
         const args = ['./test/fixtures/single-get.apib', `http://127.0.0.1:${DEFAULT_SERVER_PORT}`];
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -34,7 +34,7 @@ describe('CLI', () => {
         app.get('/v2/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
         const args = ['./test/fixtures/single-get.apib', `http://127.0.0.1:${DEFAULT_SERVER_PORT}/v2/`];
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -51,7 +51,7 @@ describe('CLI', () => {
         app.get('/machines', (req, res) => res.status(201).json([{ kind: 'bulldozer', imatriculation: 'willy' }]));
 
         const args = ['./test/fixtures/single-get.apib', `http://127.0.0.1:${DEFAULT_SERVER_PORT}`];
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -77,7 +77,7 @@ describe('CLI', () => {
             '--language=foo/bar/hook-handler',
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ];
-          runDreddCommandWithServer(args, app, (err, info) => {
+          runCLIWithServer(args, app, (err, info) => {
             runtimeInfo = info;
             done(err);
           });
@@ -118,7 +118,7 @@ describe('CLI', () => {
             `--language=${COFFEE_BIN} ./test/fixtures/scripts/exit-3.coffee`,
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ];
-          runDreddCommandWithServer(args, app, (err, info) => {
+          runCLIWithServer(args, app, (err, info) => {
             runtimeInfo = info;
             done(err);
           });
@@ -155,7 +155,7 @@ describe('CLI', () => {
             '--language=node ./test/fixtures/scripts/kill-self.js',
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ];
-          runDreddCommandWithServer(args, app, (err, info) => {
+          runCLIWithServer(args, app, (err, info) => {
             runtimeInfo = info;
             done(err);
           });
@@ -213,7 +213,7 @@ describe('CLI', () => {
             '--hookfiles=test/fixtures/hooks.js'
           ];
           hookHandler.listen(DEFAULT_HOOK_HANDLER_PORT, () =>
-            runDreddCommandWithServer(args, app, (err, info) => {
+            runCLIWithServer(args, app, (err, info) => {
               hookHandler.close();
               runtimeInfo = info;
               done(err);
@@ -266,7 +266,7 @@ describe('CLI', () => {
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ];
           hookHandler.listen(DEFAULT_HOOK_HANDLER_PORT, () =>
-            runDreddCommandWithServer(args, app, (err, info) => {
+            runCLIWithServer(args, app, (err, info) => {
               hookHandler.close();
               runtimeInfo = info;
               done(err);
@@ -307,7 +307,7 @@ describe('CLI', () => {
           '-h',
           'Accept:application/json'
         ];
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -330,7 +330,7 @@ describe('CLI', () => {
           '-u',
           'username:password'
         ];
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -354,7 +354,7 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '-s'
         ];
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -382,7 +382,7 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '-e'
         ];
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -408,7 +408,7 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '-d'
         ];
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -434,7 +434,7 @@ describe('CLI', () => {
             '-m',
             'POST'
           ];
-          runDreddCommandWithServer(args, app, (err, info) => {
+          runCLIWithServer(args, app, (err, info) => {
             runtimeInfo = info;
             done(err);
           });
@@ -456,7 +456,7 @@ describe('CLI', () => {
             '-m',
             'GET'
           ];
-          runDreddCommandWithServer(args, app, (err, info) => {
+          runCLIWithServer(args, app, (err, info) => {
             runtimeInfo = info;
             done(err);
           });
@@ -482,7 +482,7 @@ describe('CLI', () => {
           '--only=Message API > /message > GET',
           '--no-color'
         ];
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -507,7 +507,7 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--no-color'
         ];
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -532,7 +532,7 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--color=false'
         ];
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -557,7 +557,7 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '-l=error'
         ];
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -581,7 +581,7 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '-t'
         ];
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -606,7 +606,7 @@ describe('CLI', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--hookfiles=./test/fixtures/*_hooks.*'
       ];
-      runDreddCommandWithServer(args, app, (err, info) => {
+      runCLIWithServer(args, app, (err, info) => {
         runtimeInfo = info;
         done(err);
       });
@@ -637,7 +637,7 @@ describe('CLI', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--hookfiles=./test/fixtures/*_events.*'
       ];
-      runDreddCommandWithServer(args, app, (err, info) => {
+      runCLIWithServer(args, app, (err, info) => {
         runtimeInfo = info;
         done(err);
       });
@@ -672,7 +672,7 @@ describe('CLI', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--hookfiles=./test/fixtures/*_all.*'
       ];
-      runDreddCommandWithServer(args, app, (err, info) => {
+      runCLIWithServer(args, app, (err, info) => {
         runtimeInfo = info;
         done(err);
       });
@@ -703,7 +703,7 @@ describe('CLI', () => {
           './test/fixtures/schema.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`
         ];
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -730,7 +730,7 @@ describe('CLI', () => {
           './test/fixtures/schema.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`
         ];
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -742,7 +742,7 @@ describe('CLI', () => {
 
   describe('when API description document path is a glob', () => {
     describe('and called with --names options', () => {
-      let dreddCommandInfo;
+      let cliInfo;
 
       before((done) => {
         const args = [
@@ -750,19 +750,19 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--names'
         ];
-        runDreddCommand(args, (err, info) => {
-          dreddCommandInfo = info;
+        runCLI(args, (err, info) => {
+          cliInfo = info;
           done(err);
         });
       });
 
       it('it should include all paths from all API description documents matching the glob', () => {
-        assert.include(dreddCommandInfo.stdout, '> /greeting > GET');
-        assert.include(dreddCommandInfo.stdout, '> /message > GET');
-        assert.include(dreddCommandInfo.stdout, '> /name > GET');
+        assert.include(cliInfo.stdout, '> /greeting > GET');
+        assert.include(cliInfo.stdout, '> /message > GET');
+        assert.include(cliInfo.stdout, '> /name > GET');
       });
 
-      it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
     });
 
     describe('and called with hooks', () => {
@@ -781,7 +781,7 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--hookfiles=./test/fixtures/multifile/multifile_hooks.coffee'
         ];
-        runDreddCommandWithServer(args, app, (err, info) => {
+        runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
           done(err);
         });
@@ -808,7 +808,7 @@ describe('CLI', () => {
 
   describe('when called with additional --path argument which is a glob', () =>
     describe('and called with --names options', () => {
-      let dreddCommandInfo;
+      let cliInfo;
 
       before((done) => {
         const args = [
@@ -817,21 +817,21 @@ describe('CLI', () => {
           '--path=./test/fixtures/multifile/*.apib',
           '--names'
         ];
-        runDreddCommand(args, (err, info) => {
-          dreddCommandInfo = info;
+        runCLI(args, (err, info) => {
+          cliInfo = info;
           done(err);
         });
       });
 
       it('it should include all paths from all API description documents matching all paths and globs', () => {
-        assert.include(dreddCommandInfo.stdout, 'Greeting API > /greeting > GET');
-        assert.include(dreddCommandInfo.stdout, 'Message API > /message > GET');
-        assert.include(dreddCommandInfo.stdout, 'Name API > /name > GET');
-        assert.include(dreddCommandInfo.stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 1');
-        assert.include(dreddCommandInfo.stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 2');
+        assert.include(cliInfo.stdout, 'Greeting API > /greeting > GET');
+        assert.include(cliInfo.stdout, 'Message API > /message > GET');
+        assert.include(cliInfo.stdout, 'Name API > /name > GET');
+        assert.include(cliInfo.stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 1');
+        assert.include(cliInfo.stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 2');
       });
 
-      it('should exit with status 0', () => assert.equal(dreddCommandInfo.exitStatus, 0));
+      it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
     })
   );
 
@@ -848,7 +848,7 @@ describe('CLI', () => {
         '--sandbox',
         '--hookfiles=./test/fixtures/sandboxed-hook.js'
       ];
-      runDreddCommandWithServer(args, app, (err, info) => {
+      runCLIWithServer(args, app, (err, info) => {
         runtimeInfo = info;
         done(err);
       });

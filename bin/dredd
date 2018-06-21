@@ -12,10 +12,10 @@ var path = require('path');
 
 
 var dir = process.env.COVERAGE_DIR ? 'src' : 'lib';
-var DreddCommand = require('../' + dir + '/dredd-command');
+var CLI = require('../' + dir + '/cli');
 
 
-var dreddCli = new DreddCommand({
+var dreddCli = new CLI({
   custom: {
     cwd: process.cwd(),
     argv: process.argv.slice(2)
