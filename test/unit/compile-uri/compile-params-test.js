@@ -71,6 +71,22 @@ describe('compileParams', () => {
     });
   });
 
+  it('should compile a primitive example variable which its value is 0', () => {
+    const hrefVariables = new fury.minim.elements.HrefVariables();
+    hrefVariables.set('example', 0);
+
+    const parameters = compileParams(hrefVariables);
+
+    assert.deepEqual(parameters, {
+      example: {
+        default: undefined,
+        example: 0,
+        required: false,
+        values: []
+      }
+    });
+  });
+
   it('should compile an array href variable', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
     hrefVariables.set('names', []);
