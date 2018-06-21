@@ -37,6 +37,24 @@ describe('validateParams', () => {
     })
   );
 
+  describe('when type is number and example is zero', () =>
+    it('should set no error', () => {
+      const params = {
+        name: {
+          description: 'Machine name',
+          type: 'number',
+          required: true,
+          example: 0,
+          default: '',
+          values: []
+        }
+      };
+
+      const result = validateParams(params);
+      assert.equal(result.errors.length, 0);
+    })
+  );
+
   // Based on bug report:
   // https://github.com/apiaryio/dredd/issues/106
   describe('when type is string and example is a string but starting with a number', () =>
