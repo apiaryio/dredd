@@ -52,6 +52,41 @@ describe('expandUriTemplate', () => {
       it('it should return some errror', () => assert.notEqual(data.errors.length, 0));
     });
 
+    describe('when "example" is zero', () => {
+      before(() => {
+        uriTemplate = '/machines{/id}';
+        parameters = {
+          id: {
+            description: 'Machine id',
+            type: 'number',
+            required: true,
+            example: 0
+          }
+        };
+
+        data = expandUriTemplate(uriTemplate, parameters);
+      });
+
+      it('should return expandend URI', () => assert.equal(data.uri, '/machines/0'));
+    });
+
+    describe('when "default" is zero', () => {
+      before(() => {
+        uriTemplate = '/machines{/id}';
+        parameters = {
+          id: {
+            description: 'Machine id',
+            type: 'number',
+            required: true,
+            default: 0
+          }
+        };
+
+        data = expandUriTemplate(uriTemplate, parameters);
+      });
+
+      it('should return expandend URI', () => assert.equal(data.uri, '/machines/0'));
+    });
 
     describe('when URI with no URI template expression given', () => {
       before(() => {
