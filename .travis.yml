@@ -22,17 +22,19 @@ before_install:
 install: "npm install --no-optional"
 jobs:
   include:
-    - stage: "code/docs/commits quality checks"
+    # stage 1, all following runs in parallel:
+    - stage: "quality checks & tests"
       node_js: "8"
-      script: "npm run lint"
-    - stage: "docs build dry run"
-      node_js: "8"
-      script: "npm run docs:build"
-    - stage: "tests & code coverage"
-      node_js: "6"
-      script: "npm run test:coverage && npm run coveralls"
+      script: "npm run lint" # code, docs, commits quality checks
     - node_js: "8"
-      script: "npm run test:coverage && npm run coveralls"
+      script: "npm run docs:build" # docs build dry run (production build happens directly on ReadTheDocs infrastructure)
+    - node_js: "6"
+      script: "npm run test:coverage && npm run coveralls" # node 6, tests & coverage,
+    - node_js: "8"
+      script: "npm run test:coverage && npm run coveralls" # node 8, tests & coverage
+
+    # stage 2
     - stage: "semantic release"
       node_js: "8"
-      script: " npm run semantic-release || true"
+      script: "npm run semantic-release || true"
+      if: branch = master
