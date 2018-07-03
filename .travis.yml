@@ -26,7 +26,7 @@ jobs:
     - stage: "quality checks & tests"
       env: "JOB=quality_checks"
       node_js: "8"
-      script: "npm run lint"
+      script: "npm run lint && npm run docs:lint"
     - node_js: "8"
       env: "JOB=docs_build_dry_run" # why dry run? because production build happens directly on ReadTheDocs infrastructure
       script: "npm run docs:build"
