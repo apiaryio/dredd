@@ -119,7 +119,7 @@ This validation result is returned not only when validating against [JSON Schema
 <a name="textdiff-validation-result"></a>
 ## TextDiff Validation Result (string)
 
-Block of text which looks extremely similar to the standard GNU diff/patch format. Result of the [`patch_toText()` function of the `google-diff-match-patch` library](https://github.com/google/diff-match-patch/wiki/API#patch_totextpatches--text).
+Block of text which looks extremely similar to the standard GNU diff/patch format. Result of the [`patch_toText()` function of the `google-diff-match-patch` library](https://github.com/google/diff-match-patch/wiki/API#user-content-patch_totextpatches--text).
 
 <a name="gavel-error"></a>
 ## Gavel Error (object)

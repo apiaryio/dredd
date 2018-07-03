@@ -96,7 +96,7 @@ The `--no-optional` option avoids any compilation attempts when installing Dredd
 [API Blueprint]: https://apiblueprint.org/
 [Swagger]: https://swagger.io/
 
-[CoffeeScript]: http://coffeescript.org/
+[CoffeeScript]: https://coffeescript.org/
 [CI]: how-to-guides.md#continuous-integration
 
 [Homebrew]: https://brew.sh/

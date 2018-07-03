@@ -159,7 +159,7 @@ before("Machines > Machines collection > Get Machines", function (transaction) {
 
 ### Using Chai Assertions
 
-Inside hook files, you can require [Chai](http://chaijs.com/) and use its `assert`, `should` or `expect` interface in hooks and write your custom expectations. Dredd catches Chai's expectation error in hooks and makes transaction to fail.
+Inside hook files, you can require [Chai](http://www.chaijs.com/) and use its `assert`, `should` or `expect` interface in hooks and write your custom expectations. Dredd catches Chai's expectation error in hooks and makes transaction to fail.
 
 ```javascript
 var hooks = require('hooks');

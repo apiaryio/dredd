@@ -107,7 +107,7 @@ If you need the performance of the C++11 parser, but you are struggling to get i
 
 ### Supported Node.js Versions
 
-Given the [table with LTS schedule](https://github.com/nodejs/LTS), only versions marked as **Maintenance** or **Active** are supported, until their **Maintenance End**. The testing matrix of Dredd's CI builds must contain all currently supported versions and must not contain any unsupported versions. The same applies for the underlying libraries, such as [Dredd Transactions][] or [Gavel.js][].
+Given the [table with LTS schedule](https://github.com/nodejs/Release), only versions marked as **Maintenance** or **Active** are supported, until their **Maintenance End**. The testing matrix of Dredd's CI builds must contain all currently supported versions and must not contain any unsupported versions. The same applies for the underlying libraries, such as [Dredd Transactions][] or [Gavel.js][].
 
 In following files the latest supported Node.js version should be used:
 
@@ -147,7 +147,7 @@ Dredd is tested on the [AppVeyor][], a Windows-based CI. There are still [severa
 
 ### Linting
 
-Dredd uses [eslint][] to lint the JavaScript codebase. We are using [Airbnb's styleguide](https://github.com/airbnb/javascript) 
+Dredd uses [eslint][] to lint the JavaScript codebase. We are using [Airbnb's styleguide](https://github.com/airbnb/javascript)
 rules as a baseline with several rules disabled to allow us to have dirty
 post-decaffeinate code temporarily.
 
@@ -238,7 +238,7 @@ This is to be able to serve the same content also as
 [GitHub contributing guidelines][] when someone opens a Pull Request.
 
 [symbolic link]: https://en.wikipedia.org/wiki/Symbolic_link
-[contributing guidelines]: https://github.com/blog/1184-contributing-guidelines
+[GitHub contributing guidelines]: https://blog.github.com/2012-09-17-contributing-guidelines/
 
 ### Coverage
 
@@ -302,10 +302,10 @@ There is also one environment variable you could find useful:
 [Dredd Transactions]: https://github.com/apiaryio/dredd-transactions
 [Gavel.js]: https://github.com/apiaryio/gavel.js/
 
-[Semantic Versioning]: http://semver.org/
+[Semantic Versioning]: https://semver.org/
 [JavaScript (ES2015+)]: https://tc39.github.io/ecma262/
 [eslint]: https://eslint.org/
-[CoffeeScript]: http://coffeescript.org
+[CoffeeScript]: https://coffeescript.org
 [Coveralls]: https://coveralls.io/github/apiaryio/dredd
 [istanbul]: https://github.com/gotwarlost/istanbul
 [lcov-result-merger]: https://github.com/mweibel/lcov-result-merger
@@ -313,9 +313,9 @@ There is also one environment variable you could find useful:
 [Sphinx]: http://www.sphinx-doc.org/
 [ReadTheDocs]: https://readthedocs.org/
 [test coverage]: https://coveralls.io/github/apiaryio/dredd
-[Mocha]: http://mochajs.org/
+[Mocha]: https://mochajs.org/
 [Semantic Release]: https://github.com/semantic-release/semantic-release
-[Conventional Changelog]: https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#user-content-commit-message-format
+[Conventional Changelog]: https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#user-content--git-commit-guidelines
 [Commitizen CLI]: https://github.com/commitizen/cz-cli
 [md-two-spaces]: https://daringfireball.net/projects/markdown/syntax#p
 [AppVeyor]: https://www.appveyor.com/
@@ -336,7 +336,6 @@ There is also one environment variable you could find useful:
 [existing commits]: https://github.com/apiaryio/dredd/commits/master
 [docs]: https://github.com/apiaryio/dredd/tree/master/docs
 [GitHub Releases]: https://github.com/apiaryio/dredd/releases
-[GitHub contributing guidelines]: https://github.com/blog/1184-contributing-guidelines
 
 [upstream repository]: https://github.com/apiaryio/dredd
 [issues]: https://github.com/apiaryio/dredd/issues
