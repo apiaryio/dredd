@@ -1,21 +1,22 @@
 # Source code (distributed code lives in /lib)
-/src
+/src/
 
 # Common for .gitignore and .npmignore
+.DS_Store
 coverage/
-site/
 cov.*
-.vagrant
 *.log
+.env
+.envrc
 
 # List specific to .npmignore
+/docs/
+/test/
 .travis.yml
+appveyor.yml
 .npmignore
-docs/
-test/
-mkdocs.yml
 .eslintrc.js
-Vagrantfile
+.eslintignore
 *.apib
 *.md
 
