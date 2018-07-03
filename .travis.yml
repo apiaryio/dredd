@@ -24,14 +24,18 @@ jobs:
   include:
     # stage 1, all following runs in parallel:
     - stage: "quality checks & tests"
+      env: "JOB=quality_checks"
       node_js: "8"
-      script: "npm run lint" # code, docs, commits quality checks
+      script: "npm run lint"
     - node_js: "8"
-      script: "npm run docs:build" # docs build dry run (production build happens directly on ReadTheDocs infrastructure)
+      env: "JOB=docs_build_dry_run" # why dry run? because production build happens directly on ReadTheDocs infrastructure
+      script: "npm run docs:build"
     - node_js: "6"
-      script: "npm run test:coverage && npm run coveralls" # node 6, tests & coverage,
+      env: "JOB=node6"
+      script: "npm run test:coverage && npm run coveralls"
     - node_js: "8"
-      script: "npm run test:coverage && npm run coveralls" # node 8, tests & coverage
+      env: "JOB=node8"
+      script: "npm run test:coverage && npm run coveralls"
 
     # stage 2
     - stage: "semantic release"
