@@ -161,6 +161,13 @@ html_show_copyright = False
 # html_use_opensearch = ''
 
 
+# -- External links check -------------------------------------------------
+
+linkcheck_ignore = [
+    'https://crates.io/crates/dredd-hooks',  # https://github.com/sphinx-doc/sphinx/pull/5140
+]
+
+
 # -- Custom Extensions ----------------------------------------------------
 
 def setup(app):

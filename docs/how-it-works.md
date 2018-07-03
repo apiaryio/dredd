@@ -225,7 +225,7 @@ Dredd intentionally **does not support HTTP(S) proxies for testing**. Proxy can 
 [request-proxies]: https://github.com/request/request#user-content-proxies
 
 [Apiary]: https://apiary.io/
-[Semantic Versioning]: http://semver.org/
+[Semantic Versioning]: https://semver.org/
 [API Blueprint]: https://apiblueprint.org/
 [Swagger]: https://swagger.io/
 [Gavel.js]: https://github.com/apiaryio/gavel.js
