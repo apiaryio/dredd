@@ -41,4 +41,4 @@ jobs:
     - stage: "semantic release"
       node_js: "8"
       script: "npm run semantic-release || true"
-      if: branch = master
+      if: fork = false AND branch = master AND type = push
