@@ -14,7 +14,6 @@ cov.*
 docs/
 test/
 mkdocs.yml
-provisioning.sh
 .eslintrc.js
 Vagrantfile
 *.apib
