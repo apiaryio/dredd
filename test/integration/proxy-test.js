@@ -62,7 +62,7 @@ function createProxyServer(protocol, proxyRequestInfo) {
       proxyRequestInfo.method = req.method;
 
       socket.write('HTTP/1.1 200 Connection Established\r\n\r\n');
-      socket.end();
+      socket.destroy();
     });
   } else {
     throw new Error(`Unsupported protocol: ${protocol}`);
