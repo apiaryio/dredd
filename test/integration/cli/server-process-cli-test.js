@@ -1,7 +1,6 @@
 const { assert } = require('chai');
 const { isProcessRunning, killAll, runCLI, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
 
-const COFFEE_BIN = 'node_modules/.bin/coffee';
 const NON_EXISTENT_PORT = DEFAULT_SERVER_PORT + 1;
 
 describe('CLI - Server Process', () => {
@@ -168,7 +167,7 @@ describe('CLI - Server Process', () => {
       const args = [
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-        `--server=${COFFEE_BIN} test/fixtures/scripts/dummy-server-ignore-term.coffee ${DEFAULT_SERVER_PORT}`,
+        `--server=node test/fixtures/scripts/dummy-server-ignore-term.js ${DEFAULT_SERVER_PORT}`,
         '--server-wait=1',
         '--level=verbose'
       ];

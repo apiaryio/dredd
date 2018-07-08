@@ -525,7 +525,7 @@ describe('TransactionRunner', () => {
       afterEach(() => configuration.emitter.emit.restore());
 
       // If you happen to wonder why some of the callbacks in following tests
-      // get executed twice, see try/catch in runHooksForData() in transaction-runner.coffee
+      // get executed twice, see try/catch in runHooksForData() in transaction-runner.js
 
       it('should skip the test', done =>
         runner.executeAllTransactions([clonedTransaction], runner.hooks, (err) => {

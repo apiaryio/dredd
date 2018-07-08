@@ -115,7 +115,7 @@ describe('CLI', () => {
             './test/fixtures/single-get.apib',
             `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
             '--server-wait=0',
-            `--language=${COFFEE_BIN} ./test/fixtures/scripts/exit-3.coffee`,
+            '--language=node ./test/fixtures/scripts/exit-3.js',
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ];
           runCLIWithServer(args, app, (err, info) => {
