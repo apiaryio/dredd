@@ -199,9 +199,19 @@ ${packageData.name} v${packageData.version} \
     const configPath = this.argv.config;
     logger.verbose('Loading configuration file:', configPath);
 
-    if (configPath && fs.existsSync(configPath)) {
-      logger.info(`Configuration '${configPath}' found, ignoring other arguments.`);
+    if (!configPath) {
+      logger.info('Configuration path is empty');
+      if (fs.existsSync('./dredd.yml')) {
+        logger.info('Using ./dredd.yml as configuration');
+        this.argv = configUtils.load();
+      } else {
+        logger.info("Couldn't find default configuration either");
+      }
+    } else if (fs.existsSync(configPath)) {
+      logger.info(`Configuration '${configPath}' found, ignoring other arguments`);
       this.argv = configUtils.load(configPath);
+    } else {
+      logger.info(`Couldn't find configuration at ${configPath}`);
     }
 
     // Overwrite saved config with cli arguments
