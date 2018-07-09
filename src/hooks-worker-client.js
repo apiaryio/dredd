@@ -1,4 +1,4 @@
-const generateUuid = require('uuid').v4;
+const generateUuid = require('uuid/v4');
 const net = require('net');
 const path = require('path');
 const spawnArgs = require('spawn-args');

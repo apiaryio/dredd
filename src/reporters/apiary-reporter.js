@@ -1,5 +1,5 @@
 const clone = require('clone');
-const generateUuid = require('uuid').v4;
+const generateUuid = require('uuid/v4');
 const os = require('os');
 const request = require('request');
 
