@@ -1,15 +1,18 @@
 # Distributed code (source code lives in /src)
-/lib
+/lib/
 
 # Common for .gitignore and .npmignore
 .DS_Store
 coverage/
-site/
 cov.*
-.vagrant
 *.log
+.env
+.envrc
 
 # List specific to .gitignore
 node_modules
 .idea/
-_build
+.vscode/
+/docs/_build
+
+!.vscode/launch.json
