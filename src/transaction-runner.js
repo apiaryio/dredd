@@ -681,6 +681,21 @@ the real body length is 0. Using 0 instead.\
         headers: res.headers
       };
 
+      const tempRealHeader = clone(transaction.real.headers);
+      const tempExpectedHeader = clone(transaction.expected.headers);
+      const keysUpperCase = (obj) => {
+        for (const property in obj) {
+          if (Object.prototype.hasOwnProperty.call(obj, property)) {
+            if (typeof obj.property === 'string') {
+              obj.property = obj.property.toUpperCase();
+            }
+          }
+        }
+      };
+
+      keysUpperCase(transaction.real.headers);
+      keysUpperCase(transaction.expected.headers);
+
       if (body) {
         transaction.real.body = body;
       } else if (transaction.expected.body) {
@@ -699,6 +714,8 @@ the real body length is 0. Using 0 instead.\
           if (this.hookHandlerError) { return callback(this.hookHandlerError); }
 
           this.validateTransaction(test, transaction, callback);
+          transaction.real.headers = tempRealHeader;
+          transaction.expected.headers = tempExpectedHeader;
         });
       });
     };
