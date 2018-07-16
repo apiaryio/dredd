@@ -144,7 +144,7 @@ describe('Hooks worker client', () => {
     });
 
     it('should include the status in the error if spawned process ends with non-zero exit status', (done) => {
-      runner.hooks.configuration.options.language = `${COFFEE_BIN} test/fixtures/scripts/exit-3.coffee`;
+      runner.hooks.configuration.options.language = 'node test/fixtures/scripts/exit-3.js';
       loadWorkerClient((workerError) => {
         if (workerError) { return done(workerError); }
 

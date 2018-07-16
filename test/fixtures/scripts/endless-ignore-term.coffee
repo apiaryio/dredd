@@ -1,4 +1,4 @@
-require('./handle-windows-sigint')()
+require('./handle-windows-sigint.js')()
 
 ignore = ->
   console.log('ignoring termination')
