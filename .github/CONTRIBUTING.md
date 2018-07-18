@@ -167,7 +167,7 @@ about how it works.
 Dredd's documentation is written in [Markdown][] using [Sphinx][]. [ReadTheDocs][] is used to build and publish the documentation:
 
 - [https://dredd.readthedocs.io](https://dredd.readthedocs.io) - preferred long URL
-- [http://dredd.rtfd.org](http://dredd.rtfd.org) - preferred short URL
+- [https://dredd.rtfd.io](https://dredd.rtfd.io) - preferred short URL
 
 Source of the documentation can be found in the [docs][] directory. To render Dredd's documentation on your computer, you need Python 3 and Node.js installed.
 
