@@ -478,7 +478,7 @@ describe('CLI class', () => {
 
   describe('when using --server', () => {
     beforeEach((done) => {
-      sinon.spy(crossSpawnStub, 'spawn');
+      sinon.stub(crossSpawnStub, 'spawn').callsFake();
       sinon.stub(transactionRunner.prototype, 'executeAllTransactions').callsFake((transactions, hooks, cb) => cb());
       execCommand({ argv: [
         './test/fixtures/single-get.apib',
