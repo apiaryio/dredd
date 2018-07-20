@@ -20,7 +20,7 @@
     "prepare": "npm run build",
     "pretest": "npm run build",
     "semantic-release": "scripts/semantic-release.sh",
-    "test": "mocha \"test/**/*-test.js\"",
+    "test": "mocha --exit \"test/**/*-test.js\"",
     "test:coverage": "scripts/coverage.sh",
     "test:debug": "mocha --debug-brk \"test/**/*-test.js\""
   },
@@ -82,7 +82,7 @@
     "hercule": "4.0.1",
     "istanbul": "0.4.5",
     "lcov-result-merger": "1.2.0",
-    "mocha": "3.0.0",
+    "mocha": "5.2.0",
     "mocha-lcov-reporter": "1.3.0",
     "nock": "9.3.3",
     "ps-node": "0.1.6",
