@@ -205,7 +205,7 @@ Traditionally, Sphinx only supported the [reStructuredText][] format. Thanks to 
 There are some extensions hooked into the build process of [Sphinx][], modifying how the documents are processed. They're written in Node.js, because:
 
 - It's better to have them in the same language as Dredd.
-- This way they're able to import source files (e.g. `src/options.coffee`).
+- This way they're able to import source files (e.g. `src/options.js`).
 
 <!-- To display the Hercule syntax, escaping is needed, because this document itself gets processed by Hercule. But escaping by backslashes doesn't work inside Markdown code blocks, so manual <code> element is added. -->
 
