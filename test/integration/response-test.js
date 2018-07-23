@@ -303,7 +303,9 @@ const Dredd = require('../../src/dredd');
   describe(`Working with binary responses in the ${apiDescription.name}`, () => {
     const imagePath = path.join(__dirname, '../fixtures/image.png');
     const app = createServer();
-    app.get('/image.png', (req, res) => res.type('image/png').sendFile(imagePath));
+    app.get('/image.png', (req, res) =>
+      res.type('image/png').sendFile(imagePath)
+    );
 
     describe('when the body is described as empty and there are hooks to remove the real body', () => {
       let runtimeInfo;
@@ -346,5 +348,42 @@ const Dredd = require('../../src/dredd');
         assert.deepInclude(runtimeInfo.dredd.stats, { tests: 1, passes: 1 })
       );
     });
+  })
+);
+
+[
+  {
+    name: 'API Blueprint',
+    path: './test/fixtures/response/binary-invalid-utf8.apib'
+  },
+  {
+    name: 'Swagger',
+    path: './test/fixtures/response/binary-invalid-utf8.yaml'
+  }
+].forEach(apiDescription =>
+  describe(`Working with binary responses, which are not valid UTF-8, in the ${apiDescription.name}`, () => {
+    let runtimeInfo;
+
+    before((done) => {
+      const app = createServer();
+      app.get('/binary', (req, res) =>
+        res.type('application/octet-stream').send(Buffer.from([0xFF, 0xEF, 0xBF, 0xBE]))
+      );
+
+      const dredd = new Dredd({
+        options: {
+          path: apiDescription.path,
+          hookfiles: './test/fixtures/response/binary-invalid-utf8-hooks.js'
+        }
+      });
+      runDreddWithServer(dredd, app, (err, info) => {
+        runtimeInfo = info;
+        done(err);
+      });
+    });
+
+    it('evaluates the response as valid', () =>
+      assert.deepInclude(runtimeInfo.dredd.stats, { tests: 1, passes: 1 })
+    );
   })
 );

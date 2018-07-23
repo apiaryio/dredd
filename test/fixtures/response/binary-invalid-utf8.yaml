@@ -1,0 +1,19 @@
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: Images API
+schemes:
+  - http
+produces:
+  - application/octet-stream
+paths:
+  /binary:
+    get:
+      responses:
+        200:
+          description: Representation
+          examples:
+            "application/octet-stream": ""
+          schema:
+            type: string
+            format: binary
