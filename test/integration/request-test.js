@@ -1,5 +1,7 @@
 const bodyParser = require('body-parser');
 const { assert } = require('chai');
+const fs = require('fs');
+const path = require('path');
 
 const { runDreddWithServer, createServer } = require('./helpers');
 const Dredd = require('../../src/dredd');
@@ -152,3 +154,93 @@ describe('Sending \'text/plain\' request', () => {
     assert.equal(runtimeInfo.dredd.stats.passes, 1);
   });
 });
+
+[
+  {
+    name: 'API Blueprint',
+    path: './test/fixtures/request/application-octet-stream.apib'
+  },
+  {
+    name: 'Swagger',
+    path: './test/fixtures/request/application-octet-stream.yaml'
+  }
+].forEach(apiDescription =>
+  describe(`Sending 'application/octet-stream' request described in ${apiDescription.name}`, () => {
+    let runtimeInfo;
+    const contentType = 'application/octet-stream';
+
+    before((done) => {
+      const app = createServer({ bodyParser: bodyParser.raw({ type: contentType }) });
+      app.post('/binary', (req, res) => res.json({ test: 'OK' }));
+
+      const dredd = new Dredd({
+        options: {
+          path: apiDescription.path,
+          hookfiles: './test/fixtures/request/application-octet-stream-hooks.js'
+        }
+      });
+      runDreddWithServer(dredd, app, (err, info) => {
+        runtimeInfo = info;
+        done(err);
+      });
+    });
+
+    it('results in one request being delivered to the server', () => assert.isTrue(runtimeInfo.server.requestedOnce));
+    it('the request has the expected Content-Type', () => assert.equal(runtimeInfo.server.lastRequest.headers['content-type'], contentType));
+    it('the request has the expected format', () =>
+      assert.equal(
+        runtimeInfo.server.lastRequest.body.toString(),
+        Buffer.from([0xFF, 0xEF, 0xBF, 0xBE]).toString()
+      )
+    );
+    it('results in one passing test', () => {
+      assert.equal(runtimeInfo.dredd.stats.tests, 1);
+      assert.equal(runtimeInfo.dredd.stats.passes, 1);
+    });
+  })
+);
+
+[
+  {
+    name: 'API Blueprint',
+    path: './test/fixtures/request/image-png.apib'
+  },
+  {
+    name: 'Swagger',
+    path: './test/fixtures/request/image-png.yaml'
+  }
+].forEach(apiDescription =>
+  describe(`Sending 'image/png' request described in ${apiDescription.name}`, () => {
+    let runtimeInfo;
+    const contentType = 'image/png';
+
+    before((done) => {
+      const app = createServer({ bodyParser: bodyParser.raw({ type: contentType }) });
+      app.put('/image.png', (req, res) => res.json({ test: 'OK' }));
+
+      const dredd = new Dredd({
+        options: {
+          path: apiDescription.path,
+          hookfiles: './test/fixtures/request/image-png-hooks.js'
+        }
+      });
+      runDreddWithServer(dredd, app, (err, info) => {
+        runtimeInfo = info;
+        done(err);
+      });
+    });
+
+    it('results in one request being delivered to the server', () => assert.isTrue(runtimeInfo.server.requestedOnce));
+    it('the request has the expected Content-Type', () => assert.equal(runtimeInfo.server.lastRequest.headers['content-type'], contentType));
+    it('the request has the expected format', () =>
+      assert.equal(
+        runtimeInfo.server.lastRequest.body.toString(),
+        fs.readFileSync(path.join(__dirname, '../fixtures/image.png')).toString()
+      )
+    );
+    it('results in one passing test', () => {
+      assert.equal(runtimeInfo.dredd.stats.tests, 1);
+      assert.equal(runtimeInfo.dredd.stats.passes, 1);
+    });
+  })
+);
