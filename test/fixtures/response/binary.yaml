@@ -14,6 +14,3 @@ paths:
           description: Representation
           examples:
             "image/png": ""
-          schema:
-            type: string
-            format: binary
