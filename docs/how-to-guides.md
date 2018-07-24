@@ -523,6 +523,38 @@ Most of the authentication schemes use HTTP header for carrying the authenticati
 :[Swagger example](../test/fixtures/request/application-x-www-form-urlencoded.yaml)
 ```
 
+## Working with Images and other Binary Bodies
+
+The API description formats generally do not provide a way to describe binary content. The easiest solution is to describe only the media type, to [leave out the body](how-it-works.md#empty-response-body), and to handle the rest using [hooks](hooks.md).
+
+### API Blueprint
+
+```apiblueprint
+:[API Blueprint example](../test/fixtures/response/binary.apib)
+```
+
+### Swagger
+
+```yaml
+:[Swagger example](../test/fixtures/response/binary.yaml)
+```
+
+> **Note:** Do not use the explicit `binary` or `bytes` formats with response bodies, as Dredd is not able to properly work with those ([fury-adapter-swagger#193](https://github.com/apiaryio/fury-adapter-swagger/issues/193)).
+
+### Hooks
+
+In hooks, you can either assert the body:
+
+```javascript
+:[Hooks example](../test/fixtures/response/binary-assert-body-hooks.js)
+```
+
+Or you can ignore it:
+
+```javascript
+:[Hooks example](../test/fixtures/response/binary-ignore-body-hooks.js)
+```
+
 ## Multiple Requests and Responses
 
 > **Note:** For details on this topic see also [How Dredd Works With HTTP Transactions](how-it-works.md#choosing-http-transactions).
