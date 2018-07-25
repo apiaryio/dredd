@@ -14,8 +14,7 @@ describe('Sending \'application/json\' request', () => {
     const app = createServer({ bodyParser: bodyParser.text({ type: contentType }) });
     app.post('/data', (req, res) => res.json({ test: 'OK' }));
 
-    const path = './test/fixtures/request/application-json.apib';
-    const dredd = new Dredd({ options: { path } });
+    const dredd = new Dredd({ options: { path: './test/fixtures/request/application-json.apib' } });
 
     runDreddWithServer(dredd, app, (err, info) => {
       runtimeInfo = info;
@@ -134,11 +133,9 @@ describe('Sending \'text/plain\' request', () => {
   const contentType = 'text/plain';
 
   before((done) => {
-    const path = './test/fixtures/request/text-plain.apib';
-
     const app = createServer({ bodyParser: bodyParser.text({ type: contentType }) });
     app.post('/data', (req, res) => res.json({ test: 'OK' }));
-    const dredd = new Dredd({ options: { path } });
+    const dredd = new Dredd({ options: { path: './test/fixtures/request/text-plain.apib' } });
 
     runDreddWithServer(dredd, app, (err, info) => {
       runtimeInfo = info;
@@ -185,12 +182,16 @@ describe('Sending \'text/plain\' request', () => {
       });
     });
 
-    it('results in one request being delivered to the server', () => assert.isTrue(runtimeInfo.server.requestedOnce));
-    it('the request has the expected Content-Type', () => assert.equal(runtimeInfo.server.lastRequest.headers['content-type'], contentType));
+    it('results in one request being delivered to the server', () =>
+      assert.isTrue(runtimeInfo.server.requestedOnce)
+    );
+    it('the request has the expected Content-Type', () =>
+      assert.equal(runtimeInfo.server.lastRequest.headers['content-type'], contentType)
+    );
     it('the request has the expected format', () =>
       assert.equal(
-        runtimeInfo.server.lastRequest.body.toString(),
-        Buffer.from([0xFF, 0xEF, 0xBF, 0xBE]).toString()
+        runtimeInfo.server.lastRequest.body.toString('base64'),
+        Buffer.from([0xFF, 0xEF, 0xBF, 0xBE]).toString('base64')
       )
     );
     it('results in one passing test', () => {
@@ -230,12 +231,16 @@ describe('Sending \'text/plain\' request', () => {
       });
     });
 
-    it('results in one request being delivered to the server', () => assert.isTrue(runtimeInfo.server.requestedOnce));
-    it('the request has the expected Content-Type', () => assert.equal(runtimeInfo.server.lastRequest.headers['content-type'], contentType));
+    it('results in one request being delivered to the server', () =>
+      assert.isTrue(runtimeInfo.server.requestedOnce)
+    );
+    it('the request has the expected Content-Type', () =>
+      assert.equal(runtimeInfo.server.lastRequest.headers['content-type'], contentType)
+    );
     it('the request has the expected format', () =>
       assert.equal(
-        runtimeInfo.server.lastRequest.body.toString(),
-        fs.readFileSync(path.join(__dirname, '../fixtures/image.png')).toString()
+        runtimeInfo.server.lastRequest.body.toString('base64'),
+        fs.readFileSync(path.join(__dirname, '../fixtures/image.png')).toString('base64')
       )
     );
     it('results in one passing test', () => {

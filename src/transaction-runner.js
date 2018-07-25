@@ -560,9 +560,10 @@ Interface of the hooks functions will be unified soon across all hook functions:
     options.uri = url.format(urlObject) + transaction.fullPath;
     options.method = transaction.request.method;
     options.headers = transaction.request.headers;
-    options.body = transaction.request.body;
+    options.body = Buffer.from(transaction.request.body, transaction.request.bodyEncoding);
     options.proxy = false;
     options.followRedirect = false;
+    options.encoding = null;
     return options;
   }
 
@@ -624,8 +625,8 @@ Not performing HTTP request for '${transaction.name}'.\
   // Sets the Content-Length header. Overrides user-provided Content-Length
   // header value in case it's out of sync with the real length of the body.
   setContentLength(transaction) {
-    const { headers } = transaction.request;
-    const { body } = transaction.request;
+    const headers = transaction.request.headers;
+    const body = Buffer.from(transaction.request.body, transaction.request.bodyEncoding);
 
     const contentLengthHeaderName = caseless(headers).has('Content-Length');
     if (contentLengthHeaderName) {
@@ -656,6 +657,31 @@ the real body length is 0. Using 0 instead.\
   // An actual HTTP request, before validation hooks triggering
   // and the response validation is invoked here
   performRequestAndValidate(test, transaction, hooks, callback) {
+    if (transaction.request.body instanceof Buffer) {
+      const bodyBytes = transaction.request.body;
+
+      // TODO case insensitive check to either base64 or utf8 or error
+      if (transaction.request.bodyEncoding === 'base64') {
+        transaction.request.body = bodyBytes.toString('base64');
+      } else if (transaction.request.bodyEncoding) {
+        transaction.request.body = bodyBytes.toString();
+      } else {
+        const bodyText = bodyBytes.toString('utf8');
+        if (bodyText.includes('\ufffd')) {
+          // U+FFFD is a replacement character in UTF-8 and indicates there
+          // are some bytes which could not been translated as UTF-8. Therefore
+          // let's assume the body is in binary format. Transferring raw bytes
+          // over the Dredd hooks interface (JSON over TCP) is a mess, so let's
+          // encode it as Base64
+          transaction.request.body = bodyBytes.toString('base64');
+          transaction.request.bodyEncoding = 'base64';
+        } else {
+          transaction.request.body = bodyText;
+          transaction.request.bodyEncoding = 'utf8';
+        }
+      }
+    }
+
     if (transaction.request.body && this.isMultipart(transaction.request.headers)) {
       transaction.request.body = this.fixApiBlueprintMultipartBody(transaction.request.body);
     }
@@ -663,7 +689,7 @@ the real body length is 0. Using 0 instead.\
     this.setContentLength(transaction);
     const requestOptions = this.getRequestOptionsFromTransaction(transaction);
 
-    const handleRequest = (err, res, body) => {
+    const handleRequest = (err, res, bodyBytes) => {
       if (err) {
         logger.debug('Requesting tested server errored:', `${err}` || err.code);
         test.title = transaction.id;
@@ -681,8 +707,20 @@ the real body length is 0. Using 0 instead.\
         headers: res.headers
       };
 
-      if (body) {
-        transaction.real.body = body;
+      if (bodyBytes) {
+        const bodyText = bodyBytes.toString('utf8');
+        if (bodyText.includes('\ufffd')) {
+          // U+FFFD is a replacement character in UTF-8 and indicates there
+          // are some bytes which could not been translated as UTF-8. Therefore
+          // let's assume the body is in binary format. Transferring raw bytes
+          // over the Dredd hooks interface (JSON over TCP) is a mess, so let's
+          // encode it as Base64
+          transaction.real.body = bodyBytes.toString('base64');
+          transaction.real.bodyEncoding = 'base64';
+        } else {
+          transaction.real.body = bodyText;
+          transaction.real.bodyEncoding = 'utf8';
+        }
       } else if (transaction.expected.body) {
         // Leaving body as undefined skips its validation completely. In case
         // there is no real body, but there is one expected, the empty string
