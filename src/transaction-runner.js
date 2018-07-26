@@ -1,10 +1,8 @@
 const async = require('async');
-const caseless = require('caseless');
 const chai = require('chai');
 const clone = require('clone');
 const gavel = require('gavel');
 const os = require('os');
-const requestLib = require('request');
 const url = require('url');
 const { Pitboss } = require('pitboss-ng');
 
@@ -12,6 +10,8 @@ const addHooks = require('./add-hooks');
 const logger = require('./logger');
 const packageData = require('./../package.json');
 const sortTransactions = require('./sort-transactions');
+const performRequest = require('./performRequest');
+
 
 function headersArrayToObject(arr) {
   return Array.from(arr).reduce((result, currentItem) => {
@@ -549,24 +549,6 @@ Interface of the hooks functions will be unified soon across all hook functions:
     this.error = this.error || error;
   }
 
-  getRequestOptionsFromTransaction(transaction) {
-    const urlObject = {
-      protocol: transaction.protocol,
-      hostname: transaction.host,
-      port: transaction.port
-    };
-
-    const options = clone(this.configuration.http || {});
-    options.uri = url.format(urlObject) + transaction.fullPath;
-    options.method = transaction.request.method;
-    options.headers = transaction.request.headers;
-    options.body = Buffer.from(transaction.request.body, transaction.request.bodyEncoding);
-    options.proxy = false;
-    options.followRedirect = false;
-    options.encoding = null;
-    return options;
-  }
-
   // This is actually doing more some pre-flight and conditional skipping of
   // the transcation based on the configuration or hooks. TODO rename
   executeTransaction(transaction, hooks, callback) {
@@ -622,106 +604,70 @@ Not performing HTTP request for '${transaction.name}'.\
     this.performRequestAndValidate(test, transaction, hooks, callback);
   }
 
-  // Sets the Content-Length header. Overrides user-provided Content-Length
-  // header value in case it's out of sync with the real length of the body.
-  setContentLength(transaction) {
-    const headers = transaction.request.headers;
-    const body = Buffer.from(transaction.request.body, transaction.request.bodyEncoding);
-
-    const contentLengthHeaderName = caseless(headers).has('Content-Length');
-    if (contentLengthHeaderName) {
-      const contentLengthValue = parseInt(headers[contentLengthHeaderName], 10);
-
-      if (body) {
-        const calculatedContentLengthValue = Buffer.byteLength(body);
-        if (contentLengthValue !== calculatedContentLengthValue) {
-          logger.warn(`\
-Specified Content-Length header is ${contentLengthValue}, but \
-the real body length is ${calculatedContentLengthValue}. Using \
-${calculatedContentLengthValue} instead.\
-`);
-          headers[contentLengthHeaderName] = calculatedContentLengthValue;
-        }
-      } else if (contentLengthValue !== 0) {
-        logger.warn(`\
-Specified Content-Length header is ${contentLengthValue}, but \
-the real body length is 0. Using 0 instead.\
-`);
-        headers[contentLengthHeaderName] = 0;
-      }
-    } else {
-      headers['Content-Length'] = body ? Buffer.byteLength(body) : 0;
-    }
-  }
-
   // An actual HTTP request, before validation hooks triggering
   // and the response validation is invoked here
   performRequestAndValidate(test, transaction, hooks, callback) {
-    if (transaction.request.body instanceof Buffer) {
-      const bodyBytes = transaction.request.body;
+    // TODO
+    // if (transaction.request.body && this.isMultipart(transaction.request.headers)) {
+    //   transaction.request.body = this.fixApiBlueprintMultipartBody(transaction.request.body);
+    // }
 
-      // TODO case insensitive check to either base64 or utf8 or error
-      if (transaction.request.bodyEncoding === 'base64') {
-        transaction.request.body = bodyBytes.toString('base64');
-      } else if (transaction.request.bodyEncoding) {
-        transaction.request.body = bodyBytes.toString();
-      } else {
-        const bodyText = bodyBytes.toString('utf8');
-        if (bodyText.includes('\ufffd')) {
-          // U+FFFD is a replacement character in UTF-8 and indicates there
-          // are some bytes which could not been translated as UTF-8. Therefore
-          // let's assume the body is in binary format. Transferring raw bytes
-          // over the Dredd hooks interface (JSON over TCP) is a mess, so let's
-          // encode it as Base64
-          transaction.request.body = bodyBytes.toString('base64');
-          transaction.request.bodyEncoding = 'base64';
-        } else {
-          transaction.request.body = bodyText;
-          transaction.request.bodyEncoding = 'utf8';
-        }
-      }
-    }
+    // Fixing API Blueprint 'multipart/form-data' bodies:
+    // https://github.com/apiaryio/api-blueprint/issues/401
+    //
+    // Only bodies coming from the API Blueprint parser need fixing (not bodies
+    // set by Dredd users in hooks) and those can only be of the UTF-8 encoding.
+    //
+    // This is a workaround of a parser bug and as such it belongs to
+    // dredd-transactions, which should take care of the differences between
+    // formats. Having the fix here means 'before*' hooks are provided with
+    // incorrect request bodies.
+    // if (isMultipart(headers)) {
+    //   body = Buffer.from(fixApiBlueprintMultipartBody(body.toString('utf-8')));
+    // }
 
-    if (transaction.request.body && this.isMultipart(transaction.request.headers)) {
-      transaction.request.body = this.fixApiBlueprintMultipartBody(transaction.request.body);
-    }
+    // /**
+    //  * Detects whether given request headers indicate the request body
+    //  * is of the 'multipart/form-data' media type.
+    //  *
+    //  * @param {Object} headers
+    //  */
+    // function isMultipart(headers) {
+    //   const contentType = caseless(headers).get('Content-Type');
+    //   return contentType ? contentType.includes('multipart') : false;
+    // }
 
-    this.setContentLength(transaction);
-    const requestOptions = this.getRequestOptionsFromTransaction(transaction);
+    // /**
+    //  * Finds newlines not preceeded by carriage returns and replaces them by
+    //  * newlines preceeded by carriage returns.
+    //  *
+    //  * See https://github.com/apiaryio/api-blueprint/issues/401
+    //  *
+    //  * @param {String} body
+    //  */
+    // function fixApiBlueprintMultipartBody(body) {
+    //   return body.replace(/\r?\n/g, '\r\n');
+    // }
 
-    const handleRequest = (err, res, bodyBytes) => {
-      if (err) {
-        logger.debug('Requesting tested server errored:', `${err}` || err.code);
+    const uri = url.format({
+      protocol: transaction.protocol,
+      hostname: transaction.host,
+      port: transaction.port
+    }) + transaction.fullPath;
+    const options = { http: this.configuration.http };
+
+    performRequest(uri, transaction.request, options, (error, real) => {
+      if (error) {
+        logger.debug('Requesting tested server errored:', error);
         test.title = transaction.id;
         test.expected = transaction.expected;
         test.request = transaction.request;
-        this.emitError(err, test);
+        this.emitError(error, test);
         return callback();
       }
+      transaction.real = real;
 
-      logger.verbose('Handling HTTP response from tested server');
-
-      // The data models as used here must conform to Gavel.js as defined in 'http-response.coffee'
-      transaction.real = {
-        statusCode: res.statusCode,
-        headers: res.headers
-      };
-
-      if (bodyBytes) {
-        const bodyText = bodyBytes.toString('utf8');
-        if (bodyText.includes('\ufffd')) {
-          // U+FFFD is a replacement character in UTF-8 and indicates there
-          // are some bytes which could not been translated as UTF-8. Therefore
-          // let's assume the body is in binary format. Transferring raw bytes
-          // over the Dredd hooks interface (JSON over TCP) is a mess, so let's
-          // encode it as Base64
-          transaction.real.body = bodyBytes.toString('base64');
-          transaction.real.bodyEncoding = 'base64';
-        } else {
-          transaction.real.body = bodyText;
-          transaction.real.bodyEncoding = 'utf8';
-        }
-      } else if (transaction.expected.body) {
+      if (!transaction.real.body && transaction.expected.body) {
         // Leaving body as undefined skips its validation completely. In case
         // there is no real body, but there is one expected, the empty string
         // ensures Gavel does the validation.
@@ -739,27 +685,7 @@ the real body length is 0. Using 0 instead.\
           this.validateTransaction(test, transaction, callback);
         });
       });
-    };
-
-    try {
-      this.performRequest(requestOptions, handleRequest);
-    } catch (error) {
-      logger.debug('Requesting tested server errored:', error);
-      test.title = transaction.id;
-      test.expected = transaction.expected;
-      test.request = transaction.request;
-      this.emitError(error, test);
-      callback();
-    }
-  }
-
-  performRequest(options, callback) {
-    const protocol = options.uri.split(':')[0].toUpperCase();
-    logger.verbose(`\
-About to perform an ${protocol} request to the server \
-under test: ${options.method} ${options.uri}\
-`);
-    requestLib(options, callback);
+    });
   }
 
   validateTransaction(test, transaction, callback) {
@@ -858,22 +784,6 @@ include a message body: https://tools.ietf.org/html/rfc7231#section-6.3\
         callback();
       });
     });
-  }
-
-  isMultipart(headers) {
-    const contentType = caseless(headers).get('Content-Type');
-    if (contentType) {
-      return contentType.indexOf('multipart') > -1;
-    }
-    return false;
-  }
-
-  // Finds newlines not preceeded by carriage returns and replaces them by
-  // newlines preceeded by carriage returns.
-  //
-  // See https://github.com/apiaryio/api-blueprint/issues/401
-  fixApiBlueprintMultipartBody(body) {
-    return body.replace(/\r?\n/g, '\r\n');
   }
 }
 

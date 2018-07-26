@@ -1,0 +1,123 @@
+const sinon = require('sinon');
+const { assert } = require('chai');
+
+const { setContentLength } = require('../../../src/perform-request');
+
+
+describe('performRequest.setContentLength()', () => {
+  let headers;
+
+  const logger = { warn: sinon.spy() };
+  beforeEach(() => logger.warn.reset());
+
+  describe('when there is no body and no Content-Length', () => {
+    beforeEach(() => {
+      headers = setContentLength({}, Buffer.from(''), { logger });
+    });
+
+    it('does not warn', () =>
+      assert.isFalse(logger.warn.called)
+    );
+    it('has the Content-Length header set to 0', () =>
+      assert.deepPropertyVal(headers, 'Content-Length', '0')
+    );
+  });
+
+  describe('when there is no body and the Content-Length is set to 0', () => {
+    beforeEach(() => {
+      headers = setContentLength({
+        'Content-Length': '0'
+      }, Buffer.from(''), { logger });
+    });
+
+    it('does not warn', () =>
+      assert.isFalse(logger.warn.called)
+    );
+    it('has the Content-Length header set to 0', () =>
+      assert.deepPropertyVal(headers, 'Content-Length', '0')
+    );
+  });
+
+  describe('when there is body and the Content-Length is not set', () => {
+    beforeEach(() => {
+      headers = setContentLength({}, Buffer.from('abcd'), { logger });
+    });
+
+    it('does not warn', () =>
+      assert.isFalse(logger.warn.called)
+    );
+    it('has the Content-Length header set to 4', () =>
+      assert.deepPropertyVal(headers, 'Content-Length', '4')
+    );
+  });
+
+  describe('when there is body and the Content-Length is correct', () => {
+    beforeEach(() => {
+      headers = setContentLength({
+        'Content-Length': '4'
+      }, Buffer.from('abcd'), { logger });
+    });
+
+    it('does not warn', () =>
+      assert.isFalse(logger.warn.called)
+    );
+    it('has the Content-Length header set to 4', () =>
+      assert.deepPropertyVal(headers, 'Content-Length', '4')
+    );
+  });
+
+  describe('when there is no body and the Content-Length is wrong', () => {
+    beforeEach(() => {
+      headers = setContentLength({
+        'Content-Length': '42'
+      }, Buffer.from(''), { logger });
+    });
+
+    it('warns about the discrepancy', () =>
+      assert.match(logger.warn.lastCall.args[0], /but the real body length is/)
+    );
+    it('has the Content-Length header set to 0', () =>
+      assert.deepPropertyVal(headers, 'Content-Length', '0')
+    );
+  });
+
+  describe('when there is body and the Content-Length is wrong', () => {
+    beforeEach(() => {
+      headers = setContentLength({
+        'Content-Length': '42'
+      }, Buffer.from('abcd'), { logger });
+    });
+
+    it('warns about the discrepancy', () =>
+      assert.match(logger.warn.lastCall.args[0], /but the real body length is/)
+    );
+    it('has the Content-Length header set to 4', () =>
+      assert.deepPropertyVal(headers, 'Content-Length', '4')
+    );
+  });
+
+  describe('when the existing header name has unusual casing', () => {
+    beforeEach(() => {
+      headers = setContentLength({
+        'CoNtEnT-lEnGtH': '4'
+      }, Buffer.from('abcd'), { logger });
+    });
+
+    it('has the CoNtEnT-lEnGtH header set to 4', () =>
+      assert.deepEqual(headers, { 'CoNtEnT-lEnGtH': '4' })
+    );
+  });
+
+  describe('when there are modifications to the headers', () => {
+    const originalHeaders = {};
+
+    beforeEach(() => {
+      headers = setContentLength(originalHeaders, Buffer.from('abcd'), { logger });
+    });
+
+    it('does not modify the original headers object', () => {
+      assert.deepEqual(originalHeaders, {});
+      assert.deepEqual(headers, { 'Content-Length': '4' });
+    });
+  });
+});
