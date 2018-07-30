@@ -165,6 +165,9 @@ const fixtures = {
   httpHeadersMultiple: fixture({
     apiBlueprint: fromFile('./api-blueprint/http-headers-multiple.apib')
   }),
+  multipartFormData: fixture({
+    apiBlueprint: fromFile('./api-blueprint/multipart-form-data.apib')
+  }),
 
   // Specific to Swagger
   produces: fixture({
