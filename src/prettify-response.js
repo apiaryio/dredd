@@ -1,6 +1,6 @@
 const html = require('html');
 
-const logger = require('./logger');
+const logger = require('./reporters/logger');
 
 module.exports = function prettifyResponse(response) {
   let contentType;

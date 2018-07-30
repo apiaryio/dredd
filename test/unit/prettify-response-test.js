@@ -1,7 +1,7 @@
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const loggerStub = require('../../src/logger');
+const loggerStub = require('../../src/reporters/logger');
 const prettifyResponse = require('../../src/prettify-response');
 
 describe('prettifyResponse(response)', () => {

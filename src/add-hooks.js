@@ -7,7 +7,7 @@ const proxyquire = require('proxyquire').noCallThru();
 
 const Hooks = require('./hooks');
 const HooksWorkerClient = require('./hooks-worker-client');
-const logger = require('./logger');
+const logger = require('./reporters/logger');
 const mergeSandboxedHooks = require('./merge-sandboxed-hooks');
 const resolveHookfiles = require('./resolve-hookfiles');
 const sandboxHooksCode = require('./sandbox-hooks-code');

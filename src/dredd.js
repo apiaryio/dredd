@@ -8,7 +8,7 @@ const url = require('url');
 const configureReporters = require('./configure-reporters');
 const dreddTransactions = require('dredd-transactions');
 const handleRuntimeProblems = require('./handle-runtime-problems');
-const logger = require('./logger');
+const logger = require('./reporters/logger');
 const Runner = require('./transaction-runner');
 const { applyConfiguration } = require('./configuration');
 

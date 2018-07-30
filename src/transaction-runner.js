@@ -9,7 +9,7 @@ const url = require('url');
 const { Pitboss } = require('pitboss-ng');
 
 const addHooks = require('./add-hooks');
-const logger = require('./logger');
+const logger = require('./reporters/logger');
 const packageData = require('./../package.json');
 const sortTransactions = require('./sort-transactions');
 

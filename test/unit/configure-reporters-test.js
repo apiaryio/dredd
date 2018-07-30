@@ -9,7 +9,7 @@ const { assert } = require('chai');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire').noCallThru();
 
-const loggerStub = require('../../src/logger');
+const loggerStub = require('../../src/reporters/logger');
 const BaseReporterStub = sinon.spy(require('../../src/reporters/base-reporter'));
 const XUnitReporterStub = sinon.spy(require('../../src/reporters/x-unit-reporter'));
 const CliReporterStub = sinon.spy(require('../../src/reporters/cli-reporter'));
@@ -22,7 +22,7 @@ const ApiaryReporterStub = sinon.spy(require('../../src/reporters/apiary-reporte
 const emitterStub = new EventEmitter();
 
 const configureReporters = proxyquire('../../src/configure-reporters', {
-  './logger': loggerStub,
+  './reporters/logger': loggerStub,
   './reporters/base-reporter': BaseReporterStub,
   './reporters/x-unit-reporter': XUnitReporterStub,
   './reporters/cli-reporter': CliReporterStub,

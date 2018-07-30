@@ -6,7 +6,7 @@ const proxyquire = require('proxyquire').noCallThru();
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const loggerStub = require('../../src/logger');
+const loggerStub = require('../../src/reporters/logger');
 
 const PORT = 9876;
 
@@ -16,17 +16,17 @@ let stderr = '';
 let stdout = '';
 
 const addHooksStub = proxyquire('../../src/add-hooks', {
-  './logger': loggerStub
+  './reporters/logger': loggerStub
 });
 
 const transactionRunner = proxyquire('../../src/transaction-runner', {
   './add-hooks': addHooksStub,
-  './logger': loggerStub
+  './reporters/logger': loggerStub
 });
 
 const Dredd = proxyquire('../../src/dredd', {
   './transaction-runner': transactionRunner,
-  './logger': loggerStub
+  './reporters/logger': loggerStub
 });
 
 function execCommand(options = {}, cb) {

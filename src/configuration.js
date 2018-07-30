@@ -1,7 +1,7 @@
 const clone = require('clone');
 const { EventEmitter } = require('events');
 
-const logger = require('./logger');
+const logger = require('./reporters/logger');
 
 function coerceToArray(value) {
   if (Array.isArray(value)) {

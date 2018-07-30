@@ -2,10 +2,10 @@ const proxyquire = require('proxyquire').noCallThru();
 const { assert } = require('chai');
 const { EventEmitter } = require('events');
 
-const loggerStub = require('../../../src/logger');
+const loggerStub = require('../../../src/reporters/logger');
 
 const BaseReporter = proxyquire('../../../src/reporters/base-reporter', {
-  './../logger': loggerStub
+  './logger': loggerStub
 });
 
 describe('BaseReporter', () => {

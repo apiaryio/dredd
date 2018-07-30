@@ -3,10 +3,10 @@ const sinon = require('sinon');
 const { assert } = require('chai');
 const { EventEmitter } = require('events');
 
-const loggerStub = require('../../../src/logger');
+const loggerStub = require('../../../src/reporters/logger');
 
 const CliReporter = proxyquire('../../../src/reporters/cli-reporter', {
-  './../logger': loggerStub
+  './logger': loggerStub
 });
 
 describe('CliReporter', () => {

@@ -6,10 +6,10 @@ const { assert } = require('chai');
 const { EventEmitter } = require('events');
 
 const blueprintData = require('../../fixtures/blueprint-data');
-const loggerStub = require('../../../src/logger');
+const loggerStub = require('../../../src/reporters/logger');
 
 const ApiaryReporter = proxyquire('../../../src/reporters/apiary-reporter', {
-  './../logger': loggerStub
+  './logger': loggerStub
 });
 
 const PORT = 9876;

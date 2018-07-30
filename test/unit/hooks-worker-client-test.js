@@ -8,7 +8,7 @@ const { assert } = require('chai');
 const { EventEmitter } = require('events');
 
 const whichStub = require('../../src/which');
-const loggerStub = require('../../src/logger');
+const loggerStub = require('../../src/reporters/logger');
 
 const Hooks = require('../../src/hooks');
 const commandLineOptions = require('../../src/options');
@@ -30,7 +30,7 @@ const logLevels = ['error', 'log', 'info', 'warn'];
 const HooksWorkerClient = proxyquire('../../src/hooks-worker-client', {
   'cross-spawn': crossSpawnStub,
   './which': whichStub,
-  './logger': loggerStub
+  './reporters/logger': loggerStub
 });
 
 const TransactionRunner = require('../../src/transaction-runner');

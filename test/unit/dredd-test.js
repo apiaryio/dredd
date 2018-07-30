@@ -1,7 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const fsStub = require('fs');
-const loggerStub = require('../../src/logger');
+const loggerStub = require('../../src/reporters/logger');
 const proxyquire = require('proxyquire').noCallThru();
 const requestStub = require('request');
 const sinon = require('sinon');
@@ -13,7 +13,7 @@ const Dredd = proxyquire('../../src/dredd', {
   request: requestStub,
   'dredd-transactions': dreddTransactionsStub,
   fs: fsStub,
-  './logger': loggerStub
+  './reporters/logger': loggerStub
 });
 
 describe('Dredd class', () => {

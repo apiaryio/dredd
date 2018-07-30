@@ -7,7 +7,7 @@ const { assert } = require('chai');
 
 const configUtilsStub = require('../../src/config-utils');
 const interactiveConfigStub = require('../../src/interactive-config');
-const loggerStub = require('../../src/logger');
+const loggerStub = require('../../src/reporters/logger');
 const options = require('../../src/options');
 const packageData = require('../../package.json');
 
@@ -19,23 +19,23 @@ let stderr = '';
 let stdout = '';
 
 const addHooksStub = proxyquire('../../src/add-hooks', {
-  './logger': loggerStub
+  './reporters/logger': loggerStub
 });
 
 const transactionRunner = proxyquire('../../src/transaction-runner', {
   './add-hooks': addHooksStub,
-  './logger': loggerStub
+  './reporters/logger': loggerStub
 });
 
 const DreddStub = proxyquire('../../src/dredd', {
   './transaction-runner': transactionRunner,
-  './logger': loggerStub
+  './reporters/logger': loggerStub
 });
 
 const CLIStub = proxyquire('../../src/cli', {
   './dredd': DreddStub,
   console: loggerStub,
-  './logger': loggerStub,
+  './reporters/logger': loggerStub,
   './interactive-config': interactiveConfigStub,
   './config-utils': configUtilsStub,
   fs: fsStub,

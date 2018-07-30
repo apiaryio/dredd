@@ -4,10 +4,10 @@ const { assert } = require('chai');
 
 const dreddTransactions = require('dredd-transactions');
 
-const logger = require('../../src/logger');
+const logger = require('../../src/reporters/logger');
 
 const handleRuntimeProblems = proxyquire('../../src/handle-runtime-problems',
-  { './logger': logger }
+  { './reporters/logger': logger }
 );
 
 function prepareData(apiDescriptionDocument, filename, done) {

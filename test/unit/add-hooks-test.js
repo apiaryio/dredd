@@ -6,7 +6,7 @@ const proxyquire = require('proxyquire');
 const proxyquireStub = require('proxyquire');
 const { assert } = require('chai');
 
-const loggerStub = require('../../src/logger');
+const loggerStub = require('../../src/reporters/logger');
 const hooksStub = require('../../src/hooks');
 const hooksWorkerClientStub = require('../../src/hooks-worker-client');
 

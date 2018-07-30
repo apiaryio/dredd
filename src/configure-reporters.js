@@ -7,7 +7,7 @@ const MarkdownReporter = require('./reporters/markdown-reporter');
 const NyanCatReporter = require('./reporters/nyan-reporter');
 const XUnitReporter = require('./reporters/x-unit-reporter');
 
-const logger = require('./logger');
+const logger = require('./reporters/logger');
 
 const fileReporters = [
   'xunit',

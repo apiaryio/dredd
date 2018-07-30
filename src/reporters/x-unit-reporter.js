@@ -7,7 +7,7 @@ const file = require('file');
 const fsExtra = require('fs-extra');
 const pathmodule = require('path');
 
-const logger = require('./../logger');
+const logger = require('./logger');
 const prettifyResponse = require('./../prettify-response');
 
 function XUnitReporter(emitter, stats, tests, path, details) {

@@ -1,6 +1,6 @@
 const tty = require('tty');
 
-const logger = require('./../logger');
+const logger = require('./logger');
 const prettifyResponse = require('./../prettify-response');
 
 function NyanCatReporter(emitter, stats, tests) {

@@ -9,7 +9,7 @@ const configUtils = require('./config-utils');
 const Dredd = require('./dredd');
 const ignorePipeErrors = require('./ignore-pipe-errors');
 const interactiveConfig = require('./interactive-config');
-const logger = require('./logger');
+const logger = require('./reporters/logger');
 const { applyLoggingOptions } = require('./configuration');
 const { spawn } = require('./child-process');
 

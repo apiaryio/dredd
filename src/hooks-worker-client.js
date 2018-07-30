@@ -5,7 +5,7 @@ const spawnArgs = require('spawn-args');
 const { EventEmitter } = require('events');
 
 const getGoBin = require('./get-go-bin');
-const logger = require('./logger');
+const logger = require('./reporters/logger');
 const which = require('./which');
 const { spawn } = require('./child-process');
 
