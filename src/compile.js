@@ -16,8 +16,8 @@ function findRelevantTransactions(mediaType, apiElements) {
       //
       // This is very specific to API Blueprint and to backwards compatibility
       // of Dredd. There's a plan to migrate to so-called "transaction paths"
-      // in the future (apiaryio/dredd#227), which won't use the concept
-      // of transaction examples anymore.
+      // in the future (https://github.com/apiaryio/dredd/issues/227), which
+      // won't use the concept of transaction examples anymore.
       const transactionExampleNumbers = detectTransactionExampleNumbers(transitionElement);
       const hasMoreExamples = Math.max(...Array.from(transactionExampleNumbers || [])) > 1;
 
@@ -177,6 +177,13 @@ function compileAnnotation(annotationElement) {
   };
 }
 
+function isMultipart(message) {
+  return message.body && !!message.headers.filter(({ name, value }) =>
+    name.toLowerCase() === 'content-type'
+    && value.toLowerCase().includes('multipart')
+  ).length;
+}
+
 function compile(mediaType, apiElements, filename) {
   apiElements.freeze();
 
@@ -189,6 +196,16 @@ function compile(mediaType, apiElements, filename) {
       if (result.transaction) { transactions.push(result.transaction); }
       annotations = annotations.concat(result.annotations);
     });
+
+  if (mediaType === 'text/vnd.apiblueprint') {
+    // Fixing 'multipart/form-data' bodies coming from the API Blueprint
+    // parser: https://github.com/apiaryio/api-blueprint/issues/401
+    [].concat(...transactions.map(t => [t.request, t.response]))
+      .filter(isMultipart)
+      .forEach((r) => {
+        r.body = r.body.replace(/\r?\n/g, '\r\n'); // eslint-disable-line no-param-reassign
+      });
+  }
 
   return { mediaType, transactions, annotations };
 }
