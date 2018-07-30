@@ -641,4 +641,60 @@ describe('compile() · all API description formats', () => {
       );
     })
   );
+
+  describe('with \'multipart/form-data\' message bodies', () => {
+    fixtures.multipartFormData.forEachDescribe(({ source, format }) => {
+      let compilationResult;
+      const expectedBody = [
+        '--CUSTOM-BOUNDARY',
+        'Content-Disposition: form-data; name="text"',
+        'Content-Type: text/plain',
+        '',
+        'test equals to 42',
+        '--CUSTOM-BOUNDARY',
+        'Content-Disposition: form-data; name="json"',
+        'Content-Type: application/json',
+        '',
+        '{"test": 42}',
+        '',
+        '--CUSTOM-BOUNDARY--',
+        ''
+      ].join('\r\n');
+
+      before(done =>
+        compileFixture(source, (...args) => {
+          compilationResult = args[1];
+          done(args[0]);
+        })
+      );
+
+      it('produces no annotations and 1 transaction', () =>
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          annotations: 0,
+          transactions: 1
+        }))
+      );
+
+      context('the transaction', () => {
+        it('has the expected request body', () => {
+          // Remove the lines with Content-Type headers as Swagger doesn't
+          // support generating them for 'multipart/form-data' request bodies
+          const expectedRequestBody = format === 'Swagger'
+            ? expectedBody.split('\r\n').filter(line => !line.match(/Content-Type/)).join('\r\n')
+            : expectedBody;
+
+          assert.deepEqual(
+            compilationResult.transactions[0].request.body,
+            expectedRequestBody
+          );
+        });
+        it('has the expected response body', () =>
+          assert.deepEqual(
+            compilationResult.transactions[0].response.body,
+            expectedBody
+          )
+        );
+      });
+    });
+  });
 });

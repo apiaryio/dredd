@@ -91,6 +91,24 @@ function compileOrigin(mediaType, filename, httpTransactionElement, exampleNo) {
   };
 }
 
+function hasMultipartBody(headers) {
+  return !!headers.filter(({ name, value }) =>
+    name.toLowerCase() === 'content-type'
+    && value.toLowerCase().includes('multipart')
+  ).length;
+}
+
+function compileBody(messageBodyElement, isMultipart) {
+  if (!messageBodyElement) { return ''; }
+
+  const body = messageBodyElement.toValue() || '';
+  if (!isMultipart) { return body; }
+
+  // Fixing manually written 'multipart/form-data' bodies (API Blueprint
+  // issue: https://github.com/apiaryio/api-blueprint/issues/401)
+  return body.replace(/\r?\n/g, '\r\n');
+}
+
 function compileRequest(httpRequestElement) {
   let request;
   const { uri, annotations } = compileUri(httpRequestElement);
@@ -106,11 +124,12 @@ function compileRequest(httpRequestElement) {
   });
 
   if (uri) {
+    const headers = compileHeaders(httpRequestElement.headers);
     request = {
       method: httpRequestElement.method.toValue(),
       uri,
-      headers: compileHeaders(httpRequestElement.headers),
-      body: (httpRequestElement.messageBody ? httpRequestElement.messageBody.toValue() : undefined) || ''
+      headers,
+      body: compileBody(httpRequestElement.messageBody, hasMultipartBody(headers))
     };
   } else {
     request = null;
@@ -120,13 +139,11 @@ function compileRequest(httpRequestElement) {
 }
 
 function compileResponse(httpResponseElement) {
-  const response = {
-    status: (httpResponseElement.statusCode ? httpResponseElement.statusCode.toValue() : undefined) || '200',
-    headers: compileHeaders(httpResponseElement.headers)
-  };
+  const status = (httpResponseElement.statusCode ? httpResponseElement.statusCode.toValue() : undefined) || '200';
+  const headers = compileHeaders(httpResponseElement.headers);
+  const response = { status, headers };
 
-  const body = httpResponseElement.messageBody ?
-    httpResponseElement.messageBody.toValue() : undefined;
+  const body = compileBody(httpResponseElement.messageBody, hasMultipartBody(headers));
   if (body) { response.body = body; }
 
   const schema = httpResponseElement.messageBodySchema ?
@@ -177,13 +194,6 @@ function compileAnnotation(annotationElement) {
   };
 }
 
-function isMultipart(message) {
-  return message.body && !!message.headers.filter(({ name, value }) =>
-    name.toLowerCase() === 'content-type'
-    && value.toLowerCase().includes('multipart')
-  ).length;
-}
-
 function compile(mediaType, apiElements, filename) {
   apiElements.freeze();
 
@@ -196,16 +206,6 @@ function compile(mediaType, apiElements, filename) {
       if (result.transaction) { transactions.push(result.transaction); }
       annotations = annotations.concat(result.annotations);
     });
-
-  if (mediaType === 'text/vnd.apiblueprint') {
-    // Fixing 'multipart/form-data' bodies coming from the API Blueprint
-    // parser: https://github.com/apiaryio/api-blueprint/issues/401
-    [].concat(...transactions.map(t => [t.request, t.response]))
-      .filter(isMultipart)
-      .forEach((r) => {
-        r.body = r.body.replace(/\r?\n/g, '\r\n'); // eslint-disable-line no-param-reassign
-      });
-  }
 
   return { mediaType, transactions, annotations };
 }

@@ -136,6 +136,10 @@ const fixtures = {
     apiBlueprint: fromFile('./api-blueprint/no-schema.apib'),
     swagger: fromFile('./swagger/no-schema.yml')
   }),
+  multipartFormData: fixture({
+    apiBlueprint: fromFile('./api-blueprint/multipart-form-data.apib'),
+    swagger: fromFile('./swagger/multipart-form-data.yml')
+  }),
 
   // Specific to API Blueprint
   unrecognizable: fixture({
@@ -164,9 +168,6 @@ const fixtures = {
   }),
   httpHeadersMultiple: fixture({
     apiBlueprint: fromFile('./api-blueprint/http-headers-multiple.apib')
-  }),
-  multipartFormData: fixture({
-    apiBlueprint: fromFile('./api-blueprint/multipart-form-data.apib')
   }),
 
   // Specific to Swagger
