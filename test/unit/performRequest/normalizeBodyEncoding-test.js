@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const { normalizeBodyEncoding } = require('../../../src/perform-request');
+const { normalizeBodyEncoding } = require('../../../src/performRequest');
 
 
 describe('performRequest.normalizeBodyEncoding()', () => {

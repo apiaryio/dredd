@@ -607,48 +607,6 @@ Not performing HTTP request for '${transaction.name}'.\
   // An actual HTTP request, before validation hooks triggering
   // and the response validation is invoked here
   performRequestAndValidate(test, transaction, hooks, callback) {
-    // TODO
-    // if (transaction.request.body && this.isMultipart(transaction.request.headers)) {
-    //   transaction.request.body = this.fixApiBlueprintMultipartBody(transaction.request.body);
-    // }
-
-    // Fixing API Blueprint 'multipart/form-data' bodies:
-    // https://github.com/apiaryio/api-blueprint/issues/401
-    //
-    // Only bodies coming from the API Blueprint parser need fixing (not bodies
-    // set by Dredd users in hooks) and those can only be of the UTF-8 encoding.
-    //
-    // This is a workaround of a parser bug and as such it belongs to
-    // dredd-transactions, which should take care of the differences between
-    // formats. Having the fix here means 'before*' hooks are provided with
-    // incorrect request bodies.
-    // if (isMultipart(headers)) {
-    //   body = Buffer.from(fixApiBlueprintMultipartBody(body.toString('utf-8')));
-    // }
-
-    // /**
-    //  * Detects whether given request headers indicate the request body
-    //  * is of the 'multipart/form-data' media type.
-    //  *
-    //  * @param {Object} headers
-    //  */
-    // function isMultipart(headers) {
-    //   const contentType = caseless(headers).get('Content-Type');
-    //   return contentType ? contentType.includes('multipart') : false;
-    // }
-
-    // /**
-    //  * Finds newlines not preceeded by carriage returns and replaces them by
-    //  * newlines preceeded by carriage returns.
-    //  *
-    //  * See https://github.com/apiaryio/api-blueprint/issues/401
-    //  *
-    //  * @param {String} body
-    //  */
-    // function fixApiBlueprintMultipartBody(body) {
-    //   return body.replace(/\r?\n/g, '\r\n');
-    // }
-
     const uri = url.format({
       protocol: transaction.protocol,
       hostname: transaction.host,

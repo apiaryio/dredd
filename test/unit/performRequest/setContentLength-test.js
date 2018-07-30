@@ -1,7 +1,7 @@
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const { setContentLength } = require('../../../src/perform-request');
+const { setContentLength } = require('../../../src/performRequest');
 
 
 describe('performRequest.setContentLength()', () => {
