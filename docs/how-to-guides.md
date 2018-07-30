@@ -527,13 +527,37 @@ Most of the authentication schemes use HTTP header for carrying the authenticati
 
 The API description formats generally do not provide a way to describe binary content. The easiest solution is to describe only the media type, to [leave out the body](how-it-works.md#empty-response-body), and to handle the rest using [hooks](hooks.md).
 
-### API Blueprint
+### Binary Request Body
+
+#### API Blueprint
+
+```apiblueprint
+:[API Blueprint example](../test/fixtures/request/image-png.apib)
+```
+
+#### Swagger
+
+```yaml
+:[Swagger example](../test/fixtures/request/image-png.yaml)
+```
+
+#### Hooks
+
+In hooks, you can populate the request body with real binary data. The data must be in a form of a [Base64-encoded](https://en.wikipedia.org/wiki/Base64) string.
+
+```javascript
+:[Hooks example](../test/fixtures/request/image-png-hooks.js)
+```
+
+### Binary Response Body
+
+#### API Blueprint
 
 ```apiblueprint
 :[API Blueprint example](../test/fixtures/response/binary.apib)
 ```
 
-### Swagger
+#### Swagger
 
 ```yaml
 :[Swagger example](../test/fixtures/response/binary.yaml)

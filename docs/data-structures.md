@@ -24,6 +24,9 @@ Transaction object is passed as a first argument to [hook functions](hooks.md) a
 - fullPath: `/message` (string) - expanded [URI Template][] with parameters (if any) used for the HTTP request Dredd performs to the tested server
 - request (object) - the HTTP request Dredd performs to the tested server, taken from the API description
     - body: `Hello world!\n` (string)
+    - bodyEncoding (enum) - can be manually set in [hooks](hooks.md)
+        - `utf-8` (string) - indicates `body` contains a textual content encoded in UTF-8
+        - `base64` (string) - indicates `body` contains a binary content encoded in Base64
     - headers (object) - keys are HTTP header names, values are HTTP header contents
     - uri: `/message` (string) - request URI as it was written in API description
     - method: `POST` (string)
@@ -36,6 +39,9 @@ Transaction object is passed as a first argument to [hook functions](hooks.md) a
     - statusCode: `200` (string)
     - headers (object) - keys are HTTP header names, values are HTTP header contents
     - body (string)
+    - bodyEncoding (enum)
+        - `utf-8` (string) - indicates `body` contains a textual content encoded in UTF-8
+        - `base64` (string) - indicates `body` contains a binary content encoded in Base64
 - skip: `false` (boolean) - can be set to `true` and the transaction will be skipped
 - fail: `false` (enum) - can be set to `true` or string and the transaction will fail
     - (string) - failure message with details why the transaction failed
