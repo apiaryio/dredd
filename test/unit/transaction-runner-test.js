@@ -427,18 +427,18 @@ describe('TransactionRunner', () => {
       beforeEach(() => {
         configuration.options['dry-run'] = true;
         runner = new Runner(configuration);
-        sinon.spy(runner, 'performRequest');
+        sinon.spy(runner, 'performRequestAndValidate');
       });
 
 
       afterEach(() => {
         configuration.options['dry-run'] = false;
-        runner.performRequest.restore();
+        runner.performRequestAndValidate.restore();
       });
 
       it('should skip the tests', done =>
         runner.executeTransaction(transaction, () => {
-          assert.isOk(runner.performRequest.notCalled);
+          assert.isOk(runner.performRequestAndValidate.notCalled);
           done();
         })
       );
@@ -1237,162 +1237,6 @@ describe('TransactionRunner', () => {
           it('should return the error', () => assert.include(returnedError.message, 'after all'));
         });
       });
-    });
-  });
-
-  describe('executeTransaction(transaction, callback) multipart', () => {
-    let multiPartTransaction;
-    let notMultiPartTransaction;
-    runner = null;
-    beforeEach(() => {
-      runner = new Runner(configuration);
-      multiPartTransaction = {
-        name: 'Group Machine > Machine > Post Message> Bogus example name',
-        id: 'POST /machines/message',
-        host: '127.0.0.1',
-        port: '3000',
-        request: {
-          body: '\n--BOUNDARY \ncontent-disposition: form-data; name="mess12"\n\n{"message":"mess1"}\n--BOUNDARY\n\nContent-Disposition: form-data; name="mess2"\n\n{"message":"mess1"}\n--BOUNDARY--',
-          headers: {
-            'Content-Type': 'multipart/form-data; boundary=BOUNDARY',
-            'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)',
-            'Content-Length': 180
-          },
-          uri: '/machines/message',
-          method: 'POST'
-        },
-        expected: {
-          headers: {
-            'content-type': 'text/htm'
-          }
-        },
-        body: '',
-        status: '204',
-        origin: {
-          resourceGroupName: 'Group Machine',
-          resourceName: 'Machine',
-          actionName: 'Post Message',
-          exampleName: 'Bogus example name'
-        },
-        fullPath: '/machines/message',
-        protocol: 'http:'
-      };
-
-      notMultiPartTransaction = {
-        name: 'Group Machine > Machine > Post Message> Bogus example name',
-        id: 'POST /machines/message',
-        host: '127.0.0.1',
-        port: '3000',
-        request: {
-          body: '\n--BOUNDARY \ncontent-disposition: form-data; name="mess12"\n\n{"message":"mess1"}\n--BOUNDARY\n\nContent-Disposition: form-data; name="mess2"\n\n{"message":"mess1"}\n--BOUNDARY--',
-          headers: {
-            'Content-Type': 'text/plain',
-            'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)',
-            'Content-Length': 180
-          },
-          uri: '/machines/message',
-          method: 'POST'
-        },
-        expected: {
-          headers: {
-            'content-type': 'text/htm'
-          }
-        },
-        body: '',
-        status: '204',
-        origin: {
-          resourceGroupName: 'Group Machine',
-          resourceName: 'Machine',
-          actionName: 'Post Message',
-          exampleName: 'Bogus example name'
-        },
-        fullPath: '/machines/message',
-        protocol: 'http:'
-      };
-    });
-
-    describe('when multipart header in request', () => {
-      const parsedBody = '\r\n--BOUNDARY \r\ncontent-disposition: form-data; name="mess12"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY\r\n\r\nContent-Disposition: form-data; name="mess2"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY--';
-      beforeEach(() => {
-        server = nock('http://127.0.0.1:3000')
-          .post('/machines/message')
-          .reply(204);
-        configuration.server = 'http://127.0.0.1:3000';
-      });
-
-      afterEach(() => nock.cleanAll());
-
-      it('should replace line feed in body', done =>
-        runner.executeTransaction(multiPartTransaction, () => {
-          assert.isOk(server.isDone());
-          assert.equal(multiPartTransaction.request.body, parsedBody, 'Body');
-          assert.include(multiPartTransaction.request.body, '\r\n');
-          done();
-        })
-      );
-    });
-
-    describe('when multipart header in request is with lowercase key', () => {
-      const parsedBody = '\r\n--BOUNDARY \r\ncontent-disposition: form-data; name="mess12"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY\r\n\r\nContent-Disposition: form-data; name="mess2"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY--';
-      beforeEach(() => {
-        server = nock('http://127.0.0.1:3000')
-          .post('/machines/message')
-          .reply(204);
-        configuration.server = 'http://127.0.0.1:3000';
-
-        delete multiPartTransaction.request.headers['Content-Type'];
-        multiPartTransaction.request.headers['content-type'] = 'multipart/form-data; boundary=BOUNDARY';
-      });
-
-      afterEach(() => nock.cleanAll());
-
-      it('should replace line feed in body', done =>
-        runner.executeTransaction(multiPartTransaction, () => {
-          assert.isOk(server.isDone());
-          assert.equal(multiPartTransaction.request.body, parsedBody, 'Body');
-          assert.include(multiPartTransaction.request.body, '\r\n');
-          done();
-        })
-      );
-    });
-
-    describe('when multipart header in request, but body already has some CR (added in hooks e.g.s)', () => {
-      beforeEach(() => {
-        server = nock('http://127.0.0.1:3000')
-          .post('/machines/message')
-          .reply(204);
-        configuration.server = 'http://127.0.0.1:3000';
-        multiPartTransaction.request.body = '\r\n--BOUNDARY \r\ncontent-disposition: form-data; name="mess12"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY\r\n\r\nContent-Disposition: form-data; name="mess2"\r\n\r\n{"message":"mess1"}\r\n--BOUNDARY--';
-      });
-
-      afterEach(() => nock.cleanAll());
-
-      it('should not add CR again', done =>
-        runner.executeTransaction(multiPartTransaction, () => {
-          assert.isOk(server.isDone());
-          assert.notInclude(multiPartTransaction.request.body, '\r\r');
-          done();
-        })
-      );
-    });
-
-    describe('when multipart header is not in request', () => {
-      beforeEach(() => {
-        server = nock('http://127.0.0.1:3000')
-          .post('/machines/message')
-          .reply(204);
-        configuration.server = 'http://127.0.0.1:3000';
-      });
-
-      afterEach(() => nock.cleanAll());
-
-      it('should not include any line-feed in body', done =>
-        runner.executeTransaction(notMultiPartTransaction, () => {
-          assert.isOk(server.isDone());
-          assert.notInclude(multiPartTransaction.request.body, '\r\n');
-          done();
-        })
-      );
     });
   });
 
