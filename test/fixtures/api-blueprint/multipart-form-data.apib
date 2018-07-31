@@ -1,0 +1,39 @@
+FORMAT: 1A
+
+# Sanbox 'multipart/form-data' API
+
+# POST /data
+
++ Request (multipart/form-data; boundary=CUSTOM-BOUNDARY)
+
+    + Body
+
+            --CUSTOM-BOUNDARY
+            Content-Disposition: form-data; name="text"
+            Content-Type: text/plain
+
+            test equals to 42
+            --CUSTOM-BOUNDARY
+            Content-Disposition: form-data; name="json"
+            Content-Type: application/json
+
+            {"test": 42}
+
+            --CUSTOM-BOUNDARY--
+
++ Response 200 (multipart/form-data; boundary=CUSTOM-BOUNDARY)
+
+    + Body
+
+            --CUSTOM-BOUNDARY
+            Content-Disposition: form-data; name="text"
+            Content-Type: text/plain
+
+            test equals to 42
+            --CUSTOM-BOUNDARY
+            Content-Disposition: form-data; name="json"
+            Content-Type: application/json
+
+            {"test": 42}
+
+            --CUSTOM-BOUNDARY--
