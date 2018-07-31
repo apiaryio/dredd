@@ -3,7 +3,7 @@ const { assert } = require('chai');
 const parsePath = require('../../../src/transaction-path/parse-path');
 const { ESCAPE_CHAR, DELIMITER } = require('../../../src/transaction-path/constants');
 
-describe('parsePath', () => {
+describe('parsePath()', () => {
   it('should be a function', () => assert.isFunction(parsePath));
 
   it('should return an array', () => assert.isArray(parsePath(`${DELIMITER}${DELIMITER}${DELIMITER}${DELIMITER}`)));

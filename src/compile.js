@@ -210,4 +210,9 @@ function compile(mediaType, apiElements, filename) {
   return { mediaType, transactions, annotations };
 }
 
+
+compile.compileBody = compileBody;
+compile.hasMultipartBody = hasMultipartBody;
+
+
 module.exports = compile;

@@ -5,7 +5,7 @@ const parsePath = require('../../../src/transaction-path/parse-path');
 
 const { ESCAPE_CHAR, DELIMITER } = require('../../../src/transaction-path/constants');
 
-describe('parsedPathToOrigin', () => {
+describe('parsedPathToOrigin()', () => {
   it('is a function', () => assert.isFunction(parsedPathToOrigin));
 
   describe('path compilation', () => {
