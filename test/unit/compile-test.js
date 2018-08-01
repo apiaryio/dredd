@@ -1,6 +1,9 @@
 const { assert } = require('chai');
 
-const { compileBody, hasMultipartBody } = require('../../src/compile');
+const {
+  _compileBody: compileBody,
+  _hasMultipartBody: hasMultipartBody
+} = require('../../src/compile');
 
 
 describe('compile()', () => {

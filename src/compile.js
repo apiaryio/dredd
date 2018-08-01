@@ -211,8 +211,9 @@ function compile(mediaType, apiElements, filename) {
 }
 
 
-compile.compileBody = compileBody;
-compile.hasMultipartBody = hasMultipartBody;
+// only for the purpose of unit tests
+compile._compileBody = compileBody;
+compile._hasMultipartBody = hasMultipartBody;
 
 
 module.exports = compile;
