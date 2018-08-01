@@ -7,7 +7,14 @@ const levels = {
   warn: 1
 };
 
+/** Class representing application level logger. */
 class Logger {
+  /**
+   * Create new logger instance.
+   * @param {Object} [options]
+   * @param {Object} [options.writer] Custom stderr writer
+   * @param {Object} [options.level] Custom log level - error|warn|info|debug
+   */
   constructor(options = {}) {
     this.level = options.level || 'error';
     this.writer = options.writer || debug;
