@@ -2,7 +2,7 @@ const { assert } = require('chai');
 
 const getTransactionName = require('../../../src/transaction-name');
 
-describe('getTransactionName', () => {
+describe('getTransactionName()', () => {
   it('is a function', () => assert.isFunction(getTransactionName));
 
   it('joins all parts of the origin object', () => {

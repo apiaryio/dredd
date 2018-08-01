@@ -2,7 +2,7 @@ const { assert } = require('chai');
 
 const expandUriTemplate = require('../../../src/compile-uri/expand-uri-template');
 
-describe('expandUriTemplate', () => {
+describe('expandUriTemplate()', () => {
   let data = null;
   let uriTemplate = '';
   let parameters = '';

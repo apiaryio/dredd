@@ -3,7 +3,7 @@ const { assert } = require('chai');
 const getTransactionPath = require('../../../src/transaction-path');
 const { ESCAPE_CHAR, DELIMITER } = require('../../../src/transaction-path/constants');
 
-describe('getTransactionPath', () => {
+describe('getTransactionPath()', () => {
   it('is a function', () => assert.isFunction(getTransactionPath));
 
   describe('path compilation', () => {

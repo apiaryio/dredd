@@ -210,4 +210,10 @@ function compile(mediaType, apiElements, filename) {
   return { mediaType, transactions, annotations };
 }
 
+
+// only for the purpose of unit tests
+compile._compileBody = compileBody;
+compile._hasMultipartBody = hasMultipartBody;
+
+
 module.exports = compile;

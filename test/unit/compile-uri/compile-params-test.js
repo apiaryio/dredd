@@ -4,7 +4,7 @@ const fury = require('fury');
 
 const compileParams = require('../../../src/compile-uri/compile-params');
 
-describe('compileParams', () => {
+describe('compileParams()', () => {
   it('should compile a primitive href variable', () => {
     const hrefVariables = new fury.minim.elements.HrefVariables();
     hrefVariables.set('name', new fury.minim.elements.String());

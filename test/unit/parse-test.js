@@ -6,10 +6,10 @@ const parse = require('../../src/parse');
 
 const { assert } = require('../utils');
 
-describe('Parsing API description document', () => {
+describe('parse()', () => {
   const reMediaType = /\w+\/[\w.+]+/;
 
-  describe('Valid document gets correctly parsed', () =>
+  describe('when valid document gets correctly parsed', () =>
     fixtures.ordinary.forEachDescribe(({ source }) => {
       let error;
       let mediaType;
@@ -37,7 +37,7 @@ describe('Parsing API description document', () => {
     })
   );
 
-  describe('Invalid document causes error', () =>
+  describe('when invalid document causes error', () =>
     fixtures.parserError.forEachDescribe(({ source }) => {
       let error;
       let mediaType;
@@ -59,7 +59,7 @@ describe('Parsing API description document', () => {
     })
   );
 
-  describe('Defective document causes warning', () =>
+  describe('when defective document causes warning', () =>
     fixtures.parserWarning.forEachDescribe(({ source }) => {
       let error;
       let mediaType;
@@ -81,7 +81,7 @@ describe('Parsing API description document', () => {
     })
   );
 
-  describe('Unexpected parser behavior causes \'unexpected parser error\'', () => {
+  describe('when unexpected parser behavior causes \'unexpected parser error\'', () => {
     let error;
     let apiElements;
 
@@ -100,7 +100,7 @@ describe('Parsing API description document', () => {
     it('produces no parse result', () => assert.isNull(apiElements));
   });
 
-  describe('Completely unknown document format is treated as API Blueprint', () => {
+  describe('when completely unknown document format is treated as API Blueprint', () => {
     let error;
     let mediaType;
     let apiElements;
@@ -121,7 +121,7 @@ describe('Parsing API description document', () => {
     it('the first warning is about falling back to API Blueprint', () => assert.include(apiElements.warnings.getValue(0), 'to API Blueprint'));
   });
 
-  describe('Unrecognizable API Blueprint is treated as API Blueprint', () => {
+  describe('when unrecognizable API Blueprint is treated as API Blueprint', () => {
     let error;
     let mediaType;
     let apiElements;
