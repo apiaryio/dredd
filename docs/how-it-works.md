@@ -154,7 +154,7 @@ If there is no body example or schema specified for the response in your API des
 
 If you want to enforce the incoming body is empty, you can use [hooks](hooks.md):
 
-```js
+```javascript
 :[hooks example](../test/fixtures/response/empty-body-hooks.js)
 ```
 

@@ -1,0 +1,26 @@
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: Binary API
+schemes:
+  - http
+consumes:
+  - application/octet-stream
+produces:
+  - application/json
+paths:
+  /binary:
+    post:
+      parameters:
+        - name: binary
+          in: body
+          required: true
+          schema:
+            type: string
+            format: binary
+      responses:
+        200:
+          description: 'Test OK'
+          examples:
+            application/json; charset=utf-8:
+              test: 'OK'

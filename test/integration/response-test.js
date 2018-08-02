@@ -1,4 +1,5 @@
 const { assert } = require('chai');
+const path = require('path');
 
 const { runDreddWithServer, createServer } = require('./helpers');
 const Dredd = require('../../src/dredd');
@@ -284,6 +285,67 @@ const Dredd = require('../../src/dredd');
         assert.equal(runtimeInfo.dredd.logging.match(
           /fail: statusCode: Status code is '200' instead of/g
         ).length, 2)
+      );
+    });
+  })
+);
+
+[
+  {
+    name: 'API Blueprint',
+    path: './test/fixtures/response/binary.apib'
+  },
+  {
+    name: 'Swagger',
+    path: './test/fixtures/response/binary.yaml'
+  }
+].forEach(apiDescription =>
+  describe(`Working with binary responses in the ${apiDescription.name}`, () => {
+    const imagePath = path.join(__dirname, '../fixtures/image.png');
+    const app = createServer();
+    app.get('/image.png', (req, res) =>
+      res.type('image/png').sendFile(imagePath)
+    );
+
+    describe('when the body is described as empty and there are hooks to remove the real body', () => {
+      let runtimeInfo;
+
+      before((done) => {
+        const dredd = new Dredd({
+          options: {
+            path: apiDescription.path,
+            hookfiles: './test/fixtures/response/binary-ignore-body-hooks.js'
+          }
+        });
+        runDreddWithServer(dredd, app, (err, info) => {
+          runtimeInfo = info;
+          done(err);
+        });
+      });
+
+      it('evaluates the response as valid', () =>
+        assert.deepInclude(runtimeInfo.dredd.stats, { tests: 1, passes: 1 })
+      );
+    });
+
+    describe('when the body is described as empty and there are hooks to assert the real body', () => {
+      let runtimeInfo;
+
+      before((done) => {
+        const dredd = new Dredd({
+          options: {
+            path: apiDescription.path,
+            hookfiles: './test/fixtures/response/binary-assert-body-hooks.js'
+          }
+        });
+        runDreddWithServer(dredd, app, (err, info) => {
+          runtimeInfo = info;
+          done(err);
+        });
+      });
+
+      it('evaluates the response as valid', () =>
+        assert.deepInclude(runtimeInfo.dredd.stats, { tests: 1, passes: 1 })
       );
     });
   })

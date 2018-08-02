@@ -1,0 +1,26 @@
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: Images API
+schemes:
+  - http
+consumes:
+  - image/png
+produces:
+  - application/json
+paths:
+  /image.png:
+    put:
+      parameters:
+        - name: binary
+          in: body
+          required: true
+          schema:
+            type: string
+            format: binary
+      responses:
+        200:
+          description: 'Test OK'
+          examples:
+            application/json; charset=utf-8:
+              test: 'OK'

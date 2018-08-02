@@ -1,0 +1,16 @@
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: Images API
+schemes:
+  - http
+produces:
+  - image/png
+paths:
+  /image.png:
+    get:
+      responses:
+        200:
+          description: Representation
+          examples:
+            "image/png": ""
