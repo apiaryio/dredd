@@ -152,7 +152,8 @@ describe('Regression: Issues #319 and #354', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--inline-errors',
         '--details',
-        '--no-color'
+        '--no-color',
+        '--loglevel=info'
       ];
       runCLIWithServer(args, app, (err, info) => {
         if (info) { results = parseDreddStdout(info.dredd.stdout); }
@@ -225,7 +226,8 @@ describe('Regression: Issues #319 and #354', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--inline-errors',
         '--details',
-        '--no-color'
+        '--no-color',
+        '--loglevel=info'
       ];
       runCLIWithServer(args, app, (err, info) => {
         if (info) { results = parseDreddStdout(info.dredd.stdout); }

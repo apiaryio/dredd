@@ -27,7 +27,8 @@ describe('CLI - Reporters', () => {
     const args = [
       './test/fixtures/single-get.apib',
       `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-      '--reporter=nyan'
+      '--reporter=nyan',
+      '--loglevel=info'
     ];
 
     beforeEach(done =>
@@ -78,7 +79,8 @@ describe('CLI - Reporters', () => {
       const args = [
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-        '--reporter=apiary'
+        '--reporter=apiary',
+        '--loglevel=info'
       ];
 
       beforeEach(done =>
@@ -118,7 +120,8 @@ describe('CLI - Reporters', () => {
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--reporter=apiary',
-        '--hookfiles=./test/fixtures/hooks-log.coffee'
+        '--hookfiles=./test/fixtures/hooks-log.coffee',
+        '--loglevel=info'
       ];
 
       beforeEach(done =>

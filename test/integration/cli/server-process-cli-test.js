@@ -41,7 +41,11 @@ describe('CLI - Server Process', () => {
 
     describe('when is not running', () => {
       let cliInfo;
-      const args = ['./test/fixtures/apiary.apib', `http://127.0.0.1:${NON_EXISTENT_PORT}`];
+      const args = [
+        './test/fixtures/apiary.apib',
+        `http://127.0.0.1:${NON_EXISTENT_PORT}`,
+        '--loglevel=info'
+      ];
 
       beforeEach(done =>
         runCLI(args, (err, info) => {
@@ -70,7 +74,8 @@ describe('CLI - Server Process', () => {
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         `--server=node ./test/fixtures/scripts/dummy-server.js ${DEFAULT_SERVER_PORT}`,
-        '--server-wait=1'
+        '--server-wait=1',
+        '--loglevel=info'
       ];
 
       beforeEach(done =>
@@ -91,7 +96,8 @@ describe('CLI - Server Process', () => {
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--server=/foo/bar/baz',
-        '--server-wait=1'
+        '--server-wait=1',
+        '--loglevel=info'
       ];
 
       beforeEach(done =>
@@ -137,7 +143,8 @@ describe('CLI - Server Process', () => {
           scenario.apiDescriptionDocument,
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           `--server=${scenario.server}`,
-          '--server-wait=1'
+          '--server-wait=1',
+          '--loglevel=info'
         ];
 
         beforeEach(done =>

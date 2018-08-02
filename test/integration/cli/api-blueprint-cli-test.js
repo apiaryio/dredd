@@ -46,7 +46,8 @@ describe('CLI - API Blueprint Document', () => {
       const args = [
         './test/fixtures/warning-blueprint.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-        '--no-color'
+        '--no-color',
+        '--loglevel=warn'
       ];
 
       beforeEach((done) => {

@@ -54,7 +54,7 @@ function applyConfiguration(config) {
       method: [],
       only: [],
       color: true,
-      loglevel: 'info',
+      loglevel: 'error',
       timestamp: false,
       sorted: false,
       names: false,
