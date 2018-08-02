@@ -169,7 +169,7 @@ describe('CLI - Server Process', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         `--server=node test/fixtures/scripts/dummy-server-ignore-term.js ${DEFAULT_SERVER_PORT}`,
         '--server-wait=1',
-        '--level=verbose'
+        '--loglevel=verbose'
       ];
 
       beforeEach(done =>

@@ -18,7 +18,7 @@ function createAndRunDredd(configuration, done) {
   if (!configuration.options) { configuration.options = {}; }
   configuration.options.color = false;
   configuration.options.silent = true;
-  configuration.options.level = 'silly';
+  configuration.options.loglevel = 'silly';
 
   let dredd;
   recordLogging((next) => {

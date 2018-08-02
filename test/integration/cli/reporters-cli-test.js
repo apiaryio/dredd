@@ -131,7 +131,7 @@ describe('CLI - Reporters', () => {
       );
 
       it('hooks.log should print also to console', () =>
-        // Because --level=info is lower than --level=hook
+        // Because --loglevel=info is lower than --loglevel=hook
         assert.include(cliInfo.output, 'using hooks.log to debug')
       );
       it('hooks.log should use toString on objects', () => assert.include(cliInfo.output, 'Error object!'));
@@ -193,7 +193,7 @@ describe('CLI - Reporters', () => {
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--reporter=apiary',
-        '--level=info',
+        '--loglevel=info',
         '--sandbox',
         '--hookfiles=./test/fixtures/sandboxed-hooks-log.js'
       ];
@@ -208,7 +208,7 @@ describe('CLI - Reporters', () => {
       );
 
       it('hooks.log should not print also to console', () => {
-        // Because we are running in sandboxed mode with higher --level
+        // Because we are running in sandboxed mode with higher --loglevel
         assert.notInclude(cliInfo.output, 'using sandboxed hooks.log');
         assert.notInclude(cliInfo.output, 'shall not print');
       });

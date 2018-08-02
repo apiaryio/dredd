@@ -125,9 +125,9 @@ This option can be used multiple times to allow multiple methods.\n`,
     default: true
   },
 
-  level: {
+  loglevel: {
     alias: 'l',
-    description: 'The level of logging to output. Options: silly, debug, verbose, info, warn, error.\n',
+    description: 'The level of logging to stderr. Options: debug, info, warn[ing], error.\n',
     default: 'info'
   },
 

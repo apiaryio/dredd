@@ -26,7 +26,7 @@ function applyLoggingOptions(options) {
   logger.transports.console.colorize = options.color;
   logger.transports.console.silent = options.silent;
   logger.transports.console.timestamp = options.timestamp;
-  logger.transports.console.level = options.level;
+  logger.transports.console.level = options.loglevel;
 
   return options;
 }
@@ -54,7 +54,7 @@ function applyConfiguration(config) {
       method: [],
       only: [],
       color: true,
-      level: 'info',
+      loglevel: 'info',
       timestamp: false,
       sorted: false,
       names: false,
