@@ -74,18 +74,18 @@ function getBodyAsBuffer(body, encoding) {
  * @param {string} encoding
  */
 function normalizeBodyEncoding(encoding) {
-  if (!encoding) {
-    return 'utf-8';
+  if (!encoding) { return 'utf-8'; }
+
+  switch (encoding.toLowerCase()) {
+    case 'utf-8':
+    case 'utf8':
+      return 'utf-8';
+    case 'base64':
+      return 'base64';
+    default:
+      throw new Error(`Unsupported encoding: '${encoding}' (only UTF-8 and `
+        + 'Base64 are supported)');
   }
-  const lcEncoding = encoding.toLowerCase();
-  if (lcEncoding === 'utf-8' || lcEncoding === 'utf8') {
-    return 'utf-8';
-  }
-  if (lcEncoding === 'base64') {
-    return 'base64';
-  }
-  throw new Error(`Unsupported encoding: '${encoding}' (only UTF-8 and `
-    + 'Base64 are supported)');
 }
 
 
