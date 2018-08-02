@@ -1,6 +1,8 @@
 const { assert } = require('chai');
 
-const { createTransactionRes } = require('../../../src/performRequest');
+const {
+  _createTransactionRes: createTransactionRes
+} = require('../../../src/performRequest');
 
 
 describe('performRequest.createTransactionRes()', () => {

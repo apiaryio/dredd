@@ -1,7 +1,9 @@
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const { normalizeContentLengthHeader } = require('../../../src/performRequest');
+const {
+  _normalizeContentLengthHeader: normalizeContentLengthHeader
+} = require('../../../src/performRequest');
 
 
 describe('performRequest.normalizeContentLengthHeader()', () => {

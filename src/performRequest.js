@@ -151,11 +151,12 @@ function detectBodyEncoding(body) {
 }
 
 
-performRequest.normalizeBodyEncoding = normalizeBodyEncoding;
-performRequest.getBodyAsBuffer = getBodyAsBuffer;
-performRequest.normalizeContentLengthHeader = normalizeContentLengthHeader;
-performRequest.createTransactionRes = createTransactionRes;
-performRequest.detectBodyEncoding = detectBodyEncoding;
+// only for the purpose of unit tests
+performRequest._normalizeBodyEncoding = normalizeBodyEncoding;
+performRequest._getBodyAsBuffer = getBodyAsBuffer;
+performRequest._normalizeContentLengthHeader = normalizeContentLengthHeader;
+performRequest._createTransactionRes = createTransactionRes;
+performRequest._detectBodyEncoding = detectBodyEncoding;
 
 
 module.exports = performRequest;

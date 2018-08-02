@@ -1,6 +1,8 @@
 const { assert } = require('chai');
 
-const { getBodyAsBuffer } = require('../../../src/performRequest');
+const {
+  _getBodyAsBuffer: getBodyAsBuffer
+} = require('../../../src/performRequest');
 
 
 describe('performRequest.getBodyAsBuffer()', () => {
