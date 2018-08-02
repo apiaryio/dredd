@@ -34,7 +34,7 @@ function performRequest(uri, transactionReq, options, callback) {
 
   try {
     httpOptions.body = getBodyAsBuffer(transactionReq.body, transactionReq.bodyEncoding);
-    httpOptions.headers = setContentLength(transactionReq.headers, httpOptions.body);
+    httpOptions.headers = normalizeContentLengthHeader(transactionReq.headers, httpOptions.body);
 
     const protocol = httpOptions.uri.split(':')[0].toUpperCase();
     logger.debug(`Performing ${protocol} request to the server under test: `
@@ -98,7 +98,7 @@ function normalizeBodyEncoding(encoding) {
  * @param {Object} [options]
  * @param {Object} [options.logger] Custom logger
  */
-function setContentLength(headers, body, options = {}) {
+function normalizeContentLengthHeader(headers, body, options = {}) {
   const logger = options.logger || defaultLogger;
 
   const modifiedHeaders = Object.assign({}, headers);
@@ -153,7 +153,7 @@ function detectBodyEncoding(body) {
 
 performRequest.normalizeBodyEncoding = normalizeBodyEncoding;
 performRequest.getBodyAsBuffer = getBodyAsBuffer;
-performRequest.setContentLength = setContentLength;
+performRequest.normalizeContentLengthHeader = normalizeContentLengthHeader;
 performRequest.createTransactionRes = createTransactionRes;
 performRequest.detectBodyEncoding = detectBodyEncoding;
 

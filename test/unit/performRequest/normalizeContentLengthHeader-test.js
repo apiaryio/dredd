@@ -1,10 +1,10 @@
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const { setContentLength } = require('../../../src/performRequest');
+const { normalizeContentLengthHeader } = require('../../../src/performRequest');
 
 
-describe('performRequest.setContentLength()', () => {
+describe('performRequest.normalizeContentLengthHeader()', () => {
   let headers;
 
   const logger = { warn: sinon.spy() };
@@ -12,7 +12,7 @@ describe('performRequest.setContentLength()', () => {
 
   describe('when there is no body and no Content-Length', () => {
     beforeEach(() => {
-      headers = setContentLength({}, Buffer.from(''), { logger });
+      headers = normalizeContentLengthHeader({}, Buffer.from(''), { logger });
     });
 
     it('does not warn', () =>
@@ -25,7 +25,7 @@ describe('performRequest.setContentLength()', () => {
 
   describe('when there is no body and the Content-Length is set to 0', () => {
     beforeEach(() => {
-      headers = setContentLength({
+      headers = normalizeContentLengthHeader({
         'Content-Length': '0'
       }, Buffer.from(''), { logger });
     });
@@ -40,7 +40,7 @@ describe('performRequest.setContentLength()', () => {
 
   describe('when there is body and the Content-Length is not set', () => {
     beforeEach(() => {
-      headers = setContentLength({}, Buffer.from('abcd'), { logger });
+      headers = normalizeContentLengthHeader({}, Buffer.from('abcd'), { logger });
     });
 
     it('does not warn', () =>
@@ -53,7 +53,7 @@ describe('performRequest.setContentLength()', () => {
 
   describe('when there is body and the Content-Length is correct', () => {
     beforeEach(() => {
-      headers = setContentLength({
+      headers = normalizeContentLengthHeader({
         'Content-Length': '4'
       }, Buffer.from('abcd'), { logger });
     });
@@ -68,7 +68,7 @@ describe('performRequest.setContentLength()', () => {
 
   describe('when there is no body and the Content-Length is wrong', () => {
     beforeEach(() => {
-      headers = setContentLength({
+      headers = normalizeContentLengthHeader({
         'Content-Length': '42'
       }, Buffer.from(''), { logger });
     });
@@ -83,7 +83,7 @@ describe('performRequest.setContentLength()', () => {
 
   describe('when there is body and the Content-Length is wrong', () => {
     beforeEach(() => {
-      headers = setContentLength({
+      headers = normalizeContentLengthHeader({
         'Content-Length': '42'
       }, Buffer.from('abcd'), { logger });
     });
@@ -98,7 +98,7 @@ describe('performRequest.setContentLength()', () => {
 
   describe('when the existing header name has unusual casing', () => {
     beforeEach(() => {
-      headers = setContentLength({
+      headers = normalizeContentLengthHeader({
         'CoNtEnT-lEnGtH': '4'
       }, Buffer.from('abcd'), { logger });
     });
@@ -112,7 +112,7 @@ describe('performRequest.setContentLength()', () => {
     const originalHeaders = {};
 
     beforeEach(() => {
-      headers = setContentLength(originalHeaders, Buffer.from('abcd'), { logger });
+      headers = normalizeContentLengthHeader(originalHeaders, Buffer.from('abcd'), { logger });
     });
 
     it('does not modify the original headers object', () => {
