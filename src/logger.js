@@ -4,6 +4,7 @@ const levels = {
   debug: 3,
   error: 0,
   info: 2,
+  warning: 1,
   warn: 1
 };
 
