@@ -46,7 +46,6 @@ function applyConfiguration(config) {
       silent: false,
       reporter: null,
       output: null,
-      debug: false,
       header: null,
       user: null,
       'inline-errors': false,
