@@ -62,7 +62,7 @@ user: null
 inline-errors: false
 details: false
 method: []
-level: info
+loglevel: "error"
 timestamp: false
 silent: false
 path: []

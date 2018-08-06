@@ -57,7 +57,7 @@ describe('CLI class Integration', () => {
       sinon.stub(loggerStub, method).callsFake((chunk) => { stderr += `\n${method}: ${chunk}`; });
     });
     [
-      'log', 'info', 'silly', 'verbose', 'test',
+      'log', 'info', 'test',
       'hook', 'complete', 'pass', 'skip', 'debug',
       'fail', 'request', 'expected', 'actual'
     ].forEach((method) => {
@@ -69,7 +69,7 @@ describe('CLI class Integration', () => {
     ['warn', 'error'].forEach((method) => { loggerStub[method].restore(); });
 
     [
-      'log', 'info', 'silly', 'verbose', 'test',
+      'log', 'info', 'test',
       'hook', 'complete', 'pass', 'skip', 'debug',
       'fail', 'request', 'expected', 'actual'
     ].forEach((method) => { loggerStub[method].restore(); });

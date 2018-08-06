@@ -176,7 +176,7 @@ describe('CLI - Server Process', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         `--server=node test/fixtures/scripts/dummy-server-ignore-term.js ${DEFAULT_SERVER_PORT}`,
         '--server-wait=1',
-        '--loglevel=verbose'
+        '--loglevel=debug'
       ];
 
       beforeEach(done =>
@@ -187,9 +187,9 @@ describe('CLI - Server Process', () => {
       );
 
       it('should inform about starting server with custom command', () => assert.include(cliInfo.stdout, 'Starting backend server process with command'));
-      it('should inform about gracefully terminating the server', () => assert.include(cliInfo.stdout, 'Gracefully terminating the backend server process'));
+      it('should inform about gracefully terminating the server', () => assert.include(cliInfo.stderr, 'Gracefully terminating the backend server process'));
       it('should redirect server\'s message about ignoring termination', () => assert.include(cliInfo.stdout, 'ignoring termination'));
-      it('should inform about forcefully killing the server', () => assert.include(cliInfo.stdout, 'Killing the backend server process'));
+      it('should inform about forcefully killing the server', () => assert.include(cliInfo.stderr, 'Killing the backend server process'));
       it('the server should not be running', done =>
         isProcessRunning('test/fixtures/scripts/', (err, isRunning) => {
           if (!err) { assert.isFalse(isRunning); }

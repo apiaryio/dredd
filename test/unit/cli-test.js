@@ -64,7 +64,7 @@ describe('CLI class', () => {
     });
 
     [
-      'log', 'info', 'silly', 'verbose', 'test',
+      'log', 'info', 'test',
       'hook', 'complete', 'pass', 'skip', 'debug',
       'fail', 'request', 'expected', 'actual'
     ].forEach((method) => {
@@ -78,7 +78,7 @@ describe('CLI class', () => {
     });
 
     [
-      'log', 'info', 'silly', 'verbose', 'test',
+      'log', 'info', 'test',
       'hook', 'complete', 'pass', 'skip', 'debug',
       'fail', 'request', 'expected', 'actual'
     ].forEach((method) => {

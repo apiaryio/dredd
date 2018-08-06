@@ -45,18 +45,18 @@ class TransactionRunner {
   }
 
   run(transactions, callback) {
-    logger.verbose('Sorting HTTP transactions');
+    logger.debug('Sorting HTTP transactions');
     transactions = this.configuration.options.sorted ? sortTransactions(transactions) : transactions;
 
-    logger.verbose('Configuring HTTP transactions');
+    logger.debug('Configuring HTTP transactions');
     transactions = transactions.map(this.configureTransaction.bind(this));
 
     // Remainings of functional approach, probs to be eradicated
-    logger.verbose('Reading hook files and registering hooks');
+    logger.debug('Reading hook files and registering hooks');
     addHooks(this, transactions, (addHooksError) => {
       if (addHooksError) { return callback(addHooksError); }
 
-      logger.verbose('Executing HTTP transactions');
+      logger.debug('Executing HTTP transactions');
       this.executeAllTransactions(transactions, this.hooks, callback);
     });
   }
@@ -78,7 +78,7 @@ class TransactionRunner {
 
     if (this.hookHandlerError) { return callback(this.hookHandlerError); }
 
-    logger.verbose('Running \'beforeAll\' hooks');
+    logger.debug('Running \'beforeAll\' hooks');
 
     this.runHooksForData(hooks.beforeAllHooks, transactions, true, () => {
       if (this.hookHandlerError) { return callback(this.hookHandlerError); }
@@ -88,13 +88,13 @@ class TransactionRunner {
       // we need to work with indexes (keys) here, no other way of access.
       return async.timesSeries(transactions.length, (transactionIndex, iterationCallback) => {
         transaction = transactions[transactionIndex];
-        logger.verbose(`Processing transaction #${transactionIndex + 1}:`, transaction.name);
+        logger.debug(`Processing transaction #${transactionIndex + 1}:`, transaction.name);
 
-        logger.verbose('Running \'beforeEach\' hooks');
+        logger.debug('Running \'beforeEach\' hooks');
         this.runHooksForData(hooks.beforeEachHooks, transaction, false, () => {
           if (this.hookHandlerError) { return iterationCallback(this.hookHandlerError); }
 
-          logger.verbose('Running \'before\' hooks');
+          logger.debug('Running \'before\' hooks');
           this.runHooksForData(hooks.beforeHooks[transaction.name], transaction, false, () => {
             if (this.hookHandlerError) { return iterationCallback(this.hookHandlerError); }
 
@@ -108,11 +108,11 @@ class TransactionRunner {
             this.executeTransaction(transaction, hooks, () => {
               if (this.hookHandlerError) { return iterationCallback(this.hookHandlerError); }
 
-              logger.verbose('Running \'afterEach\' hooks');
+              logger.debug('Running \'afterEach\' hooks');
               this.runHooksForData(hooks.afterEachHooks, transaction, false, () => {
                 if (this.hookHandlerError) { return iterationCallback(this.hookHandlerError); }
 
-                logger.verbose('Running \'after\' hooks');
+                logger.debug('Running \'after\' hooks');
                 this.runHooksForData(hooks.afterHooks[transaction.name], transaction, false, () => {
                   if (this.hookHandlerError) { return iterationCallback(this.hookHandlerError); }
 
@@ -127,7 +127,7 @@ class TransactionRunner {
         , (iterationError) => {
         if (iterationError) { return callback(iterationError); }
 
-        logger.verbose('Running \'afterAll\' hooks');
+        logger.debug('Running \'afterAll\' hooks');
         this.runHooksForData(hooks.afterAllHooks, transactions, true, () => {
           if (this.hookHandlerError) { return callback(this.hookHandlerError); }
           callback();
@@ -581,12 +581,12 @@ Interface of the hooks functions will be unified soon across all hook functions:
     this.ensureTransactionResultsGeneralSection(transaction);
 
     if (transaction.skip) {
-      logger.verbose('HTTP transaction was marked in hooks as to be skipped. Skipping');
+      logger.debug('HTTP transaction was marked in hooks as to be skipped. Skipping');
       transaction.test = test;
       this.skipTransaction(transaction, 'Skipped in before hook');
       return callback();
     } else if (transaction.fail) {
-      logger.verbose('HTTP transaction was marked in hooks as to be failed. Reporting as failed');
+      logger.debug('HTTP transaction was marked in hooks as to be failed. Reporting as failed');
       transaction.test = test;
       this.failTransaction(transaction, `Failed in before hook: ${transaction.fail}`);
       return callback();
@@ -673,7 +673,7 @@ the real body length is 0. Using 0 instead.\
         return callback();
       }
 
-      logger.verbose('Handling HTTP response from tested server');
+      logger.debug('Handling HTTP response from tested server');
 
       // The data models as used here must conform to Gavel.js as defined in 'http-response.coffee'
       transaction.real = {
@@ -690,11 +690,11 @@ the real body length is 0. Using 0 instead.\
         transaction.real.body = '';
       }
 
-      logger.verbose('Running \'beforeEachValidation\' hooks');
+      logger.debug('Running \'beforeEachValidation\' hooks');
       this.runHooksForData(hooks ? hooks.beforeEachValidationHooks : undefined, transaction, false, () => {
         if (this.hookHandlerError) { return callback(this.hookHandlerError); }
 
-        logger.verbose('Running \'beforeValidation\' hooks');
+        logger.debug('Running \'beforeValidation\' hooks');
         this.runHooksForData(hooks != null ? hooks.beforeValidationHooks[transaction.name] : undefined, transaction, false, () => {
           if (this.hookHandlerError) { return callback(this.hookHandlerError); }
 
@@ -717,7 +717,7 @@ the real body length is 0. Using 0 instead.\
 
   performRequest(options, callback) {
     const protocol = options.uri.split(':')[0].toUpperCase();
-    logger.verbose(`\
+    logger.debug(`\
 About to perform an ${protocol} request to the server \
 under test: ${options.method} ${options.uri}\
 `);
@@ -725,7 +725,7 @@ under test: ${options.method} ${options.uri}\
   }
 
   validateTransaction(test, transaction, callback) {
-    logger.verbose('Validating HTTP transaction by Gavel.js');
+    logger.debug('Validating HTTP transaction by Gavel.js');
     logger.debug('Determining whether HTTP transaction is valid (getting boolean verdict)');
     gavel.isValid(transaction.real, transaction.expected, 'response', (isValidError, isValid) => {
       if (isValidError) {
@@ -744,7 +744,7 @@ under test: ${options.method} ${options.uri}\
         test.status = 'fail';
       }
 
-      logger.debug('Validating HTTP transaction (getting verbose validation result)');
+      logger.debug('Validating HTTP transaction (getting debug validation result)');
       gavel.validate(transaction.real, transaction.expected, 'response', (validateError, gavelResult) => {
         if (!isValidError && validateError) {
           logger.debug('Gavel.js validation errored:', validateError);

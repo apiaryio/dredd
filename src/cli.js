@@ -58,14 +58,14 @@ Example:
   // Gracefully terminate server
   stopServer(callback) {
     if (!this.serverProcess || !this.serverProcess.spawned) {
-      logger.verbose('No backend server process to terminate.');
+      logger.debug('No backend server process to terminate.');
       return callback();
     }
     if (this.serverProcess.terminated) {
       logger.debug('The backend server process has already terminated');
       return callback();
     }
-    logger.verbose('Terminating backend server process, PID', this.serverProcess.pid);
+    logger.debug('Terminating backend server process, PID', this.serverProcess.pid);
     this.serverProcess.terminate({ force: true });
     this.serverProcess.on('exit', () => callback());
   }
@@ -80,7 +80,7 @@ Example:
 
       if (this.exit) {
         this._processExit = (exitStatus) => {
-          logger.verbose(`Exiting Dredd process with status '${exitStatus}'.`);
+          logger.debug(`Exiting Dredd process with status '${exitStatus}'.`);
           logger.debug('Using configured custom exit() method to terminate the Dredd process.');
           this.finished = true;
           this.stopServer(() => {
@@ -89,19 +89,19 @@ Example:
         };
       } else {
         this._processExit = (exitStatus) => {
-          logger.verbose(`Exiting Dredd process with status '${exitStatus}'.`);
+          logger.debug(`Exiting Dredd process with status '${exitStatus}'.`);
           logger.debug('Using native process.exit() method to terminate the Dredd process.');
           this.stopServer(() => process.exit(exitStatus));
         };
       }
     } else {
       this._processExit = (exitStatus) => {
-        logger.verbose(`Exiting Dredd process with status '${exitStatus}'.`);
+        logger.debug(`Exiting Dredd process with status '${exitStatus}'.`);
         logger.debug('Using configured custom callback to terminate the Dredd process.');
         this.finished = true;
         if (this.sigIntEventAdded) {
           if (this.serverProcess && !this.serverProcess.terminated) {
-            logger.verbose('Killing backend server process before Dredd exits.');
+            logger.debug('Killing backend server process before Dredd exits.');
             this.serverProcess.signalKill();
           }
           process.removeEventListener('SIGINT', this.commandSigInt);
@@ -145,7 +145,7 @@ Example:
   runExitingActions() {
     // Run interactive config
     if (this.argv._[0] === 'init' || this.argv.init === true) {
-      logger.silly('Starting interactive configuration.');
+      logger.debug('Starting interactive configuration.');
       this.finished = true;
       interactiveConfig.run(this.argv, (config) => {
         configUtils.save(config);
@@ -180,13 +180,13 @@ Example:
 
     // Show help
     } else if (this.argv.help === true) {
-      logger.silly('Printing help.');
+      logger.debug('Printing help.');
       this.optimist.showHelp(console.error);
       this._processExit(0);
 
     // Show version
     } else if (this.argv.version === true) {
-      logger.silly('Printing version.');
+      logger.debug('Printing version.');
       console.log(`\
 ${packageData.name} v${packageData.version} \
 (${os.type()} ${os.release()}; ${os.arch()})\
@@ -197,7 +197,7 @@ ${packageData.name} v${packageData.version} \
 
   loadDreddFile() {
     const configPath = this.argv.config;
-    logger.verbose('Loading configuration file:', configPath);
+    logger.debug('Loading configuration file:', configPath);
 
     if (configPath && fs.existsSync(configPath)) {
       logger.info(`Configuration '${configPath}' found, ignoring other arguments.`);
@@ -221,15 +221,15 @@ ${packageData.name} v${packageData.version} \
 
   runServerAndThenDredd() {
     if (!this.argv.server) {
-      logger.verbose('No backend server process specified, starting testing at once');
+      logger.debug('No backend server process specified, starting testing at once');
       this.runDredd(this.dreddInstance);
     } else {
-      logger.verbose('Backend server process specified, starting backend server and then testing');
+      logger.debug('Backend server process specified, starting backend server and then testing');
 
       const parsedArgs = spawnArgs(this.argv.server);
       const command = parsedArgs.shift();
 
-      logger.verbose(`Using '${command}' as a server command, ${JSON.stringify(parsedArgs)} as arguments`);
+      logger.debug(`Using '${command}' as a server command, ${JSON.stringify(parsedArgs)} as arguments`);
       this.serverProcess = spawn(command, parsedArgs);
       logger.info(`Starting backend server process with command: ${this.argv.server}`);
 
@@ -239,8 +239,8 @@ ${packageData.name} v${packageData.version} \
       this.serverProcess.stderr.setEncoding('utf8');
       this.serverProcess.stderr.on('data', data => process.stdout.write(data.toString()));
 
-      this.serverProcess.on('signalTerm', () => logger.verbose('Gracefully terminating the backend server process'));
-      this.serverProcess.on('signalKill', () => logger.verbose('Killing the backend server process'));
+      this.serverProcess.on('signalTerm', () => logger.debug('Gracefully terminating the backend server process'));
+      this.serverProcess.on('signalKill', () => logger.debug('Killing the backend server process'));
 
       this.serverProcess.on('crash', (exitStatus, killed) => {
         if (killed) { logger.info('Backend server process was killed'); }
@@ -258,7 +258,7 @@ ${packageData.name} v${packageData.version} \
       // Ensure server is not running when dredd exits prematurely somewhere
       process.on('beforeExit', () => {
         if (this.serverProcess && !this.serverProcess.terminated) {
-          logger.verbose('Killing backend server process before Dredd exits');
+          logger.debug('Killing backend server process before Dredd exits');
           this.serverProcess.signalKill();
         }
       });
@@ -266,7 +266,7 @@ ${packageData.name} v${packageData.version} \
       // Ensure server is not running when dredd exits prematurely somewhere
       process.on('exit', () => {
         if (this.serverProcess && !this.serverProcess.terminated) {
-          logger.verbose('Killing backend server process on Dredd\'s exit');
+          logger.debug('Killing backend server process on Dredd\'s exit');
           this.serverProcess.signalKill();
         }
       });
@@ -375,9 +375,9 @@ ${packageData.name} v${packageData.version} \
       process.on('SIGINT', this.commandSigInt);
     }
 
-    logger.verbose('Running Dredd instance.');
+    logger.debug('Running Dredd instance.');
     dreddInstance.run((error, stats) => {
-      logger.verbose('Dredd instance run finished.');
+      logger.debug('Dredd instance run finished.');
       this.exitWithStatus(error, stats);
     });
 

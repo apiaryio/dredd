@@ -54,7 +54,7 @@ describe('Dredd class Integration', () => {
       sinon.stub(loggerStub, method).callsFake((chunk) => { stderr += `\n${method}: ${chunk}`; });
     });
     [
-      'log', 'info', 'silly', 'verbose', 'test',
+      'log', 'info', 'test',
       'hook', 'complete', 'pass', 'skip', 'debug',
       'fail', 'request', 'expected', 'actual'
     ].forEach((method) => {
@@ -67,7 +67,7 @@ describe('Dredd class Integration', () => {
       loggerStub[method].restore();
     });
     [
-      'log', 'info', 'silly', 'verbose', 'test',
+      'log', 'info', 'test',
       'hook', 'complete', 'pass', 'skip', 'debug',
       'fail', 'request', 'expected', 'actual'
     ].forEach((method) => {
@@ -123,7 +123,7 @@ describe('Dredd class Integration', () => {
   });
 
 
-  describe("when using reporter -r apiary with 'verbose' logging with custom apiaryApiKey and apiaryApiName", () => {
+  describe("when using reporter -r apiary with 'debug' logging with custom apiaryApiKey and apiaryApiName", () => {
     let server;
     let server2;
     let receivedRequest;
@@ -137,7 +137,7 @@ describe('Dredd class Integration', () => {
         options: {
           path: ['./test/fixtures/single-get.apib'],
           reporter: ['apiary'],
-          level: 'verbose'
+          loglevel: 'debug'
         },
         custom: {
           apiaryApiUrl: `http://127.0.0.1:${PORT + 1}`,
