@@ -32,6 +32,10 @@ class Logger {
     if (levels[this.level] >= 2) this.writer(...args);
   }
 
+  log(...args) {
+    if (levels[this.level] >= 0) this.writer(...args);
+  }
+
   warn(...args) {
     if (levels[this.level] >= 1) this.writer(...args);
   }
