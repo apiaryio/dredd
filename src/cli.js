@@ -9,7 +9,7 @@ const configUtils = require('./config-utils');
 const Dredd = require('./dredd');
 const ignorePipeErrors = require('./ignore-pipe-errors');
 const interactiveConfig = require('./interactive-config');
-const logger = require('./reporters/logger');
+const logger = require('./logger');
 const { applyLoggingOptions } = require('./configuration');
 const { spawn } = require('./child-process');
 
@@ -21,8 +21,6 @@ class CLI {
     this.finished = false;
     ({ exit: this.exit, custom: this.custom } = options);
 
-    this.setExitOrCallback();
-
     if (!this.custom) { this.custom = {}; }
 
     if (!this.custom.cwd || typeof this.custom.cwd !== 'string') {
@@ -31,6 +29,22 @@ class CLI {
 
     if (!this.custom.argv || !Array.isArray(this.custom.argv)) {
       this.custom.argv = [];
+    }
+
+    this.initializeLogger();
+    this.setExitOrCallback();
+  }
+
+  // This method makes sure that any log.warn|info|debug calls go
+  // through if `--loglevel` command line argument is set
+  initializeLogger() {
+    if (Array.isArray(this.custom.argv) &&
+        this.custom.argv.some(arg => arg.includes('loglevel'))) {
+      const level = this.custom.argv
+        .find(arg => arg.includes('loglevel'))
+        .split('=')[1];
+
+      logger.setLevel(level);
     }
   }
 
@@ -234,10 +248,10 @@ ${packageData.name} v${packageData.version} \
       logger.info(`Starting backend server process with command: ${this.argv.server}`);
 
       this.serverProcess.stdout.setEncoding('utf8');
-      this.serverProcess.stdout.on('data', data => process.stdout.write(data.toString()));
+      this.serverProcess.stdout.on('data', data => logger.debug(data.toString()));
 
       this.serverProcess.stderr.setEncoding('utf8');
-      this.serverProcess.stderr.on('data', data => process.stdout.write(data.toString()));
+      this.serverProcess.stderr.on('data', data => logger.debug(data.toString()));
 
       this.serverProcess.on('signalTerm', () => logger.debug('Gracefully terminating the backend server process'));
       this.serverProcess.on('signalKill', () => logger.debug('Killing the backend server process'));

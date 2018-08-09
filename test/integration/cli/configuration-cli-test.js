@@ -4,7 +4,7 @@ const proxyquire = require('proxyquire').noCallThru();
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const loggerStub = require('../../../src/reporters/logger');
+const loggerStub = require('../../../src/logger');
 const configUtils = require('../../../src/config-utils');
 
 const PORT = 9876;
@@ -15,17 +15,17 @@ let stderr = '';
 let stdout = '';
 
 const addHooksStub = proxyquire('../../../src/add-hooks', {
-  './reporters/logger': loggerStub
+  './logger': loggerStub
 });
 
 const transactionRunner = proxyquire('../../../src/transaction-runner', {
   './add-hooks': addHooksStub,
-  './reporters/logger': loggerStub
+  './logger': loggerStub
 });
 
 const dreddStub = proxyquire('../../../src/dredd', {
   './transaction-runner': transactionRunner,
-  './reporters/logger': loggerStub
+  './logger': loggerStub
 });
 
 const CLIStub = proxyquire('../../../src/cli', {
@@ -53,26 +53,13 @@ function execCommand(custom = {}, cb) {
 
 describe('CLI class Integration', () => {
   before(() => {
-    ['warn', 'error'].forEach((method) => {
+    ['log', 'debug', 'info', 'warn', 'error'].forEach((method) => {
       sinon.stub(loggerStub, method).callsFake((chunk) => { stderr += `\n${method}: ${chunk}`; });
-    });
-    [
-      'log', 'info', 'test',
-      'hook', 'complete', 'pass', 'skip', 'debug',
-      'fail', 'request', 'expected', 'actual'
-    ].forEach((method) => {
-      sinon.stub(loggerStub, method).callsFake((chunk) => { stdout += `\n${method}: ${chunk}`; });
     });
   });
 
   after(() => {
-    ['warn', 'error'].forEach((method) => { loggerStub[method].restore(); });
-
-    [
-      'log', 'info', 'test',
-      'hook', 'complete', 'pass', 'skip', 'debug',
-      'fail', 'request', 'expected', 'actual'
-    ].forEach((method) => { loggerStub[method].restore(); });
+    ['log', 'debug', 'info', 'warn', 'error'].forEach((method) => { loggerStub[method].restore(); });
   });
 
   describe('When using configuration file', () => {
@@ -96,7 +83,7 @@ describe('CLI class Integration', () => {
 
       it('should call fs.existsSync with given path', () => assert.isTrue(fsExistsSync.calledWith(configPath)));
       it('should call configUtils.load with given path', () => assert.isTrue(configUtilsLoad.calledWith(configPath)));
-      it('should print message about using given configuration file', () => assert.include(stdout, `info: Configuration '${configPath}' found`));
+      it('should print message about using given configuration file', () => assert.include(stderr, `info: Configuration '${configPath}' found`));
     });
 
     describe('When dredd.yml exists', () => {
@@ -119,7 +106,7 @@ describe('CLI class Integration', () => {
 
       it('should call fs.existsSync with dredd.yml', () => assert.isTrue(fsExistsSync.calledWith(configPath)));
       it('should call configUtils.load with dredd.yml', () => assert.isTrue(configUtilsLoad.calledWith(configPath)));
-      it('should print message about using dredd.yml', () => assert.include(stdout, `info: Configuration '${configPath}' found`));
+      it('should print message about using dredd.yml', () => assert.include(stderr, `info: Configuration '${configPath}' found`));
     });
 
     describe('When dredd.yml does not exist', () => {
@@ -141,7 +128,7 @@ describe('CLI class Integration', () => {
 
       it('should call fs.existsSync with dredd.yml', () => assert.isTrue(fsExistsSync.calledWith(configPath)));
       it('should never call configUtils.load', () => assert.isFalse(configUtilsLoad.called));
-      it('should not print message about using configuration file', () => assert.notInclude(stdout, 'info: Configuration'));
+      it('should not print message about using configuration file', () => assert.notInclude(stderr, 'info: Configuration'));
     });
   });
 

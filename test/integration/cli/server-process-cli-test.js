@@ -54,9 +54,9 @@ describe('CLI - Server Process', () => {
         })
       );
 
-      it('should return understandable message', () => assert.include(cliInfo.stdout, 'Error connecting'));
+      it('should return understandable message', () => assert.include(cliInfo.stderr, 'Error connecting'));
       it('should report error for all transactions', () => {
-        const occurences = (cliInfo.stdout.match(/Error connecting/g) || []).length;
+        const occurences = (cliInfo.stderr.match(/Error connecting/g) || []).length;
         assert.equal(occurences, 5);
       });
       it('should return stats', () => assert.include(cliInfo.stdout, '5 errors'));
@@ -75,7 +75,7 @@ describe('CLI - Server Process', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         `--server=node ./test/fixtures/scripts/dummy-server.js ${DEFAULT_SERVER_PORT}`,
         '--server-wait=1',
-        '--loglevel=info'
+        '--loglevel=debug'
       ];
 
       beforeEach(done =>
@@ -85,8 +85,8 @@ describe('CLI - Server Process', () => {
         })
       );
 
-      it('should inform about starting server with custom command', () => assert.include(cliInfo.stdout, 'Starting backend server process with command'));
-      it('should redirect server\'s welcome message', () => assert.include(cliInfo.stdout, `Dummy server listening on port ${DEFAULT_SERVER_PORT}`));
+      it('should inform about starting server with custom command', () => assert.include(cliInfo.stderr, 'Starting backend server process with command'));
+      it('should redirect server\'s welcome message', () => assert.include(cliInfo.stderr, `Dummy server listening on port ${DEFAULT_SERVER_PORT}`));
       it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
     });
 
@@ -97,7 +97,7 @@ describe('CLI - Server Process', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--server=/foo/bar/baz',
         '--server-wait=1',
-        '--loglevel=info'
+        '--loglevel=debug'
       ];
 
       beforeEach(done =>
@@ -107,7 +107,7 @@ describe('CLI - Server Process', () => {
         })
       );
 
-      it('should inform about starting server with custom command', () => assert.include(cliInfo.stdout, 'Starting backend server process with command'));
+      it('should inform about starting server with custom command', () => assert.include(cliInfo.stderr, 'Starting backend server process with command'));
       it('should report problem with server process spawn', () => assert.include(cliInfo.stderr, 'Command to start backend server process failed, exiting Dredd'));
       it('should exit with status 1', () => assert.equal(cliInfo.exitStatus, 1));
     });
@@ -144,7 +144,7 @@ describe('CLI - Server Process', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           `--server=${scenario.server}`,
           '--server-wait=1',
-          '--loglevel=info'
+          '--loglevel=debug'
         ];
 
         beforeEach(done =>
@@ -154,9 +154,9 @@ describe('CLI - Server Process', () => {
           })
         );
 
-        it('should inform about starting server with custom command', () => assert.include(cliInfo.stdout, 'Starting backend server process with command'));
+        it('should inform about starting server with custom command', () => assert.include(cliInfo.stderr, 'Starting backend server process with command'));
         if (scenario.expectServerBoot) {
-          it('should redirect server\'s boot message', () => assert.include(cliInfo.stdout, `Dummy server listening on port ${DEFAULT_SERVER_PORT}`));
+          it('should redirect server\'s boot message', () => assert.include(cliInfo.stderr, `Dummy server listening on port ${DEFAULT_SERVER_PORT}`));
         }
         it('the server should not be running', done =>
           isProcessRunning('test/fixtures/scripts/', (err, isRunning) => {
@@ -186,9 +186,9 @@ describe('CLI - Server Process', () => {
         })
       );
 
-      it('should inform about starting server with custom command', () => assert.include(cliInfo.stdout, 'Starting backend server process with command'));
+      it('should inform about starting server with custom command', () => assert.include(cliInfo.stderr, 'Starting backend server process with command'));
       it('should inform about gracefully terminating the server', () => assert.include(cliInfo.stderr, 'Gracefully terminating the backend server process'));
-      it('should redirect server\'s message about ignoring termination', () => assert.include(cliInfo.stdout, 'ignoring termination'));
+      it('should redirect server\'s message about ignoring termination', () => assert.include(cliInfo.stderr, 'ignoring termination'));
       it('should inform about forcefully killing the server', () => assert.include(cliInfo.stderr, 'Killing the backend server process'));
       it('the server should not be running', done =>
         isProcessRunning('test/fixtures/scripts/', (err, isRunning) => {
