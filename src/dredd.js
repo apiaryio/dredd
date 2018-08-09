@@ -8,7 +8,7 @@ const url = require('url');
 const configureReporters = require('./configure-reporters');
 const dreddTransactions = require('dredd-transactions');
 const handleRuntimeProblems = require('./handle-runtime-problems');
-const logger = require('./reporters/logger');
+const defaultLogger = require('./logger');
 const Runner = require('./transaction-runner');
 const { applyConfiguration } = require('./configuration');
 
@@ -16,6 +16,8 @@ let options = require('./options');
 
 const PROXY_ENV_VARIABLES = ['HTTP_PROXY', 'HTTPS_PROXY', 'NO_PROXY'];
 const FILE_DOWNLOAD_TIMEOUT = 5000;
+
+let logger;
 
 function removeDuplicates(arr) {
   return arr.reduce((alreadyProcessed, currentItem) => {
@@ -49,6 +51,7 @@ class Dredd {
     this.transactions = [];
     this.runner = new Runner(this.configuration);
     configureReporters(this.configuration, this.stats, this.tests, this.runner);
+    logger = this.configuration.logger || defaultLogger;
     this.logProxySettings();
   }
 

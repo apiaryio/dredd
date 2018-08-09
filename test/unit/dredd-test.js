@@ -1,7 +1,6 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const fsStub = require('fs');
-const loggerStub = require('../../src/reporters/logger');
 const proxyquire = require('proxyquire').noCallThru();
 const requestStub = require('request');
 const sinon = require('sinon');
@@ -9,11 +8,15 @@ const { assert } = require('chai');
 
 const dreddTransactionsStub = require('dredd-transactions');
 
+const reportersLoggerStub = require('../../src/reporters/logger');
+const { Logger } = require('../../src/logger');
+
+const loggerStub = new Logger({ level: 'warn' });
 const Dredd = proxyquire('../../src/dredd', {
   request: requestStub,
   'dredd-transactions': dreddTransactionsStub,
   fs: fsStub,
-  './reporters/logger': loggerStub
+  './logger': loggerStub
 });
 
 describe('Dredd class', () => {
@@ -530,12 +533,12 @@ GET /url
 
     beforeEach(() => {
       sinon.stub(dredd.runner, 'run').callsFake((transaction, callback) => callback());
-      sinon.spy(loggerStub, 'warn');
+      sinon.spy(reportersLoggerStub, 'warn');
     });
 
     afterEach(() => {
       dredd.runner.run.restore();
-      loggerStub.warn.restore();
+      reportersLoggerStub.warn.restore();
     });
 
     it('should execute the runtime', done =>
@@ -547,7 +550,7 @@ GET /url
 
     it('should write warnings to warn logger', done =>
       dredd.run(() => {
-        assert.isOk(loggerStub.warn.called);
+        assert.isOk(reportersLoggerStub.warn.called);
         done();
       })
     );
@@ -623,14 +626,14 @@ GET /url
           path: ['./test/fixtures/warning-ambiguous.apib']
         }
       };
-      sinon.spy(loggerStub, 'warn');
+      sinon.spy(reportersLoggerStub, 'warn');
       dredd = new Dredd(configuration);
       sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
     });
 
     afterEach(() => {
       dredd.runner.executeTransaction.reset();
-      loggerStub.warn.restore();
+      reportersLoggerStub.warn.restore();
     });
 
     it('should execute some transaction', done =>
@@ -642,7 +645,7 @@ GET /url
 
     it('should print runtime warnings to stdout', done =>
       dredd.run(() => {
-        assert.isOk(loggerStub.warn.called);
+        assert.isOk(reportersLoggerStub.warn.called);
         done();
       })
     );

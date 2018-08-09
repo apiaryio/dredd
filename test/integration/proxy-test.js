@@ -4,6 +4,7 @@ const { assert } = require('chai');
 
 const { runDredd, recordLogging, createServer, DEFAULT_SERVER_PORT } = require('./helpers');
 const Dredd = require('../../src/dredd');
+const { Logger } = require('../../src/logger');
 
 const PROXY_PORT = DEFAULT_SERVER_PORT + 1;
 const PROXY_URL = `http://127.0.0.1:${PROXY_PORT}`;
@@ -20,17 +21,25 @@ function createAndRunDredd(configuration, done) {
   configuration.options.silent = true;
   configuration.options.loglevel = 'debug';
 
+  configuration.logger = new Logger({ level: 'debug', writer });
+
+  const logging = { output: '' };
+  function writer(message) {
+    logging.output += message;
+  }
+
   let dredd;
+
   recordLogging((next) => {
     dredd = new Dredd(configuration);
     dredd.configuration.http.strictSSL = false;
     next();
-  }, (err, args, dreddInitLogging) =>
+  }, (err, args, dreddLogging) =>
     runDredd(dredd, (error, info) => {
-      info.logging = `${dreddInitLogging}\n${info.logging}`;
+      info.logging = `${dreddLogging}\n${info.logging}`;
       done(error, info);
-    })
-  );
+    }),
+  logging);
 }
 
 // Creates dummy proxy server for given protocol. Records details

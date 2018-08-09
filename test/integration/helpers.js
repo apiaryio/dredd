@@ -21,18 +21,17 @@ const DREDD_BIN = require.resolve('../../bin/dredd');
 // - args (array) - array of all arguments the 'next' callback obtained
 //                  from the 'fn' function
 // - logging (string) - the recorded logging output
-function recordLogging(fn, callback) {
+function recordLogging(fn, callback, logging = { output: '' }) {
   const silent = !!logger.transports.console.silent;
   logger.transports.console.silent = true; // Supress Dredd's console output (remove if debugging)
 
-  let logging = '';
-  const record = (transport, level, message) => { logging += `${level}: ${message}\n`; };
+  const record = (transport, level, message) => { logging.output += `${level}: ${message}\n`; };
 
   logger.on('logging', record);
   fn((...args) => {
     logger.removeListener('logging', record);
     logger.transports.console.silent = silent;
-    callback(null, args, logging);
+    callback(null, args, logging.output);
   });
 }
 
