@@ -1,18 +1,19 @@
-const proxyquire = require('proxyquire').noCallThru();
 const { assert } = require('chai');
 const { EventEmitter } = require('events');
 
-const loggerStub = require('../../../src/reporters/logger');
+const BaseReporter = require('../../../src/reporters/base-reporter');
+const log = require('../../../src/logger');
 
-const BaseReporter = proxyquire('../../../src/reporters/base-reporter', {
-  './logger': loggerStub
-});
+const { createCustomLogWriter } = require('../../integration/helpers');
 
 describe('BaseReporter', () => {
   let stats = {};
   let tests = [];
   let test = {};
   let emitter = {};
+
+  const logger = new log.Logger({ level: 'debug', writer: createCustomLogWriter() });
+  const config = { options: { logger } };
 
   beforeEach(() => {
     stats = {
@@ -27,7 +28,17 @@ describe('BaseReporter', () => {
     };
     tests = [];
     emitter = new EventEmitter();
-    (new BaseReporter(emitter, stats, tests));
+    (new BaseReporter(emitter, stats, tests, config));
+  });
+
+  afterEach(() => {
+    logger.writer.output = null;
+  });
+
+  describe('when initialized', () => {
+    it('should log its name to stderr when log level is set to debug', () => {
+      assert.equal(logger.writer.output, 'Using \'base\' reporter.\n');
+    });
   });
 
   describe('when starting', () => {

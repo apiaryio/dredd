@@ -35,6 +35,13 @@ function recordLogging(fn, callback, logging = { output: '' }) {
   });
 }
 
+function createCustomLogWriter() {
+  return function writer(message) {
+    if (!writer.output) writer.output = '';
+    writer.output += `${message}\n`;
+  };
+}
+
 // Helper function which records incoming server request to given
 // server runtime info object.
 function recordServerRequest(serverRuntimeInfo, req) {
@@ -231,6 +238,7 @@ function killAll(pattern, callback) {
 module.exports = {
   DEFAULT_SERVER_PORT,
   recordLogging,
+  createCustomLogWriter,
   createServer,
   runDredd,
   runDreddWithServer,

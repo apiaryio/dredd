@@ -1,11 +1,14 @@
-const logger = require('./logger');
+const log = require('../logger');
 
-function BaseReporter(emitter, stats, tests) {
+function BaseReporter(emitter, stats, tests, config = { options: {} }) {
   this.type = 'base';
   this.stats = stats;
   this.tests = tests;
   this.configureEmitter(emitter);
-  logger.verbose(`Using '${this.type}' reporter.`);
+
+  const logger = config.options.logger || new log.Logger({ level: log.level });
+
+  logger.debug(`Using '${this.type}' reporter.`);
 }
 
 BaseReporter.prototype.configureEmitter = function (emitter) {
