@@ -4,8 +4,8 @@ const logger = require('../../src/logger');
 
 describe('Logger', () => {
   context('public interface', () => {
-    it('should contain debug/error/info/warn methods', () => {
-      ['debug', 'error', 'info', 'warn'].forEach((method) => {
+    it('should contain debug/error/info/warn/log/setLevel methods', () => {
+      ['debug', 'error', 'info', 'warn', 'log', 'setLevel'].forEach((method) => {
         assert.equal('function', typeof logger[method]);
       });
     });
@@ -30,11 +30,17 @@ describe('Logger', () => {
       assert.equal(log.level, 'debug');
     });
 
-    it('should be possible to set custom stderr writer', () => {
+    it('should be possible to set custom writer', () => {
       function writer() {}
       const log = new logger.Logger({ writer });
 
       assert.equal(log.writer, writer);
+    });
+
+    it('should be possible to set custom output stream', () => {
+      const log = new logger.Logger({ output: 'STDOUT' });
+
+      assert.equal(log.output, 'stdout');
     });
   });
 
