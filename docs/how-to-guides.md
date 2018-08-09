@@ -459,15 +459,18 @@ If you prefer to add Dredd yourself or you look for inspiration on how to add Dr
 
 <a name="circleyml-configuration-file-for-circleci"></a><!-- legacy MkDocs anchor -->
 
-### `circle.yml` Configuration File for [CircleCI][]
+### `.circleci/config.yml` Configuration File for [CircleCI][]
 
 ```
-dependencies:
-  pre:
-    - npm install -g dredd@x.x.x
-test:
-  pre:
-    - dredd apiary.apib http://127.0.0.1:3000
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - run: npm install dredd@x.x.x --no-optional --global
+      - run: dredd apiary.apib http://127.0.0.1:3000
 ```
 
 <a name="travisyml-configuration-file-for-travis-ci"></a><!-- legacy MkDocs anchor -->
@@ -476,7 +479,7 @@ test:
 
 ```
 before_install:
-  - npm install -g dredd@x.x.x
+  - npm install dredd@x.x.x --no-optional --global
 before_script:
   - dredd apiary.apib http://127.0.0.1:3000
 ```
