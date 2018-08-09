@@ -40,6 +40,10 @@ class Logger {
   warn(...args) {
     if (levels[this.level] >= 1) this.writer(...args);
   }
+
+  setLevel(level = 'error') {
+    this.level = level;
+  }
 }
 
 const defaultLogger = new Logger({ level: 'error' });
