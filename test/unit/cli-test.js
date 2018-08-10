@@ -6,7 +6,6 @@ const sinon = require('sinon');
 const { assert } = require('chai');
 
 const configUtilsStub = require('../../src/config-utils');
-const interactiveConfigStub = require('../../src/interactive-config');
 const loggerStub = require('../../src/logger');
 const options = require('../../src/options');
 const packageData = require('../../package.json');
@@ -32,11 +31,16 @@ const DreddStub = proxyquire('../../src/dredd', {
   './logger': loggerStub
 });
 
+const initStub = sinon.stub().callsFake((config, save, callback) => {
+  save(config);
+  callback();
+});
+
 const CLIStub = proxyquire('../../src/cli', {
   './dredd': DreddStub,
   console: loggerStub,
   './logger': loggerStub,
-  './interactive-config': interactiveConfigStub,
+  './init': initStub,
   './config-utils': configUtilsStub,
   fs: fsStub,
   'cross-spawn': crossSpawnStub
@@ -271,123 +275,17 @@ describe('CLI class', () => {
       it('prints out version', () => assert.include(stdout, `${packageData.name} v${packageData.version}`));
     });
 
-    describe('"init" (nodejs)', () => {
+    describe('init', () => {
       before((done) => {
-        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({ language: 'nodejs' }));
         sinon.stub(configUtilsStub, 'save');
         execCommand({ argv: ['init'] }, () => done());
       });
 
       after(() => {
-        interactiveConfigStub.run.restore();
         configUtilsStub.save.restore();
       });
 
-      it('should run interactive config', () => assert.isTrue(interactiveConfigStub.run.called));
-
-      it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
-    });
-
-    describe('"init" (python)', () => {
-      before((done) => {
-        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({ language: 'python' }));
-        sinon.stub(configUtilsStub, 'save');
-        execCommand({ argv: ['init'] }, () => done());
-      });
-
-      after(() => {
-        interactiveConfigStub.run.restore();
-        configUtilsStub.save.restore();
-      });
-
-      it('should run interactive config', () => assert.isTrue(interactiveConfigStub.run.called));
-
-      it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
-    });
-
-
-    describe('"init" (php)', () => {
-      before((done) => {
-        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({ language: 'php' }));
-        sinon.stub(configUtilsStub, 'save');
-        execCommand({ argv: ['init'] }, () => done());
-      });
-
-      after(() => {
-        interactiveConfigStub.run.restore();
-        configUtilsStub.save.restore();
-      });
-
-      it('should run interactive config', () => assert.isTrue(interactiveConfigStub.run.called));
-
-      it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
-    });
-
-    describe('"init" (ruby)', () => {
-      before((done) => {
-        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({ language: 'ruby' }));
-        sinon.stub(configUtilsStub, 'save');
-        execCommand({ argv: ['init'] }, () => done());
-      });
-
-      after(() => {
-        interactiveConfigStub.run.restore();
-        configUtilsStub.save.restore();
-      });
-
-      it('should run interactive config', () => assert.isTrue(interactiveConfigStub.run.called));
-
-      it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
-    });
-
-    describe('"init" (perl)', () => {
-      before((done) => {
-        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({ language: 'perl' }));
-        sinon.stub(configUtilsStub, 'save');
-        execCommand({ argv: ['init'] }, () => done());
-      });
-
-      after(() => {
-        interactiveConfigStub.run.restore();
-        configUtilsStub.save.restore();
-      });
-
-      it('should run interactive config', () => assert.isTrue(interactiveConfigStub.run.called));
-
-      it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
-    });
-
-    describe('"init" (go)', () => {
-      before((done) => {
-        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({ language: 'go' }));
-        sinon.stub(configUtilsStub, 'save');
-        execCommand({ argv: ['init'] }, () => done());
-      });
-
-      after(() => {
-        interactiveConfigStub.run.restore();
-        configUtilsStub.save.restore();
-      });
-
-      it('should run interactive config', () => assert.isTrue(interactiveConfigStub.run.called));
-
-      it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
-    });
-
-    describe('"init" (rust)', () => {
-      before((done) => {
-        sinon.stub(interactiveConfigStub, 'run').callsFake((argv, cb) => cb({ language: 'rust' }));
-        sinon.stub(configUtilsStub, 'save');
-        execCommand({ argv: ['init'] }, () => done());
-      });
-
-      after(() => {
-        interactiveConfigStub.run.restore();
-        configUtilsStub.save.restore();
-      });
-
-      it('should run interactive config', () => assert.isTrue(interactiveConfigStub.run.called));
-
+      it('should run interactive config', () => assert.isTrue(initStub.called));
       it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
     });
 
@@ -418,7 +316,7 @@ describe('CLI class', () => {
         cb(null, stats);
       });
 
-      sinon.stub(interactiveConfigStub, 'run').callsFake((config, cb) => cb());
+      initStub.callsFake((config, cb) => cb());
 
       sinon.stub(fsStub, 'existsSync').callsFake(() => true);
 
@@ -457,7 +355,6 @@ describe('CLI class', () => {
     after(() => {
       DreddStub.prototype.run.restore();
       DreddStub.prototype.init.restore();
-      interactiveConfigStub.run.restore();
       configUtilsStub.load.restore();
       fsStub.existsSync.restore();
     });

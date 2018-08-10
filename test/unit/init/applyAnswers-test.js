@@ -54,20 +54,8 @@ describe('init._applyAnswers()', () => {
     const config = applyAnswers(createConfig(), { apiaryApiKey: '1234' });
     assert.equal(config.custom.apiaryApiKey, '1234');
   });
-  it('keeps the Apiary API key if already present in the config', () => {
-    const config = applyAnswers(Object(createConfig()), {
-      custom: { apiaryApiKey: '1234' }
-    });
-    assert.equal(config.custom.apiaryApiKey, '1234');
-  });
   it('sets the Apiary API name if provided', () => {
     const config = applyAnswers(createConfig(), { apiaryApiName: 'myproject' });
-    assert.equal(config.custom.apiaryApiName, 'myproject');
-  });
-  it('keeps the Apiary API name if already present in the config', () => {
-    const config = applyAnswers(Object(createConfig()), {
-      custom: { apiaryApiName: 'myproject' }
-    });
     assert.equal(config.custom.apiaryApiName, 'myproject');
   });
   it('creates selected CI configuration if asked', () => {
