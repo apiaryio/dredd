@@ -7,6 +7,7 @@ const sinon = require('sinon');
 const { assert } = require('chai');
 
 const loggerStub = require('../../src/reporters/logger');
+const log = require('../../src/logger');
 
 const PORT = 9876;
 
@@ -28,6 +29,17 @@ const Dredd = proxyquire('../../src/dredd', {
   './transaction-runner': transactionRunner,
   './reporters/logger': loggerStub
 });
+
+function writerStdout(message) {
+  stdout += `${message}\n`;
+}
+
+function writerStderr(message) {
+  stderr += `${message}\n`;
+}
+
+const loggerStdout = new log.Logger({ level: 'debug', output: 'stdout', writer: writerStdout });
+const loggerStderr = new log.Logger({ level: 'debug', writer: writerStderr });
 
 function execCommand(options = {}, cb) {
   stdout = '';
@@ -137,7 +149,8 @@ describe('Dredd class Integration', () => {
         options: {
           path: ['./test/fixtures/single-get.apib'],
           reporter: ['apiary'],
-          loglevel: 'debug'
+          loggerStdout,
+          loggerStderr
         },
         custom: {
           apiaryApiUrl: `http://127.0.0.1:${PORT + 1}`,
@@ -253,7 +266,8 @@ describe('Dredd class Integration', () => {
           options: {
             path: ['./test/fixtures/single-get.apib'],
             reporter: ['apiary'],
-            level: 'verbose'
+            loggerStdout,
+            loggerStderr
           },
           custom: {
             apiaryReporterEnv: {
@@ -312,7 +326,8 @@ describe('Dredd class Integration', () => {
           options: {
             path: ['./test/fixtures/single-get.apib'],
             reporter: ['apiary'],
-            level: 'verbose'
+            loggerStdout,
+            loggerStderr
           },
           custom: {
             apiaryReporterEnv: {

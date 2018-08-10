@@ -92,7 +92,7 @@ describe('CLI - Reporters', () => {
       );
 
       it('should print URL of the test report', () => assert.include(cliInfo.stdout, 'http://example.com/test/run/1234_id'));
-      it('should print warning about missing Apiary API settings', () => assert.include(cliInfo.stdout, 'Apiary API Key or API Project Subdomain were not provided.'));
+      it('should print warning about missing Apiary API settings', () => assert.include(cliInfo.stderr, 'Apiary API Key or API Project Subdomain were not provided.'));
       it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
       it('should perform 3 requests to Apiary', () => {
         assert.deepEqual(apiaryRuntimeInfo.requestCounts, {

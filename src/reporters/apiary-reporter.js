@@ -3,7 +3,7 @@ const generateUuid = require('uuid/v4');
 const os = require('os');
 const request = require('request');
 
-const logger = require('./logger');
+const log = require('../logger');
 const packageData = require('./../../package.json');
 
 const CONNECTION_ERRORS = [
@@ -15,6 +15,9 @@ const CONNECTION_ERRORS = [
   'EHOSTUNREACH',
   'EPIPE'
 ];
+
+let loggerStdout;
+let loggerStderr;
 
 function ApiaryReporter(emitter, stats, tests, config, runner) {
   this.type = 'apiary';
@@ -37,10 +40,13 @@ function ApiaryReporter(emitter, stats, tests, config, runner) {
 
   this.configureEmitter(emitter);
 
-  logger.verbose(`Using '${this.type}' reporter.`);
+  loggerStdout = config.options.loggerStdout || new log.Logger({ level: log.level, output: 'stdout' });
+  loggerStderr = config.options.loggerStderr || new log.Logger({ level: 'warn' });
+
+  loggerStderr.debug(`Using '${this.type}' reporter.`);
 
   if (!this.configuration.apiToken && !this.configuration.apiSuite) {
-    logger.warn(`
+    loggerStderr.warn(`
 Apiary API Key or API Project Subdomain were not provided.
 Configure Dredd to be able to save test reports alongside your Apiary API project:
 https://dredd.readthedocs.io/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests
@@ -181,7 +187,7 @@ ApiaryReporter.prototype.configureEmitter = function (emitter) {
     this._performRequestAsync(path, 'PATCH', data, (error) => {
       if (error) { return callback(error); }
       const reportUrl = this.reportUrl || `https://app.apiary.io/${this.configuration.apiSuite}/tests/run/${this.remoteId}`;
-      logger.complete(`See results in Apiary at: ${reportUrl}`);
+      loggerStdout.log(`See results in Apiary at: ${reportUrl}`);
       callback();
     });
   });
@@ -202,7 +208,7 @@ ApiaryReporter.prototype._performRequestAsync = function (path, method, reqBody,
     let parsedBody;
     if (err) {
       this.serverError = true;
-      logger.debug('Requesting Apiary API errored:', `${err}` || err.code);
+      loggerStderr.debug('Requesting Apiary API errored:', `${err}` || err.code);
 
       if (Array.from(CONNECTION_ERRORS).includes(err.code)) {
         return callback(new Error('Apiary reporter could not connect to Apiary API'));
@@ -210,7 +216,7 @@ ApiaryReporter.prototype._performRequestAsync = function (path, method, reqBody,
       return callback(err);
     }
 
-    logger.verbose('Handling HTTP response from Apiary API');
+    loggerStderr.debug('Handling HTTP response from Apiary API');
 
     try {
       parsedBody = JSON.parse(resBody);
@@ -225,7 +231,7 @@ ${error.message}\n${resBody}
 
     const info = { headers: res.headers, statusCode: res.statusCode, body: parsedBody };
 
-    logger.debug('Apiary reporter response:', JSON.stringify(info, null, 2));
+    loggerStderr.debug('Apiary reporter response:', JSON.stringify(info, null, 2));
 
     callback(null, res, parsedBody);
   };
@@ -249,16 +255,16 @@ ${error.message}\n${resBody}
 
   try {
     const protocol = options.uri.split(':')[0].toUpperCase();
-    logger.verbose(`
+    loggerStderr.debug(`
 About to perform an ${protocol} request from Apiary reporter
 to Apiary API: ${options.method} ${options.uri} \
 (${body ? 'with' : 'without'} body)
 `);
-    logger.debug('Request details:', JSON.stringify({ options, body }, null, 2));
+    loggerStderr.debug('Request details:', JSON.stringify({ options, body }, null, 2));
     return request(options, handleRequest);
   } catch (error) {
     this.serverError = true;
-    logger.debug('Requesting Apiary API errored:', error);
+    loggerStderr.debug('Requesting Apiary API errored:', error);
     return callback(error);
   }
 };
