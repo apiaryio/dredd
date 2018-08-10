@@ -1,31 +1,28 @@
-const proxyquire = require('proxyquire').noCallThru();
 const sinon = require('sinon');
 const { assert } = require('chai');
 const { EventEmitter } = require('events');
 
-const loggerStub = require('../../../src/reporters/logger');
+const CliReporter = require('../../../src/reporters/cli-reporter');
+const { Logger } = require('../../../src/logger');
 
-const CliReporter = proxyquire('../../../src/reporters/cli-reporter', {
-  './logger': loggerStub
-});
+const loggerStdout = new Logger({ level: 'log', output: 'stdout', silent: true });
+const loggerStderr = new Logger({ level: 'debug', silent: true });
+
+const options = { loggerStdout, loggerStderr };
 
 describe('CliReporter', () => {
   let test = {};
 
-  before(() => { loggerStub.transports.console.silent = true; });
-
-  after(() => { loggerStub.transports.console.silent = false; });
-
   describe('when starting', () => {
-    beforeEach(() => sinon.spy(loggerStub, 'info'));
+    beforeEach(() => sinon.spy(loggerStderr, 'info'));
 
-    afterEach(() => loggerStub.info.restore());
+    afterEach(() => loggerStderr.info.restore());
 
     it('should write starting to the console', (done) => {
       const emitter = new EventEmitter();
-      (new CliReporter(emitter, {}, {}, true));
+      (new CliReporter(emitter, {}, {}, true, undefined, options));
       emitter.emit('start', '', () => {
-        assert.isOk(loggerStub.info.calledOnce);
+        assert.isOk(loggerStderr.info.calledOnce);
         done();
       });
     });
@@ -39,27 +36,25 @@ describe('CliReporter', () => {
       };
     });
 
-    beforeEach(() => sinon.spy(loggerStub, 'pass'));
-
-    afterEach(() => loggerStub.pass.restore());
+    beforeEach(() => sinon.spy(loggerStdout, 'pass'));
+    afterEach(() => loggerStdout.pass.restore());
 
     it('should write pass to the console', () => {
       const emitter = new EventEmitter();
-      (new CliReporter(emitter, {}, {}, true));
+      (new CliReporter(emitter, {}, {}, true, undefined, options));
       emitter.emit('test pass', test);
-      assert.isOk(loggerStub.pass.calledOnce);
+      assert.isOk(loggerStdout.pass.calledOnce);
     });
 
     describe('when details=true', () => {
-      beforeEach(() => sinon.spy(loggerStub, 'request'));
-
-      afterEach(() => loggerStub.request.restore());
+      beforeEach(() => sinon.spy(loggerStderr, 'request'));
+      afterEach(() => loggerStderr.request.restore());
 
       it('should write details for passing tests', () => {
         const emitter = new EventEmitter();
-        (new CliReporter(emitter, {}, {}, true, true));
+        (new CliReporter(emitter, {}, {}, true, true, options));
         emitter.emit('test pass', test);
-        assert.isOk(loggerStub.request.calledOnce);
+        assert.isOk(loggerStderr.request.calledOnce);
       });
     });
   });
@@ -73,36 +68,34 @@ describe('CliReporter', () => {
     });
 
     describe('when errors are inline', () => {
-      beforeEach(() => sinon.spy(loggerStub, 'fail'));
-
-      afterEach(() => loggerStub.fail.restore());
+      beforeEach(() => sinon.spy(loggerStdout, 'fail'));
+      afterEach(() => loggerStdout.fail.restore());
 
       it('should write fail to the console', () => {
         const emitter = new EventEmitter();
-        (new CliReporter(emitter, {}, {}, true));
+        (new CliReporter(emitter, {}, {}, true, undefined, options));
         emitter.emit('test fail', test);
-        assert.isOk(loggerStub.fail.calledTwice);
+        assert.isOk(loggerStdout.fail.calledTwice);
       });
     });
 
     describe('when errors are aggregated', () => {
-      beforeEach(() => sinon.spy(loggerStub, 'fail'));
-
-      afterEach(() => loggerStub.fail.restore());
+      beforeEach(() => sinon.spy(loggerStdout, 'fail'));
+      afterEach(() => loggerStdout.fail.restore());
 
       it('should not write full failure to the console at the time of failure', () => {
         const emitter = new EventEmitter();
-        (new CliReporter(emitter, {}, {}, false));
+        (new CliReporter(emitter, {}, {}, false, undefined, options));
         emitter.emit('test fail', test);
-        assert.isOk(loggerStub.fail.calledOnce);
+        assert.isOk(loggerStdout.fail.calledOnce);
       });
 
       it('should write full failure to the console after execution is complete', (done) => {
         const emitter = new EventEmitter();
-        const cliReporter = new CliReporter(emitter, {}, {}, false);
+        const cliReporter = new CliReporter(emitter, {}, {}, false, undefined, options);
         cliReporter.errors = [test];
         emitter.emit('end', () => {
-          assert.isOk(loggerStub.fail.calledTwice);
+          assert.isOk(loggerStdout.fail.calledTwice);
           done();
         });
       });
@@ -117,15 +110,14 @@ describe('CliReporter', () => {
       };
     });
 
-    beforeEach(() => sinon.spy(loggerStub, 'error'));
-
-    afterEach(() => loggerStub.error.restore());
+    beforeEach(() => sinon.spy(loggerStderr, 'error'));
+    afterEach(() => loggerStderr.error.restore());
 
     it('should write error to the console', () => {
       const emitter = new EventEmitter();
-      (new CliReporter(emitter, {}, {}, false));
+      (new CliReporter(emitter, {}, {}, false, undefined, options));
       emitter.emit('test error', new Error('Error'), test);
-      assert.isOk(loggerStub.error.calledTwice);
+      assert.isOk(loggerStderr.error.calledTwice);
     });
   });
 
@@ -138,9 +130,8 @@ describe('CliReporter', () => {
       };
     });
 
-    beforeEach(() => sinon.spy(loggerStub, 'error'));
-
-    afterEach(() => loggerStub.error.restore());
+    beforeEach(() => sinon.spy(loggerStderr, 'error'));
+    afterEach(() => loggerStderr.error.restore());
 
     const connectionErrors = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE'];
 
@@ -148,12 +139,12 @@ describe('CliReporter', () => {
       describe(`when error type ${errType}`, () =>
         it('should write error to the console', () => {
           const emitter = new EventEmitter();
-          (new CliReporter(emitter, {}, {}, false));
+          (new CliReporter(emitter, {}, {}, false, undefined, options));
           const error = new Error('connect');
           error.code = errType;
           emitter.emit('test error', error, test);
 
-          const messages = Object.keys(loggerStub.error.args).map((value, index) => loggerStub.error.args[index][0]);
+          const messages = Object.keys(loggerStderr.error.args).map((value, index) => loggerStderr.error.args[index][0]);
 
           assert.include(messages.join(), 'Error connecting');
         })
@@ -169,15 +160,14 @@ describe('CliReporter', () => {
       };
     });
 
-    beforeEach(() => sinon.spy(loggerStub, 'skip'));
-
-    afterEach(() => loggerStub.skip.restore());
+    beforeEach(() => sinon.spy(loggerStdout, 'skip'));
+    afterEach(() => loggerStdout.skip.restore());
 
     it('should write skip to the console', () => {
       const emitter = new EventEmitter();
-      (new CliReporter(emitter, {}, {}, false));
+      (new CliReporter(emitter, {}, {}, false, undefined, options));
       emitter.emit('test skip', test);
-      assert.isOk(loggerStub.skip.calledOnce);
+      assert.isOk(loggerStdout.skip.calledOnce);
     });
   });
 
@@ -190,19 +180,18 @@ describe('CliReporter', () => {
       };
     });
 
-    beforeEach(() => sinon.spy(loggerStub, 'complete'));
-
-    afterEach(() => loggerStub.complete.restore());
+    beforeEach(() => sinon.spy(loggerStdout, 'complete'));
+    afterEach(() => loggerStdout.complete.restore());
 
     describe('when there is at least one test', () =>
 
       it('should write to the console', (done) => {
         const emitter = new EventEmitter();
-        const cliReporter = new CliReporter(emitter, {}, {}, false);
+        const cliReporter = new CliReporter(emitter, {}, {}, false, undefined, options);
         cliReporter.tests = [test];
         cliReporter.stats.tests = 1;
         emitter.emit('end', () => {
-          assert.isOk(loggerStub.complete.calledTwice);
+          assert.isOk(loggerStdout.complete.calledTwice);
           done();
         });
       })
@@ -212,9 +201,9 @@ describe('CliReporter', () => {
 
       it('should write to the console', (done) => {
         const emitter = new EventEmitter();
-        (new CliReporter(emitter, {}, {}, false));
+        (new CliReporter(emitter, {}, {}, false, undefined, options));
         emitter.emit('end', () => {
-          assert.isOk(loggerStub.complete.calledOnce);
+          assert.isOk(loggerStdout.complete.calledOnce);
           done();
         });
       })
