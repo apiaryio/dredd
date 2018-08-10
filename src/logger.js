@@ -33,26 +33,27 @@ class Logger {
     this.level = normalizeToLowerCase(options.level) || 'error';
     this.output = normalizeToLowerCase(options.output) || 'stderr';
     this.writer = selectWriter({ output: this.output, writer: options.writer });
+    this.silent = options.silent;
   }
 
   debug(...args) {
-    if (levels[this.level] >= 3) this.writer(...args);
+    if (levels[this.level] >= 3 && !this.silent) this.writer(...args);
   }
 
   error(...args) {
-    if (levels[this.level] >= 0) this.writer(...args);
+    if (levels[this.level] >= 0 && !this.silent) this.writer(...args);
   }
 
   info(...args) {
-    if (levels[this.level] >= 2) this.writer(...args);
+    if (levels[this.level] >= 2 && !this.silent) this.writer(...args);
   }
 
   log(...args) {
-    if (levels[this.level] >= 0) this.writer(...args);
+    if (levels[this.level] >= 0 && !this.silent) this.writer(...args);
   }
 
   warn(...args) {
-    if (levels[this.level] >= 1) this.writer(...args);
+    if (levels[this.level] >= 1 && !this.silent) this.writer(...args);
   }
 
   setLevel(level = 'error') {
