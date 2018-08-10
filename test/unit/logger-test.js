@@ -4,8 +4,14 @@ const logger = require('../../src/logger');
 
 describe('Logger', () => {
   context('public interface', () => {
-    it('should contain debug/error/info/warn/log/setLevel methods', () => {
+    it('should contain debug/error/info/warn/log methods', () => {
       ['debug', 'error', 'info', 'warn', 'log', 'setLevel'].forEach((method) => {
+        assert.equal('function', typeof logger[method]);
+      });
+    });
+
+    it('should contain pass/fail/skip/expected/actual/request/complete methods', () => {
+      ['pass', 'fail', 'skip', 'expected', 'actual', 'request', 'complete'].forEach((method) => {
         assert.equal('function', typeof logger[method]);
       });
     });
@@ -47,8 +53,8 @@ describe('Logger', () => {
   context('log levels', () => {
     let messages;
 
-    function writer(arg) {
-      messages.push(arg);
+    function writer(...args) {
+      messages.push(args.join(' '));
     }
 
     beforeEach(() => {
@@ -64,7 +70,7 @@ describe('Logger', () => {
         log.info('INFO');
         log.debug('DEBUG');
 
-        assert.deepEqual(messages, ['ERROR']);
+        assert.deepEqual(messages, ['error: ERROR']);
       });
     });
 
@@ -77,7 +83,7 @@ describe('Logger', () => {
         log.info('INFO');
         log.debug('DEBUG');
 
-        assert.deepEqual(messages, ['ERROR', 'WARN']);
+        assert.deepEqual(messages, ['error: ERROR', 'warn: WARN']);
       });
     });
 
@@ -90,7 +96,10 @@ describe('Logger', () => {
         log.info('INFO');
         log.debug('DEBUG');
 
-        assert.deepEqual(messages, ['ERROR', 'WARN', 'INFO']);
+        assert.deepEqual(
+          messages,
+          ['error: ERROR', 'warn: WARN', 'info: INFO']
+        );
       });
     });
 
@@ -103,7 +112,38 @@ describe('Logger', () => {
         log.info('INFO');
         log.debug('DEBUG');
 
-        assert.deepEqual(messages, ['ERROR', 'WARN', 'INFO', 'DEBUG']);
+        assert.deepEqual(
+          messages,
+          ['error: ERROR', 'warn: WARN', 'info: INFO', 'debug: DEBUG']
+        );
+      });
+    });
+  });
+
+  context('timestamp', () => {
+    let messages;
+
+    function writer(...args) {
+      messages.push(args.join(' '));
+    }
+
+    beforeEach(() => {
+      messages = [];
+    });
+
+    describe('when timestamp option is not enabled', () => {
+      it('should not be possible to see timestamp string in the log', () => {
+        const log = new logger.Logger({ level: 'error', writer });
+        log.error('ERROR');
+        assert.notInclude(messages[0], ['Z']);
+      });
+    });
+
+    describe('when timestamp option is enabled', () => {
+      it('should be possible to see timestamp string in the log', () => {
+        const log = new logger.Logger({ level: 'error', timestamp: true, writer });
+        log.error('ERROR');
+        assert.include(messages[0], ['Z']);
       });
     });
   });

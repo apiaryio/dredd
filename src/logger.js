@@ -2,12 +2,29 @@ const debug = require('debug')('*');
 
 const levels = {
   debug: 3,
-  error: 0,
-  log: 0,
+
+  actual: 2,
+  complete: 2,
+  expected: 2,
+  fail: 2,
+  pass: 2,
+  request: 2,
+  skip: 2,
+
   info: 2,
   warning: 1,
-  warn: 1
+  warn: 1,
+  error: 0,
+  log: 0
 };
+
+function composeArguments(type, ts, ...args) {
+  return [ts, ts ? ' - ' : '', `${type}:`].filter(item => item !== '').concat(args);
+}
+
+function createTimestamp() {
+  return `${(new Date(Date.now())).toISOString()}`;
+}
 
 function normalizeToLowerCase(input) {
   if (typeof input === 'string') return input.toLowerCase();
@@ -20,6 +37,16 @@ function selectWriter(options) {
   return console.log.bind(console);
 }
 
+function write(type, ...args) {
+  if (levels[this.level] >= levels[type] && !this.silent) {
+    this.writer(...composeArguments(
+      type,
+      this.timestamp ? createTimestamp() : '',
+      ...args
+    ));
+  }
+}
+
 /** Class representing application level logger. */
 class Logger {
   /**
@@ -28,46 +55,33 @@ class Logger {
    * @param {Object} [options.level] Custom log level - error|warn[ing]|info|debug|log
    * @param {Object} [options.output] Output stream - stderr|stdout
    * @param {Object} [options.writer] Custom stdout|stderr|whatever writer, overrides options.output
+   * @param {Object} [options.silent] Disables output to stderr|stdout
+   * @param {Object} [options.timestamp] Prefixes log with timestamp in ISO format
    */
   constructor(options = {}) {
     this.level = normalizeToLowerCase(options.level) || 'error';
     this.output = normalizeToLowerCase(options.output) || 'stderr';
     this.writer = selectWriter({ output: this.output, writer: options.writer });
     this.silent = options.silent;
+    this.timestamp = options.timestamp;
   }
 
-  debug(...args) {
-    if (levels[this.level] >= 3 && !this.silent) this.writer(...args);
-  }
-
-  error(...args) {
-    if (levels[this.level] >= 0 && !this.silent) this.writer(...args);
-  }
-
-  info(...args) {
-    if (levels[this.level] >= 2 && !this.silent) this.writer(...args);
-  }
-
-  log(...args) {
-    if (levels[this.level] >= 0 && !this.silent) this.writer(...args);
-  }
-
-  warn(...args) {
-    if (levels[this.level] >= 1 && !this.silent) this.writer(...args);
-  }
+  debug(...args) { write.bind(this)('debug', ...args); }
+  error(...args) { write.bind(this)('error', ...args); }
+  info(...args) { write.bind(this)('info', ...args); }
+  log(...args) { write.bind(this)('log', ...args); }
+  warn(...args) { write.bind(this)('warn', ...args); }
 
   // CLI reporter logging API
-  pass(...args) { this.info(...['pass:'].concat(args)); }
-  fail(...args) { this.info(...['fail:'].concat(args)); }
-  skip(...args) { this.info(...['skip:'].concat(args)); }
-  expected(...args) { this.info(...['expected:'].concat(args)); }
-  actual(...args) { this.info(...['actual:'].concat(args)); }
-  request(...args) { this.info(...['request:'].concat(args)); }
-  complete(...args) { this.info(...['complete:'].concat(args)); }
+  actual(...args) { write.bind(this)('actual', ...args); }
+  complete(...args) { write.bind(this)('complete', ...args); }
+  expected(...args) { write.bind(this)('expected', ...args); }
+  fail(...args) { write.bind(this)('fail', ...args); }
+  pass(...args) { write.bind(this)('pass', ...args); }
+  skip(...args) { write.bind(this)('skip', ...args); }
+  request(...args) { write.bind(this)('request', ...args); }
 
-  setLevel(level = 'error') {
-    this.level = level;
-  }
+  setLevel(level = 'error') { this.level = level; }
 }
 
 const defaultLogger = new Logger({ level: 'error' });
