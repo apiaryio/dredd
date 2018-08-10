@@ -56,6 +56,15 @@ class Logger {
     if (levels[this.level] >= 1 && !this.silent) this.writer(...args);
   }
 
+  // CLI reporter logging API
+  pass(...args) { this.info(...['pass:'].concat(args)); }
+  fail(...args) { this.info(...['fail:'].concat(args)); }
+  skip(...args) { this.info(...['skip:'].concat(args)); }
+  expected(...args) { this.info(...['expected:'].concat(args)); }
+  actual(...args) { this.info(...['actual:'].concat(args)); }
+  request(...args) { this.info(...['request:'].concat(args)); }
+  complete(...args) { this.info(...['complete:'].concat(args)); }
+
   setLevel(level = 'error') {
     this.level = level;
   }
