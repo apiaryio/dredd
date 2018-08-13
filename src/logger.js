@@ -19,7 +19,7 @@ const levels = {
 };
 
 function composeArguments(type, ts, ...args) {
-  return [ts, ts ? ' - ' : '', `${type}:`].filter(item => item !== '').concat(args);
+  return [ts, ts ? '-' : '', `${type}:`].filter(item => item !== '').concat(args);
 }
 
 function createTimestamp() {
@@ -62,8 +62,8 @@ class Logger {
     this.level = normalizeToLowerCase(options.level) || 'error';
     this.output = normalizeToLowerCase(options.output) || 'stderr';
     this.writer = selectWriter({ output: this.output, writer: options.writer });
-    this.silent = options.silent;
-    this.timestamp = options.timestamp;
+    this.silent = options.silent || false;
+    this.timestamp = options.timestamp || false;
   }
 
   debug(...args) { write.bind(this)('debug', ...args); }
@@ -81,7 +81,11 @@ class Logger {
   skip(...args) { write.bind(this)('skip', ...args); }
   request(...args) { write.bind(this)('request', ...args); }
 
-  setLevel(level = 'error') { this.level = level; }
+  set(options = {}) {
+    Object.keys(options).forEach((key) => {
+      this[key] = options[key];
+    });
+  }
 }
 
 const defaultLogger = new Logger({ level: 'error' });

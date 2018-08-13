@@ -5,7 +5,7 @@ const logger = require('../../src/logger');
 describe('Logger', () => {
   context('public interface', () => {
     it('should contain debug/error/info/warn/log methods', () => {
-      ['debug', 'error', 'info', 'warn', 'log', 'setLevel'].forEach((method) => {
+      ['debug', 'error', 'info', 'warn', 'log'].forEach((method) => {
         assert.equal('function', typeof logger[method]);
       });
     });
@@ -14,6 +14,10 @@ describe('Logger', () => {
       ['pass', 'fail', 'skip', 'expected', 'actual', 'request', 'complete'].forEach((method) => {
         assert.equal('function', typeof logger[method]);
       });
+    });
+
+    it('should contain set method', () => {
+      assert.equal('function', typeof logger.set);
     });
 
     it('should be possible to create multiple logger instances', () => {

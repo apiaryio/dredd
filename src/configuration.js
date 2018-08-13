@@ -111,7 +111,36 @@ function applyConfiguration(config) {
   return configuration;
 }
 
+function compileLoggerConfiguration(argv) {
+  const configuration = {};
+  const argvOptions = {
+    loglevel: 'level',
+    timestamp: 'timestamp',
+    silent: 'silent',
+    color: 'color',
+    '-l': 'level',
+    '-t': 'timestamp',
+    '-q': 'silent',
+    '-c': 'color'
+  };
+
+  if (Array.isArray(argv)) {
+    const keys = Object.keys(argvOptions);
+    argv.forEach((arg) => {
+      keys.forEach((key) => {
+        if (arg.includes(key)) {
+          const value = arg.split('=')[1];
+          configuration[argvOptions[key]] = value || true;
+        }
+      });
+    });
+  }
+
+  return configuration;
+}
+
 module.exports = {
   applyConfiguration,
-  applyLoggingOptions
+  applyLoggingOptions,
+  compileLoggerConfiguration
 };

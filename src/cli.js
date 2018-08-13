@@ -10,7 +10,7 @@ const Dredd = require('./dredd');
 const ignorePipeErrors = require('./ignore-pipe-errors');
 const interactiveConfig = require('./interactive-config');
 const logger = require('./logger');
-const { applyLoggingOptions } = require('./configuration');
+const { applyLoggingOptions, compileLoggerConfiguration } = require('./configuration');
 const { spawn } = require('./child-process');
 
 const packageData = require('../package.json');
@@ -38,14 +38,8 @@ class CLI {
   // This method makes sure that any log.warn|info|debug calls go
   // through if `--loglevel` command line argument is set
   initializeLogger() {
-    if (Array.isArray(this.custom.argv) &&
-        this.custom.argv.some(arg => arg.includes('loglevel'))) {
-      const level = this.custom.argv
-        .find(arg => arg.includes('loglevel'))
-        .split('=')[1];
-
-      logger.setLevel(level);
-    }
+    const options = compileLoggerConfiguration(this.custom.argv);
+    logger.set(options);
   }
 
   setOptimistArgv() {
