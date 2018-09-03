@@ -817,7 +817,7 @@ If your hooks crash, Dredd will send an error to reporters, alongside with curre
 [apib-required]: https://apiblueprint.org/documentation/mson/specification.html#353-type-attribute
 [apib-fixed]: https://apiblueprint.org/documentation/mson/specification.html#353-type-attribute
 [apib-enum]: https://apiblueprint.org/documentation/mson/specification.html#212-structure-types
-[json-schema-enum]: https://spacetelescope.github.io/understanding-json-schema/reference/generic.html#enumerated-values
-[json-schema-additional-properties]: https://spacetelescope.github.io/understanding-json-schema/reference/object.html#properties
-[json-schema-required]: https://spacetelescope.github.io/understanding-json-schema/reference/object.html#required-properties
-[json-schema-arrays]: https://spacetelescope.github.io/understanding-json-schema/reference/array.html
+[json-schema-enum]: https://json-schema.org/understanding-json-schema/reference/generic.html#enumerated-values
+[json-schema-additional-properties]: https://json-schema.org/understanding-json-schema/reference/object.html#properties
+[json-schema-required]: https://json-schema.org/understanding-json-schema/reference/object.html#required-properties
+[json-schema-arrays]: https://json-schema.org/understanding-json-schema/reference/array.html
