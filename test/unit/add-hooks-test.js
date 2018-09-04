@@ -212,8 +212,8 @@ describe('addHooks(runner, transactions, callback)', () => {
         sinon.spy(loggerStub, 'warn');
         sinon.spy(loggerStub, 'info');
         sinon.spy(fsStub, 'readFile');
-        proxyquireSpy.reset();
-        sandboxHooksCodeSpy.reset();
+        proxyquireSpy.resetHistory();
+        sandboxHooksCodeSpy.resetHistory();
         done();
       });
 
@@ -221,8 +221,8 @@ describe('addHooks(runner, transactions, callback)', () => {
         loggerStub.warn.restore();
         loggerStub.info.restore();
         fsStub.readFile.restore();
-        proxyquireSpy.reset();
-        sandboxHooksCodeSpy.reset();
+        proxyquireSpy.resetHistory();
+        sandboxHooksCodeSpy.resetHistory();
         done();
       });
 
@@ -280,16 +280,16 @@ after('Machines > Machines collection > Get Machines', function(transaction){
         sinon.spy(loggerStub, 'warn');
         sinon.spy(loggerStub, 'info');
         sinon.spy(fsStub, 'readFile');
-        proxyquireSpy.reset();
-        sandboxHooksCodeSpy.reset();
+        proxyquireSpy.resetHistory();
+        sandboxHooksCodeSpy.resetHistory();
       });
 
       afterEach(() => {
         loggerStub.warn.restore();
         loggerStub.info.restore();
         fsStub.readFile.restore();
-        proxyquireSpy.reset();
-        sandboxHooksCodeSpy.reset();
+        proxyquireSpy.resetHistory();
+        sandboxHooksCodeSpy.resetHistory();
       });
 
       it('should not use proxyquire', done =>

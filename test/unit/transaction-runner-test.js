@@ -1733,7 +1733,7 @@ function(transactions){
         });
 
         afterEach(() => {
-          beforeEachStub.reset();
+          beforeEachStub.resetHistory();
           nock.cleanAll();
         });
 
@@ -1772,7 +1772,7 @@ function(transactions){
         });
 
         afterEach(() => {
-          beforeEachValidationStub.reset();
+          beforeEachValidationStub.resetHistory();
           nock.cleanAll();
         });
 
@@ -1819,7 +1819,7 @@ function(transactions){
         });
 
         afterEach(() => {
-          afterEachStub.reset();
+          afterEachStub.resetHistory();
           nock.cleanAll();
         });
 
@@ -2164,7 +2164,7 @@ function(transactions){
         });
 
         afterEach(() => {
-          configuration.emitter.emit.reset();
+          configuration.emitter.emit.resetHistory();
           configuration.emitter.emit.restore();
         });
 
@@ -2249,7 +2249,7 @@ function(transactions){
         });
 
         afterEach(() => {
-          configuration.emitter.emit.reset();
+          configuration.emitter.emit.resetHistory();
           configuration.emitter.emit.restore();
         });
 
@@ -2333,7 +2333,7 @@ function(transactions){
       beforeEach(() => sinon.stub(configuration.emitter, 'emit'));
 
       afterEach(() => {
-        configuration.emitter.emit.reset();
+        configuration.emitter.emit.resetHistory();
         configuration.emitter.emit.restore();
       });
 

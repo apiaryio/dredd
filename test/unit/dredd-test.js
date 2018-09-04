@@ -566,7 +566,7 @@ GET /url
       sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
     });
 
-    afterEach(() => dredd.runner.executeTransaction.reset());
+    afterEach(() => dredd.runner.executeTransaction.resetHistory());
 
     it('should pass the error to the callback function', done =>
       dredd.run((error) => {
@@ -597,7 +597,7 @@ GET /url
       sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
     });
 
-    afterEach(() => dredd.runner.executeTransaction.reset());
+    afterEach(() => dredd.runner.executeTransaction.resetHistory());
 
     it('should NOT execute any transaction', done =>
       dredd.run(() => {
@@ -629,7 +629,7 @@ GET /url
     });
 
     afterEach(() => {
-      dredd.runner.executeTransaction.reset();
+      dredd.runner.executeTransaction.resetHistory();
       loggerStub.warn.restore();
     });
 
@@ -668,7 +668,7 @@ GET /url
       sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
     });
 
-    afterEach(() => dredd.runner.executeTransaction.reset());
+    afterEach(() => dredd.runner.executeTransaction.resetHistory());
 
     it('should execute the runtime', done =>
       dredd.run(() => {
