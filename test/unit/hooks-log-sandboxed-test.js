@@ -47,7 +47,7 @@ describe('hooksLogSandboxed()', () => {
   });
 
   describe('passes arguments further to hooks-log', () => {
-    beforeEach(() => hooksLogStubSpy.reset());
+    beforeEach(() => hooksLogStubSpy.resetHistory());
 
     it('should pass two arguments if only two were used', () => {
       const originLogs = clone(exampleLog);
