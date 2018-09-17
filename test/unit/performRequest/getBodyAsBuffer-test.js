@@ -5,7 +5,7 @@ const {
 } = require('../../../src/performRequest');
 
 
-describe('performRequest.getBodyAsBuffer()', () => {
+describe('performRequest._getBodyAsBuffer()', () => {
   describe('when the body is a Buffer', () => {
     it('returns the body unmodified', () => {
       const body = Buffer.from([0xFF, 0xEF, 0xBF, 0xBE]);

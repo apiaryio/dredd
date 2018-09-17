@@ -8,7 +8,7 @@ const spawnSync = require('cross-spawn').sync;
 const configUtils = require('./config-utils');
 const Dredd = require('./dredd');
 const ignorePipeErrors = require('./ignore-pipe-errors');
-const interactiveConfig = require('./interactive-config');
+const interactiveConfig = require('./init');
 const logger = require('./logger');
 const { applyLoggingOptions } = require('./configuration');
 const { spawn } = require('./child-process');
@@ -147,34 +147,10 @@ Example:
     if (this.argv._[0] === 'init' || this.argv.init === true) {
       logger.silly('Starting interactive configuration.');
       this.finished = true;
-      interactiveConfig.run(this.argv, (config) => {
+      interactiveConfig(this.argv, (config) => {
         configUtils.save(config);
-        console.log('');
-        console.log('Configuration saved to dredd.yml');
-        console.log('');
-        if (config.language === 'nodejs') {
-          console.log('Run test now, with:');
-        } else {
-          console.log('Install hooks handler and run Dredd test with:');
-        }
-        console.log('');
-        if (config.language === 'ruby') {
-          console.log('  $ gem install dredd_hooks');
-        } else if (config.language === 'python') {
-          console.log('  $ pip install dredd_hooks');
-        } else if (config.language === 'php') {
-          console.log('  $ composer require ddelnano/dredd-hooks-php --dev');
-        } else if (config.language === 'perl') {
-          console.log('  $ cpanm Dredd::Hooks');
-        } else if (config.language === 'go') {
-          console.log('  $ go get github.com/snikch/goodman/cmd/goodman');
-        } else if (config.language === 'rust') {
-          console.log('  $ cargo install dredd-hooks');
-        }
-
-        console.log('  $ dredd');
-        console.log('');
-
+      }, (err) => {
+        if (err) { logger.error('Could not configure Dredd', err); }
         this._processExit(0);
       });
 

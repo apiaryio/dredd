@@ -5,7 +5,7 @@ const {
 } = require('../../../src/performRequest');
 
 
-describe('performRequest.createTransactionRes()', () => {
+describe('performRequest._createTransactionRes()', () => {
   const res = { statusCode: 200, headers: {} };
 
   it('sets the status code', () =>

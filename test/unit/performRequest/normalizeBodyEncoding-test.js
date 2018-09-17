@@ -5,7 +5,7 @@ const {
 } = require('../../../src/performRequest');
 
 
-describe('performRequest.normalizeBodyEncoding()', () => {
+describe('performRequest._normalizeBodyEncoding()', () => {
   ['utf-8', 'utf8', 'UTF-8', 'UTF8'].forEach(value =>
     it(`normalizes ${JSON.stringify(value)} to utf-8`, () =>
       assert.equal(normalizeBodyEncoding(value), 'utf-8')

@@ -6,7 +6,7 @@ const {
 } = require('../../../src/performRequest');
 
 
-describe('performRequest.normalizeContentLengthHeader()', () => {
+describe('performRequest._normalizeContentLengthHeader()', () => {
   let headers;
 
   const logger = { warn: sinon.spy() };

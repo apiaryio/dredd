@@ -5,7 +5,7 @@ const {
 } = require('../../../src/performRequest');
 
 
-describe('performRequest.detectBodyEncoding()', () => {
+describe('performRequest._detectBodyEncoding()', () => {
   it('detects binary content as Base64', () =>
     assert.equal(
       detectBodyEncoding(Buffer.from([0xFF, 0xEF, 0xBF, 0xBE])),
