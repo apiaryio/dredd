@@ -10,7 +10,7 @@ describe('performRequest._normalizeContentLengthHeader()', () => {
   let headers;
 
   const logger = { warn: sinon.spy() };
-  beforeEach(() => logger.warn.reset());
+  beforeEach(() => logger.warn.resetHistory());
 
   describe('when there is no body and no Content-Length', () => {
     beforeEach(() => {

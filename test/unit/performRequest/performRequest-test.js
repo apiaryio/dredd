@@ -16,7 +16,7 @@ describe('performRequest()', () => {
   const request = sinon.stub().callsArgWithAsync(1, null, res, Buffer.from('Bye'));
   const logger = { debug: sinon.spy() };
 
-  beforeEach(() => { logger.debug.reset(); });
+  beforeEach(() => { logger.debug.resetHistory(); });
 
   it('does not modify the original HTTP options object', (done) => {
     const httpOptions = { json: true };
