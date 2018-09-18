@@ -17,7 +17,7 @@ describe('init._applyAnswers()', () => {
     wercker: sinon.spy()
   };
 
-  beforeEach(() => Object.keys(ci).forEach(name => ci[name].reset()));
+  beforeEach(() => Object.keys(ci).forEach(name => ci[name].resetHistory()));
 
   it('applies the API description and the API host as positional CLI arguments', () => {
     const config = applyAnswers(createConfig(), {

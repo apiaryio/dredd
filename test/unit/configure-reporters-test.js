@@ -35,14 +35,14 @@ const configureReporters = proxyquire('../../src/configure-reporters', {
 
 const resetStubs = function () {
   emitterStub.removeAllListeners();
-  BaseReporterStub.reset();
-  CliReporterStub.reset();
-  XUnitReporterStub.reset();
-  DotReporterStub.reset();
-  NyanCatReporterStub.reset();
-  HtmlReporterStub.reset();
-  MarkdownReporterStub.reset();
-  return ApiaryReporterStub.reset();
+  BaseReporterStub.resetHistory();
+  CliReporterStub.resetHistory();
+  XUnitReporterStub.resetHistory();
+  DotReporterStub.resetHistory();
+  NyanCatReporterStub.resetHistory();
+  HtmlReporterStub.resetHistory();
+  MarkdownReporterStub.resetHistory();
+  return ApiaryReporterStub.resetHistory();
 };
 
 

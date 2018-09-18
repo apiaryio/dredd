@@ -38,9 +38,9 @@ describe('hooksLog()', () => {
 
   describe('functionality', () => {
     beforeEach(() => {
-      loggerStub.log.reset();
-      loggerStub.debug.reset();
-      loggerStub.hook.reset();
+      loggerStub.log.resetHistory();
+      loggerStub.debug.resetHistory();
+      loggerStub.hook.resetHistory();
     });
 
     it('should push message to the passed array and return the new array', () => {
