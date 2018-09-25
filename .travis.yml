@@ -1,3 +1,5 @@
+# GH_TOKEN and NPM_TOKEN are expected to be set
+# in https://travis-ci.org/apiaryio/dredd/settings
 sudo: false
 dist: "trusty"
 language: "node_js"
@@ -6,10 +8,6 @@ addons:
     packages:
       - "python3"
       - "python3-pip"
-env:
-  global:
-    # GH_TOKEN and NPM_TOKEN encrypted by 'travis encrypt' utility
-    - secure: "gO5DrzOfF+l3hjvs0kLYUrGEnYVwrDy7NTGNrtPmLrrfdS6qmUNbTVggjra2aDM82lZYo0slZaOtjedSd8GMNE41egHAq0aGMJfhNrXjr+ROOIkc1BRUn3vTp5lk/n4eU7bLozoiriBphmKHHwZqekSn2orvIpAtoWL/JPVzheY="
 cache:
   directories:
     - "node_modules"
