@@ -10,8 +10,8 @@
     "node": ">= 6"
   },
   "scripts": {
-    "build": "babel ./src --out-dir ./lib/",
-    "build:watch": "babel ./src --out-dir ./lib/ --watch",
+    "build": "babel ./src --out-dir ./lib/ --copy-files",
+    "build:watch": "babel ./src --out-dir ./lib/ --copy-files --watch",
     "coveralls": "scripts/coveralls.sh",
     "docs:lint": "sphinx-build -nW -b linkcheck docs docs/_build/",
     "docs:build": "sphinx-build -nW -b html docs docs/_build/",
@@ -20,9 +20,9 @@
     "prepare": "npm run build",
     "pretest": "npm run build",
     "semantic-release": "scripts/semantic-release.sh",
-    "test": "mocha \"test/**/*-test.js\"",
-    "test:coverage": "scripts/coverage.sh",
-    "test:debug": "mocha --debug-brk \"test/**/*-test.js\""
+    "test": "mocha \"./test/**/*-test.js\"",
+    "test:coverage": "./scripts/coverage.sh",
+    "test:debug": "mocha --debug-brk \"./test/**/*-test.js\""
   },
   "repository": {
     "type": "git",
