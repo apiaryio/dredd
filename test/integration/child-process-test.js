@@ -38,20 +38,24 @@ function runChildProcess(command, fn, callback) {
 
   childProcess.on('crash', onCrash);
 
-  setTimeout(() => {
-    fn(childProcess);
+  setTimeout(
+    () => {
+      fn(childProcess);
 
-    setTimeout(() => {
-      childProcess.removeListener('exit', onExit);
-      childProcess.removeListener('error', onError);
-      childProcess.removeListener('crash', onCrash);
+      setTimeout(
+        () => {
+          childProcess.removeListener('exit', onExit);
+          childProcess.removeListener('error', onError);
+          childProcess.removeListener('crash', onCrash);
 
-      processInfo.childProcess = childProcess;
-      callback(null, processInfo);
-    }
-      , WAIT_AFTER_COMMAND_TERMINATED_MS);
-  }
-    , WAIT_AFTER_COMMAND_SPAWNED_MS);
+          processInfo.childProcess = childProcess;
+          callback(null, processInfo);
+        },
+        WAIT_AFTER_COMMAND_TERMINATED_MS
+      );
+    },
+    WAIT_AFTER_COMMAND_SPAWNED_MS
+  );
 }
 
 describe('Babysitting Child Processes', () => {
@@ -59,13 +63,13 @@ describe('Babysitting Child Processes', () => {
     describe('process with support for graceful termination', () => {
       let processInfo;
 
-      before(done =>
-        runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess.signalKill()
-          , (err, info) => {
-            processInfo = info;
-            done(err);
-          })
-      );
+      before(done => runChildProcess(
+        'test/fixtures/scripts/stdout.coffee', childProcess => childProcess.signalKill(),
+        (err, info) => {
+          processInfo = info;
+          done(err);
+        }
+      ));
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
       it('does not log a message about being gracefully terminated', () => assert.notInclude(processInfo.stdout, 'exiting'));
@@ -82,13 +86,13 @@ describe('Babysitting Child Processes', () => {
     describe('process without support for graceful termination', () => {
       let processInfo;
 
-      before(done =>
-        runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', childProcess => childProcess.signalKill()
-          , (err, info) => {
-            processInfo = info;
-            done(err);
-          })
-      );
+      before(done => runChildProcess(
+        'test/fixtures/scripts/endless-ignore-term.coffee', childProcess => childProcess.signalKill(),
+        (err, info) => {
+          processInfo = info;
+          done(err);
+        }
+      ));
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
       it('does not log a message about ignoring graceful termination', () => assert.notInclude(processInfo.stdout, 'ignoring'));
@@ -103,66 +107,17 @@ describe('Babysitting Child Processes', () => {
     });
   });
 
-  ['signalTerm', 'terminate'].forEach(functionName =>
-    describe(`when gracefully terminated by childProcess.${functionName}()`, () => {
-      describe('process with support for graceful termination', () => {
-        let processInfo;
-
-        before(done =>
-          runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess[functionName]()
-            , (err, info) => {
-              processInfo = info;
-              done(err);
-            })
-        );
-        after(done => helpers.kill(processInfo.childProcess.pid, done));
-
-        it('logs a message about being gracefully terminated', () => assert.include(processInfo.stdout, 'exiting'));
-        it('gets terminated', () => assert.isTrue(processInfo.terminated));
-        if (process.platform !== 'win32') { // Windows does not have signals
-          it('does not get terminated directly by the signal', () => assert.isNull(processInfo.signal));
-        }
-        it('returns zero status code', () => assert.equal(processInfo.exitStatus, 0));
-        it('does not emit an error', () => assert.isUndefined(processInfo.error));
-      });
-
-      describe('process without support for graceful termination', () => {
-        let processInfo;
-
-        before(done =>
-          runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', childProcess => childProcess.terminate()
-            , (err, info) => {
-              processInfo = info;
-              done(err);
-            })
-        );
-        after(done => helpers.kill(processInfo.childProcess.pid, done));
-
-        it('logs a message about ignoring the graceful termination attempt', () => assert.include(processInfo.stdout, 'ignoring'));
-        it('does not get terminated', () => assert.isFalse(processInfo.terminated));
-        it('has undefined status code', () => assert.isUndefined(processInfo.exitStatus));
-        it('emits an error', () => assert.instanceOf(processInfo.error, Error));
-        it('the error has a message about unsuccessful termination', () =>
-          assert.equal(
-            processInfo.error.message,
-            `Unable to gracefully terminate process ${processInfo.childProcess.pid}`
-          )
-        );
-      });
-    })
-  );
-
-  describe('when gracefully terminated by childProcess.terminate({\'force\': true})', () => {
+  ['signalTerm', 'terminate'].forEach(functionName => describe(`when gracefully terminated by childProcess.${functionName}()`, () => {
     describe('process with support for graceful termination', () => {
       let processInfo;
 
-      before(done =>
-        runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess.terminate({ force: true })
-          , (err, info) => {
-            processInfo = info;
-            done(err);
-          })
-      );
+      before(done => runChildProcess(
+        'test/fixtures/scripts/stdout.coffee', childProcess => childProcess[functionName](),
+        (err, info) => {
+          processInfo = info;
+          done(err);
+        }
+      ));
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
       it('logs a message about being gracefully terminated', () => assert.include(processInfo.stdout, 'exiting'));
@@ -177,13 +132,58 @@ describe('Babysitting Child Processes', () => {
     describe('process without support for graceful termination', () => {
       let processInfo;
 
-      before(done =>
-        runChildProcess('test/fixtures/scripts/endless-ignore-term.coffee', childProcess => childProcess.terminate({ force: true })
-          , (err, info) => {
-            processInfo = info;
-            done(err);
-          })
-      );
+      before(done => runChildProcess(
+        'test/fixtures/scripts/endless-ignore-term.coffee', childProcess => childProcess.terminate(),
+        (err, info) => {
+          processInfo = info;
+          done(err);
+        }
+      ));
+      after(done => helpers.kill(processInfo.childProcess.pid, done));
+
+      it('logs a message about ignoring the graceful termination attempt', () => assert.include(processInfo.stdout, 'ignoring'));
+      it('does not get terminated', () => assert.isFalse(processInfo.terminated));
+      it('has undefined status code', () => assert.isUndefined(processInfo.exitStatus));
+      it('emits an error', () => assert.instanceOf(processInfo.error, Error));
+      it('the error has a message about unsuccessful termination', () => assert.equal(
+        processInfo.error.message,
+        `Unable to gracefully terminate process ${processInfo.childProcess.pid}`
+      ));
+    });
+  }));
+
+  describe('when gracefully terminated by childProcess.terminate({\'force\': true})', () => {
+    describe('process with support for graceful termination', () => {
+      let processInfo;
+
+      before(done => runChildProcess(
+        'test/fixtures/scripts/stdout.coffee', childProcess => childProcess.terminate({ force: true }),
+        (err, info) => {
+          processInfo = info;
+          done(err);
+        }
+      ));
+      after(done => helpers.kill(processInfo.childProcess.pid, done));
+
+      it('logs a message about being gracefully terminated', () => assert.include(processInfo.stdout, 'exiting'));
+      it('gets terminated', () => assert.isTrue(processInfo.terminated));
+      if (process.platform !== 'win32') { // Windows does not have signals
+        it('does not get terminated directly by the signal', () => assert.isNull(processInfo.signal));
+      }
+      it('returns zero status code', () => assert.equal(processInfo.exitStatus, 0));
+      it('does not emit an error', () => assert.isUndefined(processInfo.error));
+    });
+
+    describe('process without support for graceful termination', () => {
+      let processInfo;
+
+      before(done => runChildProcess(
+        'test/fixtures/scripts/endless-ignore-term.coffee', childProcess => childProcess.terminate({ force: true }),
+        (err, info) => {
+          processInfo = info;
+          done(err);
+        }
+      ));
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
       it('logs a message about ignoring the graceful termination attempt', () => assert.include(processInfo.stdout, 'ignoring'));
@@ -206,12 +206,11 @@ describe('Babysitting Child Processes', () => {
 
       before(done =>
         // eslint-disable-next-line
-        runChildProcess('test/fixtures/scripts/exit-0.coffee', childProcess => true
-          , (err, info) => {
+        runChildProcess('test/fixtures/scripts/exit-0.coffee', childProcess => true,
+          (err, info) => {
             processInfo = info;
             done(err);
-          })
-      );
+          }));
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
       it('returns zero status code', () => assert.equal(processInfo.exitStatus, 0));
@@ -226,12 +225,11 @@ describe('Babysitting Child Processes', () => {
 
       before(done =>
         // eslint-disable-next-line
-        runChildProcess('test/fixtures/scripts/exit-3.coffee', childProcess => true
-          , (err, info) => {
+        runChildProcess('test/fixtures/scripts/exit-3.coffee', childProcess => true,
+          (err, info) => {
             processInfo = info;
             done(err);
-          })
-      );
+          }));
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
       it('returns non-zero status code', () => assert.isAbove(processInfo.exitStatus, 0));
@@ -246,13 +244,13 @@ describe('Babysitting Child Processes', () => {
     describe('intentionally gracefully with zero status code', () => {
       let processInfo;
 
-      before(done =>
-        runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess.signalTerm()
-          , (err, info) => {
-            processInfo = info;
-            done(err);
-          })
-      );
+      before(done => runChildProcess(
+        'test/fixtures/scripts/stdout.coffee', childProcess => childProcess.signalTerm(),
+        (err, info) => {
+          processInfo = info;
+          done(err);
+        }
+      ));
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
       it('returns zero status code', () => assert.equal(processInfo.exitStatus, 0));
@@ -265,13 +263,13 @@ describe('Babysitting Child Processes', () => {
     describe('intentionally gracefully with non-zero status code', () => {
       let processInfo;
 
-      before(done =>
-        runChildProcess('test/fixtures/scripts/stdout-exit-3.coffee', childProcess => childProcess.signalTerm()
-          , (err, info) => {
-            processInfo = info;
-            done(err);
-          })
-      );
+      before(done => runChildProcess(
+        'test/fixtures/scripts/stdout-exit-3.coffee', childProcess => childProcess.signalTerm(),
+        (err, info) => {
+          processInfo = info;
+          done(err);
+        }
+      ));
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
       it('returns non-zero status code', () => assert.isAbove(processInfo.exitStatus, 0));
@@ -284,13 +282,13 @@ describe('Babysitting Child Processes', () => {
     describe('intentionally forcefully', () => {
       let processInfo;
 
-      before(done =>
-        runChildProcess('test/fixtures/scripts/stdout.coffee', childProcess => childProcess.signalKill()
-          , (err, info) => {
-            processInfo = info;
-            done(err);
-          })
-      );
+      before(done => runChildProcess(
+        'test/fixtures/scripts/stdout.coffee', childProcess => childProcess.signalKill(),
+        (err, info) => {
+          processInfo = info;
+          done(err);
+        }
+      ));
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
       if (process.platform === 'win32') {
@@ -308,18 +306,18 @@ describe('Babysitting Child Processes', () => {
     describe('gracefully with zero status code', () => {
       let processInfo;
 
-      before(done =>
-        runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) => {
+      before(done => runChildProcess(
+        'test/fixtures/scripts/stdout.coffee', (childProcess) => {
           // Simulate that the process was terminated externally
           const emit = sinon.stub(childProcess, 'emit');
           signalTerm(childProcess, () => {});
           emit.restore();
-        }
-          , (err, info) => {
+        },
+        (err, info) => {
           processInfo = info;
           done(err);
-        })
-      );
+        }
+      ));
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
       it('returns zero status code', () => assert.equal(processInfo.exitStatus, 0));
@@ -332,18 +330,18 @@ describe('Babysitting Child Processes', () => {
     describe('gracefully with non-zero status code', () => {
       let processInfo;
 
-      before(done =>
-        runChildProcess('test/fixtures/scripts/stdout-exit-3.coffee', (childProcess) => {
+      before(done => runChildProcess(
+        'test/fixtures/scripts/stdout-exit-3.coffee', (childProcess) => {
           // Simulate that the process was terminated externally
           const emit = sinon.stub(childProcess, 'emit');
           signalTerm(childProcess, () => {});
           emit.restore();
-        }
-          , (err, info) => {
+        },
+        (err, info) => {
           processInfo = info;
           done(err);
-        })
-      );
+        }
+      ));
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
       it('returns non-zero status code', () => assert.isAbove(processInfo.exitStatus, 0));
@@ -358,18 +356,18 @@ describe('Babysitting Child Processes', () => {
     describe('forcefully', () => {
       let processInfo;
 
-      before(done =>
-        runChildProcess('test/fixtures/scripts/stdout.coffee', (childProcess) => {
+      before(done => runChildProcess(
+        'test/fixtures/scripts/stdout.coffee', (childProcess) => {
           // Simulate that the process was killed externally
           const emit = sinon.stub(childProcess, 'emit');
           signalKill(childProcess, () => {});
           emit.restore();
-        }
-          , (err, info) => {
+        },
+        (err, info) => {
           processInfo = info;
           done(err);
-        })
-      );
+        }
+      ));
       after(done => helpers.kill(processInfo.childProcess.pid, done));
 
       if (process.platform === 'win32') {

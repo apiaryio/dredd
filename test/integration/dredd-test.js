@@ -89,9 +89,7 @@ describe('Dredd class Integration', () => {
 
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
-        const server = app.listen(PORT, () =>
-          execCommand(cmd, () => server.close())
-        );
+        const server = app.listen(PORT, () => execCommand(cmd, () => server.close()));
 
         server.on('close', done);
       });
@@ -111,9 +109,7 @@ describe('Dredd class Integration', () => {
 
         app.get('/machines', (req, res) => res.status(201).json([{ kind: 'bulldozer', imatriculation: 'willy' }]));
 
-        const server = app.listen(PORT, () =>
-          execCommand(cmd, () => server.close())
-        );
+        const server = app.listen(PORT, () => execCommand(cmd, () => server.close()));
 
         server.on('close', done);
       });
@@ -180,9 +176,7 @@ describe('Dredd class Integration', () => {
 
       server = app.listen(PORT, () => {
         server2 = apiary.listen((PORT + 1), () => {
-          execCommand(cmd, () =>
-            server2.close(() => server.close(() => done()))
-          );
+          execCommand(cmd, () => server2.close(() => server.close(() => done())));
         });
       });
     });
@@ -231,11 +225,9 @@ describe('Dredd class Integration', () => {
           res.json(response);
         });
 
-        const server = app.listen(PORT, () =>
-          execCommand(cmd, () => {
-            server.close();
-          })
-        );
+        const server = app.listen(PORT, () => execCommand(cmd, () => {
+          server.close();
+        }));
 
         server.on('close', done);
       });
@@ -279,9 +271,7 @@ describe('Dredd class Integration', () => {
 
         apiary.all('*', (req, res) => res.json({}));
 
-        server2 = apiary.listen((PORT + 1), () =>
-          execCommand(cmd, () => server2.close(() => {}))
-        );
+        server2 = apiary.listen((PORT + 1), () => execCommand(cmd, () => server2.close(() => {})));
 
         server2.on('close', done);
       });
@@ -343,9 +333,7 @@ describe('Dredd class Integration', () => {
 
         server = app.listen(PORT, () => { server2 = apiary.listen((PORT + 1), () => {}); });
 
-        execCommand(cmd, () =>
-          server2.close(() => server.close(() => {}))
-        );
+        execCommand(cmd, () => server2.close(() => server.close(() => {})));
 
         server.on('close', done);
       });
@@ -423,18 +411,14 @@ describe('Dredd class Integration', () => {
       server = app.listen(PORT, () => done());
     });
 
-    after(done =>
-      server.close(() => {
-        app = null;
-        server = null;
-        done();
-      })
-    );
+    after(done => server.close(() => {
+      app = null;
+      server = null;
+      done();
+    }));
 
     describe('and I try to load a file from bad hostname at all', () => {
-      before(done =>
-        execCommand(errorCmd, () => done())
-      );
+      before(done => execCommand(errorCmd, () => done()));
 
       after(() => { connectedToServer = null; });
 
@@ -450,9 +434,7 @@ describe('Dredd class Integration', () => {
     });
 
     describe('and I try to load a file that does not exist from an existing server', () => {
-      before(done =>
-        execCommand(wrongCmd, () => done())
-      );
+      before(done => execCommand(wrongCmd, () => done()));
 
       after(() => { connectedToServer = null; });
 
@@ -470,9 +452,7 @@ describe('Dredd class Integration', () => {
     });
 
     describe('and I try to load a file that actually is there', () => {
-      before(done =>
-        execCommand(goodCmd, () => done())
-      );
+      before(done => execCommand(goodCmd, () => done()));
 
       it('should send a GET to the right server', () => assert.isTrue(connectedToServer));
 
@@ -482,90 +462,81 @@ describe('Dredd class Integration', () => {
     });
   });
 
-  describe('when i use sandbox and hookfiles option', () =>
-    describe('and I run a test', () => {
-      let requested;
-      before((done) => {
-        const cmd = {
-          options: {
-            path: './test/fixtures/single-get.apib',
-            sandbox: true,
-            hookfiles: './test/fixtures/sandboxed-hook.js'
-          }
-        };
+  describe('when i use sandbox and hookfiles option', () => describe('and I run a test', () => {
+    let requested;
+    before((done) => {
+      const cmd = {
+        options: {
+          path: './test/fixtures/single-get.apib',
+          sandbox: true,
+          hookfiles: './test/fixtures/sandboxed-hook.js'
+        }
+      };
 
-        const app = express();
+      const app = express();
 
-        app.get('/machines', (req, res) => {
-          requested = true;
-          res.json([{ type: 'bulldozer', name: 'willy' }]);
-        });
-
-        const server = app.listen(PORT, () =>
-          execCommand(cmd, () => server.close())
-        );
-
-        server.on('close', done);
+      app.get('/machines', (req, res) => {
+        requested = true;
+        res.json([{ type: 'bulldozer', name: 'willy' }]);
       });
 
-      it('exit status should be 1', () => assert.equal(exitStatus, 1));
+      const server = app.listen(PORT, () => execCommand(cmd, () => server.close()));
 
-      it('stdout should contain fail message', () => assert.include(stdout, 'failed in sandboxed hook'));
+      server.on('close', done);
+    });
 
-      it('stdout should contain sandbox messagae', () => assert.include(stdout, 'Loading hook files in sandboxed context'));
+    it('exit status should be 1', () => assert.equal(exitStatus, 1));
 
-      it('should perform the request', () => assert.isTrue(requested));
-    })
-  );
+    it('stdout should contain fail message', () => assert.include(stdout, 'failed in sandboxed hook'));
 
-  describe('when i use sandbox and hookData option', () =>
-    describe('and I run a test', () => {
-      let requested;
-      before((done) => {
-        const cmd = {
-          hooksData: {
-            './test/fixtures/single-get.apib': `\
+    it('stdout should contain sandbox messagae', () => assert.include(stdout, 'Loading hook files in sandboxed context'));
+
+    it('should perform the request', () => assert.isTrue(requested));
+  }));
+
+  describe('when i use sandbox and hookData option', () => describe('and I run a test', () => {
+    let requested;
+    before((done) => {
+      const cmd = {
+        hooksData: {
+          './test/fixtures/single-get.apib': `\
 after('Machines > Machines collection > Get Machines', function(transaction){
   transaction['fail'] = 'failed in sandboxed hook from string';
 });\
 `
-          },
-          options: {
-            path: './test/fixtures/single-get.apib',
-            sandbox: true
-          }
-        };
+        },
+        options: {
+          path: './test/fixtures/single-get.apib',
+          sandbox: true
+        }
+      };
 
-        const app = express();
+      const app = express();
 
-        app.get('/machines', (req, res) => {
-          requested = true;
-          res.json([{ type: 'bulldozer', name: 'willy' }]);
-        });
-
-        const server = app.listen(PORT, () =>
-          execCommand(cmd, () => server.close())
-        );
-
-        server.on('close', done);
+      app.get('/machines', (req, res) => {
+        requested = true;
+        res.json([{ type: 'bulldozer', name: 'willy' }]);
       });
 
-      it('exit status should be 1', () => assert.equal(exitStatus, 1));
+      const server = app.listen(PORT, () => execCommand(cmd, () => server.close()));
 
-      it('stdout should contain fail message', () => assert.include(stdout, 'failed in sandboxed hook from string'));
+      server.on('close', done);
+    });
 
-      it('stdout should not sandbox messagae', () => assert.notInclude(stdout, 'Loading hook files in sandboxed context'));
+    it('exit status should be 1', () => assert.equal(exitStatus, 1));
 
-      it('should perform the request', () => assert.isTrue(requested));
-    })
-  );
+    it('stdout should contain fail message', () => assert.include(stdout, 'failed in sandboxed hook from string'));
 
-  describe('when use old buggy (#168) path with leading whitespace in hooks', () =>
-    describe('and I run a test', () => {
-      before((done) => {
-        const cmd = {
-          hooksData: {
-            'hooks.js': `\
+    it('stdout should not sandbox messagae', () => assert.notInclude(stdout, 'Loading hook files in sandboxed context'));
+
+    it('should perform the request', () => assert.isTrue(requested));
+  }));
+
+  describe('when use old buggy (#168) path with leading whitespace in hooks', () => describe('and I run a test', () => {
+    before((done) => {
+      const cmd = {
+        hooksData: {
+          'hooks.js': `\
 before(' > Machines collection > Get Machines', function(transaction){
   throw(new Error('Whitespace transaction name'));
 });
@@ -575,55 +546,56 @@ before('Machines collection > Get Machines', function(transaction){
 });
 \
 `
-          },
-          options: {
-            path: './test/fixtures/single-get-nogroup.apib',
-            sandbox: true
-          }
-        };
+        },
+        options: {
+          path: './test/fixtures/single-get-nogroup.apib',
+          sandbox: true
+        }
+      };
 
-        const app = express();
+      const app = express();
 
-        app.get('/machines', (req, res) => {
-          res.json([{ type: 'bulldozer', name: 'willy' }]);
-        });
-
-        const server = app.listen(PORT, () =>
-          execCommand(cmd, () => server.close())
-        );
-
-        server.on('close', done);
+      app.get('/machines', (req, res) => {
+        res.json([{ type: 'bulldozer', name: 'willy' }]);
       });
 
-      it('should execute hook with whitespaced name', () => assert.include(stderr, 'Whitespace transaction name'));
+      const server = app.listen(PORT, () => execCommand(cmd, () => server.close()));
 
-      it('should execute hook with fuxed name', () => assert.include(stderr, 'Fixed transaction name'));
-    })
-  );
+      server.on('close', done);
+    });
+
+    it('should execute hook with whitespaced name', () => assert.include(stderr, 'Whitespace transaction name'));
+
+    it('should execute hook with fuxed name', () => assert.include(stderr, 'Fixed transaction name'));
+  }));
 
   describe('when Swagger document has multiple responses', () => {
     const reTransaction = /(\w+): (\w+) \((\d+)\) \/honey/g;
     let actual;
 
-    before(done =>
-      execCommand({
+    before(done => execCommand(
+      {
         options: {
           path: './test/fixtures/multiple-responses.yaml'
         }
-      }
-        , (err) => {
+      },
+      (err) => {
         let groups;
         const matches = [];
         // eslint-disable-next-line
         while (groups = reTransaction.exec(stdout)) { matches.push(groups); }
         actual = matches.map((match) => {
-          const keyMap = { 0: 'name', 1: 'action', 2: 'method', 3: 'statusCode' };
-          return match.reduce((result, element, i) => Object.assign(result, { [keyMap[i]]: element })
-            , {});
+          const keyMap = {
+            0: 'name', 1: 'action', 2: 'method', 3: 'statusCode'
+          };
+          return match.reduce(
+            (result, element, i) => Object.assign(result, { [keyMap[i]]: element }),
+            {}
+          );
         });
         done(err);
-      })
-    );
+      }
+    ));
 
     it('recognizes all 3 transactions', () => assert.equal(actual.length, 3));
 
@@ -631,38 +603,40 @@ before('Machines collection > Get Machines', function(transaction){
       { action: 'skip', statusCode: '400' },
       { action: 'skip', statusCode: '500' },
       { action: 'fail', statusCode: '200' }
-    ].forEach((expected, i) =>
-      context(`the transaction #${i + 1}`, () => {
-        it(`has status code ${expected.statusCode}`, () => assert.equal(expected.statusCode, actual[i].statusCode));
-        it(`is ${expected.action === 'skip' ? '' : 'not '}skipped by default`, () => assert.equal(expected.action, actual[i].action));
-      })
-    );
+    ].forEach((expected, i) => context(`the transaction #${i + 1}`, () => {
+      it(`has status code ${expected.statusCode}`, () => assert.equal(expected.statusCode, actual[i].statusCode));
+      it(`is ${expected.action === 'skip' ? '' : 'not '}skipped by default`, () => assert.equal(expected.action, actual[i].action));
+    }));
   });
 
   describe('when Swagger document has multiple responses and hooks unskip some of them', () => {
     const reTransaction = /(\w+): (\w+) \((\d+)\) \/honey/g;
     let actual;
 
-    before(done =>
-      execCommand({
+    before(done => execCommand(
+      {
         options: {
           path: './test/fixtures/multiple-responses.yaml',
           hookfiles: './test/fixtures/swagger-multiple-responses.js'
         }
-      }
-        , (err) => {
+      },
+      (err) => {
         let groups;
         const matches = [];
         // eslint-disable-next-line
         while (groups = reTransaction.exec(stdout)) { matches.push(groups); }
         actual = matches.map((match) => {
-          const keyMap = { 0: 'name', 1: 'action', 2: 'method', 3: 'statusCode' };
-          return match.reduce((result, element, i) => Object.assign(result, { [keyMap[i]]: element })
-            , {});
+          const keyMap = {
+            0: 'name', 1: 'action', 2: 'method', 3: 'statusCode'
+          };
+          return match.reduce(
+            (result, element, i) => Object.assign(result, { [keyMap[i]]: element }),
+            {}
+          );
         });
         done(err);
-      })
-    );
+      }
+    ));
 
     it('recognizes all 3 transactions', () => assert.equal(actual.length, 3));
 
@@ -670,43 +644,39 @@ before('Machines collection > Get Machines', function(transaction){
       { action: 'skip', statusCode: '400' },
       { action: 'fail', statusCode: '200' },
       { action: 'fail', statusCode: '500' } // Unskipped in hooks
-    ].forEach((expected, i) =>
-      context(`the transaction #${i + 1}`, () => {
-        it(`has status code ${expected.statusCode}`, () => assert.equal(expected.statusCode, actual[i].statusCode));
+    ].forEach((expected, i) => context(`the transaction #${i + 1}`, () => {
+      it(`has status code ${expected.statusCode}`, () => assert.equal(expected.statusCode, actual[i].statusCode));
 
-        const defaultMessage = `is ${expected.action === 'skip' ? '' : 'not '}skipped by default`;
-        const unskippedMessage = 'is unskipped in hooks';
-        it(`${expected.statusCode === '500' ? unskippedMessage : defaultMessage}`, () => assert.equal(expected.action, actual[i].action));
-      })
-    );
+      const defaultMessage = `is ${expected.action === 'skip' ? '' : 'not '}skipped by default`;
+      const unskippedMessage = 'is unskipped in hooks';
+      it(`${expected.statusCode === '500' ? unskippedMessage : defaultMessage}`, () => assert.equal(expected.action, actual[i].action));
+    }));
   });
 
   describe('when using Swagger document with hooks', () => {
     const reTransactionName = /hook: (.+)/g;
     let matches;
 
-    beforeEach(done =>
-      execCommand({
+    beforeEach(done => execCommand(
+      {
         options: {
           path: './test/fixtures/multiple-responses.yaml',
           hookfiles: './test/fixtures/swagger-transaction-names.js'
         }
-      }
-        , (err) => {
+      },
+      (err) => {
         let groups;
         matches = [];
         // eslint-disable-next-line
         while (groups = reTransactionName.exec(stdout)) { matches.push(groups[1]); }
         done(err);
-      })
-    );
+      }
+    ));
 
-    it('transaction names contain status code and content type', () =>
-      assert.deepEqual(matches, [
-        '/honey > GET > 200 > application/json',
-        '/honey > GET > 400 > application/json',
-        '/honey > GET > 500 > application/json'
-      ])
-    );
+    it('transaction names contain status code and content type', () => assert.deepEqual(matches, [
+      '/honey > GET > 200 > application/json',
+      '/honey > GET > 400 > application/json',
+      '/honey > GET > 500 > application/json'
+    ]));
   });
 });

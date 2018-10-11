@@ -8,21 +8,17 @@ describe('blueprintUtils', () => {
   const options = { type: 'refract' };
 
   describe('characterIndexToPosition()', () => {
-    describe('under standard circumstances', () =>
-      it('returns an object with non-zero-based row', () => {
-        const str = 'first\nsecond\nthird lines\ncontent continues';
-        const position = blueprintUtils.characterIndexToPosition(str.indexOf('lines', str), str);
-        assert.deepEqual(position, { row: 3 });
-      })
-    );
+    describe('under standard circumstances', () => it('returns an object with non-zero-based row', () => {
+      const str = 'first\nsecond\nthird lines\ncontent continues';
+      const position = blueprintUtils.characterIndexToPosition(str.indexOf('lines', str), str);
+      assert.deepEqual(position, { row: 3 });
+    }));
 
-    describe('when given one-line input and zero index', () =>
-      it('returns an object with row 1', () => {
-        const str = 'hello\n';
-        const position = blueprintUtils.characterIndexToPosition(str.indexOf('hello', str), str);
-        assert.deepEqual(position, { row: 1 });
-      })
-    );
+    describe('when given one-line input and zero index', () => it('returns an object with row 1', () => {
+      const str = 'hello\n';
+      const position = blueprintUtils.characterIndexToPosition(str.indexOf('hello', str), str);
+      assert.deepEqual(position, { row: 1 });
+    }));
   });
 
   describe('warningLocationToRanges()', () => {
@@ -93,17 +89,14 @@ describe('blueprintUtils', () => {
   });
 
   describe('rangesToLinesText()', () => {
-    describe('when tested on fake locations', () =>
-
-      it('should return a string of line(s) separated with comma', () => {
-        const line = blueprintUtils.rangesToLinesText([
-          { start: 2, end: 4 },
-          { start: 8, end: 8 },
-          { start: 10, end: 15 }
-        ]);
-        assert.strictEqual(line, 'lines 2-4, line 8, lines 10-15');
-      })
-    );
+    describe('when tested on fake locations', () => it('should return a string of line(s) separated with comma', () => {
+      const line = blueprintUtils.rangesToLinesText([
+        { start: 2, end: 4 },
+        { start: 8, end: 8 },
+        { start: 10, end: 15 }
+      ]);
+      assert.strictEqual(line, 'lines 2-4, line 8, lines 10-15');
+    }));
 
     describe('for a real API description document', () => {
       let warnings = 0;

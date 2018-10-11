@@ -43,29 +43,25 @@ describe('addHooks(runner, transactions, callback)', () => {
       }
     };
 
-    it('should create hooks instance at runner.hooks', done =>
-      addHooks(runner, transactions, (err) => {
-        if (err) { return err; }
-        assert.isDefined(runner.hooks);
-        assert.instanceOf(runner.hooks, hooksStub);
-        assert.strictEqual(runner.hooks, runner.hooks);
-        assert.nestedProperty(runner, 'hooks.transactions');
-        done();
-      })
-    );
+    it('should create hooks instance at runner.hooks', done => addHooks(runner, transactions, (err) => {
+      if (err) { return err; }
+      assert.isDefined(runner.hooks);
+      assert.instanceOf(runner.hooks, hooksStub);
+      assert.strictEqual(runner.hooks, runner.hooks);
+      assert.nestedProperty(runner, 'hooks.transactions');
+      done();
+    }));
 
 
-    it('should pass runner.logs to runner.hooks.logs', done =>
-      addHooks(runner, transactions, (err) => {
-        if (err) { return err; }
-        assert.isDefined(runner.hooks);
-        assert.instanceOf(runner.hooks, hooksStub);
-        assert.nestedProperty(runner, 'hooks.logs');
-        assert.isDefined(runner.hooks.logs);
-        assert.strictEqual(runner.hooks.logs, runner.logs);
-        done();
-      })
-    );
+    it('should pass runner.logs to runner.hooks.logs', done => addHooks(runner, transactions, (err) => {
+      if (err) { return err; }
+      assert.isDefined(runner.hooks);
+      assert.instanceOf(runner.hooks, hooksStub);
+      assert.nestedProperty(runner, 'hooks.logs');
+      assert.isDefined(runner.hooks.logs);
+      assert.strictEqual(runner.hooks.logs, runner.logs);
+      done();
+    }));
   });
 
 
@@ -86,12 +82,10 @@ describe('addHooks(runner, transactions, callback)', () => {
 
     after(() => globStub.sync.restore());
 
-    it('should not expand any glob', done =>
-      addHooks(runner, transactions, () => {
-        assert.isOk(globStub.sync.notCalled);
-        done();
-      })
-    );
+    it('should not expand any glob', done => addHooks(runner, transactions, () => {
+      assert.isOk(globStub.sync.notCalled);
+      done();
+    }));
   });
 
   describe('with non `nodejs` language option', () => {
@@ -112,13 +106,11 @@ describe('addHooks(runner, transactions, callback)', () => {
 
     afterEach(() => hooksWorkerClientStub.prototype.start.restore());
 
-    it('should start the hooks worker client', done =>
-      addHooks(runner, transactions, (err) => {
-        if (err) { return done(err); }
-        assert.isTrue(hooksWorkerClientStub.prototype.start.called);
-        done();
-      })
-    );
+    it('should start the hooks worker client', done => addHooks(runner, transactions, (err) => {
+      if (err) { return done(err); }
+      assert.isTrue(hooksWorkerClientStub.prototype.start.called);
+      done();
+    }));
   });
 
 
@@ -144,18 +136,16 @@ describe('addHooks(runner, transactions, callback)', () => {
       });
     });
 
-    it('should return files with resolved paths', done =>
-      addHooks(runner, transactions, (err) => {
-        if (err) { return done(err); }
+    it('should return files with resolved paths', done => addHooks(runner, transactions, (err) => {
+      if (err) { return done(err); }
 
-        assert.deepEqual(runner.hooks.configuration.options.hookfiles, [
-          pathStub.resolve(process.cwd(), './test/fixtures/multifile/multifile_hooks.coffee'),
-          pathStub.resolve(process.cwd(), './test/fixtures/test2_hooks.js'),
-          pathStub.resolve(process.cwd(), './test/fixtures/test_hooks.coffee')
-        ]);
-        done();
-      })
-    );
+      assert.deepEqual(runner.hooks.configuration.options.hookfiles, [
+        pathStub.resolve(process.cwd(), './test/fixtures/multifile/multifile_hooks.coffee'),
+        pathStub.resolve(process.cwd(), './test/fixtures/test2_hooks.js'),
+        pathStub.resolve(process.cwd(), './test/fixtures/test_hooks.coffee')
+      ]);
+      done();
+    }));
 
     describe('when files are valid js/coffeescript', () => {
       runner = null;
@@ -176,23 +166,19 @@ describe('addHooks(runner, transactions, callback)', () => {
         pathStub.resolve.restore();
       });
 
-      it('should load the files', done =>
-        addHooks(runner, transactions, (err) => {
-          if (err) { return done(err); }
-          assert.isOk(pathStub.resolve.called);
-          done();
-        })
-      );
+      it('should load the files', done => addHooks(runner, transactions, (err) => {
+        if (err) { return done(err); }
+        assert.isOk(pathStub.resolve.called);
+        done();
+      }));
 
-      it('should add configuration object to the hooks object proxyquired to the each hookfile', done =>
-        addHooks(runner, transactions, (err) => {
-          if (err) { return done(err); }
-          const call = proxyquireSpy.getCall(0);
-          const hooksObject = call.args[1].hooks;
-          assert.property(hooksObject, 'configuration');
-          done();
-        })
-      );
+      it('should add configuration object to the hooks object proxyquired to the each hookfile', done => addHooks(runner, transactions, (err) => {
+        if (err) { return done(err); }
+        const call = proxyquireSpy.getCall(0);
+        const hooksObject = call.args[1].hooks;
+        assert.property(hooksObject, 'configuration');
+        done();
+      }));
     });
   });
 
@@ -226,37 +212,29 @@ describe('addHooks(runner, transactions, callback)', () => {
         done();
       });
 
-      it('should not use proxyquire', done =>
-        addHooks(runner, transactions, (err) => {
-          if (err) { return done(err); }
-          assert.isFalse(proxyquireSpy.called);
-          done();
-        })
-      );
+      it('should not use proxyquire', done => addHooks(runner, transactions, (err) => {
+        if (err) { return done(err); }
+        assert.isFalse(proxyquireSpy.called);
+        done();
+      }));
 
-      it('should load files from the filesystem', done =>
-        addHooks(runner, transactions, (err) => {
-          if (err) { return done(err); }
-          assert.isTrue(fsStub.readFile.called);
-          done();
-        })
-      );
+      it('should load files from the filesystem', done => addHooks(runner, transactions, (err) => {
+        if (err) { return done(err); }
+        assert.isTrue(fsStub.readFile.called);
+        done();
+      }));
 
-      it('should run the loaded code', done =>
-        addHooks(runner, transactions, (err) => {
-          if (err) { return err; }
-          assert.isTrue(sandboxHooksCodeSpy.called);
-          done();
-        })
-      );
+      it('should run the loaded code', done => addHooks(runner, transactions, (err) => {
+        if (err) { return err; }
+        assert.isTrue(sandboxHooksCodeSpy.called);
+        done();
+      }));
 
-      it('should add hook functions strings to the runner object', done =>
-        addHooks(runner, transactions, (err) => {
-          if (err) { return err; }
-          assert.property(runner.hooks.afterHooks, 'Machines > Machines collection > Get Machines');
-          done();
-        })
-      );
+      it('should add hook functions strings to the runner object', done => addHooks(runner, transactions, (err) => {
+        if (err) { return err; }
+        assert.property(runner.hooks.afterHooks, 'Machines > Machines collection > Get Machines');
+        done();
+      }));
     });
 
     describe('when hookfiles option is not given and hooks are passed as a string from Dredd class', () => {
@@ -292,29 +270,23 @@ after('Machines > Machines collection > Get Machines', function(transaction){
         sandboxHooksCodeSpy.resetHistory();
       });
 
-      it('should not use proxyquire', done =>
-        addHooks(runner, transactions, (err) => {
-          if (err) { return done(err); }
-          assert.isFalse(proxyquireSpy.called);
-          done();
-        })
-      );
+      it('should not use proxyquire', done => addHooks(runner, transactions, (err) => {
+        if (err) { return done(err); }
+        assert.isFalse(proxyquireSpy.called);
+        done();
+      }));
 
-      it('should run the loaded code', done =>
-        addHooks(runner, transactions, (err) => {
-          if (err) { return err; }
-          assert.isTrue(sandboxHooksCodeSpy.called);
-          done();
-        })
-      );
+      it('should run the loaded code', done => addHooks(runner, transactions, (err) => {
+        if (err) { return err; }
+        assert.isTrue(sandboxHooksCodeSpy.called);
+        done();
+      }));
 
-      it('should add hook functions strings to the runner object', done =>
-        addHooks(runner, transactions, (err) => {
-          if (err) { return err; }
-          assert.property(runner.hooks.afterHooks, 'Machines > Machines collection > Get Machines');
-          done();
-        })
-      );
+      it('should add hook functions strings to the runner object', done => addHooks(runner, transactions, (err) => {
+        if (err) { return err; }
+        assert.property(runner.hooks.afterHooks, 'Machines > Machines collection > Get Machines');
+        done();
+      }));
     });
 
     describe('when hooks are passed as a string from Dredd class', () => {
@@ -334,23 +306,20 @@ after('Machines > Machines collection > Get Machines', function(transaction){
         };
       });
 
-      it('should throw a "not implemented" exception', done =>
-        addHooks(runner, transactions, (err) => {
-          assert.isDefined(err);
-          assert.include(err.message, 'not implemented');
-          done();
-        })
-      );
+      it('should throw a "not implemented" exception', done => addHooks(runner, transactions, (err) => {
+        assert.isDefined(err);
+        assert.include(err.message, 'not implemented');
+        done();
+      }));
     });
 
 
-    describe('when buggy transaction name is used (#168)', () =>
-      describe('when sandboxed', () => {
-        it('should remove leading " > " from transaction names', (done) => {
-          const runner = {
-            configuration: {
-              hooksData: {
-                'hookfile.js': `\
+    describe('when buggy transaction name is used (#168)', () => describe('when sandboxed', () => {
+      it('should remove leading " > " from transaction names', (done) => {
+        const runner = {
+          configuration: {
+            hooksData: {
+              'hookfile.js': `\
 after(' > Machines collection > Get Machines', function(transaction){
   transaction['fail'] = 'failed in sandboxed hook';
 });
@@ -358,25 +327,25 @@ before(' > Machines collection > Get Machines', function(transaction){
   transaction['fail'] = 'failed in sandboxed hook';
 });\
 `
-              },
-              options: {
-                sandbox: true
-              }
+            },
+            options: {
+              sandbox: true
             }
-          };
+          }
+        };
 
-          addHooks(runner, transactions, () => {
-            assert.notProperty(runner.hooks.afterHooks, ' > Machines collection > Get Machines');
-            assert.notProperty(runner.hooks.afterHooks, ' > Machines collection > Get Machines');
-            done();
-          });
+        addHooks(runner, transactions, () => {
+          assert.notProperty(runner.hooks.afterHooks, ' > Machines collection > Get Machines');
+          assert.notProperty(runner.hooks.afterHooks, ' > Machines collection > Get Machines');
+          done();
         });
+      });
 
-        it('should contain transaction with fixed name', (done) => {
-          const runner = {
-            configuration: {
-              hooksData: {
-                'hookfile.js': `\
+      it('should contain transaction with fixed name', (done) => {
+        const runner = {
+          configuration: {
+            hooksData: {
+              'hookfile.js': `\
 after(' > Machines collection > Get Machines', function(transaction){
   transaction['fail'] = 'failed in sandboxed hook';
 });
@@ -384,21 +353,20 @@ before(' > Machines collection > Get Machines', function(transaction){
   transaction['fail'] = 'failed in sandboxed hook';
 });\
 `
-              },
-              options: {
-                sandbox: true
-              }
+            },
+            options: {
+              sandbox: true
             }
-          };
+          }
+        };
 
-          addHooks(runner, transactions, () => {
-            assert.property(runner.hooks.afterHooks, 'Machines collection > Get Machines');
-            assert.property(runner.hooks.afterHooks, 'Machines collection > Get Machines');
-            done();
-          });
+        addHooks(runner, transactions, () => {
+          assert.property(runner.hooks.afterHooks, 'Machines collection > Get Machines');
+          assert.property(runner.hooks.afterHooks, 'Machines collection > Get Machines');
+          done();
         });
-      })
-    );
+      });
+    }));
   });
 
   describe('when not sandboxed', () => {

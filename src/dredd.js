@@ -5,8 +5,8 @@ const fs = require('fs');
 const request = require('request');
 const url = require('url');
 
-const configureReporters = require('./configure-reporters');
 const dreddTransactions = require('dredd-transactions');
+const configureReporters = require('./configure-reporters');
 const handleRuntimeProblems = require('./handle-runtime-problems');
 const logger = require('./logger');
 const Runner = require('./transaction-runner');
@@ -136,56 +136,60 @@ https://dredd.readthedocs.io/en/latest/how-it-works/#using-https-proxy
 
   // Expand all globs
   expandGlobs(callback) {
-    async.each(this.configuration.options.path, (globToExpand, globCallback) => {
-      if (/^http(s)?:\/\//.test(globToExpand)) {
-        this.configuration.files = this.configuration.files.concat(globToExpand);
-        return globCallback();
-      }
+    async.each(
+      this.configuration.options.path, (globToExpand, globCallback) => {
+        if (/^http(s)?:\/\//.test(globToExpand)) {
+          this.configuration.files = this.configuration.files.concat(globToExpand);
+          return globCallback();
+        }
 
-      glob(globToExpand, (err, match) => {
-        if (err) { return globCallback(err); }
-        this.configuration.files = this.configuration.files.concat(match);
-        if (match.length === 0) {
-          err = new Error(`
+        glob(globToExpand, (err, match) => {
+          if (err) { return globCallback(err); }
+          this.configuration.files = this.configuration.files.concat(match);
+          if (match.length === 0) {
+            err = new Error(`
             API description document(s) not found on path:
             '${globToExpand}'
          `);
-          return globCallback(err);
-        }
-        globCallback();
-      });
-    }
-      , (err) => {
-      if (err) { return callback(err, this.stats); }
+            return globCallback(err);
+          }
+          globCallback();
+        });
+      },
+      (err) => {
+        if (err) { return callback(err, this.stats); }
 
-      if (this.configDataIsEmpty && this.configuration.files.length === 0) {
-        err = new Error(`
+        if (this.configDataIsEmpty && this.configuration.files.length === 0) {
+          err = new Error(`
 API description document (or documents) not found on path:
 '${this.configuration.options.path}'
 `);
-        return callback(err, this.stats);
-      }
+          return callback(err, this.stats);
+        }
 
-      // Remove duplicate filenames
-      this.configuration.files = removeDuplicates(this.configuration.files);
-      callback(null, this.stats);
-    });
+        // Remove duplicate filenames
+        this.configuration.files = removeDuplicates(this.configuration.files);
+        callback(null, this.stats);
+      }
+    );
   }
 
   // Load all files
   loadFiles(callback) {
     // 6 parallel connections is a standard limit when connecting to one hostname,
     // use the same limit of parallel connections for reading/downloading files
-    async.eachLimit(this.configuration.files, 6, (fileUrlOrPath, loadCallback) => {
-      const { protocol, host } = url.parse(fileUrlOrPath);
-      if (host && ['http:', 'https:'].includes(protocol)) {
-        logger.verbose('Downloading remote file:', fileUrlOrPath);
-        this.downloadFile(fileUrlOrPath, loadCallback);
-      } else {
-        this.readLocalFile(fileUrlOrPath, loadCallback);
-      }
-    }
-      , callback);
+    async.eachLimit(
+      this.configuration.files, 6, (fileUrlOrPath, loadCallback) => {
+        const { protocol, host } = url.parse(fileUrlOrPath);
+        if (host && ['http:', 'https:'].includes(protocol)) {
+          logger.verbose('Downloading remote file:', fileUrlOrPath);
+          this.downloadFile(fileUrlOrPath, loadCallback);
+        } else {
+          this.readLocalFile(fileUrlOrPath, loadCallback);
+        }
+      },
+      callback
+    );
   }
 
   downloadFile(fileUrl, callback) {
@@ -234,24 +238,26 @@ Is the provided path correct?
     this.transactions = [];
 
     // Compile HTTP transactions for each API description
-    async.each(Object.keys(this.configuration.data), (filename, next) => {
-      const fileData = this.configuration.data[filename];
-      if (!fileData.annotations) { fileData.annotations = []; }
+    async.each(
+      Object.keys(this.configuration.data), (filename, next) => {
+        const fileData = this.configuration.data[filename];
+        if (!fileData.annotations) { fileData.annotations = []; }
 
-      logger.verbose('Compiling HTTP transactions from API description file:', filename);
-      dreddTransactions.compile(fileData.raw, filename, (compilationError, compilationResult) => {
-        if (compilationError) { return next(compilationError); }
+        logger.verbose('Compiling HTTP transactions from API description file:', filename);
+        dreddTransactions.compile(fileData.raw, filename, (compilationError, compilationResult) => {
+          if (compilationError) { return next(compilationError); }
 
-        fileData.mediaType = compilationResult.mediaType;
-        fileData.annotations = fileData.annotations.concat(compilationResult.annotations);
-        this.transactions = this.transactions.concat(compilationResult.transactions);
-        next();
-      });
-    }
-      , (runtimeError) => {
-      if (!runtimeError) { runtimeError = handleRuntimeProblems(this.configuration.data); }
-      callback(runtimeError, this.stats);
-    });
+          fileData.mediaType = compilationResult.mediaType;
+          fileData.annotations = fileData.annotations.concat(compilationResult.annotations);
+          this.transactions = this.transactions.concat(compilationResult.transactions);
+          next();
+        });
+      },
+      (runtimeError) => {
+        if (!runtimeError) { runtimeError = handleRuntimeProblems(this.configuration.data); }
+        callback(runtimeError, this.stats);
+      }
+    );
   }
 
   // Start the runner

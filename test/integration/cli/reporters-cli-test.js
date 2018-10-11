@@ -30,17 +30,12 @@ describe('CLI - Reporters', () => {
       '--reporter=nyan'
     ];
 
-    beforeEach(done =>
-      runCLI(args, (err, info) => {
-        cliInfo = info;
-        done(err);
-      })
-    );
+    beforeEach(done => runCLI(args, (err, info) => {
+      cliInfo = info;
+      done(err);
+    }));
 
-    it('should use given reporter', () =>
-      // Nyan cat ears should exist in stdout
-      assert.include(cliInfo.stdout, '/\\_/\\')
-    );
+    it('should use given reporter', () => assert.include(cliInfo.stdout, '/\\_/\\'));
   });
 
 
@@ -54,13 +49,11 @@ describe('CLI - Reporters', () => {
     beforeEach((done) => {
       const app = createServer();
 
-      app.post('/apis/*', (req, res) =>
-        res.json({
-          _id: '1234_id',
-          testRunId: '6789_testRunId',
-          reportUrl: 'http://example.com/test/run/1234_id'
-        })
-      );
+      app.post('/apis/*', (req, res) => res.json({
+        _id: '1234_id',
+        testRunId: '6789_testRunId',
+        reportUrl: 'http://example.com/test/run/1234_id'
+      }));
 
       app.all('*', (req, res) => res.json({}));
 
@@ -81,13 +74,11 @@ describe('CLI - Reporters', () => {
         '--reporter=apiary'
       ];
 
-      beforeEach(done =>
-        runCLI(args, { env }, (err, info) => {
-          cliInfo = info;
-          stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
-          done(err);
-        })
-      );
+      beforeEach(done => runCLI(args, { env }, (err, info) => {
+        cliInfo = info;
+        stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
+        done(err);
+      }));
 
       it('should print URL of the test report', () => assert.include(cliInfo.stdout, 'http://example.com/test/run/1234_id'));
       it('should print warning about missing Apiary API settings', () => assert.include(cliInfo.stdout, 'Apiary API Key or API Project Subdomain were not provided.'));
@@ -121,19 +112,14 @@ describe('CLI - Reporters', () => {
         '--hookfiles=./test/fixtures/hooks-log.coffee'
       ];
 
-      beforeEach(done =>
-        runCLI(args, { env }, (err, info) => {
-          cliInfo = info;
-          updateRequest = apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0];
-          stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
-          return done(err);
-        })
-      );
+      beforeEach(done => runCLI(args, { env }, (err, info) => {
+        cliInfo = info;
+        updateRequest = apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0];
+        stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
+        return done(err);
+      }));
 
-      it('hooks.log should print also to console', () =>
-        // Because --level=info is lower than --level=hook
-        assert.include(cliInfo.output, 'using hooks.log to debug')
-      );
+      it('hooks.log should print also to console', () => assert.include(cliInfo.output, 'using hooks.log to debug'));
       it('hooks.log should use toString on objects', () => assert.include(cliInfo.output, 'Error object!'));
       it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
 
@@ -198,14 +184,12 @@ describe('CLI - Reporters', () => {
         '--hookfiles=./test/fixtures/sandboxed-hooks-log.js'
       ];
 
-      beforeEach(done =>
-        runCLI(args, { env }, (err, info) => {
-          cliInfo = info;
-          updateRequest = apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0];
-          stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
-          done(err);
-        })
-      );
+      beforeEach(done => runCLI(args, { env }, (err, info) => {
+        cliInfo = info;
+        updateRequest = apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0];
+        stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
+        done(err);
+      }));
 
       it('hooks.log should not print also to console', () => {
         // Because we are running in sandboxed mode with higher --level
@@ -262,11 +246,9 @@ describe('CLI - Reporters', () => {
       '--output=__test_file_output__.xml'
     ];
 
-    beforeEach(done =>
-      runCLI(args, (err) => {
-        done(err);
-      })
-    );
+    beforeEach(done => runCLI(args, (err) => {
+      done(err);
+    }));
 
     afterEach(() => fs.unlinkSync(`${process.cwd()}/__test_file_output__.xml`));
 
@@ -283,11 +265,9 @@ describe('CLI - Reporters', () => {
       '--output=__test_file_output2__.xml'
     ];
 
-    beforeEach(done =>
-      runCLI(args, (err) => {
-        done(err);
-      })
-    );
+    beforeEach(done => runCLI(args, (err) => {
+      done(err);
+    }));
 
     afterEach(() => {
       fs.unlinkSync(`${process.cwd()}/__test_file_output1__.xml`);

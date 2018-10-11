@@ -33,12 +33,11 @@ CliReporter.prototype.configureEmitter = function (emitter) {
     }
 
     if (this.stats.tests > 0) {
-      logger.complete(`${this.stats.passes} passing, ` +
-        `${this.stats.failures} failing, ` +
-        `${this.stats.errors} errors, ` +
-        `${this.stats.skipped} skipped, ` +
-        `${this.stats.tests} total`
-      );
+      logger.complete(`${this.stats.passes} passing, `
+        + `${this.stats.failures} failing, `
+        + `${this.stats.errors} errors, `
+        + `${this.stats.skipped} skipped, `
+        + `${this.stats.tests} total`);
     }
 
     logger.complete(`Tests took ${this.stats.duration}ms`);

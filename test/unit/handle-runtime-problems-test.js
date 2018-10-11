@@ -6,7 +6,8 @@ const dreddTransactions = require('dredd-transactions');
 
 const logger = require('../../src/logger');
 
-const handleRuntimeProblems = proxyquire('../../src/handle-runtime-problems',
+const handleRuntimeProblems = proxyquire(
+  '../../src/handle-runtime-problems',
   { './logger': logger }
 );
 
@@ -48,13 +49,11 @@ FORMAT: 1A
 `;
     const filename = 'dummy-filename.apib';
 
-    beforeEach(done =>
-      prepareData(apiDescriptionDocument, filename, (err, data) => {
-        if (err) { return done(err); }
-        error = handleRuntimeProblems(data);
-        done();
-      })
-    );
+    beforeEach(done => prepareData(apiDescriptionDocument, filename, (err, data) => {
+      if (err) { return done(err); }
+      error = handleRuntimeProblems(data);
+      done();
+    }));
 
     it('returns error', () => assert.isOk(error));
     it('has no warning output', () => assert.equal(warnOutput, ''));
@@ -80,13 +79,11 @@ FORMAT: 1A
 `;
     const filename = 'dummy-filename.apib';
 
-    beforeEach(done =>
-      prepareData(apiDescriptionDocument, filename, (err, data) => {
-        if (err) { return done(err); }
-        error = handleRuntimeProblems(data);
-        done();
-      })
-    );
+    beforeEach(done => prepareData(apiDescriptionDocument, filename, (err, data) => {
+      if (err) { return done(err); }
+      error = handleRuntimeProblems(data);
+      done();
+    }));
 
     it('returns no error', () => assert.notOk(error));
     it('has no error output', () => assert.equal(errorOutput, ''));
@@ -109,13 +106,11 @@ So Long, and Thanks for All the Fish!\
 `;
     const filename = 'dummy-filename.apib';
 
-    beforeEach(done =>
-      prepareData(apiDescriptionDocument, filename, (err, data) => {
-        if (err) { return done(err); }
-        error = handleRuntimeProblems(data);
-        done();
-      })
-    );
+    beforeEach(done => prepareData(apiDescriptionDocument, filename, (err, data) => {
+      if (err) { return done(err); }
+      error = handleRuntimeProblems(data);
+      done();
+    }));
 
     it('returns no error', () => assert.notOk(error));
     it('has no error output', () => assert.equal(errorOutput, ''));

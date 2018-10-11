@@ -1,5 +1,7 @@
 const { assert } = require('chai');
-const { isProcessRunning, killAll, runCLI, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
+const {
+  isProcessRunning, killAll, runCLI, createServer, DEFAULT_SERVER_PORT
+} = require('../helpers');
 
 const NON_EXISTENT_PORT = DEFAULT_SERVER_PORT + 1;
 
@@ -28,12 +30,10 @@ describe('CLI - Server Process', () => {
       let cliInfo;
       const args = ['./test/fixtures/single-get.apib', `http://127.0.0.1:${DEFAULT_SERVER_PORT}`];
 
-      beforeEach(done =>
-        runCLI(args, (err, info) => {
-          cliInfo = info;
-          done(err);
-        })
-      );
+      beforeEach(done => runCLI(args, (err, info) => {
+        cliInfo = info;
+        done(err);
+      }));
 
       it('should request /machines', () => assert.deepEqual(serverRuntimeInfo.requestCounts, { '/machines': 1 }));
       it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
@@ -43,12 +43,10 @@ describe('CLI - Server Process', () => {
       let cliInfo;
       const args = ['./test/fixtures/apiary.apib', `http://127.0.0.1:${NON_EXISTENT_PORT}`];
 
-      beforeEach(done =>
-        runCLI(args, (err, info) => {
-          cliInfo = info;
-          done(err);
-        })
-      );
+      beforeEach(done => runCLI(args, (err, info) => {
+        cliInfo = info;
+        done(err);
+      }));
 
       it('should return understandable message', () => assert.include(cliInfo.stdout, 'Error connecting'));
       it('should report error for all transactions', () => {
@@ -73,12 +71,10 @@ describe('CLI - Server Process', () => {
         '--server-wait=1'
       ];
 
-      beforeEach(done =>
-        runCLI(args, (err, info) => {
-          cliInfo = info;
-          done(err);
-        })
-      );
+      beforeEach(done => runCLI(args, (err, info) => {
+        cliInfo = info;
+        done(err);
+      }));
 
       it('should inform about starting server with custom command', () => assert.include(cliInfo.stdout, 'Starting backend server process with command'));
       it('should redirect server\'s welcome message', () => assert.include(cliInfo.stdout, `Dummy server listening on port ${DEFAULT_SERVER_PORT}`));
@@ -94,12 +90,10 @@ describe('CLI - Server Process', () => {
         '--server-wait=1'
       ];
 
-      beforeEach(done =>
-        runCLI(args, (err, info) => {
-          cliInfo = info;
-          done(err);
-        })
-      );
+      beforeEach(done => runCLI(args, (err, info) => {
+        cliInfo = info;
+        done(err);
+      }));
 
       it('should inform about starting server with custom command', () => assert.include(cliInfo.stdout, 'Starting backend server process with command'));
       it('should report problem with server process spawn', () => assert.include(cliInfo.stderr, 'Command to start backend server process failed, exiting Dredd'));
@@ -140,23 +134,19 @@ describe('CLI - Server Process', () => {
           '--server-wait=1'
         ];
 
-        beforeEach(done =>
-          runCLI(args, (err, info) => {
-            cliInfo = info;
-            done(err);
-          })
-        );
+        beforeEach(done => runCLI(args, (err, info) => {
+          cliInfo = info;
+          done(err);
+        }));
 
         it('should inform about starting server with custom command', () => assert.include(cliInfo.stdout, 'Starting backend server process with command'));
         if (scenario.expectServerBoot) {
           it('should redirect server\'s boot message', () => assert.include(cliInfo.stdout, `Dummy server listening on port ${DEFAULT_SERVER_PORT}`));
         }
-        it('the server should not be running', done =>
-          isProcessRunning('test/fixtures/scripts/', (err, isRunning) => {
-            if (!err) { assert.isFalse(isRunning); }
-            done(err);
-          })
-        );
+        it('the server should not be running', done => isProcessRunning('test/fixtures/scripts/', (err, isRunning) => {
+          if (!err) { assert.isFalse(isRunning); }
+          done(err);
+        }));
         it('should report problems with connection to server', () => assert.include(cliInfo.stderr, 'Error connecting to server'));
         it('should exit with status 1', () => assert.equal(cliInfo.exitStatus, 1));
       });
@@ -172,23 +162,19 @@ describe('CLI - Server Process', () => {
         '--level=verbose'
       ];
 
-      beforeEach(done =>
-        runCLI(args, (err, info) => {
-          cliInfo = info;
-          done(err);
-        })
-      );
+      beforeEach(done => runCLI(args, (err, info) => {
+        cliInfo = info;
+        done(err);
+      }));
 
       it('should inform about starting server with custom command', () => assert.include(cliInfo.stdout, 'Starting backend server process with command'));
       it('should inform about gracefully terminating the server', () => assert.include(cliInfo.stdout, 'Gracefully terminating the backend server process'));
       it('should redirect server\'s message about ignoring termination', () => assert.include(cliInfo.stdout, 'ignoring termination'));
       it('should inform about forcefully killing the server', () => assert.include(cliInfo.stdout, 'Killing the backend server process'));
-      it('the server should not be running', done =>
-        isProcessRunning('test/fixtures/scripts/', (err, isRunning) => {
-          if (!err) { assert.isFalse(isRunning); }
-          done(err);
-        })
-      );
+      it('the server should not be running', done => isProcessRunning('test/fixtures/scripts/', (err, isRunning) => {
+        if (!err) { assert.isFalse(isRunning); }
+        done(err);
+      }));
       it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
     });
   });

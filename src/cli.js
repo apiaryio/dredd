@@ -251,10 +251,12 @@ ${packageData.name} v${packageData.version} \
       const waitMilis = waitSecs * 1000;
       logger.info(`Waiting ${waitSecs} seconds for backend server process to start`);
 
-      this.wait = setTimeout(() => {
-        this.runDredd(this.dreddInstance);
-      }
-        , waitMilis);
+      this.wait = setTimeout(
+        () => {
+          this.runDredd(this.dreddInstance);
+        },
+        waitMilis
+      );
     }
   }
 

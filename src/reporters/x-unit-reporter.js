@@ -95,8 +95,7 @@ XUnitReporter.prototype.configureEmitter = function (emitter) {
           skip: this.stats.skipped,
           timestamp: (new Date()).toUTCString(),
           time: this.stats.duration / 1000
-        }, false)
-        );
+        }, false));
         callback();
       } else {
         logger.error(err);

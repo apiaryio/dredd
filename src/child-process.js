@@ -15,9 +15,7 @@ function signalKill(childProcess, callback) {
     const taskkill = spawn('taskkill', ['/F', '/T', '/PID', childProcess.pid]);
     taskkill.on('exit', (exitStatus) => {
       if (exitStatus) {
-        return callback(
-          new Error(`Unable to forcefully terminate process ${childProcess.pid}`)
-        );
+        return callback(new Error(`Unable to forcefully terminate process ${childProcess.pid}`));
       }
       callback();
     });
@@ -110,9 +108,7 @@ function terminate(childProcess, options = {}, callback) {
       if (force) {
         signalKill(childProcess, callback);
       } else {
-        callback(
-          new Error(`Unable to gracefully terminate process ${childProcess.pid}`)
-        );
+        callback(new Error(`Unable to gracefully terminate process ${childProcess.pid}`));
       }
     }
   };

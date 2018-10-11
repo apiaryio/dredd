@@ -22,8 +22,7 @@ function addHooks(runner, transactions, callback) {
         if (transactionName.match(pattern)) {
           const newTransactionName = transactionName.replace(pattern, '');
           if (hooks[hookType][newTransactionName]) {
-            hooks[hookType][newTransactionName] =
-              transactionHooks.concat(hooks[hookType][newTransactionName]);
+            hooks[hookType][newTransactionName] = transactionHooks.concat(hooks[hookType][newTransactionName]);
           } else {
             hooks[hookType][newTransactionName] = transactionHooks;
           }
@@ -53,34 +52,34 @@ Stack: ${error.stack}
 
   function loadSandboxHooksFromStrings(next) {
     const isHooksDataCorrect = (
-      typeof runner.configuration.hooksData === 'object' ||
-      !Array.isArray(runner.configuration.hooksData)
+      typeof runner.configuration.hooksData === 'object'
+      || !Array.isArray(runner.configuration.hooksData)
     );
 
     if (!isHooksDataCorrect) {
-      return next(
-        new Error('hooksData option must be an object e.g. {"filename.js":"console.log("Hey!")"}')
-      );
+      return next(new Error('hooksData option must be an object e.g. {"filename.js":"console.log("Hey!")"}'));
     }
 
     // Run code in sandbox
-    async.eachSeries(Object.keys(runner.configuration.hooksData), (key, nextHook) => {
-      const data = runner.configuration.hooksData[key];
+    async.eachSeries(
+      Object.keys(runner.configuration.hooksData), (key, nextHook) => {
+        const data = runner.configuration.hooksData[key];
 
-      // Run code in sandbox
-      sandboxHooksCode(data, (sandboxError, result) => {
-        if (sandboxError) { return nextHook(sandboxError); }
+        // Run code in sandbox
+        sandboxHooksCode(data, (sandboxError, result) => {
+          if (sandboxError) { return nextHook(sandboxError); }
 
-        // Merge stringified hooks
-        runner.hooks = mergeSandboxedHooks(runner.hooks, result);
+          // Merge stringified hooks
+          runner.hooks = mergeSandboxedHooks(runner.hooks, result);
 
-        // Fixing #168 issue
-        fixLegacyTransactionNames(runner.hooks);
+          // Fixing #168 issue
+          fixLegacyTransactionNames(runner.hooks);
 
-        nextHook();
-      });
-    }
-      , next);
+          nextHook();
+        });
+      },
+      next
+    );
   }
 
   if (!runner.logs) { runner.logs = []; }
@@ -93,8 +92,8 @@ Stack: ${error.stack}
   });
 
   // Loading hooks from string, sandbox mode must be enabled
-  if (!(runner && runner.configuration && runner.configuration.options &&
-        runner.configuration.options.hookfiles)) {
+  if (!(runner && runner.configuration && runner.configuration.options
+        && runner.configuration.options.hookfiles)) {
     if (runner.configuration.hooksData) {
       if (runner.configuration.options.sandbox === true) {
         return loadSandboxHooksFromStrings(callback);
@@ -132,8 +131,8 @@ Stack: ${error.stack}
   // Loading files in non sandboxed nodejs
   if (!runner.configuration.options.sandbox === true) {
     // If the language is empty or it is nodejs
-    if (!runner.configuration.options.language ||
-           runner.configuration.options.language === 'nodejs') {
+    if (!runner.configuration.options.language
+           || runner.configuration.options.language === 'nodejs') {
       // Load regular files from fs
       for (const file of files) {
         loadHookFile(file);
@@ -153,9 +152,8 @@ Stack: ${error.stack}
   // Load sandbox files from fs
   logger.info('Loading hook files in sandboxed context:', files);
 
-  return async.eachSeries(files, (resolvedPath, nextFile) =>
-    // Load hook file content
-    fs.readFile(resolvedPath, 'utf8', (readingError, data) => {
+  return async.eachSeries(
+    files, (resolvedPath, nextFile) => fs.readFile(resolvedPath, 'utf8', (readingError, data) => {
       if (readingError) { return nextFile(readingError); }
       // Run code in sandbox
       sandboxHooksCode(data, (sandboxError, result) => {
@@ -167,8 +165,9 @@ Stack: ${error.stack}
 
         return nextFile();
       });
-    })
-    , callback);
+    }),
+    callback
+  );
 }
 
 module.exports = addHooks;

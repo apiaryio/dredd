@@ -36,15 +36,11 @@ function configureReporters(config, stats, tests, runner) {
     if (reportersArr.length > 0) {
       const usedCliReporters = intersection(reportersArr, cliReporters);
       if (usedCliReporters.length === 0) {
-        return new CliReporter(
-          config.emitter, stats, tests, config.options['inline-errors'], config.options.details
-        );
+        return new CliReporter(config.emitter, stats, tests, config.options['inline-errors'], config.options.details);
       }
       return addReporter(usedCliReporters[0], config.emitter, stats, tests);
     }
-    return new CliReporter(
-      config.emitter, stats, tests, config.options['inline-errors'], config.options.details
-    );
+    return new CliReporter(config.emitter, stats, tests, config.options['inline-errors'], config.options.details);
   }
 
   function addReporter(reporter, emitter, statistics, testsArg, path) {

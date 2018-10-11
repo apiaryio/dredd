@@ -149,20 +149,23 @@ describe('CLI class Integration', () => {
     let app = null;
     let server = null;
 
-    const errorCmd = { argv: [
-      `http://127.0.0.1:${PORT + 1}/connection-error.apib`,
-      `http://127.0.0.1:${PORT + 1}`
-    ]
+    const errorCmd = {
+      argv: [
+        `http://127.0.0.1:${PORT + 1}/connection-error.apib`,
+        `http://127.0.0.1:${PORT + 1}`
+      ]
     };
-    const wrongCmd = { argv: [
-      `http://127.0.0.1:${PORT}/not-found.apib`,
-      `http://127.0.0.1:${PORT}`
-    ]
+    const wrongCmd = {
+      argv: [
+        `http://127.0.0.1:${PORT}/not-found.apib`,
+        `http://127.0.0.1:${PORT}`
+      ]
     };
-    const goodCmd = { argv: [
-      `http://127.0.0.1:${PORT}/file.apib`,
-      `http://127.0.0.1:${PORT}`
-    ]
+    const goodCmd = {
+      argv: [
+        `http://127.0.0.1:${PORT}/file.apib`,
+        `http://127.0.0.1:${PORT}`
+      ]
     };
 
     before((done) => {
@@ -181,18 +184,14 @@ describe('CLI class Integration', () => {
       server = app.listen(PORT, () => done());
     });
 
-    after(done =>
-      server.close(() => {
-        app = null;
-        server = null;
-        done();
-      })
-    );
+    after(done => server.close(() => {
+      app = null;
+      server = null;
+      done();
+    }));
 
     describe('and I try to load a file from bad hostname at all', () => {
-      before(done =>
-        execCommand(errorCmd, () => done())
-      );
+      before(done => execCommand(errorCmd, () => done()));
 
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
@@ -204,9 +203,7 @@ describe('CLI class Integration', () => {
     });
 
     describe('and I try to load a file that does not exist from an existing server', () => {
-      before(done =>
-        execCommand(wrongCmd, () => done())
-      );
+      before(done => execCommand(wrongCmd, () => done()));
 
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
@@ -218,9 +215,7 @@ describe('CLI class Integration', () => {
     });
 
     describe('and I try to load a file that actually is there', () => {
-      before(done =>
-        execCommand(goodCmd, () => done())
-      );
+      before(done => execCommand(goodCmd, () => done()));
 
       it('should exit with status 0', () => assert.equal(exitStatus, 0));
     });

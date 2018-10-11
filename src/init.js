@@ -351,14 +351,10 @@ function detectApiDescription(files) {
   const apib = files.filter(f => f.match(/\.apib$/i));
   if (apib.length) { return apib[0]; }
 
-  const swagger = files.filter(f =>
-    f.match(/\.ya?ml$/i) && f.match(/swagger/)
-  );
+  const swagger = files.filter(f => f.match(/\.ya?ml$/i) && f.match(/swagger/));
   if (swagger.length) { return swagger[0]; }
 
-  const openapi = files.filter(f =>
-    f.match(/\.ya?ml$/i) && f.match(/api/)
-  );
+  const openapi = files.filter(f => f.match(/\.ya?ml$/i) && f.match(/api/));
   if (openapi.length) { return openapi[0]; }
 
   return 'apiary.apib';

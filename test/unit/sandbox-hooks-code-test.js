@@ -5,15 +5,13 @@ const sandboxHooksCode = require('../../src/sandbox-hooks-code');
 describe('sandboxHooksCode(hooksCode, callback)', () => {
   it('should be a defined function', () => assert.isFunction(sandboxHooksCode));
 
-  describe('when hookscode explodes', () =>
-    it('should return an error in callback', (done) => {
-      const hooksCode = '\nthrow(new Error("Exploded during sandboxed processing of hook file"));\n';
-      sandboxHooksCode(hooksCode, (err) => {
-        assert.include(err, 'sandbox');
-        done();
-      });
-    })
-  );
+  describe('when hookscode explodes', () => it('should return an error in callback', (done) => {
+    const hooksCode = '\nthrow(new Error("Exploded during sandboxed processing of hook file"));\n';
+    sandboxHooksCode(hooksCode, (err) => {
+      assert.include(err, 'sandbox');
+      done();
+    });
+  }));
 
   describe('context of code adding hooks', () => {
     it('should not have access to this context', (done) => {

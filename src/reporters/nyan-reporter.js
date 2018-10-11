@@ -171,9 +171,9 @@ NyanCatReporter.prototype.drawNyanCat = function () {
 NyanCatReporter.prototype.face = function () {
   if (this.stats.failures) {
     return '( x .x)';
-  } else if (this.stats.skipped) {
+  } if (this.stats.skipped) {
     return '( o .o)';
-  } else if (this.stats.passes) {
+  } if (this.stats.passes) {
     return '( ^ .^)';
   }
   return '( - .-)';

@@ -2,7 +2,9 @@ const net = require('net');
 const path = require('path');
 const { assert } = require('chai');
 
-const { isProcessRunning, killAll, createServer, runCLIWithServer, runCLI, DEFAULT_SERVER_PORT } = require('../helpers');
+const {
+  isProcessRunning, killAll, createServer, runCLIWithServer, runCLI, DEFAULT_SERVER_PORT
+} = require('../helpers');
 
 const COFFEE_BIN = 'node_modules/.bin/coffee';
 const DEFAULT_HOOK_HANDLER_PORT = 61321;
@@ -94,12 +96,10 @@ describe('CLI', () => {
 
         it('should not return message announcing the fact', () => assert.include(runtimeInfo.dredd.stderr, 'not found'));
 
-        it('should term or kill the server', done =>
-          isProcessRunning('endless-ignore-term', (err, isRunning) => {
-            if (!err) { assert.isFalse(isRunning); }
-            done(err);
-          })
-        );
+        it('should term or kill the server', done => isProcessRunning('endless-ignore-term', (err, isRunning) => {
+          if (!err) { assert.isFalse(isRunning); }
+          done(err);
+        }));
 
         it('should not execute any transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, {}));
       });
@@ -130,12 +130,10 @@ describe('CLI', () => {
 
         it('should return message announcing the fact', () => assert.include(runtimeInfo.dredd.stderr, 'exited'));
 
-        it('should term or kill the server', done =>
-          isProcessRunning('endless-ignore-term', (err, isRunning) => {
-            if (!err) { assert.isFalse(isRunning); }
-            done(err);
-          })
-        );
+        it('should term or kill the server', done => isProcessRunning('endless-ignore-term', (err, isRunning) => {
+          if (!err) { assert.isFalse(isRunning); }
+          done(err);
+        }));
 
         it('should not execute any transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, {}));
       });
@@ -173,12 +171,10 @@ describe('CLI', () => {
           assert.include(runtimeInfo.dredd.stderr, 'killed');
         });
 
-        it('should term or kill the server', done =>
-          isProcessRunning('endless-ignore-term', (err, isRunning) => {
-            if (!err) { assert.isFalse(isRunning); }
-            done(err);
-          })
-        );
+        it('should term or kill the server', done => isProcessRunning('endless-ignore-term', (err, isRunning) => {
+          if (!err) { assert.isFalse(isRunning); }
+          done(err);
+        }));
 
         it('should not execute any transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, {}));
       });
@@ -212,13 +208,11 @@ describe('CLI', () => {
             `--language=${COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee`,
             '--hookfiles=test/fixtures/hooks.js'
           ];
-          hookHandler.listen(DEFAULT_HOOK_HANDLER_PORT, () =>
-            runCLIWithServer(args, app, (err, info) => {
-              hookHandler.close();
-              runtimeInfo = info;
-              done(err);
-            })
-          );
+          hookHandler.listen(DEFAULT_HOOK_HANDLER_PORT, () => runCLIWithServer(args, app, (err, info) => {
+            hookHandler.close();
+            runtimeInfo = info;
+            done(err);
+          }));
         });
 
         after(done => killAll('test/fixtures/scripts/', done));
@@ -233,12 +227,10 @@ describe('CLI', () => {
           assert.include(runtimeInfo.dredd.stderr, 'killed');
         });
 
-        it('should term or kill the server', done =>
-          isProcessRunning('endless-ignore-term', (err, isRunning) => {
-            if (!err) { assert.isFalse(isRunning); }
-            done(err);
-          })
-        );
+        it('should term or kill the server', done => isProcessRunning('endless-ignore-term', (err, isRunning) => {
+          if (!err) { assert.isFalse(isRunning); }
+          done(err);
+        }));
 
         it('should execute the transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
       });
@@ -265,13 +257,11 @@ describe('CLI', () => {
             `--language=${COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee`,
             '--hookfiles=./test/fixtures/scripts/emptyfile'
           ];
-          hookHandler.listen(DEFAULT_HOOK_HANDLER_PORT, () =>
-            runCLIWithServer(args, app, (err, info) => {
-              hookHandler.close();
-              runtimeInfo = info;
-              done(err);
-            })
-          );
+          hookHandler.listen(DEFAULT_HOOK_HANDLER_PORT, () => runCLIWithServer(args, app, (err, info) => {
+            hookHandler.close();
+            runtimeInfo = info;
+            done(err);
+          }));
         });
 
         after(done => killAll('test/fixtures/scripts/', done));
@@ -283,12 +273,10 @@ describe('CLI', () => {
           assert.notInclude(runtimeInfo.dredd.stderr, 'exited');
         });
 
-        it('should kill both the handler and the server', done =>
-          isProcessRunning('endless-ignore-term', (err, isRunning) => {
-            if (!err) { assert.isFalse(isRunning); }
-            done(err);
-          })
-        );
+        it('should kill both the handler and the server', done => isProcessRunning('endless-ignore-term', (err, isRunning) => {
+          if (!err) { assert.isFalse(isRunning); }
+          done(err);
+        }));
 
         it('should execute some transaction', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
       });
@@ -361,12 +349,10 @@ describe('CLI', () => {
       });
 
       it('should perform the POST, GET, PUT, DELETE in order', () => {
-        assert.isOk(
-          runtimeInfo.dredd.stdout.indexOf('POST') <
-          runtimeInfo.dredd.stdout.indexOf('GET') <
-          runtimeInfo.dredd.stdout.indexOf('PUT') <
-          runtimeInfo.dredd.stdout.indexOf('DELETE')
-        );
+        assert.isOk(runtimeInfo.dredd.stdout.indexOf('POST')
+          < runtimeInfo.dredd.stdout.indexOf('GET')
+          < runtimeInfo.dredd.stdout.indexOf('PUT')
+          < runtimeInfo.dredd.stdout.indexOf('DELETE'));
       });
     });
 
@@ -414,10 +400,7 @@ describe('CLI', () => {
         });
       });
 
-      it('should display details on passing tests', () =>
-        // The request: block is not shown for passing tests normally
-        assert.isOk(runtimeInfo.dredd.stdout.indexOf('request') > -1)
-      );
+      it('should display details on passing tests', () => assert.isOk(runtimeInfo.dredd.stdout.indexOf('request') > -1));
     });
 
     describe('when filtering request methods with -m', () => {
@@ -513,11 +496,7 @@ describe('CLI', () => {
         });
       });
 
-      it('should print without colors', () =>
-        // If colors are not on, there is no closing color code between
-        // the "pass" and the ":"
-        assert.include(runtimeInfo.dredd.stdout, 'pass:')
-      );
+      it('should print without colors', () => assert.include(runtimeInfo.dredd.stdout, 'pass:'));
     });
 
     describe('when suppressing color with --color=false', () => {
@@ -538,11 +517,7 @@ describe('CLI', () => {
         });
       });
 
-      it('should print without colors', () =>
-        // If colors are not on, there is no closing color code between
-        // the "pass" and the ":"
-        assert.include(runtimeInfo.dredd.stdout, 'pass:')
-      );
+      it('should print without colors', () => assert.include(runtimeInfo.dredd.stdout, 'pass:'));
     });
 
     describe('when setting the log output level with -l', () => {
@@ -563,10 +538,7 @@ describe('CLI', () => {
         });
       });
 
-      it('should not display anything', () =>
-        // At the "error" level, complete should not be shown
-        assert.isOk(runtimeInfo.dredd.stdout.indexOf('complete') === -1)
-      );
+      it('should not display anything', () => assert.isOk(runtimeInfo.dredd.stdout.indexOf('complete') === -1));
     });
 
     describe('when showing timestamps with -t', () => {
@@ -587,10 +559,7 @@ describe('CLI', () => {
         });
       });
 
-      it('should display timestamps', () =>
-        // Look for the prefix for cli output with timestamps
-        assert.notEqual(runtimeInfo.dredd.stdout.indexOf('Z -'), -1)
-      );
+      it('should display timestamps', () => assert.notEqual(runtimeInfo.dredd.stdout.indexOf('Z -'), -1));
     });
   });
 
@@ -690,14 +659,12 @@ describe('CLI', () => {
 
       before((done) => {
         const app = createServer();
-        app.get('/', (req, res) =>
-          res.json({
-            data: {
-              expires: 1234,
-              token: 'this should pass since it is a string'
-            }
-          })
-        );
+        app.get('/', (req, res) => res.json({
+          data: {
+            expires: 1234,
+            token: 'this should pass since it is a string'
+          }
+        }));
 
         const args = [
           './test/fixtures/schema.apib',
@@ -717,14 +684,12 @@ describe('CLI', () => {
 
       before((done) => {
         const app = createServer();
-        app.get('/', (req, res) =>
-          res.json({
-            data: {
-              expires: 'this should fail since it is a string',
-              token: 'this should pass since it is a string'
-            }
-          })
-        );
+        app.get('/', (req, res) => res.json({
+          data: {
+            expires: 'this should fail since it is a string',
+            token: 'this should pass since it is a string'
+          }
+        }));
 
         const args = [
           './test/fixtures/schema.apib',
@@ -806,34 +771,32 @@ describe('CLI', () => {
   });
 
 
-  describe('when called with additional --path argument which is a glob', () =>
-    describe('and called with --names options', () => {
-      let cliInfo;
+  describe('when called with additional --path argument which is a glob', () => describe('and called with --names options', () => {
+    let cliInfo;
 
-      before((done) => {
-        const args = [
-          './test/fixtures/multiple-examples.apib',
-          `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-          '--path=./test/fixtures/multifile/*.apib',
-          '--names'
-        ];
-        runCLI(args, (err, info) => {
-          cliInfo = info;
-          done(err);
-        });
+    before((done) => {
+      const args = [
+        './test/fixtures/multiple-examples.apib',
+        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
+        '--path=./test/fixtures/multifile/*.apib',
+        '--names'
+      ];
+      runCLI(args, (err, info) => {
+        cliInfo = info;
+        done(err);
       });
+    });
 
-      it('it should include all paths from all API description documents matching all paths and globs', () => {
-        assert.include(cliInfo.stdout, 'Greeting API > /greeting > GET');
-        assert.include(cliInfo.stdout, 'Message API > /message > GET');
-        assert.include(cliInfo.stdout, 'Name API > /name > GET');
-        assert.include(cliInfo.stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 1');
-        assert.include(cliInfo.stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 2');
-      });
+    it('it should include all paths from all API description documents matching all paths and globs', () => {
+      assert.include(cliInfo.stdout, 'Greeting API > /greeting > GET');
+      assert.include(cliInfo.stdout, 'Message API > /message > GET');
+      assert.include(cliInfo.stdout, 'Name API > /name > GET');
+      assert.include(cliInfo.stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 1');
+      assert.include(cliInfo.stdout, 'Machines API > Machines > Machines collection > Get Machines > Example 2');
+    });
 
-      it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
-    })
-  );
+    it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
+  }));
 
   describe('Using sandboxed hooks', () => {
     let runtimeInfo;

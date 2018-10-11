@@ -86,53 +86,55 @@ class TransactionRunner {
       // Iterate over transactions' transaction
       // Because async changes the way referencing of properties work,
       // we need to work with indexes (keys) here, no other way of access.
-      return async.timesSeries(transactions.length, (transactionIndex, iterationCallback) => {
-        transaction = transactions[transactionIndex];
-        logger.verbose(`Processing transaction #${transactionIndex + 1}:`, transaction.name);
+      return async.timesSeries(
+        transactions.length, (transactionIndex, iterationCallback) => {
+          transaction = transactions[transactionIndex];
+          logger.verbose(`Processing transaction #${transactionIndex + 1}:`, transaction.name);
 
-        logger.verbose('Running \'beforeEach\' hooks');
-        this.runHooksForData(hooks.beforeEachHooks, transaction, false, () => {
-          if (this.hookHandlerError) { return iterationCallback(this.hookHandlerError); }
-
-          logger.verbose('Running \'before\' hooks');
-          this.runHooksForData(hooks.beforeHooks[transaction.name], transaction, false, () => {
+          logger.verbose('Running \'beforeEach\' hooks');
+          this.runHooksForData(hooks.beforeEachHooks, transaction, false, () => {
             if (this.hookHandlerError) { return iterationCallback(this.hookHandlerError); }
 
-            // This method:
-            // - skips and fails based on hooks or options
-            // - executes a request
-            // - recieves a response
-            // - runs beforeEachValidation hooks
-            // - runs beforeValidation hooks
-            // - runs Gavel validation
-            this.executeTransaction(transaction, hooks, () => {
+            logger.verbose('Running \'before\' hooks');
+            this.runHooksForData(hooks.beforeHooks[transaction.name], transaction, false, () => {
               if (this.hookHandlerError) { return iterationCallback(this.hookHandlerError); }
 
-              logger.verbose('Running \'afterEach\' hooks');
-              this.runHooksForData(hooks.afterEachHooks, transaction, false, () => {
+              // This method:
+              // - skips and fails based on hooks or options
+              // - executes a request
+              // - recieves a response
+              // - runs beforeEachValidation hooks
+              // - runs beforeValidation hooks
+              // - runs Gavel validation
+              this.executeTransaction(transaction, hooks, () => {
                 if (this.hookHandlerError) { return iterationCallback(this.hookHandlerError); }
 
-                logger.verbose('Running \'after\' hooks');
-                this.runHooksForData(hooks.afterHooks[transaction.name], transaction, false, () => {
+                logger.verbose('Running \'afterEach\' hooks');
+                this.runHooksForData(hooks.afterEachHooks, transaction, false, () => {
                   if (this.hookHandlerError) { return iterationCallback(this.hookHandlerError); }
 
-                  logger.debug(`Evaluating results of transaction execution #${transactionIndex + 1}:`, transaction.name);
-                  this.emitResult(transaction, iterationCallback);
+                  logger.verbose('Running \'after\' hooks');
+                  this.runHooksForData(hooks.afterHooks[transaction.name], transaction, false, () => {
+                    if (this.hookHandlerError) { return iterationCallback(this.hookHandlerError); }
+
+                    logger.debug(`Evaluating results of transaction execution #${transactionIndex + 1}:`, transaction.name);
+                    this.emitResult(transaction, iterationCallback);
+                  });
                 });
               });
             });
           });
-        });
-      }
-        , (iterationError) => {
-        if (iterationError) { return callback(iterationError); }
+        },
+        (iterationError) => {
+          if (iterationError) { return callback(iterationError); }
 
-        logger.verbose('Running \'afterAll\' hooks');
-        this.runHooksForData(hooks.afterAllHooks, transactions, true, () => {
-          if (this.hookHandlerError) { return callback(this.hookHandlerError); }
-          callback();
-        });
-      });
+          logger.verbose('Running \'afterAll\' hooks');
+          this.runHooksForData(hooks.afterAllHooks, transactions, true, () => {
+            if (this.hookHandlerError) { return callback(this.hookHandlerError); }
+            callback();
+          });
+        }
+      );
     });
   }
 
@@ -259,20 +261,22 @@ output;\
     const wrappedCode = this.sandboxedWrappedCode(hookString);
 
     const sandbox = new Pitboss(wrappedCode, { timeout: 500 });
-    return sandbox.run({
-      context: {
-        _data: data,
-        _logs: [],
-        stash: this.hookStash
+    return sandbox.run(
+      {
+        context: {
+          _data: data,
+          _logs: [],
+          stash: this.hookStash
+        },
+        libraries: {
+          _log: sandboxedLogLibraryPath
+        }
       },
-      libraries: {
-        _log: sandboxedLogLibraryPath
+      (err, result = {}) => {
+        sandbox.kill();
+        this.sandboxedHookResultsHandler(err, data, result, callback);
       }
-    }
-      , (err, result = {}) => {
-      sandbox.kill();
-      this.sandboxedHookResultsHandler(err, data, result, callback);
-    });
+    );
   }
 
   // Will be used runHook instead in next major release, see deprecation warning
@@ -339,9 +343,9 @@ Interface of the hooks functions will be unified soon across all hook functions:
 
     const { origin, request, response } = transaction;
     const mediaType = (
-      configuration.data[origin.filename] ?
-        configuration.data[origin.filename].mediaType :
-        undefined
+      configuration.data[origin.filename]
+        ? configuration.data[origin.filename].mediaType
+        : undefined
     ) || 'text/vnd.apiblueprint';
 
     // Parse the server URL (just once, caching it in @parsedUrl)
@@ -568,22 +572,22 @@ Interface of the hooks functions will be unified soon across all hook functions:
       transaction.test = test;
       this.skipTransaction(transaction, 'Skipped in before hook');
       return callback();
-    } else if (transaction.fail) {
+    } if (transaction.fail) {
       logger.verbose('HTTP transaction was marked in hooks as to be failed. Reporting as failed');
       transaction.test = test;
       this.failTransaction(transaction, `Failed in before hook: ${transaction.fail}`);
       return callback();
-    } else if (this.configuration.options['dry-run']) {
+    } if (this.configuration.options['dry-run']) {
       logger.info('Dry run. Not performing HTTP request');
       transaction.test = test;
       this.skipTransaction(transaction);
       return callback();
-    } else if (this.configuration.options.names) {
+    } if (this.configuration.options.names) {
       logger.info(transaction.name);
       transaction.test = test;
       this.skipTransaction(transaction);
       return callback();
-    } else if ((this.configuration.options.method.length > 0) && !(Array.from(this.configuration.options.method).includes(transaction.request.method))) {
+    } if ((this.configuration.options.method.length > 0) && !(Array.from(this.configuration.options.method).includes(transaction.request.method))) {
       logger.info(`\
 Only ${(Array.from(this.configuration.options.method).map(m => m.toUpperCase())).join(', ')}\
 requests are set to be executed. \
@@ -592,7 +596,7 @@ Not performing HTTP ${transaction.request.method.toUpperCase()} request.\
       transaction.test = test;
       this.skipTransaction(transaction);
       return callback();
-    } else if ((this.configuration.options.only.length > 0) && !(Array.from(this.configuration.options.only).includes(transaction.name))) {
+    } if ((this.configuration.options.only.length > 0) && !(Array.from(this.configuration.options.only).includes(transaction.name))) {
       logger.info(`\
 Only '${this.configuration.options.only}' transaction is set to be executed. \
 Not performing HTTP request for '${transaction.name}'.\
@@ -675,12 +679,8 @@ Not performing HTTP request for '${transaction.name}'.\
 
         // Warn about empty responses
         // Expected is as string, actual is as integer :facepalm:
-        const isExpectedResponseStatusCodeEmpty = ['204', '205'].includes(
-          test.expected.statusCode ? test.expected.statusCode.toString() : undefined
-        );
-        const isActualResponseStatusCodeEmpty = ['204', '205'].includes(
-          test.actual.statusCode ? test.actual.statusCode.toString() : undefined
-        );
+        const isExpectedResponseStatusCodeEmpty = ['204', '205'].includes(test.expected.statusCode ? test.expected.statusCode.toString() : undefined);
+        const isActualResponseStatusCodeEmpty = ['204', '205'].includes(test.actual.statusCode ? test.actual.statusCode.toString() : undefined);
         const hasBody = (test.expected.body || test.actual.body);
         if ((isExpectedResponseStatusCodeEmpty || isActualResponseStatusCodeEmpty) && hasBody) {
           logger.warn(`\
