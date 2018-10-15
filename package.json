@@ -59,7 +59,7 @@
     "markdown-it": "8.4.1",
     "optimist": "0.6.1",
     "pitboss-ng": "0.3.3",
-    "proxyquire": "2.0.0",
+    "proxyquire": "2.1.0",
     "request": "2.87.0",
     "spawn-args": "0.2.0",
     "uuid": "3.3.2",
