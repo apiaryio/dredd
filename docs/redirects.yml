@@ -3,7 +3,7 @@
 # to Dredd maintainers to keep this list in sync with reality.
 #
 # You can use https://github.com/honzajavorek/rtd-redirects to programmatically
-# upload the redirects to ReadTheDocs admin interface.
+# upload the redirects to the ReadTheDocs admin interface.
 redirects:
   # removed pages
   "/example/": "/quickstart.html"
