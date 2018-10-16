@@ -86,7 +86,7 @@ To solve these issues, you need to set your proxy settings for both ``npm`` and 
    $ git config --global http.proxy "http://proxy.company.com:8080"
    $ git config --global https.proxy "https://proxy.company.com:8080"
 
-When using ``git config``, make sure you have the port specified even when it’s the standard ``:80``. Also check out :ref:`how to set up Dredd to correctly work with proxies <using-http-s-proxy>`.
+When using ``git config``, make sure you have the port specified even when it’s the standard ``:80``. Also check out :ref:`how to set up Dredd to correctly work with proxies <using-https-proxy>`.
 
 Why I’m Seeing ``node-gyp`` or ``python`` Errors?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -276,7 +276,7 @@ it uses a public API described in following documents:
 
 Following data are sent over the wire to Apiary:
 
--  `Apiary Reporter Test Data <data-structures.md#apiary-reporter-test-data>`__
+-  :ref:`Apiary Reporter Test Data <apiary-reporter-test-data>`
 
 There is also one environment variable you could find useful:
 

@@ -174,7 +174,7 @@ You can fail any step by setting ``fail`` property on ``transaction`` object to 
 Using Chai Assertions
 ~~~~~~~~~~~~~~~~~~~~~
 
-Inside hook files, you can require `Chai <http://www.chaijs.com/>`__ and use its ``assert``, ``should`` or ``expect`` interface in hooks and write your custom expectations. Dredd catches Chai’s expectation error in hooks and makes transaction to fail.
+Inside hook files, you can require `Chai <https://www.chaijs.com/>`__ and use its ``assert``, ``should`` or ``expect`` interface in hooks and write your custom expectations. Dredd catches Chai’s expectation error in hooks and makes transaction to fail.
 
 .. code-block:: javascript
 

@@ -465,6 +465,8 @@ There are also some packages which make the integration a piece of cake:
 
 To find more, search for ``dredd`` in your favorite language’s package index.
 
+.. _continuous-integration:
+
 Continuous Integration
 ----------------------
 
@@ -603,6 +605,8 @@ Or you can ignore it:
 
 .. literalinclude:: ../test/fixtures/response/binary-ignore-body-hooks.js
   :language: javascript
+
+.. _multiple-requests-and-responses:
 
 Multiple Requests and Responses
 -------------------------------

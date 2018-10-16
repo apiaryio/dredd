@@ -216,12 +216,13 @@ While `API Blueprint <https://apiblueprint.org/>`__ allows specifying multiple r
 
 In other words, Dredd always selects just the first response for each request.
 
-   **Note:** Improving the support for multiple requests and responses is under development. Refer to issues `#25 <https://github.com/apiaryio/dredd/issues/25>`__ and `#78 <https://github.com/apiaryio/dredd/issues/78>`__ for details. Support for URI parameters specific to a single request within one action is also limited. Solving `#227 <https://github.com/apiaryio/dredd/issues/227>`__ should unblock many related problems. Also see `Multiple Requests and Responses <how-to-guides.md#multiple-requests-and-responses>`__ guide for workarounds.
+.. note::
+   Improving the support for multiple requests and responses is under development. Refer to issues `#25 <https://github.com/apiaryio/dredd/issues/25>`__ and `#78 <https://github.com/apiaryio/dredd/issues/78>`__ for details. Support for URI parameters specific to a single request within one action is also limited. Solving `#227 <https://github.com/apiaryio/dredd/issues/227>`__ should unblock many related problems. Also see :ref:`multiple-requests-and-responses` guide for workarounds.
 
 Swagger
 ~~~~~~~
 
-The `Swagger <https://swagger.io/>`__ format allows to specify multiple responses for a single operation. By default Dredd tests only responses with ``2xx`` status codes. Responses with other codes are marked as *skipped* and can be activated in `hooks <hooks.md>`__ - see the `Multiple Requests and Responses <how-to-guides.md#multiple-requests-and-responses>`__ how-to guide.
+The `Swagger <https://swagger.io/>`__ format allows to specify multiple responses for a single operation. By default Dredd tests only responses with ``2xx`` status codes. Responses with other codes are marked as *skipped* and can be activated in :ref:`hooks <hooks>` - see the :ref:`multiple-requests-and-responses` how-to guide.
 
 In ``produces`` (`docs <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-swaggerProduces>`__) and ``consumes`` (`docs <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-swaggerConsumes>`__), only JSON media types are supported. Only the first JSON media type in ``produces`` is effective, others are skipped. Other media types are respected only when provided with `explicit examples <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-responseExamples>`__.
 
@@ -244,6 +245,7 @@ When using :ref:`Apiary Reporter and Apiary Tests <using-apiary-reporter-and-api
 
 See also :ref:`guidelines on how to develop Apiary Reporter <hacking-apiary-reporter>`.
 
+.. _using-http-s-proxy:
 .. _using-https-proxy:
 
 Using HTTP(S) Proxy

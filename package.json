@@ -13,7 +13,7 @@
     "build": "babel ./src --out-dir ./lib/ --copy-files",
     "build:watch": "babel ./src --out-dir ./lib/ --copy-files --watch",
     "coveralls": "scripts/coveralls.sh",
-    "docs:lint": "sphinx-build -nW -b linkcheck docs docs/_build/",
+    "docs:lint": "doc8 docs && sphinx-build -nW -b linkcheck docs docs/_build/",
     "docs:build": "sphinx-build -nW -b html docs docs/_build/",
     "docs:serve": "sphinx-autobuild docs docs/_build/",
     "lint": "conventional-changelog-lint --from=master && eslint .",

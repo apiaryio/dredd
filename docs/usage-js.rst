@@ -26,7 +26,7 @@ As you can see, ``dredd.run`` is a function receiving another function as a call
 Configuration Object for Dredd Class
 ------------------------------------
 
-Let’s have a look at an example configuration first. (Please also see the `options source <https://github.com/apiaryio/dredd/blob/master/src/options.json>`__ to read detailed information about the ``options`` attributes).
+Let’s have a look at an example configuration first. (Please also see the :ref:`CLI options <usage-cli>` to read detailed information about the ``options`` attributes).
 
 .. code-block:: javascript
 
