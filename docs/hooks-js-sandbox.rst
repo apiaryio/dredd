@@ -77,7 +77,8 @@ Hook function context is not shared
 
 When **sandboxed**, hook function **context is not shared** between even the same step hook functions.
 
-Note: **This is wrong**. It throws an exception.
+.. note::
+   **This is wrong**. It throws an exception.
 
 .. code-block:: javascript
 

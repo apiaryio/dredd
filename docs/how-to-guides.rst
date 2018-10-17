@@ -166,7 +166,8 @@ Testing API Workflows
 
 Often you want to test a sequence of steps, a scenario, rather than just one request-response pair in isolation. Since the API description formats are quite limited in their support of documenting scenarios, Dredd probably isn’t the best tool to provide you with this kind of testing. There are some tricks though, which can help you to work around some of the limitations.
 
-   **Note:** `API Blueprint <https://apiblueprint.org/>`__ prepares direct support for testing and scenarios. Interested? Check out `apiaryio/api-blueprint#21 <https://github.com/apiaryio/api-blueprint/issues/21>`__!
+.. note::
+   `API Blueprint <https://apiblueprint.org/>`__ prepares direct support for testing and scenarios. Interested? Check out `apiaryio/api-blueprint#21 <https://github.com/apiaryio/api-blueprint/issues/21>`__!
 
 To test various scenarios, you will want to write each of them into a separate API description document. To load them during a single test run, use the ``--path`` option (:ref:`docs <path-p>`).
 
@@ -589,9 +590,8 @@ Swagger
 .. literalinclude:: ../test/fixtures/response/binary.yaml
   :language: yaml
 
-..
-
-   **Note:** Do not use the explicit ``binary`` or ``bytes`` formats with response bodies, as Dredd is not able to properly work with those (`fury-adapter-swagger#193 <https://github.com/apiaryio/fury-adapter-swagger/issues/193>`__).
+.. note::
+   Do not use the explicit ``binary`` or ``bytes`` formats with response bodies, as Dredd is not able to properly work with those (`fury-adapter-swagger#193 <https://github.com/apiaryio/fury-adapter-swagger/issues/193>`__).
 
 Hooks
 ~~~~~
@@ -611,7 +611,8 @@ Or you can ignore it:
 Multiple Requests and Responses
 -------------------------------
 
-   **Note:** For details on this topic see also :ref:`How Dredd Works With HTTP Transactions <choosing-http-transactions>`.
+.. note::
+   For details on this topic see also :ref:`How Dredd Works With HTTP Transactions <choosing-http-transactions>`.
 
 API Blueprint
 ~~~~~~~~~~~~~
