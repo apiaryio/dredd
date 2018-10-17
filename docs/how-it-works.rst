@@ -253,7 +253,7 @@ Using HTTP(S) Proxy
 
 You can tell Dredd to use HTTP(S) proxy for:
 
--  downloading API description documents (:ref:`the positional argument <api-description-document-string>` or the ``--path`` option (docs :ref:`path-p`) accepts also URL)
+-  downloading API description documents (the positional argument :option:`api-description-document` or the :option:`--path` option accepts also URL)
 -  :ref:`reporting to Apiary <using-apiary-reporter-and-apiary-tests>`
 
 Dredd respects ``HTTP_PROXY``, ``HTTPS_PROXY``, ``NO_PROXY``, ``http_proxy``, ``https_proxy``, and ``no_proxy`` environment variables. For more information on how those work see `relevant section <https://github.com/request/request#user-content-proxies>`__ of the underlying library’s documentation.

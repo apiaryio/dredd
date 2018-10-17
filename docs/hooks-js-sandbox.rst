@@ -55,7 +55,7 @@ The Sandbox mode can be used for running untrusted hook code. It can be activate
 -  You can access global ``stash`` object variables in each separate hook file. ``stash`` is passed between contexts of each hook function execution. This ``stash`` object purpose is to allow *transportation* of user defined values of type ``String``, ``Number``, ``Boolean``, ``null`` or ``Object`` and ``Array`` (no ``Functions`` or callbacks).
 -  Hook code is evaluated with ``"use strict"`` directive - `details at MDN <https://mdn.io/use+strict>`__
 -  Sandboxed mode does not support hooks written in CoffeScript language
--  You can print to console (via Dredd’s logger) with ``log`` function, taking into account the used logging level ``--level`` option (levels: ``error > warn > hook > info``)
+-  You can print to console (via Dredd’s logger) with ``log`` function, taking into account the used logging level :option:`--level` option (levels: ``error > warn > hook > info``)
 
 Request Stash in Sandbox Mode
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

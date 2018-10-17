@@ -35,7 +35,7 @@ Dredd doesn’t speak your language? :ref:`It’s very easy to write support for
 Using Hook Files
 ----------------
 
-To use a hook file with Dredd, use the ``--hookfiles`` flag in the command line. You can use this flag multiple times or use a `glob <https://www.npmjs.com/package/glob>`__ expression for loading multiple hook files. Dredd executes hook files in alphabetical order.
+To use a hook file with Dredd, use the :option:`--hookfiles` flag in the command line. You can use this flag multiple times or use a `glob <https://www.npmjs.com/package/glob>`__ expression for loading multiple hook files. Dredd executes hook files in alphabetical order.
 
 Example:
 
@@ -50,7 +50,7 @@ Getting Transaction Names
 
 For addressing specific test steps is used the **transaction names** of the compiled HTTP transactions (*actions*) from the API description.
 
-In order to retrieve transaction names please run Dredd with the ``--names`` argument last and it will print all available names of transactions.
+In order to retrieve transaction names please run Dredd with the :option:`--names` option last and it will print all available names of transactions.
 
 For example, given an API Blueprint file ``api-description.apib`` as following:
 

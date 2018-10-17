@@ -8,7 +8,7 @@ Dredd hooks handler client
 
 Dredd comes with concept of hooks language abstraction bridge via simple TCP socket.
 
-When you run Dredd with ``--language`` argument, it runs the command in argument and tries to connect to ``http://127.0.0.1:61321``. If connection to the hook handling server wasn’t successful, it exits with exit code ``3``.
+When you run Dredd with :option:`--language` option, it runs the given command and tries to connect to ``http://127.0.0.1:61321``. If connection to the hook handling server wasn’t successful, it exits with exit code ``3``.
 
 Dredd internally registers a function for each :ref:`type of hooks <types-of-hooks>` and when this function is executed it assigns execution ``uuid`` to that event, serializes received function parameters (a :ref:`Transaction object <transaction>` or an Array of it), sends it to the TCP socket to be handled (executed) in other language and waits until message with same ``uuid`` is received. After data reception it assigns received ``data`` back to the transaction, so other language can interact with transactions same way like :ref:`native Node.js hooks <hooks-nodejs>`.
 
@@ -70,8 +70,8 @@ Termination
 
 When the testing is done, Dredd signals the hook handler process to terminate. This is done repeatedly with delays. When termination timeout is over, Dredd loses its patience and kills the process forcefully.
 
--  **retry delays** can be configured by ``--hooks-worker-term-retry`` (:ref:`docs <hooks-worker-term-retry>`)
--  **timeout** can be configured by ``--hooks-worker-term-timeout`` (:ref:`docs <hooks-worker-term-timeout>`)
+-  **retry delays** can be configured by :option:`--hooks-worker-term-retry`
+-  **timeout** can be configured by :option:`--hooks-worker-term-timeout`
 
 On Linux or macOS, Dredd uses the ``SIGTERM`` signal to tell the hook handler process it should terminate. On Windows, where signals do not exist, Dredd sends the ``END OF TEXT`` character (``\u0003``, which is ASCII representation of Ctrl+C) to standard input of the process.
 
@@ -101,14 +101,14 @@ Configuration Options
 
 There are several configuration options, which can help you during development:
 
--  ``--hooks-worker-timeout`` - :ref:`docs <hooks-worker-timeout>`
--  ``--hooks-worker-connect-timeout`` - :ref:`docs <hooks-worker-connect-timeout>`
--  ``--hooks-worker-connect-retry`` - :ref:`docs <hooks-worker-connect-retry>`
--  ``--hooks-worker-after-connect-wait`` - :ref:`docs <hooks-worker-after-connect-wait>`
--  ``--hooks-worker-term-timeout`` - :ref:`docs <hooks-worker-term-timeout>`
--  ``--hooks-worker-term-retry`` - :ref:`docs <hooks-worker-term-retry>`
--  ``--hooks-worker-handler-host`` - :ref:`docs <hooks-worker-handler-host>`
--  ``--hooks-worker-handler-port`` - :ref:`docs <hooks-worker-handler-port>`
+-  :option:`--hooks-worker-timeout`
+-  :option:`--hooks-worker-connect-timeout`
+-  :option:`--hooks-worker-connect-retry`
+-  :option:`--hooks-worker-after-connect-wait`
+-  :option:`--hooks-worker-term-timeout`
+-  :option:`--hooks-worker-term-retry`
+-  :option:`--hooks-worker-handler-host`
+-  :option:`--hooks-worker-handler-port`
 
 Need help? No problem!
 ----------------------

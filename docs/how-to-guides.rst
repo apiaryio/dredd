@@ -169,7 +169,7 @@ Often you want to test a sequence of steps, a scenario, rather than just one req
 .. note::
    `API Blueprint <https://apiblueprint.org/>`__ prepares direct support for testing and scenarios. Interested? Check out `apiaryio/api-blueprint#21 <https://github.com/apiaryio/api-blueprint/issues/21>`__!
 
-To test various scenarios, you will want to write each of them into a separate API description document. To load them during a single test run, use the ``--path`` option (:ref:`docs <path-p>`).
+To test various scenarios, you will want to write each of them into a separate API description document. To load them during a single test run, use the :option:`--path` option.
 
 For workflows to work properly, you’ll also need to keep **shared context** between individual HTTP transactions. You can use :ref:`hooks <hooks>` in order to achieve that. See tips on how to :ref:`pass data between transactions <sharing-data-between-steps-in-request-stash>`.
 
@@ -517,13 +517,13 @@ Dredd supports all common authentication schemes:
 -  CSRF tokens
 -  …
 
-Use ``user`` setting in your configuration file or ``--user`` argument to provide HTTP basic authentication:
+Use ``user`` setting in your configuration file or the :option:`--user` option to provide HTTP basic authentication:
 
 ::
 
    --user=user:password
 
-Most of the authentication schemes use HTTP header for carrying the authentication data. If you don’t want to add authentication HTTP header to every request in the API description, you can instruct Dredd to do it for you:
+Most of the authentication schemes use HTTP header for carrying the authentication data. If you don’t want to add authentication HTTP header to every request in the API description, you can instruct Dredd to do it for you by the :option:`--header` option:
 
 ::
 

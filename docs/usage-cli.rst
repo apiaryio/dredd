@@ -8,7 +8,7 @@ Usage
 
 ::
 
-   $ dredd '<API Description Document>' '<API Location>' [OPTIONS]
+   $ dredd '<api-description-document>' '<api-location>' [OPTIONS]
 
 Example:
 
@@ -21,21 +21,17 @@ Arguments
 
 .. _api-description-document-string:
 
-API Description Document (string)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. option:: api-description-document
 
-URL or path to the API description document (API Blueprint, Swagger).
-
-**Sample values:** ``./api-blueprint.apib``, ``./swagger.yml``, ``./swagger.json``, ``http://example.com/api-blueprint.apib``
+   URL or path to the API description document (API Blueprint, Swagger).
+   **Sample values:** ``./api-blueprint.apib``, ``./swagger.yml``, ``./swagger.json``, ``http://example.com/api-blueprint.apib``
 
 .. _api-location-string:
 
-API Location (string)
-~~~~~~~~~~~~~~~~~~~~~
+.. option:: api-location
 
-URL, the root address of your API.
-
-**Sample values:** ``http://127.0.0.1:3000``, ``http://api.example.com``
+   URL, the root address of your API.
+   **Sample values:** ``http://127.0.0.1:3000``, ``http://api.example.com``
 
 Configuration File
 ------------------
@@ -90,7 +86,5 @@ CLI Options Reference
 ---------------------
 
 Remember you can always list all available arguments by ``dredd --help``.
-
-.. program:: dredd
 
 .. cli-options:: ../src/options.json
