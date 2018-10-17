@@ -4,3 +4,4 @@ sphinx-rtd-theme==0.2.4
 pygments-markdown-lexer==0.1.0.dev39
 pygments-apiblueprint==0.1.0
 doc8==0.8.0
+jinja2==2.10
