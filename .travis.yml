@@ -3,11 +3,8 @@
 sudo: false
 dist: "trusty"
 language: "node_js"
-addons:
-  apt:
-    packages:
-      - "python3"
-      - "python3-pip"
+node_js:
+  - "10"
 cache:
   directories:
     - "node_modules"
@@ -16,30 +13,28 @@ before_install:
   # so 'conventional-changelog-lint' could compare commits and lint them: marionebl/conventional-changelog-lint#7
   - "git remote set-branches origin master && git fetch && git checkout master && git checkout -"
   - "npm -g install npm@6"
-  - "pip3 install --user -r docs/requirements.txt"
-install: "npm install --no-optional"
+  - "pyenv global 3.6"
+install:
+  - "npm install --no-optional"
+  - "pip install --user -r docs/requirements.txt"
 jobs:
   include:
     # stage 1, all following runs in parallel:
     - stage: "quality checks & tests"
       env: "JOB=quality_checks"
-      node_js: "10"
       script: "npm run lint && npm run docs:lint"
-    - node_js: "10"
-      env: "JOB=docs_build_dry_run" # why dry run? because production build happens directly on ReadTheDocs infrastructure
+    - env: "JOB=docs_build_dry_run" # why dry run? because production build happens directly on ReadTheDocs infrastructure
       script: "npm run docs:build"
-    - node_js: "6"
-      env: "JOB=node6"
+    - env: "JOB=node6"
+      node_js: "6"
       script: "npm run test:coverage && npm run coveralls"
-    - node_js: "8"
-      env: "JOB=node8"
+    - env: "JOB=node8"
+      node_js: "8"
       script: "npm run test:coverage && npm run coveralls"
-    - node_js: "10"
-      env: "JOB=node10"
+    - env: "JOB=node10"
       script: "npm run test:coverage && npm run coveralls"
 
     # stage 2
     - stage: "semantic release"
-      node_js: "10"
       script: "npm run semantic-release || true"
       if: fork = false AND branch = master AND type = push
