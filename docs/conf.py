@@ -165,18 +165,3 @@ html_show_copyright = False
 linkcheck_ignore = [
     'https://crates.io/crates/dredd-hooks',  # https://github.com/sphinx-doc/sphinx/pull/5140
 ]
-
-
-# -- Hacks ----------------------------------------------------------------
-
-import sphinx.application
-
-# Hacking around the pygments-markdown-lexer issue:
-# https://github.com/jhermann/pygments-markdown-lexer/issues/6
-_original_warn = sphinx.application.Sphinx.warn
-
-def _warn(self, message, *args, **kwargs):
-    if not message.startswith('extension \'pygments_markdown_lexer\' has no setup() function'):
-        _original_warn(self, message, *args, **kwargs)
-
-sphinx.application.Sphinx.warn = _warn

@@ -3,9 +3,9 @@ import json
 from textwrap import dedent
 from docutils import nodes
 from docutils.statemachine import ViewList
+from docutils.parsers.rst import Directive
 
 from jinja2 import Template
-from sphinx.util.compat import Directive
 from sphinx.util.nodes import nested_parse_with_titles
 
 
