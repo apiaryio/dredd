@@ -52,7 +52,6 @@ sandbox: false
 server: rails server
 server-wait: 3
 init: false
-custom: {}
 names: false
 only: []
 output: []
