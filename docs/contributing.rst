@@ -72,9 +72,8 @@ Maintainers
 
 `Apiary <https://apiary.io/>`__ is the main author and maintainer of Dredd’s `upstream repository <https://github.com/apiaryio/dredd>`__. Currently responsible people are:
 
--  [@netmilk](https://github.com/netmilk) - product decisions, feature requests
+-  [@paraskakis](https://github.com/paraskakis) - product decisions, feature requests
 -  [@honzajavorek](https://github.com/honzajavorek) - lead of development
--  [@michalholasek](https://github.com/michalholasek) - team member
 
 Programming Language
 ~~~~~~~~~~~~~~~~~~~~
