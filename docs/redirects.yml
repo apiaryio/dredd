@@ -14,6 +14,7 @@ redirects:
   "/overview.html": "/how-it-works.html"
   "/usage/": "/usage-cli.html"
   "/usage.html": "/usage-cli.html"
+  "/contributing.html": "/internals.html"
 
   # MkDocs to Sphinx migration
   "/hooks-go/": "/hooks-go.html"

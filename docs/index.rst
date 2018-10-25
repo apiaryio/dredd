@@ -66,7 +66,7 @@ Contents
    Hooks: Rust <hooks-rust>
    Hooks: Other languages <hooks-new-language>
    data-structures
-   contributing
+   internals
 
 Useful Links
 ------------
