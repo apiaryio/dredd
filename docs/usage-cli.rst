@@ -62,7 +62,6 @@ See below how sample configuration file could look like. The structure is the sa
    server: rails server
    server-wait: 3
    init: false
-   custom: {}
    names: false
    only: []
    output: []
