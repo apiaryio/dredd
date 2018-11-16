@@ -12,7 +12,7 @@ const logger = require('./logger');
 const Runner = require('./transaction-runner');
 const { applyConfiguration } = require('./configuration');
 
-let options = require('./options');
+const options = require('./options.json');
 
 const PROXY_ENV_VARIABLES = ['HTTP_PROXY', 'HTTPS_PROXY', 'NO_PROXY'];
 const FILE_DOWNLOAD_TIMEOUT = 5000;
@@ -189,11 +189,11 @@ API description document (or documents) not found on path:
   }
 
   downloadFile(fileUrl, callback) {
-    options = clone(this.configuration.http);
-    options.url = fileUrl;
-    options.timeout = FILE_DOWNLOAD_TIMEOUT;
+    const opts = clone(this.configuration.http);
+    opts.url = fileUrl;
+    opts.timeout = FILE_DOWNLOAD_TIMEOUT;
 
-    request.get(options, (downloadError, res, body) => {
+    request.get(opts, (downloadError, res, body) => {
       let err;
       if (downloadError) {
         logger.debug(`Downloading ${fileUrl} errored:`, `${downloadError}` || downloadError.code);
