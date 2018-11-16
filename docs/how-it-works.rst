@@ -156,7 +156,7 @@ In `Swagger <https://swagger.io/>`__ documents, HTTP headers are inferred from `
 -  If request body parameters are specified as ``"in": "formData"``, request’s ``Content-Type`` header is set to ``application/x-www-form-urlencoded``.
 
 .. note::
-   Processing ``"in": "header"`` parameters and inferring ``application/x-www-form-urlencoded`` from ``"in": "formData"`` parameters is not implemented yet (`apiaryio/fury-adapter-swagger#68 <https://github.com/apiaryio/fury-adapter-swagger/issues/68>`__, `apiaryio/fury-adapter-swagger#67 <https://github.com/apiaryio/fury-adapter-swagger/issues/67>`__).
+   Processing ``"in": "header"`` parameters and inferring ``application/x-www-form-urlencoded`` from ``"in": "formData"`` parameters is not implemented yet (:ghissue:`fury-adapter-swagger#68`, :ghissue:`fury-adapter-swagger#67`).
 
 Request Body
 ~~~~~~~~~~~~
@@ -217,7 +217,7 @@ While `API Blueprint <https://apiblueprint.org/>`__ allows specifying multiple r
 In other words, Dredd always selects just the first response for each request.
 
 .. note::
-   Improving the support for multiple requests and responses is under development. Refer to issues `#25 <https://github.com/apiaryio/dredd/issues/25>`__ and `#78 <https://github.com/apiaryio/dredd/issues/78>`__ for details. Support for URI parameters specific to a single request within one action is also limited. Solving `#227 <https://github.com/apiaryio/dredd/issues/227>`__ should unblock many related problems. Also see :ref:`multiple-requests-and-responses` guide for workarounds.
+   Improving the support for multiple requests and responses is under development. Refer to issues :ghissue:`#25` and :ghissue:`#78` for details. Support for URI parameters specific to a single request within one action is also limited. Solving :ghissue:`#227` should unblock many related problems. Also see :ref:`multiple-requests-and-responses` guide for workarounds.
 
 Swagger
 ~~~~~~~
