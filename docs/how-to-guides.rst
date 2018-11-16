@@ -733,7 +733,7 @@ Example Values for Request Parameters
 
 While example values are natural part of the API Blueprint format, the Swagger specification allows them only for ``body`` request parameters (``schema.example``).
 
-However, Dredd needs to know what values to use when testing described API, so it supports ``x-example`` `vendor extension property <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-vendorExtensions>`__ to overcome the Swagger limitation:
+However, Dredd needs to know what values to use when testing described API, so it supports ``x-example`` `vendor extension property <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-vendorextensions>`__ to overcome the Swagger limitation:
 
 .. code-block:: yaml
 
