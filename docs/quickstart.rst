@@ -20,7 +20,7 @@ Document Your API
 First, let’s design the API we are about to build and test. That means you will need to create an API description file, which will document how your API should look like. Dredd supports two formats of API description documents:
 
 -  `API Blueprint <https://apiblueprint.org/>`__
--  `Swagger <https://swagger.io/>`__
+-  `OpenAPI 2 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md/>`__
 
 If you choose API Blueprint, create a file called ``api-description.apib`` in the root of your project and save it with following content:
 
@@ -33,7 +33,7 @@ If you choose API Blueprint, create a file called ``api-description.apib`` in th
 
            {"message": "Hello World!"}
 
-If you choose Swagger, create a file called ``api-description.yml``:
+If you choose OpenAPI 2, create a file called ``api-description.yml``:
 
 .. code-block:: yaml
 
@@ -99,7 +99,7 @@ Finally, let Dredd validate whether your freshly implemented API complies with t
 .. code-block:: shell
 
    $ dredd api-description.apib http://127.0.0.1:3000  # API Blueprint
-   $ dredd api-description.yml http://127.0.0.1:3000  # Swagger
+   $ dredd api-description.yml http://127.0.0.1:3000  # OpenAPI 2
 
 Configure Dredd
 ---------------

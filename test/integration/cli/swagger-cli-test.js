@@ -2,7 +2,7 @@ const { assert } = require('chai');
 
 const { runCLIWithServer, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
 
-describe('CLI - Swagger Document', () => {
+describe('CLI - OpenAPI 2 Document', () => {
   describe('when loaded from file', () => {
     describe('when successfully loaded', () => {
       let runtimeInfo;
@@ -22,10 +22,10 @@ describe('CLI - Swagger Document', () => {
       it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
-    describe('when Swagger is loaded with errors', () => {
+    describe('when OpenAPI 2 is loaded with errors', () => {
       let runtimeInfo;
       const args = [
-        './test/fixtures/error-swagger.yaml',
+        './test/fixtures/error-openapi2.yaml',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`
       ];
 
@@ -41,10 +41,10 @@ describe('CLI - Swagger Document', () => {
       it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr, 'Error when processing API description'));
     });
 
-    describe('when Swagger is loaded with warnings', () => {
+    describe('when OpenAPI 2 is loaded with warnings', () => {
       let runtimeInfo;
       const args = [
-        './test/fixtures/warning-swagger.yaml',
+        './test/fixtures/warning-openapi2.yaml',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--no-color'
       ];

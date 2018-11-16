@@ -233,7 +233,7 @@ describe('TransactionRunner', () => {
       );
     });
 
-    describe('when processing Swagger document and given transaction has non-2xx status code', () => {
+    describe('when processing OpenAPI 2 document and given transaction has non-2xx status code', () => {
       const filename = 'api-description.yml';
       let configuredTransaction;
 
@@ -255,7 +255,7 @@ describe('TransactionRunner', () => {
       );
     });
 
-    describe('when processing Swagger document and given transaction has 2xx status code', () => {
+    describe('when processing OpenAPI 2 document and given transaction has 2xx status code', () => {
       const filename = 'api-description.yml';
       let configuredTransaction;
 
@@ -277,7 +277,7 @@ describe('TransactionRunner', () => {
       );
     });
 
-    describe('when processing other than Swagger document and given transaction has non-2xx status code', () => {
+    describe('when processing other than OpenAPI 2 document and given transaction has non-2xx status code', () => {
       const filename = 'api-description.yml';
       let configuredTransaction;
 

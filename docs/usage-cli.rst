@@ -23,8 +23,8 @@ Arguments
 
 .. option:: api-description-document
 
-   URL or path to the API description document (API Blueprint, Swagger).
-   **Sample values:** ``./api-blueprint.apib``, ``./swagger.yml``, ``./swagger.json``, ``http://example.com/api-blueprint.apib``
+   URL or path to the API description document (API Blueprint, OpenAPI 2).
+   **Sample values:** ``./api-blueprint.apib``, ``./openapi2.yml``, ``./openapi2.json``, ``http://example.com/api-blueprint.apib``
 
 .. _api-location-string:
 
@@ -79,7 +79,7 @@ See below how sample configuration file could look like. The structure is the sa
    endpoint: "http://127.0.0.1:3000"
 
 .. note::
-   Do not get confused by Dredd using a keyword ``blueprint`` also for paths to Swagger documents. This is for historical reasons and will be changed in the future.
+   Do not get confused by Dredd using a keyword ``blueprint`` also for paths to OpenAPI 2 documents. This is for historical reasons and will be changed in the future.
 
 CLI Options Reference
 ---------------------

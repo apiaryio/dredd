@@ -25,7 +25,7 @@ documentation.
 ### Supported API Description Formats
 
 - [API Blueprint][]
-- [Swagger][]
+- [OpenAPI 2][]
 
 ### Supported Hooks Languages
 
@@ -91,7 +91,7 @@ $ npm install -g dredd
 [API Blueprint]: https://apiblueprint.org/
 [API Blueprint tutorial]: https://apiblueprint.org/documentation/tutorial.html
 [API Blueprint examples]: https://github.com/apiaryio/api-blueprint/tree/master/examples
-[Swagger]: https://swagger.io/
+[OpenAPI 2]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 
 [Documentation]: https://dredd.readthedocs.io/en/latest/
 [Changelog]: https://github.com/apiaryio/dredd/releases

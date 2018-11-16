@@ -40,7 +40,7 @@ describe('Sending \'application/json\' request', () => {
   supportsContentTypes: true
 },
 {
-  name: 'Swagger',
+  name: 'OpenAPI 2',
   path: './test/fixtures/request/multipart-form-data.yaml',
   supportsContentTypes: false
 }
@@ -96,7 +96,7 @@ describe('Sending \'application/json\' request', () => {
   path: './test/fixtures/request/application-x-www-form-urlencoded.apib'
 },
 {
-  name: 'Swagger',
+  name: 'OpenAPI 2',
   path: './test/fixtures/request/application-x-www-form-urlencoded.yaml'
 }
 ].forEach(apiDescription =>
@@ -158,7 +158,7 @@ describe('Sending \'text/plain\' request', () => {
     path: './test/fixtures/request/application-octet-stream.apib'
   },
   {
-    name: 'Swagger',
+    name: 'OpenAPI 2',
     path: './test/fixtures/request/application-octet-stream.yaml'
   }
 ].forEach(apiDescription =>
@@ -207,7 +207,7 @@ describe('Sending \'text/plain\' request', () => {
     path: './test/fixtures/request/image-png.apib'
   },
   {
-    name: 'Swagger',
+    name: 'OpenAPI 2',
     path: './test/fixtures/request/image-png.yaml'
   }
 ].forEach(apiDescription =>

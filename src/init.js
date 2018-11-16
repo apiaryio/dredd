@@ -351,10 +351,10 @@ function detectApiDescription(files) {
   const apib = files.filter(f => f.match(/\.apib$/i));
   if (apib.length) { return apib[0]; }
 
-  const swagger = files.filter(f =>
+  const openapi2 = files.filter(f =>
     f.match(/\.ya?ml$/i) && f.match(/swagger/)
   );
-  if (swagger.length) { return swagger[0]; }
+  if (openapi2.length) { return openapi2[0]; }
 
   const openapi = files.filter(f =>
     f.match(/\.ya?ml$/i) && f.match(/api/)

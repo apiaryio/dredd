@@ -21,7 +21,7 @@ Supported API Description Formats
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  `API Blueprint <https://apiblueprint.org/>`__
--  `Swagger <https://swagger.io/>`__
+-  `OpenAPI 2 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md>`__
 
 Supported Hooks Languages
 ~~~~~~~~~~~~~~~~~~~~~~~~~
