@@ -23,46 +23,52 @@ First, let’s design the API we are about to build and test. That means you wil
 -  `API Blueprint`_
 -  `OpenAPI 2`_
 
-If you choose API Blueprint, create a file called ``api-description.apib`` in the root of your project and save it with following content:
+.. tabs::
 
-.. code-block:: apiblueprint
+   .. group-tab:: API Blueprint
 
-   FORMAT: 1A
+      If you choose API Blueprint, create a file called ``api-description.apib`` in the root of your project and save it with following content:
 
-   # GET /
-   + Response 200 (application/json; charset=utf-8)
+      .. code-block:: apiblueprint
 
-           {"message": "Hello World!"}
+         FORMAT: 1A
 
-If you choose OpenAPI 2, create a file called ``api-description.yml``:
+         # GET /
+         + Response 200 (application/json; charset=utf-8)
 
-.. code-block:: yaml
+               {"message": "Hello World!"}
 
-   swagger: "2.0"
-   info:
-     version: "1.0"
-     title: Example API
-     license:
-       name: MIT
-   host: www.example.com
-   basePath: /
-   schemes:
-     - http
-   paths:
-     /:
-       get:
-         produces:
-           - application/json; charset=utf-8
-         responses:
-           200:
-             description: ""
-             schema:
-               type: object
-               properties:
-                 message:
-                   type: string
-               required:
-                 - message
+   .. group-tab:: OpenAPI 2
+
+      If you choose OpenAPI 2, create a file called ``api-description.yml``:
+
+      .. code-block:: yaml
+
+         swagger: "2.0"
+         info:
+         version: "1.0"
+         title: Example API
+         license:
+            name: MIT
+         host: www.example.com
+         basePath: /
+         schemes:
+         - http
+         paths:
+         /:
+            get:
+               produces:
+               - application/json; charset=utf-8
+               responses:
+               200:
+                  description: ""
+                  schema:
+                     type: object
+                     properties:
+                     message:
+                        type: string
+                     required:
+                     - message
 
 Implement Your API
 ------------------
@@ -97,10 +103,20 @@ At this moment, the implementation is ready to be tested. Let’s run the server
 
 Finally, let Dredd validate whether your freshly implemented API complies with the description you have:
 
-.. code-block:: shell
+.. tabs::
 
-   $ dredd api-description.apib http://127.0.0.1:3000  # API Blueprint
-   $ dredd api-description.yml http://127.0.0.1:3000  # OpenAPI 2
+   .. group-tab:: API Blueprint
+
+      .. code-block:: shell
+
+         $ dredd api-description.apib http://127.0.0.1:3000
+
+   .. group-tab:: OpenAPI 2
+
+      .. code-block:: shell
+
+         $ dredd api-description.yml http://127.0.0.1:3000
+
 
 Configure Dredd
 ---------------
