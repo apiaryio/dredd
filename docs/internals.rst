@@ -133,7 +133,7 @@ Troubleshooting C++ compilation
 
 If you need the performance of the C++ parser, but you are struggling to get it installed, it’s usually because of the following problems:
 
--  **Your machine is missing a modern C++ compiler.** See how to fix this on `Windows <https://github.com/apiaryio/drafter/wiki/Building-on-Windows>`__ or `Travis CI <https://github.com/apiaryio/protagonist/blob/master/.travis.yml>`__.
+-  **Your machine is missing a modern C++ compiler.** Check out the `list of supported compilers <https://github.com/apiaryio/drafter/#user-content-compiler-support>`__. See how to fix this on `Windows <https://github.com/apiaryio/drafter/wiki/Building-on-Windows>`__ or `Travis CI <https://github.com/apiaryio/protagonist/blob/master/.travis.yml>`__.
 -  **npm was used with Python 3.** ``node-gyp``, which performs the compilation, doesn’t support Python 3 yet. If your default Python is 3 (see ``python --version``), `tell npm to use an older version <https://stackoverflow.com/a/22433804/325365>`__.
 
 
