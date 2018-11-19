@@ -47,6 +47,7 @@ with open(os.path.join(project_dir, 'package.json')) as f:
 # ones.
 extensions = [
     'cli_options',
+    'ghissue',
     'pygments_markdown_lexer',
 ]
 

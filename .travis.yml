@@ -22,7 +22,7 @@ jobs:
     # stage 1, all following runs in parallel:
     - stage: "quality checks & tests"
       env: "JOB=quality_checks"
-      script: "npm run lint && npm run docs:lint"
+      script: "npm run lint && npm run docs:lint && npm run docs:test-extensions"
     - env: "JOB=docs_build_dry_run" # why dry run? because production build happens directly on ReadTheDocs infrastructure
       script: "npm run docs:build"
     - env: "JOB=node6"
