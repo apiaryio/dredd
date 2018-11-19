@@ -1,4 +1,5 @@
 import re
+import unittest
 
 from docutils import nodes
 from sphinx.errors import SphinxError
@@ -30,11 +31,25 @@ def setup(app):
     return {'version': '1.0', 'parallel_read_safe': True}
 
 
-# Primitive tests. Run this as follows and watch out for assertion errors:
-#
-#    $ python docs/extensions/ghissue.py
-#
+class Tests(unittest.TestCase):
+    def test_owner_repo_issueno(self):
+        self.assertEqual(
+            parse_text('refractproject/minim#83'),
+            'https://github.com/refractproject/minim/issues/83'
+        )
+
+    def test_repo_issueno(self):
+        self.assertEqual(
+            parse_text('dredd-transactions#163'),
+            'https://github.com/apiaryio/dredd-transactions/issues/163'
+        )
+
+    def test_issueno(self):
+        self.assertEqual(
+            parse_text('#1119'),
+            'https://github.com/apiaryio/dredd/issues/1119'
+        )
+
+
 if __name__ == '__main__':
-    assert parse_text('refractproject/minim#83') == 'https://github.com/refractproject/minim/issues/83'
-    assert parse_text('dredd-transactions#163') == 'https://github.com/apiaryio/dredd-transactions/issues/163'
-    assert parse_text('#1119') == 'https://github.com/apiaryio/dredd/issues/1119'
+    unittest.main()
