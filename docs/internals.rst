@@ -113,7 +113,7 @@ CoffeeScript is still a production dependency (not dev dependency), because it�
 C++ dependencies
 ~~~~~~~~~~~~~~~~
 
-Dredd uses `Drafter <https://github.com/apiaryio/drafter>`__ for parsing `API Blueprint <https://apiblueprint.org/>`__ documents. Drafter is written in C++11 and needs to be compiled during installation. Because that can cause a lot of problems in some environments, there’s also pure JavaScript version of the parser, `drafter.js <https://github.com/apiaryio/drafter.js>`__. Drafter.js is fully equivalent, but it can have slower performance. Therefore there’s `drafter-npm <https://github.com/apiaryio/drafter-npm/>`__ package, which tries to compile the C++11 version of the parser and in case of failure it falls back to the JavaScript equivalent. Dredd depends on the `drafter-npm <https://github.com/apiaryio/drafter-npm/>`__ package.
+Dredd uses `Drafter <https://github.com/apiaryio/drafter>`__ for parsing `API Blueprint <https://apiblueprint.org/>`__ documents. Drafter is written in C++ and needs to be compiled during installation. Because that can cause a lot of problems in some environments, there’s also pure JavaScript version of the parser, `drafter.js <https://github.com/apiaryio/drafter.js>`__. Drafter.js is fully equivalent, but it can have slower performance. Therefore there’s `drafter-npm <https://github.com/apiaryio/drafter-npm/>`__ package, which tries to compile the C++ version of the parser and in case of failure it falls back to the JavaScript equivalent. Dredd depends on the `drafter-npm <https://github.com/apiaryio/drafter-npm/>`__ package.
 
 That’s the reason why even if you see ``node-gyp`` errors and failures during the installation process, afterwards Dredd seems to normally work and correctly parses API Blueprint documents.
 
@@ -131,9 +131,9 @@ The ``--no-optional`` option forces the JavaScript version of Drafter and avoids
 Troubleshooting C++ compilation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you need the performance of the C++11 parser, but you are struggling to get it installed, it’s usually because of the following problems:
+If you need the performance of the C++ parser, but you are struggling to get it installed, it’s usually because of the following problems:
 
--  **Your machine is missing a C++11 compiler.** See how to fix this on `Windows <https://github.com/apiaryio/drafter/wiki/Building-on-Windows>`__ or `Travis CI <https://github.com/apiaryio/protagonist/blob/master/.travis.yml>`__.
+-  **Your machine is missing a modern C++ compiler.** See how to fix this on `Windows <https://github.com/apiaryio/drafter/wiki/Building-on-Windows>`__ or `Travis CI <https://github.com/apiaryio/protagonist/blob/master/.travis.yml>`__.
 -  **npm was used with Python 3.** ``node-gyp``, which performs the compilation, doesn’t support Python 3 yet. If your default Python is 3 (see ``python --version``), `tell npm to use an older version <https://stackoverflow.com/a/22433804/325365>`__.
 
 
