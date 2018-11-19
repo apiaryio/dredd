@@ -16,7 +16,6 @@ Maintainers
 
 `Apiary <https://apiary.io/>`__ is the main author and maintainer of Dredd’s `upstream repository <https://github.com/apiaryio/dredd>`__. Currently responsible people are:
 
-
 -  `@paraskakis <https://github.com/paraskakis>`__ - product decisions, feature requests
 -  `@honzajavorek <https://github.com/honzajavorek>`__ - lead of development
 
@@ -39,10 +38,14 @@ We are grateful for any contributions made by the community. Even seemingly smal
 To learn the basics of contributing to Dredd, please read the `contributing documentation <https://github.com/apiaryio/dredd/blob/master/CONTRIBUTING.md#readme>`__, placed in Dredd's GitHub repository.
 
 
+.. _install-dev:
+
 Installing Dredd for development
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To hack Dredd locally, clone the repository and run ``npm install`` to install JavaScript dependencies. Then run ``npm test`` to verify everything works as expected.
+
+If you want to run Dredd during development, you can do so using ``./bin/dredd``, but you need to make sure all your changes are compiled by ``npm run build`` to take effect.
 
 .. note::
 
@@ -87,6 +90,8 @@ GitHub labels
 
    This section is not written yet. See #808 `<https://github.com/apiaryio/dredd/issues/808>`__.
 
+
+.. _programming-language:
 
 Programming language
 ~~~~~~~~~~~~~~~~~~~~

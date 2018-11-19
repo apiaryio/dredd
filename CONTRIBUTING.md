@@ -56,11 +56,12 @@ Dredd is written in ES2015+ JavaScript and runs in [Node.js](https://nodejs.org/
 
 1.  [Fork Dredd](https://guides.github.com/activities/forking/)
 2.  Clone your fork on your computer
-3.  [Install Dredd](https://dredd.readthedocs.io/en/latest/installation.html)
+3.  [Install Dredd for development](https://dredd.readthedocs.io/en/latest/internals.html#install-dev): `npm install`
 4.  Create a feature branch
 5.  Write tests
 6.  Write code
-7.  When committing your changes, use the [Conventional Changelog](https://dredd.readthedocs.io/en/latest/internals.html#sem-rel) format for the commit message:
+7.  Try your changes: `npm run build && ./bin/dredd` ([why the build?](https://dredd.readthedocs.io/en/latest/internals.html#programming-language))
+8.  When committing your changes, use the [Conventional Changelog](https://dredd.readthedocs.io/en/latest/internals.html#sem-rel) format for the commit message:
 
     ```
     fix: handle corner case situation
@@ -68,8 +69,9 @@ Dredd is written in ES2015+ JavaScript and runs in [Node.js](https://nodejs.org/
 
     Note the `fix` prefix, which categorizes the type of your change. Other possible prefixes are `feat`, `refactor`, `test`, `chore`, `perf`, `docs`. We need this to be able to get a new version of Dredd automatically released when your changes are accepted.
 
-8.  Check whether your changes meet the standards of the Dredd codebase: `npm run lint`
-9.  [Send a Pull Request](https://guides.github.com/introduction/flow/)
-10. Make sure the [test coverage](https://coveralls.io/github/apiaryio/dredd) didn’t drop and all CI builds are passing
+9.  Check whether your changes meet the standards of the Dredd codebase: `npm run lint`
+10. [Send a Pull Request](https://guides.github.com/introduction/flow/)
+11. Make sure your Pull Request is passing all tests and checks
+12. Make sure the [test coverage](https://coveralls.io/github/apiaryio/dredd) didn’t drop and all CI builds are passing
 
 You can learn more about Dredd's codebase in the [Internals](https://dredd.readthedocs.io/en/latest/internals.html) section of the documentation.
