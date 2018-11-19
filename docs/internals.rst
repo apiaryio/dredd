@@ -304,6 +304,7 @@ Sphinx extensions
 There are several extensions to Sphinx, which add custom directives to the reStructuredText syntax:
 
 - ``.. cli-options:: ./path/to/file.json`` - allows to automatically generate documentation of Dredd's CLI options from the JSON file which specifies them
+- ``:ghissue:`drafter#123``` - simplifies linking GitHub issues
 
 The extensions are written in Python 3 and are heavily based on the knowledge shared in the `FOSDEM 2018 talk by Stephen Finucane <https://archive.fosdem.org/2018/schedule/event/automating_documentation_with_sphinx_extensions/>`__.
 
