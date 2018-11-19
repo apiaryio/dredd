@@ -155,8 +155,6 @@ In `Swagger <https://swagger.io/>`__ documents, HTTP headers are inferred from `
 -  ``produces`` (`docs <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-swaggerproduces>`__) is propagated as request’s ``Accept`` header.
 -  If request body parameters are specified as ``"in": "formData"``, request’s ``Content-Type`` header is set to ``application/x-www-form-urlencoded``.
 
-.. note::
-   Processing ``"in": "header"`` parameters and inferring ``application/x-www-form-urlencoded`` from ``"in": "formData"`` parameters is not implemented yet (:ghissue:`fury-adapter-swagger#68`, :ghissue:`fury-adapter-swagger#67`).
 
 Request Body
 ~~~~~~~~~~~~
