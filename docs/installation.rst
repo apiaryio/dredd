@@ -102,6 +102,6 @@ The installation process features compilation of some C++ components, which may 
 
 -  using Dredd exclusively with `Swagger <https://swagger.io/>`__,
 -  using Dredd with small `API Blueprint <https://apiblueprint.org/>`__ files,
--  using Dredd on Windows or other environments with complicated C++11 compiler setup.
+-  using Dredd on Windows or other environments with complicated C++ compiler setup.
 
 The ``--no-optional`` option avoids any compilation attempts when installing Dredd, but causes slower reading of the API Blueprint files, especially the large ones.
