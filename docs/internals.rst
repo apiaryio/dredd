@@ -88,7 +88,7 @@ GitHub labels
 
 .. todo::
 
-   This section is not written yet. See #808 `<https://github.com/apiaryio/dredd/issues/808>`__.
+   This section is not written yet. See :ghissue:`#808`.
 
 
 .. _programming-language:
@@ -328,11 +328,11 @@ API description parsing
 
 .. todo::
 
-   This section is not written yet. See #820 `<https://github.com/apiaryio/dredd/issues/820>`__.
+   This section is not written yet. See :ghissue:`#820`.
 
 Architecture
 ------------
 
 .. todo::
 
-   This section is not written yet. See #820 `<https://github.com/apiaryio/dredd/issues/820>`__.
+   This section is not written yet. See :ghissue:`#820`.
