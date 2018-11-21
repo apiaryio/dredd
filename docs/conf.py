@@ -18,7 +18,7 @@ from sphinx.errors import SphinxError
 # -- Environment ----------------------------------------------------------
 
 # Explicitly put the extensions directory to Python path
-sys.path.append(os.path.abspath('extensions'))
+sys.path.append(os.path.abspath('_extensions'))
 
 # Detect whether the build happens on ReadTheDocs
 IS_READTHEDOCS = os.environ.get('READTHEDOCS') == 'True'
@@ -26,7 +26,6 @@ IS_READTHEDOCS = os.environ.get('READTHEDOCS') == 'True'
 # Specify paths
 docs_dir = os.path.dirname(__file__)
 project_dir = os.path.join(docs_dir, '..')
-extensions_dir = os.path.join(docs_dir, 'extensions')
 node_modules_bin_dir = os.path.join(project_dir, 'node_modules', '.bin')
 
 # Install all npm dependencies if on ReadTheDocs. This requires the latest
