@@ -1,40 +1,14 @@
 {% extends "!footer.html" %}
 {% block extrafooter %}
-    <style>
-      .wy-nav-content { position: relative; padding-bottom: 10rem !important; }
-      footer { margin-bottom: 0; }
-
-      #dredd-is-hiring {
-        width: 100%;
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        background-color: #eee;
-        display: flex;
-        flex-flow: row;
-      }
-
-      #dredd-is-hiring img {
-        margin: 1rem;
-      }
-
-      #dredd-is-hiring div {
-        margin: 1.5rem;
-        max-height: 10rem;
-      }
-
-      #dredd-is-hiring p {
-        margin: 0;
-      }
-
-      .wy-side-nav-search { background-color: #687c7d /*#842a2c*/; }
-    </style>
-    <div id="dredd-is-hiring">
+    <div id="dredd-hiring">
         <img src="{{ pathto('_static/' + logo, 1) }}" class="logo" alt="Logo">
         <div>
             <h3>Dredd is hiring!</h3>
-            <p>Foo bar</p>
+            <p>Join the&nbsp;Apiary&nbsp;team and get&nbsp;paid for improving&nbsp;Dredd</p>
         </div>
+        <a href="http://bit.ly/dredd-hiring" class="btn btn-neutral" target="_blank">
+            <span class="fa fa-linkedin-square"></span>
+            Apply
+        </a>
     </div>
-    {{ super() }}
 {% endblock %}
