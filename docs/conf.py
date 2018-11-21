@@ -18,7 +18,7 @@ from sphinx.errors import SphinxError
 # -- Environment ----------------------------------------------------------
 
 # Explicitly put the extensions directory to Python path
-sys.path.append(os.path.abspath('extensions'))
+sys.path.append(os.path.abspath('_extensions'))
 
 # Detect whether the build happens on ReadTheDocs
 IS_READTHEDOCS = os.environ.get('READTHEDOCS') == 'True'
@@ -26,7 +26,6 @@ IS_READTHEDOCS = os.environ.get('READTHEDOCS') == 'True'
 # Specify paths
 docs_dir = os.path.dirname(__file__)
 project_dir = os.path.join(docs_dir, '..')
-extensions_dir = os.path.join(docs_dir, 'extensions')
 node_modules_bin_dir = os.path.join(project_dir, 'node_modules', '.bin')
 
 # Install all npm dependencies if on ReadTheDocs. This requires the latest
@@ -114,7 +113,7 @@ suppress_warnings = [
     'image.nonlocal_uri',
 ]
 
-# TODOs
+# ToDos
 todo_include_todos = True
 
 
@@ -122,16 +121,11 @@ todo_include_todos = True
 
 # The theme to use for HTML and HTML Help pages. See the documentation for
 # a list of builtin themes.
-if IS_READTHEDOCS:
-    # equals to the default RTD theme
-    html_theme = 'default'
-else:
-    # emulates the default RTD theme for local development
-    html_theme = 'sphinx_rtd_theme'
+html_theme = 'sphinx_rtd_theme'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = '_images/dredd-logo.png'
+html_logo = '_static/images/dredd-logo.png'
 
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -142,7 +136,7 @@ html_logo = '_images/dredd-logo.png'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
+html_static_path = ['_static']
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
@@ -170,3 +164,13 @@ html_show_copyright = False
 linkcheck_ignore = [
     'https://crates.io/crates/dredd-hooks',  # https://github.com/sphinx-doc/sphinx/pull/5140
 ]
+
+
+# -- Theme customization --------------------------------------------------
+
+# Directory with individual templates overriding the ones from the theme
+templates_path = ['_templates']
+
+# An extension adding the '_static/css/dredd.css' stylesheet
+def setup(app):
+    app.add_css_file('css/dredd.css')
