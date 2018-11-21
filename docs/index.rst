@@ -5,7 +5,7 @@ Dredd — HTTP API Testing Framework
 
 |npm version| |Build Status| |Windows Build Status| |Dependency Status| |devDependency Status| |Documentation Status| |Coverage Status| |Known Vulnerabilities|
 
-.. figure:: _images/dredd.png
+.. figure:: _static/images/dredd.png
    :alt: Dredd - HTTP API Testing Framework
 
 ..

@@ -9,7 +9,7 @@
 [![Coverage Status](https://coveralls.io/repos/apiaryio/dredd/badge.svg?branch=master)](https://coveralls.io/github/apiaryio/dredd)
 [![Known Vulnerabilities](https://snyk.io/test/npm/dredd/badge.svg)](https://snyk.io/test/npm/dredd)
 
-![Dredd - HTTP API Testing Framework](docs/_images/dredd.png?raw=true)
+![Dredd - HTTP API Testing Framework](docs/_static/images/dredd.png?raw=true)
 
 > **Dredd is a language-agnostic command-line tool for validating
 API description document against backend implementation of the API.**

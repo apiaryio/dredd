@@ -121,16 +121,12 @@ todo_include_todos = True
 
 # The theme to use for HTML and HTML Help pages. See the documentation for
 # a list of builtin themes.
-if IS_READTHEDOCS:
-    # equals to the default RTD theme
-    html_theme = 'default'
-else:
-    # emulates the default RTD theme for local development
-    html_theme = 'sphinx_rtd_theme'
+html_theme = 'sphinx_rtd_theme'
+templates_path = ['_templates']
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = '_images/dredd-logo.png'
+html_logo = '_static/images/dredd-logo.png'
 
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32

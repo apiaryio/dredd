@@ -692,7 +692,7 @@ Command-line output of complex HTTP responses and expectations can be hard to re
    complete: Tests took 1631ms
    complete: See results in Apiary at: https://app.apiary.io/public/tests/run/74d20a82-55c5-49bb-aac9-a3a5a7450f06
 
-.. figure:: _images/apiary-tests.png
+.. figure:: _static/images/apiary-tests.png
    :alt: Apiary Tests
 
    Apiary Tests
@@ -704,7 +704,7 @@ As you can see on the screenshot, the test reports are anonymous by default and 
 
 To get and setup credentials, just follow the tutorial in Apiary:
 
-.. figure:: _images/apiary-tests-tutorial.png
+.. figure:: _static/images/apiary-tests-tutorial.png
    :alt: Apiary Tests Tutorial
 
    Apiary Tests Tutorial
