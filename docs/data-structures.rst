@@ -30,7 +30,7 @@ Transaction object is passed as a first argument to :ref:`hook functions <hooks>
    -  ``https:`` (string)
    -  ``http:`` (string)
 
--  fullPath: ``/message`` (string) - expanded `URI Template <https://tools.ietf.org/html/rfc6570>`__ with parameters (if any) used for the HTTP request Dredd performs to the tested server
+-  fullPath: ``/message`` (string) - expanded :rfc:`URI Template <6570>` with parameters (if any) used for the HTTP request Dredd performs to the tested server
 -  request (object) - the HTTP request Dredd performs to the tested server, taken from the API description
 
    -  body: ``Hello world!\n`` (string)
@@ -153,7 +153,7 @@ This validation result is returned not only when validating against `JSON Schema
    -  propertyValue (mixed) - real value of the problematic property (can be also ``undefined`` etc.)
    -  attributeName: ``enum``, ``required`` (string) - name of the relevant JSON Schema attribute, which triggered the error
    -  attributeValue (mixed) - value of the relevant JSON Schema attribute, which triggered the error
-   -  message (string) - error message (in case of tv4 it contains `JSON Pointer <https://tools.ietf.org/html/rfc6901>`__ to the problematic property and for both Amanda and tv4 it can directly mention property names and/or values)
+   -  message (string) - error message (in case of tv4 it contains :rfc:`JSON Pointer <6901>` to the problematic property and for both Amanda and tv4 it can directly mention property names and/or values)
    -  validator: ``enum`` (string) - the same as ``attributeName``
    -  validatorName: ``error``, ``enum`` (string) - the same as ``attributeName``
    -  validatorValue (mixed) - the same as ``attributeValue``
@@ -172,7 +172,7 @@ Gavel Error (object)
 
 Can also be seen as part of Gavel Validator Output `here <https://relishapp.com/apiary/gavel/docs/data-validators-and-output-format#validators-output-format>`__.
 
--  pointer (string) - `JSON Pointer <https://tools.ietf.org/html/rfc6901>`__ path
+-  pointer (string) - :rfc:`JSON Pointer <6901>` path
 -  severity (string) - severity of the error
 -  message (string) - error message
 

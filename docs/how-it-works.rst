@@ -84,9 +84,9 @@ Response Headers Expectations
 -  Only values of headers significant for content negotiation are validated.
 -  All other headers values can differ.
 
-When using `OpenAPI 2 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md/>`__, headers are taken from ``response.headers`` (`docs <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-responseheaders>`__). HTTP headers significant for content negotiation are inferred according to following rules:
+When using :openapi:`2`, headers are taken from ``response.headers`` (:openapi:`2#responseheaders`). HTTP headers significant for content negotiation are inferred according to following rules:
 
--  ``produces`` (`docs <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-swaggerproduces>`__) is propagated as response’s ``Content-Type`` header.
+-  ``produces`` (:openapi:`2#swaggerproduces`) is propagated as response’s ``Content-Type`` header.
 -  Response’s ``Content-Type`` header overrides any ``produces``.
 
 Response Body Expectations
@@ -108,8 +108,8 @@ This order `exactly follows the API Blueprint specification <https://apiblueprin
 OpenAPI 2
 ^^^^^^^^^
 
-1. ``response.schema`` (`docs <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-responseschema>`__) - provided JSON Schema will be used.
-2. ``response.examples`` (`docs <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-responseexamples>`__) with sample JSON payload - `Gavel.js <https://github.com/apiaryio/gavel.js>`__, which is responsible for validation in Dredd, automatically infers some basic expectations described below.
+1. ``response.schema`` (:openapi:`2#responseschema`) - provided JSON Schema will be used.
+2. ``response.examples`` (:openapi:`2#responseexamples`) with sample JSON payload - `Gavel.js <https://github.com/apiaryio/gavel.js>`__, which is responsible for validation in Dredd, automatically infers some basic expectations described below.
 
 .. _gavels-expectations:
 
@@ -135,7 +135,7 @@ It’s very likely that your API description document will not be testable **as 
 URI Parameters
 ~~~~~~~~~~~~~~
 
-Both `API Blueprint <https://apiblueprint.org/>`__ and `OpenAPI 2 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md/>`__ allow usage of URI templates (API Blueprint fully implements `RFC6570 <https://tools.ietf.org/html/rfc6570>`__, OpenAPI 2 templates are much simpler). In order to have an API description which is testable, you need to describe all required parameters used in URI (path or query) and provide sample values to make Dredd able to expand URI templates with given sample values. Following rules apply when Dredd interpolates variables in a templated URI, ordered by precedence:
+Both `API Blueprint <https://apiblueprint.org/>`__ and :openapi:`2` allow usage of URI templates (API Blueprint fully implements :rfc:`6570`, OpenAPI 2 templates are much simpler). In order to have an API description which is testable, you need to describe all required parameters used in URI (path or query) and provide sample values to make Dredd able to expand URI templates with given sample values. Following rules apply when Dredd interpolates variables in a templated URI, ordered by precedence:
 
 1. Sample value, in OpenAPI 2 available as the ``x-example`` vendor extension property (:ref:`docs <example-values-for-request-parameters>`).
 2. Value of ``default``.
@@ -149,10 +149,10 @@ If Dredd isn’t able to infer any value for a required parameter, it will termi
 Request Headers
 ~~~~~~~~~~~~~~~
 
-In `OpenAPI 2 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md/>`__ documents, HTTP headers are inferred from ``"in": "header"`` parameters (`docs <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-parameterobject>`__). HTTP headers significant for content negotiation are inferred according to following rules:
+In :openapi:`2` documents, HTTP headers are inferred from ``"in": "header"`` parameters (:openapi:`2#parameterobject`). HTTP headers significant for content negotiation are inferred according to following rules:
 
--  ``consumes`` (`docs <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-swaggerconsumes>`__) is propagated as request’s ``Content-Type`` header.
--  ``produces`` (`docs <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-swaggerproduces>`__) is propagated as request’s ``Accept`` header.
+-  ``consumes`` (:openapi:`2#swaggerconsumes`) is propagated as request’s ``Content-Type`` header.
+-  ``produces`` (:openapi:`2#swaggerproduces`) is propagated as request’s ``Accept`` header.
 -  If request body parameters are specified as ``"in": "formData"``, request’s ``Content-Type`` header is set to ``application/x-www-form-urlencoded``.
 
 
@@ -172,9 +172,9 @@ This order `exactly follows the API Blueprint specification <https://apiblueprin
 OpenAPI 2
 ^^^^^^^^^
 
-The effective request body is inferred from ``"in": "body"`` and ``"in": "formData"`` parameters (`docs <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-parameterobject>`__).
+The effective request body is inferred from ``"in": "body"`` and ``"in": "formData"`` parameters (:openapi:`2#parameterobject`).
 
-If body parameter has ``schema.example`` (`docs <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-schemaexample>`__), it is used as a raw JSON sample for the request body. If it’s not present, Dredd’s `OpenAPI 2 Adapter <https://github.com/apiaryio/fury-adapter-swagger/>`__ generates sample values from the JSON Schema provided in the ``schema`` (`docs <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-parameterschema>`__) property. Following rules apply when the adapter fills values of the properties, ordered by precedence:
+If body parameter has ``schema.example`` (:openapi:`2#schemaexample`), it is used as a raw JSON sample for the request body. If it’s not present, Dredd’s `OpenAPI 2 adapter <https://github.com/apiaryio/fury-adapter-swagger/>`__ generates sample values from the JSON Schema provided in the ``schema`` (:openapi:`2#parameterschema`) property. Following rules apply when the adapter fills values of the properties, ordered by precedence:
 
 1. Value of ``default``.
 2. First value from ``enum``.
@@ -192,7 +192,7 @@ If you want to enforce the incoming body is empty, you can use :ref:`hooks <hook
 .. literalinclude:: ../test/fixtures/response/empty-body-hooks.js
    :language: javascript
 
-In case of responses with 204 or 205 status codes Dredd still behaves the same way, but it warns about violating the `RFC7231 <https://tools.ietf.org/html/rfc7231>`__ when the responses have non-empty bodies.
+In case of responses with 204 or 205 status codes Dredd still behaves the same way, but it warns about violating the :rfc:`7231` when the responses have non-empty bodies.
 
 .. _choosing-http-transactions:
 
@@ -220,11 +220,11 @@ In other words, Dredd always selects just the first response for each request.
 OpenAPI 2
 ~~~~~~~~~
 
-The `OpenAPI 2 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md/>`__ format allows to specify multiple responses for a single operation. By default Dredd tests only responses with ``2xx`` status codes. Responses with other codes are marked as *skipped* and can be activated in :ref:`hooks <hooks>` - see the :ref:`multiple-requests-and-responses` how-to guide.
+The :openapi:`2` format allows to specify multiple responses for a single operation. By default Dredd tests only responses with ``2xx`` status codes. Responses with other codes are marked as *skipped* and can be activated in :ref:`hooks <hooks>` - see the :ref:`multiple-requests-and-responses` how-to guide.
 
-In ``produces`` (`docs <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-swaggerproduces>`__) and ``consumes`` (`docs <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-swaggerconsumes>`__), only JSON media types are supported. Only the first JSON media type in ``produces`` is effective, others are skipped. Other media types are respected only when provided with `explicit examples <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-responseexamples>`__.
+In ``produces`` (:openapi:`2#swaggerproduces`) and ``consumes`` (:openapi:`2#swaggerconsumes`), only JSON media types are supported. Only the first JSON media type in ``produces`` is effective, others are skipped. Other media types are respected only when provided with :openapi:`explicit examples <2#responseexamples>`.
 
-`Default response <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-responsesdefault>`__ is ignored by Dredd unless it is the only available response. In that case, the default response is assumed to have HTTP 200 status code.
+:openapi:`Default response <2#responsedefault>` is ignored by Dredd unless it is the only available response. In that case, the default response is assumed to have HTTP 200 status code.
 
 .. _security:
 

@@ -8,7 +8,7 @@ In the following guides you can find tips and best practices how to cope with so
 Isolation of HTTP Transactions
 ------------------------------
 
-Requests in the API description usually aren’t sorted in order to comply with logical workflow of the tested application. To get the best results from testing with Dredd, you should ensure each resource action (`API Blueprint <https://apiblueprint.org/>`__) or operation (`OpenAPI 2 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md/>`__) is executed in isolated context. This can be easily achieved using :ref:`hooks <hooks>`, where you can provide your own setup and teardown code for each HTTP transaction.
+Requests in the API description usually aren’t sorted in order to comply with logical workflow of the tested application. To get the best results from testing with Dredd, you should ensure each resource action (`API Blueprint <https://apiblueprint.org/>`__) or operation (:openapi:`2`) is executed in isolated context. This can be easily achieved using :ref:`hooks <hooks>`, where you can provide your own setup and teardown code for each HTTP transaction.
 
 You should understand that testing with Dredd is an analogy to **unit tests** of your application code. In unit tests, each unit should be testable without any dependency on other units or previous tests.
 
@@ -664,7 +664,7 @@ In case you need to perform particular request with different URI parameters and
 OpenAPI 2
 ~~~~~~~~~
 
-When using `OpenAPI 2 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md/>`__ format, by default Dredd tests only responses with ``2xx`` status codes. Responses with other codes are marked as *skipped* and can be activated in :ref:`hooks <hooks>`:
+When using :openapi:`2` format, by default Dredd tests only responses with ``2xx`` status codes. Responses with other codes are marked as *skipped* and can be activated in :ref:`hooks <hooks>`:
 
 .. code-block:: javascript
 
@@ -733,7 +733,7 @@ Example Values for Request Parameters
 
 While example values are natural part of the API Blueprint format, the OpenAPI 2 specification allows them only for ``body`` request parameters (``schema.example``).
 
-However, Dredd needs to know what values to use when testing described API, so it supports ``x-example`` `vendor extension property <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-vendorextensions>`__ to overcome the OpenAPI 2 limitation:
+However, Dredd needs to know what values to use when testing described API, so it supports ``x-example`` :openapi:`vendor extension property <2#vendorextensions>` to overcome the OpenAPI 2 limitation:
 
 .. code-block:: yaml
 

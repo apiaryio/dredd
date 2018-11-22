@@ -21,7 +21,7 @@ Supported API Description Formats
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  `API Blueprint <https://apiblueprint.org/>`__
--  `OpenAPI 2 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md>`__
+-  :openapi:`2`
 
 Supported Hooks Languages
 ~~~~~~~~~~~~~~~~~~~~~~~~~
