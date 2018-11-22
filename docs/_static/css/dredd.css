@@ -2,6 +2,10 @@
   margin-right: 0.3rem;
 }
 
+a.rfc strong {
+  font-weight: normal;
+}
+
 
 /* Changes specific to 'Dredd is hiring' */
 
