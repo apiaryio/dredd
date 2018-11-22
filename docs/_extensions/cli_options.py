@@ -9,6 +9,7 @@ from jinja2 import Template
 from sphinx.util.nodes import nested_parse_with_titles
 
 
+# https://docutils.readthedocs.io/en/sphinx-docs/howto/rst-directives.html
 class CLIOptionsDirective(Directive):
     required_arguments = 1
 
