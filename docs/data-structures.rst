@@ -149,7 +149,7 @@ This validation result is returned not only when validating against `JSON Schema
 -  errorMessages (object) - doesn’t seem to ever contain anything or be used for anything
 -  *0* (object) - validation error details, property is always a string containing a number (0, 1, 2, …)
 
-   -  property (array[string]) - path to the problematic property in format of `json-pointer’s ``parse()`` output <https://github.com/manuelstofer/json-pointer#user-content-parsestr>`__
+   -  property (array[string]) - path to the problematic property in format of `json-pointer’s parse() output <https://github.com/manuelstofer/json-pointer#user-content-parsestr>`__
    -  propertyValue (mixed) - real value of the problematic property (can be also ``undefined`` etc.)
    -  attributeName: ``enum``, ``required`` (string) - name of the relevant JSON Schema attribute, which triggered the error
    -  attributeValue (mixed) - value of the relevant JSON Schema attribute, which triggered the error
