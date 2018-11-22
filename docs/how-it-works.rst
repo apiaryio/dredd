@@ -94,12 +94,12 @@ Response Body Expectations
 
 If the HTTP response body is JSON, Dredd validates only its structure. Bodies in any other format are validated as plain text.
 
-To validate the structure Dredd uses `JSON Schema <http://json-schema.org/>`__ inferred from the API description under test. The effective JSON Schema is taken from following places (the order goes from the highest priority to the lowest):
+To validate the structure Dredd uses :jsonschema:`` inferred from the API description under test. The effective JSON Schema is taken from following places (the order goes from the highest priority to the lowest):
 
 API Blueprint
 ^^^^^^^^^^^^^
 
-1. `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ section - provided custom JSON Schema (`Draft v4 <https://tools.ietf.org/html/draft-zyp-json-schema-04>`__ and `v3 <https://tools.ietf.org/html/draft-zyp-json-schema-03>`__) will be used.
+1. `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ section - provided custom JSON Schema (:jsonschema:`Draft 4 <draft4>` and :jsonschema:`Draft 3 <draft3>`) will be used.
 2. `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ section with data structure description in `MSON <https://github.com/apiaryio/mson>`__ - API Blueprint parser automatically generates JSON Schema from MSON.
 3. `Body <https://apiblueprint.org/documentation/specification.html#def-body-section>`__ section with sample JSON payload - `Gavel.js <https://github.com/apiaryio/gavel.js>`__, which is responsible for validation in Dredd, automatically infers some basic expectations described below.
 

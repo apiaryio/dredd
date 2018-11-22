@@ -393,7 +393,7 @@ Making Dredd Validation Stricter
 
 API Blueprint or OpenAPI 2 files are usually created primarily with *documentation* in mind. But what’s enough for documentation doesn’t need to be enough for *testing*.
 
-That applies to both `MSON <https://apiblueprint.org/documentation/mson/specification.html>`__ (a language powering API Blueprint’s `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ sections) and `JSON Schema <http://json-schema.org/>`__ (a language powering the OpenAPI 2 format and API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections).
+That applies to both `MSON <https://apiblueprint.org/documentation/mson/specification.html>`__ (a language powering API Blueprint’s `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ sections) and :jsonschema:`` (a language powering the OpenAPI 2 format and API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections).
 
 In following sections you can learn about how to deal with common scenarios.
 
@@ -406,10 +406,10 @@ If you describe a JSON body which has attributes ``name`` and ``size``, the foll
 
    {"name": "Sparta", "size": 300, "luck": false}
 
-It’s because in both `MSON <https://apiblueprint.org/documentation/mson/specification.html>`__ and `JSON Schema <http://json-schema.org/>`__ additional properties are not forbidden by default.
+It’s because in both `MSON <https://apiblueprint.org/documentation/mson/specification.html>`__ and :jsonschema:`` additional properties are not forbidden by default.
 
 -  In API Blueprint’s `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ sections you can mark your object with ```fixed-type`` <https://apiblueprint.org/documentation/mson/specification.html#353-type-attribute>`__, which doesn’t allow additional properties.
--  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in OpenAPI 2 you can use ``additionalProperties: false`` (`docs <https://json-schema.org/understanding-json-schema/reference/object.html#properties>`__) on the objects.
+-  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in OpenAPI 2 you can use ``additionalProperties: false`` (:jsonschema:`object#properties`) on the objects.
 
 Requiring Properties
 ~~~~~~~~~~~~~~~~~~~~
@@ -420,10 +420,10 @@ If you describe a JSON body which has attributes ``name`` and ``size``, the foll
 
    {"name": "Sparta"}
 
-It’s because properties are optional by default in both `MSON <https://apiblueprint.org/documentation/mson/specification.html>`__ and `JSON Schema <http://json-schema.org/>`__ and you need to explicitly specify them as required.
+It’s because properties are optional by default in both `MSON <https://apiblueprint.org/documentation/mson/specification.html>`__ and :jsonschema:`` and you need to explicitly specify them as required.
 
 -  In API Blueprint’s `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ section, you can use ```required`` <https://apiblueprint.org/documentation/mson/specification.html#353-type-attribute>`__.
--  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in OpenAPI 2 you can use ``required`` (`docs <https://json-schema.org/understanding-json-schema/reference/object.html#required-properties>`__), where you list the required properties. (Note this is true only for the `Draft v4 <https://tools.ietf.org/html/draft-zyp-json-schema-04>`__ JSON Schema, in older versions the ``required`` functionality was done differently.)
+-  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in OpenAPI 2 you can use ``required`` (:jsonschema:`object#required-properties`), where you list the required properties. (Note this is true only for the `Draft v4 <https://tools.ietf.org/html/draft-zyp-json-schema-04>`__ JSON Schema, in older versions the ``required`` functionality was done differently.)
 
 Validating Structure of Array Items
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -437,7 +437,7 @@ If you describe an array of items, where each of the items should have a ``name`
 That’s because in `MSON <https://apiblueprint.org/documentation/mson/specification.html>`__, the default behavior is that you are specifying what *may* appear in the array.
 
 -  In API Blueprint’s `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ sections you can mark your array with ``fixed-type`` (`docs  <https://apiblueprint.org/documentation/mson/specification.html#353-type-attribute>`__), which doesn’t allow array items of a different structure then specified.
--  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in OpenAPI 2 make sure to learn about how `validation of arrays <https://json-schema.org/understanding-json-schema/reference/array.html>`__ exactly works.
+-  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in OpenAPI 2 make sure to learn about how :jsonschema:`validation of arrays <array>` exactly works.
 
 Validating Specific Values
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -451,7 +451,7 @@ If you describe a JSON body which has attributes ``name`` and ``size``, the foll
 If the size should be always equal to 300, you need to specify the fact in your API description.
 
 -  In API Blueprint’s `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ sections you can mark your property with ``fixed`` (`docs <https://apiblueprint.org/documentation/mson/specification.html#353-type-attribute>`__), which turns the sample value into a required value. You can also use ``enum`` (`docs <https://apiblueprint.org/documentation/mson/specification.html#212-structure-types>`__) to provide a set of possible values.
--  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in OpenAPI 2 you can use ``enum`` (`docs <https://json-schema.org/understanding-json-schema/reference/generic.html#enumerated-values>`__) with one or more possible values.
+-  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in OpenAPI 2 you can use ``enum`` (:jsonschema:`generic#enumerated-values`) with one or more possible values.
 
 Integrating Dredd with Your Test Suite
 --------------------------------------

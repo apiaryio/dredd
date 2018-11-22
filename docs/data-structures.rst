@@ -143,7 +143,7 @@ JsonSchema Validation Result (object)
 
 The validation error is based on format provided by `Amanda <https://github.com/apiaryio/Amanda>`__ and is also “documented” `here <https://github.com/apiaryio/Amanda/blob/master/docs/json/objects/error.md>`__. Although for validation of draft4 JSON Schema Gavel uses `tv4 <https://github.com/geraintluff/tv4>`__ library, the output then gets reshaped into the structure of Amanda’s errors.
 
-This validation result is returned not only when validating against `JSON Schema <http://json-schema.org/>`__, but also when validating against JSON example or when validating HTTP headers.
+This validation result is returned not only when validating against :jsonschema:``, but also when validating against JSON example or when validating HTTP headers.
 
 -  length: ``0`` (number, default) - number of error properties
 -  errorMessages (object) - doesn’t seem to ever contain anything or be used for anything
