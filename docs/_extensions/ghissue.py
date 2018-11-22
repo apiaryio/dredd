@@ -11,14 +11,14 @@ URL_TEMPLATE = 'https://github.com/{owner}/{repo}/issues/{issueno}'
 # https://docutils.readthedocs.io/en/sphinx-docs/howto/rst-roles.html
 def github_issue(name, rawtext, text, lineno, inliner, options={}, content=[]):
     try:
-        refuri = parse_text(text)
+        url = parse_text(text)
     except:
         message = "Could not parse a reference to GitHub issue: '{}'".format(text)
         error = inliner.reporter.error(message, line=lineno)
         problematic = inliner.problematic(rawtext, rawtext, error)
         return [problematic], [error]
 
-    node = nodes.reference(rawtext, text, refuri=refuri, **options)
+    node = nodes.reference(rawtext, text, refuri=url, **options)
     return [node], []
 
 
@@ -28,8 +28,10 @@ def parse_text(text):
         owner = match.group(3) or 'apiaryio'
         repo = match.group(4) or 'dredd'
         issueno = match.group(5) or None
+
         if issueno:
             return URL_TEMPLATE.format(owner=owner, repo=repo, issueno=issueno)
+
     raise ValueError("Could not parse '{}' as a GitHub issue reference".format(text))
 
 
