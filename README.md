@@ -5,7 +5,7 @@
 [![Build Status](https://ci.appveyor.com/api/projects/status/n3ixfxh72qushyr4/branch/master?svg=true)](https://ci.appveyor.com/project/Apiary/dredd/branch/master)
 [![Dependency Status](https://david-dm.org/apiaryio/dredd.svg)](https://david-dm.org/apiaryio/dredd)
 [![devDependency Status](https://david-dm.org/apiaryio/dredd/dev-status.svg)](https://david-dm.org/apiaryio/dredd?type=dev)
-[![Documentation Status](https://readthedocs.org/projects/dredd/badge/?version=latest)](https://dredd.readthedocs.io/en/latest/)
+[![Documentation Status](https://readthedocs.org/projects/dredd/badge/?version=latest)](https://dredd.org/en/latest/)
 [![Coverage Status](https://coveralls.io/repos/apiaryio/dredd/badge.svg?branch=master)](https://coveralls.io/github/apiaryio/dredd)
 [![Known Vulnerabilities](https://snyk.io/test/npm/dredd/badge.svg)](https://snyk.io/test/npm/dredd)
 
@@ -29,17 +29,17 @@ documentation.
 
 ### Supported Hooks Languages
 
-Dredd supports writing [hooks](https://dredd.readthedocs.io/en/latest/hooks/)
+Dredd supports writing [hooks](https://dredd.org/en/latest/hooks/)
 — a glue code for each test setup and teardown. Following languages are supported:
 
-- [Go](https://dredd.readthedocs.io/en/latest/hooks-go/)
-- [Node.js (JavaScript)](https://dredd.readthedocs.io/en/latest/hooks-nodejs/)
-- [Perl](https://dredd.readthedocs.io/en/latest/hooks-perl/)
-- [PHP](https://dredd.readthedocs.io/en/latest/hooks-php/)
-- [Python](https://dredd.readthedocs.io/en/latest/hooks-python/)
-- [Ruby](https://dredd.readthedocs.io/en/latest/hooks-ruby/)
-- [Rust](https://dredd.readthedocs.io/en/latest/hooks-rust/)
-- Didn't find your favorite language? _[Add a new one!](https://dredd.readthedocs.io/en/latest/hooks-new-language/)_
+- [Go](https://dredd.org/en/latest/hooks-go/)
+- [Node.js (JavaScript)](https://dredd.org/en/latest/hooks-nodejs/)
+- [Perl](https://dredd.org/en/latest/hooks-perl/)
+- [PHP](https://dredd.org/en/latest/hooks-php/)
+- [Python](https://dredd.org/en/latest/hooks-python/)
+- [Ruby](https://dredd.org/en/latest/hooks-ruby/)
+- [Rust](https://dredd.org/en/latest/hooks-rust/)
+- Didn't find your favorite language? _[Add a new one!](https://dredd.org/en/latest/hooks-new-language/)_
 
 ### Supported Systems
 
@@ -93,9 +93,9 @@ $ npm install -g dredd
 [API Blueprint examples]: https://github.com/apiaryio/api-blueprint/tree/master/examples
 [Swagger]: https://swagger.io/
 
-[Documentation]: https://dredd.readthedocs.io/en/latest/
+[Documentation]: https://dredd.org/en/latest/
 [Changelog]: https://github.com/apiaryio/dredd/releases
-[Contributor's Guidelines]: https://dredd.readthedocs.io/en/latest/contributing/
+[Contributor's Guidelines]: https://dredd.org/en/latest/contributing/
 
 [Travis CI]: https://travis-ci.org/
 [CircleCI]: https://circleci.com/

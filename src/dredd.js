@@ -66,7 +66,7 @@ class Dredd {
 HTTP(S) proxy specified by environment variables: \
 ${proxySettings.join(', ')}. Please read documentation on how
 Dredd works with proxies:
-https://dredd.readthedocs.io/en/latest/how-it-works/#using-https-proxy
+https://dredd.org/en/latest/how-it-works/#using-https-proxy
 `;
       logger.verbose(message);
     }

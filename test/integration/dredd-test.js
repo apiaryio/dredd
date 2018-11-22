@@ -352,7 +352,7 @@ describe('Dredd class Integration', () => {
 
       it('should print warning about missing Apiary API settings', () => assert.include(stderr, 'Apiary API Key or API Project Subdomain were not provided.'));
 
-      it('should print link to documentation', () => assert.include(stderr, 'https://dredd.readthedocs.io/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests'));
+      it('should print link to documentation', () => assert.include(stderr, 'https://dredd.org/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests'));
 
       it('should print using the new reporter', () => assert.include(stdout, 'http://url.me/test/run/1234_id'));
 

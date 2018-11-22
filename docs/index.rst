@@ -92,7 +92,7 @@ Example Applications
 .. |devDependency Status| image:: https://david-dm.org/apiaryio/dredd/dev-status.svg
    :target: https://david-dm.org/apiaryio/dredd?type=dev
 .. |Documentation Status| image:: https://readthedocs.org/projects/dredd/badge/?version=latest
-   :target: https://dredd.readthedocs.io/en/latest/
+   :target: https://dredd.org/en/latest/
 .. |Coverage Status| image:: https://coveralls.io/repos/apiaryio/dredd/badge.svg?branch=master
    :target: https://coveralls.io/github/apiaryio/dredd
 .. |Known Vulnerabilities| image:: https://snyk.io/test/npm/dredd/badge.svg

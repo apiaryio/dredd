@@ -43,7 +43,7 @@ function ApiaryReporter(emitter, stats, tests, config, runner) {
     logger.warn(`
 Apiary API Key or API Project Subdomain were not provided.
 Configure Dredd to be able to save test reports alongside your Apiary API project:
-https://dredd.readthedocs.io/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests
+https://dredd.org/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests
 `);
   }
   if (!this.configuration.apiSuite) { this.configuration.apiSuite = 'public'; }

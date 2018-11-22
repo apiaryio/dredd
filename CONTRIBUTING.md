@@ -21,7 +21,7 @@ To report a bug, [open a new GitHub issue](https://github.com/apiaryio/dredd/iss
 
 ## 💬 Asking questions
 
-Before asking a question, please try to first search [Dredd's documentation](https://dredd.rtfd.io), [Apiary Help](https://help.apiary.io/).
+Before asking a question, please try to first search [Dredd's documentation](https://dredd.org), [Apiary Help](https://help.apiary.io/).
 
 You can always [contact Apiary Support](https://apiary.io/support), but we prefer if you ask publicly, because it allows to spread the knowledge across the community of all Dredd users:
 
@@ -39,13 +39,13 @@ The documentation is written [as code](http://www.writethedocs.org/guide/docs-as
 
 If you want to propose improvements to the documentation, you don't need to install the whole project. Usually it is just fine to use the [GitHub's editing features](https://github.com/apiaryio/dredd/edit/master/docs/installation.rst).
 
-When committing your changes, please use the [prefix your commit message](https://dredd.readthedocs.io/en/latest/internals.html#sem-rel) with `docs`:
+When committing your changes, please use the [prefix your commit message](https://dredd.org/en/latest/internals.html#sem-rel) with `docs`:
 
 ```
 docs: add more OpenAPI examples
 ```
 
-You can learn more about Dredd's codebase in the [Internals](https://dredd.readthedocs.io/en/latest/internals.html) section of the documentation.
+You can learn more about Dredd's codebase in the [Internals](https://dredd.org/en/latest/internals.html) section of the documentation.
 
 
 <a name="proposing-changes-to-code"></a>
@@ -56,12 +56,12 @@ Dredd is written in ES2015+ JavaScript and runs in [Node.js](https://nodejs.org/
 
 1.  [Fork Dredd](https://guides.github.com/activities/forking/)
 2.  Clone your fork on your computer
-3.  [Install Dredd for development](https://dredd.readthedocs.io/en/latest/internals.html#install-dev): `npm install`
+3.  [Install Dredd for development](https://dredd.org/en/latest/internals.html#install-dev): `npm install`
 4.  Create a feature branch
 5.  Write tests
 6.  Write code
-7.  Try your changes: `npm run build && ./bin/dredd` ([why the build?](https://dredd.readthedocs.io/en/latest/internals.html#programming-language))
-8.  When committing your changes, use the [Conventional Changelog](https://dredd.readthedocs.io/en/latest/internals.html#sem-rel) format for the commit message:
+7.  Try your changes: `npm run build && ./bin/dredd` ([why the build?](https://dredd.org/en/latest/internals.html#programming-language))
+8.  When committing your changes, use the [Conventional Changelog](https://dredd.org/en/latest/internals.html#sem-rel) format for the commit message:
 
     ```
     fix: handle corner case situation
@@ -74,4 +74,4 @@ Dredd is written in ES2015+ JavaScript and runs in [Node.js](https://nodejs.org/
 11. Make sure your Pull Request is passing all tests and checks
 12. Make sure the [test coverage](https://coveralls.io/github/apiaryio/dredd) didn’t drop and all CI builds are passing
 
-You can learn more about Dredd's codebase in the [Internals](https://dredd.readthedocs.io/en/latest/internals.html) section of the documentation.
+You can learn more about Dredd's codebase in the [Internals](https://dredd.org/en/latest/internals.html) section of the documentation.
