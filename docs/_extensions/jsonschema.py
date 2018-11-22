@@ -4,9 +4,9 @@ import unittest
 from docutils import nodes
 
 
-REFERENCE_RE = re.compile(r'^((.+)<)?(draft(\d)|([\w\-]+)#([\w\-]+))?>?$')
+REFERENCE_RE = re.compile(r'^((.+)<)?(draft(\d)|([\w\-]+)(#([\w\-]+))?)?>?$')
 URL_BASE = 'https://json-schema.org'
-PATH_TEMPLATE = '/understanding-json-schema/reference/{document}.html#{anchor}'
+PATH_TEMPLATE = '/understanding-json-schema/reference/{document}.html'
 DRAFT_URL_MAPPING = {
     3: 'https://tools.ietf.org/html/draft-zyp-json-schema-03',
     4: 'https://tools.ietf.org/html/draft-zyp-json-schema-04',
@@ -43,8 +43,10 @@ def parse_text(text):
             link_text = link_text or 'JSON Schema Draft {}'.format(version)
             return (link_text, DRAFT_URL_MAPPING[version])
 
-        url = URL_BASE + PATH_TEMPLATE.format(document=match.group(5),
-                                              anchor=match.group(6))
+        url = URL_BASE + PATH_TEMPLATE.format(document=match.group(5))
+        anchor = match.group(7)
+        if anchor:
+            url += '#' + anchor
         return (link_text or 'spec', url)
 
     raise ValueError(text)
@@ -65,6 +67,14 @@ class Tests(unittest.TestCase):
         link_text, url = parse_text('draft7')
         self.assertEqual(link_text, 'JSON Schema Draft 7')
         self.assertEqual(url, 'https://tools.ietf.org/html/draft-handrews-json-schema-01')
+
+    def test_spec(self):
+        link_text, url = parse_text('array')
+        self.assertEqual(link_text, 'spec')
+        self.assertEqual(url, (
+            'https://json-schema.org/understanding-json-schema/reference/'
+            'array.html'
+        ))
 
     def test_spec_fragment(self):
         link_text, url = parse_text('object#properties')
