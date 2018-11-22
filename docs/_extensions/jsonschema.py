@@ -4,9 +4,16 @@ import unittest
 from docutils import nodes
 
 
-REFERENCE_RE = re.compile(r'^((.+)<)?(([\w\-]+)#([\w\-]+))?>?$')
+REFERENCE_RE = re.compile(r'^((.+)<)?(draft(\d)|([\w\-]+)#([\w\-]+))?>?$')
 URL_BASE = 'https://json-schema.org'
 PATH_TEMPLATE = '/understanding-json-schema/reference/{document}.html#{anchor}'
+DRAFT_URL_MAPPING = {
+    3: 'https://tools.ietf.org/html/draft-zyp-json-schema-03',
+    4: 'https://tools.ietf.org/html/draft-zyp-json-schema-04',
+    5: 'https://tools.ietf.org/html/draft-wright-json-schema-00',
+    6: 'https://tools.ietf.org/html/draft-wright-json-schema-01',
+    7: 'https://tools.ietf.org/html/draft-handrews-json-schema-01',
+}
 
 
 # https://docutils.readthedocs.io/en/sphinx-docs/howto/rst-roles.html
@@ -27,12 +34,17 @@ def parse_text(text):
     match = REFERENCE_RE.match(text)
     if match:
         link_text = (match.group(2) or '').strip()
-        is_empty = match.group(3) is None
+        content = match.group(3)
 
-        if is_empty:
+        if content is None:
             return (link_text or 'JSON Schema', URL_BASE)
-        url = URL_BASE + PATH_TEMPLATE.format(document=match.group(4),
-                                              anchor=match.group(5))
+        elif content.startswith('draft'):
+            version = int(match.group(4))
+            link_text = link_text or 'JSON Schema Draft {}'.format(version)
+            return (link_text, DRAFT_URL_MAPPING[version])
+
+        url = URL_BASE + PATH_TEMPLATE.format(document=match.group(5),
+                                              anchor=match.group(6))
         return (link_text or 'spec', url)
 
     raise ValueError(text)
@@ -48,6 +60,11 @@ class Tests(unittest.TestCase):
         link_text, url = parse_text('')
         self.assertEqual(link_text, 'JSON Schema')
         self.assertEqual(url, 'https://json-schema.org')
+
+    def test_draft(self):
+        link_text, url = parse_text('draft7')
+        self.assertEqual(link_text, 'JSON Schema Draft 7')
+        self.assertEqual(url, 'https://tools.ietf.org/html/draft-handrews-json-schema-01')
 
     def test_spec_fragment(self):
         link_text, url = parse_text('object#properties')
