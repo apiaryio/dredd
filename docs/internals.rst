@@ -235,8 +235,7 @@ Contributing to documentation
 
 The documentation is written `as code <http://www.writethedocs.org/guide/docs-as-code/>`__ in the `reStructuredText <http://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`__ format and its source files are located in the `docs <https://github.com/apiaryio/dredd/tree/master/docs>`__ directory. It is published automatically by the `ReadTheDocs <https://readthedocs.org/>`__ when the ``master`` branch is updated.
 
--  https://dredd.readthedocs.io - preferred long URL
--  https://dredd.rtfd.io - preferred short URL
+Even though alternatives exist (dredd.readthedocs.io, dredd.rtfd.io, or dredd.io), the documentation should always be linked canonically as https://dredd.org.
 
 
 Building documentation locally
