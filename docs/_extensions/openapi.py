@@ -4,10 +4,9 @@ import unittest
 from docutils import nodes
 
 
-REFERENCE_RE = re.compile(r'((.+)<)?(\d)(#([\w\-]+))?>?$')
+REFERENCE_RE = re.compile(r'^((.+)<)?(\d)(#([\w\-]+))?>?$')
 URL_TEMPLATE = 'https://github.com/OAI/OpenAPI-Specification/blob/master/versions/{version}.md'
 FRAGMENT_TEMPLATE = '#user-content-{anchor}'
-
 VERSION_MAPPING = {'2': '2.0', '3': '3.0.0'}
 
 
@@ -15,7 +14,7 @@ VERSION_MAPPING = {'2': '2.0', '3': '3.0.0'}
 def openapi_link(name, rawtext, text, lineno, inliner, options={}, content=[]):
     try:
         link_text, url = parse_text(text)
-    except:
+    except ValueError:
         message = "Could not parse a reference to OpenAPI specs: '{}'".format(text)
         error = inliner.reporter.error(message, line=lineno)
         problematic = inliner.problematic(rawtext, rawtext, error)
@@ -43,7 +42,7 @@ def parse_text(text):
                 link_text = 'OpenAPI {}'.format(major_version)
             return link_text, url
 
-    raise ValueError("Could not parse '{}' as an OpenAPI specs reference".format(text))
+    raise ValueError(text)
 
 
 def setup(app):

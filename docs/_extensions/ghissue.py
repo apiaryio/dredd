@@ -12,7 +12,7 @@ URL_TEMPLATE = 'https://github.com/{owner}/{repo}/issues/{issueno}'
 def github_issue(name, rawtext, text, lineno, inliner, options={}, content=[]):
     try:
         url = parse_text(text)
-    except:
+    except ValueError:
         message = "Could not parse a reference to GitHub issue: '{}'".format(text)
         error = inliner.reporter.error(message, line=lineno)
         problematic = inliner.problematic(rawtext, rawtext, error)
@@ -32,7 +32,7 @@ def parse_text(text):
         if issueno:
             return URL_TEMPLATE.format(owner=owner, repo=repo, issueno=issueno)
 
-    raise ValueError("Could not parse '{}' as a GitHub issue reference".format(text))
+    raise ValueError(text)
 
 
 def setup(app):
