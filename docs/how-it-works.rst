@@ -224,7 +224,7 @@ The :openapi:`2` format allows to specify multiple responses for a single operat
 
 In ``produces`` (:openapi:`2#swaggerproduces`) and ``consumes`` (:openapi:`2#swaggerconsumes`), only JSON media types are supported. Only the first JSON media type in ``produces`` is effective, others are skipped. Other media types are respected only when provided with :openapi:`explicit examples <2#responseexamples>`.
 
-:openapi:`Default response <2#responsedefault>` is ignored by Dredd unless it is the only available response. In that case, the default response is assumed to have HTTP 200 status code.
+:openapi:`Default response <2#responsesdefault>` is ignored by Dredd unless it is the only available response. In that case, the default response is assumed to have HTTP 200 status code.
 
 .. _security:
 
