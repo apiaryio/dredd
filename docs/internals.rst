@@ -300,10 +300,28 @@ Writing documentation
 Sphinx extensions
 ~~~~~~~~~~~~~~~~~
 
-There are several extensions to Sphinx, which add custom directives to the reStructuredText syntax:
+There are several extensions to Sphinx, which add custom directives and roles to the reStructuredText syntax:
 
-- ``.. cli-options:: ./path/to/file.json`` - allows to automatically generate documentation of Dredd's CLI options from the JSON file which specifies them
-- ``:ghissue:`drafter#123``` - simplifies linking GitHub issues
+CLI options
+    Allows to automatically generate documentation of Dredd's CLI options from the JSON file which specifies them. Usage: ``.. cli-options:: ./path/to/file.json``
+
+GitHub issues
+    Simplifies linking GitHub issues. Usage: ``:ghissue:`drafter#123```
+
+API Blueprint spec
+    Simplifies linking the `API Blueprint`_ spec. Usage: ``:apib:`schema-section```
+
+MSON spec
+    Simplifies linking the `MSON`_ spec. Usage: ``:mson:`353-type-attribute```
+
+OpenAPI 2 spec
+    Simplifies linking the `OpenAPI 2`_ spec. Usage: ``:openapi2:`parameterobject```
+
+OpenAPI 3 spec
+    Simplifies linking the `OpenAPI 3`_ spec. Usage: ``:openapi3:`parameterobject```
+
+RFCs
+    Simplifies linking the RFCs. Not a custom extension in fact, this is provided by Sphinx out of the box. Usage: ``:rfc:`1855```
 
 The extensions are written in Python 3 and are heavily based on the knowledge shared in the `FOSDEM 2018 talk by Stephen Finucane <https://archive.fosdem.org/2018/schedule/event/automating_documentation_with_sphinx_extensions/>`__. Extensions use Python's `unittest <https://docs.python.org/3/library/unittest.html>`__ for tests. You can use ``npm run docs:test-extensions`` to run them.
 
