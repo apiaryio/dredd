@@ -49,7 +49,7 @@ extensions = [
     'pygments_markdown_lexer',
     'cli_options',
     'ghissue',
-    'openapi',
+    'specs',
 ]
 
 # The suffix(es) of source filenames.
