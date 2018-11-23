@@ -49,9 +49,11 @@ If you want to run Dredd during development, you can do so using ``./bin/dredd``
 
 .. note::
 
+    See also the full :ref:`installation guide <install-npm>`.
+
     You might see some errors during installation because of the :ref:`cpp-dependencies`, but they should not prevent you from installing and developing Dredd.
 
-    Also, when using npm with the project, you might notice it tries to compile the C++ dependencies again and again, which means every npm command takes very long until it finishes. This is a recent annoyance caused by the fact Dredd uses lock file for development. The workaround is to append ``--no-optional`` every time to your npm command. We're working on a better solution together with the team behind the C++ projects we depend on.
+    Also, when using npm with the project, you might notice it tries to compile the C++ dependencies again and again, which means every npm command takes very long until it finishes. The workaround is to append ``--no-optional`` every time to your npm command. We're working on a better solution together with the team behind the C++ projects we depend on (:ghissue:`drafter-npm#16`).
 
 
 .. _semantic-relase-and-conventional-changelog:
@@ -104,7 +106,7 @@ Tests need to be pre-compiled every time, because some integration tests use cod
 
 Previously Dredd was written in `CoffeeScript <https://coffeescript.org>`__, and it was only recently converted to modern JavaScript. That's why sometimes the code does not feel very nice. Any efforts to refactor the code to something more human-friendly are greatly appreciated.
 
-CoffeeScript is still a production dependency (not dev dependency), because it’s needed for running user-provided hooks written in CoffeeScript. This is planned to be generalized: `#1082 <https://github.com/apiaryio/dredd/pull/1082>`__
+CoffeeScript is still a production dependency (not dev dependency), because it’s needed for running user-provided hooks written in CoffeeScript. This is planned to be generalized: :ghissue:`#1082`
 
 
 .. _cpp-dependencies:
@@ -115,32 +117,18 @@ C++ dependencies
 
 Dredd uses `Drafter <https://github.com/apiaryio/drafter>`__ for parsing `API Blueprint`_ documents. Drafter is written in C++ and needs to be compiled during installation. Because that can cause a lot of problems in some environments, there’s also pure JavaScript version of the parser, `drafter.js <https://github.com/apiaryio/drafter.js>`__. Drafter.js is fully equivalent, but it can have slower performance. Therefore there’s `drafter-npm <https://github.com/apiaryio/drafter-npm/>`__ package, which tries to compile the C++ version of the parser and in case of failure it falls back to the JavaScript equivalent. Dredd depends on the `drafter-npm <https://github.com/apiaryio/drafter-npm/>`__ package.
 
-That’s the reason why even if you see ``node-gyp`` errors and failures during the installation process, afterwards Dredd seems to normally work and correctly parses API Blueprint documents.
+That’s the reason why even if you see ``node-gyp``, ``gyp``, or ``python`` errors during the installation process, afterwards Dredd seems to normally work and correctly parses API Blueprint documents.
 
+The compilation can be avoided by using ``--no-optional`` with ``npm install``. There are attempts to improve the whole experience in :ghissue:`drafter-npm#16`.
 
-Avoiding C++ compilation
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-The ``--no-optional`` option forces the JavaScript version of Drafter and avoids any compilation attempts when installing Dredd:
-
-.. code-block:: shell
-
-   $ npm install dredd --global --no-optional
-
-
-Troubleshooting C++ compilation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-If you need the performance of the C++ parser, but you are struggling to get it installed, it’s usually because of the following problems:
-
--  **Your machine is missing a modern C++ compiler.** Check out the `list of supported compilers <https://github.com/apiaryio/drafter/#user-content-compiler-support>`__. See how to fix this on `Windows <https://github.com/apiaryio/drafter/wiki/Building-on-Windows>`__ or `Travis CI <https://github.com/apiaryio/protagonist/blob/master/.travis.yml>`__.
--  **npm was used with Python 3.** ``node-gyp``, which performs the compilation, doesn’t support Python 3 yet. If your default Python is 3 (see ``python --version``), `tell npm to use an older version <https://stackoverflow.com/a/22433804/325365>`__.
+.. note::
+    See also :ref:`install-cpp` in the full installation guide.
 
 
 Supported Node.js versions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Given the `table with LTS schedule <https://github.com/nodejs/Release>`__, only versions marked as **Current**, **Maintenance**, or **Active** are supported, until their **Maintenance End**. The testing matrix of Dredd’s CI builds must contain all currently supported versions and must not contain any unsupported versions. The same applies for the underlying libraries, such as `Dredd Transactions <https://github.com/apiaryio/dredd-transactions>`__ or `Gavel`_. In ``appveyor.yml`` the latest supported Node.js version should be used.
+Given the `table with LTS schedule <https://github.com/nodejs/Release>`__, only versions marked as **Current**, **Maintenance**, or **Active** are supported, until their **Maintenance End**. The testing matrix of Dredd’s CI builds must contain all currently supported versions and must not contain any unsupported versions. The same applies for the underlying libraries, such as `Dredd Transactions <https://github.com/apiaryio/dredd-transactions>`__ or `Gavel`_. In ``appveyor.yml`` the latest supported Node.js version should be used. When dropping support for Node.js versions, remember to update the :ref:`installation guide <install-npm>`.
 
 When dropping support for a certain Node.js version, it should be removed from the testing matrix, and it **must** be delivered as a breaking change, which increments Dredd's major version number.
 
