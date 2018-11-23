@@ -9,7 +9,7 @@ const Dredd = require('../../src/dredd');
   path: './test/fixtures/response/empty-body-empty-schema.apib'
 },
 {
-  name: 'Swagger',
+  name: 'OpenAPI 2',
   path: './test/fixtures/response/empty-body-empty-schema.yaml'
 }
 ].forEach(apiDescription =>
@@ -55,7 +55,7 @@ const Dredd = require('../../src/dredd');
   path: './test/fixtures/response/empty-body.apib'
 },
 {
-  name: 'Swagger',
+  name: 'OpenAPI 2',
   path: './test/fixtures/response/empty-body.yaml'
 }
 ].forEach(apiDescription =>
@@ -100,7 +100,7 @@ const Dredd = require('../../src/dredd');
   path: './test/fixtures/response/empty-body-empty-schema.apib'
 },
 {
-  name: 'Swagger',
+  name: 'OpenAPI 2',
   path: './test/fixtures/response/empty-body-empty-schema.yaml'
 }
 ].forEach(apiDescription =>
@@ -157,7 +157,7 @@ const Dredd = require('../../src/dredd');
   path: './test/fixtures/response/empty-body-empty-schema.apib'
 },
 {
-  name: 'Swagger',
+  name: 'OpenAPI 2',
   path: './test/fixtures/response/empty-body-empty-schema.yaml'
 }
 ].forEach(apiDescription =>
@@ -214,7 +214,7 @@ const Dredd = require('../../src/dredd');
   path: './test/fixtures/response/204-205-body.apib'
 },
 {
-  name: 'Swagger',
+  name: 'OpenAPI 2',
   path: './test/fixtures/response/204-205-body.yaml'
 }
 ].forEach(apiDescription =>
@@ -296,7 +296,7 @@ const Dredd = require('../../src/dredd');
     path: './test/fixtures/response/binary.apib'
   },
   {
-    name: 'Swagger',
+    name: 'OpenAPI 2',
     path: './test/fixtures/response/binary.yaml'
   }
 ].forEach(apiDescription =>

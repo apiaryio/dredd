@@ -19,35 +19,35 @@ describe('init._detectApiDescription()', () => {
     )
   );
 
-  it('detects the first .yml file containing \'swagger\' as OpenAPI', () =>
+  it('detects the first .yml file containing \'swagger\' as OpenAPI 2', () =>
     assert.equal(
       detectApiDescription(['foo', 'this-is-swagger.yml', 'bar']),
       'this-is-swagger.yml'
     )
   );
 
-  it('detects the first .yaml file containing \'swagger\' as OpenAPI', () =>
+  it('detects the first .yaml file containing \'swagger\' as OpenAPI 2', () =>
     assert.equal(
       detectApiDescription(['foo', 'this-is-swagger.yaml', 'bar']),
       'this-is-swagger.yaml'
     )
   );
 
-  it('detects the first .yml file containing \'api\' as OpenAPI', () =>
+  it('detects the first .yml file containing \'api\' as OpenAPI 2', () =>
     assert.equal(
       detectApiDescription(['foo', 'openapi.yml', 'bar']),
       'openapi.yml'
     )
   );
 
-  it('detects the first .yaml file containing \'api\' as OpenAPI', () =>
+  it('detects the first .yaml file containing \'api\' as OpenAPI 2', () =>
     assert.equal(
       detectApiDescription(['foo', 'openapi.yaml', 'bar']),
       'openapi.yaml'
     )
   );
 
-  it('prefers API Blueprint over OpenAPI', () =>
+  it('prefers API Blueprint over OpenAPI 2', () =>
     assert.equal(
       detectApiDescription(['swagger.yml', 'boo.apib']),
       'boo.apib'

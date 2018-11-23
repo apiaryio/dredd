@@ -77,7 +77,7 @@ Run this command to retrieve all transaction names:
    $ dredd single-get.apib http://machines.apiary.io --names
    info: Machines > Machines collection > Get Machines
 
-The ``Machines > Machines collection > Get Machines`` is the name of a transaction which you can use in your hooks. The same approach works also for Swagger documents.
+The ``Machines > Machines collection > Get Machines`` is the name of a transaction which you can use in your hooks. The same approach works also for OpenAPI 2 documents.
 
 .. _types-of-hooks:
 

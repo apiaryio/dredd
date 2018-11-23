@@ -8,7 +8,7 @@ In the following guides you can find tips and best practices how to cope with so
 Isolation of HTTP Transactions
 ------------------------------
 
-Requests in the API description usually aren’t sorted in order to comply with logical workflow of the tested application. To get the best results from testing with Dredd, you should ensure each resource action (`API Blueprint <https://apiblueprint.org/>`__) or operation (`Swagger <https://swagger.io/>`__) is executed in isolated context. This can be easily achieved using :ref:`hooks <hooks>`, where you can provide your own setup and teardown code for each HTTP transaction.
+Requests in the API description usually aren’t sorted in order to comply with logical workflow of the tested application. To get the best results from testing with Dredd, you should ensure each resource action (`API Blueprint <https://apiblueprint.org/>`__) or operation (`OpenAPI 2 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md/>`__) is executed in isolated context. This can be easily achieved using :ref:`hooks <hooks>`, where you can provide your own setup and teardown code for each HTTP transaction.
 
 You should understand that testing with Dredd is an analogy to **unit tests** of your application code. In unit tests, each unit should be testable without any dependency on other units or previous tests.
 
@@ -79,8 +79,8 @@ Now we can create a ``hooks.js`` file. The file will contain setup and teardown 
      db.createCategory({id: 42});
    });
 
-Swagger
-^^^^^^^
+OpenAPI 2
+^^^^^^^^^
 
 .. code-block:: yaml
 
@@ -259,8 +259,8 @@ Now we can create a ``hooks.js`` file. The code of the file will use global ``st
      transaction.request.uri = transaction.fullPath
    })
 
-Swagger Example
-~~~~~~~~~~~~~~~
+OpenAPI 2 Example
+~~~~~~~~~~~~~~~~~
 
 Imagine we have a simple workflow described:
 
@@ -391,9 +391,9 @@ Now we can create a ``hooks.js`` file. The code of the file will use global ``st
 Making Dredd Validation Stricter
 --------------------------------
 
-API Blueprint or Swagger files are usually created primarily with *documentation* in mind. But what’s enough for documentation doesn’t need to be enough for *testing*.
+API Blueprint or OpenAPI 2 files are usually created primarily with *documentation* in mind. But what’s enough for documentation doesn’t need to be enough for *testing*.
 
-That applies to both `MSON <https://apiblueprint.org/documentation/mson/specification.html>`__ (a language powering API Blueprint’s `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ sections) and `JSON Schema <http://json-schema.org/>`__ (a language powering the Swagger format and API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections).
+That applies to both `MSON <https://apiblueprint.org/documentation/mson/specification.html>`__ (a language powering API Blueprint’s `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ sections) and `JSON Schema <http://json-schema.org/>`__ (a language powering the OpenAPI 2 format and API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections).
 
 In following sections you can learn about how to deal with common scenarios.
 
@@ -409,7 +409,7 @@ If you describe a JSON body which has attributes ``name`` and ``size``, the foll
 It’s because in both `MSON <https://apiblueprint.org/documentation/mson/specification.html>`__ and `JSON Schema <http://json-schema.org/>`__ additional properties are not forbidden by default.
 
 -  In API Blueprint’s `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ sections you can mark your object with ```fixed-type`` <https://apiblueprint.org/documentation/mson/specification.html#353-type-attribute>`__, which doesn’t allow additional properties.
--  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in Swagger you can use ``additionalProperties: false`` (`docs <https://json-schema.org/understanding-json-schema/reference/object.html#properties>`__) on the objects.
+-  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in OpenAPI 2 you can use ``additionalProperties: false`` (`docs <https://json-schema.org/understanding-json-schema/reference/object.html#properties>`__) on the objects.
 
 Requiring Properties
 ~~~~~~~~~~~~~~~~~~~~
@@ -423,7 +423,7 @@ If you describe a JSON body which has attributes ``name`` and ``size``, the foll
 It’s because properties are optional by default in both `MSON <https://apiblueprint.org/documentation/mson/specification.html>`__ and `JSON Schema <http://json-schema.org/>`__ and you need to explicitly specify them as required.
 
 -  In API Blueprint’s `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ section, you can use ```required`` <https://apiblueprint.org/documentation/mson/specification.html#353-type-attribute>`__.
--  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in Swagger you can use ``required`` (`docs <https://json-schema.org/understanding-json-schema/reference/object.html#required-properties>`__), where you list the required properties. (Note this is true only for the `Draft v4 <https://tools.ietf.org/html/draft-zyp-json-schema-04>`__ JSON Schema, in older versions the ``required`` functionality was done differently.)
+-  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in OpenAPI 2 you can use ``required`` (`docs <https://json-schema.org/understanding-json-schema/reference/object.html#required-properties>`__), where you list the required properties. (Note this is true only for the `Draft v4 <https://tools.ietf.org/html/draft-zyp-json-schema-04>`__ JSON Schema, in older versions the ``required`` functionality was done differently.)
 
 Validating Structure of Array Items
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -437,7 +437,7 @@ If you describe an array of items, where each of the items should have a ``name`
 That’s because in `MSON <https://apiblueprint.org/documentation/mson/specification.html>`__, the default behavior is that you are specifying what *may* appear in the array.
 
 -  In API Blueprint’s `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ sections you can mark your array with ``fixed-type`` (`docs  <https://apiblueprint.org/documentation/mson/specification.html#353-type-attribute>`__), which doesn’t allow array items of a different structure then specified.
--  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in Swagger make sure to learn about how `validation of arrays <https://json-schema.org/understanding-json-schema/reference/array.html>`__ exactly works.
+-  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in OpenAPI 2 make sure to learn about how `validation of arrays <https://json-schema.org/understanding-json-schema/reference/array.html>`__ exactly works.
 
 Validating Specific Values
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -451,7 +451,7 @@ If you describe a JSON body which has attributes ``name`` and ``size``, the foll
 If the size should be always equal to 300, you need to specify the fact in your API description.
 
 -  In API Blueprint’s `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ sections you can mark your property with ``fixed`` (`docs <https://apiblueprint.org/documentation/mson/specification.html#353-type-attribute>`__), which turns the sample value into a required value. You can also use ``enum`` (`docs <https://apiblueprint.org/documentation/mson/specification.html#212-structure-types>`__) to provide a set of possible values.
--  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in Swagger you can use ``enum`` (`docs <https://json-schema.org/understanding-json-schema/reference/generic.html#enumerated-values>`__) with one or more possible values.
+-  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in OpenAPI 2 you can use ``enum`` (`docs <https://json-schema.org/understanding-json-schema/reference/generic.html#enumerated-values>`__) with one or more possible values.
 
 Integrating Dredd with Your Test Suite
 --------------------------------------
@@ -561,8 +561,8 @@ API Blueprint
 .. literalinclude:: ../test/fixtures/request/image-png.apib
   :language: apiblueprint
 
-Swagger
-^^^^^^^
+OpenAPI 2
+^^^^^^^^^
 
 .. literalinclude:: ../test/fixtures/request/image-png.yaml
   :language: yaml
@@ -584,8 +584,8 @@ API Blueprint
 .. literalinclude:: ../test/fixtures/response/binary.apib
   :language: apiblueprint
 
-Swagger
-^^^^^^^
+OpenAPI 2
+^^^^^^^^^
 
 .. literalinclude:: ../test/fixtures/response/binary.yaml
   :language: yaml
@@ -661,10 +661,10 @@ Dredd will detect two HTTP transaction examples and will compile following trans
 
 In case you need to perform particular request with different URI parameters and standard inheritance of URI parameters isn’t working for you, try :ref:`modifying transaction before its execution <modifying-transaction-request-body-prior-to-execution>` in hooks.
 
-Swagger
-~~~~~~~
+OpenAPI 2
+~~~~~~~~~
 
-When using `Swagger <https://swagger.io/>`__ format, by default Dredd tests only responses with ``2xx`` status codes. Responses with other codes are marked as *skipped* and can be activated in :ref:`hooks <hooks>`:
+When using `OpenAPI 2 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md/>`__ format, by default Dredd tests only responses with ``2xx`` status codes. Responses with other codes are marked as *skipped* and can be activated in :ref:`hooks <hooks>`:
 
 .. code-block:: javascript
 
@@ -731,9 +731,9 @@ When sending test reports to Apiary, Dredd inspects the environment where it was
 Example Values for Request Parameters
 -------------------------------------
 
-While example values are natural part of the API Blueprint format, the Swagger specification allows them only for ``body`` request parameters (``schema.example``).
+While example values are natural part of the API Blueprint format, the OpenAPI 2 specification allows them only for ``body`` request parameters (``schema.example``).
 
-However, Dredd needs to know what values to use when testing described API, so it supports ``x-example`` `vendor extension property <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-vendorextensions>`__ to overcome the Swagger limitation:
+However, Dredd needs to know what values to use when testing described API, so it supports ``x-example`` `vendor extension property <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#user-content-vendorextensions>`__ to overcome the OpenAPI 2 limitation:
 
 .. code-block:: yaml
 

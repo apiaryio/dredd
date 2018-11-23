@@ -384,7 +384,7 @@ Interface of the hooks functions will be unified soon across all hook functions:
     }
 
     // Transaction skipping (can be modified in hooks). If the input format
-    // is Swagger, non-2xx transactions should be skipped by default.
+    // is OpenAPI 2, non-2xx transactions should be skipped by default.
     let skip = false;
     if (mediaType.indexOf('swagger') !== -1) {
       const status = parseInt(response.status, 10);

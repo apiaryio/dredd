@@ -601,7 +601,7 @@ before('Machines collection > Get Machines', function(transaction){
     })
   );
 
-  describe('when Swagger document has multiple responses', () => {
+  describe('when OpenAPI 2 document has multiple responses', () => {
     const reTransaction = /(\w+): (\w+) \((\d+)\) \/honey/g;
     let actual;
 
@@ -639,7 +639,7 @@ before('Machines collection > Get Machines', function(transaction){
     );
   });
 
-  describe('when Swagger document has multiple responses and hooks unskip some of them', () => {
+  describe('when OpenAPI 2 document has multiple responses and hooks unskip some of them', () => {
     const reTransaction = /(\w+): (\w+) \((\d+)\) \/honey/g;
     let actual;
 
@@ -647,7 +647,7 @@ before('Machines collection > Get Machines', function(transaction){
       execCommand({
         options: {
           path: './test/fixtures/multiple-responses.yaml',
-          hookfiles: './test/fixtures/swagger-multiple-responses.js'
+          hookfiles: './test/fixtures/openapi2-multiple-responses.js'
         }
       }
         , (err) => {
@@ -681,7 +681,7 @@ before('Machines collection > Get Machines', function(transaction){
     );
   });
 
-  describe('when using Swagger document with hooks', () => {
+  describe('when using OpenAPI 2 document with hooks', () => {
     const reTransactionName = /hook: (.+)/g;
     let matches;
 
@@ -689,7 +689,7 @@ before('Machines collection > Get Machines', function(transaction){
       execCommand({
         options: {
           path: './test/fixtures/multiple-responses.yaml',
-          hookfiles: './test/fixtures/swagger-transaction-names.js'
+          hookfiles: './test/fixtures/openapi2-transaction-names.js'
         }
       }
         , (err) => {
