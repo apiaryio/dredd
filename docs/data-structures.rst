@@ -1,9 +1,10 @@
+.. include:: _links.rst
 .. _data-structures:
 
 Data Structures
 ===============
 
-Documentation of various data structures in both `Gavel.js <https://github.com/apiaryio/gavel.js>`__ and Dredd. `MSON notation <https://github.com/apiaryio/mson>`__ is used to describe the data structures.
+Documentation of various data structures in both `Gavel`_ and Dredd. `MSON notation <mson>`__ is used to describe the data structures.
 
 .. _transaction:
 
@@ -131,7 +132,7 @@ Can be seen also `here <https://relishapp.com/apiary/gavel/docs/data-validators-
 -  realType (string) - media type
 -  expectedType (string) - media type
 -  validator (string) - validator class name
--  rawData (enum) - raw output of the validator, has different structure for every validator and is saved and used in Apiary to render graphical diff by `gavel2html <https://github.com/apiaryio/gavel2html/>`__
+-  rawData (enum) - raw output of the validator, has different structure for every validator and is saved and used in Apiary to render graphical diff by `gavel2html <https://github.com/apiaryio/gavel2html>`__
 
    -  (:ref:`jsonschema-validation-result`)
    -  (:ref:`textdiff-validation-result`)
@@ -143,7 +144,7 @@ JsonSchema Validation Result (object)
 
 The validation error is based on format provided by `Amanda <https://github.com/apiaryio/Amanda>`__ and is also “documented” `here <https://github.com/apiaryio/Amanda/blob/master/docs/json/objects/error.md>`__. Although for validation of draft4 JSON Schema Gavel uses `tv4 <https://github.com/geraintluff/tv4>`__ library, the output then gets reshaped into the structure of Amanda’s errors.
 
-This validation result is returned not only when validating against :jsonschema:``, but also when validating against JSON example or when validating HTTP headers.
+This validation result is returned not only when validating against `JSON Schema`_, but also when validating against JSON example or when validating HTTP headers.
 
 -  length: ``0`` (number, default) - number of error properties
 -  errorMessages (object) - doesn’t seem to ever contain anything or be used for anything

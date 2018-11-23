@@ -1,3 +1,4 @@
+.. include:: _links.rst
 .. _how-it-works:
 
 How It Works
@@ -74,7 +75,7 @@ Following execution life cycle documentation should help you to understand how D
 Automatic Expectations
 ----------------------
 
-Dredd automatically generates expectations on HTTP responses based on examples in the API description with use of `Gavel.js <https://github.com/apiaryio/gavel.js>`__ library. Please refer to `Gavel <https://relishapp.com/apiary/gavel/docs>`__ rules if you want know more.
+Dredd automatically generates expectations on HTTP responses based on examples in the API description with use of the `Gavel`_ library. Please refer to `Gavel's rules <https://relishapp.com/apiary/gavel/docs>`__ if you want know more.
 
 Response Headers Expectations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -84,9 +85,9 @@ Response Headers Expectations
 -  Only values of headers significant for content negotiation are validated.
 -  All other headers values can differ.
 
-When using :openapi:`2`, headers are taken from ``response.headers`` (:openapi:`2#responseheaders`). HTTP headers significant for content negotiation are inferred according to following rules:
+When using `OpenAPI 2`_, headers are taken from ``response.headers`` (:openapi2:`responseheaders`). HTTP headers significant for content negotiation are inferred according to following rules:
 
--  ``produces`` (:openapi:`2#swaggerproduces`) is propagated as response’s ``Content-Type`` header.
+-  ``produces`` (:openapi2:`swaggerproduces`) is propagated as response’s ``Content-Type`` header.
 -  Response’s ``Content-Type`` header overrides any ``produces``.
 
 Response Body Expectations
@@ -94,22 +95,22 @@ Response Body Expectations
 
 If the HTTP response body is JSON, Dredd validates only its structure. Bodies in any other format are validated as plain text.
 
-To validate the structure Dredd uses :jsonschema:`` inferred from the API description under test. The effective JSON Schema is taken from following places (the order goes from the highest priority to the lowest):
+To validate the structure Dredd uses `JSON Schema`_ inferred from the API description under test. The effective JSON Schema is taken from following places (the order goes from the highest priority to the lowest):
 
 API Blueprint
 ^^^^^^^^^^^^^
 
-1. `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ section - provided custom JSON Schema (:jsonschema:`Draft 4 <draft4>` and :jsonschema:`Draft 3 <draft3>`) will be used.
-2. `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ section with data structure description in `MSON <https://github.com/apiaryio/mson>`__ - API Blueprint parser automatically generates JSON Schema from MSON.
-3. `Body <https://apiblueprint.org/documentation/specification.html#def-body-section>`__ section with sample JSON payload - `Gavel.js <https://github.com/apiaryio/gavel.js>`__, which is responsible for validation in Dredd, automatically infers some basic expectations described below.
+1. :apib:`Schema <def-schema-section>` section - provided custom JSON Schema (`Draft 4`_ and `Draft 3`_) will be used.
+2. :apib:`Attributes <def-attributes-section>` section with data structure description in `MSON`_ - API Blueprint parser automatically generates JSON Schema from MSON.
+3. :apib:`Body <def-body-section>` section with sample JSON payload - `Gavel`_, which is responsible for validation in Dredd, automatically infers some basic expectations described below.
 
-This order `exactly follows the API Blueprint specification <https://apiblueprint.org/documentation/specification.html#relation-of-body-schema-and-attributes-sections>`__.
+This order :apib:`exactly follows the API Blueprint specification <relation-of-body-schema-and-attributes-sections>`.
 
 OpenAPI 2
 ^^^^^^^^^
 
-1. ``response.schema`` (:openapi:`2#responseschema`) - provided JSON Schema will be used.
-2. ``response.examples`` (:openapi:`2#responseexamples`) with sample JSON payload - `Gavel.js <https://github.com/apiaryio/gavel.js>`__, which is responsible for validation in Dredd, automatically infers some basic expectations described below.
+1. ``response.schema`` (:openapi2:`responseschema`) - provided JSON Schema will be used.
+2. ``response.examples`` (:openapi2:`responseexamples`) with sample JSON payload - `Gavel`_, which is responsible for validation in Dredd, automatically infers some basic expectations described below.
 
 .. _gavels-expectations:
 
@@ -135,7 +136,7 @@ It’s very likely that your API description document will not be testable **as 
 URI Parameters
 ~~~~~~~~~~~~~~
 
-Both `API Blueprint <https://apiblueprint.org/>`__ and :openapi:`2` allow usage of URI templates (API Blueprint fully implements :rfc:`6570`, OpenAPI 2 templates are much simpler). In order to have an API description which is testable, you need to describe all required parameters used in URI (path or query) and provide sample values to make Dredd able to expand URI templates with given sample values. Following rules apply when Dredd interpolates variables in a templated URI, ordered by precedence:
+Both `API Blueprint`_ and `OpenAPI 2`_ allow usage of URI templates (API Blueprint fully implements :rfc:`6570`, OpenAPI 2 templates are much simpler). In order to have an API description which is testable, you need to describe all required parameters used in URI (path or query) and provide sample values to make Dredd able to expand URI templates with given sample values. Following rules apply when Dredd interpolates variables in a templated URI, ordered by precedence:
 
 1. Sample value, in OpenAPI 2 available as the ``x-example`` vendor extension property (:ref:`docs <example-values-for-request-parameters>`).
 2. Value of ``default``.
@@ -149,10 +150,10 @@ If Dredd isn’t able to infer any value for a required parameter, it will termi
 Request Headers
 ~~~~~~~~~~~~~~~
 
-In :openapi:`2` documents, HTTP headers are inferred from ``"in": "header"`` parameters (:openapi:`2#parameterobject`). HTTP headers significant for content negotiation are inferred according to following rules:
+In `OpenAPI 2`_ documents, HTTP headers are inferred from ``"in": "header"`` parameters (:openapi2:`parameterobject`). HTTP headers significant for content negotiation are inferred according to following rules:
 
--  ``consumes`` (:openapi:`2#swaggerconsumes`) is propagated as request’s ``Content-Type`` header.
--  ``produces`` (:openapi:`2#swaggerproduces`) is propagated as request’s ``Accept`` header.
+-  ``consumes`` (:openapi2:`swaggerconsumes`) is propagated as request’s ``Content-Type`` header.
+-  ``produces`` (:openapi2:`swaggerproduces`) is propagated as request’s ``Accept`` header.
 -  If request body parameters are specified as ``"in": "formData"``, request’s ``Content-Type`` header is set to ``application/x-www-form-urlencoded``.
 
 
@@ -164,17 +165,17 @@ API Blueprint
 
 The effective request body is taken from following places (the order goes from the highest priority to the lowest):
 
-1. `Body <https://apiblueprint.org/documentation/specification.html#def-body-section>`__ section with sample JSON payload.
-2. `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ section with data structure description in `MSON <https://github.com/apiaryio/mson>`__ - API Blueprint parser automatically generates sample JSON payload from MSON.
+1. :apib:`Body <def-body-section>` section with sample JSON payload.
+2. :apib:`Attributes <def-attributes-section>` section with data structure description in `MSON`_ - API Blueprint parser automatically generates sample JSON payload from MSON.
 
-This order `exactly follows the API Blueprint specification <https://apiblueprint.org/documentation/specification.html#relation-of-body-schema-and-attributes-sections>`__.
+This order :apib:`exactly follows the API Blueprint specification <relation-of-body-schema-and-attributes-sections>`.
 
 OpenAPI 2
 ^^^^^^^^^
 
-The effective request body is inferred from ``"in": "body"`` and ``"in": "formData"`` parameters (:openapi:`2#parameterobject`).
+The effective request body is inferred from ``"in": "body"`` and ``"in": "formData"`` parameters (:openapi2:`parameterobject`).
 
-If body parameter has ``schema.example`` (:openapi:`2#schemaexample`), it is used as a raw JSON sample for the request body. If it’s not present, Dredd’s `OpenAPI 2 adapter <https://github.com/apiaryio/fury-adapter-swagger/>`__ generates sample values from the JSON Schema provided in the ``schema`` (:openapi:`2#parameterschema`) property. Following rules apply when the adapter fills values of the properties, ordered by precedence:
+If body parameter has ``schema.example`` (:openapi2:`schemaexample`), it is used as a raw JSON sample for the request body. If it’s not present, Dredd’s `OpenAPI 2 adapter <https://github.com/apiaryio/fury-adapter-swagger/>`__ generates sample values from the JSON Schema provided in the ``schema`` (:openapi2:`parameterschema`) property. Following rules apply when the adapter fills values of the properties, ordered by precedence:
 
 1. Value of ``default``.
 2. First value from ``enum``.
@@ -202,7 +203,7 @@ Choosing HTTP Transactions
 API Blueprint
 ~~~~~~~~~~~~~
 
-While `API Blueprint <https://apiblueprint.org/>`__ allows specifying multiple requests and responses in any combination (see specification for the `action section <https://apiblueprint.org/documentation/specification.html#def-action-section>`__), Dredd currently supports just separated HTTP transaction pairs like this:
+While `API Blueprint`_ allows specifying multiple requests and responses in any combination (see specification for the :apib:`action section <def-action-section>`), Dredd currently supports just separated HTTP transaction pairs like this:
 
 ::
 
@@ -220,11 +221,11 @@ In other words, Dredd always selects just the first response for each request.
 OpenAPI 2
 ~~~~~~~~~
 
-The :openapi:`2` format allows to specify multiple responses for a single operation. By default Dredd tests only responses with ``2xx`` status codes. Responses with other codes are marked as *skipped* and can be activated in :ref:`hooks <hooks>` - see the :ref:`multiple-requests-and-responses` how-to guide.
+The `OpenAPI 2`_ format allows to specify multiple responses for a single operation. By default Dredd tests only responses with ``2xx`` status codes. Responses with other codes are marked as *skipped* and can be activated in :ref:`hooks <hooks>` - see the :ref:`multiple-requests-and-responses` how-to guide.
 
-In ``produces`` (:openapi:`2#swaggerproduces`) and ``consumes`` (:openapi:`2#swaggerconsumes`), only JSON media types are supported. Only the first JSON media type in ``produces`` is effective, others are skipped. Other media types are respected only when provided with :openapi:`explicit examples <2#responseexamples>`.
+In ``produces`` (:openapi2:`swaggerproduces`) and ``consumes`` (:openapi2:`swaggerconsumes`), only JSON media types are supported. Only the first JSON media type in ``produces`` is effective, others are skipped. Other media types are respected only when provided with :openapi2:`explicit examples <responseexamples>`.
 
-:openapi:`Default response <2#responsesdefault>` is ignored by Dredd unless it is the only available response. In that case, the default response is assumed to have HTTP 200 status code.
+:openapi2:`Default response <responsesdefault>` is ignored by Dredd unless it is the only available response. In that case, the default response is assumed to have HTTP 200 status code.
 
 .. _security:
 
@@ -233,9 +234,9 @@ Security
 
 Depending on what you test and how, output of Dredd may contain sensitive data.
 
-Mind that if you run Dredd in a CI server provided as a service (such as `CircleCI <https://circleci.com/>`__, `Travis CI <https://travis-ci.org/>`__, etc.), you are disclosing the CLI output of Dredd to third parties.
+Mind that if you run Dredd in a CI server provided as a service (such as `CircleCI`_, `Travis CI`_, etc.), you are disclosing the CLI output of Dredd to third parties.
 
-When using :ref:`Apiary Reporter and Apiary Tests <using-apiary-reporter-and-apiary-tests>`, you are sending your testing data to `Apiary <https://apiary.io/>`__ (Dredd creators and maintainers). See their `Terms of Service <https://apiary.io/tos>`__ and `Privacy Policy <https://apiary.io/privacy>`__. Which data exactly is being sent to Apiary?
+When using :ref:`Apiary Reporter and Apiary Tests <using-apiary-reporter-and-apiary-tests>`, you are sending your testing data to `Apiary`_ (Dredd creators and maintainers). See their `Terms of Service <https://apiary.io/tos>`__ and `Privacy Policy <https://apiary.io/privacy>`__. Which data exactly is being sent to Apiary?
 
 -  **Complete API description under test.** This means your API Blueprint or OpenAPI 2 files. The API description is stored encrypted in Apiary.
 -  **Complete testing results.** Those can contain details of all requests made to the server under test and their responses. Apiary stores this data unencrypted, even if the original communication between Dredd and the API server under test happens to be over HTTPS. See :ref:`Apiary Reporter Test Data <apiary-reporter-test-data>` for detailed description of what is sent. You can :ref:`sanitize it before it gets sent <removing-sensitive-data-from-test-reports>`.

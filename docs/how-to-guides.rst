@@ -1,3 +1,4 @@
+.. include:: _links.rst
 .. _how-to-guides:
 
 How-To Guides
@@ -8,7 +9,7 @@ In the following guides you can find tips and best practices how to cope with so
 Isolation of HTTP Transactions
 ------------------------------
 
-Requests in the API description usually aren’t sorted in order to comply with logical workflow of the tested application. To get the best results from testing with Dredd, you should ensure each resource action (`API Blueprint <https://apiblueprint.org/>`__) or operation (:openapi:`2`) is executed in isolated context. This can be easily achieved using :ref:`hooks <hooks>`, where you can provide your own setup and teardown code for each HTTP transaction.
+Requests in the API description usually aren’t sorted in order to comply with logical workflow of the tested application. To get the best results from testing with Dredd, you should ensure each resource action (`API Blueprint`_) or operation (`OpenAPI 2`_) is executed in isolated context. This can be easily achieved using :ref:`hooks <hooks>`, where you can provide your own setup and teardown code for each HTTP transaction.
 
 You should understand that testing with Dredd is an analogy to **unit tests** of your application code. In unit tests, each unit should be testable without any dependency on other units or previous tests.
 
@@ -167,7 +168,7 @@ Testing API Workflows
 Often you want to test a sequence of steps, a scenario, rather than just one request-response pair in isolation. Since the API description formats are quite limited in their support of documenting scenarios, Dredd probably isn’t the best tool to provide you with this kind of testing. There are some tricks though, which can help you to work around some of the limitations.
 
 .. note::
-   `API Blueprint <https://apiblueprint.org/>`__ prepares direct support for testing and scenarios. Interested? Check out :ghissue:`api-blueprint#21`!
+   `API Blueprint`_ prepares direct support for testing and scenarios. Interested? Check out :ghissue:`api-blueprint#21`!
 
 To test various scenarios, you will want to write each of them into a separate API description document. To load them during a single test run, use the :option:`--path` option.
 
@@ -393,7 +394,7 @@ Making Dredd Validation Stricter
 
 API Blueprint or OpenAPI 2 files are usually created primarily with *documentation* in mind. But what’s enough for documentation doesn’t need to be enough for *testing*.
 
-That applies to both `MSON <https://apiblueprint.org/documentation/mson/specification.html>`__ (a language powering API Blueprint’s `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ sections) and :jsonschema:`` (a language powering the OpenAPI 2 format and API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections).
+That applies to both `MSON`_ (a language powering API Blueprint’s :apib:`Attributes <def-attributes-section>` sections) and `JSON Schema`_ (a language powering the OpenAPI 2 format and API Blueprint’s :apib:`Schema <def-schema-section>` sections).
 
 In following sections you can learn about how to deal with common scenarios.
 
@@ -406,10 +407,10 @@ If you describe a JSON body which has attributes ``name`` and ``size``, the foll
 
    {"name": "Sparta", "size": 300, "luck": false}
 
-It’s because in both `MSON <https://apiblueprint.org/documentation/mson/specification.html>`__ and :jsonschema:`` additional properties are not forbidden by default.
+It’s because in both `MSON`_ and `JSON Schema`_ additional properties are not forbidden by default.
 
--  In API Blueprint’s `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ sections you can mark your object with ```fixed-type`` <https://apiblueprint.org/documentation/mson/specification.html#353-type-attribute>`__, which doesn’t allow additional properties.
--  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in OpenAPI 2 you can use ``additionalProperties: false`` (:jsonschema:`object#properties`) on the objects.
+-  In API Blueprint’s :apib:`Attributes <def-attributes-section>` sections you can mark your object with ``fixed-type`` (:mson:`353-type-attribute`), which doesn’t allow additional properties.
+-  In API Blueprint’s :apib:`Schema <def-schema-section>` sections and in OpenAPI 2 you can use ``additionalProperties: false`` (`spec <https://json-schema.org/understanding-json-schema/reference/object.html#properties>`__) on the objects.
 
 Requiring Properties
 ~~~~~~~~~~~~~~~~~~~~
@@ -420,10 +421,10 @@ If you describe a JSON body which has attributes ``name`` and ``size``, the foll
 
    {"name": "Sparta"}
 
-It’s because properties are optional by default in both `MSON <https://apiblueprint.org/documentation/mson/specification.html>`__ and :jsonschema:`` and you need to explicitly specify them as required.
+It’s because properties are optional by default in both `MSON`_ and `JSON Schema`_ and you need to explicitly specify them as required.
 
--  In API Blueprint’s `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ section, you can use ```required`` <https://apiblueprint.org/documentation/mson/specification.html#353-type-attribute>`__.
--  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in OpenAPI 2 you can use ``required`` (:jsonschema:`object#required-properties`), where you list the required properties. (Note this is true only for the `Draft v4 <https://tools.ietf.org/html/draft-zyp-json-schema-04>`__ JSON Schema, in older versions the ``required`` functionality was done differently.)
+-  In API Blueprint’s :apib:`Attributes <def-attributes-section>` section, you can use ``required`` (:mson:`353-type-attribute`).
+-  In API Blueprint’s :apib:`Schema <def-schema-section>` sections and in OpenAPI 2 you can use ``required`` (`spec <https://json-schema.org/understanding-json-schema/reference/object.html#required-properties>`__), where you list the required properties. (Note this is true only for the `Draft v4 <https://tools.ietf.org/html/draft-zyp-json-schema-04>`__ JSON Schema, in older versions the ``required`` functionality was done differently.)
 
 Validating Structure of Array Items
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -434,10 +435,10 @@ If you describe an array of items, where each of the items should have a ``name`
 
    [{"name": "Sparta"}, {"title": "Athens"}, "Thebes"]
 
-That’s because in `MSON <https://apiblueprint.org/documentation/mson/specification.html>`__, the default behavior is that you are specifying what *may* appear in the array.
+That’s because in `MSON`_, the default behavior is that you are specifying what *may* appear in the array.
 
--  In API Blueprint’s `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ sections you can mark your array with ``fixed-type`` (`docs  <https://apiblueprint.org/documentation/mson/specification.html#353-type-attribute>`__), which doesn’t allow array items of a different structure then specified.
--  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in OpenAPI 2 make sure to learn about how :jsonschema:`validation of arrays <array>` exactly works.
+-  In API Blueprint’s :apib:`Attributes <def-attributes-section>` sections you can mark your array with ``fixed-type`` (:mson:`353-type-attribute`), which doesn’t allow array items of a different structure then specified.
+-  In API Blueprint’s :apib:`Schema <def-schema-section>` sections and in OpenAPI 2 make sure to learn about how `validation of arrays <https://json-schema.org/understanding-json-schema/reference/array.html>`__ exactly works.
 
 Validating Specific Values
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -450,8 +451,8 @@ If you describe a JSON body which has attributes ``name`` and ``size``, the foll
 
 If the size should be always equal to 300, you need to specify the fact in your API description.
 
--  In API Blueprint’s `Attributes <https://apiblueprint.org/documentation/specification.html#def-attributes-section>`__ sections you can mark your property with ``fixed`` (`docs <https://apiblueprint.org/documentation/mson/specification.html#353-type-attribute>`__), which turns the sample value into a required value. You can also use ``enum`` (`docs <https://apiblueprint.org/documentation/mson/specification.html#212-structure-types>`__) to provide a set of possible values.
--  In API Blueprint’s `Schema <https://apiblueprint.org/documentation/specification.html#def-schema-section>`__ sections and in OpenAPI 2 you can use ``enum`` (:jsonschema:`generic#enumerated-values`) with one or more possible values.
+-  In API Blueprint’s :apib:`Attributes <def-attributes-section>` sections you can mark your property with ``fixed`` (:mson:`353-type-attribute`), which turns the sample value into a required value. You can also use ``enum`` (:mson:`212-structure-types`) to provide a set of possible values.
+-  In API Blueprint’s :apib:`Schema <def-schema-section>` sections and in OpenAPI 2 you can use ``enum`` (`spec <https://json-schema.org/understanding-json-schema/reference/generic.html#enumerated-values>`__) with one or more possible values.
 
 Integrating Dredd with Your Test Suite
 --------------------------------------
@@ -473,14 +474,14 @@ Continuous Integration
 
 It’s a good practice to make Dredd part of your continuous integration workflow. Only that way you can ensure that application code you’ll produce won’t break the contract you provide in your API documentation.
 
-Dredd’s interactive configuration wizard, ``dredd init``, can help you with setting up ``dredd.yml`` configuration file and with modifying or generating CI configuration files for `Travis CI <https://travis-ci.org/>`__ or `CircleCI <https://circleci.com/>`__.
+Dredd’s interactive configuration wizard, ``dredd init``, can help you with setting up ``dredd.yml`` configuration file and with modifying or generating CI configuration files for `Travis CI`_ or `CircleCI`_.
 
 If you prefer to add Dredd yourself or you look for inspiration on how to add Dredd to other continuous integration services, see examples below. When testing in CI, always pin your Dredd version to a specific number and upgrade to newer releases manually.
 
 .. _circleyml-configuration-file-for-circleci:
 
-``.circleci/config.yml`` Configuration File for `CircleCI <https://circleci.com/>`__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``.circleci/config.yml`` Configuration File for `CircleCI`_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
@@ -496,8 +497,8 @@ If you prefer to add Dredd yourself or you look for inspiration on how to add Dr
 
 .. _travisyml-configuration-file-for-travis-ci:
 
-``.travis.yml`` Configuration File for `Travis CI <https://travis-ci.org/>`__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``.travis.yml`` Configuration File for `Travis CI`_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
@@ -664,7 +665,7 @@ In case you need to perform particular request with different URI parameters and
 OpenAPI 2
 ~~~~~~~~~
 
-When using :openapi:`2` format, by default Dredd tests only responses with ``2xx`` status codes. Responses with other codes are marked as *skipped* and can be activated in :ref:`hooks <hooks>`:
+When using `OpenAPI 2`_ format, by default Dredd tests only responses with ``2xx`` status codes. Responses with other codes are marked as *skipped* and can be activated in :ref:`hooks <hooks>`:
 
 .. code-block:: javascript
 
@@ -680,7 +681,7 @@ When using :openapi:`2` format, by default Dredd tests only responses with ``2xx
 Using Apiary Reporter and Apiary Tests
 --------------------------------------
 
-Command-line output of complex HTTP responses and expectations can be hard to read. To tackle the problem, you can use Dredd to send test reports to `Apiary <https://apiary.io/>`__. Apiary provides a comfortable interface for browsing complex test reports:
+Command-line output of complex HTTP responses and expectations can be hard to read. To tackle the problem, you can use Dredd to send test reports to `Apiary`_. Apiary provides a comfortable interface for browsing complex test reports:
 
 ::
 
@@ -733,7 +734,7 @@ Example Values for Request Parameters
 
 While example values are natural part of the API Blueprint format, the OpenAPI 2 specification allows them only for ``body`` request parameters (``schema.example``).
 
-However, Dredd needs to know what values to use when testing described API, so it supports ``x-example`` :openapi:`vendor extension property <2#vendorextensions>` to overcome the OpenAPI 2 limitation:
+However, Dredd needs to know what values to use when testing described API, so it supports ``x-example`` :openapi2:`vendor extension property <vendorextensions>` to overcome the OpenAPI 2 limitation:
 
 .. code-block:: yaml
 

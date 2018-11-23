@@ -1,3 +1,4 @@
+.. include:: _links.rst
 .. _quickstart:
 
 Quickstart
@@ -19,8 +20,8 @@ Document Your API
 
 First, let’s design the API we are about to build and test. That means you will need to create an API description file, which will document how your API should look like. Dredd supports two formats of API description documents:
 
--  `API Blueprint <https://apiblueprint.org/>`__
--  :openapi:`2`
+-  `API Blueprint`_
+-  `OpenAPI 2`_
 
 If you choose API Blueprint, create a file called ``api-description.apib`` in the root of your project and save it with following content:
 

@@ -1,3 +1,4 @@
+.. include:: _links.rst
 .. _internals:
 
 Internals
@@ -13,7 +14,7 @@ Dredd itself is a `command-line <https://en.wikipedia.org/wiki/Command-line_inte
 Maintainers
 -----------
 
-`Apiary <https://apiary.io/>`__ is the main author and maintainer of Dredd’s `upstream repository <https://github.com/apiaryio/dredd>`__. Currently responsible people are:
+`Apiary`_ is the main author and maintainer of Dredd’s `upstream repository <https://github.com/apiaryio/dredd>`__. Currently responsible people are:
 
 -  `@paraskakis <https://github.com/paraskakis>`__ - product decisions, feature requests
 -  `@honzajavorek <https://github.com/honzajavorek>`__ - lead of development
@@ -112,7 +113,7 @@ CoffeeScript is still a production dependency (not dev dependency), because it�
 C++ dependencies
 ~~~~~~~~~~~~~~~~
 
-Dredd uses `Drafter <https://github.com/apiaryio/drafter>`__ for parsing `API Blueprint <https://apiblueprint.org/>`__ documents. Drafter is written in C++ and needs to be compiled during installation. Because that can cause a lot of problems in some environments, there’s also pure JavaScript version of the parser, `drafter.js <https://github.com/apiaryio/drafter.js>`__. Drafter.js is fully equivalent, but it can have slower performance. Therefore there’s `drafter-npm <https://github.com/apiaryio/drafter-npm/>`__ package, which tries to compile the C++ version of the parser and in case of failure it falls back to the JavaScript equivalent. Dredd depends on the `drafter-npm <https://github.com/apiaryio/drafter-npm/>`__ package.
+Dredd uses `Drafter <https://github.com/apiaryio/drafter>`__ for parsing `API Blueprint`_ documents. Drafter is written in C++ and needs to be compiled during installation. Because that can cause a lot of problems in some environments, there’s also pure JavaScript version of the parser, `drafter.js <https://github.com/apiaryio/drafter.js>`__. Drafter.js is fully equivalent, but it can have slower performance. Therefore there’s `drafter-npm <https://github.com/apiaryio/drafter-npm/>`__ package, which tries to compile the C++ version of the parser and in case of failure it falls back to the JavaScript equivalent. Dredd depends on the `drafter-npm <https://github.com/apiaryio/drafter-npm/>`__ package.
 
 That’s the reason why even if you see ``node-gyp`` errors and failures during the installation process, afterwards Dredd seems to normally work and correctly parses API Blueprint documents.
 
@@ -139,7 +140,7 @@ If you need the performance of the C++ parser, but you are struggling to get it 
 Supported Node.js versions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Given the `table with LTS schedule <https://github.com/nodejs/Release>`__, only versions marked as **Current**, **Maintenance**, or **Active** are supported, until their **Maintenance End**. The testing matrix of Dredd’s CI builds must contain all currently supported versions and must not contain any unsupported versions. The same applies for the underlying libraries, such as `Dredd Transactions <https://github.com/apiaryio/dredd-transactions>`__ or `Gavel.js <https://github.com/apiaryio/gavel.js/>`__. In ``appveyor.yml`` the latest supported Node.js version should be used.
+Given the `table with LTS schedule <https://github.com/nodejs/Release>`__, only versions marked as **Current**, **Maintenance**, or **Active** are supported, until their **Maintenance End**. The testing matrix of Dredd’s CI builds must contain all currently supported versions and must not contain any unsupported versions. The same applies for the underlying libraries, such as `Dredd Transactions <https://github.com/apiaryio/dredd-transactions>`__ or `Gavel`_. In ``appveyor.yml`` the latest supported Node.js version should be used.
 
 When dropping support for a certain Node.js version, it should be removed from the testing matrix, and it **must** be delivered as a breaking change, which increments Dredd's major version number.
 
