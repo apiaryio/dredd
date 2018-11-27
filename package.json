@@ -33,7 +33,7 @@
     "clone": "2.1.1",
     "fury": "3.0.0-beta.7",
     "fury-adapter-apib-parser": "0.11.0",
-    "fury-adapter-swagger": "0.19.0",
+    "fury-adapter-swagger": "0.19.1",
     "uri-template": "1.0.1"
   },
   "devDependencies": {
