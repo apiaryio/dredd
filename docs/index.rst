@@ -1,3 +1,4 @@
+.. include:: _links.rst
 .. _index:
 
 Dredd — HTTP API Testing Framework
@@ -20,8 +21,8 @@ Features
 Supported API Description Formats
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  `API Blueprint <https://apiblueprint.org/>`__
--  `OpenAPI 2 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md>`__
+-  `API Blueprint`_
+-  `OpenAPI 2`_
 
 Supported Hooks Languages
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -41,7 +42,7 @@ Supported Systems
 ~~~~~~~~~~~~~~~~~
 
 -  Linux, macOS, Windows, …
--  `Travis CI <https://travis-ci.org/>`__, `CircleCI <https://circleci.com/>`__, `Jenkins <https://jenkins.io/>`__, `AppVeyor <https://www.appveyor.com/>`__, …
+-  `Travis CI`_, `CircleCI`_, `Jenkins`_, `AppVeyor`_, …
 
 Contents
 --------

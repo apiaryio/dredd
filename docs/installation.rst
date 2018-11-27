@@ -1,3 +1,4 @@
+.. include:: _links.rst
 .. _installation:
 
 Installation
@@ -100,8 +101,8 @@ Why Is the Installation So Slow?
 
 The installation process features compilation of some C++ components, which may take some time (:ref:`learn more about this <compiled-vs-pure-javascript>`). You can simplify and speed up the process using ``npm install -g dredd --no-optional`` if you are:
 
--  using Dredd exclusively with `OpenAPI 2 <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md/>`__,
--  using Dredd with small `API Blueprint <https://apiblueprint.org/>`__ files,
+-  using Dredd exclusively with `OpenAPI 2`_,
+-  using Dredd with small `API Blueprint`_ files,
 -  using Dredd on Windows or other environments with complicated C++ compiler setup.
 
 The ``--no-optional`` option avoids any compilation attempts when installing Dredd, but causes slower reading of the API Blueprint files, especially the large ones.

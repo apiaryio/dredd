@@ -1,9 +1,10 @@
+.. include:: _links.rst
 .. _data-structures:
 
 Data Structures
 ===============
 
-Documentation of various data structures in both `Gavel.js <https://github.com/apiaryio/gavel.js>`__ and Dredd. `MSON notation <https://github.com/apiaryio/mson>`__ is used to describe the data structures.
+Documentation of various data structures in both `Gavel`_ and Dredd. `MSON notation <mson>`__ is used to describe the data structures.
 
 .. _transaction:
 
@@ -30,7 +31,7 @@ Transaction object is passed as a first argument to :ref:`hook functions <hooks>
    -  ``https:`` (string)
    -  ``http:`` (string)
 
--  fullPath: ``/message`` (string) - expanded `URI Template <https://tools.ietf.org/html/rfc6570>`__ with parameters (if any) used for the HTTP request Dredd performs to the tested server
+-  fullPath: ``/message`` (string) - expanded :rfc:`URI Template <6570>` with parameters (if any) used for the HTTP request Dredd performs to the tested server
 -  request (object) - the HTTP request Dredd performs to the tested server, taken from the API description
 
    -  body: ``Hello world!\n`` (string)
@@ -131,7 +132,7 @@ Can be seen also `here <https://relishapp.com/apiary/gavel/docs/data-validators-
 -  realType (string) - media type
 -  expectedType (string) - media type
 -  validator (string) - validator class name
--  rawData (enum) - raw output of the validator, has different structure for every validator and is saved and used in Apiary to render graphical diff by `gavel2html <https://github.com/apiaryio/gavel2html/>`__
+-  rawData (enum) - raw output of the validator, has different structure for every validator and is saved and used in Apiary to render graphical diff by `gavel2html <https://github.com/apiaryio/gavel2html>`__
 
    -  (:ref:`jsonschema-validation-result`)
    -  (:ref:`textdiff-validation-result`)
@@ -143,17 +144,17 @@ JsonSchema Validation Result (object)
 
 The validation error is based on format provided by `Amanda <https://github.com/apiaryio/Amanda>`__ and is also “documented” `here <https://github.com/apiaryio/Amanda/blob/master/docs/json/objects/error.md>`__. Although for validation of draft4 JSON Schema Gavel uses `tv4 <https://github.com/geraintluff/tv4>`__ library, the output then gets reshaped into the structure of Amanda’s errors.
 
-This validation result is returned not only when validating against `JSON Schema <http://json-schema.org/>`__, but also when validating against JSON example or when validating HTTP headers.
+This validation result is returned not only when validating against `JSON Schema`_, but also when validating against JSON example or when validating HTTP headers.
 
 -  length: ``0`` (number, default) - number of error properties
 -  errorMessages (object) - doesn’t seem to ever contain anything or be used for anything
 -  *0* (object) - validation error details, property is always a string containing a number (0, 1, 2, …)
 
-   -  property (array[string]) - path to the problematic property in format of `json-pointer’s ``parse()`` output <https://github.com/manuelstofer/json-pointer#user-content-parsestr>`__
+   -  property (array[string]) - path to the problematic property in format of `json-pointer’s parse() output <https://github.com/manuelstofer/json-pointer#user-content-parsestr>`__
    -  propertyValue (mixed) - real value of the problematic property (can be also ``undefined`` etc.)
    -  attributeName: ``enum``, ``required`` (string) - name of the relevant JSON Schema attribute, which triggered the error
    -  attributeValue (mixed) - value of the relevant JSON Schema attribute, which triggered the error
-   -  message (string) - error message (in case of tv4 it contains `JSON Pointer <https://tools.ietf.org/html/rfc6901>`__ to the problematic property and for both Amanda and tv4 it can directly mention property names and/or values)
+   -  message (string) - error message (in case of tv4 it contains :rfc:`JSON Pointer <6901>` to the problematic property and for both Amanda and tv4 it can directly mention property names and/or values)
    -  validator: ``enum`` (string) - the same as ``attributeName``
    -  validatorName: ``error``, ``enum`` (string) - the same as ``attributeName``
    -  validatorValue (mixed) - the same as ``attributeValue``
@@ -172,7 +173,7 @@ Gavel Error (object)
 
 Can also be seen as part of Gavel Validator Output `here <https://relishapp.com/apiary/gavel/docs/data-validators-and-output-format#validators-output-format>`__.
 
--  pointer (string) - `JSON Pointer <https://tools.ietf.org/html/rfc6901>`__ path
+-  pointer (string) - :rfc:`JSON Pointer <6901>` path
 -  severity (string) - severity of the error
 -  message (string) - error message
 

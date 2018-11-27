@@ -2,16 +2,24 @@ import re
 import unittest
 
 from docutils import nodes
-from sphinx.errors import SphinxError
 
 
 REFERENCE_RE = re.compile(r'^((([^\/]+)/)?([^#]+))?#(\d+)$')
 URL_TEMPLATE = 'https://github.com/{owner}/{repo}/issues/{issueno}'
 
 
-def github_issue(name, rawtext, text, lineno, inliner, options={}, content=[]):
-    refuri = parse_text(text)
-    node = nodes.reference(rawtext, text, refuri=refuri, **options)
+# https://docutils.readthedocs.io/en/sphinx-docs/howto/rst-roles.html
+def github_issue(name, rawtext, text, lineno, inliner,
+                 options=None, content=None):
+    try:
+        url = parse_text(text)
+    except ValueError:
+        message = "Could not parse a reference to GitHub issue: '{}'".format(text)
+        error = inliner.reporter.error(message, line=lineno)
+        problematic = inliner.problematic(rawtext, rawtext, error)
+        return [problematic], [error]
+
+    node = nodes.reference(rawtext, text, refuri=url, **(options or {}))
     return [node], []
 
 
@@ -21,9 +29,11 @@ def parse_text(text):
         owner = match.group(3) or 'apiaryio'
         repo = match.group(4) or 'dredd'
         issueno = match.group(5) or None
+
         if issueno:
             return URL_TEMPLATE.format(owner=owner, repo=repo, issueno=issueno)
-    raise SphinxError("Could not parse '{}' as a GitHub issue reference".format(text))
+
+    raise ValueError(text)
 
 
 def setup(app):
@@ -49,6 +59,10 @@ class Tests(unittest.TestCase):
             parse_text('#1119'),
             'https://github.com/apiaryio/dredd/issues/1119'
         )
+
+    def test_syntax_error(self):
+        with self.assertRaises(ValueError):
+            parse_text('42')
 
 
 if __name__ == '__main__':
