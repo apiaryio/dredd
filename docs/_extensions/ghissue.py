@@ -9,7 +9,8 @@ URL_TEMPLATE = 'https://github.com/{owner}/{repo}/issues/{issueno}'
 
 
 # https://docutils.readthedocs.io/en/sphinx-docs/howto/rst-roles.html
-def github_issue(name, rawtext, text, lineno, inliner, options={}, content=[]):
+def github_issue(name, rawtext, text, lineno, inliner,
+                 options=None, content=None):
     try:
         url = parse_text(text)
     except ValueError:
@@ -18,7 +19,7 @@ def github_issue(name, rawtext, text, lineno, inliner, options={}, content=[]):
         problematic = inliner.problematic(rawtext, rawtext, error)
         return [problematic], [error]
 
-    node = nodes.reference(rawtext, text, refuri=url, **options)
+    node = nodes.reference(rawtext, text, refuri=url, **(options or {}))
     return [node], []
 
 

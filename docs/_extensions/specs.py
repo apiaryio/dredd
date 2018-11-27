@@ -21,7 +21,7 @@ SPECS = {
 
 
 # https://docutils.readthedocs.io/en/sphinx-docs/howto/rst-roles.html
-def link(name, rawtext, text, lineno, inliner, options={}, content=[]):
+def link(name, rawtext, text, lineno, inliner, options=None, content=None):
     title, url_template = SPECS[name]
     try:
         link_text, url = parse_text(text, url_template)
@@ -34,7 +34,7 @@ def link(name, rawtext, text, lineno, inliner, options={}, content=[]):
         problematic = inliner.problematic(rawtext, rawtext, error)
         return [problematic], [error]
 
-    node = nodes.reference(rawtext, link_text, refuri=url, **options)
+    node = nodes.reference(rawtext, link_text, refuri=url, **(options or {}))
     return [node], []
 
 
