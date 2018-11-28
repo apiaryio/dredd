@@ -12,5 +12,8 @@ paths:
       responses:
         200:
           description: Representation
+          schema:
+            type: string
+            format: binary
           examples:
             "image/png": ""
