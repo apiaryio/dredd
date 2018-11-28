@@ -1,22 +1,25 @@
 const { assert } = require('chai');
 
 const {
-  _createTransactionRes: createTransactionRes
+  _createTransactionResponse: createTransactionResponse
 } = require('../../../src/performRequest');
 
 
-describe('performRequest._createTransactionRes()', () => {
+describe('performRequest._createTransactionResponse()', () => {
   const res = { statusCode: 200, headers: {} };
 
   it('sets the status code', () =>
     assert.deepEqual(
-      createTransactionRes(res),
+      createTransactionResponse(res),
       { statusCode: 200, headers: {} }
     )
   );
   it('copies the headers', () => {
     const headers = { 'Content-Type': 'application/json' };
-    const transactionRes = createTransactionRes({ statusCode: 200, headers });
+    const transactionRes = createTransactionResponse({
+      statusCode: 200,
+      headers
+    });
     headers['X-Header'] = 'abcd';
 
     assert.deepEqual(
@@ -26,19 +29,19 @@ describe('performRequest._createTransactionRes()', () => {
   });
   it('does not set empty body', () =>
     assert.deepEqual(
-      createTransactionRes(res, Buffer.from([])),
+      createTransactionResponse(res, Buffer.from([])),
       { statusCode: 200, headers: {} }
     )
   );
   it('sets textual body as a string with UTF-8 encoding', () =>
     assert.deepEqual(
-      createTransactionRes(res, Buffer.from('řeřicha')),
+      createTransactionResponse(res, Buffer.from('řeřicha')),
       { statusCode: 200, headers: {}, body: 'řeřicha', bodyEncoding: 'utf-8' }
     )
   );
   it('sets binary body as a string with Base64 encoding', () =>
     assert.deepEqual(
-      createTransactionRes(res, Buffer.from([0xFF, 0xBE])),
+      createTransactionResponse(res, Buffer.from([0xFF, 0xBE])),
       {
         statusCode: 200,
         headers: {},
