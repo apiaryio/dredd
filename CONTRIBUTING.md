@@ -51,27 +51,16 @@ You can learn more about Dredd's codebase in the [Internals](https://dredd.org/e
 <a name="proposing-changes-to-code"></a>
 
 ## 🛠 Proposing changes to code
+### Before you start
 
-Dredd is written in ES2015+ JavaScript and runs in [Node.js](https://nodejs.org/). We label good first issues as [easy to fix & important](https://github.com/apiaryio/dredd/labels/easy%20to%20fix%20%26%20important) or [easy to fix](https://github.com/apiaryio/dredd/labels/easy%20to%20fix). We recommend the following workflow for proposing changes to Dredd's code:
+- Have [Node.js](https://nodejs.org/) installed
+- Be familiar with [git](https://guides.github.com/introduction/git-handbook/), [Pull Request flow](https://guides.github.com/introduction/flow/) and [GitHub forks](https://guides.github.com/activities/forking/)
+- [Read about Dredd's architecture](https://dredd.org/en/latest/internals.html)
+- Look at [easy to fix issues](https://github.com/apiaryio/dredd/labels/easy%20to%20fix)
 
-1.  [Fork Dredd](https://guides.github.com/activities/forking/)
-2.  Clone your fork on your computer
-3.  [Install Dredd for development](https://dredd.org/en/latest/internals.html#install-dev): `npm install`
-4.  Create a feature branch
-5.  Write tests
-6.  Write code
-7.  Try your changes: `npm run build && ./bin/dredd` ([why the build?](https://dredd.org/en/latest/internals.html#programming-language))
-8.  When committing your changes, use the [Conventional Changelog](https://dredd.org/en/latest/internals.html#sem-rel) format for the commit message:
-
-    ```
-    fix: handle corner case situation
-    ```
-
-    Note the `fix` prefix, which categorizes the type of your change. Other possible prefixes are `feat`, `refactor`, `test`, `chore`, `perf`, `docs`. We need this to be able to get a new version of Dredd automatically released when your changes are accepted.
-
-9.  Check whether your changes meet the standards of the Dredd codebase: `npm run lint`
-10. [Send a Pull Request](https://guides.github.com/introduction/flow/)
-11. Make sure your Pull Request is passing all tests and checks
-12. Make sure the [test coverage](https://coveralls.io/github/apiaryio/dredd) didn’t drop and all CI builds are passing
-
-You can learn more about Dredd's codebase in the [Internals](https://dredd.org/en/latest/internals.html) section of the documentation.
+### Improving Dredd
+1. [Fork and clone Dredd](https://guides.github.com/activities/forking/)
+1. Run `npm install`
+1. [Write your code and tests](https://dredd.org/en/latest/internals.html#programming-language)
+1. Use the [Conventional Changelog](https://dredd.org/en/latest/internals.html#sem-rel) format for the commit message
+1. Check your changes with `npm run lint`
