@@ -19,3 +19,4 @@ paths:
           description: Machine list response
           schema:
             type: array
+            items: {}
