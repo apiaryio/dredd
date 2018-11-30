@@ -72,11 +72,8 @@ Installing Node.js
       - Make sure both ``node --version`` and ``npm --version`` work in your Command Prompt
       - Node.js needs to be at least version 6
 
-.. note::
-   You can also use `nvm <https://github.com/creationix/nvm>`__ to install Node.js on your computer.
-
 .. warning::
-   If your internet connection is restricted (VPN, firewall, proxy), you need to run following additional commands to configure npm:
+   If your internet connection is restricted (VPN, firewall, proxy), you need to `configure npm <https://docs.npmjs.com/misc/config#https-proxy>`__:
 
    .. code-block:: text
 
@@ -105,10 +102,8 @@ Git is needed to install some of Dredd's dependencies (see :ghissue:`gavel.js#83
 
    .. group-tab:: macOS
 
-      - First try whether Git isn't already available by running ``git --version``
-      - If not and you're using `Homebrew <https://brew.sh/>`__, run ``brew install git``
-      - Otherwise `download Git <https://git-scm.com/downloads>`__ from the official website and install it using the downloaded installer
-      - Make sure ``git --version`` works in your Terminal
+      - Git is available out of the box
+      - You can verify by running ``git --version`` in your Terminal
 
    .. group-tab:: Linux
 
@@ -153,7 +148,7 @@ Now that you have everything prepared, you can finally run npm to install Dredd:
    npm install dredd --global --no-optional
 
 .. warning::
-   If you get ``EACCES`` permissions errors, run the command again with ``sudo`` or try `one of the officially recommended solutions <https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally>`__.
+   If you get ``EACCES`` permissions errors, try `one of the officially recommended solutions <https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally>`__. In the worst case, you can run the command again with ``sudo``.
 
 You can verify Dredd is correctly installed by printing its version number:
 
