@@ -1,4 +1,3 @@
-sudo: false
 dist: "trusty"
 language: "node_js"
 node_js:
@@ -24,7 +23,8 @@ cache:
     - "node_modules"
 before_install:
   - "npm -g install npm@6"
-install: "if [[ $DRAFTER = JS ]]; then npm install --no-optional; else npm install; fi"
+install:
+  - "if [[ $DRAFTER = JS ]]; then npm install --no-optional; else npm install; fi"
 script:
   - "npm run lint && npm run test:coverage"
 after_success:
