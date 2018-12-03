@@ -80,7 +80,7 @@
     "babel-core": "6.26.0",
     "babel-preset-env": "1.6.1",
     "body-parser": "1.18.3",
-    "coveralls": "2.13.0",
+    "coveralls": "3.0.2",
     "drafter": "1.2.0",
     "eslint": "4.4.1",
     "eslint-config-airbnb": "15.1.0",
