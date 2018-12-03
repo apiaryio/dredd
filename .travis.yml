@@ -35,5 +35,5 @@ jobs:
 
     # stage 2
     - stage: "semantic release"
-      script: "npm run semantic-release || true"
+      script: "npm run semantic-release"
       if: fork = false AND branch = master AND type = push
