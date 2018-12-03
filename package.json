@@ -17,14 +17,18 @@
     "docs:test-extensions": "python -m unittest docs/_extensions/*.py --verbose",
     "docs:build": "sphinx-build -nW -b html ./docs ./docs/_build",
     "docs:serve": "sphinx-autobuild ./docs ./docs/_build",
-    "lint": "commitlint --from=master && eslint .",
-    "lint:ci": "commitlint-travis && eslint .",
+    "lint:commits": "commitlint --from=master",
+    "lint:code": "eslint .",
+    "lint": "npm run lint:commits && npm run lint:code",
     "prepare": "npm run build",
     "pretest": "npm run build",
-    "semantic-release": "semantic-release && npm dist-tag add \"dredd@$(npm view dredd version)\" stable",
     "test": "mocha \"./test/**/*-test.js\"",
     "test:coverage": "./scripts/coverage.sh",
-    "test:debug": "mocha --debug-brk \"./test/**/*-test.js\""
+    "test:debug": "mocha --debug-brk \"./test/**/*-test.js\"",
+    "ci:lint": "commitlint-travis && npm run lint:code && npm run docs:lint && npm run docs:test-extensions",
+    "ci:docs": "npm run docs:build",
+    "ci:test": "npm run test:coverage && npm run coveralls",
+    "ci:release": "semantic-release && npm dist-tag add \"dredd@$(npm view dredd version)\" stable"
   },
   "repository": {
     "type": "git",
