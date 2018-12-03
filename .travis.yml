@@ -1,6 +1,5 @@
 # GH_TOKEN and NPM_TOKEN are expected to be set
 # in https://travis-ci.org/apiaryio/dredd/settings
-sudo: false
 dist: "trusty"
 language: "node_js"
 node_js:
