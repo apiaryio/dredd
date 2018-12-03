@@ -1,6 +1,5 @@
 # GH_TOKEN and NPM_TOKEN are expected to be set
 # in https://travis-ci.org/apiaryio/dredd/settings
-sudo: false
 dist: "trusty"
 language: "node_js"
 node_js:
@@ -10,10 +9,11 @@ cache:
     - "node_modules"
 before_install:
   # Travis CI has only shallow clone of the repository. We need to get the 'master' branch
-  # so 'conventional-changelog-lint' could compare commits and lint them: marionebl/conventional-changelog-lint#7
+  # so 'commitlint' could compare commits and lint them: marionebl/conventional-changelog-lint#7
   - "git remote set-branches origin master && git fetch && git checkout master && git checkout -"
   - "npm -g install npm@6"
   - "pyenv global 3.6"
+  - "pip install pip --upgrade"
 install:
   - "npm install --no-optional"
   - "pip install --user -r docs/requirements.txt"
@@ -22,19 +22,19 @@ jobs:
     # stage 1, all following runs in parallel:
     - stage: "quality checks & tests"
       env: "JOB=quality_checks"
-      script: "npm run lint && npm run docs:lint && npm run docs:test-extensions"
+      script: "npm run ci:lint"
     - env: "JOB=docs_build_dry_run" # why dry run? because production build happens directly on ReadTheDocs infrastructure
-      script: "npm run docs:build"
+      script: "npm run ci:docs"
     - env: "JOB=node6"
       node_js: "6"
-      script: "npm run test:coverage && npm run coveralls"
+      script: "npm run ci:test"
     - env: "JOB=node8"
       node_js: "8"
-      script: "npm run test:coverage && npm run coveralls"
+      script: "npm run ci:test"
     - env: "JOB=node10"
-      script: "npm run test:coverage && npm run coveralls"
+      script: "npm run ci:test"
 
     # stage 2
     - stage: "semantic release"
-      script: "npm run semantic-release || true"
+      script: "npm run ci:release"
       if: fork = false AND branch = master AND type = push
