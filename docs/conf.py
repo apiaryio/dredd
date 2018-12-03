@@ -46,6 +46,7 @@ with open(os.path.join(project_dir, 'package.json')) as f:
 # ones.
 extensions = [
     'sphinx.ext.todo',
+    'sphinx_tabs.tabs',
     'pygments_markdown_lexer',
     'cli_options',
     'ghissue',
@@ -165,6 +166,8 @@ html_show_copyright = False
 linkcheck_ignore = [
     'https://crates.io/crates/dredd-hooks',  # https://github.com/sphinx-doc/sphinx/pull/5140
 ]
+
+sphinx_tabs_valid_builders = ['linkcheck']
 
 
 # -- Theme customization --------------------------------------------------
