@@ -45,7 +45,7 @@ function performRequest(uri, transactionReq, options, callback) {
       if (error) {
         callback(error);
       } else {
-        callback(null, createTransactionRes(res, resBody));
+        callback(null, createTransactionResponse(res, resBody));
       }
     });
   } catch (error) {
@@ -125,7 +125,7 @@ function normalizeContentLengthHeader(headers, body, options = {}) {
  * @param {Object} res Node.js HTTP response
  * @param {Buffer} body HTTP response body as Buffer
  */
-function createTransactionRes(res, body) {
+function createTransactionResponse(res, body) {
   const transactionRes = {
     statusCode: res.statusCode,
     headers: Object.assign({}, res.headers)
@@ -155,7 +155,7 @@ function detectBodyEncoding(body) {
 performRequest._normalizeBodyEncoding = normalizeBodyEncoding;
 performRequest._getBodyAsBuffer = getBodyAsBuffer;
 performRequest._normalizeContentLengthHeader = normalizeContentLengthHeader;
-performRequest._createTransactionRes = createTransactionRes;
+performRequest._createTransactionResponse = createTransactionResponse;
 performRequest._detectBodyEncoding = detectBodyEncoding;
 
 
