@@ -134,11 +134,23 @@ describe('parse()', () => {
       })
     );
 
-    it('produces no error', () => assert.isNull(error));
-    it('produces API Elements', () => assert.isObject(apiElements));
-    it('produces media type', () => assert.match(mediaType, reMediaType));
-    it('the parse result contains annotation elements', () => assert.isFalse(apiElements.annotations ? apiElements.annotations.isEmpty : undefined));
-    it('the annotations are warnings', () => assert.equal(apiElements.warnings ? apiElements.warnings.length : undefined, apiElements.annotations.length));
-    it('the first warning is about falling back to API Blueprint', () => assert.include(apiElements.warnings.getValue(0), 'to API Blueprint'));
+    it('produces no error', () =>
+      assert.isNull(error)
+    );
+    it('produces API Elements', () =>
+      assert.isObject(apiElements)
+    );
+    it('produces media type', () =>
+      assert.match(mediaType, reMediaType)
+    );
+    it('the parse result contains annotation elements', () =>
+      assert.isFalse(apiElements.annotations.isEmpty)
+    );
+    it('the annotations are warnings', () =>
+      assert.equal(apiElements.warnings.length, apiElements.annotations.length)
+    );
+    it('the first warning is about falling back to API Blueprint', () =>
+      assert.include(apiElements.warnings.getValue(0), 'to API Blueprint')
+    );
   });
 });

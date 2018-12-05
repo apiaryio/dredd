@@ -26,7 +26,7 @@ before_install:
 install:
   - "if [[ $DRAFTER = JS ]]; then npm install --no-optional; else npm install; fi"
 script:
-  - "npm run lint && npm run test:coverage"
+  - "npm run ci:test"
 after_success:
-  - "npm run coveralls"
-  - "npm run semantic-release || true"
+  - "npm run ci:coverage"
+  - "npm run ci:release"

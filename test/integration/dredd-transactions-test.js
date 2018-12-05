@@ -104,9 +104,10 @@ describe('Dredd Transactions', () => {
       })
     );
 
-    it('produces two annotations', () =>
+    it('produces one annotation', () =>
       assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        annotations: 2
+        annotations: 1,
+        transactions: 0
       }))
     );
 
@@ -120,16 +121,6 @@ describe('Dredd Transactions', () => {
         type: 'warning',
         component: 'apiDescriptionParser',
         message: 'to API Blueprint'
-      }))
-    );
-
-    it('produces a warning about missing HTTP status code', () =>
-      // "+ Response XXX" would be a match in the API Blueprint detection,
-      // so the fixture omits the HTTP status code to prevent that
-      assert.jsonSchema(compilationResult.annotations[1], createAnnotationSchema({
-        type: 'warning',
-        component: 'apiDescriptionParser',
-        message: 'missing response HTTP status code'
       }))
     );
   });
