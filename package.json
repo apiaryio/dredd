@@ -76,7 +76,7 @@
     "lcov-result-merger": "1.2.0",
     "mocha": "5.2.0",
     "mocha-lcov-reporter": "1.3.0",
-    "nock": "9.3.3",
+    "nock": "10.0.4",
     "ps-node": "0.1.6",
     "semantic-release": "15.12.4",
     "sinon": "6.1.5"
