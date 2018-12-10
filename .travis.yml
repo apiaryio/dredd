@@ -24,7 +24,7 @@ cache:
 before_install:
   - "npm -g install npm@6"
 install:
-  - "if [[ $DRAFTER = JS ]]; then npm install --no-optional; else npm install; fi"
+  - "if [[ $DRAFTER = JS ]]; then npm install --no-optional --no-save; else npm install --no-save; fi"
 script:
   - "npm run ci:test"
 after_success:
