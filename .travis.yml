@@ -12,7 +12,7 @@ before_install:
   - "pyenv global 3.6"
   - "pip install pip --upgrade"
 install:
-  - "npm install --no-optional"
+  - "npm install --no-optional --no-save"
   - "pip install --user -r docs/requirements.txt"
 jobs:
   include:
