@@ -91,51 +91,6 @@ Installing Node.js
    Later be sure to read :ref:`how to set up Dredd to correctly work with proxies <using-https-proxy>`.
 
 
-.. _install-git:
-
-Installing Git
-~~~~~~~~~~~~~~
-
-Git is needed to install some of Dredd's dependencies (see :ghissue:`gavel.js#83`).
-
-.. tabs::
-
-   .. group-tab:: macOS
-
-      - Git is available out of the box
-      - You can verify by running ``git --version`` in your Terminal
-
-   .. group-tab:: Linux
-
-      - First try whether Git isn't already available by running ``git --version``
-      - If not, `install Git as a system package <https://git-scm.com/download/linux>`__
-      - Make sure ``git --version`` works in your Terminal
-
-   .. group-tab:: Windows
-
-      - First try whether Git isn't already available by running ``git --version``
-      - If not, `download Git <https://git-scm.com/downloads>`__ from the official website and install it using the downloaded installer
-      - Make sure ``git --version`` works in your Command Prompt
-
-.. warning::
-   If your internet connection is restricted (VPN, firewall, proxy), you need to run following additional commands to configure Git. Even when it is :80, always specify the port number in the commands below:
-
-   .. code-block:: text
-
-      git config --global http.proxy "http://proxy.example.com:8080"
-      git config --global https.proxy "https://proxy.example.com:8080"
-
-   Otherwise you'll get similar errors during Dredd installation:
-
-   .. code-block:: text
-
-      Error: Command failed: git config --get remote.origin.url
-      ssh: connect to host github.com port 22: Operation timed out
-      fatal: Could not read from remote repository.
-
-   Later be sure to read :ref:`how to set up Dredd to correctly work with proxies <using-https-proxy>`.
-
-
 .. _install-dredd:
 
 Installing Dredd
