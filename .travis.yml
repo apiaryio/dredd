@@ -8,9 +8,6 @@ cache:
   directories:
     - "node_modules"
 before_install:
-  # Travis CI has only shallow clone of the repository. We need to get the 'master' branch
-  # so 'commitlint' could compare commits and lint them: marionebl/conventional-changelog-lint#7
-  - "git remote set-branches origin master && git fetch && git checkout master && git checkout -"
   - "npm -g install npm@6"
   - "pyenv global 3.6"
   - "pip install pip --upgrade"
