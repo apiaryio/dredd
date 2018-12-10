@@ -22,7 +22,7 @@ Supported API Description Formats
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  `API Blueprint`_
--  `OpenAPI 2`_
+-  `OpenAPI 2`_ (formerly known as Swagger)
 
 Supported Hooks Languages
 ~~~~~~~~~~~~~~~~~~~~~~~~~

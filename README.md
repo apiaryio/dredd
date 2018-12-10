@@ -26,7 +26,7 @@ documentation.
 ### Supported API Description Formats
 
 - [API Blueprint][]
-- [OpenAPI 2][]
+- [OpenAPI 2][] (formerly known as Swagger)
 
 ### Supported Hooks Languages
 
