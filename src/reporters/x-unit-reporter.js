@@ -36,7 +36,7 @@ XUnitReporter.prototype.updateSuiteStats = function (path, stats, callback) {
           tests: stats.tests,
           failures: stats.failures,
           errors: stats.errors,
-          skip: stats.skipped,
+          skipped: stats.skipped,
           timestamp: (new Date()).toUTCString(),
           time: stats.duration / 1000
         }, false);
@@ -92,7 +92,7 @@ XUnitReporter.prototype.configureEmitter = function (emitter) {
           tests: this.stats.tests,
           failures: this.stats.failures,
           errors: this.stats.errors,
-          skip: this.stats.skipped,
+          skipped: this.stats.skipped,
           timestamp: (new Date()).toUTCString(),
           time: this.stats.duration / 1000
         }, false)
