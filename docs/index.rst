@@ -56,16 +56,16 @@ Contents
    how-to-guides
    Usage: CLI <usage-cli>
    Usage: JavaScript <usage-js>
-   About Hooks <hooks>
-   Hooks: Go <hooks-go>
-   Hooks: JavaScript (Sandboxed) <hooks-js-sandbox>
-   Hooks: Node.js <hooks-nodejs>
-   Hooks: Perl <hooks-perl>
-   Hooks: PHP <hooks-php>
-   Hooks: Python <hooks-python>
-   Hooks: Ruby <hooks-ruby>
-   Hooks: Rust <hooks-rust>
-   Hooks: Other languages <hooks-new-language>
+   About Hooks <hooks/index>
+   Hooks: Go <hooks/go>
+   Hooks: JavaScript (Sandboxed) <hooks/js-sandbox>
+   Hooks: Node.js <hooks/nodejs>
+   Hooks: Perl <hooks/perl>
+   Hooks: PHP <hooks/php>
+   Hooks: Python <hooks/python>
+   Hooks: Ruby <hooks/ruby>
+   Hooks: Rust <hooks/rust>
+   Hooks: Other languages <hooks/new-language>
    data-structures
    internals
 

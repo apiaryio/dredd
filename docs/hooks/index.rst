@@ -1,4 +1,4 @@
-.. include:: _links.rst
+.. include:: ../_links.rst
 .. _hooks:
 
 Hook Scripts
