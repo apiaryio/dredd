@@ -153,5 +153,5 @@ Advanced Examples
 For more complex example applications, please refer to:
 
 -  `Express.js example application <https://github.com/apiaryio/dredd-example>`__
--  `Ruby on Rails example application <https://github.com/theodorton/dredd-test-rails>`__
+-  `Ruby on Rails example application <https://gitlab.com/theodorton/dredd-test-rails>`__
 -  `Laravel example application <https://github.com/ddelnano/dredd-hooks-php/wiki/Laravel-Example>`__
