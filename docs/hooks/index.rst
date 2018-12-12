@@ -22,14 +22,18 @@ Languages
 
 You can interact with your server implementation in following languages:
 
--  :ref:`Go <hooks-go>`
--  :ref:`JavaScript (Sandboxed) <hooks-js-sandbox>`
--  :ref:`Node.js <hooks-nodejs>`
--  :ref:`Perl <hooks-perl>`
--  :ref:`PHP <hooks-php>`
--  :ref:`Python <hooks-python>`
--  :ref:`Ruby <hooks-ruby>`
--  :ref:`Rust <hooks-rust>`
+.. toctree::
+   :maxdepth: 1
+
+   Go <go>
+   JavaScript (Sandboxed) <js-sandbox>
+   Node.js <nodejs>
+   Perl <perl>
+   PHP <php>
+   Python <python>
+   Ruby <ruby>
+   Rust <rust>
+   Other languages <new-language>
 
 Dredd doesn’t speak your language? :ref:`It’s very easy to write support for your language. <hooks-new-language>` Your contribution is more than welcome!
 
