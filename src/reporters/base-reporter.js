@@ -1,4 +1,4 @@
-const logger = require('./../logger');
+const logger = require('../logger');
 
 function BaseReporter(emitter, stats, tests) {
   this.type = 'base';

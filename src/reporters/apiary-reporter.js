@@ -3,8 +3,8 @@ const generateUuid = require('uuid/v4');
 const os = require('os');
 const request = require('request');
 
-const logger = require('./../logger');
-const packageData = require('./../../package.json');
+const logger = require('../logger');
+const packageData = require('../../package.json');
 
 const CONNECTION_ERRORS = [
   'ECONNRESET',

@@ -10,7 +10,7 @@ const loggerStub = require('../../../src/logger');
 const fsExtraStub = { mkdirp(path, cb) { return cb(); } };
 
 const MarkdownReporter = proxyquire('../../../src/reporters/markdown-reporter', {
-  './../logger': loggerStub,
+  '../logger': loggerStub,
   fs: fsStub,
   'fs-extra': fsExtraStub
 });

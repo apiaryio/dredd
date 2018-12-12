@@ -9,7 +9,7 @@ const blueprintData = require('../../fixtures/blueprint-data');
 const loggerStub = require('../../../src/logger');
 
 const ApiaryReporter = proxyquire('../../../src/reporters/apiary-reporter', {
-  './../logger': loggerStub
+  '../logger': loggerStub
 });
 
 const PORT = 9876;

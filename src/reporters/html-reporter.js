@@ -7,8 +7,8 @@ const fsExtra = require('fs-extra');
 const md = require('markdown-it')();
 const pathmodule = require('path');
 
-const logger = require('./../logger');
-const prettifyResponse = require('./../prettify-response');
+const logger = require('../logger');
+const prettifyResponse = require('../prettify-response');
 
 function HtmlReporter(emitter, stats, tests, path, details) {
   EventEmitter.call(this);

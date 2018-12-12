@@ -1,7 +1,7 @@
 const tty = require('tty');
 
-const logger = require('./../logger');
-const prettifyResponse = require('./../prettify-response');
+const logger = require('../logger');
+const prettifyResponse = require('../prettify-response');
 
 function NyanCatReporter(emitter, stats, tests) {
   let windowWidth;
