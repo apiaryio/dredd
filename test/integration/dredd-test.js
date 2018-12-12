@@ -15,17 +15,17 @@ let exitStatus;
 let stderr = '';
 let stdout = '';
 
-const addHooksStub = proxyquire('../../src/add-hooks', {
+const addHooksStub = proxyquire('../../src/addHooks', {
   './logger': loggerStub
 });
 
-const transactionRunner = proxyquire('../../src/transaction-runner', {
-  './add-hooks': addHooksStub,
+const transactionRunner = proxyquire('../../src/TransactionRunner', {
+  './addHooks': addHooksStub,
   './logger': loggerStub
 });
 
-const Dredd = proxyquire('../../src/dredd', {
-  './transaction-runner': transactionRunner,
+const Dredd = proxyquire('../../src/Dredd', {
+  './TransactionRunner': transactionRunner,
   './logger': loggerStub
 });
 

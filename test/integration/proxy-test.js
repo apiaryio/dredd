@@ -3,7 +3,7 @@ const url = require('url');
 const { assert } = require('chai');
 
 const { runDredd, recordLogging, createServer, DEFAULT_SERVER_PORT } = require('./helpers');
-const Dredd = require('../../src/dredd');
+const Dredd = require('../../src/Dredd');
 
 const PROXY_PORT = DEFAULT_SERVER_PORT + 1;
 const PROXY_URL = `http://127.0.0.1:${PROXY_PORT}`;

@@ -4,7 +4,7 @@ const util = require('util');
 
 const { assert } = require('chai');
 
-const hooksLog = require('../../src/hooks-log');
+const hooksLog = require('../../src/hooksLog');
 const loggerStub = require('../../src/logger');
 
 describe('hooksLog()', () => {

@@ -21,7 +21,7 @@ const ApiaryReporterStub = sinon.spy(require('../../src/reporters/ApiaryReporter
 
 const emitterStub = new EventEmitter();
 
-const configureReporters = proxyquire('../../src/configure-reporters', {
+const configureReporters = proxyquire('../../src/configureReporters', {
   './logger': loggerStub,
   './reporters/BaseReporter': BaseReporterStub,
   './reporters/XUnitReporter': XUnitReporterStub,

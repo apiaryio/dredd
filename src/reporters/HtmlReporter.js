@@ -8,7 +8,7 @@ const md = require('markdown-it')();
 const pathmodule = require('path');
 
 const logger = require('../logger');
-const prettifyResponse = require('../prettify-response');
+const prettifyResponse = require('../prettifyResponse');
 
 function HtmlReporter(emitter, stats, tests, path, details) {
   EventEmitter.call(this);

@@ -5,12 +5,12 @@ const clone = require('clone');
 const fs = require('fs');
 const proxyquire = require('proxyquire').noCallThru();
 
-const Hooks = require('./hooks');
-const HooksWorkerClient = require('./hooks-worker-client');
+const Hooks = require('./Hooks');
+const HooksWorkerClient = require('./HooksWorkerClient');
 const logger = require('./logger');
-const mergeSandboxedHooks = require('./merge-sandboxed-hooks');
-const resolveHookfiles = require('./resolve-hookfiles');
-const sandboxHooksCode = require('./sandbox-hooks-code');
+const mergeSandboxedHooks = require('./mergeSandboxedHooks');
+const resolveHookfiles = require('./resolveHookfiles');
+const sandboxHooksCode = require('./sandboxHooksCode');
 
 // Note: runner.configuration.options must be defined
 function addHooks(runner, transactions, callback) {

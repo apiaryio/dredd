@@ -2,7 +2,7 @@ const sinon = require('sinon');
 const { assert } = require('chai');
 
 const loggerStub = require('../../src/logger');
-const prettifyResponse = require('../../src/prettify-response');
+const prettifyResponse = require('../../src/prettifyResponse');
 
 describe('prettifyResponse(response)', () => {
   describe('with a real object without any circular references', () => {

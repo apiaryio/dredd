@@ -6,7 +6,7 @@ const dreddTransactions = require('dredd-transactions');
 
 const logger = require('../../src/logger');
 
-const handleRuntimeProblems = proxyquire('../../src/handle-runtime-problems',
+const handleRuntimeProblems = proxyquire('../../src/handleRuntimeProblems',
   { './logger': logger }
 );
 

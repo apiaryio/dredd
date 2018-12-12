@@ -29,7 +29,7 @@ output\
 
   const sandbox = new Pitboss(wrappedCode);
   sandbox.run({ libraries: {
-    _Hooks: '../../../lib/hooks', console: 'console'
+    _Hooks: '../../../lib/Hooks', console: 'console'
   } }, (err, result) => {
     sandbox.kill();
     if (err) { return callback(err); }

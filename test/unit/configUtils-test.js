@@ -5,7 +5,7 @@ const sinon = require('sinon');
 const yamlStub = require('js-yaml');
 const { assert } = require('chai');
 
-const configUtils = proxyquire('../../src/config-utils', {
+const configUtils = proxyquire('../../src/configUtils', {
   fs: fsStub,
   'js-yaml': yamlStub
 });

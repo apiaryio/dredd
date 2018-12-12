@@ -4,10 +4,10 @@ const path = require('path');
 const spawnArgs = require('spawn-args');
 const { EventEmitter } = require('events');
 
-const getGoBin = require('./get-go-bin');
+const getGoBin = require('./getGoBin');
 const logger = require('./logger');
 const which = require('./which');
-const { spawn } = require('./child-process');
+const { spawn } = require('./childProcess');
 
 class HooksWorkerClient {
   constructor(runner) {

@@ -5,11 +5,11 @@ const fs = require('fs');
 const request = require('request');
 const url = require('url');
 
-const configureReporters = require('./configure-reporters');
+const configureReporters = require('./configureReporters');
 const dreddTransactions = require('dredd-transactions');
-const handleRuntimeProblems = require('./handle-runtime-problems');
+const handleRuntimeProblems = require('./handleRuntimeProblems');
 const logger = require('./logger');
-const Runner = require('./transaction-runner');
+const Runner = require('./TransactionRunner');
 const { applyConfiguration } = require('./configuration');
 
 const options = require('./options.json');

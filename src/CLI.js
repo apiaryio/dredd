@@ -5,13 +5,13 @@ const os = require('os');
 const spawnArgs = require('spawn-args');
 const spawnSync = require('cross-spawn').sync;
 
-const configUtils = require('./config-utils');
-const Dredd = require('./dredd');
-const ignorePipeErrors = require('./ignore-pipe-errors');
+const configUtils = require('./configUtils');
+const Dredd = require('./Dredd');
+const ignorePipeErrors = require('./ignorePipeErrors');
 const interactiveConfig = require('./init');
 const logger = require('./logger');
 const { applyLoggingOptions } = require('./configuration');
-const { spawn } = require('./child-process');
+const { spawn } = require('./childProcess');
 
 const packageData = require('../package.json');
 

@@ -3,10 +3,10 @@ const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const hooksLogStubSpy = sinon.spy(require('../../src/hooks-log'));
+const hooksLogStubSpy = sinon.spy(require('../../src/hooksLog'));
 
-const hooksLogSandboxed = proxyquire('../../src/hooks-log-sandboxed', {
-  './hooks-log': hooksLogStubSpy
+const hooksLogSandboxed = proxyquire('../../src/hooksLogSandboxed', {
+  './hooksLog': hooksLogStubSpy
 });
 
 describe('hooksLogSandboxed()', () => {
@@ -46,7 +46,7 @@ describe('hooksLogSandboxed()', () => {
     });
   });
 
-  describe('passes arguments further to hooks-log', () => {
+  describe('passes arguments further to hooksLog', () => {
     beforeEach(() => hooksLogStubSpy.resetHistory());
 
     it('should pass two arguments if only two were used', () => {

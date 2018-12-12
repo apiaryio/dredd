@@ -9,7 +9,7 @@ const { assert } = require('chai');
 
 const dreddTransactionsStub = require('dredd-transactions');
 
-const Dredd = proxyquire('../../src/dredd', {
+const Dredd = proxyquire('../../src/Dredd', {
   request: requestStub,
   'dredd-transactions': dreddTransactionsStub,
   fs: fsStub,

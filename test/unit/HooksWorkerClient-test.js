@@ -10,7 +10,7 @@ const { EventEmitter } = require('events');
 const whichStub = require('../../src/which');
 const loggerStub = require('../../src/logger');
 
-const Hooks = require('../../src/hooks');
+const Hooks = require('../../src/Hooks');
 const commandLineOptions = require('../../src/options');
 
 function measureExecutionDurationMs(fn) {
@@ -27,13 +27,13 @@ const PORT = 61321;
 let runner;
 const logLevels = ['error', 'log', 'info', 'warn'];
 
-const HooksWorkerClient = proxyquire('../../src/hooks-worker-client', {
+const HooksWorkerClient = proxyquire('../../src/HooksWorkerClient', {
   'cross-spawn': crossSpawnStub,
   './which': whichStub,
   './logger': loggerStub
 });
 
-const TransactionRunner = require('../../src/transaction-runner');
+const TransactionRunner = require('../../src/TransactionRunner');
 
 let hooksWorkerClient;
 

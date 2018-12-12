@@ -10,15 +10,15 @@ const { EventEmitter } = require('events');
 
 nock.enableNetConnect();
 
-const addHooks = require('../../src/add-hooks');
+const addHooks = require('../../src/addHooks');
 const loggerStub = require('../../src/logger');
 
-const Runner = proxyquire('../../src/transaction-runner', {
+const Runner = proxyquire('../../src/TransactionRunner', {
   html: htmlStub,
   './logger': loggerStub
 });
 
-const Hooks = require('../../src/hooks');
+const Hooks = require('../../src/Hooks');
 
 describe('TransactionRunner', () => {
   let server;
@@ -524,7 +524,7 @@ describe('TransactionRunner', () => {
       afterEach(() => configuration.emitter.emit.restore());
 
       // If you happen to wonder why some of the callbacks in following tests
-      // get executed twice, see try/catch in runHooksForData() in transaction-runner.js
+      // get executed twice, see try/catch in runHooksForData() in TransactionRunner.js
 
       it('should skip the test', done =>
         runner.executeAllTransactions([clonedTransaction], runner.hooks, (err) => {

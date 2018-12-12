@@ -1,4 +1,4 @@
-const hooksLog = require('./hooks-log');
+const hooksLog = require('./hooksLog');
 
 // Sandboxed hooks cannot access "console" or system logger
 const logger = null;

@@ -1,4 +1,4 @@
-const blueprintUtils = require('./blueprint-utils');
+const blueprintUtils = require('./blueprintUtils');
 const logger = require('./logger');
 
 module.exports = function handleRuntimeProblems(blueprintData) {

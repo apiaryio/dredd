@@ -3,7 +3,7 @@ const { assert } = require('chai');
 const { EventEmitter } = require('events');
 
 const { runDredd, createServer, runDreddWithServer } = require('./helpers');
-const Dredd = require('../../src/dredd');
+const Dredd = require('../../src/Dredd');
 
 describe('Sanitation of Reported Data', () => {
   // Sample sensitive data (this value is used in API Blueprint fixtures as well)

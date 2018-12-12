@@ -5,7 +5,7 @@ const proxyquire = require('proxyquire').noCallThru();
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const configUtilsStub = require('../../src/config-utils');
+const configUtilsStub = require('../../src/configUtils');
 const loggerStub = require('../../src/logger');
 const options = require('../../src/options');
 const packageData = require('../../package.json');
@@ -17,17 +17,17 @@ let exitStatus;
 let stderr = '';
 let stdout = '';
 
-const addHooksStub = proxyquire('../../src/add-hooks', {
+const addHooksStub = proxyquire('../../src/addHooks', {
   './logger': loggerStub
 });
 
-const transactionRunner = proxyquire('../../src/transaction-runner', {
-  './add-hooks': addHooksStub,
+const transactionRunner = proxyquire('../../src/TransactionRunner', {
+  './addHooks': addHooksStub,
   './logger': loggerStub
 });
 
-const DreddStub = proxyquire('../../src/dredd', {
-  './transaction-runner': transactionRunner,
+const DreddStub = proxyquire('../../src/Dredd', {
+  './TransactionRunner': transactionRunner,
   './logger': loggerStub
 });
 
@@ -36,12 +36,12 @@ const initStub = sinon.stub().callsFake((config, save, callback) => {
   callback();
 });
 
-const CLIStub = proxyquire('../../src/cli', {
-  './dredd': DreddStub,
+const CLIStub = proxyquire('../../src/CLI', {
+  './Dredd': DreddStub,
   console: loggerStub,
   './logger': loggerStub,
   './init': initStub,
-  './config-utils': configUtilsStub,
+  './configUtils': configUtilsStub,
   fs: fsStub,
   'cross-spawn': crossSpawnStub
 });

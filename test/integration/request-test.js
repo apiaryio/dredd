@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { runDreddWithServer, createServer } = require('./helpers');
-const Dredd = require('../../src/dredd');
+const Dredd = require('../../src/Dredd');
 
 describe('Sending \'application/json\' request', () => {
   let runtimeInfo;

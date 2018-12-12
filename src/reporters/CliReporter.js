@@ -1,5 +1,5 @@
 const logger = require('../logger');
-const prettifyResponse = require('../prettify-response');
+const prettifyResponse = require('../prettifyResponse');
 
 function CliReporter(emitter, stats, tests, inlineErrors, details) {
   this.type = 'cli';

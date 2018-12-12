@@ -6,10 +6,10 @@ const os = require('os');
 const url = require('url');
 const { Pitboss } = require('pitboss-ng');
 
-const addHooks = require('./add-hooks');
+const addHooks = require('./addHooks');
 const logger = require('./logger');
 const packageData = require('../package.json');
-const sortTransactions = require('./sort-transactions');
+const sortTransactions = require('./sortTransactions');
 const performRequest = require('./performRequest');
 
 
@@ -26,7 +26,7 @@ function eventCallback(reporterError) {
 
 // Use "lib" folder, because pitboss-ng does not support "coffee-script:register"
 // out of the box now
-const sandboxedLogLibraryPath = '../../../lib/hooks-log-sandboxed';
+const sandboxedLogLibraryPath = '../../../lib/hooksLogSandboxed';
 
 class TransactionRunner {
   constructor(configuration) {

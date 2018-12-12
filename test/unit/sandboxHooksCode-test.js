@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const sandboxHooksCode = require('../../src/sandbox-hooks-code');
+const sandboxHooksCode = require('../../src/sandboxHooksCode');
 
 describe('sandboxHooksCode(hooksCode, callback)', () => {
   it('should be a defined function', () => assert.isFunction(sandboxHooksCode));

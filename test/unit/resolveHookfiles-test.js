@@ -1,7 +1,7 @@
 const path = require('path');
 const { assert } = require('chai');
 
-const resolveHookfiles = require('../../src/resolve-hookfiles');
+const resolveHookfiles = require('../../src/resolveHookfiles');
 
 describe('resolveHookfiles()', () => {
   const cwd = path.join(__filename, '..', '..', 'fixtures');

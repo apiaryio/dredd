@@ -1,5 +1,5 @@
 const logger = require('../logger');
-const prettifyResponse = require('../prettify-response');
+const prettifyResponse = require('../prettifyResponse');
 
 function DotReporter(emitter, stats, tests) {
   this.type = 'dot';

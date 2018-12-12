@@ -1,7 +1,7 @@
 const clone = require('clone');
 const { assert } = require('chai');
 
-const mergeSandboxedHooks = require('../../src/merge-sandboxed-hooks');
+const mergeSandboxedHooks = require('../../src/mergeSandboxedHooks');
 
 describe('mergeSandboxedHooks', () => {
   it('should be a defined function', () => assert.isFunction(mergeSandboxedHooks));
