@@ -10,27 +10,27 @@ const sinon = require('sinon');
 const proxyquire = require('proxyquire').noCallThru();
 
 const loggerStub = require('../../src/logger');
-const BaseReporterStub = sinon.spy(require('../../src/reporters/base-reporter'));
-const XUnitReporterStub = sinon.spy(require('../../src/reporters/x-unit-reporter'));
-const CliReporterStub = sinon.spy(require('../../src/reporters/cli-reporter'));
-const DotReporterStub = sinon.spy(require('../../src/reporters/dot-reporter'));
-const NyanCatReporterStub = sinon.spy(require('../../src/reporters/nyan-reporter'));
-const HtmlReporterStub = sinon.spy(require('../../src/reporters/html-reporter'));
-const MarkdownReporterStub = sinon.spy(require('../../src/reporters/markdown-reporter'));
-const ApiaryReporterStub = sinon.spy(require('../../src/reporters/apiary-reporter'));
+const BaseReporterStub = sinon.spy(require('../../src/reporters/BaseReporter'));
+const XUnitReporterStub = sinon.spy(require('../../src/reporters/XUnitReporter'));
+const CliReporterStub = sinon.spy(require('../../src/reporters/CliReporter'));
+const DotReporterStub = sinon.spy(require('../../src/reporters/DotReporter'));
+const NyanCatReporterStub = sinon.spy(require('../../src/reporters/NyanReporter'));
+const HtmlReporterStub = sinon.spy(require('../../src/reporters/HtmlReporter'));
+const MarkdownReporterStub = sinon.spy(require('../../src/reporters/MarkdownReporter'));
+const ApiaryReporterStub = sinon.spy(require('../../src/reporters/ApiaryReporter'));
 
 const emitterStub = new EventEmitter();
 
 const configureReporters = proxyquire('../../src/configure-reporters', {
   './logger': loggerStub,
-  './reporters/base-reporter': BaseReporterStub,
-  './reporters/x-unit-reporter': XUnitReporterStub,
-  './reporters/cli-reporter': CliReporterStub,
-  './reporters/dot-reporter': DotReporterStub,
-  './reporters/nyan-reporter': NyanCatReporterStub,
-  './reporters/html-reporter': HtmlReporterStub,
-  './reporters/markdown-reporter': MarkdownReporterStub,
-  './reporters/apiary-reporter': ApiaryReporterStub
+  './reporters/BaseReporter': BaseReporterStub,
+  './reporters/XUnitReporter': XUnitReporterStub,
+  './reporters/CliReporter': CliReporterStub,
+  './reporters/DotReporter': DotReporterStub,
+  './reporters/NyanReporter': NyanCatReporterStub,
+  './reporters/HtmlReporter': HtmlReporterStub,
+  './reporters/MarkdownReporter': MarkdownReporterStub,
+  './reporters/ApiaryReporter': ApiaryReporterStub
 });
 
 const resetStubs = function () {

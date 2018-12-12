@@ -8,7 +8,7 @@ const { EventEmitter } = require('events');
 const blueprintData = require('../../fixtures/blueprint-data');
 const loggerStub = require('../../../src/logger');
 
-const ApiaryReporter = proxyquire('../../../src/reporters/apiary-reporter', {
+const ApiaryReporter = proxyquire('../../../src/reporters/ApiaryReporter', {
   '../logger': loggerStub
 });
 

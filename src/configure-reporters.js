@@ -1,11 +1,11 @@
-const ApiaryReporter = require('./reporters/apiary-reporter');
-const BaseReporter = require('./reporters/base-reporter');
-const CliReporter = require('./reporters/cli-reporter');
-const DotReporter = require('./reporters/dot-reporter');
-const HtmlReporter = require('./reporters/html-reporter');
-const MarkdownReporter = require('./reporters/markdown-reporter');
-const NyanCatReporter = require('./reporters/nyan-reporter');
-const XUnitReporter = require('./reporters/x-unit-reporter');
+const ApiaryReporter = require('./reporters/ApiaryReporter');
+const BaseReporter = require('./reporters/BaseReporter');
+const CliReporter = require('./reporters/CliReporter');
+const DotReporter = require('./reporters/DotReporter');
+const HtmlReporter = require('./reporters/HtmlReporter');
+const MarkdownReporter = require('./reporters/MarkdownReporter');
+const NyanCatReporter = require('./reporters/NyanReporter');
+const XUnitReporter = require('./reporters/XUnitReporter');
 
 const logger = require('./logger');
 

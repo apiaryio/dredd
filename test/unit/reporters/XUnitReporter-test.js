@@ -9,7 +9,7 @@ const loggerStub = require('../../../src/logger');
 
 const fsExtraStub = { mkdirp(path, cb) { return cb(); } };
 
-const XUnitReporter = proxyquire('../../../src/reporters/x-unit-reporter', {
+const XUnitReporter = proxyquire('../../../src/reporters/XUnitReporter', {
   '../logger': loggerStub,
   fs: fsStub,
   'fs-extra': fsExtraStub

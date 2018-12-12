@@ -6,7 +6,7 @@ const { EventEmitter } = require('events');
 
 const loggerStub = require('../../../src/logger');
 
-const DotReporter = proxyquire('../../../src/reporters/dot-reporter', {
+const DotReporter = proxyquire('../../../src/reporters/DotReporter', {
   '../logger': loggerStub
 });
 
