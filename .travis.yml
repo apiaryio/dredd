@@ -1,37 +1,60 @@
-# GH_TOKEN and NPM_TOKEN are expected to be set
-# in https://travis-ci.org/apiaryio/dredd/settings
-dist: "trusty"
 language: "node_js"
-node_js:
-  - "10"
+node_js: "10"
 cache:
   directories:
     - "node_modules"
 before_install:
   - "npm install npm@6 --global"
-  - "pyenv global 3.6"
-  - "pip install pip --upgrade"
 install:
   - "npm install --no-optional --no-save"
-  - "pip install --user -r docs/requirements.txt"
 jobs:
   include:
-    # stage 1, all following runs in parallel:
+    ################################# Stage 1 #################################
     - stage: "quality checks & tests"
       env: "JOB=quality_checks"
+      before_install:
+        - "npm install npm@6 --global"
+        - "pyenv global 3.6"
+        - "pip install pip --upgrade"
+      install:
+        - "npm install --no-optional --no-save"
+        - "pip install --user -r docs/requirements.txt"
       script: "npm run ci:lint"
-    - env: "JOB=docs_build_dry_run" # why dry run? because production build happens directly on ReadTheDocs infrastructure
+
+    # It's just dry run, because production build happens directly on
+    # the ReadTheDocs infrastructure
+    - env: "JOB=docs_build_dry_run"
+      before_install:
+        - "npm install npm@6 --global"
+        - "pyenv global 3.6"
+        - "pip install pip --upgrade"
+      install:
+        - "npm install --no-optional --no-save"
+        - "pip install --user -r docs/requirements.txt"
       script: "npm run ci:docs"
+
     - env: "JOB=node6"
       node_js: "6"
       script: "npm run ci:test"
+
     - env: "JOB=node8"
       node_js: "8"
       script: "npm run ci:test"
+
     - env: "JOB=node10"
       script: "npm run ci:test"
 
-    # stage 2
+    - env: "JOB=smoke_tests"
+      services:
+        - "mongodb"
+      cache: {}
+      before_install: []
+      install: []
+      script: "npm run ci:test:smoke"
+
+    ################################# Stage 2 #################################
+    # The GH_TOKEN and NPM_TOKEN environment variables are expected to be set
+    # in https://travis-ci.org/apiaryio/dredd/settings
     - stage: "semantic release"
       script: "npm run ci:release"
       if: fork = false AND branch = master AND type = push

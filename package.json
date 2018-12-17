@@ -26,6 +26,7 @@
     "ci:lint": "npm run lint && npm run docs:lint && npm run docs:test-extensions",
     "ci:docs": "npm run docs:build",
     "ci:test": "npm run test:coverage && npm run coveralls",
+    "ci:test:smoke": "./scripts/smoke.sh",
     "ci:release": "semantic-release && npm dist-tag add \"dredd@$(npm view dredd version)\" stable"
   },
   "repository": {
