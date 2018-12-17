@@ -8,7 +8,7 @@ cache:
   directories:
     - "node_modules"
 before_install:
-  - "npm -g install npm@6"
+  - "npm install npm@6 --global"
   - "pyenv global 3.6"
   - "pip install pip --upgrade"
 install:
