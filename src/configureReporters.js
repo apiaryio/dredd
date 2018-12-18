@@ -1,6 +1,6 @@
 const ApiaryReporter = require('./reporters/ApiaryReporter');
 const BaseReporter = require('./reporters/BaseReporter');
-const CliReporter = require('./reporters/CliReporter');
+const CLIReporter = require('./reporters/CLIReporter');
 const DotReporter = require('./reporters/DotReporter');
 const HtmlReporter = require('./reporters/HtmlReporter');
 const MarkdownReporter = require('./reporters/MarkdownReporter');
@@ -36,13 +36,13 @@ function configureReporters(config, stats, tests, runner) {
     if (reportersArr.length > 0) {
       const usedCliReporters = intersection(reportersArr, cliReporters);
       if (usedCliReporters.length === 0) {
-        return new CliReporter(
+        return new CLIReporter(
           config.emitter, stats, tests, config.options['inline-errors'], config.options.details
         );
       }
       return addReporter(usedCliReporters[0], config.emitter, stats, tests);
     }
-    return new CliReporter(
+    return new CLIReporter(
       config.emitter, stats, tests, config.options['inline-errors'], config.options.details
     );
   }

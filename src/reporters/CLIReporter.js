@@ -1,7 +1,7 @@
 const logger = require('../logger');
 const prettifyResponse = require('../prettifyResponse');
 
-function CliReporter(emitter, stats, tests, inlineErrors, details) {
+function CLIReporter(emitter, stats, tests, inlineErrors, details) {
   this.type = 'cli';
   this.stats = stats;
   this.tests = tests;
@@ -14,7 +14,7 @@ function CliReporter(emitter, stats, tests, inlineErrors, details) {
   logger.verbose(`Using '${this.type}' reporter.`);
 }
 
-CliReporter.prototype.configureEmitter = function (emitter) {
+CLIReporter.prototype.configureEmitter = function (emitter) {
   emitter.on('start', (rawBlueprint, callback) => {
     logger.info('Beginning Dredd testing...');
     callback();
@@ -96,4 +96,4 @@ CliReporter.prototype.configureEmitter = function (emitter) {
   });
 };
 
-module.exports = CliReporter;
+module.exports = CLIReporter;

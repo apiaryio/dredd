@@ -12,7 +12,7 @@ const proxyquire = require('proxyquire').noCallThru();
 const loggerStub = require('../../src/logger');
 const BaseReporterStub = sinon.spy(require('../../src/reporters/BaseReporter'));
 const XUnitReporterStub = sinon.spy(require('../../src/reporters/XUnitReporter'));
-const CliReporterStub = sinon.spy(require('../../src/reporters/CliReporter'));
+const CliReporterStub = sinon.spy(require('../../src/reporters/CLIReporter'));
 const DotReporterStub = sinon.spy(require('../../src/reporters/DotReporter'));
 const NyanCatReporterStub = sinon.spy(require('../../src/reporters/NyanReporter'));
 const HtmlReporterStub = sinon.spy(require('../../src/reporters/HtmlReporter'));
@@ -25,7 +25,7 @@ const configureReporters = proxyquire('../../src/configureReporters', {
   './logger': loggerStub,
   './reporters/BaseReporter': BaseReporterStub,
   './reporters/XUnitReporter': XUnitReporterStub,
-  './reporters/CliReporter': CliReporterStub,
+  './reporters/CLIReporter': CliReporterStub,
   './reporters/DotReporter': DotReporterStub,
   './reporters/NyanReporter': NyanCatReporterStub,
   './reporters/HtmlReporter': HtmlReporterStub,
@@ -64,7 +64,7 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
   describe('when there are no reporters', () => {
     beforeEach(() => resetStubs());
 
-    it('should only add a CliReporter', (done) => {
+    it('should only add a CLIReporter', (done) => {
       configureReporters(configuration, {}, {}, null);
       assert.isOk(CliReporterStub.called);
       return done();
@@ -113,7 +113,7 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
 
     beforeEach(() => resetStubs());
 
-    it('should add a CliReporter', (done) => {
+    it('should add a CLIReporter', (done) => {
       configureReporters(configuration, {}, {}, () => {});
       assert.isOk(CliReporterStub.called);
       return done();
