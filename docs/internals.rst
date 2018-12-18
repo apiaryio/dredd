@@ -43,9 +43,7 @@ To learn the basics of contributing to Dredd, please read the `contributing docu
 Installing Dredd for development
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To hack Dredd locally, clone the repository and run ``npm install`` to install JavaScript dependencies. Then run ``npm test`` to verify everything works as expected.
-
-If you want to run Dredd during development, you can do so using ``./bin/dredd``, but you need to make sure all your changes are compiled by ``npm run build`` to take effect.
+To hack Dredd locally, clone the repository and run ``npm install`` to install JavaScript dependencies. Then run ``npm test`` to verify everything works as expected. If you want to run Dredd during development, you can do so using ``./bin/dredd``.
 
 .. note::
 
@@ -99,10 +97,6 @@ Programming language
 ~~~~~~~~~~~~~~~~~~~~
 
 Dredd is written in modern JavaScript, ran by `Node.js <https://nodejs.org/>`__, and distributed by `npm <https://www.npmjs.com/>`__.
-
-Before publishing to the npm registry, `Babel <https://babeljs.io/>`__ compiles the code in the ``src`` directory and produces widely compatible ES5 JavaScript code in the ``lib`` directory. This is done because in the future we want to be able to run Dredd in the browser. With time this seems like a long shot and until we actually work on having Dredd browser-compatible, we might want to get rid of the build step.
-
-Tests need to be pre-compiled every time, because some integration tests use code linked from ``lib``. This is certainly a flaw and it slows down day-to-day development, but until we refactor the tests, compiling is necessary.
 
 Previously Dredd was written in `CoffeeScript <https://coffeescript.org>`__, and it was only recently converted to modern JavaScript. That's why sometimes the code does not feel very nice. Any efforts to refactor the code to something more human-friendly are greatly appreciated.
 
