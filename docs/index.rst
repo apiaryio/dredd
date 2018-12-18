@@ -78,8 +78,8 @@ Example Applications
 
 .. |npm version| image:: https://badge.fury.io/js/dredd.svg
    :target: https://www.npmjs.com/package/dredd
-.. |Build Status| image:: https://travis-ci.org/apiaryio/dredd.svg?branch=master
-   :target: https://travis-ci.org/apiaryio/dredd
+.. |Build Status| image:: https://circleci.com/gh/apiaryio/dredd/tree/master.svg?style=svg
+   :target: https://circleci.com/gh/apiaryio/dredd/tree/master
 .. |Windows Build Status| image:: https://ci.appveyor.com/api/projects/status/n3ixfxh72qushyr4/branch/master?svg=true
    :target: https://ci.appveyor.com/project/Apiary/dredd/branch/master
 .. |Documentation Status| image:: https://readthedocs.org/projects/dredd/badge/?version=latest

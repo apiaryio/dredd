@@ -1,0 +1,136 @@
+version: 2.1
+
+
+commands:
+  npm-install:
+    steps:
+      - run: sudo npm install npm@6 --global
+      - restore_cache:
+          key: js-deps-{{ checksum "package.json" }}
+      - run: npm install --no-save
+      - save_cache:
+          key: js-deps-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+
+  pip-install-docs:
+    steps:
+      - run: sudo pip install --upgrade pip
+      - restore_cache:
+          key: py-deps-{{ checksum "docs/requirements.txt" }}
+      - run: "if [ ! -d ./venv ]; then python -m venv ./venv; fi"
+      - run: echo "source $(pwd)/venv/bin/activate" >> $BASH_ENV
+      - run: pip install -r ./docs/requirements.txt
+      - save_cache:
+          key: py-deps-{{ checksum "docs/requirements.txt" }}
+          paths:
+            - ./venv
+
+
+jobs:
+  test-node12:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - npm-install
+      - run: npm run ci:test
+
+  test-node8:
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - npm-install
+      - run: npm run ci:test
+
+  test-node10:
+    docker:
+      - image: circleci/node:10
+    steps:
+      - checkout
+      - npm-install
+      - run: npm run ci:test
+
+  test-e2e-apib:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - npm-install
+      - run: npm run e2e:apib
+
+  test-e2e-openapi2:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - npm-install
+      - run: npm run e2e:openapi2
+
+  quality-checks:
+    # Using Python 3.6 as that's the version ReadTheDocs is running.
+    docker:
+      - image: circleci/python:3.6-node
+    steps:
+      - checkout
+      - npm-install
+      - pip-install-docs
+      - run: npm run ci:lint
+
+  docs-dry-run:
+    # Why dry run? Because production build happens directly on the ReadTheDocs
+    # infrastructure. Using Python 3.6 as that's the version RTD is running.
+    docker:
+      - image: circleci/python:3.6-node
+    steps:
+      - checkout
+      - npm-install
+      - pip-install-docs
+      - run: npm run ci:docs
+
+  smoke-tests:
+    docker:
+      - image: circleci/node:12
+      - image: circleci/mongo:latest
+    steps:
+      - checkout
+      - npm-install
+      - run: npm run ci:smoke
+
+  release:
+    # The GH_TOKEN and NPM_TOKEN environment variables are expected to be set
+    # in https://circleci.com/gh/apiaryio/dredd/edit#env-vars
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - npm-install
+      - run: npm run ci:release
+
+
+workflows:
+  version: 2
+  test-and-release:
+    jobs:
+      - quality-checks
+      - test-node12
+      - test-node10
+      - test-node8
+      - test-e2e-apib
+      - test-e2e-openapi2
+      - smoke-tests
+      - docs-dry-run
+      - release:
+          requires:
+            - quality-checks
+            - test-node12
+            - test-node10
+            - test-node8
+            - test-e2e-apib
+            - test-e2e-openapi2
+            - smoke-tests
+            - docs-dry-run
+          filters:
+            branches:
+              only: master
