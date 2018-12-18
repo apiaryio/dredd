@@ -1,6 +1,3 @@
-# Source code (distributed code lives in /lib)
-/src/
-
 # Common for .gitignore and .npmignore
 .DS_Store
 coverage/
@@ -12,11 +9,11 @@ cov.*
 # List specific to .npmignore
 /docs/
 /test/
-.travis.yml
-appveyor.yml
-.npmignore
-.eslintrc.js
-.eslintignore
+*.yml
+*.ini
+.*ignore
+.*rc.js
+*.config.js
 *.apib
 *.md
 

@@ -1,6 +1,3 @@
-# Distributed code (source code lives in /src)
-/lib/
-
 # Common for .gitignore and .npmignore
 .DS_Store
 coverage/
@@ -15,4 +12,5 @@ node_modules
 .vscode/
 /docs/_build
 
+# Regardless the rules above, never ignore following
 !.vscode/launch.json
