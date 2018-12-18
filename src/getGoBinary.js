@@ -4,7 +4,7 @@ const path = require('path');
 // Docs:
 // - https://golang.org/doc/code.html#GOPATH
 // - https://golang.org/cmd/go/#hdr-GOPATH_environment_variable
-module.exports = function getGoBin(callback) {
+module.exports = function getGoBinary(callback) {
   const goBin = process.env.GOBIN;
   if (goBin) {
     process.nextTick(() => callback(null, goBin));

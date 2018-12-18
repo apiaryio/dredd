@@ -3,9 +3,9 @@ const path = require('path');
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const getGoBin = require('../../src/getGoBin');
+const getGoBinary = require('../../src/getGoBinary');
 
-describe('getGoBin()', () => {
+describe('getGoBinary()', () => {
   let goBin;
   let goPath;
 
@@ -26,7 +26,7 @@ describe('getGoBin()', () => {
 
     beforeEach((done) => {
       process.env.GOBIN = path.join('dummy', 'gobin', 'path');
-      getGoBin((...args) => {
+      getGoBinary((...args) => {
         callbackArgs = args;
         done();
       });
@@ -40,7 +40,7 @@ describe('getGoBin()', () => {
 
     beforeEach((done) => {
       process.env.GOPATH = path.join('dummy', 'gopath', 'path');
-      getGoBin((...args) => {
+      getGoBinary((...args) => {
         callbackArgs = args;
         done();
       });
@@ -55,7 +55,7 @@ describe('getGoBin()', () => {
     beforeEach((done) => {
       process.env.GOBIN = path.join('dummy', 'gobin', 'path');
       process.env.GOPATH = path.join('dummy', 'gopath', 'path');
-      getGoBin((...args) => {
+      getGoBinary((...args) => {
         callbackArgs = args;
         done();
       });
@@ -69,7 +69,7 @@ describe('getGoBin()', () => {
 
     beforeEach((done) => {
       sinon.stub(childProcess, 'exec').callsFake((command, callback) => callback(null, path.join('dummy', 'gopath', 'path')));
-      getGoBin((...args) => {
+      getGoBinary((...args) => {
         callbackArgs = args;
         done();
       });
@@ -85,7 +85,7 @@ describe('getGoBin()', () => {
 
     beforeEach((done) => {
       sinon.stub(childProcess, 'exec').callsFake((command, callback) => callback(error));
-      getGoBin((...args) => {
+      getGoBinary((...args) => {
         callbackArgs = args;
         done();
       });

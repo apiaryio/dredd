@@ -4,7 +4,7 @@ const path = require('path');
 const spawnArgs = require('spawn-args');
 const { EventEmitter } = require('events');
 
-const getGoBin = require('./getGoBin');
+const getGoBinary = require('./getGoBinary');
 const logger = require('./logger');
 const which = require('./which');
 const { spawn } = require('./childProcess');
@@ -146,7 +146,7 @@ Use Dredd's native Node.js hooks instead.
 `;
       callback(new Error(msg));
     } else if (this.language === 'go') {
-      getGoBin((err, goBin) => {
+      getGoBinary((err, goBin) => {
         if (err) {
           callback(new Error(`Go doesn't seem to be installed: ${err.message}`));
         } else {
