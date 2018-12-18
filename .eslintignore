@@ -1,2 +1,8 @@
-lib
-docs/_build
+.github
+.vscode
+coverage
+docs
+
+# In case Python virtualenv is present in the project directory, this ignores
+# its contents (some Python projects vendor JavaScript files, etc.)
+site-packages
