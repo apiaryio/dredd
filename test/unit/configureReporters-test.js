@@ -15,7 +15,7 @@ const XUnitReporterStub = sinon.spy(require('../../src/reporters/XUnitReporter')
 const CliReporterStub = sinon.spy(require('../../src/reporters/CLIReporter'));
 const DotReporterStub = sinon.spy(require('../../src/reporters/DotReporter'));
 const NyanCatReporterStub = sinon.spy(require('../../src/reporters/NyanReporter'));
-const HtmlReporterStub = sinon.spy(require('../../src/reporters/HtmlReporter'));
+const HtmlReporterStub = sinon.spy(require('../../src/reporters/HTMLReporter'));
 const MarkdownReporterStub = sinon.spy(require('../../src/reporters/MarkdownReporter'));
 const ApiaryReporterStub = sinon.spy(require('../../src/reporters/ApiaryReporter'));
 
@@ -28,7 +28,7 @@ const configureReporters = proxyquire('../../src/configureReporters', {
   './reporters/CLIReporter': CliReporterStub,
   './reporters/DotReporter': DotReporterStub,
   './reporters/NyanReporter': NyanCatReporterStub,
-  './reporters/HtmlReporter': HtmlReporterStub,
+  './reporters/HTMLReporter': HtmlReporterStub,
   './reporters/MarkdownReporter': MarkdownReporterStub,
   './reporters/ApiaryReporter': ApiaryReporterStub
 });

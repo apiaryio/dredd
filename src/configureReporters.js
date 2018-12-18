@@ -2,7 +2,7 @@ const ApiaryReporter = require('./reporters/ApiaryReporter');
 const BaseReporter = require('./reporters/BaseReporter');
 const CLIReporter = require('./reporters/CLIReporter');
 const DotReporter = require('./reporters/DotReporter');
-const HtmlReporter = require('./reporters/HtmlReporter');
+const HTMLReporter = require('./reporters/HTMLReporter');
 const MarkdownReporter = require('./reporters/MarkdownReporter');
 const NyanCatReporter = require('./reporters/NyanReporter');
 const XUnitReporter = require('./reporters/XUnitReporter');
@@ -59,7 +59,7 @@ function configureReporters(config, stats, tests, runner) {
       case 'nyan':
         return new NyanCatReporter(emitter, statistics, testsArg);
       case 'html':
-        return new HtmlReporter(emitter, statistics, testsArg, path, config.options.details);
+        return new HTMLReporter(emitter, statistics, testsArg, path, config.options.details);
       case 'markdown':
         return new MarkdownReporter(emitter, statistics, testsArg, path, config.options.details);
       case 'apiary':

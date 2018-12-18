@@ -9,13 +9,13 @@ const loggerStub = require('../../../src/logger');
 
 const fsExtraStub = { mkdirp(path, cb) { return cb(); } };
 
-const HtmlReporter = proxyquire('../../../src/reporters/HtmlReporter', {
+const HTMLReporter = proxyquire('../../../src/reporters/HTMLReporter', {
   '../logger': loggerStub,
   fs: fsStub,
   'fs-extra': fsExtraStub
 });
 
-describe('HtmlReporter', () => {
+describe('HTMLReporter', () => {
   let emitter;
   let htmlReporter;
   let stats;
@@ -39,7 +39,7 @@ describe('HtmlReporter', () => {
       duration: 0
     };
     tests = [];
-    htmlReporter = new HtmlReporter(emitter, stats, tests, 'test.html');
+    htmlReporter = new HTMLReporter(emitter, stats, tests, 'test.html');
   });
 
   describe('when starting', () => {

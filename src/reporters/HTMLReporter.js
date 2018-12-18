@@ -10,7 +10,7 @@ const pathmodule = require('path');
 const logger = require('../logger');
 const prettifyResponse = require('../prettifyResponse');
 
-function HtmlReporter(emitter, stats, tests, path, details) {
+function HTMLReporter(emitter, stats, tests, path, details) {
   EventEmitter.call(this);
 
   this.type = 'html';
@@ -26,7 +26,7 @@ function HtmlReporter(emitter, stats, tests, path, details) {
   logger.verbose(`Using '${this.type}' reporter.`);
 }
 
-HtmlReporter.prototype.sanitizedPath = function (path) {
+HTMLReporter.prototype.sanitizedPath = function (path) {
   const filePath = path ? file.path.abspath(path) : file.path.abspath('./report.html');
   if (fs.existsSync(filePath)) {
     logger.info(`File exists at ${filePath}, will be overwritten...`);
@@ -34,7 +34,7 @@ HtmlReporter.prototype.sanitizedPath = function (path) {
   return filePath;
 };
 
-HtmlReporter.prototype.configureEmitter = function (emitter) {
+HTMLReporter.prototype.configureEmitter = function (emitter) {
   const title = str => `${Array(this.level).join('#')} ${str}`;
 
   emitter.on('start', (rawBlueprint, callback) => {
@@ -103,6 +103,6 @@ HtmlReporter.prototype.configureEmitter = function (emitter) {
   });
 };
 
-inherits(HtmlReporter, EventEmitter);
+inherits(HTMLReporter, EventEmitter);
 
-module.exports = HtmlReporter;
+module.exports = HTMLReporter;
