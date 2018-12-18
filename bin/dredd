@@ -11,8 +11,7 @@ var path = require('path');
 });
 
 
-var dir = process.env.COVERAGE_DIR ? 'src' : 'lib';
-var CLI = require('../' + dir + '/CLI');
+var CLI = require('../src/CLI');
 
 
 var dreddCli = new CLI({

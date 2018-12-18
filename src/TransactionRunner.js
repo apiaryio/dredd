@@ -26,7 +26,7 @@ function eventCallback(reporterError) {
 
 // Use "lib" folder, because pitboss-ng does not support "coffee-script:register"
 // out of the box now
-const sandboxedLogLibraryPath = '../../../lib/hooksLogSandboxed';
+const sandboxedLogLibraryPath = '../../../src/hooksLogSandboxed';
 
 class TransactionRunner {
   constructor(configuration) {
