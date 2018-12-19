@@ -20,20 +20,20 @@ if [ ! -z "$TRAVIS" ]; then
 
   # Prepare the Dredd package as a tarball
   cd ./dredd
-  npm install --no-optional --no-save
+  npm install --no-save
   npm pack
   cd ..
 
   # Get an instance of the 'dredd-example' repo
   git clone https://github.com/apiaryio/dredd-example.git
   cd ./dredd-example
-  npm install --no-optional --no-save
+  npm install --no-save
 
   # Use the tarball version of Dredd in the 'dredd-example' project
   #
   # The line below prints the output of the npm install command and captures
   # it for later introspection at the same time.
-  { output=$(npm install ../dredd/*.tgz --no-optional --save-dev | tee /dev/fd/5); } 5>&1
+  { output=$(npm install ../dredd/*.tgz --save-dev | tee /dev/fd/5); } 5>&1
 
   # Assert that Protagonist (the C++ dependency) was not installed
   if [[ $output == *"protagonist"* || -d ./node_modules/protagonist ]]; then

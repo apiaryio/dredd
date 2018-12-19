@@ -4,7 +4,7 @@ install:
   - ps: Install-Product node 10
   - "npm -g install npm@6"
   - "set PATH=%APPDATA%\\npm;%PATH%"
-  - "npm install --no-optional"
+  - "npm install"
 cache:
   - "node_modules -> package.json"
   - "%APPDATA%\\npm-cache -> package.json"
