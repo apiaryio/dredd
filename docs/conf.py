@@ -32,8 +32,7 @@ node_modules_bin_dir = os.path.join(project_dir, 'node_modules', '.bin')
 # ReadTheDocs build image, which supports Node.js out of the box. This is
 # specified in the readthedocs.yml in the root of the project.
 if IS_READTHEDOCS:
-    subprocess.check_call('npm install --no-optional',
-                          cwd=project_dir, shell=True)
+    subprocess.check_call('npm install', cwd=project_dir, shell=True)
 
 # Load package.json data
 with open(os.path.join(project_dir, 'package.json')) as f:
