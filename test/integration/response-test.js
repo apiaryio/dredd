@@ -2,7 +2,7 @@ const { assert } = require('chai');
 const path = require('path');
 
 const { runDreddWithServer, createServer } = require('./helpers');
-const Dredd = require('../../src/Dredd');
+const Dredd = require('../../lib/Dredd');
 
 [{
   name: 'API Blueprint',

@@ -4,9 +4,9 @@ const { assert } = require('chai');
 
 const dreddTransactions = require('dredd-transactions');
 
-const logger = require('../../src/logger');
+const logger = require('../../lib/logger');
 
-const handleRuntimeProblems = proxyquire('../../src/handleRuntimeProblems',
+const handleRuntimeProblems = proxyquire('../../lib/handleRuntimeProblems',
   { './logger': logger }
 );
 

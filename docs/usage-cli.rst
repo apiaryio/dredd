@@ -86,4 +86,4 @@ CLI Options Reference
 
 Remember you can always list all available arguments by ``dredd --help``.
 
-.. cli-options:: ../src/options.json
+.. cli-options:: ../lib/options.json

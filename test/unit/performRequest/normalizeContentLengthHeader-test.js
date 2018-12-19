@@ -3,7 +3,7 @@ const { assert } = require('chai');
 
 const {
   _normalizeContentLengthHeader: normalizeContentLengthHeader
-} = require('../../../src/performRequest');
+} = require('../../../lib/performRequest');
 
 
 describe('performRequest._normalizeContentLengthHeader()', () => {

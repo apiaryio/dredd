@@ -10,15 +10,15 @@ const { EventEmitter } = require('events');
 
 nock.enableNetConnect();
 
-const addHooks = require('../../src/addHooks');
-const loggerStub = require('../../src/logger');
+const addHooks = require('../../lib/addHooks');
+const loggerStub = require('../../lib/logger');
 
-const Runner = proxyquire('../../src/TransactionRunner', {
+const Runner = proxyquire('../../lib/TransactionRunner', {
   html: htmlStub,
   './logger': loggerStub
 });
 
-const Hooks = require('../../src/Hooks');
+const Hooks = require('../../lib/Hooks');
 
 describe('TransactionRunner', () => {
   let server;

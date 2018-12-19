@@ -3,9 +3,9 @@ const sinon = require('sinon');
 const { assert } = require('chai');
 const { EventEmitter } = require('events');
 
-const loggerStub = require('../../../src/logger');
+const loggerStub = require('../../../lib/logger');
 
-const CLIReporter = proxyquire('../../../src/reporters/CLIReporter', {
+const CLIReporter = proxyquire('../../../lib/reporters/CLIReporter', {
   '../logger': loggerStub
 });
 

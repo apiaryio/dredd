@@ -6,9 +6,9 @@ const { assert } = require('chai');
 const { EventEmitter } = require('events');
 
 const blueprintData = require('../../fixtures/blueprint-data');
-const loggerStub = require('../../../src/logger');
+const loggerStub = require('../../../lib/logger');
 
-const ApiaryReporter = proxyquire('../../../src/reporters/ApiaryReporter', {
+const ApiaryReporter = proxyquire('../../../lib/reporters/ApiaryReporter', {
   '../logger': loggerStub
 });
 

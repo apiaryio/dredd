@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const { _detectLanguage: detectLanguage } = require('../../../src/init');
+const { _detectLanguage: detectLanguage } = require('../../../lib/init');
 
 
 describe('init._detectLanguage()', () => {

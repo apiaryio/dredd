@@ -3,9 +3,9 @@ const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const hooksLogStubSpy = sinon.spy(require('../../src/hooksLog'));
+const hooksLogStubSpy = sinon.spy(require('../../lib/hooksLog'));
 
-const hooksLogSandboxed = proxyquire('../../src/hooksLogSandboxed', {
+const hooksLogSandboxed = proxyquire('../../lib/hooksLogSandboxed', {
   './hooksLog': hooksLogStubSpy
 });
 

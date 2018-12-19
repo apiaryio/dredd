@@ -9,19 +9,19 @@ const { assert } = require('chai');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire').noCallThru();
 
-const loggerStub = require('../../src/logger');
-const BaseReporterStub = sinon.spy(require('../../src/reporters/BaseReporter'));
-const XUnitReporterStub = sinon.spy(require('../../src/reporters/XUnitReporter'));
-const CliReporterStub = sinon.spy(require('../../src/reporters/CLIReporter'));
-const DotReporterStub = sinon.spy(require('../../src/reporters/DotReporter'));
-const NyanCatReporterStub = sinon.spy(require('../../src/reporters/NyanReporter'));
-const HtmlReporterStub = sinon.spy(require('../../src/reporters/HTMLReporter'));
-const MarkdownReporterStub = sinon.spy(require('../../src/reporters/MarkdownReporter'));
-const ApiaryReporterStub = sinon.spy(require('../../src/reporters/ApiaryReporter'));
+const loggerStub = require('../../lib/logger');
+const BaseReporterStub = sinon.spy(require('../../lib/reporters/BaseReporter'));
+const XUnitReporterStub = sinon.spy(require('../../lib/reporters/XUnitReporter'));
+const CliReporterStub = sinon.spy(require('../../lib/reporters/CLIReporter'));
+const DotReporterStub = sinon.spy(require('../../lib/reporters/DotReporter'));
+const NyanCatReporterStub = sinon.spy(require('../../lib/reporters/NyanReporter'));
+const HtmlReporterStub = sinon.spy(require('../../lib/reporters/HTMLReporter'));
+const MarkdownReporterStub = sinon.spy(require('../../lib/reporters/MarkdownReporter'));
+const ApiaryReporterStub = sinon.spy(require('../../lib/reporters/ApiaryReporter'));
 
 const emitterStub = new EventEmitter();
 
-const configureReporters = proxyquire('../../src/configureReporters', {
+const configureReporters = proxyquire('../../lib/configureReporters', {
   './logger': loggerStub,
   './reporters/BaseReporter': BaseReporterStub,
   './reporters/XUnitReporter': XUnitReporterStub,

@@ -49,7 +49,7 @@ Let’s have a look at an example configuration first. (Please also see the :ref
 
        'hookfiles': [], // Array of Strings, filepaths to files containing hooks (can use glob wildcards)
 
-       'reporter': ['dot', 'html'], // Array of possible reporters, see folder src/reporters
+       'reporter': ['dot', 'html'], // Array of possible reporters, see folder lib/reporters
 
        'output': [],     // Array of Strings, filepaths to files used for output of file-based reporters
 

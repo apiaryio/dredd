@@ -1,8 +1,8 @@
 const clone = require('clone');
 const { assert } = require('chai');
 
-const configuration = require('../../src/configuration');
-const logger = require('../../src/logger');
+const configuration = require('../../lib/configuration');
+const logger = require('../../lib/logger');
 
 describe('configuration.applyLoggingOptions()', () => {
   let loggerSettings;

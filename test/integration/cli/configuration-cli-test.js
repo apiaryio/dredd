@@ -4,8 +4,8 @@ const proxyquire = require('proxyquire').noCallThru();
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const loggerStub = require('../../../src/logger');
-const configUtils = require('../../../src/configUtils');
+const loggerStub = require('../../../lib/logger');
+const configUtils = require('../../../lib/configUtils');
 
 const PORT = 9876;
 
@@ -14,21 +14,21 @@ let exitStatus;
 let stderr = '';
 let stdout = '';
 
-const addHooksStub = proxyquire('../../../src/addHooks', {
+const addHooksStub = proxyquire('../../../lib/addHooks', {
   './logger': loggerStub
 });
 
-const transactionRunner = proxyquire('../../../src/TransactionRunner', {
+const transactionRunner = proxyquire('../../../lib/TransactionRunner', {
   './addHooks': addHooksStub,
   './logger': loggerStub
 });
 
-const dreddStub = proxyquire('../../../src/Dredd', {
+const dreddStub = proxyquire('../../../lib/Dredd', {
   './TransactionRunner': transactionRunner,
   './logger': loggerStub
 });
 
-const CLIStub = proxyquire('../../../src/CLI', {
+const CLIStub = proxyquire('../../../lib/CLI', {
   './Dredd': dreddStub,
   './configUtils': configUtils,
   console: loggerStub,

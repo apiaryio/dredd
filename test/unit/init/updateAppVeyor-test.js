@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const { _updateAppVeyor: updateAppVeyor } = require('../../../src/init');
+const { _updateAppVeyor: updateAppVeyor } = require('../../../lib/init');
 
 
 function createOptions(contents) {

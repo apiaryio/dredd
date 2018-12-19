@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const { _updateCircleCI: updateCircleCI } = require('../../../src/init');
+const { _updateCircleCI: updateCircleCI } = require('../../../lib/init');
 
 
 function createOptions(contents) {

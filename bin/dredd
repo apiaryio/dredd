@@ -11,7 +11,7 @@ var path = require('path');
 });
 
 
-var CLI = require('../src/CLI');
+var CLI = require('../lib/CLI');
 
 
 var dreddCli = new CLI({

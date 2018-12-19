@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const { _updateWercker: updateWercker } = require('../../../src/init');
+const { _updateWercker: updateWercker } = require('../../../lib/init');
 
 
 function createOptions(contents) {

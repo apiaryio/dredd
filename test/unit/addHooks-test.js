@@ -6,16 +6,16 @@ const proxyquire = require('proxyquire');
 const proxyquireStub = require('proxyquire');
 const { assert } = require('chai');
 
-const loggerStub = require('../../src/logger');
-const hooksStub = require('../../src/Hooks');
-const hooksWorkerClientStub = require('../../src/HooksWorkerClient');
+const loggerStub = require('../../lib/logger');
+const hooksStub = require('../../lib/Hooks');
+const hooksWorkerClientStub = require('../../lib/HooksWorkerClient');
 
 const proxyquireSpy = sinon.spy(proxyquireStub.noCallThru());
 proxyquireStub.noCallThru = () => proxyquireSpy;
 
-const sandboxHooksCodeSpy = sinon.spy(require('../../src/sandboxHooksCode'));
+const sandboxHooksCodeSpy = sinon.spy(require('../../lib/sandboxHooksCode'));
 
-const addHooks = proxyquire('../../src/addHooks', {
+const addHooks = proxyquire('../../lib/addHooks', {
   logger: loggerStub,
   glob: globStub,
   pathStub,

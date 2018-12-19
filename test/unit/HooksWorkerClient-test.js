@@ -7,11 +7,11 @@ const sinon = require('sinon');
 const { assert } = require('chai');
 const { EventEmitter } = require('events');
 
-const whichStub = require('../../src/which');
-const loggerStub = require('../../src/logger');
+const whichStub = require('../../lib/which');
+const loggerStub = require('../../lib/logger');
 
-const Hooks = require('../../src/Hooks');
-const commandLineOptions = require('../../src/options');
+const Hooks = require('../../lib/Hooks');
+const commandLineOptions = require('../../lib/options');
 
 function measureExecutionDurationMs(fn) {
   const time = process.hrtime();
@@ -27,13 +27,13 @@ const PORT = 61321;
 let runner;
 const logLevels = ['error', 'log', 'info', 'warn'];
 
-const HooksWorkerClient = proxyquire('../../src/HooksWorkerClient', {
+const HooksWorkerClient = proxyquire('../../lib/HooksWorkerClient', {
   'cross-spawn': crossSpawnStub,
   './which': whichStub,
   './logger': loggerStub
 });
 
-const TransactionRunner = require('../../src/TransactionRunner');
+const TransactionRunner = require('../../lib/TransactionRunner');
 
 let hooksWorkerClient;
 

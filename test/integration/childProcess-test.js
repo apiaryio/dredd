@@ -2,7 +2,7 @@ const sinon = require('sinon');
 const { assert } = require('chai');
 
 const helpers = require('./helpers');
-const { spawn, signalTerm, signalKill } = require('../../src/childProcess');
+const { spawn, signalTerm, signalKill } = require('../../lib/childProcess');
 
 const COFFEE_BIN = 'node_modules/.bin/coffee';
 const WAIT_AFTER_COMMAND_SPAWNED_MS = 500;

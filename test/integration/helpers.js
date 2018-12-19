@@ -8,7 +8,7 @@ const path = require('path');
 const ps = require('ps-node');
 const spawn = require('cross-spawn');
 
-const logger = require('../../src/logger');
+const logger = require('../../lib/logger');
 
 const DEFAULT_SERVER_PORT = 9876;
 const DREDD_BIN = require.resolve('../../bin/dredd');

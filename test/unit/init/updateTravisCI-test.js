@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const { _updateTravisCI: updateTravisCI } = require('../../../src/init');
+const { _updateTravisCI: updateTravisCI } = require('../../../lib/init');
 
 
 function createOptions(contents) {

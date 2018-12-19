@@ -2,7 +2,7 @@ const { assert } = require('chai');
 
 const {
   _printClosingMessage: printClosingMessage
-} = require('../../../src/init');
+} = require('../../../lib/init');
 
 
 function print(s) {

@@ -1,8 +1,8 @@
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const loggerStub = require('../../src/logger');
-const prettifyResponse = require('../../src/prettifyResponse');
+const loggerStub = require('../../lib/logger');
+const prettifyResponse = require('../../lib/prettifyResponse');
 
 describe('prettifyResponse(response)', () => {
   describe('with a real object without any circular references', () => {
