@@ -1,11 +1,9 @@
-const drafter = require('drafter');
 const { assert } = require('chai');
 
 const blueprintUtils = require('../../lib/blueprintUtils');
 
 describe('blueprintUtils', () => {
   const placeholderText = '';
-  const options = { type: 'refract' };
 
   describe('characterIndexToPosition()', () => {
     describe('under standard circumstances', () =>
@@ -52,8 +50,8 @@ describe('blueprintUtils', () => {
       ]);
     });
 
-    it('works for some API description warnings too', (done) => {
-      const blueprint = `\
+    it('works for some API description warnings too', () => {
+      const apiDescription = `\
 # Indented API
 
 ## GET /url
@@ -66,25 +64,33 @@ describe('blueprintUtils', () => {
 
         ok indentation\
 `;
-      return drafter.parse(blueprint, options, (err, parseResult) => {
-        if (err) { return done(new Error(err.message)); }
+      const annotation = {
+        element: 'annotation',
+        meta: { classes: ['warning'] },
+        attributes: {
+          code: 10,
+          sourceMap: [
+            {
+              element: 'sourceMap',
+              content: [[59, 17], [78, 10]]
+            }
+          ]
+        },
+        content:
+          'message-body asset is expected to be a pre-formatted code ' +
+          'block, every of its line indented by exactly 8 spaces or 2 tabs'
+      };
 
-        const annotations = (Array.from(parseResult.content).filter(node => node.element === 'annotation'));
-        assert.isAbove(annotations.length, 0);
-        const annotation = annotations[0];
+      location = [];
+      for (const sourceMap of annotation.attributes.sourceMap) {
+        location = location.concat(sourceMap.content);
+      }
+      assert.isAbove(location.length, 0);
 
-        location = [];
-        for (const sourceMap of annotation.attributes.sourceMap) {
-          location = location.concat(sourceMap.content);
-        }
-        assert.isAbove(location.length, 0);
-
-        const ranges = blueprintUtils.warningLocationToRanges(location, blueprint);
-        assert.isArray(ranges);
-        assert.lengthOf(ranges, 1);
-        assert.deepEqual(ranges, [{ start: 6, end: 7 }]);
-        done();
-      });
+      const ranges = blueprintUtils.warningLocationToRanges(location, apiDescription);
+      assert.isArray(ranges);
+      assert.lengthOf(ranges, 1);
+      assert.deepEqual(ranges, [{ start: 6, end: 7 }]);
     });
 
     it('returns an empty Array for empty locations', () => assert.deepEqual(blueprintUtils.warningLocationToRanges([], placeholderText), []));
@@ -106,11 +112,8 @@ describe('blueprintUtils', () => {
     );
 
     describe('for a real API description document', () => {
-      let warnings = 0;
-      let blueprint = null;
       const allRanges = [];
-      before((done) => {
-        blueprint = `\
+      const apiDescription = `\
 # Indentation warnings API
 ## GET /url
 + Response 200 (text/plain)
@@ -139,24 +142,82 @@ describe('blueprintUtils', () => {
 
         yup!\
 `;
-        drafter.parse(blueprint, options, (err, parseResult) => {
-          if (err) { return done(err); }
+      const annotations = [
+        {
+          element: 'annotation',
+          meta: { classes: ['warning'] },
+          attributes: {
+            code: 10,
+            sourceMap: [
+              {
+                element: 'sourceMap',
+                content: [[70, 23], [95, 24]]
+              }
+            ]
+          },
+          content:
+            'message-body asset is expected to be a pre-formatted code ' +
+            'block, every of its line indented by exactly 8 spaces or 2 tabs'
+        },
+        {
+          element: 'annotation',
+          meta: { classes: ['warning'] },
+          attributes: {
+            code: 10,
+            sourceMap: [
+              {
+                element: 'sourceMap',
+                content: [[168, 39]]
+              }
+            ]
+          },
+          content:
+            'headers is expected to be a pre-formatted code block, every ' +
+            'of its line indented by exactly 12 spaces or 3 tabs'
+        },
+        {
+          element: 'annotation',
+          meta: { classes: ['warning'] },
+          attributes: {
+            code: 10,
+            sourceMap: [
+              {
+                element: 'sourceMap',
+                content: [[224, 33]]
+              }
+            ]
+          },
+          content:
+            'message-body asset is expected to be a pre-formatted code ' +
+            'block, every of its line indented by exactly 12 spaces or 3 tabs'
+        },
+        {
+          element: 'annotation',
+          meta: { classes: ['warning'] },
+          attributes: {
+            code: 10,
+            sourceMap: [
+              {
+                element: 'sourceMap',
+                content: [[302, 12], [318, 12], [334, 14]]
+              }
+            ]
+          },
+          content:
+            'message-body asset is expected to be a pre-formatted code ' +
+            'block, every of its line indented by exactly 8 spaces or 2 tabs'
+        }
+      ];
 
-          const annotations = (Array.from(parseResult.content).filter(node => node.element === 'annotation'));
-          warnings = annotations.length;
+      for (const annotation of annotations) {
+        let location = [];
+        for (const sourceMap of annotation.attributes.sourceMap) {
+          location = location.concat(sourceMap.content);
+        }
+        allRanges.push(blueprintUtils.warningLocationToRanges(location, apiDescription));
+      }
 
-          for (const annotation of annotations) {
-            let location = [];
-            for (const sourceMap of annotation.attributes.sourceMap) {
-              location = location.concat(sourceMap.content);
-            }
-            allRanges.push(blueprintUtils.warningLocationToRanges(location, blueprint));
-          }
-          done();
-        });
-      });
-
-      it('shows ~ 4 warnings', () => assert.equal(warnings, 4));
+      it('shows ~ 4 warnings', () => assert.equal(annotations.length, 4));
 
       it('prints lines for those warnings', () => {
         const expectedLines = [
