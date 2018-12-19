@@ -29,7 +29,22 @@ if [ ! -z "$TRAVIS" ]; then
   cd ./dredd-example
   npm install --no-optional --no-save
 
-  # Use the tarball, run the 'dredd-example' project tests
-  npm install ../dredd/*.tgz --no-optional --save-dev
+  # Use the tarball version of Dredd in the 'dredd-example' project
+  #
+  # The line below prints the output of the npm install command and captures
+  # it for later introspection at the same time.
+  { output=$(npm install ../dredd/*.tgz --no-optional --save-dev | tee /dev/fd/5); } 5>&1
+
+  # Assert that Protagonist (the C++ dependency) was not installed
+  if [[ $output == *"protagonist"* || -d ./node_modules/protagonist ]]; then
+    echo "ERROR: It looks like Dredd has tried to install the 'protagonist'"\
+      "library (a C++ binding for the API Blueprint parser), which is"\
+      "an unwanted behavior of the installation process. The lock file"\
+      "together with the 'scripts/postshrinkwrap.js' script should have"\
+      "prevented this."
+    exit 1
+  fi
+
+  # Test the 'dredd-example' project
   npm test
 fi
