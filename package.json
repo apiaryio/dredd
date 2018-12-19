@@ -30,6 +30,12 @@
     "type": "git",
     "url": "https://github.com/apiaryio/dredd"
   },
+  "files": [
+    "bin",
+    "lib",
+    "npm-shrinkwrap.json",
+    "README.md"
+  ],
   "dependencies": {
     "async": "2.6.1",
     "caseless": "0.12.0",
