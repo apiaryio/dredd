@@ -54,7 +54,7 @@ You can learn more about Dredd's codebase in the [Internals](https://dredd.org/e
 ### Before you start
 
 - Have [Node.js](https://nodejs.org/) installed
-- Be familiar with [git](https://guides.github.com/introduction/git-handbook/), [Pull Request flow](https://guides.github.com/introduction/flow/) and [GitHub forks](https://guides.github.com/activities/forking/)
+- Be familiar with [Git](https://guides.github.com/introduction/git-handbook/), [Pull Request flow](https://guides.github.com/introduction/flow/) and [GitHub forks](https://guides.github.com/activities/forking/)
 - [Read about Dredd's architecture](https://dredd.org/en/latest/internals.html)
 - Look at [easy to fix issues](https://github.com/apiaryio/dredd/labels/easy%20to%20fix)
 

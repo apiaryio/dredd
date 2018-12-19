@@ -5,9 +5,9 @@ const proxyquire = require('proxyquire').noCallThru();
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const configUtilsStub = require('../../src/configUtils');
-const loggerStub = require('../../src/logger');
-const options = require('../../src/options');
+const configUtilsStub = require('../../lib/configUtils');
+const loggerStub = require('../../lib/logger');
+const options = require('../../lib/options');
 const packageData = require('../../package.json');
 
 const PORT = 9876;
@@ -17,16 +17,16 @@ let exitStatus;
 let stderr = '';
 let stdout = '';
 
-const addHooksStub = proxyquire('../../src/addHooks', {
+const addHooksStub = proxyquire('../../lib/addHooks', {
   './logger': loggerStub
 });
 
-const transactionRunner = proxyquire('../../src/TransactionRunner', {
+const transactionRunner = proxyquire('../../lib/TransactionRunner', {
   './addHooks': addHooksStub,
   './logger': loggerStub
 });
 
-const DreddStub = proxyquire('../../src/Dredd', {
+const DreddStub = proxyquire('../../lib/Dredd', {
   './TransactionRunner': transactionRunner,
   './logger': loggerStub
 });
@@ -36,7 +36,7 @@ const initStub = sinon.stub().callsFake((config, save, callback) => {
   callback();
 });
 
-const CLIStub = proxyquire('../../src/CLI', {
+const CLIStub = proxyquire('../../lib/CLI', {
   './Dredd': DreddStub,
   console: loggerStub,
   './logger': loggerStub,

@@ -5,11 +5,11 @@ const sinon = require('sinon');
 const { assert } = require('chai');
 const { EventEmitter } = require('events');
 
-const loggerStub = require('../../../src/logger');
+const loggerStub = require('../../../lib/logger');
 
 const fsExtraStub = { mkdirp(path, cb) { return cb(); } };
 
-const HTMLReporter = proxyquire('../../../src/reporters/HTMLReporter', {
+const HTMLReporter = proxyquire('../../../lib/reporters/HTMLReporter', {
   '../logger': loggerStub,
   fs: fsStub,
   'fs-extra': fsExtraStub

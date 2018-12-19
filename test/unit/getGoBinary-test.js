@@ -3,7 +3,7 @@ const path = require('path');
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const getGoBinary = require('../../src/getGoBinary');
+const getGoBinary = require('../../lib/getGoBinary');
 
 describe('getGoBinary()', () => {
   let goBin;

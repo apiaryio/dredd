@@ -3,7 +3,7 @@ const readline = require('readline');
 const ASCII_CTRL_C = 3;
 
 // To learn about why this is needed and how it works, see
-// the 'src/childProcess.js' file, function 'signalTerm'.
+// the 'lib/childProcess.js' file, function 'signalTerm'.
 module.exports = () => {
   // Handling programmatic interruption (Dredd sends '\u0003'
   // to stdin)

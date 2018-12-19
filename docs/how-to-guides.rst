@@ -62,7 +62,7 @@ Now we can create a ``hooks.js`` file. The file will contain setup and teardown 
 .. code-block:: javascript
 
    hooks = require('hooks');
-   db = require('./src/db');
+   db = require('./lib/db');
 
    beforeAll(function() {
      db.cleanUp();
@@ -144,7 +144,7 @@ Now we can create a ``hooks.js`` file. The file will contain setup and teardown 
 .. code-block:: javascript
 
    hooks = require('hooks');
-   db = require('./src/db');
+   db = require('./lib/db');
 
    beforeAll(function() {
      db.cleanUp();
@@ -233,7 +233,7 @@ Now we can create a ``hooks.js`` file. The code of the file will use global ``st
 .. code-block:: javascript
 
    hooks = require('hooks');
-   db = require('./src/db');
+   db = require('./lib/db');
 
    stash = {}
 
@@ -362,7 +362,7 @@ Now we can create a ``hooks.js`` file. The code of the file will use global ``st
 .. code-block:: javascript
 
    hooks = require('hooks');
-   db = require('./src/db');
+   db = require('./lib/db');
 
    stash = {}
 

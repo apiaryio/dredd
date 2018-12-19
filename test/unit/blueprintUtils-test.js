@@ -1,7 +1,7 @@
 const drafter = require('drafter');
 const { assert } = require('chai');
 
-const blueprintUtils = require('../../src/blueprintUtils');
+const blueprintUtils = require('../../lib/blueprintUtils');
 
 describe('blueprintUtils', () => {
   const placeholderText = '';

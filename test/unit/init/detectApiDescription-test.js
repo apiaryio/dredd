@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const { _detectApiDescription: detectApiDescription } = require('../../../src/init');
+const { _detectApiDescription: detectApiDescription } = require('../../../lib/init');
 
 
 describe('init._detectApiDescription()', () => {

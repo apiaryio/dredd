@@ -1,7 +1,7 @@
 const { assert } = require('chai');
 const sinon = require('sinon');
 
-const { _applyAnswers: applyAnswers } = require('../../../src/init');
+const { _applyAnswers: applyAnswers } = require('../../../lib/init');
 
 
 function createConfig() {

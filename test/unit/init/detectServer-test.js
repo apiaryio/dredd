@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const { _detectServer: detectServer } = require('../../../src/init');
+const { _detectServer: detectServer } = require('../../../lib/init');
 
 
 describe('init._detectServer()', () => {

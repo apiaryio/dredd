@@ -2,7 +2,7 @@ const { assert } = require('chai');
 
 const {
   _getBodyAsBuffer: getBodyAsBuffer
-} = require('../../../src/performRequest');
+} = require('../../../lib/performRequest');
 
 
 describe('performRequest._getBodyAsBuffer()', () => {

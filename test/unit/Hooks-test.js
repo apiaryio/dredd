@@ -1,7 +1,7 @@
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const Hooks = require('../../src/Hooks');
+const Hooks = require('../../lib/Hooks');
 
 describe('Hooks', () => {
   describe('constructor', () => {

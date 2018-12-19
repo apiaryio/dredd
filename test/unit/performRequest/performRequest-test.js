@@ -1,7 +1,7 @@
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const performRequest = require('../../../src/performRequest');
+const performRequest = require('../../../lib/performRequest');
 
 
 describe('performRequest()', () => {

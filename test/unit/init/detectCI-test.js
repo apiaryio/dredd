@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const { _detectCI: detectCI } = require('../../../src/init');
+const { _detectCI: detectCI } = require('../../../lib/init');
 
 
 describe('init._detectCI()', () => {

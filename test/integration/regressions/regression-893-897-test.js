@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const Dredd = require('../../../src/Dredd');
+const Dredd = require('../../../lib/Dredd');
 const { runDreddWithServer, createServer } = require('../helpers');
 
 describe('Regression: Issue #893 and #897', () => {
