@@ -320,7 +320,10 @@ describe('CLI - Reporters', () => {
       });
     });
 
-    afterEach(() => fs.unlinkSync(`${process.cwd()}/__test_directory/__test_file_output__.xml`));
+    afterEach(() => {
+      fs.unlinkSync(`${process.cwd()}/__test_directory/__test_file_output__.xml`);
+      fs.rmdirSync(`${process.cwd()}/__test_directory`);
+    });
 
     it('should create given file', () => assert.isOk(fs.existsSync(`${process.cwd()}/__test_directory/__test_file_output__.xml`)));
   });
