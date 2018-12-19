@@ -42,7 +42,7 @@ Installing Dredd using `Docker <https://docs.docker.com>`__ is the easiest and t
 npm
 ---
 
-Dredd is a command-line application written in JavaScript, or to be more precise, in `Node.js <https://nodejs.org>`__. If Docker isn't an option for you, it's possible to install Dredd using the `npm <https://www.npmjs.com>`__ package manager. To install Dredd's dependencies, you'll also need to have `Git <https://git-scm.com/>`__ available.
+Dredd is a command-line application written in JavaScript, or to be more precise, in `Node.js <https://nodejs.org>`__. If Docker isn't an option for you, it's possible to install Dredd using the `npm <https://www.npmjs.com>`__.
 
 
 .. _install-nodejs:
