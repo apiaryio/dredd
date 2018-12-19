@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+// Postprocesses the lockfile to remove C++ dependency and to enforce https://
+
 const fs = require('fs');
 const path = require('path');
 const lockfile = require('../npm-shrinkwrap');
