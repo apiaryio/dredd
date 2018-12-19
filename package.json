@@ -10,19 +10,20 @@
     "node": ">= 6"
   },
   "scripts": {
+    "postshrinkwrap": "node ./scripts/postshrinkwrap.js",
     "docs:lint": "doc8 ./docs && sphinx-build -nW -b linkcheck ./docs ./docs/_build",
     "docs:test-extensions": "python -m unittest docs/_extensions/*.py --verbose",
     "docs:build": "sphinx-build -nW -b html ./docs ./docs/_build",
     "docs:serve": "sphinx-autobuild ./docs ./docs/_build",
     "lint": "./scripts/commitlint.sh && eslint .",
     "test": "mocha \"./test/**/*-test.js\"",
-    "test:coverage": "./scripts/coverage.sh",
+    "test:coverage": "bash ./scripts/coverage.sh",
     "test:debug": "mocha --debug-brk \"./test/**/*-test.js\"",
     "coveralls": "./scripts/coveralls.sh",
     "ci:lint": "npm run lint && npm run docs:lint && npm run docs:test-extensions",
     "ci:docs": "npm run docs:build",
     "ci:test": "npm run test:coverage && npm run coveralls",
-    "ci:test:smoke": "./scripts/smoke.sh",
+    "ci:test:smoke": "bash ./scripts/smoke.sh",
     "ci:release": "semantic-release && npm dist-tag add \"dredd@$(npm view dredd version)\" stable"
   },
   "repository": {
