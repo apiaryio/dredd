@@ -6,7 +6,7 @@
 [![Dependency Status](https://david-dm.org/apiaryio/dredd.svg)](https://david-dm.org/apiaryio/dredd)
 [![devDependency Status](https://david-dm.org/apiaryio/dredd/dev-status.svg)](https://david-dm.org/apiaryio/dredd?type=dev)
 [![Greenkeeper badge](https://badges.greenkeeper.io/apiaryio/dredd.svg)](https://greenkeeper.io/)
-[![Documentation Status](https://readthedocs.org/projects/dredd/badge/?version=latest)](https://dredd.org/en/latest/)
+[![Documentation Status](https://readthedocs.org/projects/dredd/badge/?version=latest)](https://readthedocs.org/projects/dredd/builds/)
 [![Coverage Status](https://coveralls.io/repos/apiaryio/dredd/badge.svg?branch=master)](https://coveralls.io/github/apiaryio/dredd)
 [![Known Vulnerabilities](https://snyk.io/test/npm/dredd/badge.svg)](https://snyk.io/test/npm/dredd)
 
