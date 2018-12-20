@@ -28,7 +28,6 @@ module.exports = {
     'import/no-extraneous-dependencies': 'off',
     'import/no-unresolved': 'off',
     'max-len': 'off',
-    'no-bitwise': 'off',
     'no-continue': 'off',
     'no-empty': 'off',
     'no-multi-assign': 'off',

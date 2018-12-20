@@ -80,7 +80,7 @@ describe('MarkdownReporter', () => {
 
     it('should write the title to the buffer', done =>
       emitter.emit('start', '', () => {
-        assert.isOk(~mdReporter.buf.indexOf('Dredd'));
+        assert.isOk(mdReporter.buf.includes('Dredd'));
         done();
       })
     )
@@ -141,7 +141,7 @@ describe('MarkdownReporter', () => {
     });
 
     it('should write pass to the buffer', (done) => {
-      assert.isOk(~mdReporter.buf.indexOf('Pass'));
+      assert.isOk(mdReporter.buf.includes('Pass'));
       done();
     });
 
@@ -150,7 +150,7 @@ describe('MarkdownReporter', () => {
       it('should write details for passing tests', (done) => {
         mdReporter.details = true;
         emitter.emit('test pass', test);
-        assert.isOk(~mdReporter.buf.indexOf('Request'));
+        assert.isOk(mdReporter.buf.includes('Request'));
         done();
       })
     );
@@ -167,7 +167,7 @@ describe('MarkdownReporter', () => {
     });
 
     it('should write skip to the buffer', (done) => {
-      assert.isOk(~mdReporter.buf.indexOf('Skip'));
+      assert.isOk(mdReporter.buf.includes('Skip'));
       done();
     });
   });
@@ -183,7 +183,7 @@ describe('MarkdownReporter', () => {
     });
 
     it('should write fail to the buffer', (done) => {
-      assert.isOk(~mdReporter.buf.indexOf('Fail'));
+      assert.isOk(mdReporter.buf.includes('Fail'));
       done();
     });
   });
@@ -199,7 +199,7 @@ describe('MarkdownReporter', () => {
     });
 
     it('should write error to the buffer', (done) => {
-      assert.isOk(~mdReporter.buf.indexOf('Error'));
+      assert.isOk(mdReporter.buf.includes('Error'));
       done();
     });
   });
