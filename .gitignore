@@ -1,16 +1,12 @@
-# Common for .gitignore and .npmignore
+/coverage
+/docs/_build
+node_modules
+.idea
+.vscode
 .DS_Store
-coverage/
 cov.*
 *.log
-.env
-.envrc
-
-# List specific to .gitignore
-node_modules
-.idea/
-.vscode/
-/docs/_build
+.env*
 
 # Regardless the rules above, never ignore following
 !.vscode/launch.json

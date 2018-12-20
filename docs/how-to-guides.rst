@@ -492,7 +492,7 @@ If you prefer to add Dredd yourself or you look for inspiration on how to add Dr
          - image: circleci/node:latest
        steps:
          - checkout
-         - run: npm install dredd@x.x.x --no-optional --global
+         - run: npm install dredd@x.x.x --global
          - run: dredd apiary.apib http://127.0.0.1:3000
 
 .. _travisyml-configuration-file-for-travis-ci:
@@ -503,7 +503,7 @@ If you prefer to add Dredd yourself or you look for inspiration on how to add Dr
 ::
 
    before_install:
-     - npm install dredd@x.x.x --no-optional --global
+     - npm install dredd@x.x.x --global
    before_script:
      - dredd apiary.apib http://127.0.0.1:3000
 

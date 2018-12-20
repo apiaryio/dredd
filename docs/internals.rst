@@ -49,10 +49,6 @@ To hack Dredd locally, clone the repository and run ``npm install`` to install J
 
     See also the full :ref:`installation guide <install-npm>`.
 
-    You might see some errors during installation because of the :ref:`cpp-dependencies`, but they should not prevent you from installing and developing Dredd.
-
-    Also, when using npm with the project, you might notice it tries to compile the C++ dependencies again and again, which means every npm command takes very long until it finishes. The workaround is to append ``--no-optional`` every time to your npm command. We're working on a better solution together with the team behind the C++ projects we depend on (:ghissue:`drafter-npm#16`).
-
 
 .. _semantic-relase-and-conventional-changelog:
 .. _conventional-changelog:
@@ -111,12 +107,7 @@ C++ dependencies
 
 Dredd uses `Drafter <https://github.com/apiaryio/drafter>`__ for parsing `API Blueprint`_ documents. Drafter is written in C++ and needs to be compiled during installation. Because that can cause a lot of problems in some environments, there’s also pure JavaScript version of the parser, `drafter.js <https://github.com/apiaryio/drafter.js>`__. Drafter.js is fully equivalent, but it can have slower performance. Therefore there’s `drafter-npm <https://github.com/apiaryio/drafter-npm/>`__ package, which tries to compile the C++ version of the parser and in case of failure it falls back to the JavaScript equivalent. Dredd depends on the `drafter-npm <https://github.com/apiaryio/drafter-npm/>`__ package.
 
-That’s the reason why even if you see ``node-gyp``, ``gyp``, or ``python`` errors during the installation process, afterwards Dredd seems to normally work and correctly parses API Blueprint documents.
-
-The compilation can be avoided by using ``--no-optional`` with ``npm install``. There are attempts to improve the whole experience in :ghissue:`drafter-npm#16`.
-
-.. note::
-    See also :ref:`install-cpp` in the full installation guide.
+That still proved problematic for Dredd though. The current solution is to provide an `npm-shrinkwrap.json <https://docs.npmjs.com/files/shrinkwrap.json>`__ file, which completely excludes `protagonist <https://github.com/apiaryio/protagonist>`__, i.e. the compiled C++ binding. Unlike ``package-lock.json``, the file can be distributed inside Dredd's npm package. The exclusion is performed by a ``postshrinkwrap`` npm script.
 
 
 Supported Node.js versions
