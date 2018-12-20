@@ -1,6 +1,6 @@
 const hooks = require('hooks');
 
 hooks.beforeAll((done) => {
-  console.log('hooks.beforeAll');
+  process.stdout.write('hooks.beforeAll\n');
   done();
 });

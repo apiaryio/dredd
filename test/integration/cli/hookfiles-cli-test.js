@@ -201,7 +201,7 @@ describe('CLI', () => {
           // TCP server echoing transactions back
           const hookHandler = net.createServer((socket) => {
             socket.on('data', data => socket.write(data));
-            socket.on('error', err => console.error(err));
+            socket.on('error', err => process.stderr.write(`${err}\n`));
           });
 
           const args = [
@@ -254,7 +254,7 @@ describe('CLI', () => {
           // TCP server echoing transactions back
           const hookHandler = net.createServer((socket) => {
             socket.on('data', data => socket.write(data));
-            socket.on('error', err => console.error(err));
+            socket.on('error', err => process.stderr.write(`${err}\n`));
           });
 
           const args = [

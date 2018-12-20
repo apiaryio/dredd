@@ -1,11 +1,11 @@
 const hooks = require('hooks');
 
 hooks.beforeAll((done) => {
-  console.log('*** beforeAll');
+  process.stdout.write('*** beforeAll\n');
   done();
 });
 
 hooks.before('Machines > Machines collection > Get Machines', (transaction, done) => {
-  console.log('*** before');
+  process.stdout.write('*** before\n');
   done();
 });

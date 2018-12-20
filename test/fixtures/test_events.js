@@ -1,6 +1,6 @@
 const { afterAll } = require('hooks');
 
 afterAll((done) => {
-  console.log('hooks.afterAll');
+  process.stdout.write('hooks.afterAll\n');
   done();
 });

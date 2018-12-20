@@ -3,7 +3,7 @@ const express = require('express');
 require('./handle-windows-sigint.js')();
 
 function ignore() {
-  console.log('ignoring termination');
+  process.stdout.write('ignoring termination\n');
 }
 
 process.on('SIGTERM', ignore);
@@ -20,5 +20,5 @@ app.get('/machines/:name', (req, res) => {
 });
 
 app.listen(process.argv[2], () => {
-  console.log(`Dummy server listening on port ${process.argv[2]}!`);
+  process.stdout.write(`Dummy server listening on port ${process.argv[2]}!\n`);
 });
