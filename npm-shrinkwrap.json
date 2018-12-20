@@ -263,9 +263,9 @@
       "integrity": "sha512-hIP3EEPs8tB9AT1L+NUqtwOAps4mk2Zob89MWXMHjHWg9milF/j4osnnQLXBCBFBk/tvIG/tUc9mOUJiPBhPXA=="
     },
     "core-js": {
-      "version": "2.5.7",
-      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.5.7.tgz",
-      "integrity": "sha512-RszJCAxg/PP6uzXVXL6BsxSXx/B05oJAQ2vkJRjyjrEcNVycaqOmNb5OTxZPE3xa5gwZduqza6L9JOCenh/Ecw=="
+      "version": "2.6.1",
+      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.6.1.tgz",
+      "integrity": "sha512-L72mmmEayPJBejKIWe2pYtGis5r0tQ5NaJekdhyXgeMQTpJoBsH0NL4ElY2LfSoV15xeQWKQ+XTTOZdyero5Xg=="
     },
     "core-util-is": {
       "version": "1.0.2",
@@ -1138,9 +1138,9 @@
       }
     },
     "ono": {
-      "version": "4.0.10",
-      "resolved": "https://registry.npmjs.org/ono/-/ono-4.0.10.tgz",
-      "integrity": "sha512-4Xz4hlbq7MzV0I3vKfZwRvyj8tCbXODqBNzFqtkjP+KTV93zzDRju8kw1qnf6P5kcZ2+xlIq6wSCqA+euSKxhA==",
+      "version": "4.0.11",
+      "resolved": "https://registry.npmjs.org/ono/-/ono-4.0.11.tgz",
+      "integrity": "sha512-jQ31cORBFE6td25deYeD80wxKBMj+zBmHTrVxnc6CKhx8gho6ipmWM5zj/oeoqioZ99yqBls9Z/9Nss7J26G2g==",
       "requires": {
         "format-util": "^1.0.3"
       }

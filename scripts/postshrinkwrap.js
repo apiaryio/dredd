@@ -1,9 +1,15 @@
 #!/usr/bin/env node
-// Postprocesses the lockfile to remove C++ dependency and to enforce https://
+// Postprocesses the lockfile to remove dev dependencies and one C++
+// dependency, and to enforce https://
 
 const fs = require('fs');
 const path = require('path');
 const lockfile = require('../npm-shrinkwrap');
+
+// Remove dev dependencies so they NEVER get to the final distribution of Dredd
+Object.keys(lockfile.dependencies)
+  .filter(name => lockfile.dependencies[name].dev)
+  .forEach(name => delete lockfile.dependencies[name]);
 
 // Force all installations of Dredd to use only the pure JavaScript version
 // of the API Blueprint parser. It has slower performance, but it solves
