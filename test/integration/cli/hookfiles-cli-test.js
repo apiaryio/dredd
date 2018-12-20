@@ -75,7 +75,7 @@ describe('CLI', () => {
             `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
             '--server-wait=0',
             '--language=foo/bar/hook-handler',
-            '--hookfiles=./test/fixtures/scripts/emptyfile'
+            '--hookfiles=./test/fixtures/scripts/emptyfile',
           ];
           runCLIWithServer(args, app, (err, info) => {
             runtimeInfo = info;
@@ -116,7 +116,7 @@ describe('CLI', () => {
             `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
             '--server-wait=0',
             '--language=node ./test/fixtures/scripts/exit-3.js',
-            '--hookfiles=./test/fixtures/scripts/emptyfile'
+            '--hookfiles=./test/fixtures/scripts/emptyfile',
           ];
           runCLIWithServer(args, app, (err, info) => {
             runtimeInfo = info;
@@ -153,7 +153,7 @@ describe('CLI', () => {
             `--server=${COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee`,
             '--server-wait=0',
             '--language=node ./test/fixtures/scripts/kill-self.js',
-            '--hookfiles=./test/fixtures/scripts/emptyfile'
+            '--hookfiles=./test/fixtures/scripts/emptyfile',
           ];
           runCLIWithServer(args, app, (err, info) => {
             runtimeInfo = info;
@@ -210,7 +210,7 @@ describe('CLI', () => {
             `--server=${COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee`,
             '--server-wait=0',
             `--language=${COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee`,
-            '--hookfiles=test/fixtures/hooks.js'
+            '--hookfiles=test/fixtures/hooks.js',
           ];
           hookHandler.listen(DEFAULT_HOOK_HANDLER_PORT, () =>
             runCLIWithServer(args, app, (err, info) => {
@@ -263,7 +263,7 @@ describe('CLI', () => {
             `--server=${COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee`,
             '--server-wait=0',
             `--language=${COFFEE_BIN} ./test/fixtures/scripts/endless-ignore-term.coffee`,
-            '--hookfiles=./test/fixtures/scripts/emptyfile'
+            '--hookfiles=./test/fixtures/scripts/emptyfile',
           ];
           hookHandler.listen(DEFAULT_HOOK_HANDLER_PORT, () =>
             runCLIWithServer(args, app, (err, info) => {
@@ -305,7 +305,7 @@ describe('CLI', () => {
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '-h',
-          'Accept:application/json'
+          'Accept:application/json',
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -328,7 +328,7 @@ describe('CLI', () => {
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '-u',
-          'username:password'
+          'username:password',
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -352,7 +352,7 @@ describe('CLI', () => {
         const args = [
           './test/fixtures/apiary.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-          '-s'
+          '-s',
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -380,7 +380,7 @@ describe('CLI', () => {
         const args = [
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-          '-e'
+          '-e',
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -406,7 +406,7 @@ describe('CLI', () => {
         const args = [
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-          '-d'
+          '-d',
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -432,7 +432,7 @@ describe('CLI', () => {
             './test/fixtures/single-get.apib',
             `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
             '-m',
-            'POST'
+            'POST',
           ];
           runCLIWithServer(args, app, (err, info) => {
             runtimeInfo = info;
@@ -454,7 +454,7 @@ describe('CLI', () => {
             './test/fixtures/single-get.apib',
             `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
             '-m',
-            'GET'
+            'GET',
           ];
           runCLIWithServer(args, app, (err, info) => {
             runtimeInfo = info;
@@ -480,7 +480,7 @@ describe('CLI', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--path=./test/fixtures/multifile/*.apib',
           '--only=Message API > /message > GET',
-          '--no-color'
+          '--no-color',
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -505,7 +505,7 @@ describe('CLI', () => {
         const args = [
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-          '--no-color'
+          '--no-color',
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -530,7 +530,7 @@ describe('CLI', () => {
         const args = [
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-          '--color=false'
+          '--color=false',
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -555,7 +555,7 @@ describe('CLI', () => {
         const args = [
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-          '-l=error'
+          '-l=error',
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -579,7 +579,7 @@ describe('CLI', () => {
         const args = [
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-          '-t'
+          '-t',
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -604,7 +604,7 @@ describe('CLI', () => {
       const args = [
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-        '--hookfiles=./test/fixtures/*_hooks.*'
+        '--hookfiles=./test/fixtures/*_hooks.*',
       ];
       runCLIWithServer(args, app, (err, info) => {
         runtimeInfo = info;
@@ -635,7 +635,7 @@ describe('CLI', () => {
       const args = [
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-        '--hookfiles=./test/fixtures/*_events.*'
+        '--hookfiles=./test/fixtures/*_events.*',
       ];
       runCLIWithServer(args, app, (err, info) => {
         runtimeInfo = info;
@@ -670,7 +670,7 @@ describe('CLI', () => {
       const args = [
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-        '--hookfiles=./test/fixtures/*_all.*'
+        '--hookfiles=./test/fixtures/*_all.*',
       ];
       runCLIWithServer(args, app, (err, info) => {
         runtimeInfo = info;
@@ -694,14 +694,14 @@ describe('CLI', () => {
           res.json({
             data: {
               expires: 1234,
-              token: 'this should pass since it is a string'
-            }
+              token: 'this should pass since it is a string',
+            },
           })
         );
 
         const args = [
           './test/fixtures/schema.apib',
-          `http://127.0.0.1:${DEFAULT_SERVER_PORT}`
+          `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -721,14 +721,14 @@ describe('CLI', () => {
           res.json({
             data: {
               expires: 'this should fail since it is a string',
-              token: 'this should pass since it is a string'
-            }
+              token: 'this should pass since it is a string',
+            },
           })
         );
 
         const args = [
           './test/fixtures/schema.apib',
-          `http://127.0.0.1:${DEFAULT_SERVER_PORT}`
+          `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -748,7 +748,7 @@ describe('CLI', () => {
         const args = [
           './test/fixtures/multifile/*.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-          '--names'
+          '--names',
         ];
         runCLI(args, (err, info) => {
           cliInfo = info;
@@ -779,7 +779,7 @@ describe('CLI', () => {
         const args = [
           './test/fixtures/multifile/*.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-          '--hookfiles=./test/fixtures/multifile/multifile_hooks.coffee'
+          '--hookfiles=./test/fixtures/multifile/multifile_hooks.coffee',
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -799,7 +799,7 @@ describe('CLI', () => {
         assert.deepEqual(runtimeInfo.server.requestCounts, {
           '/name': 1,
           '/greeting': 1,
-          '/message': 1
+          '/message': 1,
         });
       });
     });
@@ -815,7 +815,7 @@ describe('CLI', () => {
           './test/fixtures/multiple-examples.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--path=./test/fixtures/multifile/*.apib',
-          '--names'
+          '--names',
         ];
         runCLI(args, (err, info) => {
           cliInfo = info;
@@ -846,7 +846,7 @@ describe('CLI', () => {
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--sandbox',
-        '--hookfiles=./test/fixtures/sandboxed-hook.js'
+        '--hookfiles=./test/fixtures/sandboxed-hook.js',
       ];
       runCLIWithServer(args, app, (err, info) => {
         runtimeInfo = info;

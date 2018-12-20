@@ -30,7 +30,7 @@ describe('CLI - API Description Document', () => {
       let runtimeInfo;
       const args = [
         './test/fixtures/__non-existent__.apib',
-        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`
+        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
       ];
 
       beforeEach((done) => {
@@ -49,7 +49,7 @@ describe('CLI - API Description Document', () => {
       let runtimeInfo;
       const args = [
         os.homedir(),
-        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`
+        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
       ];
 
       beforeEach((done) => {
@@ -71,7 +71,7 @@ describe('CLI - API Description Document', () => {
       let runtimeInfo;
       const args = [
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}/single-get.apib`,
-        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`
+        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
       ];
 
       beforeEach((done) => {
@@ -97,7 +97,7 @@ describe('CLI - API Description Document', () => {
       let runtimeInfo;
       const args = [
         `http://127.0.0.1:${NON_EXISTENT_PORT}/single-get.apib`,
-        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`
+        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
       ];
 
       beforeEach((done) => {
@@ -121,7 +121,7 @@ describe('CLI - API Description Document', () => {
       let runtimeInfo;
       const args = [
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}/__non-existent__.apib`,
-        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`
+        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
       ];
 
       beforeEach((done) => {
@@ -151,7 +151,7 @@ describe('CLI - API Description Document', () => {
       const args = [
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-        '--path=./test/fixtures/single-get-uri-template.apib'
+        '--path=./test/fixtures/single-get-uri-template.apib',
       ];
 
       beforeEach((done) => {
@@ -174,7 +174,7 @@ describe('CLI - API Description Document', () => {
       const args = [
         './test/fixtures/single-get-uri-template.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-        `--path=http://127.0.0.1:${DEFAULT_SERVER_PORT}/single-get.yaml`
+        `--path=http://127.0.0.1:${DEFAULT_SERVER_PORT}/single-get.yaml`,
       ];
 
       beforeEach((done) => {
@@ -203,7 +203,7 @@ describe('CLI - API Description Document', () => {
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--path=./test/fixtures/single-get-uri-template.apib',
-        '--path=./test/fixtures/single-get-path.apib'
+        '--path=./test/fixtures/single-get-path.apib',
       ];
 
       beforeEach((done) => {
@@ -227,7 +227,7 @@ describe('CLI - API Description Document', () => {
       const args = [
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-        '--path=./test/fixtures/single-get-uri-temp*.apib'
+        '--path=./test/fixtures/single-get-uri-temp*.apib',
       ];
 
       beforeEach((done) => {
@@ -250,7 +250,7 @@ describe('CLI - API Description Document', () => {
       const args = [
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-        '--path=./test/fixtures/__non-existent__.apib'
+        '--path=./test/fixtures/__non-existent__.apib',
       ];
 
       beforeEach((done) => {

@@ -30,7 +30,7 @@ const configureReporters = proxyquire('../../lib/configureReporters', {
   './reporters/NyanReporter': NyanCatReporterStub,
   './reporters/HTMLReporter': HtmlReporterStub,
   './reporters/MarkdownReporter': MarkdownReporterStub,
-  './reporters/ApiaryReporter': ApiaryReporterStub
+  './reporters/ApiaryReporter': ApiaryReporterStub,
 });
 
 const resetStubs = function () {
@@ -53,8 +53,8 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
       reporter: [],
       output: [],
       silent: false,
-      'inline-errors': false
-    }
+      'inline-errors': false,
+    },
   };
 
   before(() => loggerStub.transports.console.silent = true);

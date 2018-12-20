@@ -15,7 +15,7 @@ const loggerStub = require('../../lib/logger');
 
 const Runner = proxyquire('../../lib/TransactionRunner', {
   html: htmlStub,
-  './logger': loggerStub
+  './logger': loggerStub,
 });
 
 const Hooks = require('../../lib/Hooks');
@@ -30,8 +30,8 @@ describe('TransactionRunner', () => {
       method: [],
       only: [],
       header: [],
-      reporter: []
-    }
+      reporter: [],
+    },
   };
 
   let transaction;
@@ -69,8 +69,8 @@ describe('TransactionRunner', () => {
             method: [],
             only: [],
             header: [],
-            reporter: []
-          }
+            reporter: [],
+          },
         };
 
         runner = new Runner(configuration);
@@ -91,8 +91,8 @@ describe('TransactionRunner', () => {
             method: [],
             only: [],
             header: [],
-            reporter: []
-          }
+            reporter: [],
+          },
         };
         runner = new Runner(configuration);
         runner.config(configuration);
@@ -110,28 +110,28 @@ describe('TransactionRunner', () => {
           body: '{\n  "type": "bulldozer",\n  "name": "willy"}\n',
           headers: {
             'Content-Type': {
-              value: 'application/json'
-            }
+              value: 'application/json',
+            },
           },
           uri: '/machines',
-          method: 'POST'
+          method: 'POST',
         },
         response: {
           body: '{\n  "type": "bulldozer",\n  "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n',
           headers: {
             'content-type': {
-              value: 'application/json'
-            }
+              value: 'application/json',
+            },
           },
-          status: '202'
+          status: '202',
         },
         origin: {
           apiName: 'Machines API',
           resourceGroupName: 'Group Machine',
           resourceName: 'Machine',
           actionName: 'Delete Message',
-          exampleName: 'Bogus example name'
-        }
+          exampleName: 'Bogus example name',
+        },
       };
 
       runner = new Runner(configuration);
@@ -144,68 +144,68 @@ describe('TransactionRunner', () => {
       [{
         description: 'is hostname',
         input: { serverUrl: 'https://127.0.0.1:8000', requestPath: '/hello' },
-        expected: { host: '127.0.0.1', port: '8000', protocol: 'https:', fullPath: '/hello' }
+        expected: { host: '127.0.0.1', port: '8000', protocol: 'https:', fullPath: '/hello' },
       },
       {
         description: 'is IPv4',
         input: { serverUrl: 'https://127.0.0.1:8000', requestPath: '/hello' },
-        expected: { host: '127.0.0.1', port: '8000', protocol: 'https:', fullPath: '/hello' }
+        expected: { host: '127.0.0.1', port: '8000', protocol: 'https:', fullPath: '/hello' },
       },
       {
         description: 'has path',
         input: { serverUrl: 'http://127.0.0.1:8000/v1', requestPath: '/hello' },
-        expected: { host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/hello' }
+        expected: { host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/hello' },
       },
       {
         description: 'has path with trailing slash',
         input: { serverUrl: 'http://127.0.0.1:8000/v1/', requestPath: '/hello' },
-        expected: { host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/hello' }
+        expected: { host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/hello' },
       },
       {
         description: 'has path and request path is /',
         input: { serverUrl: 'http://127.0.0.1:8000/v1', requestPath: '/' },
-        expected: { host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/' }
+        expected: { host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/' },
       },
       {
         description: 'has path with trailing slash and request path is /',
         input: { serverUrl: 'http://127.0.0.1:8000/v1/', requestPath: '/' },
-        expected: { host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/' }
+        expected: { host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/' },
       },
       {
         description: 'has path and request has no path',
         input: { serverUrl: 'http://127.0.0.1:8000/v1', requestPath: '' },
-        expected: { host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1' }
+        expected: { host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1' },
       },
       {
         description: 'has path with trailing slash and request has no path',
         input: { serverUrl: 'http://127.0.0.1:8000/v1/', requestPath: '' },
-        expected: { host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/' }
+        expected: { host: '127.0.0.1', port: '8000', protocol: 'http:', fullPath: '/v1/' },
       },
       {
         description: 'is hostname with no protocol',
         input: { serverUrl: '127.0.0.1', requestPath: '/hello' },
-        expected: { host: '127.0.0.1', port: null, protocol: 'http:', fullPath: '/hello' }
+        expected: { host: '127.0.0.1', port: null, protocol: 'http:', fullPath: '/hello' },
       },
       {
         description: 'is IPv4 with no protocol',
         input: { serverUrl: '127.0.0.1:4000', requestPath: '/hello' },
-        expected: { host: '127.0.0.1', port: '4000', protocol: 'http:', fullPath: '/hello' }
+        expected: { host: '127.0.0.1', port: '4000', protocol: 'http:', fullPath: '/hello' },
       },
       {
         description: 'is hostname with // instead of protocol',
         input: { serverUrl: '//127.0.0.1', requestPath: '/hello' },
-        expected: { host: '127.0.0.1', port: null, protocol: 'http:', fullPath: '/hello' }
+        expected: { host: '127.0.0.1', port: null, protocol: 'http:', fullPath: '/hello' },
       },
       {
         description: 'is hostname with trailing slash',
         input: { serverUrl: 'http://127.0.0.1/', requestPath: '/hello' },
-        expected: { host: '127.0.0.1', port: null, protocol: 'http:', fullPath: '/hello' }
+        expected: { host: '127.0.0.1', port: null, protocol: 'http:', fullPath: '/hello' },
       },
       {
         description: 'is hostname with no protocol and with trailing slash',
         input: { serverUrl: '127.0.0.1/', requestPath: '/hello' },
-        expected: { host: '127.0.0.1', port: null, protocol: 'http:', fullPath: '/hello' }
-      }
+        expected: { host: '127.0.0.1', port: null, protocol: 'http:', fullPath: '/hello' },
+      },
 
       ].forEach(({ description, input, expected }) =>
         context(`${description}: '${input.serverUrl}' + '${input.requestPath}'`, () => {
@@ -226,7 +226,7 @@ describe('TransactionRunner', () => {
               host: configuredTransaction.host,
               port: configuredTransaction.port,
               protocol: configuredTransaction.protocol,
-              fullPath: configuredTransaction.fullPath
+              fullPath: configuredTransaction.fullPath,
             }, expected)
           );
         })
@@ -381,25 +381,25 @@ describe('TransactionRunner', () => {
           headers: {
             'Content-Type': 'application/json',
             'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)',
-            'Content-Length': 44
+            'Content-Length': 44,
           },
           uri: '/machines',
-          method: 'POST'
+          method: 'POST',
         },
         expected: {
-          headers: { 'content-type': 'application/json'
+          headers: { 'content-type': 'application/json',
           },
           body: '{\n  "type": "bulldozer",\n  "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n',
-          status: '202'
+          status: '202',
         },
         origin: {
           resourceGroupName: 'Group Machine',
           resourceName: 'Machine',
           actionName: 'Delete Message',
-          exampleName: 'Bogus example name'
+          exampleName: 'Bogus example name',
         },
         fullPath: '/machines',
-        protocol: 'http:'
+        protocol: 'http:',
       };
     });
 
@@ -514,8 +514,8 @@ describe('TransactionRunner', () => {
 
           runner.hooks.beforeHooks = {
             'Group Machine > Machine > Delete Message > Bogus example name': [
-              (hookTransaction) => { hookTransaction.skip = true; }
-            ]
+              (hookTransaction) => { hookTransaction.skip = true; },
+            ],
           };
           done();
         });
@@ -754,25 +754,25 @@ describe('TransactionRunner', () => {
             headers: {
               'Content-Type': 'application/json',
               'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)',
-              'Content-Length': 44
+              'Content-Length': 44,
             },
             uri: `/machines${name}`,
-            method: 'POST'
+            method: 'POST',
           },
           expected: {
-            headers: { 'content-type': 'application/json'
+            headers: { 'content-type': 'application/json',
             },
             body: '{\n  "type": "bulldozer",\n  "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n',
-            statusCode: '202'
+            statusCode: '202',
           },
           origin: {
             resourceGroupName: 'Group Machine',
             resourceName: 'Machine',
             actionName: 'Delete Message',
-            exampleName: 'Bogus example name'
+            exampleName: 'Bogus example name',
           },
           fullPath: `/machines${name}`,
-          protocol: 'http:'
+          protocol: 'http:',
         });
 
         transactions.push(transaction);
@@ -789,7 +789,7 @@ describe('TransactionRunner', () => {
         'beforeValidationSpy',
         'afterSpy',
         'afterEachSpy',
-        'afterAllSpy'
+        'afterAllSpy',
       ];
 
       spies = {};
@@ -1249,8 +1249,8 @@ describe('TransactionRunner', () => {
         method: [],
         header: [],
         reporter: [],
-        only: []
-      }
+        only: [],
+      },
     };
     // Do not actually search & load hookfiles from disk
     // hookfiles: './**/*_hooks.*'
@@ -1269,25 +1269,25 @@ describe('TransactionRunner', () => {
           headers: {
             'Content-Type': 'application/json',
             'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)',
-            'Content-Length': 44
+            'Content-Length': 44,
           },
           uri: '/machines',
-          method: 'POST'
+          method: 'POST',
         },
         expected: {
-          headers: { 'content-type': 'application/json'
+          headers: { 'content-type': 'application/json',
           },
           body: '{\n  "type": "bulldozer",\n "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n',
-          statusCode: '202'
+          statusCode: '202',
         },
         origin: {
           resourceGroupName: 'Group Machine',
           resourceName: 'Machine',
           actionName: 'Delete Message',
-          exampleName: 'Bogus example name'
+          exampleName: 'Bogus example name',
         },
         fullPath: '/machines',
-        protocol: 'http:'
+        protocol: 'http:',
       });
 
       server = nock('http://127.0.0.1:3000')
@@ -1311,13 +1311,13 @@ describe('TransactionRunner', () => {
           'Group Machine > Machine > Delete Message > Bogus example name': [
             // eslint-disable-next-line
             transaction => loggerStub.info('before')
-          ]
+          ],
         };
         runner.hooks.beforeValidationHooks = {
           'Group Machine > Machine > Delete Message > Bogus example name': [
             // eslint-disable-next-line
             transaction => loggerStub.info('beforeValidation')
-          ]
+          ],
         };
         runner.hooks.afterHooks = {
           'Group Machine > Machine > Delete Message > Bogus example name': [
@@ -1325,8 +1325,8 @@ describe('TransactionRunner', () => {
             function (transaction, done) {
               loggerStub.info('after');
               done();
-            }
-          ]
+            },
+          ],
         };
       });
 
@@ -1350,13 +1350,13 @@ describe('TransactionRunner', () => {
           'Group Machine > Machine > Delete Message > Bogus example name': [
             // eslint-disable-next-line
             transaction => loggerStub.info('before')
-          ]
+          ],
         };
         runner.hooks.beforeValidationHooks = {
           'Group Machine > Machine > Delete Message > Bogus example name': [
             // eslint-disable-next-line
             transaction => loggerStub.info('beforeValidation')
-          ]
+          ],
         };
         runner.hooks.afterHooks = {
           'Group Machine > Machine > Delete Message > Bogus example name': [
@@ -1364,8 +1364,8 @@ describe('TransactionRunner', () => {
             function (transaction, done) {
               loggerStub.info('after');
               done();
-            }
-          ]
+            },
+          ],
         };
       });
 
@@ -1393,8 +1393,8 @@ describe('TransactionRunner', () => {
             function (transaction, cb) {
               loggerStub.info('second');
               cb();
-            }
-          ]
+            },
+          ],
         };
       });
 
@@ -1635,8 +1635,8 @@ function(transactions){
           transactions = [{
             name: 'Test!',
             request: { headers: {}, body: '' },
-            skip: true
-          }
+            skip: true,
+          },
           ];
 
           runner.executeAllTransactions(transactions, runner.hooks, (err) => {
@@ -1658,8 +1658,8 @@ function(transactions){
           transactions = [{
             name: 'Test!',
             request: { headers: {}, body: '' },
-            skip: true
-          }
+            skip: true,
+          },
           ];
 
           runner.executeAllTransactions(transactions, runner.hooks, (err) => {
@@ -1688,25 +1688,25 @@ function(transactions){
             headers: {
               'Content-Type': 'application/json',
               'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)',
-              'Content-Length': 44
+              'Content-Length': 44,
             },
             uri: '/machines',
-            method: 'POST'
+            method: 'POST',
           },
           expected: {
-            headers: { 'content-type': 'application/json'
+            headers: { 'content-type': 'application/json',
             },
             body: '{\n  "type": "bulldozer",\n  "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n',
-            statusCode: '202'
+            statusCode: '202',
           },
           origin: {
             resourceGroupName: 'Group Machine',
             resourceName: 'Machine',
             actionName: 'Delete Message',
-            exampleName: 'Bogus example name'
+            exampleName: 'Bogus example name',
           },
           fullPath: '/machines',
-          protocol: 'http:'
+          protocol: 'http:',
         };
 
         [1, 2].forEach((i) => {
@@ -1872,7 +1872,7 @@ function(transactions){
           'Group Machine > Machine > Delete Message > Bogus example name': [
             // eslint-disable-next-line
             transaction => JSON.parse('<<<>>>!@#!@#!@#4234234')
-          ]
+          ],
         };
         sinon.stub(configuration.emitter, 'emit');
       });
@@ -1893,7 +1893,7 @@ function(transactions){
           'Group Machine > Machine > Delete Message > Bogus example name': [
             // eslint-disable-next-line
             transaction => JSON.parse('<<<>>>!@#!@#!@#4234234')
-          ]
+          ],
         };
         sinon.stub(configuration.emitter, 'emit');
       });
@@ -1914,7 +1914,7 @@ function(transactions){
           'Group Machine > Machine > Delete Message > Bogus example name': [
             // eslint-disable-next-line
             transaction => assert.isOk(false)
-          ]
+          ],
         };
         sinon.stub(configuration.emitter, 'emit');
       });
@@ -1964,7 +1964,7 @@ function(transactions){
           'Group Machine > Machine > Delete Message > Bogus example name': [
             // eslint-disable-next-line
             transaction => assert.isOk(false)
-          ]
+          ],
         };
         sinon.stub(configuration.emitter, 'emit');
       });
@@ -2022,8 +2022,8 @@ function(transactions){
           clonedTransaction = clone(transaction);
           runner.hooks.beforeHooks = {
             'Group Machine > Machine > Delete Message > Bogus example name': [
-              (hookTransaction) => { hookTransaction.fail = 'Message before'; }
-            ]
+              (hookTransaction) => { hookTransaction.fail = 'Message before'; },
+            ],
           };
           sinon.stub(configuration.emitter, 'emit');
         });
@@ -2096,8 +2096,8 @@ function(transactions){
             clonedTransaction = clone(transaction);
             runner.hooks.afterHooks = {
               'Group Machine > Machine > Delete Message > Bogus example name': [
-                (hookTransaction) => { hookTransaction.fail = 'Message after'; }
-              ]
+                (hookTransaction) => { hookTransaction.fail = 'Message after'; },
+              ],
             };
           });
 
@@ -2157,8 +2157,8 @@ function(transactions){
 
           runner.hooks.afterHooks = {
             'Group Machine > Machine > Delete Message > Bogus example name': [
-              (hookTransaction) => { hookTransaction.fail = 'Message after fail'; }
-            ]
+              (hookTransaction) => { hookTransaction.fail = 'Message after fail'; },
+            ],
           };
           sinon.stub(configuration.emitter, 'emit');
         });
@@ -2242,8 +2242,8 @@ function(transactions){
           clonedTransaction = clone(transaction);
           runner.hooks.afterHooks = {
             'Group Machine > Machine > Delete Message > Bogus example name': [
-              (hookTransaction) => { hookTransaction.fail = 'Message after pass'; }
-            ]
+              (hookTransaction) => { hookTransaction.fail = 'Message after pass'; },
+            ],
           };
           sinon.stub(configuration.emitter, 'emit');
         });
@@ -2368,8 +2368,8 @@ function(transactions){
               body.name = 'Michael';
               transaction.request.body = JSON.stringify(body);
               transaction.request.headers['Content-Length'] = transaction.request.body.length;
-            }
-          ]
+            },
+          ],
         };
 
         const app = express();

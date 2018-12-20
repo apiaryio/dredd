@@ -6,7 +6,7 @@ const { EventEmitter } = require('events');
 const loggerStub = require('../../../lib/logger');
 
 const CLIReporter = proxyquire('../../../lib/reporters/CLIReporter', {
-  '../logger': loggerStub
+  '../logger': loggerStub,
 });
 
 describe('CLIReporter', () => {
@@ -35,7 +35,7 @@ describe('CLIReporter', () => {
     before(() => {
       test = {
         status: 'pass',
-        title: 'Passing Test'
+        title: 'Passing Test',
       };
     });
 
@@ -68,7 +68,7 @@ describe('CLIReporter', () => {
     before(() => {
       test = {
         status: 'fail',
-        title: 'Failing Test'
+        title: 'Failing Test',
       };
     });
 
@@ -113,7 +113,7 @@ describe('CLIReporter', () => {
     before(() => {
       test = {
         status: 'error',
-        title: 'Error Test'
+        title: 'Error Test',
       };
     });
 
@@ -134,7 +134,7 @@ describe('CLIReporter', () => {
     before(() => {
       test = {
         status: 'error',
-        title: 'Error Test'
+        title: 'Error Test',
       };
     });
 
@@ -165,7 +165,7 @@ describe('CLIReporter', () => {
     before(() => {
       test = {
         status: 'skip',
-        title: 'Skipped Test'
+        title: 'Skipped Test',
       };
     });
 
@@ -186,7 +186,7 @@ describe('CLIReporter', () => {
     before(() => {
       test = {
         status: 'fail',
-        title: 'Failing Test'
+        title: 'Failing Test',
       };
     });
 

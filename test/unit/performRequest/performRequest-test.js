@@ -10,7 +10,7 @@ describe('performRequest()', () => {
   const transactionReq = {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
-    body: 'Hello'
+    body: 'Hello',
   };
   const res = { statusCode: 200, headers: { 'Content-Type': 'text/plain' } };
   const request = sinon.stub().callsArgWithAsync(1, null, res, Buffer.from('Bye'));
@@ -129,7 +129,7 @@ describe('performRequest()', () => {
         statusCode: 200,
         headers: { 'Content-Type': 'text/plain' },
         body: 'Bye',
-        bodyEncoding: 'utf-8'
+        bodyEncoding: 'utf-8',
       });
       done();
     });

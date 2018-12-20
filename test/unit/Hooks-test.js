@@ -16,8 +16,8 @@ describe('Hooks', () => {
         logs: [{ content: 'message1' }, { content: 'message2' }],
         logger: {
           hook() {},
-          error() {}
-        }
+          error() {},
+        },
       };
 
       const hooks = new Hooks(options);
@@ -34,8 +34,8 @@ describe('Hooks', () => {
         logs: [{ content: 'message1' }, { content: 'message2' }],
         logger: {
           hook() {},
-          error() {}
-        }
+          error() {},
+        },
       };
       sinon.spy(options.logger, 'hook');
       sinon.spy(options.logger, 'error');
@@ -170,7 +170,7 @@ describe('Hooks', () => {
         'beforeEachHooks',
         'afterEachHooks',
         'afterAllHooks',
-        'beforeEachValidationHooks'
+        'beforeEachValidationHooks',
       ];
 
       properties.forEach((property) => {
@@ -198,7 +198,7 @@ describe('Hooks', () => {
       properties = [
         'beforeHooks',
         'afterHooks',
-        'beforeValidationHooks'
+        'beforeValidationHooks',
       ];
 
       properties.forEach((property) => {

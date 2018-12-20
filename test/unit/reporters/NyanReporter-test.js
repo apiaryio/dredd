@@ -7,7 +7,7 @@ const { EventEmitter } = require('events');
 const loggerStub = require('../../../lib/logger');
 
 const NyanCatReporter = proxyquire('../../../lib/reporters/NyanReporter', {
-  '../logger': loggerStub
+  '../logger': loggerStub,
 });
 
 describe('NyanCatReporter', () => {
@@ -30,7 +30,7 @@ describe('NyanCatReporter', () => {
       skipped: 0,
       start: 0,
       end: 0,
-      duration: 0
+      duration: 0,
     };
     tests = [];
     nyanReporter = new NyanCatReporter(emitter, stats, tests);
@@ -82,7 +82,7 @@ describe('NyanCatReporter', () => {
       beforeEach(() => {
         const test = {
           status: 'fail',
-          title: 'failing test'
+          title: 'failing test',
         };
         nyanReporter.errors = [test];
         emitter.emit('test start', test);
@@ -105,7 +105,7 @@ describe('NyanCatReporter', () => {
       beforeEach(() => {
         const test = {
           status: 'pass',
-          title: 'Passing Test'
+          title: 'Passing Test',
         };
         sinon.stub(nyanReporter, 'write');
         sinon.spy(nyanReporter, 'draw');
@@ -124,7 +124,7 @@ describe('NyanCatReporter', () => {
       beforeEach(() => {
         const test = {
           status: 'skipped',
-          title: 'Skipped Test'
+          title: 'Skipped Test',
         };
         sinon.spy(nyanReporter, 'draw');
         sinon.stub(nyanReporter, 'write');
@@ -143,7 +143,7 @@ describe('NyanCatReporter', () => {
       beforeEach(() => {
         const test = {
           status: 'failed',
-          title: 'Failed Test'
+          title: 'Failed Test',
         };
         sinon.spy(nyanReporter, 'draw');
         sinon.stub(nyanReporter, 'write');
@@ -162,7 +162,7 @@ describe('NyanCatReporter', () => {
       beforeEach(() => {
         const test = {
           status: 'error',
-          title: 'Errored Test'
+          title: 'Errored Test',
         };
         sinon.spy(nyanReporter, 'draw');
         sinon.stub(nyanReporter, 'write');

@@ -6,12 +6,12 @@ const { assert } = require('chai');
 const hooksLogStubSpy = sinon.spy(require('../../lib/hooksLog'));
 
 const hooksLogSandboxed = proxyquire('../../lib/hooksLogSandboxed', {
-  './hooksLog': hooksLogStubSpy
+  './hooksLog': hooksLogStubSpy,
 });
 
 describe('hooksLogSandboxed()', () => {
   const exampleLog = [
-    { content: 'some text' }
+    { content: 'some text' },
   ];
 
   describe('basic functionality', () => {

@@ -18,17 +18,17 @@ let stderr = '';
 let stdout = '';
 
 const addHooksStub = proxyquire('../../lib/addHooks', {
-  './logger': loggerStub
+  './logger': loggerStub,
 });
 
 const transactionRunner = proxyquire('../../lib/TransactionRunner', {
   './addHooks': addHooksStub,
-  './logger': loggerStub
+  './logger': loggerStub,
 });
 
 const DreddStub = proxyquire('../../lib/Dredd', {
   './TransactionRunner': transactionRunner,
-  './logger': loggerStub
+  './logger': loggerStub,
 });
 
 const initStub = sinon.stub().callsFake((config, save, callback) => {
@@ -43,7 +43,7 @@ const CLIStub = proxyquire('../../lib/CLI', {
   './init': initStub,
   './configUtils': configUtilsStub,
   fs: fsStub,
-  'cross-spawn': crossSpawnStub
+  'cross-spawn': crossSpawnStub,
 });
 
 function execCommand(custom = {}, cb) {
@@ -51,7 +51,7 @@ function execCommand(custom = {}, cb) {
   stderr = '';
   let finished = false;
   (new CLIStub({
-    custom
+    custom,
   }, ((code) => {
       if (!finished) {
         finished = true;
@@ -70,7 +70,7 @@ describe('CLI class', () => {
     [
       'log', 'info', 'silly', 'verbose', 'test',
       'hook', 'complete', 'pass', 'skip', 'debug',
-      'fail', 'request', 'expected', 'actual'
+      'fail', 'request', 'expected', 'actual',
     ].forEach((method) => {
       sinon.stub(loggerStub, method).callsFake((chunk) => { stdout += `\n${method}: ${chunk}`; });
     });
@@ -84,7 +84,7 @@ describe('CLI class', () => {
     [
       'log', 'info', 'silly', 'verbose', 'test',
       'hook', 'complete', 'pass', 'skip', 'debug',
-      'fail', 'request', 'expected', 'actual'
+      'fail', 'request', 'expected', 'actual',
     ].forEach((method) => {
       loggerStub[method].restore();
     });
@@ -119,7 +119,7 @@ describe('CLI class', () => {
     before(() => {
       dc = new CLIStub({ exit() {
         hasCalledExit = true;
-      }
+      },
       });
       dc.run();
     });
@@ -151,8 +151,8 @@ describe('CLI class', () => {
         exit() {},
         custom: {
           argv: ['./file.apib', 'http://127.0.0.1:3000'],
-          env: { NO_KEY: 'NO_VAL' }
-        }
+          env: { NO_KEY: 'NO_VAL' },
+        },
       });
 
       sinon.stub(dc, 'initDredd').callsFake((configuration) => {
@@ -215,13 +215,13 @@ describe('CLI class', () => {
           argv: [
             './test/fixtures/single-get.apib',
             `http://127.0.0.1:${PORT}`,
-            '--path=./test/fixtures/single-get.apib'
-          ]
+            '--path=./test/fixtures/single-get.apib',
+          ],
         },
         exit(code) {
           exitStatus = code;
           server.close();
-        }
+        },
       });
 
       const server = app.listen(PORT, () => dc.run());
@@ -311,7 +311,7 @@ describe('CLI class', () => {
           skipped: 0,
           start: 0,
           end: 0,
-          duration: 0
+          duration: 0,
         };
         cb(null, stats);
       });
@@ -346,7 +346,7 @@ describe('CLI class', () => {
           timestamp: false,
           silent: false,
           path: [],
-          $0: 'node ./bin/dredd'
+          $0: 'node ./bin/dredd',
         }));
 
       execCommand({ argv: ['--names'] }, () => done());
@@ -381,8 +381,8 @@ describe('CLI class', () => {
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${PORT}`,
         '--server',
-        'foo/bar'
-      ]
+        'foo/bar',
+      ],
       }, () => done());
     });
 

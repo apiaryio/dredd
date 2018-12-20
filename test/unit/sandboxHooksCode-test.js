@@ -41,7 +41,7 @@ describe('sandboxHooksCode(hooksCode, callback)', () => {
       'beforeEach',
       'afterEach',
       'beforeEachValidation',
-      'beforeValidation'
+      'beforeValidation',
     ];
 
     functions.forEach((name) => {
@@ -77,7 +77,7 @@ throw(new Error('${name} is not a function'))
       'afterEachHooks',
       'afterAllHooks',
       'beforeValidationHooks',
-      'beforeEachValidationHooks'
+      'beforeEachValidationHooks',
     ];
 
     properties.forEach((property) => {

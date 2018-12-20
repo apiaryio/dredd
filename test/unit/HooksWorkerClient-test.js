@@ -30,7 +30,7 @@ const logLevels = ['error', 'log', 'info', 'warn'];
 const HooksWorkerClient = proxyquire('../../lib/HooksWorkerClient', {
   'cross-spawn': crossSpawnStub,
   './which': whichStub,
-  './logger': loggerStub
+  './logger': loggerStub,
 });
 
 const TransactionRunner = require('../../lib/TransactionRunner');
@@ -167,8 +167,8 @@ describe('Hooks worker client', () => {
       beforeEach(() => {
         runner.hooks.configuration = {
           options: {
-            language: 'nodejs'
-          }
+            language: 'nodejs',
+          },
         };
       });
 
@@ -193,8 +193,8 @@ describe('Hooks worker client', () => {
         runner.hooks.configuration = {
           options: {
             language: 'ruby',
-            hookfiles: 'somefile.rb'
-          }
+            hookfiles: 'somefile.rb',
+          },
         };
 
         sinon.stub(whichStub, 'which').callsFake(() => true);
@@ -243,8 +243,8 @@ describe('Hooks worker client', () => {
         runner.hooks.configuration = {
           options: {
             language: 'ruby',
-            hookfiles: 'somefile.rb'
-          }
+            hookfiles: 'somefile.rb',
+          },
         };
       });
 
@@ -272,8 +272,8 @@ describe('Hooks worker client', () => {
         runner.hooks.configuration = {
           options: {
             language: 'python',
-            hookfiles: 'somefile.py'
-          }
+            hookfiles: 'somefile.py',
+          },
         };
 
         sinon.stub(whichStub, 'which').callsFake(() => true);
@@ -322,8 +322,8 @@ describe('Hooks worker client', () => {
         runner.hooks.configuration = {
           options: {
             language: 'python',
-            hookfiles: 'somefile.py'
-          }
+            hookfiles: 'somefile.py',
+          },
         };
       });
 
@@ -350,8 +350,8 @@ describe('Hooks worker client', () => {
         runner.hooks.configuration = {
           options: {
             language: 'php',
-            hookfiles: 'somefile.py'
-          }
+            hookfiles: 'somefile.py',
+          },
         };
 
         sinon.stub(whichStub, 'which').callsFake(() => true);
@@ -400,8 +400,8 @@ describe('Hooks worker client', () => {
         runner.hooks.configuration = {
           options: {
             language: 'php',
-            hookfiles: 'somefile.py'
-          }
+            hookfiles: 'somefile.py',
+          },
         };
       });
 
@@ -430,8 +430,8 @@ describe('Hooks worker client', () => {
         runner.hooks.configuration = {
           options: {
             language: 'go',
-            hookfiles: 'gobinary'
-          }
+            hookfiles: 'gobinary',
+          },
         };
       });
       afterEach(() => {
@@ -469,8 +469,8 @@ describe('Hooks worker client', () => {
         runner.hooks.configuration = {
           options: {
             language: 'go',
-            hookfiles: 'gobinary'
-          }
+            hookfiles: 'gobinary',
+          },
         };
 
         sinon.stub(whichStub, 'which').callsFake(() => true);
@@ -522,8 +522,8 @@ describe('Hooks worker client', () => {
         runner.hooks.configuration = {
           options: {
             language: 'rust',
-            hookfiles: 'rustbinary'
-          }
+            hookfiles: 'rustbinary',
+          },
         };
       });
       afterEach(() => whichStub.which.restore());
@@ -549,8 +549,8 @@ describe('Hooks worker client', () => {
         runner.hooks.configuration = {
           options: {
             language: 'rust',
-            hookfiles: 'rustbinary'
-          }
+            hookfiles: 'rustbinary',
+          },
         };
 
         sinon.stub(whichStub, 'which').callsFake(() => true);
@@ -604,8 +604,8 @@ describe('Hooks worker client', () => {
         runner.hooks.configuration = {
           options: {
             language: 'perl',
-            hookfiles: 'somefile.py'
-          }
+            hookfiles: 'somefile.py',
+          },
         };
 
         sinon.stub(whichStub, 'which').callsFake(() => true);
@@ -654,8 +654,8 @@ describe('Hooks worker client', () => {
         runner.hooks.configuration = {
           options: {
             language: 'perl',
-            hookfiles: 'somefile.py'
-          }
+            hookfiles: 'somefile.py',
+          },
         };
       });
 
@@ -682,8 +682,8 @@ describe('Hooks worker client', () => {
         runner.hooks.configuration = {
           options: {
             language: './my-fancy-command',
-            hookfiles: 'someotherfile'
-          }
+            hookfiles: 'someotherfile',
+          },
         };
 
         sinon.stub(HooksWorkerClient.prototype, 'terminateHandler').callsFake(callback => callback());
@@ -730,8 +730,8 @@ describe('Hooks worker client', () => {
         runner.hooks.configuration = {
           options: {
             language: 'ruby',
-            hookfiles: 'somefile.rb'
-          }
+            hookfiles: 'somefile.rb',
+          },
         };
 
         sinon.stub(HooksWorkerClient.prototype, 'spawnHandler').callsFake(callback => callback());
@@ -765,7 +765,7 @@ describe('Hooks worker client', () => {
         'beforeEachValidation',
         'afterEach',
         'beforeAll',
-        'afterAll'
+        'afterAll',
       ];
 
       Array.from(eventTypes).forEach((eventType) => {
@@ -829,7 +829,7 @@ describe('Hooks worker client', () => {
       'beforeEachValidation',
       'afterEach',
       'beforeAll',
-      'afterAll'
+      'afterAll',
     ];
 
     Array.from(eventTypes).forEach((eventType) => {
@@ -873,7 +873,7 @@ describe('Hooks worker client', () => {
           const keys = [
             'data',
             'event',
-            'uuid'
+            'uuid',
           ];
 
           Array.from(keys).forEach((key) => {
@@ -901,7 +901,7 @@ describe('Hooks worker client', () => {
   describe('when hook handler server is running and modifying transactions', () => {
     let transaction = {
       name: 'API > Hello > World',
-      request: { method: 'POST', uri: '/message', headers: {}, body: 'Hello World!' }
+      request: { method: 'POST', uri: '/message', headers: {}, body: 'Hello World!' },
     };
 
     return [
@@ -909,7 +909,7 @@ describe('Hooks worker client', () => {
       'beforeEach',
       'beforeEachValidation',
       'afterEach',
-      'afterAll'
+      'afterAll',
     ].forEach((eventName) => {
       let getFirstTransaction;
       let transactionData;
@@ -992,36 +992,36 @@ describe('Hooks worker client', () => {
   describe("'hooks-worker-*' configuration options", () => {
     const scenarios = [{
       property: 'timeout',
-      option: 'hooks-worker-timeout'
+      option: 'hooks-worker-timeout',
     },
     {
       property: 'connectTimeout',
-      option: 'hooks-worker-connect-timeout'
+      option: 'hooks-worker-connect-timeout',
     },
     {
       property: 'connectRetry',
-      option: 'hooks-worker-connect-retry'
+      option: 'hooks-worker-connect-retry',
     },
     {
       property: 'afterConnectWait',
-      option: 'hooks-worker-after-connect-wait'
+      option: 'hooks-worker-after-connect-wait',
     },
     {
       property: 'termTimeout',
-      option: 'hooks-worker-term-timeout'
+      option: 'hooks-worker-term-timeout',
     },
     {
       property: 'termRetry',
-      option: 'hooks-worker-term-retry'
+      option: 'hooks-worker-term-retry',
     },
     {
       property: 'handlerHost',
-      option: 'hooks-worker-handler-host'
+      option: 'hooks-worker-handler-host',
     },
     {
       property: 'handlerPort',
-      option: 'hooks-worker-handler-port'
-    }
+      option: 'hooks-worker-handler-port',
+    },
     ];
 
     Array.from(scenarios).forEach((scenario) => {

@@ -10,7 +10,7 @@ hooks.after('Resource > Update Resource', (transaction, done) => {
       end: transaction.test.end,
       duration: transaction.test.duration,
       startedAt: transaction.test.startedAt,
-      message: transaction.fail
+      message: transaction.fail,
     };
   }
   done();

@@ -11,7 +11,7 @@ describe('init._detectLanguage()', () => {
   [
     { name: 'Rust', value: 'rust', file: 'Cargo.toml' },
     { name: 'Go', value: 'go', file: 'foo.go' },
-    { name: 'PHP', value: 'php', file: 'composer.json' }
+    { name: 'PHP', value: 'php', file: 'composer.json' },
   ].forEach(({ name, value, file }) => {
     it(`prioritizes ${name} over Python`, () =>
       assert.equal(detectLanguage(['README', 'Pipfile', file]), value)

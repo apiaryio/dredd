@@ -1,7 +1,7 @@
 const { assert } = require('chai');
 
 const {
-  _createTransactionResponse: createTransactionResponse
+  _createTransactionResponse: createTransactionResponse,
 } = require('../../../lib/performRequest');
 
 
@@ -18,7 +18,7 @@ describe('performRequest._createTransactionResponse()', () => {
     const headers = { 'Content-Type': 'application/json' };
     const transactionRes = createTransactionResponse({
       statusCode: 200,
-      headers
+      headers,
     });
     headers['X-Header'] = 'abcd';
 
@@ -46,7 +46,7 @@ describe('performRequest._createTransactionResponse()', () => {
         statusCode: 200,
         headers: {},
         body: Buffer.from([0xFF, 0xBE]).toString('base64'),
-        bodyEncoding: 'base64'
+        bodyEncoding: 'base64',
       }
     )
   );

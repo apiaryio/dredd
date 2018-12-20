@@ -12,7 +12,7 @@ const fsExtraStub = { mkdirp(path, cb) { return cb(); } };
 const MarkdownReporter = proxyquire('../../../lib/reporters/MarkdownReporter', {
   '../logger': loggerStub,
   fs: fsStub,
-  'fs-extra': fsExtraStub
+  'fs-extra': fsExtraStub,
 });
 
 describe('MarkdownReporter', () => {
@@ -36,7 +36,7 @@ describe('MarkdownReporter', () => {
       skipped: 0,
       start: 0,
       end: 0,
-      duration: 0
+      duration: 0,
     };
     tests = [];
     mdReporter = new MarkdownReporter(emitter, stats, tests, 'test.md');
@@ -134,7 +134,7 @@ describe('MarkdownReporter', () => {
     beforeEach(() => {
       test = {
         status: 'pass',
-        title: 'Passing Test'
+        title: 'Passing Test',
       };
       emitter.emit('test start', test);
       emitter.emit('test pass', test);
@@ -160,7 +160,7 @@ describe('MarkdownReporter', () => {
     beforeEach(() => {
       test = {
         status: 'skipped',
-        title: 'Skipped Test'
+        title: 'Skipped Test',
       };
       emitter.emit('test start', test);
       emitter.emit('test skip', test);
@@ -176,7 +176,7 @@ describe('MarkdownReporter', () => {
     beforeEach(() => {
       test = {
         status: 'failed',
-        title: 'Failed Test'
+        title: 'Failed Test',
       };
       emitter.emit('test start', test);
       emitter.emit('test fail', test);
@@ -192,7 +192,7 @@ describe('MarkdownReporter', () => {
     beforeEach(() => {
       test = {
         status: 'error',
-        title: 'Errored Test'
+        title: 'Errored Test',
       };
       emitter.emit('test start', test);
       emitter.emit('test error', new Error('Error'), test);

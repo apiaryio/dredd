@@ -38,7 +38,7 @@ describe('blueprintUtils', () => {
         [str.indexOf('seven'), 2],
         [str.indexOf('eight'), 2],
         // Also add just one single line warning location
-        [str.indexOf('ten'), 3]
+        [str.indexOf('ten'), 3],
       ];
       const ranges = blueprintUtils.warningLocationToRanges(location, str);
       assert.isArray(ranges);
@@ -46,7 +46,7 @@ describe('blueprintUtils', () => {
       assert.deepEqual(ranges, [
         { start: 2, end: 4 },
         { start: 6, end: 8 },
-        { start: 10, end: 10 }
+        { start: 10, end: 10 },
       ]);
     });
 
@@ -72,13 +72,13 @@ describe('blueprintUtils', () => {
           sourceMap: [
             {
               element: 'sourceMap',
-              content: [[59, 17], [78, 10]]
-            }
-          ]
+              content: [[59, 17], [78, 10]],
+            },
+          ],
         },
         content:
           'message-body asset is expected to be a pre-formatted code ' +
-          'block, every of its line indented by exactly 8 spaces or 2 tabs'
+          'block, every of its line indented by exactly 8 spaces or 2 tabs',
       };
 
       location = [];
@@ -105,7 +105,7 @@ describe('blueprintUtils', () => {
         const line = blueprintUtils.rangesToLinesText([
           { start: 2, end: 4 },
           { start: 8, end: 8 },
-          { start: 10, end: 15 }
+          { start: 10, end: 15 },
         ]);
         assert.strictEqual(line, 'lines 2-4, line 8, lines 10-15');
       })
@@ -151,13 +151,13 @@ describe('blueprintUtils', () => {
             sourceMap: [
               {
                 element: 'sourceMap',
-                content: [[70, 23], [95, 24]]
-              }
-            ]
+                content: [[70, 23], [95, 24]],
+              },
+            ],
           },
           content:
             'message-body asset is expected to be a pre-formatted code ' +
-            'block, every of its line indented by exactly 8 spaces or 2 tabs'
+            'block, every of its line indented by exactly 8 spaces or 2 tabs',
         },
         {
           element: 'annotation',
@@ -167,13 +167,13 @@ describe('blueprintUtils', () => {
             sourceMap: [
               {
                 element: 'sourceMap',
-                content: [[168, 39]]
-              }
-            ]
+                content: [[168, 39]],
+              },
+            ],
           },
           content:
             'headers is expected to be a pre-formatted code block, every ' +
-            'of its line indented by exactly 12 spaces or 3 tabs'
+            'of its line indented by exactly 12 spaces or 3 tabs',
         },
         {
           element: 'annotation',
@@ -183,13 +183,13 @@ describe('blueprintUtils', () => {
             sourceMap: [
               {
                 element: 'sourceMap',
-                content: [[224, 33]]
-              }
-            ]
+                content: [[224, 33]],
+              },
+            ],
           },
           content:
             'message-body asset is expected to be a pre-formatted code ' +
-            'block, every of its line indented by exactly 12 spaces or 3 tabs'
+            'block, every of its line indented by exactly 12 spaces or 3 tabs',
         },
         {
           element: 'annotation',
@@ -199,14 +199,14 @@ describe('blueprintUtils', () => {
             sourceMap: [
               {
                 element: 'sourceMap',
-                content: [[302, 12], [318, 12], [334, 14]]
-              }
-            ]
+                content: [[302, 12], [318, 12], [334, 14]],
+              },
+            ],
           },
           content:
             'message-body asset is expected to be a pre-formatted code ' +
-            'block, every of its line indented by exactly 8 spaces or 2 tabs'
-        }
+            'block, every of its line indented by exactly 8 spaces or 2 tabs',
+        },
       ];
 
       for (const annotation of annotations) {
@@ -224,7 +224,7 @@ describe('blueprintUtils', () => {
           'lines 5-6',
           'line 12',
           'line 16',
-          'lines 21-23'
+          'lines 21-23',
         ];
         const result = [];
         for (let lineIndex = 0; lineIndex < expectedLines.length; lineIndex++) {

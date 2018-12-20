@@ -49,7 +49,7 @@ function recordServerRequest(serverRuntimeInfo, req) {
     method: req.method,
     url: req.url,
     headers: clone(req.headers),
-    body: clone(req.body)
+    body: clone(req.body),
   };
 
   serverRuntimeInfo.lastRequest = recordedReq;
@@ -66,7 +66,7 @@ function getSSLCredentials() {
   const httpsDir = path.join(__dirname, '../fixtures/https');
   return {
     key: fs.readFileSync(path.join(httpsDir, 'server.key'), 'utf8'),
-    cert: fs.readFileSync(path.join(httpsDir, 'server.crt'), 'utf8')
+    cert: fs.readFileSync(path.join(httpsDir, 'server.crt'), 'utf8'),
   };
 }
 
@@ -95,7 +95,7 @@ function createServer(options = {}) {
     requested: false,
     lastRequest: null,
     requests: {},
-    requestCounts: {}
+    requestCounts: {},
   };
 
   let app = express();
@@ -239,5 +239,5 @@ module.exports = {
   runCLIWithServer,
   isProcessRunning,
   kill,
-  killAll
+  killAll,
 };

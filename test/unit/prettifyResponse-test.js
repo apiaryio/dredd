@@ -9,7 +9,7 @@ describe('prettifyResponse(response)', () => {
     it('should print JSON.stringified application/json header based response', () => {
       const output = prettifyResponse({
         headers: {
-          'content-type': 'application/json'
+          'content-type': 'application/json',
         },
         body:
           { a: 'b' } });
@@ -27,9 +27,9 @@ body: \n{
     it('should print indented XML when content-type is text/html', () => {
       const output = prettifyResponse({
         headers: {
-          'content-type': 'text/html'
+          'content-type': 'text/html',
         },
-        body: '<div>before paragraph <p>in para <i>italics</i><br /><b>bold</b> afterwords</p></div>'
+        body: '<div>before paragraph <p>in para <i>italics</i><br /><b>bold</b> afterwords</p></div>',
       });
 
       const expectedOutput = `\
@@ -51,9 +51,9 @@ body: \n<div>before paragraph
 
       prettifyResponse({
         headers: {
-          'content-type': 'application/json'
+          'content-type': 'application/json',
         },
-        body
+        body,
       });
     });
 

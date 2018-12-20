@@ -26,7 +26,7 @@ describe('CLI - OpenAPI 2 Document', () => {
       let runtimeInfo;
       const args = [
         './test/fixtures/error-openapi2.yaml',
-        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`
+        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
       ];
 
       beforeEach((done) => {
@@ -46,7 +46,7 @@ describe('CLI - OpenAPI 2 Document', () => {
       const args = [
         './test/fixtures/warning-openapi2.yaml',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-        '--no-color'
+        '--no-color',
       ];
 
       beforeEach((done) => {

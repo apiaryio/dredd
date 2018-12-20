@@ -16,17 +16,17 @@ let stderr = '';
 let stdout = '';
 
 const addHooksStub = proxyquire('../../lib/addHooks', {
-  './logger': loggerStub
+  './logger': loggerStub,
 });
 
 const transactionRunner = proxyquire('../../lib/TransactionRunner', {
   './addHooks': addHooksStub,
-  './logger': loggerStub
+  './logger': loggerStub,
 });
 
 const Dredd = proxyquire('../../lib/Dredd', {
   './TransactionRunner': transactionRunner,
-  './logger': loggerStub
+  './logger': loggerStub,
 });
 
 function execCommand(options = {}, cb) {
@@ -56,7 +56,7 @@ describe('Dredd class Integration', () => {
     [
       'log', 'info', 'silly', 'verbose', 'test',
       'hook', 'complete', 'pass', 'skip', 'debug',
-      'fail', 'request', 'expected', 'actual'
+      'fail', 'request', 'expected', 'actual',
     ].forEach((method) => {
       sinon.stub(loggerStub, method).callsFake((chunk) => { stdout += `\n${method}: ${chunk}`; });
     });
@@ -69,7 +69,7 @@ describe('Dredd class Integration', () => {
     [
       'log', 'info', 'silly', 'verbose', 'test',
       'hook', 'complete', 'pass', 'skip', 'debug',
-      'fail', 'request', 'expected', 'actual'
+      'fail', 'request', 'expected', 'actual',
     ].forEach((method) => {
       loggerStub[method].restore();
     });
@@ -81,8 +81,8 @@ describe('Dredd class Integration', () => {
       before((done) => {
         const cmd = {
           options: {
-            path: './test/fixtures/single-get.apib'
-          }
+            path: './test/fixtures/single-get.apib',
+          },
         };
 
         const app = express();
@@ -103,8 +103,8 @@ describe('Dredd class Integration', () => {
       before((done) => {
         const cmd = {
           options: {
-            path: ['./test/fixtures/single-get.apib']
-          }
+            path: ['./test/fixtures/single-get.apib'],
+          },
         };
 
         const app = express();
@@ -137,13 +137,13 @@ describe('Dredd class Integration', () => {
         options: {
           path: ['./test/fixtures/single-get.apib'],
           reporter: ['apiary'],
-          level: 'verbose'
+          level: 'verbose',
         },
         custom: {
           apiaryApiUrl: `http://127.0.0.1:${PORT + 1}`,
           apiaryApiKey: 'the-key',
-          apiaryApiName: 'the-api-name'
-        }
+          apiaryApiName: 'the-api-name',
+        },
       };
 
       receivedHeaders = {};
@@ -170,7 +170,7 @@ describe('Dredd class Integration', () => {
         res.status(201).json({
           _id: '1234_id',
           testRunId: '6789_testRunId',
-          reportUrl: 'http://url.me/test/run/1234_id'
+          reportUrl: 'http://url.me/test/run/1234_id',
         });
       });
 
@@ -220,8 +220,8 @@ describe('Dredd class Integration', () => {
       before((done) => {
         const cmd = {
           options: {
-            path: ['./test/fixtures/single-get.apib', './test/fixtures/single-get.apib']
-          }
+            path: ['./test/fixtures/single-get.apib', './test/fixtures/single-get.apib'],
+          },
         };
 
         const app = express();
@@ -253,13 +253,13 @@ describe('Dredd class Integration', () => {
           options: {
             path: ['./test/fixtures/single-get.apib'],
             reporter: ['apiary'],
-            level: 'verbose'
+            level: 'verbose',
           },
           custom: {
             apiaryReporterEnv: {
-              APIARY_API_URL: `http://127.0.0.1:${PORT + 1}`
-            }
-          }
+              APIARY_API_URL: `http://127.0.0.1:${PORT + 1}`,
+            },
+          },
         };
 
         const apiary = express();
@@ -273,7 +273,7 @@ describe('Dredd class Integration', () => {
           res.status(201).json({
             _id: '1234_id',
             testRunId: '6789_testRunId',
-            reportUrl: 'http://url.me/test/run/1234_id'
+            reportUrl: 'http://url.me/test/run/1234_id',
           });
         });
 
@@ -312,13 +312,13 @@ describe('Dredd class Integration', () => {
           options: {
             path: ['./test/fixtures/single-get.apib'],
             reporter: ['apiary'],
-            level: 'verbose'
+            level: 'verbose',
           },
           custom: {
             apiaryReporterEnv: {
-              APIARY_API_URL: `http://127.0.0.1:${PORT + 1}`
-            }
-          }
+              APIARY_API_URL: `http://127.0.0.1:${PORT + 1}`,
+            },
+          },
         };
 
         const apiary = express();
@@ -333,7 +333,7 @@ describe('Dredd class Integration', () => {
           res.status(201).json({
             _id: '1234_id',
             testRunId: '6789_testRunId',
-            reportUrl: 'http://url.me/test/run/1234_id'
+            reportUrl: 'http://url.me/test/run/1234_id',
           });
         });
 
@@ -379,20 +379,20 @@ describe('Dredd class Integration', () => {
     const errorCmd = {
       server: `http://127.0.0.1:${PORT + 1}`,
       options: {
-        path: [`http://127.0.0.1:${PORT + 1}/connection-error.apib`]
-      }
+        path: [`http://127.0.0.1:${PORT + 1}/connection-error.apib`],
+      },
     };
 
     const wrongCmd = {
       options: {
-        path: [`http://127.0.0.1:${PORT}/not-found.apib`]
-      }
+        path: [`http://127.0.0.1:${PORT}/not-found.apib`],
+      },
     };
 
     const goodCmd = {
       options: {
-        path: [`http://127.0.0.1:${PORT}/file.apib`]
-      }
+        path: [`http://127.0.0.1:${PORT}/file.apib`],
+      },
     };
 
     afterEach(() => { connectedToServer = null; });
@@ -490,8 +490,8 @@ describe('Dredd class Integration', () => {
           options: {
             path: './test/fixtures/single-get.apib',
             sandbox: true,
-            hookfiles: './test/fixtures/sandboxed-hook.js'
-          }
+            hookfiles: './test/fixtures/sandboxed-hook.js',
+          },
         };
 
         const app = express();
@@ -528,12 +528,12 @@ describe('Dredd class Integration', () => {
 after('Machines > Machines collection > Get Machines', function(transaction){
   transaction['fail'] = 'failed in sandboxed hook from string';
 });\
-`
+`,
           },
           options: {
             path: './test/fixtures/single-get.apib',
-            sandbox: true
-          }
+            sandbox: true,
+          },
         };
 
         const app = express();
@@ -574,12 +574,12 @@ before('Machines collection > Get Machines', function(transaction){
   throw(new Error('Fixed transaction name'));
 });
 \
-`
+`,
           },
           options: {
             path: './test/fixtures/single-get-nogroup.apib',
-            sandbox: true
-          }
+            sandbox: true,
+          },
         };
 
         const app = express();
@@ -608,8 +608,8 @@ before('Machines collection > Get Machines', function(transaction){
     before(done =>
       execCommand({
         options: {
-          path: './test/fixtures/multiple-responses.yaml'
-        }
+          path: './test/fixtures/multiple-responses.yaml',
+        },
       }
         , (err) => {
         let groups;
@@ -630,7 +630,7 @@ before('Machines collection > Get Machines', function(transaction){
     [
       { action: 'skip', statusCode: '400' },
       { action: 'skip', statusCode: '500' },
-      { action: 'fail', statusCode: '200' }
+      { action: 'fail', statusCode: '200' },
     ].forEach((expected, i) =>
       context(`the transaction #${i + 1}`, () => {
         it(`has status code ${expected.statusCode}`, () => assert.equal(expected.statusCode, actual[i].statusCode));
@@ -647,8 +647,8 @@ before('Machines collection > Get Machines', function(transaction){
       execCommand({
         options: {
           path: './test/fixtures/multiple-responses.yaml',
-          hookfiles: './test/fixtures/openapi2-multiple-responses.js'
-        }
+          hookfiles: './test/fixtures/openapi2-multiple-responses.js',
+        },
       }
         , (err) => {
         let groups;
@@ -669,7 +669,7 @@ before('Machines collection > Get Machines', function(transaction){
     [
       { action: 'skip', statusCode: '400' },
       { action: 'fail', statusCode: '200' },
-      { action: 'fail', statusCode: '500' } // Unskipped in hooks
+      { action: 'fail', statusCode: '500' }, // Unskipped in hooks
     ].forEach((expected, i) =>
       context(`the transaction #${i + 1}`, () => {
         it(`has status code ${expected.statusCode}`, () => assert.equal(expected.statusCode, actual[i].statusCode));
@@ -689,8 +689,8 @@ before('Machines collection > Get Machines', function(transaction){
       execCommand({
         options: {
           path: './test/fixtures/multiple-responses.yaml',
-          hookfiles: './test/fixtures/openapi2-transaction-names.js'
-        }
+          hookfiles: './test/fixtures/openapi2-transaction-names.js',
+        },
       }
         , (err) => {
         let groups;
@@ -705,7 +705,7 @@ before('Machines collection > Get Machines', function(transaction){
       assert.deepEqual(matches, [
         '/honey > GET > 200 > application/json',
         '/honey > GET > 400 > application/json',
-        '/honey > GET > 500 > application/json'
+        '/honey > GET > 500 > application/json',
       ])
     );
   });
