@@ -13,7 +13,7 @@ const Dredd = proxyquire('../../lib/Dredd', {
   request: requestStub,
   'dredd-transactions': dreddTransactionsStub,
   fs: fsStub,
-  './logger': loggerStub
+  './logger': loggerStub,
 });
 
 describe('Dredd class', () => {
@@ -28,7 +28,7 @@ describe('Dredd class', () => {
     before(() => {
       configuration = {
         server: 'http://127.0.0.1:3000/',
-        blueprintPath: './test/fixtures/apiary.apib'
+        blueprintPath: './test/fixtures/apiary.apib',
       };
       sinon.stub(loggerStub, 'info').callsFake(() => { });
       sinon.stub(loggerStub, 'log').callsFake(() => { });
@@ -64,8 +64,8 @@ describe('Dredd class', () => {
           header: 'Accept:application/json',
           user: 'bob:test',
           sorted: true,
-          path: ['./test/fixtures/apiary.apib']
-        }
+          path: ['./test/fixtures/apiary.apib'],
+        },
       };
     });
 
@@ -122,8 +122,8 @@ describe('Dredd class', () => {
           server: 'http://127.0.0.1:3000/',
           options: {
             silent: true,
-            path: ['./test/fixtures/multifile/*.apib', './test/fixtures/multifile/*.apib']
-          }
+            path: ['./test/fixtures/multifile/*.apib', './test/fixtures/multifile/*.apib'],
+          },
         };
         dredd = new Dredd(configuration);
       });
@@ -182,8 +182,8 @@ describe('Dredd class', () => {
           server: 'http://127.0.0.1:3000/',
           options: {
             silent: true,
-            path: ['./test/fixtures/multifile/*.balony', './test/fixtures/multifile/*.apib']
-          }
+            path: ['./test/fixtures/multifile/*.balony', './test/fixtures/multifile/*.apib'],
+          },
         };
         dredd = new Dredd(configuration);
       });
@@ -209,8 +209,8 @@ describe('Dredd class', () => {
           server: 'http://127.0.0.1:3000/',
           options: {
             silent: true,
-            path: ['./test/fixtures/multifile/*.balony']
-          }
+            path: ['./test/fixtures/multifile/*.balony'],
+          },
         };
         dredd = new Dredd(configuration);
       });
@@ -235,7 +235,7 @@ describe('Dredd class', () => {
         configuration = {
           server: 'http://127.0.0.1:3000/',
           options: {
-            silent: true
+            silent: true,
           },
           data: {
             testingDirectObject: {
@@ -247,7 +247,7 @@ GET /url
 + Response 200 (application/json)
 
         {"a":"b"}'\
-`
+`,
             },
             testingDirectBlueprintString: `\
 # API name
@@ -256,8 +256,8 @@ GET /url
 + Response 200 (application/json)
 
         {"a":"b"}'\
-`
-          }
+`,
+          },
         };
         dredd = new Dredd(configuration);
         sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
@@ -336,8 +336,8 @@ GET /url
           server: 'http://127.0.0.1:3000/',
           options: {
             silent: true,
-            path: ['http://some.path.to/file.apib', 'https://another.path.to/apiary.apib', './test/fixtures/multifile/*.apib']
-          }
+            path: ['http://some.path.to/file.apib', 'https://another.path.to/apiary.apib', './test/fixtures/multifile/*.apib'],
+          },
         };
         dredd = new Dredd(configuration);
         fsStub.readFile('./test/fixtures/single-get.apib', 'utf8', (err, content) => {
@@ -369,7 +369,7 @@ GET /url
               'https://another.path.to/apiary.apib',
               './test/fixtures/multifile/message.apib',
               './test/fixtures/multifile/greeting.apib',
-              './test/fixtures/multifile/name.apib'
+              './test/fixtures/multifile/name.apib',
             ]);
             done();
           })
@@ -489,8 +489,8 @@ GET /url
         url: 'http://127.0.0.1:3000/',
         options: {
           silent: true,
-          path: ['./test/fixtures/error-blueprint.apib']
-        }
+          path: ['./test/fixtures/error-blueprint.apib'],
+        },
       };
       dredd = new Dredd(configuration);
     });
@@ -522,8 +522,8 @@ GET /url
         url: 'http://127.0.0.1:3000/',
         options: {
           silent: true,
-          path: ['./test/fixtures/warning-ambiguous.apib']
-        }
+          path: ['./test/fixtures/warning-ambiguous.apib'],
+        },
       };
       dredd = new Dredd(configuration);
     });
@@ -559,8 +559,8 @@ GET /url
         url: 'http://127.0.0.1:3000/',
         options: {
           silent: true,
-          path: ['./balony/path.apib']
-        }
+          path: ['./balony/path.apib'],
+        },
       };
       dredd = new Dredd(configuration);
       sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
@@ -589,8 +589,8 @@ GET /url
         server: 'http://127.0.0.1:3000/',
         options: {
           silent: true,
-          path: ['./test/fixtures/error-uri-template.apib']
-        }
+          path: ['./test/fixtures/error-uri-template.apib'],
+        },
       };
 
       dredd = new Dredd(configuration);
@@ -620,8 +620,8 @@ GET /url
         server: 'http://127.0.0.1:3000/',
         options: {
           silent: true,
-          path: ['./test/fixtures/warning-ambiguous.apib']
-        }
+          path: ['./test/fixtures/warning-ambiguous.apib'],
+        },
       };
       sinon.spy(loggerStub, 'warn');
       dredd = new Dredd(configuration);
@@ -661,8 +661,8 @@ GET /url
         server: 'http://127.0.0.1:3000/',
         options: {
           silent: true,
-          path: ['./test/fixtures/apiary.apib']
-        }
+          path: ['./test/fixtures/apiary.apib'],
+        },
       };
       dredd = new Dredd(configuration);
       sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
@@ -695,9 +695,9 @@ GET /url
               apiaryApiUrl: `http://127.0.0.1:${PORT + 1}`,
               apiaryApiKey: 'the-key',
               apiaryApiName: 'the-api-name',
-              dreddRestDebug: '1'
-            }
-          }
+              dreddRestDebug: '1',
+            },
+          },
         };
 
         dredd = new Dredd(configuration);
@@ -709,7 +709,7 @@ GET /url
           res.status(201).json({
             _id: '1234_id',
             testRunId: '6789_testRunId',
-            reportUrl: 'http://url.me/test/run/1234_id'
+            reportUrl: 'http://url.me/test/run/1234_id',
           })
         );
 
@@ -751,9 +751,9 @@ GET /url
               apiaryApiUrl: `http://127.0.0.1:${PORT + 1}`,
               apiaryApiKey: 'the-key',
               apiaryApiName: 'the-api-name',
-              dreddRestDebug: '1'
-            }
-          }
+              dreddRestDebug: '1',
+            },
+          },
         };
 
         dredd = new Dredd(configuration);

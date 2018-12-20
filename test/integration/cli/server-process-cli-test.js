@@ -70,7 +70,7 @@ describe('CLI - Server Process', () => {
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         `--server=node ./test/fixtures/scripts/dummy-server.js ${DEFAULT_SERVER_PORT}`,
-        '--server-wait=1'
+        '--server-wait=1',
       ];
 
       beforeEach(done =>
@@ -91,7 +91,7 @@ describe('CLI - Server Process', () => {
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--server=/foo/bar/baz',
-        '--server-wait=1'
+        '--server-wait=1',
       ];
 
       beforeEach(done =>
@@ -110,26 +110,26 @@ describe('CLI - Server Process', () => {
       description: 'When crashes before requests',
       apiDescriptionDocument: './test/fixtures/single-get.apib',
       server: 'node test/fixtures/scripts/exit-3.js',
-      expectServerBoot: false
+      expectServerBoot: false,
     },
     {
       description: 'When crashes during requests',
       apiDescriptionDocument: './test/fixtures/apiary.apib',
       server: `node test/fixtures/scripts/dummy-server-crash.js ${DEFAULT_SERVER_PORT}`,
-      expectServerBoot: true
+      expectServerBoot: true,
     },
     {
       description: 'When killed before requests',
       apiDescriptionDocument: './test/fixtures/single-get.apib',
       server: 'node test/fixtures/scripts/kill-self.js',
-      expectServerBoot: false
+      expectServerBoot: false,
     },
     {
       description: 'When killed during requests',
       apiDescriptionDocument: './test/fixtures/apiary.apib',
       server: `node test/fixtures/scripts/dummy-server-kill.js ${DEFAULT_SERVER_PORT}`,
-      expectServerBoot: true
-    }
+      expectServerBoot: true,
+    },
     ]) {
       describe(scenario.description, () => {
         let cliInfo;
@@ -137,7 +137,7 @@ describe('CLI - Server Process', () => {
           scenario.apiDescriptionDocument,
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           `--server=${scenario.server}`,
-          '--server-wait=1'
+          '--server-wait=1',
         ];
 
         beforeEach(done =>
@@ -169,7 +169,7 @@ describe('CLI - Server Process', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         `--server=node test/fixtures/scripts/dummy-server-ignore-term.js ${DEFAULT_SERVER_PORT}`,
         '--server-wait=1',
-        '--level=verbose'
+        '--level=verbose',
       ];
 
       beforeEach(done =>

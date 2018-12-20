@@ -42,8 +42,8 @@ describe('Sanitation of Reported Data', () => {
       emitter,
       options: {
         path: `./test/fixtures/sanitation/${fixtureName}.apib`,
-        hookfiles: `./test/fixtures/sanitation/${fixtureName}.js`
-      }
+        hookfiles: `./test/fixtures/sanitation/${fixtureName}.js`,
+      },
     });
   }
 
@@ -74,7 +74,7 @@ describe('Sanitation of Reported Data', () => {
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
-        'start', 'test start', 'test fail', 'end'
+        'start', 'test start', 'test fail', 'end',
       ])
     );
     it('emitted test data does not contain request body', () => assert.equal(events[2].test.request.body, ''));
@@ -109,7 +109,7 @@ describe('Sanitation of Reported Data', () => {
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
-        'start', 'test start', 'test fail', 'end'
+        'start', 'test start', 'test fail', 'end',
       ])
     );
     it('emitted test data does not contain response body', () => {
@@ -147,7 +147,7 @@ describe('Sanitation of Reported Data', () => {
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
-        'start', 'test start', 'test fail', 'end'
+        'start', 'test start', 'test fail', 'end',
       ])
     );
     it('emitted test data does not contain confidential body attribute', () => {
@@ -185,7 +185,7 @@ describe('Sanitation of Reported Data', () => {
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
-        'start', 'test start', 'test fail', 'end'
+        'start', 'test start', 'test fail', 'end',
       ])
     );
     it('emitted test data does not contain confidential body attribute', () => {
@@ -226,7 +226,7 @@ describe('Sanitation of Reported Data', () => {
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
-        'start', 'test start', 'test fail', 'end'
+        'start', 'test start', 'test fail', 'end',
       ])
     );
     it('emitted test data does contain the sensitive data censored', () => {
@@ -257,7 +257,7 @@ describe('Sanitation of Reported Data', () => {
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
-        'start', 'test start', 'test fail', 'end'
+        'start', 'test start', 'test fail', 'end',
       ])
     );
     it('emitted test data does not contain confidential header', () => {
@@ -296,7 +296,7 @@ describe('Sanitation of Reported Data', () => {
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
-        'start', 'test start', 'test fail', 'end'
+        'start', 'test start', 'test fail', 'end',
       ])
     );
     it('emitted test data does not contain confidential header', () => {
@@ -338,7 +338,7 @@ describe('Sanitation of Reported Data', () => {
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
-        'start', 'test start', 'test fail', 'end'
+        'start', 'test start', 'test fail', 'end',
       ])
     );
     it('emitted test data does contain the sensitive data censored', () => assert.include(events[2].test.request.uri, 'CENSORED'));
@@ -368,7 +368,7 @@ describe('Sanitation of Reported Data', () => {
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
-        'start', 'test start', 'test fail', 'end'
+        'start', 'test start', 'test fail', 'end',
       ])
     );
     it('emitted test data does contain the sensitive data censored', () => assert.include(JSON.stringify(events), 'CENSORED'));
@@ -396,7 +396,7 @@ describe('Sanitation of Reported Data', () => {
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
-        'start', 'test start', 'test fail', 'end'
+        'start', 'test start', 'test fail', 'end',
       ])
     );
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
@@ -427,7 +427,7 @@ describe('Sanitation of Reported Data', () => {
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
-        'start', 'test start', 'test pass', 'end'
+        'start', 'test start', 'test pass', 'end',
       ])
     );
     it('emitted test data does not contain request body', () => assert.equal(events[2].test.request.body, ''));
@@ -462,7 +462,7 @@ describe('Sanitation of Reported Data', () => {
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
-        'start', 'test start', 'test fail', 'end'
+        'start', 'test start', 'test fail', 'end',
       ])
     );
     it('emitted test is failed', () => {
@@ -501,7 +501,7 @@ describe('Sanitation of Reported Data', () => {
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
-        'start', 'test start', 'test fail', 'end'
+        'start', 'test start', 'test fail', 'end',
       ])
     );
     it('emitted test data does not contain request body', () => assert.equal(events[2].test.request.body, ''));
@@ -541,7 +541,7 @@ describe('Sanitation of Reported Data', () => {
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
-        'start', 'test start', 'test skip', 'end'
+        'start', 'test start', 'test skip', 'end',
       ])
     );
     it('emitted test is skipped', () => {
@@ -580,7 +580,7 @@ describe('Sanitation of Reported Data', () => {
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
-        'start', 'test start', 'test error', 'end'
+        'start', 'test start', 'test error', 'end',
       ])
     );
     it('sensitive data leak to emitted test data', () => {
@@ -614,7 +614,7 @@ describe('Sanitation of Reported Data', () => {
     });
     it('emits expected events in expected order', () =>
       assert.deepEqual((Array.from(events).map(event => event.name)), [
-        'start', 'test start', 'test fail', 'end'
+        'start', 'test start', 'test fail', 'end',
       ])
     );
     it('sensitive data cannot be found anywhere in the emitted test data', () => {

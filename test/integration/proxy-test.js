@@ -178,7 +178,7 @@ ${protocol}_proxy=${PROXY_URL}\
         },
         expectedLog,
         expectedDestination: 'server',
-        expectedUrl: '/machines'
+        expectedUrl: '/machines',
       })
     );
 
@@ -195,7 +195,7 @@ ${protocol}_proxy=${PROXY_URL}\
         },
         expectedLog,
         expectedDestination: 'proxy',
-        expectedUrl: `${serverUrl}/apis/public/tests/runs`
+        expectedUrl: `${serverUrl}/apis/public/tests/runs`,
       });
     });
 
@@ -208,7 +208,7 @@ ${protocol}_proxy=${PROXY_URL}\
         },
         expectedLog,
         expectedDestination: 'proxy',
-        expectedUrl: `${serverUrl}/example.apib`
+        expectedUrl: `${serverUrl}/example.apib`,
       })
     );
   });
@@ -240,7 +240,7 @@ http_proxy=${PROXY_URL}, no_proxy=${SERVER_HOST}\
       },
       expectedLog,
       expectedDestination: 'server',
-      expectedUrl: '/machines'
+      expectedUrl: '/machines',
     })
   );
 
@@ -257,7 +257,7 @@ http_proxy=${PROXY_URL}, no_proxy=${SERVER_HOST}\
       },
       expectedLog,
       expectedDestination: 'server',
-      expectedUrl: '/apis/public/tests/runs'
+      expectedUrl: '/apis/public/tests/runs',
     });
   });
 
@@ -270,7 +270,7 @@ http_proxy=${PROXY_URL}, no_proxy=${SERVER_HOST}\
       },
       expectedLog,
       expectedDestination: 'server',
-      expectedUrl: '/example.apib'
+      expectedUrl: '/example.apib',
     })
   );
 });

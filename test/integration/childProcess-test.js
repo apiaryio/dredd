@@ -18,7 +18,7 @@ function runChildProcess(command, fn, callback) {
     terminated: false,
     exitStatus: undefined,
     signal: undefined,
-    onCrash
+    onCrash,
   };
 
   const childProcess = spawn(COFFEE_BIN, [command]);

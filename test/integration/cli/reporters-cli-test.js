@@ -27,7 +27,7 @@ describe('CLI - Reporters', () => {
     const args = [
       './test/fixtures/single-get.apib',
       `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-      '--reporter=nyan'
+      '--reporter=nyan',
     ];
 
     beforeEach(done =>
@@ -58,7 +58,7 @@ describe('CLI - Reporters', () => {
         res.json({
           _id: '1234_id',
           testRunId: '6789_testRunId',
-          reportUrl: 'http://example.com/test/run/1234_id'
+          reportUrl: 'http://example.com/test/run/1234_id',
         })
       );
 
@@ -78,7 +78,7 @@ describe('CLI - Reporters', () => {
       const args = [
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-        '--reporter=apiary'
+        '--reporter=apiary',
       ];
 
       beforeEach(done =>
@@ -96,7 +96,7 @@ describe('CLI - Reporters', () => {
         assert.deepEqual(apiaryRuntimeInfo.requestCounts, {
           '/apis/public/tests/runs': 1,
           '/apis/public/tests/run/1234_id': 1,
-          '/apis/public/tests/steps?testRunId=1234_id': 1
+          '/apis/public/tests/steps?testRunId=1234_id': 1,
         });
       });
       it('should send results from gavel', () => {
@@ -118,7 +118,7 @@ describe('CLI - Reporters', () => {
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--reporter=apiary',
-        '--hookfiles=./test/fixtures/hooks-log.coffee'
+        '--hookfiles=./test/fixtures/hooks-log.coffee',
       ];
 
       beforeEach(done =>
@@ -195,7 +195,7 @@ describe('CLI - Reporters', () => {
         '--reporter=apiary',
         '--level=info',
         '--sandbox',
-        '--hookfiles=./test/fixtures/sandboxed-hooks-log.js'
+        '--hookfiles=./test/fixtures/sandboxed-hooks-log.js',
       ];
 
       beforeEach(done =>
@@ -259,7 +259,7 @@ describe('CLI - Reporters', () => {
       './test/fixtures/single-get.apib',
       `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
       '--reporter=xunit',
-      '--output=__test_file_output__.xml'
+      '--output=__test_file_output__.xml',
     ];
 
     beforeEach(done =>
@@ -280,7 +280,7 @@ describe('CLI - Reporters', () => {
       '--reporter=xunit',
       '--output=__test_file_output1__.xml',
       '--reporter=xunit',
-      '--output=__test_file_output2__.xml'
+      '--output=__test_file_output2__.xml',
     ];
 
     beforeEach(done =>
@@ -305,7 +305,7 @@ describe('CLI - Reporters', () => {
       './test/fixtures/single-get.apib',
       `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
       '--reporter=xunit',
-      '--output=./__test_directory/__test_file_output__.xml'
+      '--output=./__test_directory/__test_file_output__.xml',
     ];
 
     beforeEach((done) => {
@@ -334,7 +334,7 @@ describe('CLI - Reporters', () => {
     const args = [
       './test/fixtures/single-get.apib',
       `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-      '--reporter=apiary'
+      '--reporter=apiary',
     ];
 
     beforeEach((done) => {

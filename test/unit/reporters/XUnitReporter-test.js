@@ -12,7 +12,7 @@ const fsExtraStub = { mkdirp(path, cb) { return cb(); } };
 const XUnitReporter = proxyquire('../../../lib/reporters/XUnitReporter', {
   '../logger': loggerStub,
   fs: fsStub,
-  'fs-extra': fsExtraStub
+  'fs-extra': fsExtraStub,
 });
 
 describe('XUnitReporter', () => {
@@ -174,22 +174,22 @@ describe('XUnitReporter', () => {
           body: '{ "test": "body" }',
           schema: '{ "test": "schema" }',
           headers: {
-            Accept: 'application/json'
-          }
+            Accept: 'application/json',
+          },
         },
         expected: {
           body: '{ "test": "body" }',
           schema: '{ "test": "schema" }',
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+          },
         },
         actual: {
           body: '<html></html>',
           headers: {
-            'Content-Type': 'text/html'
-          }
-        }
+            'Content-Type': 'text/html',
+          },
+        },
       };
     });
 
@@ -221,7 +221,7 @@ describe('XUnitReporter', () => {
     before(() => {
       test = {
         status: 'skipped',
-        title: 'Skipped Test'
+        title: 'Skipped Test',
       };
     });
 
@@ -242,7 +242,7 @@ describe('XUnitReporter', () => {
     before(() => {
       test = {
         status: 'failed',
-        title: 'Failed Test'
+        title: 'Failed Test',
       };
     });
 
@@ -263,7 +263,7 @@ describe('XUnitReporter', () => {
     before(() => {
       test = {
         status: 'error',
-        title: 'Errored Test'
+        title: 'Errored Test',
       };
     });
 

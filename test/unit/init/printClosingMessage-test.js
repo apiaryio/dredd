@@ -1,7 +1,7 @@
 const { assert } = require('chai');
 
 const {
-  _printClosingMessage: printClosingMessage
+  _printClosingMessage: printClosingMessage,
 } = require('../../../lib/init');
 
 

@@ -6,12 +6,12 @@ const Dredd = require('../../lib/Dredd');
 
 [{
   name: 'API Blueprint',
-  path: './test/fixtures/response/empty-body-empty-schema.apib'
+  path: './test/fixtures/response/empty-body-empty-schema.apib',
 },
 {
   name: 'OpenAPI 2',
-  path: './test/fixtures/response/empty-body-empty-schema.yaml'
-}
+  path: './test/fixtures/response/empty-body-empty-schema.yaml',
+},
 ].forEach(apiDescription =>
   describe(`Specifying neither response body nor schema in the ${apiDescription.name}`, () => {
     describe('when the server returns non-empty responses', () => {
@@ -52,12 +52,12 @@ const Dredd = require('../../lib/Dredd');
 
 [{
   name: 'API Blueprint',
-  path: './test/fixtures/response/empty-body.apib'
+  path: './test/fixtures/response/empty-body.apib',
 },
 {
   name: 'OpenAPI 2',
-  path: './test/fixtures/response/empty-body.yaml'
-}
+  path: './test/fixtures/response/empty-body.yaml',
+},
 ].forEach(apiDescription =>
   describe(`Specifying no response body in the ${apiDescription.name}, but specifying a schema`, () => {
     describe('when the server returns a response not valid according to the schema', () => {
@@ -97,12 +97,12 @@ const Dredd = require('../../lib/Dredd');
 
 [{
   name: 'API Blueprint',
-  path: './test/fixtures/response/empty-body-empty-schema.apib'
+  path: './test/fixtures/response/empty-body-empty-schema.apib',
 },
 {
   name: 'OpenAPI 2',
-  path: './test/fixtures/response/empty-body-empty-schema.yaml'
-}
+  path: './test/fixtures/response/empty-body-empty-schema.yaml',
+},
 ].forEach(apiDescription =>
   describe(`Specifying no response body in the ${apiDescription.name} and having hooks ensuring empty response`, () => {
     describe('when the server returns a non-empty responses', () => {
@@ -115,8 +115,8 @@ const Dredd = require('../../lib/Dredd');
         const dredd = new Dredd({
           options: {
             path: apiDescription.path,
-            hookfiles: './test/fixtures/response/empty-body-hooks.js'
-          }
+            hookfiles: './test/fixtures/response/empty-body-hooks.js',
+          },
         });
         runDreddWithServer(dredd, app, (err, info) => {
           runtimeInfo = info;
@@ -138,8 +138,8 @@ const Dredd = require('../../lib/Dredd');
         const dredd = new Dredd({
           options: {
             path: apiDescription.path,
-            hookfiles: './test/fixtures/response/empty-body-hooks.js'
-          }
+            hookfiles: './test/fixtures/response/empty-body-hooks.js',
+          },
         });
         runDreddWithServer(dredd, app, (err, info) => {
           runtimeInfo = info;
@@ -154,12 +154,12 @@ const Dredd = require('../../lib/Dredd');
 
 [{
   name: 'API Blueprint',
-  path: './test/fixtures/response/empty-body-empty-schema.apib'
+  path: './test/fixtures/response/empty-body-empty-schema.apib',
 },
 {
   name: 'OpenAPI 2',
-  path: './test/fixtures/response/empty-body-empty-schema.yaml'
-}
+  path: './test/fixtures/response/empty-body-empty-schema.yaml',
+},
 ].forEach(apiDescription =>
   describe(`Specifying no response body in the ${apiDescription.name} and having hooks ensuring empty response`, () => {
     describe('when the server returns non-empty responses', () => {
@@ -172,8 +172,8 @@ const Dredd = require('../../lib/Dredd');
         const dredd = new Dredd({
           options: {
             path: apiDescription.path,
-            hookfiles: './test/fixtures/response/empty-body-hooks.js'
-          }
+            hookfiles: './test/fixtures/response/empty-body-hooks.js',
+          },
         });
         runDreddWithServer(dredd, app, (err, info) => {
           runtimeInfo = info;
@@ -195,8 +195,8 @@ const Dredd = require('../../lib/Dredd');
         const dredd = new Dredd({
           options: {
             path: apiDescription.path,
-            hookfiles: './test/fixtures/response/empty-body-hooks.js'
-          }
+            hookfiles: './test/fixtures/response/empty-body-hooks.js',
+          },
         });
         runDreddWithServer(dredd, app, (err, info) => {
           runtimeInfo = info;
@@ -211,12 +211,12 @@ const Dredd = require('../../lib/Dredd');
 
 [{
   name: 'API Blueprint',
-  path: './test/fixtures/response/204-205-body.apib'
+  path: './test/fixtures/response/204-205-body.apib',
 },
 {
   name: 'OpenAPI 2',
-  path: './test/fixtures/response/204-205-body.yaml'
-}
+  path: './test/fixtures/response/204-205-body.yaml',
+},
 ].forEach(apiDescription =>
   describe(`Working with HTTP 204 and 205 responses in the ${apiDescription.name}`, () => {
     describe('when the actual response is non-empty', () => {
@@ -293,12 +293,12 @@ const Dredd = require('../../lib/Dredd');
 [
   {
     name: 'API Blueprint',
-    path: './test/fixtures/response/binary.apib'
+    path: './test/fixtures/response/binary.apib',
   },
   {
     name: 'OpenAPI 2',
-    path: './test/fixtures/response/binary.yaml'
-  }
+    path: './test/fixtures/response/binary.yaml',
+  },
 ].forEach(apiDescription =>
   describe(`Working with binary responses in the ${apiDescription.name}`, () => {
     const imagePath = path.join(__dirname, '../fixtures/image.png');
@@ -314,8 +314,8 @@ const Dredd = require('../../lib/Dredd');
         const dredd = new Dredd({
           options: {
             path: apiDescription.path,
-            hookfiles: './test/fixtures/response/binary-ignore-body-hooks.js'
-          }
+            hookfiles: './test/fixtures/response/binary-ignore-body-hooks.js',
+          },
         });
         runDreddWithServer(dredd, app, (err, info) => {
           runtimeInfo = info;
@@ -335,8 +335,8 @@ const Dredd = require('../../lib/Dredd');
         const dredd = new Dredd({
           options: {
             path: apiDescription.path,
-            hookfiles: './test/fixtures/response/binary-assert-body-hooks.js'
-          }
+            hookfiles: './test/fixtures/response/binary-assert-body-hooks.js',
+          },
         });
         runDreddWithServer(dredd, app, (err, info) => {
           runtimeInfo = info;

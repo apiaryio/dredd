@@ -14,7 +14,7 @@ describe('configuration.applyLoggingOptions()', () => {
   it('applies logging options', () => {
     config = configuration.applyLoggingOptions({
       color: 'true',
-      level: 'debug'
+      level: 'debug',
     });
 
     assert.propertyVal(config, 'color', true);
@@ -50,8 +50,8 @@ describe('configuration.applyConfiguration()', () => {
     config = configuration.applyConfiguration({
       options: {
         color: 'true',
-        level: 'debug'
-      }
+        level: 'debug',
+      },
     });
 
     assert.nestedPropertyVal(config, 'options.color', true);

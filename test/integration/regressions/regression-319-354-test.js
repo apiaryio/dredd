@@ -71,9 +71,9 @@ describe('Regression: Issues #319 and #354', () => {
     producer: {
       address: {
         city: null,
-        street: ''
-      }
-    }
+        street: '',
+      },
+    },
   };
 
   const brickTypeSchema = {
@@ -91,13 +91,13 @@ describe('Regression: Issues #319 and #354', () => {
             type: 'object',
             properties: {
               city: { type: ['string', 'null'] },
-              street: { type: 'string' }
-            }
-          }
-        }
-      }
+              street: { type: 'string' },
+            },
+          },
+        },
+      },
     },
-    required: ['name']
+    required: ['name'],
   };
 
   const userPayload = {
@@ -106,8 +106,8 @@ describe('Regression: Issues #319 and #354', () => {
     shoeSize: 42,
     address: {
       city: null,
-      street: ''
-    }
+      street: '',
+    },
   };
 
   const userSchema = {
@@ -121,19 +121,19 @@ describe('Regression: Issues #319 and #354', () => {
         type: 'object',
         properties: {
           city: { type: ['string', 'null'] },
-          street: { type: 'string' }
-        }
-      }
-    }
+          street: { type: 'string' },
+        },
+      },
+    },
   };
 
   const userArrayPayload = [
-    userPayload
+    userPayload,
   ];
 
   const userArraySchema = {
     $schema: 'http://json-schema.org/draft-04/schema#',
-    type: 'array'
+    type: 'array',
   };
 
   describe('Tested app is consistent with the API description', () => {
@@ -152,7 +152,7 @@ describe('Regression: Issues #319 and #354', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--inline-errors',
         '--details',
-        '--no-color'
+        '--no-color',
       ];
       runCLIWithServer(args, app, (err, info) => {
         if (info) { results = parseDreddStdout(info.dredd.stdout); }
@@ -207,7 +207,7 @@ describe('Regression: Issues #319 and #354', () => {
 
     const incorrectUserArrayPayload = {
       page: 1,
-      items: [incorrectUserPayload]
+      items: [incorrectUserPayload],
     };
 
     beforeEach((done) => {
@@ -225,7 +225,7 @@ describe('Regression: Issues #319 and #354', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--inline-errors',
         '--details',
-        '--no-color'
+        '--no-color',
       ];
       runCLIWithServer(args, app, (err, info) => {
         if (info) { results = parseDreddStdout(info.dredd.stdout); }

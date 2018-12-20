@@ -1,7 +1,7 @@
 const { assert } = require('chai');
 
 const {
-  _detectBodyEncoding: detectBodyEncoding
+  _detectBodyEncoding: detectBodyEncoding,
 } = require('../../../lib/performRequest');
 
 

@@ -23,7 +23,7 @@ const addHooks = proxyquire('../../lib/addHooks', {
   proxyquire: proxyquireStub,
   './sandboxHooksCode': sandboxHooksCodeSpy,
   './HooksWorkerClient': hooksWorkerClientStub,
-  fs: fsStub
+  fs: fsStub,
 });
 
 describe('addHooks(runner, transactions, callback)', () => {
@@ -38,9 +38,9 @@ describe('addHooks(runner, transactions, callback)', () => {
       logs: ['item'],
       configuration: {
         options: {
-          hookfiles: null
-        }
-      }
+          hookfiles: null,
+        },
+      },
     };
 
     it('should create hooks instance at runner.hooks', done =>
@@ -76,9 +76,9 @@ describe('addHooks(runner, transactions, callback)', () => {
       runner = {
         configuration: {
           options: {
-            hookfiles: null
-          }
-        }
+            hookfiles: null,
+          },
+        },
       };
 
       sinon.spy(globStub, 'sync');
@@ -102,9 +102,9 @@ describe('addHooks(runner, transactions, callback)', () => {
         configuration: {
           options: {
             language: 'ruby',
-            hookfiles: './test/fixtures/non-js-hooks.rb'
-          }
-        }
+            hookfiles: './test/fixtures/non-js-hooks.rb',
+          },
+        },
       };
 
       sinon.stub(hooksWorkerClientStub.prototype, 'start').callsFake(cb => cb());
@@ -128,9 +128,9 @@ describe('addHooks(runner, transactions, callback)', () => {
       runner = {
         configuration: {
           options: {
-            hookfiles: './test/**/*_hooks.*'
-          }
-        }
+            hookfiles: './test/**/*_hooks.*',
+          },
+        },
       };
     });
 
@@ -151,7 +151,7 @@ describe('addHooks(runner, transactions, callback)', () => {
         assert.deepEqual(runner.hooks.configuration.options.hookfiles, [
           pathStub.resolve(process.cwd(), './test/fixtures/multifile/multifile_hooks.coffee'),
           pathStub.resolve(process.cwd(), './test/fixtures/test2_hooks.js'),
-          pathStub.resolve(process.cwd(), './test/fixtures/test_hooks.coffee')
+          pathStub.resolve(process.cwd(), './test/fixtures/test_hooks.coffee'),
         ]);
         done();
       })
@@ -163,9 +163,9 @@ describe('addHooks(runner, transactions, callback)', () => {
         runner = {
           configuration: {
             options: {
-              hookfiles: './test/**/*_hooks.*'
-            }
-          }
+              hookfiles: './test/**/*_hooks.*',
+            },
+          },
         };
         sinon.stub(globStub, 'sync').callsFake(() => ['file1.js', 'file2.coffee']);
         sinon.stub(pathStub, 'resolve').callsFake(() => '/Users/netmilk/projects/dredd/file2.coffee');
@@ -204,9 +204,9 @@ describe('addHooks(runner, transactions, callback)', () => {
           configuration: {
             options: {
               hookfiles: './test/fixtures/sandboxed-hook.js',
-              sandbox: true
-            }
-          }
+              sandbox: true,
+            },
+          },
         };
 
         sinon.spy(loggerStub, 'warn');
@@ -269,12 +269,12 @@ describe('addHooks(runner, transactions, callback)', () => {
 after('Machines > Machines collection > Get Machines', function(transaction){
   transaction['fail'] = 'failed in sandboxed hook';
 });\
-`
+`,
             },
             options: {
-              sandbox: true
-            }
-          }
+              sandbox: true,
+            },
+          },
         };
 
         sinon.spy(loggerStub, 'warn');
@@ -327,10 +327,10 @@ after('Machines > Machines collection > Get Machines', function(transaction){
 after('Machines > Machines collection > Get Machines', function(transaction){
   transaction['fail'] = 'failed in sandboxed hook';
 });\
-`
+`,
             },
-            options: {}
-          }
+            options: {},
+          },
         };
       });
 
@@ -357,12 +357,12 @@ after(' > Machines collection > Get Machines', function(transaction){
 before(' > Machines collection > Get Machines', function(transaction){
   transaction['fail'] = 'failed in sandboxed hook';
 });\
-`
+`,
               },
               options: {
-                sandbox: true
-              }
-            }
+                sandbox: true,
+              },
+            },
           };
 
           addHooks(runner, transactions, () => {
@@ -383,12 +383,12 @@ after(' > Machines collection > Get Machines', function(transaction){
 before(' > Machines collection > Get Machines', function(transaction){
   transaction['fail'] = 'failed in sandboxed hook';
 });\
-`
+`,
               },
               options: {
-                sandbox: true
-              }
-            }
+                sandbox: true,
+              },
+            },
           };
 
           addHooks(runner, transactions, () => {
@@ -406,9 +406,9 @@ before(' > Machines collection > Get Machines', function(transaction){
       const runner = {
         configuration: {
           options: {
-            hookfiles: './test/fixtures/groupless-names.js'
-          }
-        }
+            hookfiles: './test/fixtures/groupless-names.js',
+          },
+        },
       };
 
       addHooks(runner, transactions, () => {
@@ -422,9 +422,9 @@ before(' > Machines collection > Get Machines', function(transaction){
       const runner = {
         configuration: {
           options: {
-            hookfiles: './test/fixtures/groupless-names.js'
-          }
-        }
+            hookfiles: './test/fixtures/groupless-names.js',
+          },
+        },
       };
 
       addHooks(runner, transactions, () => {

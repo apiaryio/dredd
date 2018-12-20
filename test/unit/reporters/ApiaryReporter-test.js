@@ -9,7 +9,7 @@ const blueprintData = require('../../fixtures/blueprint-data');
 const loggerStub = require('../../../lib/logger');
 
 const ApiaryReporter = proxyquire('../../../lib/reporters/ApiaryReporter', {
-  '../logger': loggerStub
+  '../logger': loggerStub,
 });
 
 const PORT = 9876;
@@ -63,25 +63,25 @@ describe('ApiaryReporter', () => {
           resourceGroupName: '',
           resourceName: '/greeting',
           actionName: 'GET',
-          exampleName: ''
+          exampleName: '',
         },
 
         actual: {
           statusCode: 400,
           headers: {
-            'content-type': 'text/plain'
+            'content-type': 'text/plain',
           },
 
-          body: 'Foo bar'
+          body: 'Foo bar',
         },
 
         expected: {
           headers: {
-            'content-type': 'application/json'
+            'content-type': 'application/json',
           },
 
           body: '{\n  "type": "bulldozer",\n  "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n',
-          status: '202'
+          status: '202',
         },
 
         request: {
@@ -89,11 +89,11 @@ describe('ApiaryReporter', () => {
           headers: {
             'Content-Type': 'application/json',
             'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)',
-            'Content-Length': 44
+            'Content-Length': 44,
           },
 
           uri: '/machines',
-          method: 'POST'
+          method: 'POST',
         },
 
         results: {
@@ -101,8 +101,8 @@ describe('ApiaryReporter', () => {
             results: [{
               pointer: '/content-type',
               severity: 'error',
-              message: 'Value of the ‘content-type’ must be application/json.'
-            }
+              message: 'Value of the ‘content-type’ must be application/json.',
+            },
             ],
             realType: 'application/vnd.apiary.http-headers+json',
             expectedType: 'application/vnd.apiary.http-headers+json',
@@ -116,23 +116,23 @@ describe('ApiaryReporter', () => {
                 message: 'Value of the ‘content-type’ must be application/json.',
                 validator: 'enum',
                 validatorName: 'enum',
-                validatorValue: ['application/json']
+                validatorValue: ['application/json'],
               },
 
-              length: 1
-            }
+              length: 1,
+            },
           },
 
           body: {
             results: [{
               message: "No validator found for real data media type 'text/plain' and expected data media type 'application/json'.",
-              severity: 'error'
-            }
+              severity: 'error',
+            },
             ],
             realType: 'text/plain',
             expectedType: 'application/json',
             validator: null,
-            rawData: null
+            rawData: null,
           },
 
           statusCode: {
@@ -142,11 +142,11 @@ describe('ApiaryReporter', () => {
             rawData: '@@ -1,3 +1,9 @@\n-400\n+undefined\n',
             results: [{
               severity: 'error',
-              message: 'Real and expected data does not match.'
-            }
-            ]
-          }
-        }
+              message: 'Real and expected data does not match.',
+            },
+            ],
+          },
+        },
       };
 
       nock.disableNetConnect();
@@ -164,7 +164,7 @@ describe('ApiaryReporter', () => {
       describe('when custom settings contain API URL without trailing slash', () => {
         const custom = {
           apiaryReporterEnv: env,
-          apiaryApiUrl: 'https://api.example.com:1234'
+          apiaryApiUrl: 'https://api.example.com:1234',
         };
 
         it('uses the provided API URL in configuration', () => {
@@ -180,7 +180,7 @@ describe('ApiaryReporter', () => {
       describe('when custom settings contain API URL with trailing slash', () => {
         const custom = {
           apiaryReporterEnv: env,
-          apiaryApiUrl: 'https://api.example.com:1234/'
+          apiaryApiUrl: 'https://api.example.com:1234/',
         };
 
         it('uses the provided API URL in configuration, without trailing slash', () => {
@@ -198,7 +198,7 @@ describe('ApiaryReporter', () => {
       describe('when custom settings contain API URL without trailing slash', () => {
         const custom = {
           apiaryReporterEnv: env,
-          apiaryApiUrl: 'https://api.example.com:1234'
+          apiaryApiUrl: 'https://api.example.com:1234',
         };
 
         it('should use API URL without double slashes', (done) => {
@@ -214,7 +214,7 @@ describe('ApiaryReporter', () => {
       describe('when custom settings contain API URL with trailing slash', () => {
         const custom = {
           apiaryReporterEnv: env,
-          apiaryApiUrl: 'https://api.example.com:1234/'
+          apiaryApiUrl: 'https://api.example.com:1234/',
         };
 
         describe('when provided with root path', () =>
@@ -774,19 +774,19 @@ describe('ApiaryReporter', () => {
         actual: {
           statusCode: 400,
           headers: {
-            'content-type': 'text/plain'
+            'content-type': 'text/plain',
           },
 
-          body: 'Foo bar'
+          body: 'Foo bar',
         },
 
         expected: {
           headers: {
-            'content-type': 'application/json'
+            'content-type': 'application/json',
           },
 
           body: '{\n  "type": "bulldozer",\n  "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n',
-          status: '202'
+          status: '202',
         },
 
         request: {
@@ -794,11 +794,11 @@ describe('ApiaryReporter', () => {
           headers: {
             'Content-Type': 'application/json',
             'User-Agent': 'Dredd/0.2.1 (Darwin 13.0.0; x64)',
-            'Content-Length': 44
+            'Content-Length': 44,
           },
 
           uri: '/machines',
-          method: 'POST'
+          method: 'POST',
         },
 
         results: {
@@ -806,8 +806,8 @@ describe('ApiaryReporter', () => {
             results: [{
               pointer: '/content-type',
               severity: 'error',
-              message: 'Value of the ‘content-type’ must be application/json.'
-            }
+              message: 'Value of the ‘content-type’ must be application/json.',
+            },
             ],
             realType: 'application/vnd.apiary.http-headers+json',
             expectedType: 'application/vnd.apiary.http-headers+json',
@@ -821,23 +821,23 @@ describe('ApiaryReporter', () => {
                 message: 'Value of the ‘content-type’ must be application/json.',
                 validator: 'enum',
                 validatorName: 'enum',
-                validatorValue: ['application/json']
+                validatorValue: ['application/json'],
               },
 
-              length: 1
-            }
+              length: 1,
+            },
           },
 
           body: {
             results: [{
               message: "No validator found for real data media type 'text/plain' and expected data media type 'application/json'.",
-              severity: 'error'
-            }
+              severity: 'error',
+            },
             ],
             realType: 'text/plain',
             expectedType: 'application/json',
             validator: null,
-            rawData: null
+            rawData: null,
           },
 
           statusCode: {
@@ -847,11 +847,11 @@ describe('ApiaryReporter', () => {
             rawData: '@@ -1,3 +1,9 @@\n-400\n+undefined\n',
             results: [{
               severity: 'error',
-              message: 'Real and expected data does not match.'
-            }
-            ]
-          }
-        }
+              message: 'Real and expected data does not match.',
+            },
+            ],
+          },
+        },
       };
 
       nock.disableNetConnect();

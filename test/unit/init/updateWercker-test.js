@@ -18,7 +18,7 @@ describe('init._updateWercker()', () => {
 
   it('adds commands to install and run Dredd', () => {
     const contents = { build: { steps: [
-      { script: { name: 'pipenv-install', code: 'pipenv install' } }
+      { script: { name: 'pipenv-install', code: 'pipenv install' } },
     ] } };
     updateWercker(createOptions(contents));
 

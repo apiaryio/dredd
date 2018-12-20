@@ -17,7 +17,7 @@ describe('resolveHookfiles()', () => {
     it('resolves them into absolute paths', () => {
       const hookfiles = [
         path.join(cwd, 'hooks.js'),
-        path.join(cwd, 'non-js-hooks.rb')
+        path.join(cwd, 'non-js-hooks.rb'),
       ];
       const paths = resolveHookfiles(hookfiles, cwd);
       assert.deepEqual(paths, hookfiles);
@@ -29,7 +29,7 @@ describe('resolveHookfiles()', () => {
       const paths = resolveHookfiles(['./hooks.js', './non-js-hooks.rb'], cwd);
       assert.deepEqual(paths, [
         path.join(cwd, 'hooks.js'),
-        path.join(cwd, 'non-js-hooks.rb')
+        path.join(cwd, 'non-js-hooks.rb'),
       ]);
     })
   );
@@ -47,7 +47,7 @@ describe('resolveHookfiles()', () => {
     it('resolves them into absolute paths', () => {
       const paths = resolveHookfiles(['./**/hooks.js'], cwd);
       assert.deepEqual(paths, [
-        path.join(cwd, 'hooks.js')
+        path.join(cwd, 'hooks.js'),
       ]);
     })
   );
@@ -66,7 +66,7 @@ describe('resolveHookfiles()', () => {
       const paths = resolveHookfiles(['./non-js-hooks.rb', './**/hooks.js'], cwd);
       assert.deepEqual(paths, [
         path.join(cwd, 'hooks.js'),
-        path.join(cwd, 'non-js-hooks.rb')
+        path.join(cwd, 'non-js-hooks.rb'),
       ]);
     });
 
@@ -94,7 +94,7 @@ describe('resolveHookfiles()', () => {
         './hooks-glob/bar/b.js',
         './hooks-glob/baz/c.js',
         './hooks-glob/foo/o.js',
-        './hooks-glob/bar/p.js'
+        './hooks-glob/bar/p.js',
       ], cwd);
       assert.deepEqual(paths, [
         path.join(cwd, 'hooks-glob/foo/a.js'),
@@ -107,7 +107,7 @@ describe('resolveHookfiles()', () => {
         path.join(cwd, 'test_hooks.coffee'),
         path.join(cwd, 'hooks-glob/baz/x.js'),
         path.join(cwd, 'hooks-glob/foo/y.js'),
-        path.join(cwd, 'hooks-glob/bar/z.js')
+        path.join(cwd, 'hooks-glob/bar/z.js'),
       ]);
     });
   });

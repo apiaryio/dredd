@@ -7,7 +7,7 @@ const { EventEmitter } = require('events');
 const loggerStub = require('../../../lib/logger');
 
 const DotReporter = proxyquire('../../../lib/reporters/DotReporter', {
-  '../logger': loggerStub
+  '../logger': loggerStub,
 });
 
 describe('DotReporter', () => {
@@ -30,7 +30,7 @@ describe('DotReporter', () => {
       skipped: 0,
       start: 0,
       end: 0,
-      duration: 0
+      duration: 0,
     };
     tests = [];
     emitter = new EventEmitter();
@@ -67,7 +67,7 @@ describe('DotReporter', () => {
       before(() => {
         test = {
           status: 'fail',
-          title: 'failing test'
+          title: 'failing test',
         };
       });
 
@@ -93,7 +93,7 @@ describe('DotReporter', () => {
     before(() => {
       test = {
         status: 'pass',
-        title: 'Passing Test'
+        title: 'Passing Test',
       };
     });
 
@@ -112,7 +112,7 @@ describe('DotReporter', () => {
     before(() => {
       test = {
         status: 'skipped',
-        title: 'Skipped Test'
+        title: 'Skipped Test',
       };
     });
 
@@ -131,7 +131,7 @@ describe('DotReporter', () => {
     before(() => {
       test = {
         status: 'failed',
-        title: 'Failed Test'
+        title: 'Failed Test',
       };
     });
 
@@ -150,7 +150,7 @@ describe('DotReporter', () => {
     before(() => {
       test = {
         status: 'error',
-        title: 'Errored Test'
+        title: 'Errored Test',
       };
     });
 

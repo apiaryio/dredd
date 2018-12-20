@@ -7,7 +7,7 @@ const { assert } = require('chai');
 
 const configUtils = proxyquire('../../lib/configUtils', {
   fs: fsStub,
-  'js-yaml': yamlStub
+  'js-yaml': yamlStub,
 });
 
 const argvData = {
@@ -58,7 +58,7 @@ const argvData = {
   q: false,
   path: [],
   p: [],
-  $0: 'node ./bin/dredd'
+  $0: 'node ./bin/dredd',
 };
 
 describe('configUtils', () => {
@@ -224,7 +224,7 @@ endpoint: endpoint\
   describe('parseCustom(arrayOfCustoms)', () => {
     const custom = [
       'customOpt:itsValue:can:contain:delimiters',
-      'customOpt2:itsValue'
+      'customOpt2:itsValue',
     ];
 
     it('shold return an object', () => {

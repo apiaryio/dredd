@@ -15,24 +15,24 @@ let stderr = '';
 let stdout = '';
 
 const addHooksStub = proxyquire('../../../lib/addHooks', {
-  './logger': loggerStub
+  './logger': loggerStub,
 });
 
 const transactionRunner = proxyquire('../../../lib/TransactionRunner', {
   './addHooks': addHooksStub,
-  './logger': loggerStub
+  './logger': loggerStub,
 });
 
 const dreddStub = proxyquire('../../../lib/Dredd', {
   './TransactionRunner': transactionRunner,
-  './logger': loggerStub
+  './logger': loggerStub,
 });
 
 const CLIStub = proxyquire('../../../lib/CLI', {
   './Dredd': dreddStub,
   './configUtils': configUtils,
   console: loggerStub,
-  fs
+  fs,
 });
 
 function execCommand(custom = {}, cb) {
@@ -59,7 +59,7 @@ describe('CLI class Integration', () => {
     [
       'log', 'info', 'silly', 'verbose', 'test',
       'hook', 'complete', 'pass', 'skip', 'debug',
-      'fail', 'request', 'expected', 'actual'
+      'fail', 'request', 'expected', 'actual',
     ].forEach((method) => {
       sinon.stub(loggerStub, method).callsFake((chunk) => { stdout += `\n${method}: ${chunk}`; });
     });
@@ -71,7 +71,7 @@ describe('CLI class Integration', () => {
     [
       'log', 'info', 'silly', 'verbose', 'test',
       'hook', 'complete', 'pass', 'skip', 'debug',
-      'fail', 'request', 'expected', 'actual'
+      'fail', 'request', 'expected', 'actual',
     ].forEach((method) => { loggerStub[method].restore(); });
   });
 
@@ -151,18 +151,18 @@ describe('CLI class Integration', () => {
 
     const errorCmd = { argv: [
       `http://127.0.0.1:${PORT + 1}/connection-error.apib`,
-      `http://127.0.0.1:${PORT + 1}`
-    ]
+      `http://127.0.0.1:${PORT + 1}`,
+    ],
     };
     const wrongCmd = { argv: [
       `http://127.0.0.1:${PORT}/not-found.apib`,
-      `http://127.0.0.1:${PORT}`
-    ]
+      `http://127.0.0.1:${PORT}`,
+    ],
     };
     const goodCmd = { argv: [
       `http://127.0.0.1:${PORT}/file.apib`,
-      `http://127.0.0.1:${PORT}`
-    ]
+      `http://127.0.0.1:${PORT}`,
+    ],
     };
 
     before((done) => {

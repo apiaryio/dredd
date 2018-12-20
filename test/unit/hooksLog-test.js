@@ -9,7 +9,7 @@ const loggerStub = require('../../lib/logger');
 
 describe('hooksLog()', () => {
   const exampleLogs = [
-    { content: 'some text' }
+    { content: 'some text' },
   ];
 
   before(() => {

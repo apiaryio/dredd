@@ -1,7 +1,7 @@
 const { assert } = require('chai');
 
 const {
-  _getBodyAsBuffer: getBodyAsBuffer
+  _getBodyAsBuffer: getBodyAsBuffer,
 } = require('../../../lib/performRequest');
 
 

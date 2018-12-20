@@ -73,7 +73,7 @@ describe("Sending 'multipart/form-data' request described in API Blueprint", () 
       '{"test": 42}',
       '',
       '--CUSTOM-BOUNDARY--',
-      ''
+      '',
     ];
     assert.equal(runtimeInfo.server.lastRequest.body, lines.join('\r\n'));
   });
@@ -116,7 +116,7 @@ describe("Sending 'multipart/form-data' request described in OpenAPI 2", () => {
       '{"test": 42}',
       '',
       '--CUSTOM-BOUNDARY--',
-      ''
+      '',
     ];
     assert.equal(runtimeInfo.server.lastRequest.body, lines.join('\r\n'));
   });
@@ -159,7 +159,7 @@ describe("Sending 'multipart/form-data' request described as 'file' in OpenAPI 2
       '{"test": 42}',
       '',
       '--BOUNDARY--',
-      ''
+      '',
     ];
     assert.equal(runtimeInfo.server.lastRequest.body, lines.join('\r\n'));
   });
@@ -171,12 +171,12 @@ describe("Sending 'multipart/form-data' request described as 'file' in OpenAPI 2
 
 [{
   name: 'API Blueprint',
-  path: './test/fixtures/request/application-x-www-form-urlencoded.apib'
+  path: './test/fixtures/request/application-x-www-form-urlencoded.apib',
 },
 {
   name: 'OpenAPI 2',
-  path: './test/fixtures/request/application-x-www-form-urlencoded.yaml'
-}
+  path: './test/fixtures/request/application-x-www-form-urlencoded.yaml',
+},
 ].forEach(apiDescription =>
   describe(`Sending 'application/x-www-form-urlencoded' request described in ${apiDescription.name}`, () => {
     let runtimeInfo;
@@ -243,12 +243,12 @@ describe('Sending \'text/plain\' request', () => {
 [
   {
     name: 'API Blueprint',
-    path: './test/fixtures/request/application-octet-stream.apib'
+    path: './test/fixtures/request/application-octet-stream.apib',
   },
   {
     name: 'OpenAPI 2',
-    path: './test/fixtures/request/application-octet-stream.yaml'
-  }
+    path: './test/fixtures/request/application-octet-stream.yaml',
+  },
 ].forEach(apiDescription =>
   describe(`Sending 'application/octet-stream' request described in ${apiDescription.name}`, () => {
     let runtimeInfo;
@@ -261,8 +261,8 @@ describe('Sending \'text/plain\' request', () => {
       const dredd = new Dredd({
         options: {
           path: apiDescription.path,
-          hookfiles: './test/fixtures/request/application-octet-stream-hooks.js'
-        }
+          hookfiles: './test/fixtures/request/application-octet-stream-hooks.js',
+        },
       });
       runDreddWithServer(dredd, app, (err, info) => {
         runtimeInfo = info;
@@ -292,12 +292,12 @@ describe('Sending \'text/plain\' request', () => {
 [
   {
     name: 'API Blueprint',
-    path: './test/fixtures/request/image-png.apib'
+    path: './test/fixtures/request/image-png.apib',
   },
   {
     name: 'OpenAPI 2',
-    path: './test/fixtures/request/image-png.yaml'
-  }
+    path: './test/fixtures/request/image-png.yaml',
+  },
 ].forEach(apiDescription =>
   describe(`Sending 'image/png' request described in ${apiDescription.name}`, () => {
     let runtimeInfo;
@@ -310,8 +310,8 @@ describe('Sending \'text/plain\' request', () => {
       const dredd = new Dredd({
         options: {
           path: apiDescription.path,
-          hookfiles: './test/fixtures/request/image-png-hooks.js'
-        }
+          hookfiles: './test/fixtures/request/image-png-hooks.js',
+        },
       });
       runDreddWithServer(dredd, app, (err, info) => {
         runtimeInfo = info;

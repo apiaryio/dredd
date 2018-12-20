@@ -2,7 +2,7 @@ const sinon = require('sinon');
 const { assert } = require('chai');
 
 const {
-  _normalizeContentLengthHeader: normalizeContentLengthHeader
+  _normalizeContentLengthHeader: normalizeContentLengthHeader,
 } = require('../../../lib/performRequest');
 
 
@@ -28,7 +28,7 @@ describe('performRequest._normalizeContentLengthHeader()', () => {
   describe('when there is no body and the Content-Length is set to 0', () => {
     beforeEach(() => {
       headers = normalizeContentLengthHeader({
-        'Content-Length': '0'
+        'Content-Length': '0',
       }, Buffer.from(''), { logger });
     });
 
@@ -56,7 +56,7 @@ describe('performRequest._normalizeContentLengthHeader()', () => {
   describe('when there is body and the Content-Length is correct', () => {
     beforeEach(() => {
       headers = normalizeContentLengthHeader({
-        'Content-Length': '4'
+        'Content-Length': '4',
       }, Buffer.from('abcd'), { logger });
     });
 
@@ -71,7 +71,7 @@ describe('performRequest._normalizeContentLengthHeader()', () => {
   describe('when there is no body and the Content-Length is wrong', () => {
     beforeEach(() => {
       headers = normalizeContentLengthHeader({
-        'Content-Length': '42'
+        'Content-Length': '42',
       }, Buffer.from(''), { logger });
     });
 
@@ -86,7 +86,7 @@ describe('performRequest._normalizeContentLengthHeader()', () => {
   describe('when there is body and the Content-Length is wrong', () => {
     beforeEach(() => {
       headers = normalizeContentLengthHeader({
-        'Content-Length': '42'
+        'Content-Length': '42',
       }, Buffer.from('abcd'), { logger });
     });
 
@@ -101,7 +101,7 @@ describe('performRequest._normalizeContentLengthHeader()', () => {
   describe('when the existing header name has unusual casing', () => {
     beforeEach(() => {
       headers = normalizeContentLengthHeader({
-        'CoNtEnT-lEnGtH': '4'
+        'CoNtEnT-lEnGtH': '4',
       }, Buffer.from('abcd'), { logger });
     });
 

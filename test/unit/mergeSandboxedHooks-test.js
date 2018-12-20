@@ -12,7 +12,7 @@ describe('mergeSandboxedHooks', () => {
     before: { 'Transaction Name': ['original'] },
     after: { 'Transaction Name': ['original'] },
     afterEach: ['original'],
-    afterAll: ['original']
+    afterAll: ['original'],
   };
 
   const toBeMergedObject = {
@@ -21,7 +21,7 @@ describe('mergeSandboxedHooks', () => {
     before: { 'Transaction Name': ['merged'] },
     after: { 'Transaction Name': ['merged'] },
     afterEach: ['merged'],
-    afterAll: ['merged']
+    afterAll: ['merged'],
   };
 
   let originalHooks;

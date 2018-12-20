@@ -12,7 +12,7 @@ const fsExtraStub = { mkdirp(path, cb) { return cb(); } };
 const HTMLReporter = proxyquire('../../../lib/reporters/HTMLReporter', {
   '../logger': loggerStub,
   fs: fsStub,
-  'fs-extra': fsExtraStub
+  'fs-extra': fsExtraStub,
 });
 
 describe('HTMLReporter', () => {
@@ -36,7 +36,7 @@ describe('HTMLReporter', () => {
       skipped: 0,
       start: 0,
       end: 0,
-      duration: 0
+      duration: 0,
     };
     tests = [];
     htmlReporter = new HTMLReporter(emitter, stats, tests, 'test.html');
@@ -130,7 +130,7 @@ describe('HTMLReporter', () => {
     before(() => {
       test = {
         status: 'pass',
-        title: 'Passing Test'
+        title: 'Passing Test',
       };
     });
 
@@ -154,7 +154,7 @@ describe('HTMLReporter', () => {
     before(() => {
       test = {
         status: 'skipped',
-        title: 'Skipped Test'
+        title: 'Skipped Test',
       };
     });
 
@@ -169,7 +169,7 @@ describe('HTMLReporter', () => {
     before(() => {
       test = {
         status: 'failed',
-        title: 'Failed Test'
+        title: 'Failed Test',
       };
     });
 
@@ -184,7 +184,7 @@ describe('HTMLReporter', () => {
     before(() => {
       test = {
         status: 'error',
-        title: 'Errored Test'
+        title: 'Errored Test',
       };
     });
 

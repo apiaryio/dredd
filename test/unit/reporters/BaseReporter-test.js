@@ -5,7 +5,7 @@ const { EventEmitter } = require('events');
 const loggerStub = require('../../../lib/logger');
 
 const BaseReporter = proxyquire('../../../lib/reporters/BaseReporter', {
-  '../logger': loggerStub
+  '../logger': loggerStub,
 });
 
 describe('BaseReporter', () => {
@@ -23,7 +23,7 @@ describe('BaseReporter', () => {
       skipped: 0,
       start: 0,
       end: 0,
-      duration: 0
+      duration: 0,
     };
     tests = [];
     emitter = new EventEmitter();
@@ -60,7 +60,7 @@ describe('BaseReporter', () => {
     before(() => {
       test = {
         status: 'pass',
-        title: 'Passing Test'
+        title: 'Passing Test',
       };
     });
 
@@ -74,7 +74,7 @@ describe('BaseReporter', () => {
     beforeEach(() => {
       test = {
         status: 'pass',
-        title: 'Passing Test'
+        title: 'Passing Test',
       };
       emitter.emit('test start', test);
       emitter.emit('test pass', test);
@@ -89,7 +89,7 @@ describe('BaseReporter', () => {
     beforeEach(() => {
       test = {
         status: 'skipped',
-        title: 'Skipped Test'
+        title: 'Skipped Test',
       };
       emitter.emit('test start', test);
       emitter.emit('test skip', test);
@@ -102,7 +102,7 @@ describe('BaseReporter', () => {
     beforeEach(() => {
       test = {
         status: 'failed',
-        title: 'Failed Test'
+        title: 'Failed Test',
       };
       emitter.emit('test start', test);
       emitter.emit('test fail', test);
@@ -117,7 +117,7 @@ describe('BaseReporter', () => {
     beforeEach(() => {
       test = {
         status: 'error',
-        title: 'Errored Test'
+        title: 'Errored Test',
       };
       emitter.emit('test start', test);
       emitter.emit('test error', new Error('Error'), test);
@@ -132,7 +132,7 @@ describe('BaseReporter', () => {
     beforeEach(() => {
       test = {
         status: 'pass',
-        title: 'Passing Test'
+        title: 'Passing Test',
       };
       emitter.emit('test start', test);
       test.start = '2017-06-15T09:29:50.588Z';
@@ -146,7 +146,7 @@ describe('BaseReporter', () => {
     beforeEach(() => {
       test = {
         status: 'pass',
-        title: 'Failed Test'
+        title: 'Failed Test',
       };
       emitter.emit('test start', test);
       test.start = '2017-06-15T09:29:50.588Z';
@@ -160,7 +160,7 @@ describe('BaseReporter', () => {
     beforeEach(() => {
       test = {
         status: 'pass',
-        title: 'Errored Test'
+        title: 'Errored Test',
       };
       emitter.emit('test start', test);
       test.start = '2017-06-15T09:29:50.588Z';
