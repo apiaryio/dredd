@@ -7,7 +7,7 @@ const lockfile = require('../npm-shrinkwrap');
 
 // Force all installations of Dredd to use only the pure JavaScript version
 // of the API Blueprint parser. It has slower performance, but it solves
-// roughly a billions of installation & distribution problems.
+// quite a few installation & distribution problems.
 delete lockfile.dependencies.drafter.requires.protagonist;
 delete lockfile.dependencies.protagonist;
 
