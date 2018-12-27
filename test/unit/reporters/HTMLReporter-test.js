@@ -73,7 +73,7 @@ describe('HTMLReporter', () => {
 
     it('should write the prelude to the buffer', done =>
       emitter.emit('start', '', () => {
-        assert.isOk(~htmlReporter.buf.indexOf('Dredd'));
+        assert.isOk(htmlReporter.buf.includes('Dredd'));
         done();
       })
     );
@@ -137,7 +137,7 @@ describe('HTMLReporter', () => {
     it('should call the pass event', () => {
       emitter.emit('test start', test);
       emitter.emit('test pass', test);
-      assert.isOk(~htmlReporter.buf.indexOf('Pass'));
+      assert.isOk(htmlReporter.buf.includes('Pass'));
     });
 
     describe('when details=true', () =>
@@ -145,7 +145,7 @@ describe('HTMLReporter', () => {
       it('should write details for passing tests', () => {
         htmlReporter.details = true;
         emitter.emit('test pass', test);
-        assert.isOk(~htmlReporter.buf.indexOf('Request'));
+        assert.isOk(htmlReporter.buf.includes('Request'));
       })
     );
   });
@@ -161,7 +161,7 @@ describe('HTMLReporter', () => {
     it('should call the skip event', () => {
       emitter.emit('test start', test);
       emitter.emit('test skip', test);
-      assert.isOk(~htmlReporter.buf.indexOf('Skip'));
+      assert.isOk(htmlReporter.buf.includes('Skip'));
     });
   });
 
@@ -176,7 +176,7 @@ describe('HTMLReporter', () => {
     it('should call the fail event', () => {
       emitter.emit('test start', test);
       emitter.emit('test fail', test);
-      assert.isOk(~htmlReporter.buf.indexOf('Fail'));
+      assert.isOk(htmlReporter.buf.includes('Fail'));
     });
   });
 
@@ -191,7 +191,7 @@ describe('HTMLReporter', () => {
     it('should call the error event', () => {
       emitter.emit('test start', test);
       emitter.emit('test error', new Error('Error'), test);
-      assert.isOk(~htmlReporter.buf.indexOf('Error'));
+      assert.isOk(htmlReporter.buf.includes('Error'));
     });
   });
 });
