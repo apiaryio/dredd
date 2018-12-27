@@ -26,11 +26,11 @@ function runChildProcess(command, fn, callback) {
   childProcess.stdout.on('data', (data) => { processInfo.stdout += data.toString(); });
   childProcess.stderr.on('data', (data) => { processInfo.stderr += data.toString(); });
 
-  const onExit = function (exitStatus, signal) {
+  function onExit(exitStatus, signal) {
     processInfo.terminated = true;
     processInfo.exitStatus = exitStatus;
     processInfo.signal = signal;
-  };
+  }
   childProcess.on('exit', onExit);
 
   const onError = (err) => { processInfo.error = err; };

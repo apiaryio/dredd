@@ -33,7 +33,7 @@ const configureReporters = proxyquire('../../lib/configureReporters', {
   './reporters/ApiaryReporter': ApiaryReporterStub,
 });
 
-const resetStubs = function () {
+function resetStubs() {
   emitterStub.removeAllListeners();
   BaseReporterStub.resetHistory();
   CliReporterStub.resetHistory();
@@ -43,7 +43,7 @@ const resetStubs = function () {
   HtmlReporterStub.resetHistory();
   MarkdownReporterStub.resetHistory();
   return ApiaryReporterStub.resetHistory();
-};
+}
 
 
 describe('configureReporters(config, stats, tests, onSaveCallback)', () => {

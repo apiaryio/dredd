@@ -3,16 +3,18 @@ const { assert } = require('chai');
 
 const { runCLIWithServer, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
 
+
 // Helper, tries to parse given HTTP body and in case it can be parsed as JSON,
 // it returns the resulting JS object, otherwise it returns whatever came in.
-const parseIfJson = function (body) {
+function parseIfJson(body) {
   if (!body) { return undefined; }
   try {
     return JSON.parse(body);
   } catch (error) {
     return body;
   }
-};
+}
+
 
 // This can be removed once https://github.com/apiaryio/dredd/issues/341 is done
 function parseDreddStdout(stdout) {

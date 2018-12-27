@@ -111,10 +111,10 @@ function createServer(options = {}) {
   // is made optional, defaulting to the 'DEFAULT_SERVER_PORT' value.
   // The callback is provided not only with error object, but also with
   // runtime info about the server (what requests it got etc.).
-  const { listen } = app;
-  app.listen = function (port, callback) {
+  const originalListen = app.listen;
+  app.listen = function listen(port, callback) {
     if (typeof port === 'function') { [callback, port] = Array.from([port, DEFAULT_SERVER_PORT]); }
-    return listen.call(this, port, err => callback(err, serverRuntimeInfo));
+    return originalListen.call(this, port, err => callback(err, serverRuntimeInfo));
   };
   return app;
 }

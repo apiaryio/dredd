@@ -24,7 +24,6 @@ module.exports = {
     // of the codebase possible and are to be removed in the future
     'class-methods-use-this': 'off',
     'consistent-return': 'off',
-    'func-names': 'off',
     'import/no-extraneous-dependencies': 'off',
     'import/no-unresolved': 'off',
     'max-len': 'off',
