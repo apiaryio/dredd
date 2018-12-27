@@ -618,7 +618,7 @@ describe('CLI', () => {
   describe('when describing events in hookfiles', () => {
     let runtimeInfo;
 
-    const containsLine = function (str, expected) {
+    function containsLine(str, expected) {
       const lines = str.split('\n');
       for (const line of lines) {
         if (line.indexOf(expected) > -1) {
@@ -626,7 +626,7 @@ describe('CLI', () => {
         }
       }
       return false;
-    };
+    }
 
     before((done) => {
       const app = createServer();
@@ -652,7 +652,7 @@ describe('CLI', () => {
   describe('when describing both hooks and events in hookfiles', () => {
     let runtimeInfo;
 
-    const getResults = function (str) {
+    function getResults(str) {
       const ret = [];
       const lines = str.split('\n');
       for (const line of lines) {
@@ -661,7 +661,7 @@ describe('CLI', () => {
         }
       }
       return ret.join(',');
-    };
+    }
 
     before((done) => {
       const app = createServer();

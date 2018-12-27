@@ -277,10 +277,10 @@ describe('ApiaryReporter', () => {
 
         // This is a hack how to get access to the performed request from nock
         // nock isn't able to provide it
-        const getBody = function (body) {
+        function getBody(body) {
           requestBody = body;
           return body;
-        };
+        }
 
         call = nock(env.APIARY_API_URL)
           .filteringRequestBody(getBody)
@@ -396,10 +396,10 @@ describe('ApiaryReporter', () => {
 
         // This is a hack how to get access to the performed request from nock
         // nock isn't able to provide it
-        const getBody = function (body) {
+        function getBody(body) {
           requestBody = body;
           return body;
-        };
+        }
 
         call = nock(env.APIARY_API_URL)
           .filteringRequestBody(getBody)
@@ -503,10 +503,10 @@ describe('ApiaryReporter', () => {
 
         // This is a hack how to get access to the performed request from nock
         // nock isn't able to provide it
-        const getBody = function (body) {
+        function getBody(body) {
           requestBody = body;
           return body;
-        };
+        }
 
         call = nock(env.APIARY_API_URL)
           .filteringRequestBody(getBody)
@@ -562,10 +562,10 @@ describe('ApiaryReporter', () => {
 
         // This is a hack how to get access to the performed request from nock
         // nock isn't able to provide it
-        const getBody = function (body) {
+        function getBody(body) {
           requestBody = body;
           return body;
-        };
+        }
 
         call = nock(env.APIARY_API_URL)
           .filteringRequestBody(getBody)
@@ -680,10 +680,10 @@ describe('ApiaryReporter', () => {
         const uri = `/apis/public/tests/run/${runId}`;
         // This is a hack how to get access to the performed request from nock
         // nock isn't able to provide it
-        const getBody = function (body) {
+        function getBody(body) {
           requestBody = body;
           return body;
-        };
+        }
 
         call = nock(env.APIARY_API_URL)
           .filteringRequestBody(getBody)
@@ -874,10 +874,10 @@ describe('ApiaryReporter', () => {
         const uri = `/apis/${env.APIARY_API_NAME}/tests/runs`;
 
         requestBody = null;
-        const getBody = function (body) {
+        function getBody(body) {
           requestBody = body;
           return body;
-        };
+        }
 
         call = nock(env.APIARY_API_URL)
           .filteringRequestBody(getBody)
