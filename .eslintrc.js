@@ -5,13 +5,17 @@ module.exports = {
     'node': true
   },
   rules: {
+    // Using 'console' is perfectly okay for a Node.js CLI tool and avoiding
+    // it only brings unnecessary complexity
+    'no-console': 'off',
+
     // Node 6 does not support dangling commas in function arguments
-    "comma-dangle": [
-      "error",
+    'comma-dangle': [
+      'error',
       {
-        "arrays": "always-multiline",
-        "objects": "always-multiline",
-        "functions": "never"
+        'arrays': 'always-multiline',
+        'objects': 'always-multiline',
+        'functions': 'never'
       }
     ],
 
