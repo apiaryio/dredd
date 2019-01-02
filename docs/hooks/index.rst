@@ -1,8 +1,9 @@
 .. include:: ../_links.rst
+.. _hook-scripts:
 .. _hooks:
 
-Hook Scripts
-============
+Hooks
+=====
 
 Similar to any other testing framework, Dredd supports executing code around each test step. Hooks are code blocks executed in defined stage of :ref:`execution lifecycle <execution-life-cycle>`. In the hooks code you have an access to compiled HTTP :ref:`transaction object <transaction-object-structure>` which you can modify.
 
