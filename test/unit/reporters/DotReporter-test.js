@@ -42,9 +42,7 @@ describe('DotReporter', () => {
 
     afterEach(() => loggerStub.info.restore());
 
-    it('should log that testing has begun', () =>
-      emitter.emit('start', '', () => assert.isOk(loggerStub.info.called))
-    );
+    it('should log that testing has begun', () => emitter.emit('start', '', () => assert.isOk(loggerStub.info.called)));
   });
 
   describe('when ending', () => {
@@ -59,9 +57,7 @@ describe('DotReporter', () => {
       dotReporter.write.restore();
     });
 
-    it('should log that testing is complete', () =>
-      emitter.emit('end', () => assert.isOk(loggerStub.complete.calledTwice))
-    );
+    it('should log that testing is complete', () => emitter.emit('end', () => assert.isOk(loggerStub.complete.calledTwice)));
 
     describe('when there are failures', () => {
       before(() => {
@@ -80,12 +76,10 @@ describe('DotReporter', () => {
 
       afterEach(() => loggerStub.fail.restore());
 
-      it('should log the failures at the end of testing', done =>
-        emitter.emit('end', () => {
-          assert.isOk(loggerStub.fail.called);
-          done();
-        })
-      );
+      it('should log the failures at the end of testing', done => emitter.emit('end', () => {
+        assert.isOk(loggerStub.fail.called);
+        done();
+      }));
     });
   });
 

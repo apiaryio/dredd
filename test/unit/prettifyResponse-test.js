@@ -12,7 +12,8 @@ describe('prettifyResponse(response)', () => {
           'content-type': 'application/json',
         },
         body:
-          { a: 'b' } });
+          { a: 'b' },
+      });
 
       const expectedOutput = `\
 headers: \n    content-type: application/json\n

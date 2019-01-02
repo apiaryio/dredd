@@ -1,5 +1,5 @@
 module.exports = {
-  extends: 'airbnb/base',
+  extends: 'airbnb-base',
   env: {
     'mocha': true,
     'node': true
@@ -38,6 +38,7 @@ module.exports = {
     'no-param-reassign': 'off',
     'no-plusplus': 'off',
     'no-restricted-syntax': 'off',
-    'no-use-before-define': 'off'
+    'no-use-before-define': 'off',
+    'prefer-destructuring': 'off',
   }
 };

@@ -71,12 +71,10 @@ describe('HTMLReporter', () => {
       it('should not attempt to delete a file', () => assert.isOk(fsStub.unlinkSync.notCalled));
     });
 
-    it('should write the prelude to the buffer', done =>
-      emitter.emit('start', '', () => {
-        assert.isOk(htmlReporter.buf.includes('Dredd'));
-        done();
-      })
-    );
+    it('should write the prelude to the buffer', done => emitter.emit('start', '', () => {
+      assert.isOk(htmlReporter.buf.includes('Dredd'));
+      done();
+    }));
   });
 
   describe('when ending', () => {
@@ -93,13 +91,11 @@ describe('HTMLReporter', () => {
         fsExtraStub.mkdirp.restore();
       });
 
-      it('should write the file', done =>
-        emitter.emit('end', () => {
-          assert.isOk(fsExtraStub.mkdirp.called);
-          assert.isOk(fsStub.writeFile.called);
-          done();
-        })
-      );
+      it('should write the file', done => emitter.emit('end', () => {
+        assert.isOk(fsExtraStub.mkdirp.called);
+        assert.isOk(fsStub.writeFile.called);
+        done();
+      }));
     });
 
     describe('when cannot create output directory', () => {
@@ -115,14 +111,12 @@ describe('HTMLReporter', () => {
         fsExtraStub.mkdirp.restore();
       });
 
-      it('should write to log', done =>
-        emitter.emit('end', () => {
-          assert.isOk(fsExtraStub.mkdirp.called);
-          assert.isOk(fsStub.writeFile.notCalled);
-          assert.isOk(loggerStub.error.called);
-          done();
-        })
-      );
+      it('should write to log', done => emitter.emit('end', () => {
+        assert.isOk(fsExtraStub.mkdirp.called);
+        assert.isOk(fsStub.writeFile.notCalled);
+        assert.isOk(loggerStub.error.called);
+        done();
+      }));
     });
   });
 
@@ -140,14 +134,11 @@ describe('HTMLReporter', () => {
       assert.isOk(htmlReporter.buf.includes('Pass'));
     });
 
-    describe('when details=true', () =>
-
-      it('should write details for passing tests', () => {
-        htmlReporter.details = true;
-        emitter.emit('test pass', test);
-        assert.isOk(htmlReporter.buf.includes('Request'));
-      })
-    );
+    describe('when details=true', () => it('should write details for passing tests', () => {
+      htmlReporter.details = true;
+      emitter.emit('test pass', test);
+      assert.isOk(htmlReporter.buf.includes('Request'));
+    }));
   });
 
   describe('when test is skipped', () => {

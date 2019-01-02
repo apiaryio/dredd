@@ -2,7 +2,9 @@ const http = require('http');
 const url = require('url');
 const { assert } = require('chai');
 
-const { runDredd, recordLogging, createServer, DEFAULT_SERVER_PORT } = require('./helpers');
+const {
+  runDredd, recordLogging, createServer, DEFAULT_SERVER_PORT,
+} = require('./helpers');
 const Dredd = require('../../lib/Dredd');
 
 const PROXY_PORT = DEFAULT_SERVER_PORT + 1;
@@ -25,12 +27,10 @@ function createAndRunDredd(configuration, done) {
     dredd = new Dredd(configuration);
     dredd.configuration.http.strictSSL = false;
     next();
-  }, (err, args, dreddInitLogging) =>
-    runDredd(dredd, (error, info) => {
-      info.logging = `${dreddInitLogging}\n${info.logging}`;
-      done(error, info);
-    })
-  );
+  }, (err, args, dreddInitLogging) => runDredd(dredd, (error, info) => {
+    info.logging = `${dreddInitLogging}\n${info.logging}`;
+    done(error, info);
+  }));
 }
 
 // Creates dummy proxy server for given protocol. Records details
@@ -137,7 +137,7 @@ function test(scenario) {
       it('requests the proxy with regular HTTP method', () => assert.oneOf(proxyRequestInfo.method, REGULAR_HTTP_METHODS));
       it('requests the proxy, using the original URL as a path', () => assert.equal(proxyRequestInfo.url, scenario.expectedUrl));
       return;
-    } else if (scenario.protocol === 'https') {
+    } if (scenario.protocol === 'https') {
       it('requests the proxy with CONNECT', () => assert.equal(proxyRequestInfo.method, 'CONNECT'));
       it('asks the proxy to tunnel SSL connection to the original hostname', () => {
         const hostname = `${url.parse(scenario.expectedUrl).hostname}:${DEFAULT_SERVER_PORT}`;
@@ -169,18 +169,16 @@ ${protocol}_proxy=${PROXY_URL}\
     beforeEach(() => { process.env[`${protocol}_proxy`] = PROXY_URL; });
     afterEach(() => delete process.env[`${protocol}_proxy`]);
 
-    describe('Requesting Server Under Test', () =>
-      test({
-        protocol,
-        configureDredd(configuration) {
-          configuration.server = serverUrl;
-          configuration.options.path = './test/fixtures/single-get.apib';
-        },
-        expectedLog,
-        expectedDestination: 'server',
-        expectedUrl: '/machines',
-      })
-    );
+    describe('Requesting Server Under Test', () => test({
+      protocol,
+      configureDredd(configuration) {
+        configuration.server = serverUrl;
+        configuration.options.path = './test/fixtures/single-get.apib';
+      },
+      expectedLog,
+      expectedDestination: 'server',
+      expectedUrl: '/machines',
+    }));
 
     describe('Using Apiary Reporter', () => {
       beforeEach(() => { process.env.APIARY_API_URL = serverUrl; });
@@ -199,18 +197,16 @@ ${protocol}_proxy=${PROXY_URL}\
       });
     });
 
-    describe('Downloading API Description Document', () =>
-      test({
-        protocol,
-        configureDredd(configuration) {
-          configuration.server = DUMMY_URL;
-          configuration.options.path = `${serverUrl}/example.apib`;
-        },
-        expectedLog,
-        expectedDestination: 'proxy',
-        expectedUrl: `${serverUrl}/example.apib`,
-      })
-    );
+    describe('Downloading API Description Document', () => test({
+      protocol,
+      configureDredd(configuration) {
+        configuration.server = DUMMY_URL;
+        configuration.options.path = `${serverUrl}/example.apib`;
+      },
+      expectedLog,
+      expectedDestination: 'proxy',
+      expectedUrl: `${serverUrl}/example.apib`,
+    }));
   });
 });
 
@@ -231,18 +227,16 @@ http_proxy=${PROXY_URL}, no_proxy=${SERVER_HOST}\
     delete process.env.no_proxy;
   });
 
-  describe('Requesting Server Under Test', () =>
-    test({
-      protocol: 'http',
-      configureDredd(configuration) {
-        configuration.server = serverUrl;
-        configuration.options.path = './test/fixtures/single-get.apib';
-      },
-      expectedLog,
-      expectedDestination: 'server',
-      expectedUrl: '/machines',
-    })
-  );
+  describe('Requesting Server Under Test', () => test({
+    protocol: 'http',
+    configureDredd(configuration) {
+      configuration.server = serverUrl;
+      configuration.options.path = './test/fixtures/single-get.apib';
+    },
+    expectedLog,
+    expectedDestination: 'server',
+    expectedUrl: '/machines',
+  }));
 
   describe('Using Apiary Reporter', () => {
     beforeEach(() => { process.env.APIARY_API_URL = serverUrl; });
@@ -261,16 +255,14 @@ http_proxy=${PROXY_URL}, no_proxy=${SERVER_HOST}\
     });
   });
 
-  describe('Downloading API Description Document', () =>
-    test({
-      protocol: 'http',
-      configureDredd(configuration) {
-        configuration.server = DUMMY_URL;
-        configuration.options.path = `${serverUrl}/example.apib`;
-      },
-      expectedLog,
-      expectedDestination: 'server',
-      expectedUrl: '/example.apib',
-    })
-  );
+  describe('Downloading API Description Document', () => test({
+    protocol: 'http',
+    configureDredd(configuration) {
+      configuration.server = DUMMY_URL;
+      configuration.options.path = `${serverUrl}/example.apib`;
+    },
+    expectedLog,
+    expectedDestination: 'server',
+    expectedUrl: '/example.apib',
+  }));
 });

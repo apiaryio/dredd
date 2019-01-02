@@ -51,15 +51,14 @@ describe('Hooks worker client', () => {
     runner.hooks = new Hooks({ logs: [], logger: console });
     runner.hooks.configuration = { options: {} };
 
-    Array.from(logLevels).forEach(level =>
-      sinon.stub(loggerStub, level).callsFake((msg1, msg2) => {
-        let text = msg1;
-        if (msg2) { text += ` ${msg2}`; }
+    Array.from(logLevels).forEach(level => sinon.stub(loggerStub, level).callsFake((msg1, msg2) => {
+      let text = msg1;
+      if (msg2) { text += ` ${msg2}`; }
 
-        // Uncomment to enable logging for debug
-        // console.log text
-        logs.push(text);
-      }));
+      // Uncomment to enable logging for debug
+      // console.log text
+      logs.push(text);
+    }));
   });
 
   afterEach(() => {
@@ -123,8 +122,8 @@ describe('Hooks worker client', () => {
       });
     });
 
-    it('should not set the error on worker if process gets intentionally killed by Dredd ' +
-    'because it can be killed after all hooks execution if SIGTERM isn\'t handled', (done) => {
+    it('should not set the error on worker if process gets intentionally killed by Dredd '
+    + 'because it can be killed after all hooks execution if SIGTERM isn\'t handled', (done) => {
       runner.hooks.configuration.options.language = `${COFFEE_BIN} test/fixtures/scripts/endless-ignore-term.coffee`;
       loadWorkerClient((workerError) => {
         if (workerError) { return done(workerError); }
@@ -133,13 +132,12 @@ describe('Hooks worker client', () => {
         // finishes, so we need to manually stop it. However, it could happen
         // we'll stop it before it actually manages to do what we test here, so
         // we add some timeout here.
-        setTimeout(() =>
-          hooksWorkerClient.stop((stopError) => {
-            if (stopError) { return done(stopError); }
-            assert.isNull(runner.hookHandlerError);
-            done();
-          })
-          , MIN_COMMAND_EXECUTION_DURATION_MS);
+        setTimeout(() => hooksWorkerClient.stop((stopError) => {
+          if (stopError) { return done(stopError); }
+          assert.isNull(runner.hookHandlerError);
+          done();
+        }),
+        MIN_COMMAND_EXECUTION_DURATION_MS);
       });
     });
 
@@ -152,14 +150,13 @@ describe('Hooks worker client', () => {
         // finishes, so we need to manually stop it. However, it could happen
         // we'll stop it before it actually manages to do what we test here, so
         // we add some timeout here.
-        setTimeout(() =>
-          hooksWorkerClient.stop((stopError) => {
-            if (stopError) { return done(stopError); }
-            assert.isOk(runner.hookHandlerError);
-            assert.include(runner.hookHandlerError.message, '3');
-            done();
-          })
-          , MIN_COMMAND_EXECUTION_DURATION_MS);
+        setTimeout(() => hooksWorkerClient.stop((stopError) => {
+          if (stopError) { return done(stopError); }
+          assert.isOk(runner.hookHandlerError);
+          assert.include(runner.hookHandlerError.message, '3');
+          done();
+        }),
+        MIN_COMMAND_EXECUTION_DURATION_MS);
       });
     });
 
@@ -172,13 +169,11 @@ describe('Hooks worker client', () => {
         };
       });
 
-      it('should write a hint that native hooks should be used', done =>
-        loadWorkerClient((err) => {
-          assert.isOk(err);
-          assert.include(err.message, 'native Node.js hooks instead');
-          done();
-        })
-      );
+      it('should write a hint that native hooks should be used', done => loadWorkerClient((err) => {
+        assert.isOk(err);
+        assert.include(err.message, 'native Node.js hooks instead');
+        done();
+      }));
     });
 
     describe('when --language=ruby option is given and the worker is installed', () => {
@@ -210,30 +205,26 @@ describe('Hooks worker client', () => {
         HooksWorkerClient.prototype.terminateHandler.restore();
       });
 
-      it('should spawn the server process with command "dredd-hooks-ruby"', done =>
-        loadWorkerClient((err) => {
-          assert.isUndefined(err);
+      it('should spawn the server process with command "dredd-hooks-ruby"', done => loadWorkerClient((err) => {
+        assert.isUndefined(err);
 
-          hooksWorkerClient.stop((error) => {
-            assert.isUndefined(error);
-            assert.isTrue(crossSpawnStub.spawn.called);
-            assert.equal(crossSpawnStub.spawn.getCall(0).args[0], 'dredd-hooks-ruby');
-            done();
-          });
-        })
-      );
+        hooksWorkerClient.stop((error) => {
+          assert.isUndefined(error);
+          assert.isTrue(crossSpawnStub.spawn.called);
+          assert.equal(crossSpawnStub.spawn.getCall(0).args[0], 'dredd-hooks-ruby');
+          done();
+        });
+      }));
 
-      it('should pass --hookfiles option as an array of arguments', done =>
-        loadWorkerClient((err) => {
-          assert.isUndefined(err);
+      it('should pass --hookfiles option as an array of arguments', done => loadWorkerClient((err) => {
+        assert.isUndefined(err);
 
-          hooksWorkerClient.stop((error) => {
-            assert.isUndefined(error);
-            assert.equal(crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.rb');
-            done();
-          });
-        })
-      );
+        hooksWorkerClient.stop((error) => {
+          assert.isUndefined(error);
+          assert.equal(crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.rb');
+          done();
+        });
+      }));
     });
 
     describe('when --language=ruby option is given and the worker is not installed', () => {
@@ -251,13 +242,11 @@ describe('Hooks worker client', () => {
       afterEach(() => whichStub.which.restore());
 
 
-      it('should write a hint how to install', done =>
-        loadWorkerClient((err) => {
-          assert.isOk(err);
-          assert.include(err.message, 'gem install dredd_hooks');
-          done();
-        })
-      );
+      it('should write a hint how to install', done => loadWorkerClient((err) => {
+        assert.isOk(err);
+        assert.include(err.message, 'gem install dredd_hooks');
+        done();
+      }));
     });
 
     describe('when --language=python option is given and the worker is installed', () => {
@@ -289,30 +278,26 @@ describe('Hooks worker client', () => {
         HooksWorkerClient.prototype.terminateHandler.restore();
       });
 
-      it('should spawn the server process with command "dredd-hooks-python"', done =>
-        loadWorkerClient((err) => {
-          assert.isUndefined(err);
+      it('should spawn the server process with command "dredd-hooks-python"', done => loadWorkerClient((err) => {
+        assert.isUndefined(err);
 
-          hooksWorkerClient.stop((error) => {
-            assert.isUndefined(error);
-            assert.isTrue(crossSpawnStub.spawn.called);
-            assert.equal(crossSpawnStub.spawn.getCall(0).args[0], 'dredd-hooks-python');
-            done();
-          });
-        })
-      );
+        hooksWorkerClient.stop((error) => {
+          assert.isUndefined(error);
+          assert.isTrue(crossSpawnStub.spawn.called);
+          assert.equal(crossSpawnStub.spawn.getCall(0).args[0], 'dredd-hooks-python');
+          done();
+        });
+      }));
 
-      it('should pass --hookfiles option as an array of arguments', done =>
-        loadWorkerClient((err) => {
-          assert.isUndefined(err);
+      it('should pass --hookfiles option as an array of arguments', done => loadWorkerClient((err) => {
+        assert.isUndefined(err);
 
-          hooksWorkerClient.stop((error) => {
-            assert.isUndefined(error);
-            assert.equal(crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.py');
-            done();
-          });
-        })
-      );
+        hooksWorkerClient.stop((error) => {
+          assert.isUndefined(error);
+          assert.equal(crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.py');
+          done();
+        });
+      }));
     });
 
     describe('when --language=python option is given and the worker is not installed', () => {
@@ -329,13 +314,11 @@ describe('Hooks worker client', () => {
 
       afterEach(() => whichStub.which.restore());
 
-      it('should write a hint how to install', done =>
-        loadWorkerClient((err) => {
-          assert.isOk(err);
-          assert.include(err.message, 'pip install dredd_hooks');
-          done();
-        })
-      );
+      it('should write a hint how to install', done => loadWorkerClient((err) => {
+        assert.isOk(err);
+        assert.include(err.message, 'pip install dredd_hooks');
+        done();
+      }));
     });
 
     describe('when --language=php option is given and the worker is installed', () => {
@@ -367,30 +350,26 @@ describe('Hooks worker client', () => {
         HooksWorkerClient.prototype.terminateHandler.restore();
       });
 
-      it('should spawn the server process with command "dredd-hooks-php"', done =>
-        loadWorkerClient((err) => {
-          assert.isUndefined(err);
+      it('should spawn the server process with command "dredd-hooks-php"', done => loadWorkerClient((err) => {
+        assert.isUndefined(err);
 
-          hooksWorkerClient.stop((error) => {
-            assert.isUndefined(error);
-            assert.isTrue(crossSpawnStub.spawn.called);
-            assert.equal(crossSpawnStub.spawn.getCall(0).args[0], 'dredd-hooks-php');
-            done();
-          });
-        })
-      );
+        hooksWorkerClient.stop((error) => {
+          assert.isUndefined(error);
+          assert.isTrue(crossSpawnStub.spawn.called);
+          assert.equal(crossSpawnStub.spawn.getCall(0).args[0], 'dredd-hooks-php');
+          done();
+        });
+      }));
 
-      it('should pass --hookfiles option as an array of arguments', done =>
-        loadWorkerClient((err) => {
-          assert.isUndefined(err);
+      it('should pass --hookfiles option as an array of arguments', done => loadWorkerClient((err) => {
+        assert.isUndefined(err);
 
-          hooksWorkerClient.stop((error) => {
-            assert.isUndefined(error);
-            assert.equal(crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.py');
-            done();
-          });
-        })
-      );
+        hooksWorkerClient.stop((error) => {
+          assert.isUndefined(error);
+          assert.equal(crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.py');
+          done();
+        });
+      }));
     });
 
     describe('when --language=php option is given and the worker is not installed', () => {
@@ -407,13 +386,11 @@ describe('Hooks worker client', () => {
 
       afterEach(() => whichStub.which.restore());
 
-      it('should write a hint how to install', done =>
-        loadWorkerClient((err) => {
-          assert.isOk(err);
-          assert.include(err.message, 'composer require ddelnano/dredd-hooks-php --dev');
-          done();
-        })
-      );
+      it('should write a hint how to install', done => loadWorkerClient((err) => {
+        assert.isOk(err);
+        assert.include(err.message, 'composer require ddelnano/dredd-hooks-php --dev');
+        done();
+      }));
     });
 
     describe('when --language=go option is given and the worker is not installed', () => {
@@ -440,13 +417,11 @@ describe('Hooks worker client', () => {
         process.env.GOPATH = goPath;
       });
 
-      it('should write a hint how to install', done =>
-        loadWorkerClient((err) => {
-          assert.isOk(err);
-          assert.include(err.message, 'go get github.com/snikch/goodman/cmd/goodman');
-          done();
-        })
-      );
+      it('should write a hint how to install', done => loadWorkerClient((err) => {
+        assert.isOk(err);
+        assert.include(err.message, 'go get github.com/snikch/goodman/cmd/goodman');
+        done();
+      }));
     });
 
     describe('when --language=go option is given and the worker is installed', () => {
@@ -489,30 +464,26 @@ describe('Hooks worker client', () => {
         process.env.GOPATH = goPath;
       });
 
-      it('should spawn the server process with command "$GOBIN/goodman"', done =>
-        loadWorkerClient((err) => {
-          assert.isUndefined(err);
+      it('should spawn the server process with command "$GOBIN/goodman"', done => loadWorkerClient((err) => {
+        assert.isUndefined(err);
 
-          hooksWorkerClient.stop((error) => {
-            assert.isUndefined(error);
-            assert.isTrue(crossSpawnStub.spawn.called);
-            assert.equal(crossSpawnStub.spawn.getCall(0).args[0], path.join(dummyPath, 'goodman'));
-            done();
-          });
-        })
-      );
+        hooksWorkerClient.stop((error) => {
+          assert.isUndefined(error);
+          assert.isTrue(crossSpawnStub.spawn.called);
+          assert.equal(crossSpawnStub.spawn.getCall(0).args[0], path.join(dummyPath, 'goodman'));
+          done();
+        });
+      }));
 
-      it('should pass --hookfiles option as an array of arguments', done =>
-        loadWorkerClient((err) => {
-          assert.isUndefined(err);
+      it('should pass --hookfiles option as an array of arguments', done => loadWorkerClient((err) => {
+        assert.isUndefined(err);
 
-          hooksWorkerClient.stop((error) => {
-            assert.isUndefined(error);
-            assert.equal(crossSpawnStub.spawn.getCall(0).args[1][0], 'gobinary');
-            done();
-          });
-        })
-      );
+        hooksWorkerClient.stop((error) => {
+          assert.isUndefined(error);
+          assert.equal(crossSpawnStub.spawn.getCall(0).args[1][0], 'gobinary');
+          done();
+        });
+      }));
     });
 
     describe('when --language=rust option is given and the worker is not installed', () => {
@@ -528,13 +499,11 @@ describe('Hooks worker client', () => {
       });
       afterEach(() => whichStub.which.restore());
 
-      it('should write a hint how to install', done =>
-        loadWorkerClient((err) => {
-          assert.isOk(err);
-          assert.include(err.message, 'cargo install dredd-hooks');
-          done();
-        })
-      );
+      it('should write a hint how to install', done => loadWorkerClient((err) => {
+        assert.isOk(err);
+        assert.include(err.message, 'cargo install dredd-hooks');
+        done();
+      }));
     });
 
     describe('when --language=rust option is given and the worker is installed', () => {
@@ -566,30 +535,26 @@ describe('Hooks worker client', () => {
         HooksWorkerClient.prototype.terminateHandler.restore();
       });
 
-      it('should spawn the server process with command "dredd-hooks-rust"', done =>
-        loadWorkerClient((err) => {
-          assert.isUndefined(err);
+      it('should spawn the server process with command "dredd-hooks-rust"', done => loadWorkerClient((err) => {
+        assert.isUndefined(err);
 
-          hooksWorkerClient.stop((error) => {
-            assert.isUndefined(error);
-            assert.isTrue(crossSpawnStub.spawn.called);
-            assert.equal(crossSpawnStub.spawn.getCall(0).args[0], 'dredd-hooks-rust');
-            done();
-          });
-        })
-      );
+        hooksWorkerClient.stop((error) => {
+          assert.isUndefined(error);
+          assert.isTrue(crossSpawnStub.spawn.called);
+          assert.equal(crossSpawnStub.spawn.getCall(0).args[0], 'dredd-hooks-rust');
+          done();
+        });
+      }));
 
-      it('should pass --hookfiles option as an array of arguments', done =>
-        loadWorkerClient((err) => {
-          assert.isUndefined(err);
+      it('should pass --hookfiles option as an array of arguments', done => loadWorkerClient((err) => {
+        assert.isUndefined(err);
 
-          hooksWorkerClient.stop((error) => {
-            assert.isUndefined(error);
-            assert.equal(crossSpawnStub.spawn.getCall(0).args[1][0], 'rustbinary');
-            done();
-          });
-        })
-      );
+        hooksWorkerClient.stop((error) => {
+          assert.isUndefined(error);
+          assert.equal(crossSpawnStub.spawn.getCall(0).args[1][0], 'rustbinary');
+          done();
+        });
+      }));
     });
 
     describe('when --language=perl option is given and the worker is installed', () => {
@@ -621,30 +586,26 @@ describe('Hooks worker client', () => {
         HooksWorkerClient.prototype.terminateHandler.restore();
       });
 
-      it('should spawn the server process with command "dredd-hooks-perl"', done =>
-        loadWorkerClient((err) => {
-          assert.isUndefined(err);
+      it('should spawn the server process with command "dredd-hooks-perl"', done => loadWorkerClient((err) => {
+        assert.isUndefined(err);
 
-          hooksWorkerClient.stop((error) => {
-            assert.isUndefined(error);
-            assert.isTrue(crossSpawnStub.spawn.called);
-            assert.equal(crossSpawnStub.spawn.getCall(0).args[0], 'dredd-hooks-perl');
-            done();
-          });
-        })
-      );
+        hooksWorkerClient.stop((error) => {
+          assert.isUndefined(error);
+          assert.isTrue(crossSpawnStub.spawn.called);
+          assert.equal(crossSpawnStub.spawn.getCall(0).args[0], 'dredd-hooks-perl');
+          done();
+        });
+      }));
 
-      it('should pass --hookfiles option as an array of arguments', done =>
-        loadWorkerClient((err) => {
-          assert.isUndefined(err);
+      it('should pass --hookfiles option as an array of arguments', done => loadWorkerClient((err) => {
+        assert.isUndefined(err);
 
-          hooksWorkerClient.stop((error) => {
-            assert.isUndefined(error);
-            assert.equal(crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.py');
-            done();
-          });
-        })
-      );
+        hooksWorkerClient.stop((error) => {
+          assert.isUndefined(error);
+          assert.equal(crossSpawnStub.spawn.getCall(0).args[1][0], 'somefile.py');
+          done();
+        });
+      }));
     });
 
     describe('when --language=perl option is given and the worker is not installed', () => {
@@ -661,13 +622,11 @@ describe('Hooks worker client', () => {
 
       afterEach(() => whichStub.which.restore());
 
-      it('should write a hint how to install', done =>
-        loadWorkerClient((err) => {
-          assert.isOk(err);
-          assert.include(err.message, 'cpanm Dredd::Hooks');
-          done();
-        })
-      );
+      it('should write a hint how to install', done => loadWorkerClient((err) => {
+        assert.isOk(err);
+        assert.include(err.message, 'cpanm Dredd::Hooks');
+        done();
+      }));
     });
 
     describe('when --language=./any/other-command is given', () => {
@@ -699,30 +658,26 @@ describe('Hooks worker client', () => {
         whichStub.which.restore();
       });
 
-      it('should spawn the server process with command "./my-fancy-command"', done =>
-        loadWorkerClient((err) => {
-          assert.isUndefined(err);
+      it('should spawn the server process with command "./my-fancy-command"', done => loadWorkerClient((err) => {
+        assert.isUndefined(err);
 
-          hooksWorkerClient.stop((error) => {
-            assert.isUndefined(error);
-            assert.isTrue(crossSpawnStub.spawn.called);
-            assert.equal(crossSpawnStub.spawn.getCall(0).args[0], './my-fancy-command');
-            done();
-          });
-        })
-      );
+        hooksWorkerClient.stop((error) => {
+          assert.isUndefined(error);
+          assert.isTrue(crossSpawnStub.spawn.called);
+          assert.equal(crossSpawnStub.spawn.getCall(0).args[0], './my-fancy-command');
+          done();
+        });
+      }));
 
-      it('should pass --hookfiles option as an array of arguments', done =>
-        loadWorkerClient((err) => {
-          assert.isUndefined(err);
+      it('should pass --hookfiles option as an array of arguments', done => loadWorkerClient((err) => {
+        assert.isUndefined(err);
 
-          hooksWorkerClient.stop((error) => {
-            assert.isUndefined(error);
-            assert.equal(crossSpawnStub.spawn.getCall(0).args[1][0], 'someotherfile');
-            done();
-          });
-        })
-      );
+        hooksWorkerClient.stop((error) => {
+          assert.isUndefined(error);
+          assert.equal(crossSpawnStub.spawn.getCall(0).args[1][0], 'someotherfile');
+          done();
+        });
+      }));
     });
 
     describe('after loading', () => {
@@ -901,7 +856,9 @@ describe('Hooks worker client', () => {
   describe('when hook handler server is running and modifying transactions', () => {
     let transaction = {
       name: 'API > Hello > World',
-      request: { method: 'POST', uri: '/message', headers: {}, body: 'Hello World!' },
+      request: {
+        method: 'POST', uri: '/message', headers: {}, body: 'Hello World!',
+      },
     };
 
     return [
@@ -950,10 +907,10 @@ describe('Hooks worker client', () => {
 
                 // once the hooks worker client finishes processing of data it
                 // got back from the hook handler, it triggers this event
-                hooksWorkerClient.emitter.on(messageIn.uuid, () =>
+                hooksWorkerClient.emitter.on(messageIn.uuid, () => {
                   // -- 7 --
-                  done()
-                );
+                  done();
+                });
 
                 // -- 5 --, modifying the transaction
                 transaction = getFirstTransaction(messageIn.data);
