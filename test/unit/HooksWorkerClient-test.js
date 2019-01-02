@@ -901,7 +901,9 @@ describe('Hooks worker client', () => {
   describe('when hook handler server is running and modifying transactions', () => {
     let transaction = {
       name: 'API > Hello > World',
-      request: { method: 'POST', uri: '/message', headers: {}, body: 'Hello World!' },
+      request: {
+        method: 'POST', uri: '/message', headers: {}, body: 'Hello World!',
+      },
     };
 
     return [
@@ -950,10 +952,10 @@ describe('Hooks worker client', () => {
 
                 // once the hooks worker client finishes processing of data it
                 // got back from the hook handler, it triggers this event
-                hooksWorkerClient.emitter.on(messageIn.uuid, () =>
+                hooksWorkerClient.emitter.on(messageIn.uuid, () => {
                   // -- 7 --
-                  done()
-                );
+                  done();
+                });
 
                 // -- 5 --, modifying the transaction
                 transaction = getFirstTransaction(messageIn.data);

@@ -414,10 +414,10 @@ describe('CLI', () => {
         });
       });
 
-      it('should display details on passing tests', () =>
+      it('should display details on passing tests', () => {
         // The request: block is not shown for passing tests normally
-        assert.isOk(runtimeInfo.dredd.stdout.indexOf('request') > -1)
-      );
+        assert.isOk(runtimeInfo.dredd.stdout.indexOf('request') > -1);
+      });
     });
 
     describe('when filtering request methods with -m', () => {
@@ -513,11 +513,11 @@ describe('CLI', () => {
         });
       });
 
-      it('should print without colors', () =>
+      it('should print without colors', () => {
         // If colors are not on, there is no closing color code between
         // the "pass" and the ":"
-        assert.include(runtimeInfo.dredd.stdout, 'pass:')
-      );
+        assert.include(runtimeInfo.dredd.stdout, 'pass:');
+      });
     });
 
     describe('when suppressing color with --color=false', () => {
@@ -538,11 +538,11 @@ describe('CLI', () => {
         });
       });
 
-      it('should print without colors', () =>
+      it('should print without colors', () => {
         // If colors are not on, there is no closing color code between
         // the "pass" and the ":"
-        assert.include(runtimeInfo.dredd.stdout, 'pass:')
-      );
+        assert.include(runtimeInfo.dredd.stdout, 'pass:');
+      });
     });
 
     describe('when setting the log output level with -l', () => {
@@ -563,10 +563,10 @@ describe('CLI', () => {
         });
       });
 
-      it('should not display anything', () =>
+      it('should not display anything', () => {
         // At the "error" level, complete should not be shown
-        assert.isOk(runtimeInfo.dredd.stdout.indexOf('complete') === -1)
-      );
+        assert.isOk(runtimeInfo.dredd.stdout.indexOf('complete') === -1);
+      });
     });
 
     describe('when showing timestamps with -t', () => {
@@ -587,10 +587,10 @@ describe('CLI', () => {
         });
       });
 
-      it('should display timestamps', () =>
+      it('should display timestamps', () => {
         // Look for the prefix for cli output with timestamps
-        assert.notEqual(runtimeInfo.dredd.stdout.indexOf('Z -'), -1)
-      );
+        assert.notEqual(runtimeInfo.dredd.stdout.indexOf('Z -'), -1);
+      });
     });
   });
 

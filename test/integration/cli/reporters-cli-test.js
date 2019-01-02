@@ -30,17 +30,17 @@ describe('CLI - Reporters', () => {
       '--reporter=nyan',
     ];
 
-    beforeEach(done =>
+    beforeEach((done) => {
       runCLI(args, (err, info) => {
         cliInfo = info;
         done(err);
-      })
-    );
+      });
+    });
 
-    it('should use given reporter', () =>
+    it('should use given reporter', () => {
       // Nyan cat ears should exist in stdout
-      assert.include(cliInfo.stdout, '/\\_/\\')
-    );
+      assert.include(cliInfo.stdout, '/\\_/\\');
+    });
   });
 
 
@@ -54,13 +54,13 @@ describe('CLI - Reporters', () => {
     beforeEach((done) => {
       const app = createServer();
 
-      app.post('/apis/*', (req, res) =>
+      app.post('/apis/*', (req, res) => {
         res.json({
           _id: '1234_id',
           testRunId: '6789_testRunId',
           reportUrl: 'http://example.com/test/run/1234_id',
-        })
-      );
+        });
+      });
 
       app.all('*', (req, res) => res.json({}));
 
@@ -121,19 +121,19 @@ describe('CLI - Reporters', () => {
         '--hookfiles=./test/fixtures/hooks-log.coffee',
       ];
 
-      beforeEach(done =>
+      beforeEach((done) => {
         runCLI(args, { env }, (err, info) => {
           cliInfo = info;
           updateRequest = apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0];
           stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
           return done(err);
-        })
-      );
+        });
+      });
 
-      it('hooks.log should print also to console', () =>
+      it('hooks.log should print also to console', () => {
         // Because --level=info is lower than --level=hook
-        assert.include(cliInfo.output, 'using hooks.log to debug')
-      );
+        assert.include(cliInfo.output, 'using hooks.log to debug');
+      });
       it('hooks.log should use toString on objects', () => assert.include(cliInfo.output, 'Error object!'));
       it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
 
