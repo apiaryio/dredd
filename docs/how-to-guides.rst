@@ -83,7 +83,7 @@ Now we can create a ``hooks.js`` file. The file will contain setup and teardown 
 OpenAPI 2
 ^^^^^^^^^
 
-.. code-block:: yaml
+.. code-block:: openapi2
 
    swagger: "2.0"
    info:
@@ -265,7 +265,7 @@ OpenAPI 2 Example
 
 Imagine we have a simple workflow described:
 
-.. code-block:: yaml
+.. code-block:: openapi2
 
    swagger: "2.0"
    info:
@@ -736,7 +736,7 @@ While example values are natural part of the API Blueprint format, the OpenAPI 2
 
 However, Dredd needs to know what values to use when testing described API, so it supports ``x-example`` :openapi2:`vendor extension property <vendorextensions>` to overcome the OpenAPI 2 limitation:
 
-.. code-block:: yaml
+.. code-block:: openapi2
 
    ...
    paths:
