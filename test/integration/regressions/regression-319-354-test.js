@@ -49,7 +49,9 @@ function parseDreddStdout(stdout) {
   });
 
   // Re-arrange data from entries
-  const results = { summary: '', failures: [], bodies: [], schemas: [] };
+  const results = {
+    summary: '', failures: [], bodies: [], schemas: [],
+  };
   for (entry of entries) {
     switch (entry.label) {
       case 'body': results.bodies.push(parseIfJson(entry.body)); break;

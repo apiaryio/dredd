@@ -76,15 +76,10 @@ describe('MarkdownReporter', () => {
     });
   });
 
-  describe('when starting', () =>
-
-    it('should write the title to the buffer', done =>
-      emitter.emit('start', '', () => {
-        assert.isOk(mdReporter.buf.includes('Dredd'));
-        done();
-      })
-    )
-  );
+  describe('when starting', () => it('should write the title to the buffer', done => emitter.emit('start', '', () => {
+    assert.isOk(mdReporter.buf.includes('Dredd'));
+    done();
+  })));
 
   describe('when ending', () => {
     describe('when can create output directory', () => {
@@ -119,14 +114,12 @@ describe('MarkdownReporter', () => {
         fsExtraStub.mkdirp.restore();
       });
 
-      it('should write to log', done =>
-        emitter.emit('end', () => {
-          assert.isOk(fsExtraStub.mkdirp.called);
-          assert.isOk(fsStub.writeFile.notCalled);
-          assert.isOk(loggerStub.error.called);
-          done();
-        })
-      );
+      it('should write to log', done => emitter.emit('end', () => {
+        assert.isOk(fsExtraStub.mkdirp.called);
+        assert.isOk(fsStub.writeFile.notCalled);
+        assert.isOk(loggerStub.error.called);
+        done();
+      }));
     });
   });
 
@@ -145,15 +138,12 @@ describe('MarkdownReporter', () => {
       done();
     });
 
-    describe('when details=true', () =>
-
-      it('should write details for passing tests', (done) => {
-        mdReporter.details = true;
-        emitter.emit('test pass', test);
-        assert.isOk(mdReporter.buf.includes('Request'));
-        done();
-      })
-    );
+    describe('when details=true', () => it('should write details for passing tests', (done) => {
+      mdReporter.details = true;
+      emitter.emit('test pass', test);
+      assert.isOk(mdReporter.buf.includes('Request'));
+      done();
+    }));
   });
 
   describe('when test is skipped', () => {

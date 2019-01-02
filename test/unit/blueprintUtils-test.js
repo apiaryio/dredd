@@ -6,21 +6,17 @@ describe('blueprintUtils', () => {
   const placeholderText = '';
 
   describe('characterIndexToPosition()', () => {
-    describe('under standard circumstances', () =>
-      it('returns an object with non-zero-based row', () => {
-        const str = 'first\nsecond\nthird lines\ncontent continues';
-        const position = blueprintUtils.characterIndexToPosition(str.indexOf('lines', str), str);
-        assert.deepEqual(position, { row: 3 });
-      })
-    );
+    describe('under standard circumstances', () => it('returns an object with non-zero-based row', () => {
+      const str = 'first\nsecond\nthird lines\ncontent continues';
+      const position = blueprintUtils.characterIndexToPosition(str.indexOf('lines', str), str);
+      assert.deepEqual(position, { row: 3 });
+    }));
 
-    describe('when given one-line input and zero index', () =>
-      it('returns an object with row 1', () => {
-        const str = 'hello\n';
-        const position = blueprintUtils.characterIndexToPosition(str.indexOf('hello', str), str);
-        assert.deepEqual(position, { row: 1 });
-      })
-    );
+    describe('when given one-line input and zero index', () => it('returns an object with row 1', () => {
+      const str = 'hello\n';
+      const position = blueprintUtils.characterIndexToPosition(str.indexOf('hello', str), str);
+      assert.deepEqual(position, { row: 1 });
+    }));
   });
 
   describe('warningLocationToRanges()', () => {
@@ -77,8 +73,8 @@ describe('blueprintUtils', () => {
           ],
         },
         content:
-          'message-body asset is expected to be a pre-formatted code ' +
-          'block, every of its line indented by exactly 8 spaces or 2 tabs',
+          'message-body asset is expected to be a pre-formatted code '
+          + 'block, every of its line indented by exactly 8 spaces or 2 tabs',
       };
 
       location = [];
@@ -99,17 +95,14 @@ describe('blueprintUtils', () => {
   });
 
   describe('rangesToLinesText()', () => {
-    describe('when tested on fake locations', () =>
-
-      it('should return a string of line(s) separated with comma', () => {
-        const line = blueprintUtils.rangesToLinesText([
-          { start: 2, end: 4 },
-          { start: 8, end: 8 },
-          { start: 10, end: 15 },
-        ]);
-        assert.strictEqual(line, 'lines 2-4, line 8, lines 10-15');
-      })
-    );
+    describe('when tested on fake locations', () => it('should return a string of line(s) separated with comma', () => {
+      const line = blueprintUtils.rangesToLinesText([
+        { start: 2, end: 4 },
+        { start: 8, end: 8 },
+        { start: 10, end: 15 },
+      ]);
+      assert.strictEqual(line, 'lines 2-4, line 8, lines 10-15');
+    }));
 
     describe('for a real API description document', () => {
       const allRanges = [];
@@ -156,8 +149,8 @@ describe('blueprintUtils', () => {
             ],
           },
           content:
-            'message-body asset is expected to be a pre-formatted code ' +
-            'block, every of its line indented by exactly 8 spaces or 2 tabs',
+            'message-body asset is expected to be a pre-formatted code '
+            + 'block, every of its line indented by exactly 8 spaces or 2 tabs',
         },
         {
           element: 'annotation',
@@ -172,8 +165,8 @@ describe('blueprintUtils', () => {
             ],
           },
           content:
-            'headers is expected to be a pre-formatted code block, every ' +
-            'of its line indented by exactly 12 spaces or 3 tabs',
+            'headers is expected to be a pre-formatted code block, every '
+            + 'of its line indented by exactly 12 spaces or 3 tabs',
         },
         {
           element: 'annotation',
@@ -188,8 +181,8 @@ describe('blueprintUtils', () => {
             ],
           },
           content:
-            'message-body asset is expected to be a pre-formatted code ' +
-            'block, every of its line indented by exactly 12 spaces or 3 tabs',
+            'message-body asset is expected to be a pre-formatted code '
+            + 'block, every of its line indented by exactly 12 spaces or 3 tabs',
         },
         {
           element: 'annotation',
@@ -204,8 +197,8 @@ describe('blueprintUtils', () => {
             ],
           },
           content:
-            'message-body asset is expected to be a pre-formatted code ' +
-            'block, every of its line indented by exactly 8 spaces or 2 tabs',
+            'message-body asset is expected to be a pre-formatted code '
+            + 'block, every of its line indented by exactly 8 spaces or 2 tabs',
         },
       ];
 

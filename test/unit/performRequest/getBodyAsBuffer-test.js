@@ -19,15 +19,9 @@ describe('performRequest._getBodyAsBuffer()', () => {
 
   [undefined, null, ''].forEach((body) => {
     describe(`when the body is ${JSON.stringify(body)}`, () => {
-      it('returns empty Buffer without encoding', () =>
-        assert.deepEqual(getBodyAsBuffer(body), Buffer.from([]))
-      );
-      it('returns empty Buffer with encoding set to UTF-8', () =>
-        assert.deepEqual(getBodyAsBuffer(body, 'utf-8'), Buffer.from([]))
-      );
-      it('returns empty Buffer with encoding set to Base64', () =>
-        assert.deepEqual(getBodyAsBuffer(body, 'base64'), Buffer.from([]))
-      );
+      it('returns empty Buffer without encoding', () => assert.deepEqual(getBodyAsBuffer(body), Buffer.from([])));
+      it('returns empty Buffer with encoding set to UTF-8', () => assert.deepEqual(getBodyAsBuffer(body, 'utf-8'), Buffer.from([])));
+      it('returns empty Buffer with encoding set to Base64', () => assert.deepEqual(getBodyAsBuffer(body, 'base64'), Buffer.from([])));
     });
   });
 
@@ -39,12 +33,8 @@ describe('performRequest._getBodyAsBuffer()', () => {
   });
 
   describe('when the body is a string', () => {
-    it('assumes UTF-8 without encoding', () =>
-      assert.deepEqual(getBodyAsBuffer('abc'), Buffer.from('abc'))
-    );
-    it('respects encoding set to UTF-8', () =>
-      assert.deepEqual(getBodyAsBuffer('abc', 'utf-8'), Buffer.from('abc'))
-    );
+    it('assumes UTF-8 without encoding', () => assert.deepEqual(getBodyAsBuffer('abc'), Buffer.from('abc')));
+    it('respects encoding set to UTF-8', () => assert.deepEqual(getBodyAsBuffer('abc', 'utf-8'), Buffer.from('abc')));
     it('respects encoding set to Base64', () => {
       const body = Buffer.from('abc').toString('base64');
       assert.deepEqual(getBodyAsBuffer(body, 'base64'), Buffer.from('abc'));

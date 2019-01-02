@@ -217,27 +217,23 @@ describe('ApiaryReporter', () => {
           apiaryApiUrl: 'https://api.example.com:1234/',
         };
 
-        describe('when provided with root path', () =>
-          it('should use API URL without double slashes', (done) => {
-            emitter = new EventEmitter();
-            const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom });
-            apiaryReporter._performRequestAsync('/', 'POST', '', () => {
-              assert.isOk(loggerStub.verbose.calledWithMatch('POST https://api.example.com:1234/ (without body)'));
-              done();
-            });
-          })
-        );
+        describe('when provided with root path', () => it('should use API URL without double slashes', (done) => {
+          emitter = new EventEmitter();
+          const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom });
+          apiaryReporter._performRequestAsync('/', 'POST', '', () => {
+            assert.isOk(loggerStub.verbose.calledWithMatch('POST https://api.example.com:1234/ (without body)'));
+            done();
+          });
+        }));
 
-        describe('when provided with non-root path', () =>
-          it('should use API URL without double slashes', (done) => {
-            emitter = new EventEmitter();
-            const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom });
-            apiaryReporter._performRequestAsync('/hello?q=1', 'POST', '', () => {
-              assert.isOk(loggerStub.verbose.calledWithMatch('POST https://api.example.com:1234/hello?q=1 (without body)'));
-              done();
-            });
-          })
-        );
+        describe('when provided with non-root path', () => it('should use API URL without double slashes', (done) => {
+          emitter = new EventEmitter();
+          const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom });
+          apiaryReporter._performRequestAsync('/hello?q=1', 'POST', '', () => {
+            assert.isOk(loggerStub.verbose.calledWithMatch('POST https://api.example.com:1234/hello?q=1 (without body)'));
+            done();
+          });
+        }));
       });
 
       describe('when server is not available', () => {
@@ -372,17 +368,15 @@ describe('ApiaryReporter', () => {
         });
       });
 
-      describe('serverError is true', () =>
-        it('should not do anything', (done) => {
-          emitter = new EventEmitter();
-          const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
-          apiaryReporter.serverError = true;
-          emitter.emit('start', blueprintData, () => {
-            assert.isFalse(call.isDone());
-            done();
-          });
-        })
-      );
+      describe('serverError is true', () => it('should not do anything', (done) => {
+        emitter = new EventEmitter();
+        const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
+        apiaryReporter.serverError = true;
+        emitter.emit('start', blueprintData, () => {
+          assert.isFalse(call.isDone());
+          done();
+        });
+      }));
     });
 
     describe('when adding passing test', () => {
@@ -439,18 +433,16 @@ describe('ApiaryReporter', () => {
         });
       });
 
-      describe('serverError is true', () =>
-        it('should not do anything', (done) => {
-          emitter = new EventEmitter();
-          const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
-          apiaryReporter.remoteId = runId;
-          apiaryReporter.serverError = true;
-          emitter.emit('test pass', test, () => {
-            assert.isFalse(call.isDone());
-            done();
-          });
-        })
-      );
+      describe('serverError is true', () => it('should not do anything', (done) => {
+        emitter = new EventEmitter();
+        const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
+        apiaryReporter.remoteId = runId;
+        apiaryReporter.serverError = true;
+        emitter.emit('test pass', test, () => {
+          assert.isFalse(call.isDone());
+          done();
+        });
+      }));
     });
 
     describe('when adding failing test', () => {
@@ -475,18 +467,16 @@ describe('ApiaryReporter', () => {
         });
       });
 
-      describe('when serverError is true', () =>
-        it('should not do anything', (done) => {
-          emitter = new EventEmitter();
-          const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
-          apiaryReporter.remoteId = runId;
-          apiaryReporter.serverError = true;
-          emitter.emit('test fail', test, () => {
-            assert.isFalse(call.isDone());
-            done();
-          });
-        })
-      );
+      describe('when serverError is true', () => it('should not do anything', (done) => {
+        emitter = new EventEmitter();
+        const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
+        apiaryReporter.remoteId = runId;
+        apiaryReporter.serverError = true;
+        emitter.emit('test fail', test, () => {
+          assert.isFalse(call.isDone());
+          done();
+        });
+      }));
     });
 
     describe('when adding skipped test', () => {
@@ -534,18 +524,16 @@ describe('ApiaryReporter', () => {
         });
       });
 
-      describe('when serverError is true', () =>
-        it('should not do anything', (done) => {
-          emitter = new EventEmitter();
-          const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
-          apiaryReporter.remoteId = runId;
-          apiaryReporter.serverError = true;
-          emitter.emit('test skip', clonedTest, () => {
-            assert.isFalse(call.isDone());
-            done();
-          });
-        })
-      );
+      describe('when serverError is true', () => it('should not do anything', (done) => {
+        emitter = new EventEmitter();
+        const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
+        apiaryReporter.remoteId = runId;
+        apiaryReporter.serverError = true;
+        emitter.emit('test skip', clonedTest, () => {
+          assert.isFalse(call.isDone());
+          done();
+        });
+      }));
     });
 
 
@@ -656,19 +644,17 @@ describe('ApiaryReporter', () => {
       });
 
 
-      describe('when serverError is true', () =>
-        it('should not do anything', (done) => {
-          emitter = new EventEmitter();
-          const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
-          apiaryReporter.remoteId = runId;
-          apiaryReporter.serverError = true;
-          const error = new Error('some error');
-          emitter.emit('test error', error, test, () => {
-            assert.isFalse(call.isDone());
-            done();
-          });
-        })
-      );
+      describe('when serverError is true', () => it('should not do anything', (done) => {
+        emitter = new EventEmitter();
+        const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
+        apiaryReporter.remoteId = runId;
+        apiaryReporter.serverError = true;
+        const error = new Error('some error');
+        emitter.emit('test error', error, test, () => {
+          assert.isFalse(call.isDone());
+          done();
+        });
+      }));
     });
 
     describe('when ending', () => {
@@ -737,18 +723,16 @@ describe('ApiaryReporter', () => {
         });
       });
 
-      describe('serverError is true', () =>
-        it('should not do enything', (done) => {
-          emitter = new EventEmitter();
-          const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
-          apiaryReporter.remoteId = runId;
-          apiaryReporter.serverError = true;
-          emitter.emit('end', () => {
-            assert.isFalse(call.isDone());
-            done();
-          });
-        })
-      );
+      describe('serverError is true', () => it('should not do enything', (done) => {
+        emitter = new EventEmitter();
+        const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
+        apiaryReporter.remoteId = runId;
+        apiaryReporter.serverError = true;
+        emitter.emit('end', () => {
+          assert.isFalse(call.isDone());
+          done();
+        });
+      }));
     });
   });
 

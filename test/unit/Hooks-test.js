@@ -184,15 +184,13 @@ describe('Hooks', () => {
           assert.isArray(object[property]);
         });
 
-        describe(`all array members under property '${property}'`, () =>
-          it('should be a string', () => {
-            const object = hooks.dumpHooksFunctionsToStrings();
-            Object.keys(object[property]).forEach((key) => {
-              const value = object[property][key];
-              assert.isString(value, `on ${property}['${key}']`);
-            });
-          })
-        );
+        describe(`all array members under property '${property}'`, () => it('should be a string', () => {
+          const object = hooks.dumpHooksFunctionsToStrings();
+          Object.keys(object[property]).forEach((key) => {
+            const value = object[property][key];
+            assert.isString(value, `on ${property}['${key}']`);
+          });
+        }));
       });
 
       properties = [

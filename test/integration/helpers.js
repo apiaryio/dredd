@@ -133,8 +133,8 @@ function runDredd(dredd, serverPort, callback) {
 
   let stats;
 
-  recordLogging(next => dredd.run(next)
-    , (err, args, logging) => {
+  recordLogging(next => dredd.run(next),
+    (err, args, logging) => {
       if (err) { return callback(err); }
 
       [err, stats] = Array.from(args);
@@ -150,9 +150,7 @@ function runDreddWithServer(dredd, app, serverPort, callback) {
   const server = app.listen(serverPort, (err, serverRuntimeInfo) => {
     if (err) { return callback(err); }
 
-    runDredd(dredd, serverPort, (error, dreddRuntimeInfo) =>
-      server.close(() => callback(error, { server: serverRuntimeInfo, dredd: dreddRuntimeInfo }))
-    );
+    runDredd(dredd, serverPort, (error, dreddRuntimeInfo) => server.close(() => callback(error, { server: serverRuntimeInfo, dredd: dreddRuntimeInfo })));
   });
 }
 
@@ -177,7 +175,9 @@ function runCommand(command, args, spawnOptions = {}, callback) {
     output += data;
   });
 
-  cli.on('exit', exitStatus => callback(null, { stdout, stderr, output, exitStatus }));
+  cli.on('exit', exitStatus => callback(null, {
+    stdout, stderr, output, exitStatus,
+  }));
 }
 
 // Runs Dredd as a CLI command, with given arguments.
@@ -191,9 +191,7 @@ function runCLIWithServer(args, app, serverPort, callback) {
   const server = app.listen(serverPort, (err, serverRuntimeInfo) => {
     if (err) { return callback(err); }
 
-    runCLI(args, (error, cliInfo) =>
-      server.close(() => callback(error, { server: serverRuntimeInfo, dredd: cliInfo }))
-    );
+    runCLI(args, (error, cliInfo) => server.close(() => callback(error, { server: serverRuntimeInfo, dredd: cliInfo })));
   });
 }
 
@@ -224,8 +222,8 @@ function killAll(pattern, callback) {
   return ps.lookup({ arguments: pattern }, (err, processList) => {
     if (err || !processList.length) { return callback(err); }
 
-    async.each(processList, (processListItem, next) => kill(processListItem.pid, next)
-      , callback);
+    async.each(processList, (processListItem, next) => kill(processListItem.pid, next),
+      callback);
   });
 }
 

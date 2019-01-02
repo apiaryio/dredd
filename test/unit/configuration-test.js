@@ -24,19 +24,15 @@ describe('configuration.applyLoggingOptions()', () => {
     assert.equal(logger.transports.console.level, 'debug');
   });
 
-  describe('with color set to legacy \'true\' string value', () =>
-    it('resulting configuration should contain \'color\' set to boolean true', () => {
-      const options = configuration.applyLoggingOptions({ color: 'true' });
-      assert.propertyVal(options, 'color', true);
-    })
-  );
+  describe('with color set to legacy \'true\' string value', () => it('resulting configuration should contain \'color\' set to boolean true', () => {
+    const options = configuration.applyLoggingOptions({ color: 'true' });
+    assert.propertyVal(options, 'color', true);
+  }));
 
-  describe('with color option set to legacy \'false\' string value', () =>
-    it('resulting configuration should contain \'color\' set to boolean false', () => {
-      const options = configuration.applyLoggingOptions({ color: 'false' });
-      assert.propertyVal(options, 'color', false);
-    })
-  );
+  describe('with color option set to legacy \'false\' string value', () => it('resulting configuration should contain \'color\' set to boolean false', () => {
+    const options = configuration.applyLoggingOptions({ color: 'false' });
+    assert.propertyVal(options, 'color', false);
+  }));
 });
 
 describe('configuration.applyConfiguration()', () => {

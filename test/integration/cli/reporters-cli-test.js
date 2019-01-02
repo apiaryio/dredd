@@ -81,13 +81,11 @@ describe('CLI - Reporters', () => {
         '--reporter=apiary',
       ];
 
-      beforeEach(done =>
-        runCLI(args, { env }, (err, info) => {
-          cliInfo = info;
-          stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
-          done(err);
-        })
-      );
+      beforeEach(done => runCLI(args, { env }, (err, info) => {
+        cliInfo = info;
+        stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
+        done(err);
+      }));
 
       it('should print URL of the test report', () => assert.include(cliInfo.stdout, 'http://example.com/test/run/1234_id'));
       it('should print warning about missing Apiary API settings', () => assert.include(cliInfo.stdout, 'Apiary API Key or API Project Subdomain were not provided.'));
@@ -198,14 +196,12 @@ describe('CLI - Reporters', () => {
         '--hookfiles=./test/fixtures/sandboxed-hooks-log.js',
       ];
 
-      beforeEach(done =>
-        runCLI(args, { env }, (err, info) => {
-          cliInfo = info;
-          updateRequest = apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0];
-          stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
-          done(err);
-        })
-      );
+      beforeEach(done => runCLI(args, { env }, (err, info) => {
+        cliInfo = info;
+        updateRequest = apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0];
+        stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
+        done(err);
+      }));
 
       it('hooks.log should not print also to console', () => {
         // Because we are running in sandboxed mode with higher --level
@@ -262,11 +258,9 @@ describe('CLI - Reporters', () => {
       '--output=__test_file_output__.xml',
     ];
 
-    beforeEach(done =>
-      runCLI(args, (err) => {
-        done(err);
-      })
-    );
+    beforeEach(done => runCLI(args, (err) => {
+      done(err);
+    }));
 
     afterEach(() => fs.unlinkSync(`${process.cwd()}/__test_file_output__.xml`));
 
@@ -283,11 +277,9 @@ describe('CLI - Reporters', () => {
       '--output=__test_file_output2__.xml',
     ];
 
-    beforeEach(done =>
-      runCLI(args, (err) => {
-        done(err);
-      })
-    );
+    beforeEach(done => runCLI(args, (err) => {
+      done(err);
+    }));
 
     afterEach(() => {
       fs.unlinkSync(`${process.cwd()}/__test_file_output1__.xml`);

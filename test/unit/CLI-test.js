@@ -53,12 +53,12 @@ function execCommand(custom = {}, cb) {
   (new CLIStub({
     custom,
   }, ((code) => {
-      if (!finished) {
-        finished = true;
-        exitStatus = code || 0;
-        return cb(null, stdout, stderr, (code != null ? code : 0));
-      }
-    })).run());
+    if (!finished) {
+      finished = true;
+      exitStatus = code || 0;
+      return cb(null, stdout, stderr, (code != null ? code : 0));
+    }
+  })).run());
 }
 
 describe('CLI class', () => {
@@ -117,9 +117,10 @@ describe('CLI class', () => {
     let hasCalledExit;
 
     before(() => {
-      dc = new CLIStub({ exit() {
-        hasCalledExit = true;
-      },
+      dc = new CLIStub({
+        exit() {
+          hasCalledExit = true;
+        },
       });
       dc.run();
     });
@@ -255,9 +256,7 @@ describe('CLI class', () => {
 
   describe('when called w/ OR wo/ exiting arguments', () => {
     describe('--help', () => {
-      before(done =>
-        execCommand({ argv: ['--help'] }, () => done())
-      );
+      before(done => execCommand({ argv: ['--help'] }, () => done()));
 
       it('prints out some really nice help text with all options descriptions', () => {
         assert.include(stderr, 'Usage:');
@@ -268,9 +267,7 @@ describe('CLI class', () => {
     });
 
     describe('--version', () => {
-      before(done =>
-        execCommand({ argv: ['--version'] }, () => done())
-      );
+      before(done => execCommand({ argv: ['--version'] }, () => done()));
 
       it('prints out version', () => assert.include(stdout, `${packageData.name} v${packageData.version}`));
     });
@@ -290,9 +287,7 @@ describe('CLI class', () => {
     });
 
     describe('without argv', () => {
-      before(done =>
-        execCommand({ argv: [] }, () => done())
-      );
+      before(done => execCommand({ argv: [] }, () => done()));
 
       it('prints out an error message', () => assert.include(stderr, 'Error: Must specify'));
     });
@@ -320,34 +315,33 @@ describe('CLI class', () => {
 
       sinon.stub(fsStub, 'existsSync').callsFake(() => true);
 
-      sinon.stub(configUtilsStub, 'load').callsFake(() =>
-        ({
-          _: ['blueprint', 'endpoint'],
-          'dry-run': true,
-          hookfiles: null,
-          sandbox: false,
-          save: null,
-          load: null,
-          server: null,
-          init: false,
-          custom: [],
-          names: false,
-          only: [],
-          reporter: [],
-          output: [],
-          header: [],
-          sorted: false,
-          user: null,
-          'inline-errors': false,
-          details: false,
-          method: [],
-          color: true,
-          level: 'info',
-          timestamp: false,
-          silent: false,
-          path: [],
-          $0: 'node ./bin/dredd',
-        }));
+      sinon.stub(configUtilsStub, 'load').callsFake(() => ({
+        _: ['blueprint', 'endpoint'],
+        'dry-run': true,
+        hookfiles: null,
+        sandbox: false,
+        save: null,
+        load: null,
+        server: null,
+        init: false,
+        custom: [],
+        names: false,
+        only: [],
+        reporter: [],
+        output: [],
+        header: [],
+        sorted: false,
+        user: null,
+        'inline-errors': false,
+        details: false,
+        method: [],
+        color: true,
+        level: 'info',
+        timestamp: false,
+        silent: false,
+        path: [],
+        $0: 'node ./bin/dredd',
+      }));
 
       execCommand({ argv: ['--names'] }, () => done());
     });
@@ -377,12 +371,13 @@ describe('CLI class', () => {
     beforeEach((done) => {
       sinon.stub(crossSpawnStub, 'spawn').callsFake();
       sinon.stub(transactionRunner.prototype, 'executeAllTransactions').callsFake((transactions, hooks, cb) => cb());
-      execCommand({ argv: [
-        './test/fixtures/single-get.apib',
-        `http://127.0.0.1:${PORT}`,
-        '--server',
-        'foo/bar',
-      ],
+      execCommand({
+        argv: [
+          './test/fixtures/single-get.apib',
+          `http://127.0.0.1:${PORT}`,
+          '--server',
+          'foo/bar',
+        ],
       }, () => done());
     });
 

@@ -1,13 +1,13 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const fsStub = require('fs');
-const loggerStub = require('../../lib/logger');
 const proxyquire = require('proxyquire').noCallThru();
 const requestStub = require('request');
 const sinon = require('sinon');
 const { assert } = require('chai');
 
 const dreddTransactionsStub = require('dredd-transactions');
+const loggerStub = require('../../lib/logger');
 
 const Dredd = proxyquire('../../lib/Dredd', {
   request: requestStub,
@@ -128,51 +128,41 @@ describe('Dredd class', () => {
         dredd = new Dredd(configuration);
       });
 
-      beforeEach(() =>
-        sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback())
-      );
+      beforeEach(() => sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback()));
 
       afterEach(() => dredd.runner.executeTransaction.restore());
 
-      it('should expand all glob patterns and resolved paths should be unique', done =>
-        dredd.run((error) => {
-          if (error) { return done(error); }
-          assert.equal(dredd.configuration.files.length, 3);
-          assert.include(dredd.configuration.files, './test/fixtures/multifile/message.apib');
-          done();
-        })
-      );
+      it('should expand all glob patterns and resolved paths should be unique', done => dredd.run((error) => {
+        if (error) { return done(error); }
+        assert.equal(dredd.configuration.files.length, 3);
+        assert.include(dredd.configuration.files, './test/fixtures/multifile/message.apib');
+        done();
+      }));
 
-      it('should remove globs from config', done =>
-        dredd.run((error) => {
-          if (error) { return done(error); }
-          assert.notInclude(dredd.configuration.files, './test/fixtures/multifile/*.apib');
-          done();
-        })
-      );
+      it('should remove globs from config', done => dredd.run((error) => {
+        if (error) { return done(error); }
+        assert.notInclude(dredd.configuration.files, './test/fixtures/multifile/*.apib');
+        done();
+      }));
 
-      it('should load file contents on paths to config', done =>
-        dredd.run((error) => {
-          if (error) { return done(error); }
-          assert.isObject(dredd.configuration.data);
-          assert.property(dredd.configuration.data, './test/fixtures/multifile/greeting.apib');
-          assert.isObject(dredd.configuration.data['./test/fixtures/multifile/greeting.apib']);
-          assert.property(dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'filename');
-          assert.property(dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'raw');
-          done();
-        })
-      );
+      it('should load file contents on paths to config', done => dredd.run((error) => {
+        if (error) { return done(error); }
+        assert.isObject(dredd.configuration.data);
+        assert.property(dredd.configuration.data, './test/fixtures/multifile/greeting.apib');
+        assert.isObject(dredd.configuration.data['./test/fixtures/multifile/greeting.apib']);
+        assert.property(dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'filename');
+        assert.property(dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'raw');
+        done();
+      }));
 
-      it('should parse loaded files', done =>
-        dredd.run((error) => {
-          if (error) { return done(error); }
-          assert.isObject(dredd.configuration.data['./test/fixtures/multifile/greeting.apib']);
-          assert.property(dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'annotations');
-          assert.property(dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'filename');
-          assert.property(dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'raw');
-          done();
-        })
-      );
+      it('should parse loaded files', done => dredd.run((error) => {
+        if (error) { return done(error); }
+        assert.isObject(dredd.configuration.data['./test/fixtures/multifile/greeting.apib']);
+        assert.property(dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'annotations');
+        assert.property(dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'filename');
+        assert.property(dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'raw');
+        done();
+      }));
     });
 
 
@@ -188,18 +178,14 @@ describe('Dredd class', () => {
         dredd = new Dredd(configuration);
       });
 
-      beforeEach(() =>
-        sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback())
-      );
+      beforeEach(() => sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback()));
 
       afterEach(() => dredd.runner.executeTransaction.restore());
 
-      it('should return error', done =>
-        dredd.run((error) => {
-          assert.isOk(error);
-          done();
-        })
-      );
+      it('should return error', done => dredd.run((error) => {
+        assert.isOk(error);
+        done();
+      }));
     });
 
 
@@ -215,18 +201,14 @@ describe('Dredd class', () => {
         dredd = new Dredd(configuration);
       });
 
-      beforeEach(() =>
-        sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback())
-      );
+      beforeEach(() => sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback()));
 
       afterEach(() => dredd.runner.executeTransaction.restore());
 
-      it('should return error', done =>
-        dredd.run((error) => {
-          assert.isOk(error);
-          done();
-        })
-      );
+      it('should return error', done => dredd.run((error) => {
+        assert.isOk(error);
+        done();
+      }));
     });
 
 
@@ -265,35 +247,29 @@ GET /url
 
       afterEach(() => dredd.runner.executeTransaction.restore());
 
-      it('should not expand any glob patterns', done =>
-        dredd.run((error) => {
-          if (error) { return done(error); }
-          assert.lengthOf(dredd.configuration.files, 0);
-          done();
-        })
-      );
+      it('should not expand any glob patterns', done => dredd.run((error) => {
+        if (error) { return done(error); }
+        assert.lengthOf(dredd.configuration.files, 0);
+        done();
+      }));
 
-      it('should pass data contents to config', done =>
-        dredd.run((error) => {
-          if (error) { return done(error); }
-          assert.isObject(dredd.configuration.data);
-          assert.notNestedProperty(dredd, 'configuration.data.testingDirectObject');
-          assert.nestedPropertyVal(dredd, 'configuration.data.testingDirectObjectFilename.filename', 'testingDirectObjectFilename');
-          assert.nestedProperty(dredd, 'configuration.data.testingDirectObjectFilename.raw');
-          assert.nestedPropertyVal(dredd, 'configuration.data.testingDirectBlueprintString.filename', 'testingDirectBlueprintString');
-          assert.nestedProperty(dredd, 'configuration.data.testingDirectBlueprintString.raw');
-          done();
-        })
-      );
+      it('should pass data contents to config', done => dredd.run((error) => {
+        if (error) { return done(error); }
+        assert.isObject(dredd.configuration.data);
+        assert.notNestedProperty(dredd, 'configuration.data.testingDirectObject');
+        assert.nestedPropertyVal(dredd, 'configuration.data.testingDirectObjectFilename.filename', 'testingDirectObjectFilename');
+        assert.nestedProperty(dredd, 'configuration.data.testingDirectObjectFilename.raw');
+        assert.nestedPropertyVal(dredd, 'configuration.data.testingDirectBlueprintString.filename', 'testingDirectBlueprintString');
+        assert.nestedProperty(dredd, 'configuration.data.testingDirectBlueprintString.raw');
+        done();
+      }));
 
-      it('should parse passed data contents', done =>
-        dredd.run((error) => {
-          if (error) { return done(error); }
-          assert.nestedProperty(dredd, 'configuration.data.testingDirectObjectFilename.annotations');
-          assert.nestedProperty(dredd, 'configuration.data.testingDirectBlueprintString.annotations');
-          done();
-        })
-      );
+      it('should parse passed data contents', done => dredd.run((error) => {
+        if (error) { return done(error); }
+        assert.nestedProperty(dredd, 'configuration.data.testingDirectObjectFilename.annotations');
+        assert.nestedProperty(dredd, 'configuration.data.testingDirectBlueprintString.annotations');
+        done();
+      }));
 
       describe('and I also set configuration.options.path to an existing file', () => {
         let localdredd;
@@ -306,25 +282,23 @@ GET /url
 
         afterEach(() => localdredd.runner.executeTransaction.restore());
 
-        it('should fill configuration data with data and one file at that path', done =>
-          localdredd.run((error) => {
-            if (error) { return done(error); }
-            assert.lengthOf(localdredd.configuration.files, 1);
-            assert.isObject(localdredd.configuration.data);
-            assert.lengthOf(Object.keys(localdredd.configuration.data), 3);
-            assert.property(localdredd.configuration.data, './test/fixtures/apiary.apib');
-            assert.propertyVal(localdredd.configuration.data['./test/fixtures/apiary.apib'], 'filename', './test/fixtures/apiary.apib');
-            assert.property(localdredd.configuration.data['./test/fixtures/apiary.apib'], 'raw');
-            assert.property(localdredd.configuration.data['./test/fixtures/apiary.apib'], 'annotations');
-            assert.nestedPropertyVal(localdredd, 'configuration.data.testingDirectObjectFilename.filename', 'testingDirectObjectFilename');
-            assert.nestedProperty(localdredd, 'configuration.data.testingDirectObjectFilename.raw');
-            assert.nestedProperty(localdredd, 'configuration.data.testingDirectObjectFilename.annotations');
-            assert.nestedPropertyVal(localdredd, 'configuration.data.testingDirectBlueprintString.filename', 'testingDirectBlueprintString');
-            assert.nestedProperty(localdredd, 'configuration.data.testingDirectBlueprintString.raw');
-            assert.nestedProperty(localdredd, 'configuration.data.testingDirectBlueprintString.annotations');
-            done();
-          })
-        );
+        it('should fill configuration data with data and one file at that path', done => localdredd.run((error) => {
+          if (error) { return done(error); }
+          assert.lengthOf(localdredd.configuration.files, 1);
+          assert.isObject(localdredd.configuration.data);
+          assert.lengthOf(Object.keys(localdredd.configuration.data), 3);
+          assert.property(localdredd.configuration.data, './test/fixtures/apiary.apib');
+          assert.propertyVal(localdredd.configuration.data['./test/fixtures/apiary.apib'], 'filename', './test/fixtures/apiary.apib');
+          assert.property(localdredd.configuration.data['./test/fixtures/apiary.apib'], 'raw');
+          assert.property(localdredd.configuration.data['./test/fixtures/apiary.apib'], 'annotations');
+          assert.nestedPropertyVal(localdredd, 'configuration.data.testingDirectObjectFilename.filename', 'testingDirectObjectFilename');
+          assert.nestedProperty(localdredd, 'configuration.data.testingDirectObjectFilename.raw');
+          assert.nestedProperty(localdredd, 'configuration.data.testingDirectObjectFilename.annotations');
+          assert.nestedPropertyVal(localdredd, 'configuration.data.testingDirectBlueprintString.filename', 'testingDirectBlueprintString');
+          assert.nestedProperty(localdredd, 'configuration.data.testingDirectBlueprintString.raw');
+          assert.nestedProperty(localdredd, 'configuration.data.testingDirectBlueprintString.annotations');
+          done();
+        }));
       });
     });
 
@@ -346,139 +320,118 @@ GET /url
         });
       });
 
-      beforeEach(() =>
-        sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback())
-      );
+      beforeEach(() => sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback()));
 
       afterEach(() => dredd.runner.executeTransaction.restore());
 
       describe('when all URLs can be downloaded', () => {
         before(() =>
           // eslint-disable-next-line
-          sinon.stub(requestStub, 'get').callsFake((receivedArgs = {}, cb) => cb(null, { statusCode: 200 }, blueprintCode))
-        );
+          sinon.stub(requestStub, 'get').callsFake((receivedArgs = {}, cb) => cb(null, { statusCode: 200 }, blueprintCode)));
 
         after(() => requestStub.get.restore());
 
-        it('should expand glob pattern and resolved paths should be unique', done =>
-          dredd.run((error) => {
-            if (error) { return done(error); }
-            assert.lengthOf(dredd.configuration.files, 5);
-            assert.sameMembers(dredd.configuration.files, [
-              'http://some.path.to/file.apib',
-              'https://another.path.to/apiary.apib',
-              './test/fixtures/multifile/message.apib',
-              './test/fixtures/multifile/greeting.apib',
-              './test/fixtures/multifile/name.apib',
-            ]);
-            done();
-          })
-        );
+        it('should expand glob pattern and resolved paths should be unique', done => dredd.run((error) => {
+          if (error) { return done(error); }
+          assert.lengthOf(dredd.configuration.files, 5);
+          assert.sameMembers(dredd.configuration.files, [
+            'http://some.path.to/file.apib',
+            'https://another.path.to/apiary.apib',
+            './test/fixtures/multifile/message.apib',
+            './test/fixtures/multifile/greeting.apib',
+            './test/fixtures/multifile/name.apib',
+          ]);
+          done();
+        }));
 
-        it('should remove globs from config', done =>
-          dredd.run((error) => {
-            if (error) { return done(error); }
-            assert.notInclude(dredd.configuration.files, './test/fixtures/multifile/*.apib');
-            done();
-          })
-        );
+        it('should remove globs from config', done => dredd.run((error) => {
+          if (error) { return done(error); }
+          assert.notInclude(dredd.configuration.files, './test/fixtures/multifile/*.apib');
+          done();
+        }));
 
-        it('should load file contents on paths to config and parse these files', done =>
-          dredd.run((error) => {
-            if (error) { return done(error); }
-            assert.isObject(dredd.configuration.data);
-            assert.property(dredd.configuration.data, './test/fixtures/multifile/greeting.apib');
-            assert.property(dredd.configuration.data, 'http://some.path.to/file.apib');
-            assert.property(dredd.configuration.data, 'https://another.path.to/apiary.apib');
+        it('should load file contents on paths to config and parse these files', done => dredd.run((error) => {
+          if (error) { return done(error); }
+          assert.isObject(dredd.configuration.data);
+          assert.property(dredd.configuration.data, './test/fixtures/multifile/greeting.apib');
+          assert.property(dredd.configuration.data, 'http://some.path.to/file.apib');
+          assert.property(dredd.configuration.data, 'https://another.path.to/apiary.apib');
 
-            assert.isObject(dredd.configuration.data['./test/fixtures/multifile/name.apib']);
-            assert.property(dredd.configuration.data['./test/fixtures/multifile/name.apib'], 'filename');
-            assert.property(dredd.configuration.data['./test/fixtures/multifile/name.apib'], 'raw');
-            assert.property(dredd.configuration.data['./test/fixtures/multifile/name.apib'], 'annotations');
+          assert.isObject(dredd.configuration.data['./test/fixtures/multifile/name.apib']);
+          assert.property(dredd.configuration.data['./test/fixtures/multifile/name.apib'], 'filename');
+          assert.property(dredd.configuration.data['./test/fixtures/multifile/name.apib'], 'raw');
+          assert.property(dredd.configuration.data['./test/fixtures/multifile/name.apib'], 'annotations');
 
-            assert.isObject(dredd.configuration.data['./test/fixtures/multifile/message.apib']);
-            assert.property(dredd.configuration.data['./test/fixtures/multifile/message.apib'], 'filename');
-            assert.property(dredd.configuration.data['./test/fixtures/multifile/message.apib'], 'raw');
-            assert.property(dredd.configuration.data['./test/fixtures/multifile/message.apib'], 'annotations');
+          assert.isObject(dredd.configuration.data['./test/fixtures/multifile/message.apib']);
+          assert.property(dredd.configuration.data['./test/fixtures/multifile/message.apib'], 'filename');
+          assert.property(dredd.configuration.data['./test/fixtures/multifile/message.apib'], 'raw');
+          assert.property(dredd.configuration.data['./test/fixtures/multifile/message.apib'], 'annotations');
 
-            assert.isObject(dredd.configuration.data['./test/fixtures/multifile/greeting.apib']);
-            assert.property(dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'filename');
-            assert.property(dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'raw');
-            assert.property(dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'annotations');
+          assert.isObject(dredd.configuration.data['./test/fixtures/multifile/greeting.apib']);
+          assert.property(dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'filename');
+          assert.property(dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'raw');
+          assert.property(dredd.configuration.data['./test/fixtures/multifile/greeting.apib'], 'annotations');
 
-            assert.isObject(dredd.configuration.data['http://some.path.to/file.apib']);
-            assert.property(dredd.configuration.data['http://some.path.to/file.apib'], 'filename');
-            assert.property(dredd.configuration.data['http://some.path.to/file.apib'], 'raw');
-            assert.property(dredd.configuration.data['http://some.path.to/file.apib'], 'annotations');
+          assert.isObject(dredd.configuration.data['http://some.path.to/file.apib']);
+          assert.property(dredd.configuration.data['http://some.path.to/file.apib'], 'filename');
+          assert.property(dredd.configuration.data['http://some.path.to/file.apib'], 'raw');
+          assert.property(dredd.configuration.data['http://some.path.to/file.apib'], 'annotations');
 
-            assert.isObject(dredd.configuration.data['https://another.path.to/apiary.apib']);
-            assert.property(dredd.configuration.data['https://another.path.to/apiary.apib'], 'filename');
-            assert.property(dredd.configuration.data['https://another.path.to/apiary.apib'], 'raw');
-            assert.property(dredd.configuration.data['https://another.path.to/apiary.apib'], 'annotations');
-            done();
-          })
-        );
+          assert.isObject(dredd.configuration.data['https://another.path.to/apiary.apib']);
+          assert.property(dredd.configuration.data['https://another.path.to/apiary.apib'], 'filename');
+          assert.property(dredd.configuration.data['https://another.path.to/apiary.apib'], 'raw');
+          assert.property(dredd.configuration.data['https://another.path.to/apiary.apib'], 'annotations');
+          done();
+        }));
       });
 
       describe('when an URL for one API description document returns 404 not-found', () => {
-        before(() =>
-          sinon.stub(requestStub, 'get').callsFake((receivedArgs = {}, cb) => {
-            if ((receivedArgs ? receivedArgs.url : undefined) === 'https://another.path.to/apiary.apib') {
-              return cb(null, { statusCode: 404 }, 'Page Not Found');
-            }
-            cb(null, { statusCode: 200 }, blueprintCode);
-          })
-        );
+        before(() => sinon.stub(requestStub, 'get').callsFake((receivedArgs = {}, cb) => {
+          if ((receivedArgs ? receivedArgs.url : undefined) === 'https://another.path.to/apiary.apib') {
+            return cb(null, { statusCode: 404 }, 'Page Not Found');
+          }
+          cb(null, { statusCode: 200 }, blueprintCode);
+        }));
 
         after(() => requestStub.get.restore());
 
-        it('should exit with an error', done =>
-          dredd.run((error) => {
-            assert.isOk(error);
-            assert.instanceOf(error, Error);
-            assert.property(error, 'message');
-            assert.include(error.message, 'Unable to load file from URL');
-            done();
-          })
-        );
+        it('should exit with an error', done => dredd.run((error) => {
+          assert.isOk(error);
+          assert.instanceOf(error, Error);
+          assert.property(error, 'message');
+          assert.include(error.message, 'Unable to load file from URL');
+          done();
+        }));
 
-        it('should not execute any transaction', done =>
-          dredd.run(() => {
-            assert.notOk(dredd.runner.executeTransaction.called);
-            done();
-          })
-        );
+        it('should not execute any transaction', done => dredd.run(() => {
+          assert.notOk(dredd.runner.executeTransaction.called);
+          done();
+        }));
       });
 
       describe('when an URL for one API description document is unreachable (erroneous)', () => {
-        before(() =>
-          sinon.stub(requestStub, 'get').callsFake((receivedArgs = {}, cb) => {
-            if ((receivedArgs ? receivedArgs.url : undefined) === 'http://some.path.to/file.apib') {
-              // Server not found on
-              return cb({ code: 'ENOTFOUND' });
-            }
-            cb(null, { statusCode: 200 }, blueprintCode);
-          })
-        );
+        before(() => sinon.stub(requestStub, 'get').callsFake((receivedArgs = {}, cb) => {
+          if ((receivedArgs ? receivedArgs.url : undefined) === 'http://some.path.to/file.apib') {
+            // Server not found on
+            return cb({ code: 'ENOTFOUND' });
+          }
+          cb(null, { statusCode: 200 }, blueprintCode);
+        }));
 
         after(() => requestStub.get.restore());
 
-        it('should exit with an error', done =>
-          dredd.run((error) => {
-            assert.isOk(error);
-            assert.instanceOf(error, Error);
-            assert.property(error, 'message');
-            assert.include(error.message, 'Error when loading file from URL');
-            done();
-          })
-        );
+        it('should exit with an error', done => dredd.run((error) => {
+          assert.isOk(error);
+          assert.instanceOf(error, Error);
+          assert.property(error, 'message');
+          assert.include(error.message, 'Error when loading file from URL');
+          done();
+        }));
 
-        it('should not execute any transaction', done =>
-          dredd.run(() => {
-            assert.notOk(dredd.runner.executeTransaction.called);
-            done();
-          })
-        );
+        it('should not execute any transaction', done => dredd.run(() => {
+          assert.notOk(dredd.runner.executeTransaction.called);
+          done();
+        }));
       });
     });
   });
@@ -495,25 +448,19 @@ GET /url
       dredd = new Dredd(configuration);
     });
 
-    beforeEach(() =>
-      sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback())
-    );
+    beforeEach(() => sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback()));
 
     afterEach(() => dredd.runner.executeTransaction.restore());
 
-    it('should exit with an error', done =>
-      dredd.run((error) => {
-        assert.isOk(error);
-        done();
-      })
-    );
+    it('should exit with an error', done => dredd.run((error) => {
+      assert.isOk(error);
+      done();
+    }));
 
-    it('should NOT execute any transaction', done =>
-      dredd.run(() => {
-        assert.notOk(dredd.runner.executeTransaction.called);
-        done();
-      })
-    );
+    it('should NOT execute any transaction', done => dredd.run(() => {
+      assert.notOk(dredd.runner.executeTransaction.called);
+      done();
+    }));
   });
 
   describe('when API description document parsing warning', () => {
@@ -538,19 +485,15 @@ GET /url
       loggerStub.warn.restore();
     });
 
-    it('should execute the runtime', done =>
-      dredd.run(() => {
-        assert.isOk(dredd.runner.run.called);
-        done();
-      })
-    );
+    it('should execute the runtime', done => dredd.run(() => {
+      assert.isOk(dredd.runner.run.called);
+      done();
+    }));
 
-    it('should write warnings to warn logger', done =>
-      dredd.run(() => {
-        assert.isOk(loggerStub.warn.called);
-        done();
-      })
-    );
+    it('should write warnings to warn logger', done => dredd.run(() => {
+      assert.isOk(loggerStub.warn.called);
+      done();
+    }));
   });
 
   describe('when non existing API description document path', () => {
@@ -568,19 +511,15 @@ GET /url
 
     afterEach(() => dredd.runner.executeTransaction.resetHistory());
 
-    it('should pass the error to the callback function', done =>
-      dredd.run((error) => {
-        assert.isOk(error);
-        done();
-      })
-    );
+    it('should pass the error to the callback function', done => dredd.run((error) => {
+      assert.isOk(error);
+      done();
+    }));
 
-    it('should NOT execute any transaction', done =>
-      dredd.run(() => {
-        assert.notOk(dredd.runner.executeTransaction.called);
-        done();
-      })
-    );
+    it('should NOT execute any transaction', done => dredd.run(() => {
+      assert.notOk(dredd.runner.executeTransaction.called);
+      done();
+    }));
   });
 
   describe('when runtime contains any error', () => {
@@ -599,19 +538,15 @@ GET /url
 
     afterEach(() => dredd.runner.executeTransaction.resetHistory());
 
-    it('should NOT execute any transaction', done =>
-      dredd.run(() => {
-        assert.notOk(dredd.runner.executeTransaction.called);
-        done();
-      })
-    );
+    it('should NOT execute any transaction', done => dredd.run(() => {
+      assert.notOk(dredd.runner.executeTransaction.called);
+      done();
+    }));
 
-    it('should exit with an error', done =>
-      dredd.run((error) => {
-        assert.isOk(error);
-        done();
-      })
-    );
+    it('should exit with an error', done => dredd.run((error) => {
+      assert.isOk(error);
+      done();
+    }));
   });
 
   describe('when runtime contains any warning', () => {
@@ -633,26 +568,20 @@ GET /url
       loggerStub.warn.restore();
     });
 
-    it('should execute some transaction', done =>
-      dredd.run(() => {
-        assert.isOk(dredd.runner.executeTransaction.called);
-        done();
-      })
-    );
+    it('should execute some transaction', done => dredd.run(() => {
+      assert.isOk(dredd.runner.executeTransaction.called);
+      done();
+    }));
 
-    it('should print runtime warnings to stdout', done =>
-      dredd.run(() => {
-        assert.isOk(loggerStub.warn.called);
-        done();
-      })
-    );
+    it('should print runtime warnings to stdout', done => dredd.run(() => {
+      assert.isOk(loggerStub.warn.called);
+      done();
+    }));
 
-    it('should not exit', done =>
-      dredd.run((error) => {
-        assert.notOk(error);
-        done();
-      })
-    );
+    it('should not exit', done => dredd.run((error) => {
+      assert.notOk(error);
+      done();
+    }));
   });
 
   describe('when runtime is without errors and warnings', () => {
@@ -670,12 +599,10 @@ GET /url
 
     afterEach(() => dredd.runner.executeTransaction.resetHistory());
 
-    it('should execute the runtime', done =>
-      dredd.run(() => {
-        assert.isOk(dredd.runner.executeTransaction.called);
-        done();
-      })
-    );
+    it('should execute the runtime', done => dredd.run(() => {
+      assert.isOk(dredd.runner.executeTransaction.called);
+      done();
+    }));
   });
 
   describe('#emitStart', () => {
@@ -705,22 +632,18 @@ GET /url
         const apiary = express();
         apiary.use(bodyParser.json({ size: '5mb' }));
 
-        apiary.post('/apis/*', (req, res) =>
-          res.status(201).json({
-            _id: '1234_id',
-            testRunId: '6789_testRunId',
-            reportUrl: 'http://url.me/test/run/1234_id',
-          })
-        );
+        apiary.post('/apis/*', (req, res) => res.status(201).json({
+          _id: '1234_id',
+          testRunId: '6789_testRunId',
+          reportUrl: 'http://url.me/test/run/1234_id',
+        }));
 
         apiary.all('*', (req, res) => res.json({}));
 
         apiaryServer = apiary.listen((PORT + 1), () => done());
       });
 
-      afterEach(done =>
-        apiaryServer.close(() => done())
-      );
+      afterEach(done => apiaryServer.close(() => done()));
 
 
       it('should call the callback', (done) => {
@@ -770,12 +693,10 @@ GET /url
         dredd.emitStart(callback);
       });
 
-      it('should print the error', done =>
-        dredd.emitStart(() => {
-          assert.isTrue(errorLogger.called);
-          done();
-        })
-      );
+      it('should print the error', done => dredd.emitStart(() => {
+        assert.isTrue(errorLogger.called);
+        done();
+      }));
     });
   });
 
@@ -792,11 +713,8 @@ GET /url
       });
       afterEach(() => delete process.env.http_proxy);
 
-      it('logs about the setting', () =>
-        assert.include(verboseLogger.lastCall.args[0],
-          'HTTP(S) proxy specified by environment variables: http_proxy=http://proxy.example.com'
-        )
-      );
+      it('logs about the setting', () => assert.include(verboseLogger.lastCall.args[0],
+        'HTTP(S) proxy specified by environment variables: http_proxy=http://proxy.example.com'));
     });
 
     describe('when the proxy is set by uppercase environment variable', () => {
@@ -806,12 +724,9 @@ GET /url
       });
       afterEach(() => delete process.env.HTTPS_PROXY);
 
-      it('logs about the setting', () =>
-        assert.include(verboseLogger.lastCall.args[0],
-          'HTTP(S) proxy specified by environment variables: ' +
-          'HTTPS_PROXY=http://proxy.example.com'
-        )
-      );
+      it('logs about the setting', () => assert.include(verboseLogger.lastCall.args[0],
+        'HTTP(S) proxy specified by environment variables: '
+          + 'HTTPS_PROXY=http://proxy.example.com'));
     });
 
     describe('when NO_PROXY environment variable is set', () => {
@@ -825,13 +740,10 @@ GET /url
         delete process.env.NO_PROXY;
       });
 
-      it('logs about the setting', () =>
-        assert.include(verboseLogger.lastCall.args[0],
-          'HTTP(S) proxy specified by environment variables: ' +
-          'HTTPS_PROXY=http://proxy.example.com, ' +
-          'NO_PROXY=whitelisted.example.com'
-        )
-      );
+      it('logs about the setting', () => assert.include(verboseLogger.lastCall.args[0],
+        'HTTP(S) proxy specified by environment variables: '
+          + 'HTTPS_PROXY=http://proxy.example.com, '
+          + 'NO_PROXY=whitelisted.example.com'));
     });
 
     describe('when DUMMY_PROXY environment variable is set', () => {
@@ -845,12 +757,9 @@ GET /url
         delete process.env.NO_PROXY;
       });
 
-      it('is ignored', () =>
-        assert.include(verboseLogger.lastCall.args[0],
-          'HTTP(S) proxy specified by environment variables: ' +
-          'NO_PROXY=whitelisted.example.com'
-        )
-      );
+      it('is ignored', () => assert.include(verboseLogger.lastCall.args[0],
+        'HTTP(S) proxy specified by environment variables: '
+          + 'NO_PROXY=whitelisted.example.com'));
     });
   });
 });

@@ -49,13 +49,11 @@ describe('NyanCatReporter', () => {
       nyanReporter.write.restore();
     });
 
-    it('should hide the cursor and draw the cat', done =>
-      emitter.emit('start', '', () => {
-        assert.isOk(nyanReporter.cursorHide.calledOnce);
-        assert.isOk(nyanReporter.draw.calledOnce);
-        done();
-      })
-    );
+    it('should hide the cursor and draw the cat', done => emitter.emit('start', '', () => {
+      assert.isOk(nyanReporter.cursorHide.calledOnce);
+      assert.isOk(nyanReporter.draw.calledOnce);
+      done();
+    }));
   });
 
   describe('when ending', () => {
@@ -71,12 +69,10 @@ describe('NyanCatReporter', () => {
       nyanReporter.write.restore();
     });
 
-    it('should log that testing is complete', done =>
-      emitter.emit('end', () => {
-        assert.isOk(loggerStub.complete.calledTwice);
-        done();
-      })
-    );
+    it('should log that testing is complete', done => emitter.emit('end', () => {
+      assert.isOk(loggerStub.complete.calledTwice);
+      done();
+    }));
 
     describe('when there are failures', () => {
       beforeEach(() => {
@@ -91,12 +87,10 @@ describe('NyanCatReporter', () => {
 
       afterEach(() => loggerStub.fail.restore());
 
-      it('should log the failures at the end of testing', done =>
-        emitter.emit('end', () => {
-          assert.isOk(loggerStub.fail.calledTwice);
-          done();
-        })
-      );
+      it('should log the failures at the end of testing', done => emitter.emit('end', () => {
+        assert.isOk(loggerStub.fail.calledTwice);
+        done();
+      }));
     });
   });
 
