@@ -1,0 +1,32 @@
+FORMAT: 1A
+
+# Blog API
+## Articles [/articles]
+### List articles [GET]
+
++ Response 200 (application/json)
+
+        [
+          {
+            "id": 1,
+            "title": "Creamy cucumber salad",
+            "text": "Slice cucumbers…"
+          }
+        ]
+
+### Publish an article [POST]
+
++ Request (application/json)
+
+        {
+          "title": "Crispy schnitzel",
+          "text": "Prepare eggs…"
+        }
+
++ Response 201 (application/json)
+
+        {
+          "id": 2,
+          "title": "Crispy schnitzel",
+          "text": "Prepare eggs…"
+        }

@@ -11,6 +11,8 @@ Dredd itself is a `command-line <https://en.wikipedia.org/wiki/Command-line_inte
    :depth: 1
 
 
+.. _maintainers:
+
 Maintainers
 -----------
 

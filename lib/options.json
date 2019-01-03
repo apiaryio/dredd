@@ -6,7 +6,7 @@
   },
   "hookfiles": {
     "alias": "f",
-    "description": "Specifies a pattern to match files with before/after hooks for running tests. Files are executed in alphabetical order.",
+    "description": "Path to hook files. Can be used multiple times, supports glob patterns. Hook files are executed in alphabetical order.",
     "default": null
   },
   "language": {
