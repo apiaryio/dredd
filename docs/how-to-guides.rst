@@ -537,7 +537,7 @@ Sending Multipart Requests
   :language: apiblueprint
 
 .. literalinclude:: ../test/fixtures/request/multipart-form-data.yaml
-  :language: yaml
+  :language: openapi2
 
 Sending Form Data
 -----------------
@@ -546,7 +546,7 @@ Sending Form Data
   :language: apiblueprint
 
 .. literalinclude:: ../test/fixtures/request/application-x-www-form-urlencoded.yaml
-  :language: yaml
+  :language: openapi2
 
 Working with Images and other Binary Bodies
 -------------------------------------------
@@ -566,7 +566,7 @@ OpenAPI 2
 ^^^^^^^^^
 
 .. literalinclude:: ../test/fixtures/request/image-png.yaml
-  :language: yaml
+  :language: openapi2
 
 Hooks
 ^^^^^
@@ -589,7 +589,7 @@ OpenAPI 2
 ^^^^^^^^^
 
 .. literalinclude:: ../test/fixtures/response/binary.yaml
-  :language: yaml
+  :language: openapi2
 
 .. note::
    Do not use the explicit ``binary`` or ``bytes`` formats with response bodies, as Dredd is not able to properly work with those (:ghissue:`fury-adapter-swagger#193`).
