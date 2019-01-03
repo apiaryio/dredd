@@ -16,12 +16,16 @@ redirects:
   "/usage.html": "/usage-cli.html"
   "/contributing.html": "/internals.html"
 
+  # 'Node.js to JavaScript' migration
+  "/hooks/nodejs.html": "/hooks/js.html"
+  "/hooks-nodejs.html": "/hooks/js.html"
+  "/hooks-nodejs/": "/hooks/js.html"
+
   # 'Hooks to a directory' migration
   "/hooks.html": "/hooks/index.html"
   "/hooks-go.html": "/hooks/go.html"
   "/hooks-new-language.html": "/hooks/new-language.html"
   "/hooks-perl.html": "/hooks/perl.html"
-  "/hooks-nodejs.html": "/hooks/nodejs.html"
   "/hooks-ruby.html": "/hooks/ruby.html"
   "/hooks-php.html": "/hooks/php.html"
   "/hooks-python.html": "/hooks/python.html"
@@ -40,7 +44,6 @@ redirects:
   "/hooks-go/": "/hooks/go.html"
   "/hooks-new-language/": "/hooks/new-language.html"
   "/hooks-perl/": "/hooks/perl.html"
-  "/hooks-nodejs/": "/hooks/nodejs.html"
   "/hooks-ruby/": "/hooks/ruby.html"
   "/hooks-php/": "/hooks/php.html"
   "/hooks-python/": "/hooks/python.html"

@@ -1,3 +1,4 @@
+.. _hooks-js:
 .. _hooks-nodejs:
 
 Writing Dredd Hooks In Node.js
@@ -13,7 +14,7 @@ Usage
 API Reference
 -------------
 
--  For ``before``, ``after``, ``beforeValidation``, ``beforeEach``, ``afterEach`` and ``beforeEachValidation`` a :ref:`Transaction Object <transaction-object-structure>` is passed as the first argument to the hook function.
+-  For ``before``, ``after``, ``beforeValidation``, ``beforeEach``, ``afterEach`` and ``beforeEachValidation`` a :ref:`Transaction Object <transaction>` is passed as the first argument to the hook function.
 -  An array of Transaction Objects is passed to ``beforeAll`` and ``afterAll``.
 -  The second argument is an optional callback function for async execution.
 -  Any modifications on the ``transaction`` object are propagated to the actual HTTP transactions.
