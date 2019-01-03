@@ -176,10 +176,10 @@ The Travis CI build uses following commands to deliver coverage reports:
 
 The first mentioned command does following:
 
-1.  Uses `istanbul <https://github.com/gotwarlost/istanbul>`__ to instrument the JavaScript code
-2.  Runs the tests on the instrumented code using Mocha with a special lcov reporter, which gives us information about which lines were executed in the standard lcov format
-3. Because some integration tests execute the ``bin/dredd`` script in a subprocess, we collect the coverage stats also in this file. The results are appended to a dedicated lcov file
-4. All lcov files are then merged into one using the `lcov-result-merger <https://github.com/mweibel/lcov-result-merger>`__ utility and sent to Coveralls
+#.  Uses `istanbul <https://github.com/gotwarlost/istanbul>`__ to instrument the JavaScript code
+#.  Runs the tests on the instrumented code using Mocha with a special lcov reporter, which gives us information about which lines were executed in the standard lcov format
+#. Because some integration tests execute the ``bin/dredd`` script in a subprocess, we collect the coverage stats also in this file. The results are appended to a dedicated lcov file
+#. All lcov files are then merged into one using the `lcov-result-merger <https://github.com/mweibel/lcov-result-merger>`__ utility and sent to Coveralls
 
 Hand-made combined Mocha reporter is used to achieve running tests and collecting coverage at the same time.
 
@@ -215,18 +215,17 @@ Even though alternatives exist (dredd.readthedocs.io, dredd.rtfd.io, or dredd.io
 Building documentation locally
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The documentation is built by `Sphinx <http://www.sphinx-doc.org/>`__. To render it on your computer, you need `Python 3 <https://www.python.org/>`__ and `Node.js <http://nodejs.org/>`__.
+The documentation is built by `Sphinx <http://www.sphinx-doc.org/>`__. To render it on your computer, you need `Python 3 <https://www.python.org/>`__.
 
-1. Make sure ``node`` is an executable and ``npm install`` has been done for the Dredd directory.
-2. `Get Python 3 <https://www.python.org/downloads/>`__. `ReadTheDocs <https://readthedocs.org/>`__ build the documentation with Python 3.6, so make sure you have this version.
-3. Create a `virtual environment <https://docs.python.org/3/library/venv.html>`__ and activate it:
+#. `Get Python 3 <https://www.python.org/downloads/>`__. `ReadTheDocs <https://readthedocs.org/>`__ build the documentation with Python 3.6, so make sure you have this version.
+#. Create a `virtual environment <https://docs.python.org/3/library/venv.html>`__ and activate it:
 
    .. code-block:: shell
 
       python3 -m venv ./venv
       source ./venv/bin/activate
 
-4. Install dependencies for the docs:
+#. Install dependencies for the docs:
 
    .. code-block:: shell
 
@@ -246,7 +245,7 @@ Now you can use following commands:
 Installation on ReadTheDocs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The final documentation gets published by `ReadTheDocs <https://readthedocs.org/>`__. Because the documentation needs some of the npm dependencies installed and ReadTheDocs do not support this in their default build environment, we force their latest build image, which includes Node.js out of the box, in the ``readthedocs.yml``. In the Sphinx' configuration file, ``docs/conf.py``, we make sure ``npm install`` is executed on ReadTheDocs.
+The final documentation gets published by `ReadTheDocs <https://readthedocs.org/>`__. We force their latest build image in the ``readthedocs.yml`` to get Python 3.
 
 
 Writing documentation
