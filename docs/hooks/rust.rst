@@ -19,11 +19,14 @@ Installation
 Usage
 -----
 
-Using Dredd with Rust is slightly different to other languages, as a binary needs to be compiled for execution. The –hookfiles flags should point to compiled hook binaries. See below for an example hooks.rs file to get an idea of what the source file behind the Rust binary would look like.
+Using Dredd with Rust is slightly different to other languages, as a binary needs to be compiled for execution. The :option:`--hookfiles` options should point to compiled hook binaries. See below for an example hooks.rs file to get an idea of what the source file behind the Rust binary would look like.
 
 ::
 
    $ dredd apiary.apib http://127.0.0.1:3000 --server=./rust-web-server-to-test --language=rust --hookfiles=./hook-file-binary
+
+.. note::
+   If you're running :ref:`Dredd inside Docker <docker>`, read about :ref:`specifics of getting it working together with non-JavaScript hooks <hooks-docker>`.
 
 API Reference
 -------------

@@ -23,6 +23,9 @@ Usage
 
    $ dredd apiary.apib http://127.0.0.1:3000 --language=python --hookfiles=./hooks*.py
 
+.. note::
+   If you're running :ref:`Dredd inside Docker <docker>`, read about :ref:`specifics of getting it working together with non-JavaScript hooks <hooks-docker>`.
+
 API Reference
 -------------
 
