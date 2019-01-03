@@ -50,7 +50,7 @@ Dredd offers interactive wizard to setup your ``dredd.yml`` file:
 
 See below how sample configuration file could look like. The structure is the same as of the :ref:`Dredd Class configuration object <configuration-object-for-dredd-class>`.
 
-.. code-block:: yaml
+.. code-block:: openapi2
 
    reporter: apiary
    custom:

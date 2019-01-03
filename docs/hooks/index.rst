@@ -1,110 +1,191 @@
 .. include:: ../_links.rst
+
+
+.. _hook-scripts:
 .. _hooks:
 
-Hook Scripts
-============
+Hooks
+=====
 
-Similar to any other testing framework, Dredd supports executing code around each test step. Hooks are code blocks executed in defined stage of :ref:`execution lifecycle <execution-life-cycle>`. In the hooks code you have an access to compiled HTTP :ref:`transaction object <transaction-object-structure>` which you can modify.
+Dredd supports *hooks*, which are blocks of arbitrary code that run before or after each test step. The concept is similar to XUnit's ``setUp`` and ``tearDown`` functions, `Cucumber hooks <https://docs.cucumber.io/cucumber/api/#hooks>`__, or `Git hooks <https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks>`__. Hooks are usually used for:
 
-Hooks are usually used for:
+-  Loading database fixtures,
+-  cleaning up after test step(s),
+-  handling auth and sessions,
+-  passing data between transactions (saving state from responses),
+-  modifying a request generated from the API description,
+-  changing generated expectations,
+-  setting custom expectations,
+-  debugging by logging stuff.
 
--  loading db fixtures
--  cleanup after test step or steps
--  handling authentication and sessions
--  passing data between transactions (saving state from responses to *stash*)
--  modifying request generated from API description
--  changing generated expectations
--  setting custom expectations
--  debugging via logging stuff
 
-Languages
----------
+Getting started
+---------------
 
-You can interact with your server implementation in following languages:
+Let's have a description of a blog API, which allows to list all articles, and to publish a new one.
+
+.. tabs::
+
+   .. group-tab:: API Blueprint
+
+      .. literalinclude:: ../../test/fixtures/blog/api.apib
+         :language: apiblueprint
+
+   .. group-tab:: OpenAPI 2
+
+      .. literalinclude:: ../../test/fixtures/blog/api.yaml
+         :language: yaml
+
+Now let's say the real instance of the API has the POST request protected so it is not possible for everyone to publish new articles. We do not want to hardcode secret tokens in our API description, but we want to get Dredd to pass the auth. This is where the hooks can help.
+
+
+Writing hooks
+~~~~~~~~~~~~~
+
+Hooks are functions, which are registered to be ran for a specific test step (HTTP transaction) and at a specific point in Dredd's :ref:`execution life cycle <execution-life-cycle>`. Hook functions take one or more `transaction objects <transaction>`__, which they can modify. Let's use hooks to add an `Authorization header <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization>`__ to Dredd's request.
+
+Dredd supports :ref:`writing hooks in multiple programming languages <supported-languages>`, but we'll go with JavaScript hooks in this tutorial as they're available out of the box.
+
+.. tabs::
+
+   .. group-tab:: API Blueprint
+
+      Let's create a file called ``hooks.js`` with the following content:
+
+      .. literalinclude:: ../../test/fixtures/blog/hooks-apib.js
+         :language: javascript
+
+      As you can see, we're registering the hook function to be executed **before** the HTTP transaction ``Articles > Publish an article``. This path-like identifier is a :ref:`transaction name <transaction-names>`.
+
+   .. group-tab:: OpenAPI 2
+
+      Let's create a file called ``hooks.js`` with the following content:
+
+      .. literalinclude:: ../../test/fixtures/blog/hooks-openapi2.js
+         :language: javascript
+
+      As you can see, we're registering the hook function to be executed **before** the HTTP transaction ``Articles > Publish an article > 201 > application/json``. This path-like identifier is a :ref:`transaction name <transaction-names>`.
+
+
+Running Dredd with hooks
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+With the API instance running locally at ``http://127.0.0.1``, you can now run Dredd with hooks using the :option:`--hookfiles` option:
+
+.. tabs::
+
+   .. group-tab:: API Blueprint
+
+      .. code-block:: text
+
+         dredd ./blog.apib http://127.0.0.1 --hookfiles=./hooks.js
+
+   .. group-tab:: OpenAPI 2
+
+      .. code-block:: text
+
+         dredd ./blog.yaml http://127.0.0.1 --hookfiles=./hooks.js
+
+Now the tests should pass even if publishing new article requires auth.
+
+
+.. _supported-languages:
+
+Supported languages
+-------------------
+
+Dredd itself is written in JavaScript, so it supports :ref:`JavaScript hooks <hooks-js>` out of the box. Hook handlers for other languages need to be installed before they can be used. Supported languages are:
 
 .. toctree::
    :maxdepth: 1
 
-   Go <go>
+   JavaScript <js>
    JavaScript (Sandboxed) <js-sandbox>
-   Node.js <nodejs>
+   Go <go>
    Perl <perl>
    PHP <php>
    Python <python>
    Ruby <ruby>
    Rust <rust>
-   Other languages <new-language>
 
-Dredd doesn’t speak your language? :ref:`It’s very easy to write support for your language. <hooks-new-language>` Your contribution is more than welcome!
+.. toctree::
+   :hidden:
 
-Using Hook Files
-----------------
+   New language <new-language>
 
-To use a hook file with Dredd, use the :option:`--hookfiles` flag in the command line. You can use this flag multiple times or use a `glob <https://www.npmjs.com/package/glob>`__ expression for loading multiple hook files. Dredd executes hook files in alphabetical order.
+.. note::
 
-Example:
+   If you don't see your favorite language, :ref:`it's fairly easy to contribute support for it <hooks-new-language>`! Join the :ref:`Contributors Hall of Fame <maintainers>` where we praise those who added support for additional languages.
 
-.. code-block:: shell
+   (Especially if your language of choice is **Java**, there's an eternal fame and glory waiting for you - see :ghissue:`#875`)
 
-   $ dredd single-get.apib http://machines.apiary.io --hookfiles=*_hooks.*
 
+.. _transaction-names:
 .. _getting-transaction-names:
 
-Getting Transaction Names
--------------------------
+Transaction names
+-----------------
 
-For addressing specific test steps is used the **transaction names** of the compiled HTTP transactions (*actions*) from the API description.
+Transaction names are path-like strings, which allow hook functions to address specific HTTP transactions. They intuitively follow the structure of your API description document.
 
-In order to retrieve transaction names please run Dredd with the :option:`--names` option last and it will print all available names of transactions.
+You can get a list of all transaction names available in your API description document by calling Dredd with the :option:`--names` option:
 
-For example, given an API Blueprint file ``api-description.apib`` as following:
+.. tabs::
 
-.. code-block:: apiblueprint
+   .. group-tab:: API Blueprint
 
-   FORMAT: 1A
+      .. code-block:: text
+         :emphasize-lines: 3, 5
 
-   # Machines API
+         $ dredd ./blog.apib http://127.0.0.1 --names
+         info: Beginning Dredd testing...
+         info: Articles > List articles
+         skip: GET (200) /articles
+         info: Articles > Publish an article
+         skip: POST (201) /articles
+         complete: 0 passing, 0 failing, 0 errors, 2 skipped, 2 total
+         complete: Tests took 9ms
 
-   # Group Machines
+      As you can see, the document ``./blog.apib`` contains two transactions, which you can address in hooks as:
 
-   # Machines collection [/machines]
+      - ``Articles > List articles``
+      - ``Articles > Publish an article``
 
-   ## Get Machines [GET]
+   .. group-tab:: OpenAPI 2
 
-   - Response 200 (application/json; charset=utf-8)
+      .. code-block:: text
+         :emphasize-lines: 3, 5
 
-       [{"type": "bulldozer", "name": "willy"}]
+         $ dredd ./blog.yaml http://127.0.0.1 --names
+         info: Beginning Dredd testing...
+         info: Articles > List articles > 200 > application/json
+         skip: GET (200) /articles
+         info: Articles > Publish an article > 201 > application/json
+         skip: POST (201) /articles
+         complete: 0 passing, 0 failing, 0 errors, 2 skipped, 2 total
+         complete: Tests took 9ms
 
-Run this command to retrieve all transaction names:
+      As you can see, the document ``./blog.yaml`` contains two transactions, which you can address in hooks as:
 
-.. code-block:: shell
+      - ``Articles > List articles > 200 > application/json``
+      - ``Articles > Publish an article > 201 > application/json``
 
-   $ dredd single-get.apib http://machines.apiary.io --names
-   info: Machines > Machines collection > Get Machines
+.. note::
+   The transaction names and the :option:`--names` workflow mostly do their job, but with `many documented flaws <https://github.com/apiaryio/dredd/labels/Epic%3A%20Transaction%20Names>`__. A successor to transaction names is being designed in :ghissue:`#227`
 
-The ``Machines > Machines collection > Get Machines`` is the name of a transaction which you can use in your hooks. The same approach works also for `OpenAPI 2`_ documents.
 
 .. _types-of-hooks:
 
-Types of Hooks
+Types of hooks
 --------------
 
-Dredd supports following types of hooks:
+Hooks get executed at specific points in Dredd's :ref:`execution life cycle <execution-life-cycle>`. Available types of hooks are:
 
 -  ``beforeAll`` called at the beginning of the whole test run
 -  ``beforeEach`` called before each HTTP transaction
--  ``before`` called before some specific HTTP transaction
+-  ``before`` called before a specific HTTP transaction
 -  ``beforeEachValidation`` called before each HTTP transaction is validated
--  ``beforeValidation`` called before some specific HTTP transaction is validated
--  ``after`` called after some specific HTTP transaction regardless its result
+-  ``beforeValidation`` called before a specific HTTP transaction is validated
+-  ``after`` called after a specific HTTP transaction regardless its result
 -  ``afterEach`` called after each HTTP transaction
 -  ``afterAll`` called after whole test run
-
-Refer to :ref:`Dredd execution lifecycle <execution-life-cycle>` when is each hook executed.
-
-.. _transaction-object-structure:
-
-Transaction Object Structure
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The main purpose of hooks is to work with the transaction object they get as the first argument, in order to inspect or modify Dredd’s behavior. See :ref:`transaction object reference <transaction>` to learn more about its contents.

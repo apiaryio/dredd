@@ -42,7 +42,7 @@ First, let’s design the API we are about to build and test. That means you wil
 
       If you choose OpenAPI 2, create a file called ``api-description.yml``:
 
-      .. code-block:: yaml
+      .. code-block:: openapi2
 
          swagger: "2.0"
          info:

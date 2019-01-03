@@ -1,9 +1,32 @@
+/*
+  Minor tuning to get the Font-Awesome icons used in buttons slightly padded.
+*/
 .btn .fa {
   margin-right: 0.3rem;
 }
+.btn.float-right .fa {
+  margin-right: 0;
+  margin-left: 0.3rem;
+}
 
+/*
+  The :rfc: role renders bold for no obvious reason. This resets it so
+  the links don't stand out.
+*/
 a.rfc strong {
   font-weight: normal;
+}
+
+/*
+  Workaround for https://github.com/djungelorm/sphinx-tabs/pull/35
+*/
+.rst-content .section ul:last-child,
+.rst-content .toctree-wrapper ul:last-child,
+article ul:last-child {
+  margin-bottom: 24px;
+}
+.rst-content .tab ul:last-child {
+  margin-bottom: 0;
 }
 
 

@@ -6,6 +6,7 @@ import subprocess
 import urllib.request
 
 from sphinx.errors import SphinxError
+from pygments.lexers.data import YamlLexer
 
 
 ###########################################################################
@@ -175,6 +176,26 @@ sphinx_tabs_valid_builders = ['linkcheck']
 # Directory with individual templates overriding the ones from the theme
 templates_path = ['_templates']
 
-# An extension adding the '_static/css/dredd.css' stylesheet
+
+# -- Custom Pygments lexers for OpenAPI -----------------------------------
+
+class OpenAPI2Lexer(YamlLexer):
+    name = 'OpenAPI 2'
+    aliases = ['openapi2', 'swagger']
+    mimetypes = ['application/swagger+yaml']
+
+class OpenAPI3Lexer(YamlLexer):
+    name = 'OpenAPI 3'
+    aliases = ['openapi3']
+    mimetypes = ['application/vnd.oai.openapi']
+
+
+# -- Setting up extensions ------------------------------------------------
+
 def setup(app):
+    # An extension adding the '_static/css/dredd.css' stylesheet
     app.add_css_file('css/dredd.css')
+
+    # Adding
+    app.add_lexer('openapi2', OpenAPI2Lexer())
+    app.add_lexer('openapi3', OpenAPI3Lexer())
