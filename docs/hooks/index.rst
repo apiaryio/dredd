@@ -34,7 +34,7 @@ Let's have a description of a blog API, which allows to list all articles, and t
    .. group-tab:: OpenAPI 2
 
       .. literalinclude:: ../../test/fixtures/blog/api.yaml
-         :language: yaml
+         :language: openapi2
 
 Now let's say the real instance of the API has the POST request protected so it is not possible for everyone to publish new articles. We do not want to hardcode secret tokens in our API description, but we want to get Dredd to pass the auth. This is where the hooks can help.
 
@@ -94,7 +94,7 @@ Now the tests should pass even if publishing new article requires auth.
 Supported languages
 -------------------
 
-Dredd itself is written in JavaScript, so it supports :ref:`JavaScript hooks <hooks-js>` out of the box. Hook handlers for other languages need to be installed before they can be used. Supported languages are:
+Dredd itself is written in JavaScript, so it supports :ref:`JavaScript hooks <hooks-js>` out of the box. Running hooks in other languages requires installing a dedicated *hook handler*. Supported languages are:
 
 .. toctree::
    :maxdepth: 1
@@ -189,3 +189,18 @@ Hooks get executed at specific points in Dredd's :ref:`execution life cycle <exe
 -  ``after`` called after a specific HTTP transaction regardless its result
 -  ``afterEach`` called after each HTTP transaction
 -  ``afterAll`` called after whole test run
+
+
+.. _hooks-docker:
+
+Hooks inside Docker
+-------------------
+
+As mentioned in :ref:`supported-languages`, running hooks written in languages other than JavaScript requires a dedicated hook handler. Hook handler is a separate process, which communicates with Dredd over a TCP socket.
+
+If you're :ref:`running Dredd inside Docker <docker>`, you may want to use a separate container for the hook handler and then run all your containers together as described in the :ref:`docker-compose` section.
+
+However, hooks were not originally designed with this scenario in mind. Dredd gets a name of (or path to) the hook handler in :option:`--language` and then starts it as a child process. To work around this, `fool Dredd with a dummy script <https://github.com/apiaryio/dredd/issues/748#issuecomment-285355519>`__ and set :option:`--hooks-worker-handler-host` together with :option:`--hooks-worker-handler-port` to point Dredd's TCP communication to the other container.
+
+.. note::
+    The issue described above is tracked in :ghissue:`#755`.
