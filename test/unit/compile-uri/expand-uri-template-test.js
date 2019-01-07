@@ -122,11 +122,11 @@ describe('expandUriTemplate()', () => {
 
         it('should return no error', () => assert.equal(data.errors.length, 0));
 
-        it('should return no warning', () =>
+        it('should return no warning', () => {
           // The warning was removed as parser started to provide its own
           // warning for the very same thing.
-          assert.equal(data.warnings.length, 0)
-        );
+          assert.equal(data.warnings.length, 0);
+        });
 
         it('should return URI as it is', () => assert.equal(data.uri, uriTemplate));
       });
@@ -183,11 +183,11 @@ describe('expandUriTemplate()', () => {
 
         it('should return no error', () => assert.equal(data.errors.length, 0));
 
-        it('should return no warning', () =>
+        it('should return no warning', () => {
           // The warning was removed as parser started to provide its own
           // warning for the very same thing.
-          assert.equal(data.warnings.length, 0)
-        );
+          assert.equal(data.warnings.length, 0);
+        });
 
         it('should return expandend URI', () => assert.equal(data.uri, '/machines/waldo'));
       });
