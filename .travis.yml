@@ -1,30 +1,19 @@
-dist: "trusty"
 language: "node_js"
 node_js:
   - "6"
   - "8"
   - "10"
-addons:
-  apt:
-    sources:
-      - "ubuntu-toolchain-r-test"
-    packages:
-      - "g++-4.8"
 env:
   global:
-    - "CXX=g++-4.8"
     # GH_TOKEN and NPM_TOKEN encrypted by 'travis encrypt' utility
     - secure: "wvzBndJSj08eo4AJWS7SyiPz1yG8PprxwaFbS4VNvd7cbnZvPAEsaAYvjt7ubn4KtcSXPpslUV12EO4xNPghaJUAsnJjRxf6+HSz+0M0BQBOpCwtg2BwXxll3FSRW+KZ/27bJXPl0F2nRDrsyBLbQ3+KQ9CF/QnenE6YvUfSPKrcg/OgZIQ6QeFMOgmP9Z/lP6zOkyigapsaMiRr2/8H9kx21Z6Wgd0lB+LMsKmPmNAUadN5TSJY6t4+aS5UrNsW8DMeYUDbcGk9XWh+YE86MqrP7FZCQoUfyP72ZEnUKrRJO+osDBGNJbxoIDVPQfPlIAx6gdsw+KAoyzT8/roc1MQBrlfhRAFlNyKjXqd0TUqg3I7ji4ZIababoCI4Qz4GGh6ZEJ2rQCYDnBw9cT2OzzoSx8QyiEnRu/qfKitIF7CcNCzclzp0EILXTZijgUaqK8g6rjwcLTnbN9S3KdpUTp3KN/NPgZm/lupxKVaPRqQH7MOWATYEzzw5wYx1H4ihNyKKasu5MHPJJelCW8X3qecYFahNQXaiI+ifZpG3jyH2s12Oi/tLxtYLPt8R+ScXdrGrs0FgX3azZn6YB3phWIV4OD+1jBGDJiym8Wk45Vm0EsneyOZaitFO2EDawWgyt1hQzbmvKUXVL70OG6tdaT8ztABYDz9jNjGhg80LYmQ="
-  matrix:
-    - "DRAFTER=JS"
-    - "DRAFTER=CPP"
 cache:
   directories:
     - "node_modules"
 before_install:
-  - "npm -g install npm@6"
+  - "npm install npm@6 --global"
 install:
-  - "if [[ $DRAFTER = JS ]]; then npm install --no-optional --no-save; else npm install --no-save; fi"
+  - "npm run ci:install"
 script:
   - "npm run ci:test"
 after_success:

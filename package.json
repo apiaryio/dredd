@@ -9,11 +9,12 @@
   "scripts": {
     "postshrinkwrap": "node ./scripts/postshrinkwrap.js",
     "clean": "rimraf ./coverage",
-    "lint": "./scripts/commitlint.sh && eslint --ignore-path .gitignore .",
+    "lint": "bash ./scripts/commitlint.sh && eslint --ignore-path .gitignore .",
     "test": "npm run clean && mocha ./test",
     "test:coverage": "npm run clean && istanbul cover ./node_modules/.bin/_mocha -- ./test",
+    "ci:install": "bash scripts/npm-install-ci.sh",
     "ci:test": "npm run lint && npm run test:coverage",
-    "ci:coverage": "scripts/coveralls.sh",
+    "ci:coverage": "bash scripts/coveralls.sh",
     "ci:release": "semantic-release"
   },
   "repository": {
