@@ -109,13 +109,13 @@ C++ dependencies
 
 Dredd uses `Drafter <https://github.com/apiaryio/drafter>`__ for parsing `API Blueprint`_ documents. Drafter is written in C++ and needs to be compiled during installation. Because that can cause a lot of problems in some environments, there’s also pure JavaScript version of the parser, `drafter.js <https://github.com/apiaryio/drafter.js>`__. Drafter.js is fully equivalent, but it can have slower performance. Therefore there’s `drafter-npm <https://github.com/apiaryio/drafter-npm/>`__ package, which tries to compile the C++ version of the parser and in case of failure it falls back to the JavaScript equivalent. Dredd depends on the `drafter-npm <https://github.com/apiaryio/drafter-npm/>`__ package.
 
-That still proved problematic for Dredd though. The current solution is to provide an `npm-shrinkwrap.json <https://docs.npmjs.com/files/shrinkwrap.json>`__ file, which completely excludes `protagonist <https://github.com/apiaryio/protagonist>`__, i.e. the compiled C++ binding. Unlike ``package-lock.json``, the file can be distributed inside Dredd's npm package. The exclusion is performed by a ``postshrinkwrap`` npm script.
+That still proved problematic for Dredd though. The current solution is to provide an `npm-shrinkwrap.json <https://docs.npmjs.com/files/shrinkwrap.json>`__ file with the `Dredd Transactions`_ library, which completely excludes `protagonist <https://github.com/apiaryio/protagonist>`__, i.e. the compiled C++ binding. Unlike ``package-lock.json``, the file can be distributed inside an npm package. The exclusion is performed by a ``postshrinkwrap`` npm script.
 
 
 Supported Node.js versions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Given the `table with LTS schedule <https://github.com/nodejs/Release>`__, only versions marked as **Current**, **Maintenance**, or **Active** are supported, until their **Maintenance End**. The testing matrix of Dredd’s CI builds must contain all currently supported versions and must not contain any unsupported versions. The same applies for the underlying libraries, such as `Dredd Transactions <https://github.com/apiaryio/dredd-transactions>`__ or `Gavel`_. In ``appveyor.yml`` the latest supported Node.js version should be used. When dropping support for Node.js versions, remember to update the :ref:`installation guide <install-npm>`.
+Given the `table with LTS schedule <https://github.com/nodejs/Release>`__, only versions marked as **Current**, **Maintenance**, or **Active** are supported, until their **Maintenance End**. The testing matrix of Dredd’s CI builds must contain all currently supported versions and must not contain any unsupported versions. The same applies for the underlying libraries, such as `Dredd Transactions`_ or `Gavel`_. In ``appveyor.yml`` the latest supported Node.js version should be used. When dropping support for Node.js versions, remember to update the :ref:`installation guide <install-npm>`.
 
 When dropping support for a certain Node.js version, it should be removed from the testing matrix, and it **must** be delivered as a breaking change, which increments Dredd's major version number.
 
