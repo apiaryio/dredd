@@ -1,5 +1,5 @@
-const detectTransactionExampleNumbers = require('../../src/detect-transaction-example-numbers');
-const parse = require('../../src/parse');
+const detectTransactionExampleNumbers = require('../../lib/detect-transaction-example-numbers');
+const parse = require('../../lib/parse');
 
 const { assert } = require('../utils');
 

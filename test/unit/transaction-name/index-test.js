@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const getTransactionName = require('../../../src/transaction-name');
+const getTransactionName = require('../../../lib/transaction-name');
 
 describe('getTransactionName()', () => {
   it('is a function', () => assert.isFunction(getTransactionName));

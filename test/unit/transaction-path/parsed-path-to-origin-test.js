@@ -1,9 +1,9 @@
 const { assert } = require('chai');
 
-const parsedPathToOrigin = require('../../../src/transaction-path/parsed-path-to-origin');
-const parsePath = require('../../../src/transaction-path/parse-path');
+const parsedPathToOrigin = require('../../../lib/transaction-path/parsed-path-to-origin');
+const parsePath = require('../../../lib/transaction-path/parse-path');
 
-const { ESCAPE_CHAR, DELIMITER } = require('../../../src/transaction-path/constants');
+const { ESCAPE_CHAR, DELIMITER } = require('../../../lib/transaction-path/constants');
 
 describe('parsedPathToOrigin()', () => {
   it('is a function', () => assert.isFunction(parsedPathToOrigin));

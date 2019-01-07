@@ -2,7 +2,7 @@ const fury = require('fury');
 const sinon = require('sinon');
 
 const fixtures = require('../fixtures');
-const parse = require('../../src/parse');
+const parse = require('../../lib/parse');
 
 const { assert } = require('../utils');
 

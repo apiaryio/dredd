@@ -194,7 +194,7 @@ describe('compile() · all API description formats', () => {
     const message = '... dummy warning message ...';
 
     const stubs = {
-      './compile-uri': proxyquire('../../src/compile-uri', {
+      './compile-uri': proxyquire('../../lib/compile-uri', {
         './expand-uri-template': () => ({ uri: '/honey?beekeeper=Honza', errors: [], warnings: [message] })
       })
     };
@@ -276,7 +276,7 @@ describe('compile() · all API description formats', () => {
 
     const message = '... dummy warning message ...';
     const stubs = {
-      './compile-uri': proxyquire('../../src/compile-uri', {
+      './compile-uri': proxyquire('../../lib/compile-uri', {
         './validate-params': () => ({ errors: [], warnings: [message] })
       })
     };

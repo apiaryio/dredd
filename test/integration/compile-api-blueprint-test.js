@@ -2,7 +2,7 @@ const sinon = require('sinon');
 
 const createAnnotationSchema = require('../schemas/annotation');
 const createCompilationResultSchema = require('../schemas/compilation-result');
-const detectTransactionExampleNumbers = require('../../src/detect-transaction-example-numbers');
+const detectTransactionExampleNumbers = require('../../lib/detect-transaction-example-numbers');
 const fixtures = require('../fixtures');
 
 const { assert, compileFixture } = require('../utils');

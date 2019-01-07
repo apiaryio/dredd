@@ -2,7 +2,7 @@ const proxyquire = require('proxyquire').noPreserveCache();
 
 const createCompilationResultSchema = require('../schemas/compilation-result');
 const createAnnotationSchema = require('../schemas/annotation');
-const dreddTransactions = require('../../src/index');
+const dreddTransactions = require('../../lib/index');
 const fixtures = require('../fixtures');
 
 const { assert } = require('../utils');
@@ -14,7 +14,7 @@ describe('Dredd Transactions', () => {
     let compilationResult;
 
     beforeEach((done) => {
-      const dt = proxyquire('../../src/index',
+      const dt = proxyquire('../../lib/index',
         { './compile': () => { throw error; } }
       );
       dt.compile('... dummy API description document ...', null, (...args) => {
@@ -202,7 +202,7 @@ describe('Dredd Transactions', () => {
     const message = '... dummy error message ...';
 
     beforeEach((done) => {
-      const dt = proxyquire('../../src/index', {
+      const dt = proxyquire('../../lib/index', {
         './parse': (input, callback) => callback(new Error(message))
       });
       dt.compile(source, null, (...args) => {
@@ -233,7 +233,7 @@ describe('Dredd Transactions', () => {
     const message = '... dummy error message ...';
 
     beforeEach((done) => {
-      const dt = proxyquire('../../src/index', {
+      const dt = proxyquire('../../lib/index', {
         './parse': (input, callback) => callback(new Error(message), { dummy: true })
       });
       dt.compile(source, null, (...args) => {
@@ -263,7 +263,7 @@ describe('Dredd Transactions', () => {
     const source = '... dummy API description document ...';
 
     beforeEach((done) => {
-      const dt = proxyquire('../../src/index', {
+      const dt = proxyquire('../../lib/index', {
         './parse': (input, callback) => callback(null, { dummy: true })
       });
       dt.compile(source, null, (...args) => {

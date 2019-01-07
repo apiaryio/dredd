@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const dreddTransactions = require('../../src/index');
+const dreddTransactions = require('../../lib/index');
 
 describe('compiled transaction paths', () => {
   describe('Full notation with multiple request-response pairs', () =>

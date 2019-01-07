@@ -1,7 +1,7 @@
 const { assert } = require('chai');
 
-const getTransactionPath = require('../../../src/transaction-path');
-const { ESCAPE_CHAR, DELIMITER } = require('../../../src/transaction-path/constants');
+const getTransactionPath = require('../../../lib/transaction-path');
+const { ESCAPE_CHAR, DELIMITER } = require('../../../lib/transaction-path/constants');
 
 describe('getTransactionPath()', () => {
   it('is a function', () => assert.isFunction(getTransactionPath));

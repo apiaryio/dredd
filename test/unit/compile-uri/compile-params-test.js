@@ -2,7 +2,7 @@ const { assert } = require('chai');
 
 const fury = require('fury');
 
-const compileParams = require('../../../src/compile-uri/compile-params');
+const compileParams = require('../../../lib/compile-uri/compile-params');
 
 describe('compileParams()', () => {
   it('should compile a primitive href variable', () => {
