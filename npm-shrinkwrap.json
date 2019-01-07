@@ -328,12 +328,6 @@
       "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.1.tgz",
       "integrity": "sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg=="
     },
-    "nan": {
-      "version": "2.12.1",
-      "resolved": "https://registry.npmjs.org/nan/-/nan-2.12.1.tgz",
-      "integrity": "sha512-JY7V6lRkStKcKTvHO5NVSQRv+RV+FIL5pvDoLiAtSL9pKlC5x9PKQcZDsq7m4FO4d57mkhC6Z+QhAh3Jdk5JFw==",
-      "optional": true
-    },
     "nomnom": {
       "version": "1.5.2",
       "resolved": "https://registry.npmjs.org/nomnom/-/nomnom-1.5.2.tgz",

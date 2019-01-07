@@ -12,11 +12,12 @@ Object.keys(lockfile.dependencies)
   .filter(name => lockfile.dependencies[name].dev)
   .forEach(name => delete lockfile.dependencies[name]);
 
-// Force all installations of Dredd to use only the pure JavaScript version
-// of the API Blueprint parser. It has slower performance, but it solves
-// quite a few installation & distribution problems.
+// Force all installations of Dredd Transactions to use only the pure
+// JavaScript version of the API Blueprint parser. It has slower performance,
+// but it solves quite a few installation & distribution problems.
 delete lockfile.dependencies['fury-adapter-apib-parser'].dependencies.drafter.requires.protagonist;
 delete lockfile.dependencies.protagonist;
+delete lockfile.dependencies.nan; // protagonist's dependency, specific to C++
 
 const json = JSON.stringify(lockfile, null, 2)
   // Sometimes the npm registry resolves to http:// URLs for no obvious reason.
