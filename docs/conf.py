@@ -2,7 +2,6 @@ import os
 import sys
 import re
 import json
-import subprocess
 import urllib.request
 
 from sphinx.errors import SphinxError
@@ -20,24 +19,6 @@ from pygments.lexers.data import YamlLexer
 
 # Explicitly put the extensions directory to Python path
 sys.path.append(os.path.abspath('_extensions'))
-
-# Detect whether the build happens on ReadTheDocs
-IS_READTHEDOCS = os.environ.get('READTHEDOCS') == 'True'
-
-# Specify paths
-docs_dir = os.path.dirname(__file__)
-project_dir = os.path.join(docs_dir, '..')
-node_modules_bin_dir = os.path.join(project_dir, 'node_modules', '.bin')
-
-# Install all npm dependencies if on ReadTheDocs. This requires the latest
-# ReadTheDocs build image, which supports Node.js out of the box. This is
-# specified in the readthedocs.yml in the root of the project.
-if IS_READTHEDOCS:
-    subprocess.check_call('npm install', cwd=project_dir, shell=True)
-
-# Load package.json data
-with open(os.path.join(project_dir, 'package.json')) as f:
-    package_json = json.load(f)
 
 
 # -- General configuration ------------------------------------------------
@@ -66,42 +47,10 @@ project = 'Dredd'
 copyright = 'Apiary Czech Republic, s.r.o.'
 author = 'Apiary'
 
-# The version info for the project you're documenting, acts as replacement for
-# |version| and |release|, also used in various other places throughout the
-# built documents.
-def get_release():
-    try:
-        # Is internet available? this is to be able to generate docs
-        # e.g. in train without internet connection
-        urllib.request.urlopen('https://www.npmjs.com/package/dredd', timeout=3)
-    except urllib.request.URLError as e:
-        if IS_READTHEDOCS:
-            # ReadTheDocs have problem to connect to npm, fail fast
-            raise SphinxError('Could not determine Dredd version: {}'.format(e))
-        else:
-            # Offline local development, use dummy release number
-            return package_json['version']
-    else:
-        # Online, ask Semantic Release what would be the next version
-        sem_rel_bin = os.path.join(node_modules_bin_dir, 'semantic-release')
-        sem_rel_output = subprocess.getoutput('{} pre'.format(sem_rel_bin))
-        match = re.search(r'determined version (\d+\.\d+\.\d+)', sem_rel_output, re.I)
-        if match:
-            # Semantic Release would use this version number
-            return match.group(1)
-
-        # Semantic Release wasn't able to determine a new version number,
-        # either because of some error or because there are no changes which
-        # would bump the version number. Stick to the latest released version.
-        return subprocess.getoutput('npm view dredd version').strip()
-
-# The full version, including alpha/beta/rc tags.
-release = get_release()
-if not re.match(r'\d+\.\d+\.\d+', release):
-    raise SphinxError("'{}' does not look like version number".format(release))
-
-# The short X.Y version.
-version = release
+# The project version (2.6) and release (2.6.0rc1) numbers. Figuring this
+# out for Dredd is tricky (because of Semantic Release), so it's hardcoded.
+version = 'latest'
+release = 'latest'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
