@@ -58,7 +58,7 @@
     "rimraf": "2.6.3",
     "semantic-release": "15.12.4",
     "sinon": "5.0.7",
-    "swagger-zoo": "2.19.2"
+    "swagger-zoo": "2.20.0"
   },
   "keywords": [
     "api",
