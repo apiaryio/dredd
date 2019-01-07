@@ -7,6 +7,7 @@
     "node": ">= 6"
   },
   "scripts": {
+    "postshrinkwrap": "node ./scripts/postshrinkwrap.js",
     "clean": "rimraf ./coverage",
     "lint": "./scripts/commitlint.sh && eslint --ignore-path .gitignore .",
     "test": "npm run clean && mocha ./test",
