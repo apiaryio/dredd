@@ -16,8 +16,8 @@ describe('compileParams()', () => {
         default: undefined,
         example: undefined,
         required: false,
-        values: []
-      }
+        values: [],
+      },
     });
   });
 
@@ -33,8 +33,8 @@ describe('compileParams()', () => {
         default: undefined,
         example: 'Doe',
         required: true,
-        values: []
-      }
+        values: [],
+      },
     });
   });
 
@@ -49,8 +49,8 @@ describe('compileParams()', () => {
         default: undefined,
         example: 'Doe',
         required: false,
-        values: []
-      }
+        values: [],
+      },
     });
   });
 
@@ -66,8 +66,8 @@ describe('compileParams()', () => {
         default: 'Unknown',
         example: undefined,
         required: false,
-        values: []
-      }
+        values: [],
+      },
     });
   });
 
@@ -82,8 +82,8 @@ describe('compileParams()', () => {
         default: undefined,
         example: 0,
         required: false,
-        values: []
-      }
+        values: [],
+      },
     });
   });
 
@@ -98,8 +98,8 @@ describe('compileParams()', () => {
         default: undefined,
         example: [],
         required: false,
-        values: []
-      }
+        values: [],
+      },
     });
   });
 
@@ -114,8 +114,8 @@ describe('compileParams()', () => {
         default: undefined,
         example: ['One', 'Two'],
         required: false,
-        values: []
-      }
+        values: [],
+      },
     });
   });
 
@@ -131,8 +131,8 @@ describe('compileParams()', () => {
         default: ['Unknown'],
         example: [],
         required: false,
-        values: []
-      }
+        values: [],
+      },
     });
   });
 
@@ -147,8 +147,8 @@ describe('compileParams()', () => {
         default: undefined,
         example: ['One', 'Two'],
         required: false,
-        values: []
-      }
+        values: [],
+      },
     });
   });
 
@@ -164,8 +164,8 @@ describe('compileParams()', () => {
         default: ['Unknown'],
         example: [],
         required: false,
-        values: []
-      }
+        values: [],
+      },
     });
   });
 
@@ -182,8 +182,8 @@ describe('compileParams()', () => {
         default: undefined,
         example: 'ascending',
         required: false,
-        values: ['ascending', 'decending']
-      }
+        values: ['ascending', 'decending'],
+      },
     });
   });
 
@@ -200,8 +200,8 @@ describe('compileParams()', () => {
         default: undefined,
         example: 'decending',
         required: false,
-        values: ['ascending', 'decending']
-      }
+        values: ['ascending', 'decending'],
+      },
     });
   });
 
@@ -219,8 +219,8 @@ describe('compileParams()', () => {
         default: 'decending',
         example: 'ascending',
         required: false,
-        values: ['ascending', 'decending']
-      }
+        values: ['ascending', 'decending'],
+      },
     });
   });
 });

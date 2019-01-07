@@ -15,8 +15,8 @@ describe('expandUriTemplate()', () => {
         type: 'string',
         required: true,
         example: 'waldo',
-        default: ''
-      }
+        default: '',
+      },
     };
 
     data = expandUriTemplate(uriTemplate, parameters);
@@ -28,10 +28,8 @@ describe('expandUriTemplate()', () => {
     [
       'errors',
       'warnings',
-      'uri'
-    ].forEach(key =>
-      it(`should have key "${key}"`, () => assert.include(Object.keys(data), key))
-    );
+      'uri',
+    ].forEach(key => it(`should have key "${key}"`, () => assert.include(Object.keys(data), key)));
 
     describe('when not parseable uri templeate privided', () => {
       before(() => {
@@ -42,8 +40,8 @@ describe('expandUriTemplate()', () => {
             type: 'string',
             required: true,
             example: 'waldo',
-            default: ''
-          }
+            default: '',
+          },
         };
 
         data = expandUriTemplate(uriTemplate, parameters);
@@ -60,8 +58,8 @@ describe('expandUriTemplate()', () => {
             description: 'Machine id',
             type: 'number',
             required: true,
-            example: 0
-          }
+            example: 0,
+          },
         };
 
         data = expandUriTemplate(uriTemplate, parameters);
@@ -78,8 +76,8 @@ describe('expandUriTemplate()', () => {
             description: 'Machine id',
             type: 'number',
             required: true,
-            default: 0
-          }
+            default: 0,
+          },
         };
 
         data = expandUriTemplate(uriTemplate, parameters);
@@ -113,8 +111,8 @@ describe('expandUriTemplate()', () => {
               type: 'string',
               required: true,
               example: 'waldo',
-              default: ''
-            }
+              default: '',
+            },
           };
 
           data = expandUriTemplate(uriTemplate, parameters);
@@ -167,15 +165,15 @@ describe('expandUriTemplate()', () => {
               type: 'string',
               required: true,
               example: 'waldo',
-              default: ''
+              default: '',
             },
             fanny: {
               description: 'Machine fanny',
               type: 'string',
               required: true,
               example: 'wild',
-              default: ''
-            }
+              default: '',
+            },
           };
 
           data = expandUriTemplate(uriTemplate, parameters);
@@ -202,8 +200,8 @@ describe('expandUriTemplate()', () => {
                 type: 'string',
                 required: true,
                 example: '',
-                default: ''
-              }
+                default: '',
+              },
             };
 
             data = expandUriTemplate(uriTemplate, parameters);
@@ -235,8 +233,8 @@ describe('expandUriTemplate()', () => {
                 type: 'string',
                 required: true,
                 example: 'example-one',
-                default: ''
-              }
+                default: '',
+              },
             };
 
             data = expandUriTemplate(uriTemplate, parameters);
@@ -260,8 +258,8 @@ describe('expandUriTemplate()', () => {
                 type: 'string',
                 required: true,
                 example: '',
-                default: 'example-one'
-              }
+                default: 'example-one',
+              },
             };
 
             data = expandUriTemplate(uriTemplate, parameters);
@@ -287,8 +285,8 @@ describe('expandUriTemplate()', () => {
                 type: 'string',
                 required: true,
                 example: 'example-one',
-                default: 'default-one'
-              }
+                default: 'default-one',
+              },
             };
 
             data = expandUriTemplate(uriTemplate, parameters);
@@ -315,8 +313,8 @@ describe('expandUriTemplate()', () => {
               type: 'string',
               required: false,
               example: 'example-one',
-              default: ''
-            }
+              default: '',
+            },
           };
 
           data = expandUriTemplate(uriTemplate, parameters);
@@ -339,8 +337,8 @@ describe('expandUriTemplate()', () => {
                 type: 'string',
                 required: false,
                 default: 'default-one',
-                example: ''
-              }
+                example: '',
+              },
             };
 
             data = expandUriTemplate(uriTemplate, parameters);
@@ -364,8 +362,8 @@ describe('expandUriTemplate()', () => {
                 type: 'string',
                 required: false,
                 example: 'example-one',
-                default: 'default-one'
-              }
+                default: 'default-one',
+              },
             };
 
             data = expandUriTemplate(uriTemplate, parameters);
@@ -389,8 +387,8 @@ describe('expandUriTemplate()', () => {
                 type: 'string',
                 required: false,
                 default: '',
-                example: ''
-              }
+                example: '',
+              },
             };
 
             data = expandUriTemplate(uriTemplate, parameters);

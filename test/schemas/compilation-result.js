@@ -30,9 +30,9 @@ module.exports = function createCompilationResultSchema(options = {}) {
       type: 'object',
       properties: {
         name: { type: 'string' },
-        value: { type: 'string' }
-      }
-    }
+        value: { type: 'string' },
+      },
+    },
   };
 
   const requestSchema = {
@@ -41,10 +41,10 @@ module.exports = function createCompilationResultSchema(options = {}) {
       uri: { type: 'string', pattern: '^/' },
       method: { type: 'string' },
       headers: headersSchema,
-      body: { type: 'string' }
+      body: { type: 'string' },
     },
     required: ['uri', 'method', 'headers'],
-    additionalProperties: false
+    additionalProperties: false,
   };
 
   const responseSchema = {
@@ -53,10 +53,10 @@ module.exports = function createCompilationResultSchema(options = {}) {
       status: { type: 'string' },
       headers: headersSchema,
       body: { type: 'string' },
-      schema: { type: 'string' }
+      schema: { type: 'string' },
     },
     required: ['status', 'headers'],
-    additionalProperties: false
+    additionalProperties: false,
   };
 
   const transactionSchema = {
@@ -67,20 +67,20 @@ module.exports = function createCompilationResultSchema(options = {}) {
       origin: createOriginSchema({ filename }),
       name: { type: 'string' },
       pathOrigin: createPathOriginSchema(),
-      path: { type: 'string' }
+      path: { type: 'string' },
     },
     required: ['request', 'response', 'origin', 'name', 'pathOrigin', 'path'],
-    additionalProperties: false
+    additionalProperties: false,
   };
 
   const transactionsSchema = addMinMax({
     type: 'array',
-    items: transactionSchema
+    items: transactionSchema,
   }, transactions);
 
   const annotationsSchema = addMinMax({
     type: 'array',
-    items: createAnnotationSchema({ filename })
+    items: createAnnotationSchema({ filename }),
   }, annotations);
 
   return {
@@ -88,9 +88,9 @@ module.exports = function createCompilationResultSchema(options = {}) {
     properties: {
       mediaType: { anyOf: [{ type: 'string' }, { type: 'null' }] },
       transactions: transactionsSchema,
-      annotations: annotationsSchema
+      annotations: annotationsSchema,
     },
     required: ['mediaType', 'transactions', 'annotations'],
-    additionalProperties: false
+    additionalProperties: false,
   };
 };

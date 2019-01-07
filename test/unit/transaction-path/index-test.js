@@ -16,7 +16,7 @@ describe('getTransactionPath()', () => {
           resourceGroupName: 'Some Group Name',
           resourceName: 'Some Resource Name',
           actionName: 'Some Action Name',
-          exampleName: 'Example 2'
+          exampleName: 'Example 2',
         };
 
         result = getTransactionPath(pathOrigin);
@@ -32,7 +32,7 @@ describe('getTransactionPath()', () => {
           resourceGroupName: 'Some Group Name',
           resourceName: 'Some Resource Name',
           actionName: 'Some Action Name',
-          exampleName: 'Example 2'
+          exampleName: 'Example 2',
         };
 
         result = getTransactionPath(pathOrigin);
@@ -49,7 +49,7 @@ describe('getTransactionPath()', () => {
           resourceGroupName: '',
           resourceName: 'Some Resource Name',
           actionName: 'Some Action Name',
-          exampleName: 'Example 1'
+          exampleName: 'Example 1',
         };
 
         result = getTransactionPath(pathOrigin);
@@ -65,7 +65,7 @@ describe('getTransactionPath()', () => {
           resourceGroupName: '',
           resourceName: 'Some Resource Name',
           actionName: 'Some Action Name',
-          exampleName: 'Example 1'
+          exampleName: 'Example 1',
         };
 
         result = getTransactionPath(pathOrigin);
@@ -81,7 +81,7 @@ describe('getTransactionPath()', () => {
           resourceGroupName: '',
           resourceName: 'Some Resource Name',
           actionName: `Some Action Name${DELIMITER} Colon`,
-          exampleName: 'Example 1'
+          exampleName: 'Example 1',
         };
 
         result = getTransactionPath(pathOrigin);
@@ -97,7 +97,7 @@ describe('getTransactionPath()', () => {
           resourceGroupName: '',
           resourceName: 'Some Resource Name',
           actionName: `Some Action Name${ESCAPE_CHAR} Backslash`,
-          exampleName: 'Example 1'
+          exampleName: 'Example 1',
         };
 
         result = getTransactionPath(pathOrigin);
@@ -113,7 +113,7 @@ describe('getTransactionPath()', () => {
           resourceGroupName: '',
           resourceName: 'Some Resource Name',
           actionName: `Some Action Name${ESCAPE_CHAR}${DELIMITER} Backslash with Delimiter`,
-          exampleName: 'Example 1'
+          exampleName: 'Example 1',
         };
 
         result = getTransactionPath(pathOrigin);
@@ -129,7 +129,7 @@ describe('getTransactionPath()', () => {
           resourceGroupName: '',
           resourceName: '/message',
           actionName: 'GET',
-          exampleName: 'Example 1'
+          exampleName: 'Example 1',
         };
 
         result = getTransactionPath(pathOrigin);
