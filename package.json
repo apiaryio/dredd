@@ -10,7 +10,6 @@
     "node": ">= 6"
   },
   "scripts": {
-    "postshrinkwrap": "node ./scripts/postshrinkwrap.js",
     "docs:lint": "doc8 ./docs && sphinx-build -nW -b linkcheck ./docs ./docs/_build",
     "docs:test-extensions": "python -m unittest docs/_extensions/*.py --verbose",
     "docs:build": "sphinx-build -nW -b html ./docs ./docs/_build",
@@ -33,7 +32,6 @@
   "files": [
     "bin",
     "lib",
-    "npm-shrinkwrap.json",
     "README.md"
   ],
   "dependencies": {
