@@ -14,9 +14,9 @@ module.exports = function createOriginSchema(options = {}) {
       resourceGroupName: { type: 'string' },
       resourceName: { type: 'string' },
       actionName: { type: 'string' },
-      exampleName: { type: 'string' }
+      exampleName: { type: 'string' },
     },
     required: ['filename', 'apiName', 'resourceGroupName', 'resourceName', 'actionName', 'exampleName'],
-    additionalProperties: false
+    additionalProperties: false,
   };
 };

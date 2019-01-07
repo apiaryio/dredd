@@ -1,8 +1,8 @@
 const chai = require('chai');
 const proxyquire = require('proxyquire').noPreserveCache();
 
-const nativeCompile = require('../src/compile');
-const parse = require('../src/parse');
+const nativeCompile = require('../lib/compile');
+const parse = require('../lib/parse');
 
 chai.use(require('chai-json-schema'));
 
@@ -15,7 +15,7 @@ function compileFixture(source, options, done) {
   }
 
   if (options.stubs) {
-    compile = proxyquire('../src/compile', options.stubs);
+    compile = proxyquire('../lib/compile', options.stubs);
   } else {
     compile = nativeCompile;
   }

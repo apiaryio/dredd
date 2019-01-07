@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const getTransactionName = require('../../../src/transaction-name');
+const getTransactionName = require('../../../lib/transaction-name');
 
 describe('getTransactionName()', () => {
   it('is a function', () => assert.isFunction(getTransactionName));
@@ -11,7 +11,7 @@ describe('getTransactionName()', () => {
       resourceGroupName: 'b',
       resourceName: 'c',
       actionName: 'd',
-      exampleName: 'e'
+      exampleName: 'e',
     });
     assert.equal(name, 'a > b > c > d > e');
   });
@@ -22,7 +22,7 @@ describe('getTransactionName()', () => {
       resourceGroupName: 'a',
       resourceName: undefined,
       actionName: 'b',
-      exampleName: ''
+      exampleName: '',
     });
     assert.equal(name, 'a > b');
   });
@@ -33,7 +33,7 @@ describe('getTransactionName()', () => {
       resourceGroupName: 'a',
       resourceName: undefined,
       actionName: '',
-      exampleName: ''
+      exampleName: '',
     });
     assert.equal(name, 'a');
   });
@@ -44,7 +44,7 @@ describe('getTransactionName()', () => {
       resourceGroupName: 'b',
       resourceName: 'c',
       actionName: 'd',
-      exampleName: 'e > f'
+      exampleName: 'e > f',
     });
     assert.equal(name, 'a > b > c > d > e > f');
   });

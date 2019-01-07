@@ -4,8 +4,8 @@ module.exports = () => ({
     type: 'array',
     items: [
       { type: 'number' },
-      { type: 'number' }
+      { type: 'number' },
     ],
-    additionalItems: false
-  }
+    additionalItems: false,
+  },
 });

@@ -17,26 +17,26 @@ module.exports = function createAnnotationSchema(options = {}) {
     properties: {
       type: {
         type: 'string',
-        enum: options.type ? [options.type] : TYPES
+        enum: options.type ? [options.type] : TYPES,
       },
       component: {
         type: 'string',
-        enum: options.component ? [options.component] : COMPONENTS
+        enum: options.component ? [options.component] : COMPONENTS,
       },
       message: messageSchema,
       location: createLocationSchema(),
-      origin: createOriginSchema({ filename })
+      origin: createOriginSchema({ filename }),
     },
     required: ['type', 'component', 'message', 'location'],
     dependencies: {
       origin: {
         properties: {
           component: {
-            enum: ['parametersValidation', 'uriTemplateExpansion']
-          }
-        }
-      }
+            enum: ['parametersValidation', 'uriTemplateExpansion'],
+          },
+        },
+      },
     },
-    additionalProperties: false
+    additionalProperties: false,
   };
 };
