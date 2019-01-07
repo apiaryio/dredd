@@ -13,7 +13,7 @@ if [ ! -z "$TRAVIS" ]; then
 
   # Assert that Protagonist (the C++ dependency) was not installed
   if [[ $output == *"protagonist"* || -d ./node_modules/protagonist ]]; then
-    echo "ERROR: It looks like Dredd Transactions has tried to install "
+    echo "ERROR: It looks like Dredd Transactions has tried to install"\
       "the 'protagonist' library (a C++ binding for the API Blueprint"\
       "parser), which is an unwanted behavior of the installation process."\
       "The lock file together with the 'scripts/postshrinkwrap.js' script"\
