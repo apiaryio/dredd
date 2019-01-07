@@ -6,7 +6,7 @@ function addMinMax(schema, n) {
   const modifiedSchema = Object.assign({}, schema);
 
   if (n.length === 1) { // [min]
-    modifiedSchema.minItems = n[0];
+    [modifiedSchema.minItems] = n;
   } else if (n.length === 2) { // [min, max]
     [modifiedSchema.minItems, modifiedSchema.maxItems] = Array.from(n);
   } else { // exact number

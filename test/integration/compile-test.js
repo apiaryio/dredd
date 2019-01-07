@@ -25,7 +25,7 @@ describe('compile() · all API description formats', () => {
     });
   });
 
-  describe('causing an error in the parser', () =>
+  describe('causing an error in the parser', () => {
     fixtures.parserError.forEachDescribe(({ source }) => {
       let compilationResult;
 
@@ -51,9 +51,9 @@ describe('compile() · all API description formats', () => {
         }))
       );
     })
-  );
+  });
 
-  describe('causing an error in URI expansion', () =>
+  describe('causing an error in URI expansion', () => {
     // Parsers may provide warning in similar situations, however, we do not
     // want to rely on them (implementations differ). This error is returned
     // in case Dredd Transactions are not able to parse the URI template.
@@ -97,9 +97,9 @@ describe('compile() · all API description formats', () => {
         });
       });
     })
-  );
+  });
 
-  describe('causing an error in URI parameters validation', () =>
+  describe('causing an error in URI parameters validation', () => {
     // Parsers may provide warning in similar situations, however, we do not
     // want to rely on them (implementations differ). This error is returned
     // in case Dredd Transactions are not satisfied with the input for
@@ -148,9 +148,9 @@ describe('compile() · all API description formats', () => {
         });
       });
     })
-  );
+  });
 
-  describe('causing a warning in the parser', () =>
+  describe('causing a warning in the parser', () => {
     fixtures.parserWarning.forEachDescribe(({ source }) => {
       let compilationResult;
 
@@ -183,7 +183,7 @@ describe('compile() · all API description formats', () => {
         );
       });
     })
-  );
+  });
 
   describe('causing a warning in URI expansion', () => {
     // This is a test for an arbitrary warning coming from URI expansion, which
@@ -229,7 +229,7 @@ describe('compile() · all API description formats', () => {
     });
   });
 
-  describe('causing an \'ambiguous parameters\' warning in URI expansion', () =>
+  describe('causing an \'ambiguous parameters\' warning in URI expansion', () => {
     // Parsers may provide error in similar situations, however, we do not
     // want to rely on them (implementations differ). This warning is returned
     // in case parameters do not have any kind of value Dredd could use. Mind
@@ -267,7 +267,7 @@ describe('compile() · all API description formats', () => {
         })
       );
     })
-  );
+  });
 
   describe('causing a warning in URI parameters validation', () => {
     // Since 'validateParams' doesn't actually return any warnings
@@ -311,7 +311,7 @@ describe('compile() · all API description formats', () => {
     });
   });
 
-  describe('with enum parameter', () =>
+  describe('with enum parameter', () => {
     fixtures.enumParameter.forEachDescribe(({ source }) => {
       let compilationResult;
 
@@ -331,9 +331,9 @@ describe('compile() · all API description formats', () => {
 
       it('expands the request URI with the first enum value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Adam'));
     })
-  );
+  });
 
-  describe('with enum parameter having example value', () =>
+  describe('with enum parameter having example value', () => {
     fixtures.enumParameterExample.forEachDescribe(({ source }) => {
       let compilationResult;
 
@@ -353,9 +353,9 @@ describe('compile() · all API description formats', () => {
 
       it('expands the request URI with the example value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza'));
     })
-  );
+  });
 
-  describe('with enum parameter having unlisted example value', () =>
+  describe('with enum parameter having unlisted example value', () => {
     // Parsers may provide warning in similar situations, however, we do not
     // want to rely on them (implementations differ). This error is returned
     // in case enum parameters have an example value, which is not allowed
@@ -401,9 +401,9 @@ describe('compile() · all API description formats', () => {
 
       it('expands the request URI with the example value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Pavan'));
     })
-  );
+  });
 
-  describe('with parameters having example values', () =>
+  describe('with parameters having example values', () => {
     fixtures.exampleParameters.forEachDescribe(({ source }) => {
       let compilationResult;
 
@@ -423,9 +423,9 @@ describe('compile() · all API description formats', () => {
 
       it('expands the request URI with the example value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&flavour=spicy'));
     })
-  );
+  });
 
-  describe('with response schema', () =>
+  describe('with response schema', () => {
     fixtures.responseSchema.forEachDescribe(({ source }) => {
       let compilationResult;
 
@@ -464,9 +464,9 @@ describe('compile() · all API description formats', () => {
         });
       });
     })
-  );
+  });
 
-  describe('with inheritance of URI parameters', () =>
+  describe('with inheritance of URI parameters', () => {
     fixtures.parametersInheritance.forEachDescribe(({ source }) => {
       let compilationResult;
 
@@ -486,9 +486,9 @@ describe('compile() · all API description formats', () => {
 
       it('expands the request URI using correct inheritance cascade', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&amount=42'));
     })
-  );
+  });
 
-  describe('with different default value and first enum value of URI parameter', () =>
+  describe('with different default value and first enum value of URI parameter', () => {
     fixtures.preferDefault.forEachDescribe(({ source }) => {
       let compilationResult;
 
@@ -508,9 +508,9 @@ describe('compile() · all API description formats', () => {
 
       it('expands the request URI using the default value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Adam'));
     })
-  );
+  });
 
-  describe('with default value for a required URI parameter', () =>
+  describe('with default value for a required URI parameter', () => {
     fixtures.defaultRequired.forEachDescribe(({ source }) => {
       let compilationResult;
 
@@ -550,9 +550,9 @@ describe('compile() · all API description formats', () => {
 
       it('expands the request URI using the default value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza'));
     })
-  );
+  });
 
-  describe('with HTTP headers', () =>
+  describe('with HTTP headers', () => {
     fixtures.httpHeaders.forEachDescribe(({ source }) => {
       let compilationResult;
 
@@ -584,9 +584,9 @@ describe('compile() · all API description formats', () => {
         ])
       );
     })
-  );
+  });
 
-  describe('without explicit body', () =>
+  describe('without explicit body', () => {
     fixtures.noBody.forEachDescribe(({ source }) => {
       let compilationResult;
 
@@ -607,9 +607,9 @@ describe('compile() · all API description formats', () => {
       it('produces transaction #1 with no body', () => assert.isUndefined(compilationResult.transactions[0].response.body));
       it('produces transaction #2 with no body', () => assert.isUndefined(compilationResult.transactions[0].response.body));
     })
-  );
+  });
 
-  describe('without explicit schema', () =>
+  describe('without explicit schema', () => {
     fixtures.noSchema.forEachDescribe(({ source }) => {
       let compilationResult;
       const expectedMediaTypes = ['application/json', 'application/json', 'text/csv', 'text/yaml'];
@@ -640,7 +640,7 @@ describe('compile() · all API description formats', () => {
         })
       );
     })
-  );
+  });
 
   describe('with \'multipart/form-data\' message bodies', () => {
     fixtures.multipartFormData.forEachDescribe(({ source, format }) => {
@@ -663,8 +663,9 @@ describe('compile() · all API description formats', () => {
 
       before(done =>
         compileFixture(source, (...args) => {
-          compilationResult = args[1];
-          done(args[0]);
+          let err;
+          [err, compilationResult] = args;
+          done(err);
         })
       );
 
