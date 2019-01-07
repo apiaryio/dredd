@@ -36,11 +36,6 @@
       "resolved": "https://registry.npmjs.org/cjson/-/cjson-0.2.1.tgz",
       "integrity": "sha1-c82KrWXZ4VBfmvF0TTt5wVJ2gqU="
     },
-    "clone": {
-      "version": "2.1.1",
-      "resolved": "https://registry.npmjs.org/clone/-/clone-2.1.1.tgz",
-      "integrity": "sha1-0hfR6WERjjrJpLi7oyhVU79kfNs="
-    },
     "colors": {
       "version": "0.5.1",
       "resolved": "https://registry.npmjs.org/colors/-/colors-0.5.1.tgz",
@@ -332,6 +327,12 @@
       "version": "2.1.1",
       "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.1.tgz",
       "integrity": "sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg=="
+    },
+    "nan": {
+      "version": "2.12.1",
+      "resolved": "https://registry.npmjs.org/nan/-/nan-2.12.1.tgz",
+      "integrity": "sha512-JY7V6lRkStKcKTvHO5NVSQRv+RV+FIL5pvDoLiAtSL9pKlC5x9PKQcZDsq7m4FO4d57mkhC6Z+QhAh3Jdk5JFw==",
+      "optional": true
     },
     "nomnom": {
       "version": "1.5.2",
