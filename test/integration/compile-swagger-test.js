@@ -11,11 +11,13 @@ describe('compile() · Swagger', () => {
   describe('causing a \'not specified in URI Template\' error', () => {
     let compilationResult;
 
-    before(done => compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.swagger, (...args) => {
-      let err;
+    before((done) => {
+      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.swagger, (...args) => {
+        let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
-      done(err);
-    }));
+        done(err);
+      });
+    });
 
     it('produces one annotation and no transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       annotations: 1,
@@ -175,11 +177,13 @@ describe('compile() · Swagger', () => {
   describe('with \'securityDefinitions\' and multiple responses', () => {
     let compilationResult;
 
-    before(done => compileFixture(fixtures.securityDefinitionsMultipleResponses.swagger, (...args) => {
-      let err;
+    before((done) => {
+      compileFixture(fixtures.securityDefinitionsMultipleResponses.swagger, (...args) => {
+        let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
-      done(err);
-    }));
+        done(err);
+      });
+    });
 
     it('produces two transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       transactions: 2,

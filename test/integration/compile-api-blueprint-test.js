@@ -35,11 +35,13 @@ describe('compile() · API Blueprint', () => {
 
     let compilationResult;
 
-    before(done => compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.apiBlueprint, (...args) => {
-      let err;
+    before((done) => {
+      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.apiBlueprint, (...args) => {
+        let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
-      done(err);
-    }));
+        done(err);
+      });
+    });
 
     it('produces one annotation and one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       annotations: 1,
@@ -131,11 +133,13 @@ describe('compile() · API Blueprint', () => {
     let compilationResult;
     const filename = 'apiDescription.apib';
 
-    before(done => compileFixture(fixtures.arbitraryAction.apiBlueprint, { filename }, (...args) => {
-      let err;
+    before((done) => {
+      compileFixture(fixtures.arbitraryAction.apiBlueprint, { filename }, (...args) => {
+        let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
-      done(err);
-    }));
+        done(err);
+      });
+    });
 
     it('produces two transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       transactions: 2,
@@ -156,11 +160,13 @@ describe('compile() · API Blueprint', () => {
     let compilationResult;
     const filename = 'apiDescription.apib';
 
-    before(done => compileFixture(fixtures.withoutSections.apiBlueprint, { filename }, (...args) => {
-      let err;
+    before((done) => {
+      compileFixture(fixtures.withoutSections.apiBlueprint, { filename }, (...args) => {
+        let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
-      done(err);
-    }));
+        done(err);
+      });
+    });
 
     it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       transactions: 1,
