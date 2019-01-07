@@ -1,20 +1,16 @@
 {
   "name": "dredd-transactions",
   "version": "0.0.0-semantically-released",
-  "description": "Compiles HTTP Transactions (Request-Response pairs) from API description document",
-  "main": "dist/src/index.js",
+  "description": "Compiles HTTP Transactions (Request-Response pairs) from an API description document",
+  "main": "lib/index.js",
   "engines": {
     "node": ">= 6"
   },
   "scripts": {
-    "build:source": "babel ./src --out-dir ./dist/src",
-    "build:test": "babel ./test --out-dir ./dist/test --copy-files",
-    "clean": "rimraf ./coverage ./dist",
-    "build": "npm run build:source && npm run build:test",
+    "clean": "rimraf ./coverage",
     "lint": "./scripts/commitlint.sh && eslint --ignore-path .gitignore .",
-    "prepublish": "npm run build:source",
-    "test": "npm run clean && npm run build && mocha ./dist/test",
-    "test:coverage": "npm run clean && npm run build && istanbul cover ./node_modules/.bin/_mocha -- dist/test",
+    "test": "npm run clean && mocha ./test",
+    "test:coverage": "npm run clean && istanbul cover ./node_modules/.bin/_mocha -- ./test",
     "ci:test": "npm run lint && npm run test:coverage",
     "ci:coverage": "scripts/coveralls.sh",
     "ci:release": "semantic-release"
@@ -23,13 +19,11 @@
     "type": "git",
     "url": "https://github.com/apiaryio/dredd-transactions"
   },
-  "babel": {
-    "ignore": [
-      "test/**/*.apib",
-      "test/**/*.yml",
-      "test/mocha.opts"
-    ]
-  },
+  "files": [
+    "lib",
+    "npm-shrinkwrap.json",
+    "README.md"
+  ],
   "dependencies": {
     "clone": "2.1.1",
     "fury": "3.0.0-beta.7",
