@@ -10,7 +10,6 @@
     "node": ">= 6"
   },
   "scripts": {
-    "postshrinkwrap": "node ./scripts/postshrinkwrap.js",
     "docs:lint": "doc8 ./docs && sphinx-build -nW -b linkcheck ./docs ./docs/_build",
     "docs:test-extensions": "python -m unittest docs/_extensions/*.py --verbose",
     "docs:build": "sphinx-build -nW -b html ./docs ./docs/_build",
@@ -33,7 +32,6 @@
   "files": [
     "bin",
     "lib",
-    "npm-shrinkwrap.json",
     "README.md"
   ],
   "dependencies": {
@@ -43,7 +41,7 @@
     "clone": "2.1.1",
     "coffeescript": "1.12.7",
     "cross-spawn": "6.0.5",
-    "dredd-transactions": "6.2.1",
+    "dredd-transactions": "6.2.2",
     "file": "0.2.2",
     "fs-extra": "6.0.1",
     "gavel": "2.2.1",

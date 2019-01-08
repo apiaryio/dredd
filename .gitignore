@@ -1,3 +1,6 @@
+package-lock.json
+npm-shrinkwrap.json
+
 /coverage
 /docs/_build
 node_modules

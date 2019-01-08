@@ -40,8 +40,8 @@ if [ ! -z "$TRAVIS" ]; then
     echo "ERROR: It looks like Dredd has tried to install the 'protagonist'"\
       "library (a C++ binding for the API Blueprint parser), which is"\
       "an unwanted behavior of the installation process. The lock file"\
-      "together with the 'scripts/postshrinkwrap.js' script should have"\
-      "prevented this."
+      "of the 'dredd-transactions' library together with its"\
+      "'scripts/postshrinkwrap.js' script should have prevented this."
     exit 1
   fi
 
