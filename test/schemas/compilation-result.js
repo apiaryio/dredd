@@ -1,5 +1,4 @@
 const createOriginSchema = require('./origin');
-const createPathOriginSchema = require('./path-origin');
 const createAnnotationSchema = require('./annotation');
 
 function addMinMax(schema, n) {
@@ -66,10 +65,8 @@ module.exports = function createCompilationResultSchema(options = {}) {
       response: responseSchema,
       origin: createOriginSchema({ filename }),
       name: { type: 'string' },
-      pathOrigin: createPathOriginSchema(),
-      path: { type: 'string' },
     },
-    required: ['request', 'response', 'origin', 'name', 'pathOrigin', 'path'],
+    required: ['request', 'response', 'origin', 'name'],
     additionalProperties: false,
   };
 

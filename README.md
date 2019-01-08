@@ -31,7 +31,7 @@ This project supersedes [Blueprint Transactions][blueprint-transactions] library
 * Compiles [Transaction Name][transaction-object-spec] string (vague identifier) for each *Transaction*.
 * Provides [Transaction Origin][transaction-object-spec] with pointers to [API Elements][api-elements] derived from the original API description document.
 
-> **Note:** These features are to be superseded by so-called _Transaction Path_. Feel free to read and comment the proposal in [apiaryio/dredd#227](https://github.com/apiaryio/dredd/issues/227).
+> **Note:** These features are to be superseded by whatever comes out of the proposal in [apiaryio/dredd#227](https://github.com/apiaryio/dredd/issues/227).
 
 
 ## Installation
@@ -63,7 +63,7 @@ dt.compile('# My API\n...', 'apiary.apib', function (error, compilationResult) {
 ### Arguments
 
 - (string) - API description document provided as string.
-- (string) - Original file name of the API description document. **Soon to be removed! See [#6][filename-deprecation].**
+- (string) - Original file name of the API description document. **To be removed! See [#6][filename-deprecation].**
 - (function) - Callback.
 
 ### Callback Arguments
@@ -91,7 +91,7 @@ Represents a single *HTTP Transaction* (Request-Response pair) and its location 
 - `name` - String representation, both human- and machine-readable.
 - `origin` - Object of references to nodes of [API Elements][api-elements] derived from the original API description document.
 
-> **Note:** These two forms of locating HTTP Transactions are to be superseded by so-called _Transaction Path_. Feel free to read and comment the proposal in [apiaryio/dredd#227](https://github.com/apiaryio/dredd/issues/227).
+> **Note:** These two forms of locating HTTP Transactions are to be superseded by whatever comes out of the proposal in [apiaryio/dredd#227](https://github.com/apiaryio/dredd/issues/227).
 
 
 ### Properties
@@ -125,7 +125,7 @@ Represents a single *HTTP Transaction* (Request-Response pair) and its location 
     - actionName: `Retrieve Message` (string)
     - exampleName: `First example` (string)
 
-> **Note:** These properties are to be superseded by so-called _Transaction Path_. Feel free to read and comment the proposal in [apiaryio/dredd#227](https://github.com/apiaryio/dredd/issues/227).
+> **Note:** These properties are to be superseded by whatever comes out of the proposal in [apiaryio/dredd#227](https://github.com/apiaryio/dredd/issues/227).
 
 
 <a name="annotation-object"></a>
@@ -158,7 +158,7 @@ Description of an error or warning which occurred during parsing of the API desc
     - actionName: `Retrieve Message` (string)
     - exampleName: `First example` (string)
 
-> **Note:** These properties are to be superseded by so-called _Transaction Path_. Feel free to read and comment the proposal in [apiaryio/dredd#227](https://github.com/apiaryio/dredd/issues/227).
+> **Note:** These properties are to be superseded by whatever comes out of the proposal in [apiaryio/dredd#227](https://github.com/apiaryio/dredd/issues/227).
 
 
 [dredd]: https://github.com/apiaryio/dredd
