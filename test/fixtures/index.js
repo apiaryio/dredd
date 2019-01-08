@@ -15,6 +15,7 @@ const fromFile = filename => fs.readFileSync(path.join(__dirname, filename)).toS
 const FORMAT_NAMES = {
   apib: 'API Blueprint',
   openapi2: 'OpenAPI 2',
+  openapi3: 'OpenAPI 3',
 };
 
 // Fixture factory. Makes sure the fixtures are available both as an iterable
@@ -62,6 +63,7 @@ const fixtures = {
   empty: fixture({
     apib: '',
     openapi2: '',
+    openapi3: '',
   }),
   ordinary: fixture({
     apib: fromFile('./apib/ordinary.apib'),
@@ -193,6 +195,11 @@ const fixtures = {
   }),
   defaultResponse: fixture({
     openapi2: fromFile('./openapi2/default-response.yml'),
+  }),
+
+  // Specific to OpenAPI 3
+  proofOfConcept: fixture({
+    openapi3: fromFile('./openapi3/proof-of-concept.yml'),
   }),
 };
 
