@@ -7,12 +7,12 @@ const fixtures = require('../fixtures');
 
 const { assert, compileFixture } = require('../utils');
 
-describe('compile() · Swagger', () => {
+describe('compile() · OpenAPI 2', () => {
   describe('causing a \'not specified in URI Template\' error', () => {
     let compilationResult;
 
     before((done) => {
-      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.swagger, (...args) => {
+      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.openapi2, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
         done(err);
@@ -34,7 +34,7 @@ describe('compile() · Swagger', () => {
   describe('with \'produces\' containing JSON media type', () => {
     let compilationResult;
 
-    before(done => compileFixture(fixtures.produces.swagger, (...args) => {
+    before(done => compileFixture(fixtures.produces.openapi2, (...args) => {
       let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
       done(err);
@@ -61,7 +61,7 @@ describe('compile() · Swagger', () => {
   describe('with \'produces\' containing JSON media type with parameters', () => {
     let compilationResult;
 
-    before(done => compileFixture(fixtures.producesCharset.swagger, (...args) => {
+    before(done => compileFixture(fixtures.producesCharset.openapi2, (...args) => {
       let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
       done(err);
@@ -88,7 +88,7 @@ describe('compile() · Swagger', () => {
   describe('with \'produces\' containing a non-JSON media type with an example', () => {
     let compilationResult;
 
-    before(done => compileFixture(fixtures.producesNonJSONExample.swagger, (...args) => {
+    before(done => compileFixture(fixtures.producesNonJSONExample.openapi2, (...args) => {
       let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
       done(err);
@@ -115,7 +115,7 @@ describe('compile() · Swagger', () => {
   describe('with \'consumes\'', () => {
     let compilationResult;
 
-    before(done => compileFixture(fixtures.consumes.swagger, (...args) => {
+    before(done => compileFixture(fixtures.consumes.openapi2, (...args) => {
       let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
       done(err);
@@ -142,7 +142,7 @@ describe('compile() · Swagger', () => {
 
     before((done) => {
       const stubs = { './detect-transaction-example-numbers': detectTransactionExampleNumbersStub };
-      compileFixture(fixtures.multipleResponses.swagger, { filename, stubs }, (...args) => {
+      compileFixture(fixtures.multipleResponses.openapi2, { filename, stubs }, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
         done(err);
@@ -178,7 +178,7 @@ describe('compile() · Swagger', () => {
     let compilationResult;
 
     before((done) => {
-      compileFixture(fixtures.securityDefinitionsMultipleResponses.swagger, (...args) => {
+      compileFixture(fixtures.securityDefinitionsMultipleResponses.openapi2, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
         done(err);
@@ -193,7 +193,7 @@ describe('compile() · Swagger', () => {
   describe('with \'securityDefinitions\' containing transitions', () => {
     let compilationResult;
 
-    before(done => compileFixture(fixtures.securityDefinitionsTransitions.swagger, (...args) => {
+    before(done => compileFixture(fixtures.securityDefinitionsTransitions.openapi2, (...args) => {
       let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
       done(err);
@@ -207,7 +207,7 @@ describe('compile() · Swagger', () => {
   describe('with default response (without explicit status code)', () => {
     let compilationResult;
 
-    before(done => compileFixture(fixtures.defaultResponse.swagger, (...args) => {
+    before(done => compileFixture(fixtures.defaultResponse.openapi2, (...args) => {
       let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
       done(err);

@@ -112,7 +112,7 @@ describe('parse()', () => {
     let mediaType;
     let apiElements;
 
-    beforeEach(done => parse(fixtures.unrecognizable.apiBlueprint, (err, parseResult) => {
+    beforeEach(done => parse(fixtures.unrecognizable.apib, (err, parseResult) => {
       error = err;
       if (parseResult) { ({ mediaType, apiElements } = parseResult); }
       done();

@@ -11,7 +11,7 @@ describe('compile() · API Blueprint', () => {
   describe('causing a \'missing title\' warning', () => {
     let compilationResult;
 
-    before(done => compileFixture(fixtures.missingTitleAnnotation.apiBlueprint, (...args) => {
+    before(done => compileFixture(fixtures.missingTitleAnnotation.apib, (...args) => {
       let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
       done(err);
@@ -36,7 +36,7 @@ describe('compile() · API Blueprint', () => {
     let compilationResult;
 
     before((done) => {
-      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.apiBlueprint, (...args) => {
+      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.apib, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
         done(err);
@@ -68,7 +68,7 @@ describe('compile() · API Blueprint', () => {
 
     before((done) => {
       const stubs = { './detect-transaction-example-numbers': detectTransactionExampleNumbersStub };
-      compileFixture(fixtures.multipleTransactionExamples.apiBlueprint, { stubs }, (...args) => {
+      compileFixture(fixtures.multipleTransactionExamples.apib, { stubs }, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
         done(err);
@@ -110,7 +110,7 @@ describe('compile() · API Blueprint', () => {
 
     before((done) => {
       const stubs = { './detect-transaction-example-numbers': detectTransactionExampleNumbersStub };
-      compileFixture(fixtures.oneTransactionExample.apiBlueprint, { stubs }, (...args) => {
+      compileFixture(fixtures.oneTransactionExample.apib, { stubs }, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
         done(err);
@@ -133,7 +133,7 @@ describe('compile() · API Blueprint', () => {
     const filename = 'apiDescription.apib';
 
     before((done) => {
-      compileFixture(fixtures.arbitraryAction.apiBlueprint, { filename }, (...args) => {
+      compileFixture(fixtures.arbitraryAction.apib, { filename }, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
         done(err);
@@ -160,7 +160,7 @@ describe('compile() · API Blueprint', () => {
     const filename = 'apiDescription.apib';
 
     before((done) => {
-      compileFixture(fixtures.withoutSections.apiBlueprint, { filename }, (...args) => {
+      compileFixture(fixtures.withoutSections.apib, { filename }, (...args) => {
         let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
         done(err);
@@ -182,7 +182,7 @@ describe('compile() · API Blueprint', () => {
   describe('with different sample and default value of URI parameter', () => {
     let compilationResult;
 
-    before(done => compileFixture(fixtures.preferSample.apiBlueprint, (...args) => {
+    before(done => compileFixture(fixtures.preferSample.apib, (...args) => {
       let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
       done(err);
@@ -198,7 +198,7 @@ describe('compile() · API Blueprint', () => {
   describe('with response without explicit status code', () => {
     let compilationResult;
 
-    before(done => compileFixture(fixtures.noStatus.apiBlueprint, (...args) => {
+    before(done => compileFixture(fixtures.noStatus.apib, (...args) => {
       let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
       done(err);
@@ -221,7 +221,7 @@ describe('compile() · API Blueprint', () => {
   describe('with multiple HTTP headers of the same name', () => {
     let compilationResult;
 
-    before(done => compileFixture(fixtures.httpHeadersMultiple.apiBlueprint, (...args) => {
+    before(done => compileFixture(fixtures.httpHeadersMultiple.apib, (...args) => {
       let err;
         [err, compilationResult] = Array.from(args); // eslint-disable-line
       done(err);

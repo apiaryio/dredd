@@ -79,7 +79,7 @@ describe('Dredd Transactions', () => {
 
   describe('When given unrecognizable API Blueprint format', () => {
     let compilationResult;
-    const source = fixtures.unrecognizable.apiBlueprint;
+    const source = fixtures.unrecognizable.apib;
 
     beforeEach(done => dreddTransactions.compile(source, null, (...args) => {
       let err;

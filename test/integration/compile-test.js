@@ -576,9 +576,9 @@ describe('compile() · all API description formats', () => {
 
       context('the transaction', () => {
         it('has the expected request body', () => {
-          // Remove the lines with Content-Type headers as Swagger doesn't
+          // Remove the lines with Content-Type headers as OpenAPI 2 doesn't
           // support generating them for 'multipart/form-data' request bodies
-          const expectedRequestBody = format === 'Swagger'
+          const expectedRequestBody = format === 'OpenAPI 2'
             ? expectedBody.split('\r\n').filter(line => !line.match(/Content-Type/)).join('\r\n')
             : expectedBody;
 
