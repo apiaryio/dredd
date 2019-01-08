@@ -125,7 +125,6 @@ describe('compile() · API Blueprint', () => {
 
     context('the transaction', () => {
       it('is identified as part of no example in \'origin\'', () => assert.equal(compilationResult.transactions[0].origin.exampleName, ''));
-      it('is identified as part of Example 1 in \'pathOrigin\'', () => assert.equal(compilationResult.transactions[0].pathOrigin.exampleName, 'Example 1'));
     });
   });
 
@@ -177,13 +176,6 @@ describe('compile() · API Blueprint', () => {
       it('uses empty string as resource group name', () => assert.equal(compilationResult.transactions[0].origin.resourceGroupName, ''));
       it('uses URI as resource name', () => assert.equal(compilationResult.transactions[0].origin.resourceName, '/message'));
       it('uses method as action name', () => assert.equal(compilationResult.transactions[0].origin.actionName, 'GET'));
-    });
-
-    context('\'pathOrigin\'', () => {
-      it('uses empty string as API name', () => assert.equal(compilationResult.transactions[0].pathOrigin.apiName, ''));
-      it('uses empty string as resource group name', () => assert.equal(compilationResult.transactions[0].pathOrigin.resourceGroupName, ''));
-      it('uses URI as resource name', () => assert.equal(compilationResult.transactions[0].pathOrigin.resourceName, '/message'));
-      it('uses method as action name', () => assert.equal(compilationResult.transactions[0].pathOrigin.actionName, 'GET'));
     });
   });
 
