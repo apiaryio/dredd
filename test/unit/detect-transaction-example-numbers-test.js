@@ -5,7 +5,7 @@ const { assert } = require('../utils');
 
 // Encapsulates a single test scenario.
 const scenario = (description, { actionContent, exampleNumbersPerTransaction }) => describe(`${description}`, () => {
-  const apiBlueprint = `
+  const apib = `
 FORMAT: 1A
 # Gargamel API
 # Group Smurfs
@@ -17,7 +17,7 @@ ${actionContent}
   let transitionElements;
   let transactionExampleNumbers;
 
-  beforeEach(done => parse(apiBlueprint, (...args) => {
+  beforeEach(done => parse(apib, (...args) => {
         const [error, { apiElements }] = Array.from(args); // eslint-disable-line
     transitionElements = apiElements.api.resourceGroups
       .get(0).resources.get(0).transitions.get(0);
