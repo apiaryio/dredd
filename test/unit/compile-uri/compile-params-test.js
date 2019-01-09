@@ -1,8 +1,8 @@
 const { assert } = require('chai');
-
 const fury = require('fury');
 
 const compileParams = require('../../../lib/compile-uri/compile-params');
+
 
 describe('compileParams()', () => {
   it('should compile a primitive href variable', () => {
@@ -48,6 +48,22 @@ describe('compileParams()', () => {
       name: {
         default: undefined,
         example: 'Doe',
+        required: false,
+        values: [],
+      },
+    });
+  });
+
+  it('should compile a primitive href variable with no value', () => {
+    const hrefVariables = new fury.minim.elements.HrefVariables();
+    hrefVariables.set('name', undefined);
+
+    const parameters = compileParams(hrefVariables);
+
+    assert.deepEqual(parameters, {
+      name: {
+        default: undefined,
+        example: undefined,
         required: false,
         values: [],
       },
