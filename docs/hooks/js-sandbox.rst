@@ -3,6 +3,9 @@
 JavaScript Hooks In Sandbox Mode
 ================================
 
+.. warning::
+   The sandboxed JavaScript hooks are deprecated. Use :ref:`JavaScript hooks <hooks-js>` as a replacement. See :ghissue:`#1178` for more details.
+
 Usage
 -----
 
