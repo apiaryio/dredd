@@ -1367,71 +1367,6 @@ describe('TransactionRunner', () => {
       }));
     });
 
-    describe('‘*All’ hooks with legacy async interface (fist argument is a callback)', () => {
-      describe('with a ‘beforeAll’ hook', () => {
-        const legacyApiFunction = callback => callback();
-        const anotherLegacyApiFunction = cb => cb();
-
-        const beforeAllStub = sinon.spy(legacyApiFunction);
-        const beforeAllStubAnother = sinon.spy(anotherLegacyApiFunction);
-
-        beforeEach(() => {
-          runner.hooks.beforeAll(beforeAllStub);
-          runner.hooks.beforeAll(beforeAllStubAnother);
-        });
-
-        it('should run the hooks', done => runner.executeAllTransactions([], runner.hooks, () => {
-          assert.isOk(beforeAllStub.called);
-          assert.isOk(beforeAllStubAnother.called);
-          done();
-        }));
-      });
-
-      describe('with an ‘afterAll’ hook', () => {
-        const legacyApiFunction = callback => callback();
-        const anotherLegacyApiFunction = cb => cb();
-
-        const afterAllStub = sinon.spy(legacyApiFunction);
-        const afterAllStubAnother = sinon.spy(anotherLegacyApiFunction);
-
-        beforeEach(() => {
-          runner.hooks.afterAll(afterAllStub);
-          runner.hooks.afterAll(afterAllStubAnother);
-        });
-
-        it('should run the hooks', done => runner.executeAllTransactions([], runner.hooks, () => {
-          assert.isOk(afterAllStub.called);
-          assert.isOk(afterAllStubAnother.called);
-          done();
-        }));
-      });
-
-      describe('with multiple hooks for the same events', () => {
-        const legacyApiFunction = callback => callback();
-
-        const beforeAllStub1 = sinon.spy(legacyApiFunction);
-        const beforeAllStub2 = sinon.spy(legacyApiFunction);
-        const afterAllStub1 = sinon.spy(legacyApiFunction);
-        const afterAllStub2 = sinon.spy(legacyApiFunction);
-
-        beforeEach(() => {
-          runner.hooks.beforeAll(beforeAllStub1);
-          runner.hooks.afterAll(afterAllStub1);
-          runner.hooks.afterAll(afterAllStub2);
-          runner.hooks.beforeAll(beforeAllStub2);
-        });
-
-        it('should run all the events in order', done => runner.executeAllTransactions([], runner.hooks, () => {
-          assert.isOk(beforeAllStub1.calledBefore(beforeAllStub2));
-          assert.isOk(beforeAllStub2.called);
-          assert.isOk(beforeAllStub2.calledBefore(afterAllStub1));
-          assert.isOk(afterAllStub1.calledBefore(afterAllStub2));
-          assert.isOk(afterAllStub2.called);
-          done();
-        }));
-      });
-    });
-
     describe('‘*All’ hooks with standard async API (first argument transactions, second callback)', () => {
       describe('with a ‘beforeAll’ hook', () => {
         // eslint-disable-next-line
@@ -1640,12 +1575,12 @@ describe('TransactionRunner', () => {
 
       describe('with multiple hooks for the same events', () => {
         // eslint-disable-next-line
-        const legacyApiFunction = (transactions, callback) => callback();
+        const hookFunction = (transactions, callback) => callback();
 
-        const beforeAllStub1 = sinon.spy(legacyApiFunction);
-        const beforeAllStub2 = sinon.spy(legacyApiFunction);
-        const afterAllStub1 = sinon.spy(legacyApiFunction);
-        const afterAllStub2 = sinon.spy(legacyApiFunction);
+        const beforeAllStub1 = sinon.spy(hookFunction);
+        const beforeAllStub2 = sinon.spy(hookFunction);
+        const afterAllStub1 = sinon.spy(hookFunction);
+        const afterAllStub2 = sinon.spy(hookFunction);
 
         beforeEach(() => {
           runner.hooks.beforeAll(beforeAllStub1);
