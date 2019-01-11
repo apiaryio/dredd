@@ -100,7 +100,6 @@ Dredd itself is written in JavaScript, so it supports :ref:`JavaScript hooks <ho
    :maxdepth: 1
 
    JavaScript <js>
-   JavaScript (Sandboxed) <js-sandbox>
    Go <go>
    Perl <perl>
    PHP <php>

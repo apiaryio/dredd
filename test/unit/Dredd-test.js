@@ -24,36 +24,6 @@ describe('Dredd class', () => {
 
   afterEach(() => fsStub.readFile.restore());
 
-  describe('with legacy configuration', () => {
-    before(() => {
-      configuration = {
-        server: 'http://127.0.0.1:3000/',
-        blueprintPath: './test/fixtures/apiary.apib',
-      };
-      sinon.stub(loggerStub, 'info').callsFake(() => { });
-      sinon.stub(loggerStub, 'log').callsFake(() => { });
-    });
-
-    after(() => {
-      loggerStub.info.restore();
-      loggerStub.log.restore();
-    });
-
-    it('should not explode and run executeTransaction', (done) => {
-      function fn() {
-        dredd = new Dredd(configuration);
-        sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
-        dredd.run(() => {
-          assert.isOk(dredd.runner.executeTransaction.called);
-          dredd.runner.executeTransaction.restore();
-          done();
-        });
-      }
-
-      assert.doesNotThrow(fn);
-    });
-  });
-
   describe('with valid configuration', () => {
     before(() => {
       configuration = {

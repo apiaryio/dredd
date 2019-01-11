@@ -319,7 +319,6 @@ describe('CLI class', () => {
         _: ['blueprint', 'endpoint'],
         'dry-run': true,
         hookfiles: null,
-        sandbox: false,
         save: null,
         load: null,
         server: null,
