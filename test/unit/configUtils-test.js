@@ -16,7 +16,6 @@ const argvData = {
   y: true,
   hookfiles: null,
   f: null,
-  sandbox: false,
   b: false,
   save: null,
   z: null,
@@ -148,7 +147,6 @@ describe('configUtils', () => {
     const yamlData = `\
 dry-run: true
 hookfiles: null
-sandbox: false
 save: null
 load: null
 server: null

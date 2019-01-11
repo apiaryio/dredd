@@ -58,7 +58,6 @@ See below how sample configuration file could look like. The structure is the sa
      - "apiaryApiName:apiName"
    dry-run: null
    hookfiles: "dreddhooks.js"
-   sandbox: false
    server: rails server
    server-wait: 3
    init: false

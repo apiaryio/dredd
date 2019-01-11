@@ -14,11 +14,6 @@
     "description": "Language of hookfiles. Possible options are: nodejs, ruby, python, php, perl, go, rust",
     "default": "nodejs"
   },
-  "sandbox": {
-    "alias": "b",
-    "description": "Load and run non trusted hooks code in sandboxed container",
-    "default": false
-  },
   "server": {
     "alias": "g",
     "description": "Run API backend server command and kill it after Dredd execution. E.g. `rails server`",

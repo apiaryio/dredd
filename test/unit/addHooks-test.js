@@ -13,7 +13,6 @@ const hooksWorkerClientStub = require('../../lib/HooksWorkerClient');
 const proxyquireSpy = sinon.spy(proxyquireStub.noCallThru());
 proxyquireStub.noCallThru = () => proxyquireSpy;
 
-const sandboxHooksCodeSpy = sinon.spy(require('../../lib/sandboxHooksCode'));
 
 const addHooks = proxyquire('../../lib/addHooks', {
   logger: loggerStub,
@@ -21,7 +20,6 @@ const addHooks = proxyquire('../../lib/addHooks', {
   pathStub,
   hooks: hooksStub,
   proxyquire: proxyquireStub,
-  './sandboxHooksCode': sandboxHooksCodeSpy,
   './HooksWorkerClient': hooksWorkerClientStub,
   fs: fsStub,
 });
@@ -38,7 +36,7 @@ describe('addHooks(runner, transactions, callback)', () => {
       logs: ['item'],
       configuration: {
         options: {
-          hookfiles: null,
+          hookfiles: [],
         },
       },
     };
@@ -182,194 +180,7 @@ describe('addHooks(runner, transactions, callback)', () => {
     });
   });
 
-  describe('when sandboxed mode is on', () => {
-    describe('when hookfiles option is given', () => {
-      let runner = {};
-      beforeEach((done) => {
-        runner = {
-          configuration: {
-            options: {
-              hookfiles: './test/fixtures/sandboxed-hook.js',
-              sandbox: true,
-            },
-          },
-        };
-
-        sinon.spy(loggerStub, 'warn');
-        sinon.spy(loggerStub, 'info');
-        sinon.spy(fsStub, 'readFile');
-        proxyquireSpy.resetHistory();
-        sandboxHooksCodeSpy.resetHistory();
-        done();
-      });
-
-      afterEach((done) => {
-        loggerStub.warn.restore();
-        loggerStub.info.restore();
-        fsStub.readFile.restore();
-        proxyquireSpy.resetHistory();
-        sandboxHooksCodeSpy.resetHistory();
-        done();
-      });
-
-      it('should not use proxyquire', done => addHooks(runner, transactions, (err) => {
-        if (err) { return done(err); }
-        assert.isFalse(proxyquireSpy.called);
-        done();
-      }));
-
-      it('should load files from the filesystem', done => addHooks(runner, transactions, (err) => {
-        if (err) { return done(err); }
-        assert.isTrue(fsStub.readFile.called);
-        done();
-      }));
-
-      it('should run the loaded code', done => addHooks(runner, transactions, (err) => {
-        if (err) { return err; }
-        assert.isTrue(sandboxHooksCodeSpy.called);
-        done();
-      }));
-
-      it('should add hook functions strings to the runner object', done => addHooks(runner, transactions, (err) => {
-        if (err) { return err; }
-        assert.property(runner.hooks.afterHooks, 'Machines > Machines collection > Get Machines');
-        done();
-      }));
-    });
-
-    describe('when hookfiles option is not given and hooks are passed as a string from Dredd class', () => {
-      let runner = {};
-      beforeEach(() => {
-        runner = {
-          configuration: {
-            hooksData: {
-              'some-filename.js': `\
-after('Machines > Machines collection > Get Machines', function(transaction){
-  transaction['fail'] = 'failed in sandboxed hook';
-});\
-`,
-            },
-            options: {
-              sandbox: true,
-            },
-          },
-        };
-
-        sinon.spy(loggerStub, 'warn');
-        sinon.spy(loggerStub, 'info');
-        sinon.spy(fsStub, 'readFile');
-        proxyquireSpy.resetHistory();
-        sandboxHooksCodeSpy.resetHistory();
-      });
-
-      afterEach(() => {
-        loggerStub.warn.restore();
-        loggerStub.info.restore();
-        fsStub.readFile.restore();
-        proxyquireSpy.resetHistory();
-        sandboxHooksCodeSpy.resetHistory();
-      });
-
-      it('should not use proxyquire', done => addHooks(runner, transactions, (err) => {
-        if (err) { return done(err); }
-        assert.isFalse(proxyquireSpy.called);
-        done();
-      }));
-
-      it('should run the loaded code', done => addHooks(runner, transactions, (err) => {
-        if (err) { return err; }
-        assert.isTrue(sandboxHooksCodeSpy.called);
-        done();
-      }));
-
-      it('should add hook functions strings to the runner object', done => addHooks(runner, transactions, (err) => {
-        if (err) { return err; }
-        assert.property(runner.hooks.afterHooks, 'Machines > Machines collection > Get Machines');
-        done();
-      }));
-    });
-
-    describe('when hooks are passed as a string from Dredd class', () => {
-      let runner = {};
-      beforeEach(() => {
-        runner = {
-          configuration: {
-            hooksData: {
-              'some-filename.js': `\
-after('Machines > Machines collection > Get Machines', function(transaction){
-  transaction['fail'] = 'failed in sandboxed hook';
-});\
-`,
-            },
-            options: {},
-          },
-        };
-      });
-
-      it('should throw a "not implemented" exception', done => addHooks(runner, transactions, (err) => {
-        assert.isDefined(err);
-        assert.include(err.message, 'not implemented');
-        done();
-      }));
-    });
-
-
-    describe('when buggy transaction name is used (#168)', () => describe('when sandboxed', () => {
-      it('should remove leading " > " from transaction names', (done) => {
-        const runner = {
-          configuration: {
-            hooksData: {
-              'hookfile.js': `\
-after(' > Machines collection > Get Machines', function(transaction){
-  transaction['fail'] = 'failed in sandboxed hook';
-});
-before(' > Machines collection > Get Machines', function(transaction){
-  transaction['fail'] = 'failed in sandboxed hook';
-});\
-`,
-            },
-            options: {
-              sandbox: true,
-            },
-          },
-        };
-
-        addHooks(runner, transactions, () => {
-          assert.notProperty(runner.hooks.afterHooks, ' > Machines collection > Get Machines');
-          assert.notProperty(runner.hooks.afterHooks, ' > Machines collection > Get Machines');
-          done();
-        });
-      });
-
-      it('should contain transaction with fixed name', (done) => {
-        const runner = {
-          configuration: {
-            hooksData: {
-              'hookfile.js': `\
-after(' > Machines collection > Get Machines', function(transaction){
-  transaction['fail'] = 'failed in sandboxed hook';
-});
-before(' > Machines collection > Get Machines', function(transaction){
-  transaction['fail'] = 'failed in sandboxed hook';
-});\
-`,
-            },
-            options: {
-              sandbox: true,
-            },
-          },
-        };
-
-        addHooks(runner, transactions, () => {
-          assert.property(runner.hooks.afterHooks, 'Machines collection > Get Machines');
-          assert.property(runner.hooks.afterHooks, 'Machines collection > Get Machines');
-          done();
-        });
-      });
-    }));
-  });
-
-  describe('when not sandboxed', () => {
+  describe('when with buggy names', () => {
     it('should remove leading " > " from transaction names', (done) => {
       const runner = {
         configuration: {

@@ -816,32 +816,4 @@ describe('CLI', () => {
 
     it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
   }));
-
-  describe('Using sandboxed hooks', () => {
-    let runtimeInfo;
-
-    before((done) => {
-      const app = createServer();
-      app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
-
-      const args = [
-        './test/fixtures/single-get.apib',
-        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-        '--sandbox',
-        '--hookfiles=./test/fixtures/sandboxed-hook.js',
-      ];
-      runCLIWithServer(args, app, (err, info) => {
-        runtimeInfo = info;
-        done(err);
-      });
-    });
-
-    it('should hit the resource', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
-
-    it('exit status should be 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
-
-    it('stdout should contain fail message', () => assert.include(runtimeInfo.dredd.stdout, 'failed in sandboxed hook'));
-
-    it('stdout should contain sandbox messagae', () => assert.include(runtimeInfo.dredd.stdout, 'Loading hook files in sandboxed context'));
-  });
 });

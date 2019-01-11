@@ -61,10 +61,6 @@ Let’s have a look at an example configuration first. (Please also see the :ref
 
      'emitter': EventEmitterInstance, // optional - listen to test progress, your own instance of EventEmitter
 
-     'hooksData': {
-       'pathToHook' : '...'
-     }
-
      'data': {
        'path/to/file': '...'
      }
@@ -96,13 +92,6 @@ data (object)
 **Optional** Object with keys as ``filename`` and value as ``blueprint``-code.
 
 Useful when you don’t want to operate on top of filesystem and want to pass code of your API description as a string. You get the point.
-
-hooksData (object)
-^^^^^^^^^^^^^^^^^^
-
-**Optional** Object with keys as ``filename`` and strings with JavaScript hooks code.
-
-Load hooks file code from string. Must be used together with sandboxed mode.
 
 .. code-block:: javascript
 

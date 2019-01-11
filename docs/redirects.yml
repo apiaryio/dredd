@@ -16,6 +16,10 @@ redirects:
   "/usage.html": "/usage-cli.html"
   "/contributing.html": "/internals.html"
 
+  # Removal of sandboxed JS hooks
+  "/hooks-js-sandbox.html": "/hooks/js.html"
+  "/hooks-js-sandbox/": "/hooks/js.html"
+
   # 'Node.js to JavaScript' migration
   "/hooks/nodejs.html": "/hooks/js.html"
   "/hooks-nodejs.html": "/hooks/js.html"
@@ -29,7 +33,6 @@ redirects:
   "/hooks-ruby.html": "/hooks/ruby.html"
   "/hooks-php.html": "/hooks/php.html"
   "/hooks-python.html": "/hooks/python.html"
-  "/hooks-js-sandbox.html": "/hooks/js-sandbox.html"
 
   # 'MkDocs to Sphinx' migration
   "/usage-js/": "/usage-js.html"
@@ -47,4 +50,3 @@ redirects:
   "/hooks-ruby/": "/hooks/ruby.html"
   "/hooks-php/": "/hooks/php.html"
   "/hooks-python/": "/hooks/python.html"
-  "/hooks-js-sandbox/": "/hooks/js-sandbox.html"

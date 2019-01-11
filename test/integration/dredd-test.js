@@ -462,76 +462,6 @@ describe('Dredd class Integration', () => {
     });
   });
 
-  describe('when i use sandbox and hookfiles option', () => describe('and I run a test', () => {
-    let requested;
-    before((done) => {
-      const cmd = {
-        options: {
-          path: './test/fixtures/single-get.apib',
-          sandbox: true,
-          hookfiles: './test/fixtures/sandboxed-hook.js',
-        },
-      };
-
-      const app = express();
-
-      app.get('/machines', (req, res) => {
-        requested = true;
-        res.json([{ type: 'bulldozer', name: 'willy' }]);
-      });
-
-      const server = app.listen(PORT, () => execCommand(cmd, () => server.close()));
-
-      server.on('close', done);
-    });
-
-    it('exit status should be 1', () => assert.equal(exitStatus, 1));
-
-    it('stdout should contain fail message', () => assert.include(stdout, 'failed in sandboxed hook'));
-
-    it('stdout should contain sandbox messagae', () => assert.include(stdout, 'Loading hook files in sandboxed context'));
-
-    it('should perform the request', () => assert.isTrue(requested));
-  }));
-
-  describe('when i use sandbox and hookData option', () => describe('and I run a test', () => {
-    let requested;
-    before((done) => {
-      const cmd = {
-        hooksData: {
-          './test/fixtures/single-get.apib': `\
-after('Machines > Machines collection > Get Machines', function(transaction){
-  transaction['fail'] = 'failed in sandboxed hook from string';
-});\
-`,
-        },
-        options: {
-          path: './test/fixtures/single-get.apib',
-          sandbox: true,
-        },
-      };
-
-      const app = express();
-
-      app.get('/machines', (req, res) => {
-        requested = true;
-        res.json([{ type: 'bulldozer', name: 'willy' }]);
-      });
-
-      const server = app.listen(PORT, () => execCommand(cmd, () => server.close()));
-
-      server.on('close', done);
-    });
-
-    it('exit status should be 1', () => assert.equal(exitStatus, 1));
-
-    it('stdout should contain fail message', () => assert.include(stdout, 'failed in sandboxed hook from string'));
-
-    it('stdout should not sandbox messagae', () => assert.notInclude(stdout, 'Loading hook files in sandboxed context'));
-
-    it('should perform the request', () => assert.isTrue(requested));
-  }));
-
   describe('when use old buggy (#168) path with leading whitespace in hooks', () => describe('and I run a test', () => {
     before((done) => {
       const cmd = {
@@ -549,7 +479,6 @@ before('Machines collection > Get Machines', function(transaction){
         },
         options: {
           path: './test/fixtures/single-get-nogroup.apib',
-          sandbox: true,
         },
       };
 
