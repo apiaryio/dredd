@@ -462,42 +462,6 @@ describe('Dredd class Integration', () => {
     });
   });
 
-  describe('when use old buggy (#168) path with leading whitespace in hooks', () => describe('and I run a test', () => {
-    before((done) => {
-      const cmd = {
-        hooksData: {
-          'hooks.js': `\
-before(' > Machines collection > Get Machines', function(transaction){
-  throw(new Error('Whitespace transaction name'));
-});
-
-before('Machines collection > Get Machines', function(transaction){
-  throw(new Error('Fixed transaction name'));
-});
-\
-`,
-        },
-        options: {
-          path: './test/fixtures/single-get-nogroup.apib',
-        },
-      };
-
-      const app = express();
-
-      app.get('/machines', (req, res) => {
-        res.json([{ type: 'bulldozer', name: 'willy' }]);
-      });
-
-      const server = app.listen(PORT, () => execCommand(cmd, () => server.close()));
-
-      server.on('close', done);
-    });
-
-    it('should execute hook with whitespaced name', () => assert.include(stderr, 'Whitespace transaction name'));
-
-    it('should execute hook with fuxed name', () => assert.include(stderr, 'Fixed transaction name'));
-  }));
-
   describe('when OpenAPI 2 document has multiple responses', () => {
     const reTransaction = /(\w+): (\w+) \((\d+)\) \/honey/g;
     let actual;

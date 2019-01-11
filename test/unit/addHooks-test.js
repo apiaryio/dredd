@@ -179,38 +179,4 @@ describe('addHooks(runner, transactions, callback)', () => {
       }));
     });
   });
-
-  describe('when with buggy names', () => {
-    it('should remove leading " > " from transaction names', (done) => {
-      const runner = {
-        configuration: {
-          options: {
-            hookfiles: './test/fixtures/groupless-names.js',
-          },
-        },
-      };
-
-      addHooks(runner, transactions, () => {
-        assert.notProperty(runner.hooks.afterHooks, ' > Machines collection > Get Machines');
-        assert.notProperty(runner.hooks.afterHooks, ' > Machines collection > Get Machines');
-        done();
-      });
-    });
-
-    it('should contain transaction with fixed name', (done) => {
-      const runner = {
-        configuration: {
-          options: {
-            hookfiles: './test/fixtures/groupless-names.js',
-          },
-        },
-      };
-
-      addHooks(runner, transactions, () => {
-        assert.property(runner.hooks.afterHooks, 'Machines collection > Get Machines');
-        assert.property(runner.hooks.afterHooks, 'Machines collection > Get Machines');
-        done();
-      });
-    });
-  });
 });
