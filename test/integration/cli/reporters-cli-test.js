@@ -116,6 +116,7 @@ describe('CLI - Reporters', () => {
         './test/fixtures/single-get.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--reporter=apiary',
+        '--require=coffeescript/register',
         '--hookfiles=./test/fixtures/hooks-log.coffee',
       ];
 

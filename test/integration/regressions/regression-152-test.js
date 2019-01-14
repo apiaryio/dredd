@@ -13,6 +13,7 @@ describe('Regression: Issue #152', () => describe('Modify transaction object ins
     const dredd = new Dredd({
       options: {
         path: './test/fixtures/single-get.apib',
+        require: 'coffeescript/register',
         hookfiles: './test/fixtures/regression-152.coffee',
       },
     });

@@ -14,6 +14,10 @@
     "description": "Language of hookfiles. Possible options are: nodejs, ruby, python, php, perl, go, rust",
     "default": "nodejs"
   },
+  "require": {
+    "description": "When using nodejs hooks, require the given module before executing hooks",
+    "default": null
+  },
   "server": {
     "alias": "g",
     "description": "Run API backend server command and kill it after Dredd execution. E.g. `rails server`",
