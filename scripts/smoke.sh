@@ -47,4 +47,7 @@ if [ ! -z "$TRAVIS" ]; then
 
   # Test the 'dredd-example' project
   npm test
+
+  # Test the JavaScript API
+  node -e 'process.exitCode = (new (require("dredd"))({})).run ? 0 : 1;'
 fi
