@@ -10,7 +10,7 @@
     "node": "^6.9 || >=8"
   },
   "scripts": {
-    "docs:lint": "doc8 ./docs && sphinx-build -nW -b linkcheck ./docs ./docs/_build",
+    "docs:lint": "sphinx-build -nW -b linkcheck ./docs ./docs/_build",
     "docs:test-extensions": "python -m unittest docs/_extensions/*.py --verbose",
     "docs:build": "sphinx-build -nW -b html ./docs ./docs/_build",
     "docs:serve": "sphinx-autobuild ./docs ./docs/_build",
