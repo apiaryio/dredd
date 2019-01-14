@@ -98,9 +98,6 @@ Dredd is written in modern JavaScript, ran by `Node.js <https://nodejs.org/>`__,
 
 Previously Dredd was written in `CoffeeScript <https://coffeescript.org>`__, and it was only recently converted to modern JavaScript. That's why sometimes the code does not feel very nice. Any efforts to refactor the code to something more human-friendly are greatly appreciated.
 
-CoffeeScript is still a production dependency (not dev dependency), because it’s needed for running user-provided hooks written in CoffeeScript. This is planned to be generalized: :ghissue:`#1082`
-
-
 .. _cpp-dependencies:
 .. _compiled-vs-pure-javascript:
 
