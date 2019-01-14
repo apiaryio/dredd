@@ -29,7 +29,7 @@
   "dependencies": {
     "fury": "3.0.0-beta.8",
     "fury-adapter-apib-parser": "0.12.0",
-    "fury-adapter-swagger": "0.23.0",
+    "fury-adapter-swagger": "0.23.1",
     "uri-template": "1.0.1"
   },
   "devDependencies": {
