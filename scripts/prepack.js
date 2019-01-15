@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Postprocesses the 'node_modules' to remove a C++ dependency
-// of the API Blueprint parser
+// Alters the 'node_modules' to remove a C++ dependency of the API Blueprint
+// parser before the 'npm pack' creates the package
 
 const fs = require('fs');
 const path = require('path');
