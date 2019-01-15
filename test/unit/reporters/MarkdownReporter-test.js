@@ -7,12 +7,14 @@ const { EventEmitter } = require('events');
 
 const loggerStub = require('../../../lib/logger');
 
-const fsExtraStub = { mkdirp(path, cb) { return cb(); } };
+const makeDirStub = (input, options) => makeDirStubImpl(input, options);
+let makeDirStubImpl = () => Promise.resolve();
+const makeDirStubImplBackup = makeDirStubImpl;
 
 const MarkdownReporter = proxyquire('../../../lib/reporters/MarkdownReporter', {
   '../logger': loggerStub,
   fs: fsStub,
-  'fs-extra': fsExtraStub,
+  'make-dir': makeDirStub,
 });
 
 describe('MarkdownReporter', () => {
@@ -84,38 +86,38 @@ describe('MarkdownReporter', () => {
   describe('when ending', () => {
     describe('when can create output directory', () => {
       beforeEach(() => {
-        sinon.stub(fsStub, 'writeFile');
-        sinon.spy(fsExtraStub, 'mkdirp');
+        sinon.stub(fsStub, 'writeFile').callsFake((path, data, callback) => callback());
+        makeDirStubImpl = sinon.spy(makeDirStubImpl);
       });
 
       afterEach(() => {
         fsStub.writeFile.restore();
-        fsExtraStub.mkdirp.restore();
+        makeDirStubImpl = makeDirStubImplBackup;
       });
 
-      it('should write buffer to file', (done) => {
-        emitter.emit('end');
-        assert.isOk(fsExtraStub.mkdirp.called);
+      it('should write buffer to file', done => emitter.emit('end', () => {
+        emitter.emit('end', () => {});
+        assert.isOk(makeDirStubImpl.called);
         assert.isOk(fsStub.writeFile.called);
         done();
-      });
+      }));
     });
 
     describe('when cannot create output directory', () => {
       beforeEach(() => {
-        sinon.stub(fsStub, 'writeFile');
+        sinon.stub(fsStub, 'writeFile').callsFake((path, data, callback) => callback());
         sinon.stub(loggerStub, 'error');
-        sinon.stub(fsExtraStub, 'mkdirp').callsFake((path, cb) => cb('error'));
+        makeDirStubImpl = sinon.stub().callsFake(() => Promise.reject(new Error()));
       });
 
       after(() => {
         fsStub.writeFile.restore();
         loggerStub.error.restore();
-        fsExtraStub.mkdirp.restore();
+        makeDirStubImpl = makeDirStubImplBackup;
       });
 
       it('should write to log', done => emitter.emit('end', () => {
-        assert.isOk(fsExtraStub.mkdirp.called);
+        assert.isOk(makeDirStubImpl.called);
         assert.isOk(fsStub.writeFile.notCalled);
         assert.isOk(loggerStub.error.called);
         done();

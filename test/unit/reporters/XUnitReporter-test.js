@@ -7,12 +7,14 @@ const { EventEmitter } = require('events');
 
 const loggerStub = require('../../../lib/logger');
 
-const fsExtraStub = { mkdirp(path, cb) { return cb(); } };
+const makeDirStub = (input, options) => makeDirStubImpl(input, options);
+let makeDirStubImpl = () => Promise.resolve();
+const makeDirStubImplBackup = makeDirStubImpl;
 
 const XUnitReporter = proxyquire('../../../lib/reporters/XUnitReporter', {
   '../logger': loggerStub,
   fs: fsStub,
-  'fs-extra': fsExtraStub,
+  'make-dir': makeDirStub,
 });
 
 describe('XUnitReporter', () => {
@@ -66,19 +68,19 @@ describe('XUnitReporter', () => {
     describe('when can create output directory', () => {
       beforeEach(() => {
         sinon.stub(fsStub, 'appendFileSync');
-        sinon.spy(fsExtraStub, 'mkdirp');
+        makeDirStubImpl = sinon.spy(makeDirStubImpl);
       });
 
       afterEach(() => {
         fsStub.appendFileSync.restore();
-        fsExtraStub.mkdirp.restore();
+        makeDirStubImpl = makeDirStubImplBackup;
       });
 
       it('should write opening to file', (done) => {
         const emitter = new EventEmitter();
         (new XUnitReporter(emitter, {}, {}, 'test.xml'));
         emitter.emit('start', '', () => {
-          assert.isOk(fsExtraStub.mkdirp.called);
+          assert.isOk(makeDirStubImpl.called);
           assert.isOk(fsStub.appendFileSync.called);
           done();
         });
@@ -89,20 +91,20 @@ describe('XUnitReporter', () => {
       beforeEach(() => {
         sinon.stub(fsStub, 'appendFileSync');
         sinon.stub(loggerStub, 'error');
-        sinon.stub(fsExtraStub, 'mkdirp').callsFake((path, cb) => cb('error'));
+        makeDirStubImpl = sinon.stub().callsFake(() => Promise.reject(new Error()));
       });
 
       after(() => {
         fsStub.appendFileSync.restore();
         loggerStub.error.restore();
-        fsExtraStub.mkdirp.restore();
+        makeDirStubImpl = makeDirStubImplBackup;
       });
 
       it('should write to log', (done) => {
         const emitter = new EventEmitter();
         (new XUnitReporter(emitter, {}, {}, 'test.xml'));
         emitter.emit('start', '', () => {
-          assert.isOk(fsExtraStub.mkdirp.called);
+          assert.isOk(makeDirStubImpl.called);
           assert.isOk(fsStub.appendFileSync.notCalled);
           assert.isOk(loggerStub.error.called);
           done();
