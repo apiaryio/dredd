@@ -40,7 +40,7 @@
     "chai": "4.1.2",
     "clone": "2.1.1",
     "cross-spawn": "6.0.5",
-    "dredd-transactions": "6.2.5",
+    "dredd-transactions": "6.2.6",
     "file": "0.2.2",
     "fs-extra": "6.0.1",
     "gavel": "2.2.1",
