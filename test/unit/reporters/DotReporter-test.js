@@ -5,6 +5,7 @@ const { assert } = require('chai');
 const { EventEmitter } = require('events');
 
 const loggerStub = require('../../../lib/logger');
+const reporterOutputLoggerStub = require('../../../lib/reporters/reporterOutputLogger');
 
 const DotReporter = proxyquire('../../../lib/reporters/DotReporter', {
   '../logger': loggerStub,
@@ -48,16 +49,16 @@ describe('DotReporter', () => {
   describe('when ending', () => {
     beforeEach(() => {
       stats.tests = 1;
-      sinon.spy(loggerStub, 'complete');
+      sinon.spy(reporterOutputLoggerStub, 'complete');
       sinon.stub(dotReporter, 'write');
     });
 
     afterEach(() => {
-      loggerStub.complete.restore();
+      reporterOutputLoggerStub.complete.restore();
       dotReporter.write.restore();
     });
 
-    it('should log that testing is complete', () => emitter.emit('end', () => assert.isOk(loggerStub.complete.calledTwice)));
+    it('should log that testing is complete', () => emitter.emit('end', () => assert.isOk(reporterOutputLoggerStub.complete.calledTwice)));
 
     describe('when there are failures', () => {
       before(() => {
@@ -71,13 +72,13 @@ describe('DotReporter', () => {
         dotReporter.errors = [test];
         dotReporter.stats.tests = 1;
         emitter.emit('test start', test);
-        sinon.spy(loggerStub, 'fail');
+        sinon.spy(reporterOutputLoggerStub, 'fail');
       });
 
-      afterEach(() => loggerStub.fail.restore());
+      afterEach(() => reporterOutputLoggerStub.fail.restore());
 
       it('should log the failures at the end of testing', done => emitter.emit('end', () => {
-        assert.isOk(loggerStub.fail.called);
+        assert.isOk(reporterOutputLoggerStub.fail.called);
         done();
       }));
     });

@@ -533,7 +533,7 @@ describe('CLI', () => {
       });
     });
 
-    describe('when setting the log output level with -l', () => {
+    describe('when setting the log output level with --level', () => {
       let runtimeInfo;
 
       before((done) => {
@@ -543,7 +543,8 @@ describe('CLI', () => {
         const args = [
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-          '-l=error',
+          '--level=error',
+          '--color=false',
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -552,8 +553,7 @@ describe('CLI', () => {
       });
 
       it('should not display anything', () => {
-        // At the "error" level, complete should not be shown
-        assert.isOk(runtimeInfo.dredd.stdout.indexOf('complete') === -1);
+        assert.notInclude(runtimeInfo.dredd.output, 'info:');
       });
     });
 

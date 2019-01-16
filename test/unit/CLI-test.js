@@ -64,28 +64,19 @@ function execCommand(custom = {}, cb) {
 describe('CLI class', () => {
   before(() => {
     ['warn', 'error'].forEach((method) => {
-      sinon.stub(loggerStub, method).callsFake((chunk) => { stderr += `\n${method}: ${chunk}`; });
+      sinon
+        .stub(loggerStub, method)
+        .callsFake((chunk) => { stderr += `\n${method}: ${chunk}`; });
     });
-
-    [
-      'log', 'info', 'silly', 'verbose', 'test',
-      'hook', 'complete', 'pass', 'skip', 'debug',
-      'fail', 'request', 'expected', 'actual',
-    ].forEach((method) => {
-      sinon.stub(loggerStub, method).callsFake((chunk) => { stdout += `\n${method}: ${chunk}`; });
+    ['log', 'info', 'silly', 'verbose', 'debug'].forEach((method) => {
+      sinon
+        .stub(loggerStub, method)
+        .callsFake((chunk) => { stdout += `\n${method}: ${chunk}`; });
     });
   });
 
   after(() => {
-    ['warn', 'error'].forEach((method) => {
-      loggerStub[method].restore();
-    });
-
-    [
-      'log', 'info', 'silly', 'verbose', 'test',
-      'hook', 'complete', 'pass', 'skip', 'debug',
-      'fail', 'request', 'expected', 'actual',
-    ].forEach((method) => {
+    ['warn', 'error', 'log', 'info', 'silly', 'verbose', 'debug'].forEach((method) => {
       loggerStub[method].restore();
     });
   });

@@ -9,6 +9,7 @@ const ps = require('ps-node');
 const spawn = require('cross-spawn');
 
 const logger = require('../../lib/logger');
+const reporterOutputLogger = require('../../lib/reporters/reporterOutputLogger');
 
 const DEFAULT_SERVER_PORT = 9876;
 const DREDD_BIN = require.resolve('../../bin/dredd');
@@ -22,16 +23,28 @@ const DREDD_BIN = require.resolve('../../bin/dredd');
 //                  from the 'fn' function
 // - logging (string) - the recorded logging output
 function recordLogging(fn, callback) {
-  const silent = !!logger.transports.console.silent;
-  logger.transports.console.silent = true; // Supress Dredd's console output (remove if debugging)
+  const loggerSilent = !!logger.transports.console.silent;
+  const reporterOutputLoggerSilent = !!reporterOutputLogger.transports.console.silent;
+
+  // Supress Dredd's console output (remove if debugging)
+  logger.transports.console.silent = true;
+  reporterOutputLogger.transports.console.silent = true;
 
   let logging = '';
-  const record = (transport, level, message) => { logging += `${level}: ${message}\n`; };
+  const record = (transport, level, message) => {
+    logging += `${level}: ${message}\n`;
+  };
 
   logger.on('logging', record);
+  reporterOutputLogger.on('logging', record);
+
   fn((...args) => {
     logger.removeListener('logging', record);
-    logger.transports.console.silent = silent;
+    logger.transports.console.silent = loggerSilent;
+
+    reporterOutputLogger.removeListener('logging', record);
+    reporterOutputLogger.transports.console.silent = reporterOutputLoggerSilent;
+
     callback(null, args, logging);
   });
 }

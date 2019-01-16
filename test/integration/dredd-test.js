@@ -2,36 +2,20 @@ const bodyParser = require('body-parser');
 const clone = require('clone');
 const express = require('express');
 const fs = require('fs');
-const proxyquire = require('proxyquire').noCallThru();
-const sinon = require('sinon');
 const { assert } = require('chai');
 
-const loggerStub = require('../../lib/logger');
+const logger = require('../../lib/logger');
+const reporterOutputLogger = require('../../lib/reporters/reporterOutputLogger');
+const Dredd = require('../../lib/Dredd');
 
 const PORT = 9876;
 
 let exitStatus;
 
-let stderr = '';
-let stdout = '';
-
-const addHooksStub = proxyquire('../../lib/addHooks', {
-  './logger': loggerStub,
-});
-
-const transactionRunner = proxyquire('../../lib/TransactionRunner', {
-  './addHooks': addHooksStub,
-  './logger': loggerStub,
-});
-
-const Dredd = proxyquire('../../lib/Dredd', {
-  './TransactionRunner': transactionRunner,
-  './logger': loggerStub,
-});
+let output = '';
 
 function execCommand(options = {}, cb) {
-  stdout = '';
-  stderr = '';
+  output = '';
   exitStatus = null;
   let finished = false;
   if (!options.server) { options.server = `http://127.0.0.1:${PORT}`; }
@@ -40,41 +24,36 @@ function execCommand(options = {}, cb) {
     if (!finished) {
       finished = true;
       if (error ? error.message : undefined) {
-        stderr += error.message;
+        output += error.message;
       }
       exitStatus = (error || (((1 * stats.failures) + (1 * stats.errors)) > 0)) ? 1 : 0;
-      cb(null, stdout, stderr, exitStatus);
+      cb();
     }
   });
 }
 
+
+function record(transport, level, message) {
+  output += `\n${level}: ${message}`;
+}
+
+
 describe('Dredd class Integration', () => {
   before(() => {
-    ['warn', 'error'].forEach((method) => {
-      sinon.stub(loggerStub, method).callsFake((chunk) => { stderr += `\n${method}: ${chunk}`; });
-    });
-    [
-      'log', 'info', 'silly', 'verbose', 'test',
-      'hook', 'complete', 'pass', 'skip', 'debug',
-      'fail', 'request', 'expected', 'actual',
-    ].forEach((method) => {
-      sinon.stub(loggerStub, method).callsFake((chunk) => { stdout += `\n${method}: ${chunk}`; });
-    });
+    logger.transports.console.silent = true;
+    logger.on('logging', record);
+
+    reporterOutputLogger.transports.console.silent = true;
+    reporterOutputLogger.on('logging', record);
   });
 
   after(() => {
-    ['warn', 'error'].forEach((method) => {
-      loggerStub[method].restore();
-    });
-    [
-      'log', 'info', 'silly', 'verbose', 'test',
-      'hook', 'complete', 'pass', 'skip', 'debug',
-      'fail', 'request', 'expected', 'actual',
-    ].forEach((method) => {
-      loggerStub[method].restore();
-    });
-  });
+    logger.transports.console.silent = false;
+    logger.removeListener('logging', record);
 
+    reporterOutputLogger.transports.console.silent = false;
+    reporterOutputLogger.removeListener('logging', record);
+  });
 
   describe('when creating Dredd instance with existing API description document and responding server', () => {
     describe('when the server is responding as specified in the API description', () => {
@@ -181,7 +160,7 @@ describe('Dredd class Integration', () => {
       });
     });
 
-    it('should not print warning about missing Apiary API settings', () => assert.notInclude(stderr, 'Apiary API Key or API Project Subdomain were not provided.'));
+    it('should not print warning about missing Apiary API settings', () => assert.notInclude(output, 'Apiary API Key or API Project Subdomain were not provided.'));
 
     it('should contain Authentication header thanks to apiaryApiKey and apiaryApiName configuration', () => {
       assert.propertyVal(receivedHeaders, 'authentication', 'Token the-key');
@@ -193,7 +172,7 @@ describe('Dredd class Integration', () => {
       assert.propertyVal(receivedRequestTestRuns, 'public', false);
     });
 
-    it('should print using the new reporter', () => assert.include(stdout, 'http://url.me/test/run/1234_id'));
+    it('should print using the new reporter', () => assert.include(output, 'http://url.me/test/run/1234_id'));
 
     it('should send results from Gavel', () => {
       assert.isObject(receivedRequest);
@@ -276,7 +255,7 @@ describe('Dredd class Integration', () => {
         server2.on('close', done);
       });
 
-      it('should print using the reporter', () => assert.include(stdout, 'http://url.me/test/run/1234_id'));
+      it('should print using the reporter', () => assert.include(output, 'http://url.me/test/run/1234_id'));
 
       it('should send results from gavel', () => {
         assert.isObject(receivedRequest);
@@ -338,11 +317,11 @@ describe('Dredd class Integration', () => {
         server.on('close', done);
       });
 
-      it('should print warning about missing Apiary API settings', () => assert.include(stderr, 'Apiary API Key or API Project Subdomain were not provided.'));
+      it('should print warning about missing Apiary API settings', () => assert.include(output, 'Apiary API Key or API Project Subdomain were not provided.'));
 
-      it('should print link to documentation', () => assert.include(stderr, 'https://dredd.org/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests'));
+      it('should print link to documentation', () => assert.include(output, 'https://dredd.org/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests'));
 
-      it('should print using the new reporter', () => assert.include(stdout, 'http://url.me/test/run/1234_id'));
+      it('should print using the new reporter', () => assert.include(output, 'http://url.me/test/run/1234_id'));
 
       it('should send results from Gavel', () => {
         assert.isObject(receivedRequest);
@@ -426,10 +405,10 @@ describe('Dredd class Integration', () => {
 
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
-      it('should print error message to stderr', () => {
-        assert.include(stderr, 'Error when loading file from URL');
-        assert.include(stderr, 'Is the provided URL correct?');
-        assert.include(stderr, 'connection-error.apib');
+      it('should print error message to the output', () => {
+        assert.include(output, 'Error when loading file from URL');
+        assert.include(output, 'Is the provided URL correct?');
+        assert.include(output, 'connection-error.apib');
       });
     });
 
@@ -444,10 +423,10 @@ describe('Dredd class Integration', () => {
 
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
-      it('should print error message to stderr', () => {
-        assert.include(stderr, 'Unable to load file from URL');
-        assert.include(stderr, 'responded with status code 404');
-        assert.include(stderr, 'not-found.apib');
+      it('should print error message to the output', () => {
+        assert.include(output, 'Unable to load file from URL');
+        assert.include(output, 'responded with status code 404');
+        assert.include(output, 'not-found.apib');
       });
     });
 
@@ -463,7 +442,7 @@ describe('Dredd class Integration', () => {
   });
 
   describe('when OpenAPI 2 document has multiple responses', () => {
-    const reTransaction = /(\w+): (\w+) \((\d+)\) \/honey/g;
+    const reTransaction = /(skip|fail): (\w+) \((\d+)\) \/honey/g;
     let actual;
 
     before(done => execCommand({
@@ -475,7 +454,7 @@ describe('Dredd class Integration', () => {
       let groups;
       const matches = [];
       // eslint-disable-next-line
-        while (groups = reTransaction.exec(stdout)) { matches.push(groups); }
+      while (groups = reTransaction.exec(output)) { matches.push(groups); }
       actual = matches.map((match) => {
         const keyMap = {
           0: 'name', 1: 'action', 2: 'method', 3: 'statusCode',
@@ -499,7 +478,7 @@ describe('Dredd class Integration', () => {
   });
 
   describe('when OpenAPI 2 document has multiple responses and hooks unskip some of them', () => {
-    const reTransaction = /(\w+): (\w+) \((\d+)\) \/honey/g;
+    const reTransaction = /(skip|fail): (\w+) \((\d+)\) \/honey/g;
     let actual;
 
     before(done => execCommand({
@@ -512,7 +491,7 @@ describe('Dredd class Integration', () => {
       let groups;
       const matches = [];
       // eslint-disable-next-line
-        while (groups = reTransaction.exec(stdout)) { matches.push(groups); }
+      while (groups = reTransaction.exec(output)) { matches.push(groups); }
       actual = matches.map((match) => {
         const keyMap = {
           0: 'name', 1: 'action', 2: 'method', 3: 'statusCode',
@@ -552,7 +531,7 @@ describe('Dredd class Integration', () => {
       let groups;
       matches = [];
       // eslint-disable-next-line
-        while (groups = reTransactionName.exec(stdout)) { matches.push(groups[1]); }
+        while (groups = reTransactionName.exec(output)) { matches.push(groups[1]); }
       done(err);
     }));
 

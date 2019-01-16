@@ -5,7 +5,7 @@ const util = require('util');
 const { assert } = require('chai');
 
 const hooksLog = require('../../lib/hooksLog');
-const loggerStub = require('../../lib/logger');
+const reporterOutputLoggerStub = require('../../lib/reporters/reporterOutputLogger');
 
 describe('hooksLog()', () => {
   const exampleLogs = [
@@ -13,21 +13,17 @@ describe('hooksLog()', () => {
   ];
 
   before(() => {
-    sinon.stub(loggerStub, 'log').callsFake(() => { });
-    sinon.stub(loggerStub, 'debug').callsFake(() => { });
-    sinon.stub(loggerStub, 'hook').callsFake(() => { });
+    sinon.stub(reporterOutputLoggerStub, 'hook').callsFake(() => { });
   });
 
   after(() => {
-    loggerStub.log.restore();
-    loggerStub.debug.restore();
-    loggerStub.hook.restore();
+    reporterOutputLoggerStub.hook.restore();
   });
 
   it('should print using util.format only when content is an object type', () => {
-    const data = hooksLog(clone(exampleLogs), loggerStub, { hello: 'object world' });
-    assert.equal(loggerStub.hook.callCount, 1);
-    assert.deepEqual(loggerStub.hook.getCall(0).args[0], { hello: 'object world' });
+    const data = hooksLog(clone(exampleLogs), reporterOutputLoggerStub, { hello: 'object world' });
+    assert.equal(reporterOutputLoggerStub.hook.callCount, 1);
+    assert.deepEqual(reporterOutputLoggerStub.hook.getCall(0).args[0], { hello: 'object world' });
     assert.lengthOf(data, 2);
     assert.isObject(data[1]);
     assert.property(data[1], 'content');
@@ -38,14 +34,12 @@ describe('hooksLog()', () => {
 
   describe('functionality', () => {
     beforeEach(() => {
-      loggerStub.log.resetHistory();
-      loggerStub.debug.resetHistory();
-      loggerStub.hook.resetHistory();
+      reporterOutputLoggerStub.hook.resetHistory();
     });
 
     it('should push message to the passed array and return the new array', () => {
       const originLogs = [];
-      const data = hooksLog(originLogs, loggerStub, 'one message');
+      const data = hooksLog(originLogs, reporterOutputLoggerStub, 'one message');
       assert.isArray(data);
       assert.lengthOf(data, 1);
       assert.strictEqual(data, originLogs);
@@ -55,7 +49,7 @@ describe('hooksLog()', () => {
 
     it('should push message to undefined logs and return new array instead', () => {
       const originLogs = undefined;
-      const data = hooksLog(originLogs, loggerStub, 'another message');
+      const data = hooksLog(originLogs, reporterOutputLoggerStub, 'another message');
       assert.isArray(data);
       assert.lengthOf(data, 1);
       assert.isUndefined(originLogs);
@@ -65,7 +59,7 @@ describe('hooksLog()', () => {
 
     it('should append message to an existing logs array', () => {
       const originLogs = clone(exampleLogs);
-      const data = hooksLog(originLogs, loggerStub, 'some other idea');
+      const data = hooksLog(originLogs, reporterOutputLoggerStub, 'some other idea');
       assert.isArray(data);
       assert.lengthOf(data, 2);
       assert.deepEqual(data, originLogs);
@@ -74,15 +68,12 @@ describe('hooksLog()', () => {
     });
 
     it('should use "hook" logger level', () => {
-      hooksLog([], loggerStub, 'there is a log');
+      hooksLog([], reporterOutputLoggerStub, 'there is a log');
 
-      assert.isTrue(loggerStub.hook.called);
-      assert.equal(loggerStub.hook.callCount, 1);
+      assert.isTrue(reporterOutputLoggerStub.hook.called);
+      assert.equal(reporterOutputLoggerStub.hook.callCount, 1);
 
-      assert.isFalse(loggerStub.log.called);
-      assert.isFalse(loggerStub.debug.called);
-
-      assert.equal(loggerStub.hook.getCall(0).args[0], 'there is a log');
+      assert.equal(reporterOutputLoggerStub.hook.getCall(0).args[0], 'there is a log');
     });
   });
 });
