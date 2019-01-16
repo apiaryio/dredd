@@ -7,12 +7,14 @@ const { EventEmitter } = require('events');
 
 const loggerStub = require('../../../lib/logger');
 
-const fsExtraStub = { mkdirp(path, cb) { return cb(); } };
+const makeDirStub = (input, options) => makeDirStubImpl(input, options);
+let makeDirStubImpl = () => Promise.resolve();
+const makeDirStubImplBackup = makeDirStubImpl;
 
 const HTMLReporter = proxyquire('../../../lib/reporters/HTMLReporter', {
   '../logger': loggerStub,
   fs: fsStub,
-  'fs-extra': fsExtraStub,
+  'make-dir': makeDirStub,
 });
 
 describe('HTMLReporter', () => {
@@ -83,16 +85,16 @@ describe('HTMLReporter', () => {
     describe('when can create output directory', () => {
       beforeEach(() => {
         sinon.stub(fsStub, 'writeFile').callsFake((path, data, callback) => callback());
-        sinon.spy(fsExtraStub, 'mkdirp');
+        makeDirStubImpl = sinon.spy(makeDirStubImpl);
       });
 
       afterEach(() => {
         fsStub.writeFile.restore();
-        fsExtraStub.mkdirp.restore();
+        makeDirStubImpl = makeDirStubImplBackup;
       });
 
       it('should write the file', done => emitter.emit('end', () => {
-        assert.isOk(fsExtraStub.mkdirp.called);
+        assert.isOk(makeDirStubImpl.called);
         assert.isOk(fsStub.writeFile.called);
         done();
       }));
@@ -102,17 +104,17 @@ describe('HTMLReporter', () => {
       beforeEach(() => {
         sinon.stub(loggerStub, 'error');
         sinon.stub(fsStub, 'writeFile').callsFake((path, data, callback) => callback());
-        sinon.stub(fsExtraStub, 'mkdirp').callsFake((path, cb) => cb('error'));
+        makeDirStubImpl = sinon.stub().callsFake(() => Promise.reject(new Error()));
       });
 
       after(() => {
         loggerStub.error.restore();
         fsStub.writeFile.restore();
-        fsExtraStub.mkdirp.restore();
+        makeDirStubImpl = makeDirStubImplBackup;
       });
 
       it('should write to log', done => emitter.emit('end', () => {
-        assert.isOk(fsExtraStub.mkdirp.called);
+        assert.isOk(makeDirStubImpl.called);
         assert.isOk(fsStub.writeFile.notCalled);
         assert.isOk(loggerStub.error.called);
         done();

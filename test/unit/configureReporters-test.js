@@ -144,7 +144,7 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
       it('should use the default output paths for the additional reporters', (done) => {
         configureReporters(configuration, {}, {}, () => {});
         assert.isOk(XUnitReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file1'));
-        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, null));
+        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, undefined));
         return done();
       });
     });
@@ -195,7 +195,7 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
       it('should use the default output paths for the additional reporters', (done) => {
         configureReporters(configuration, {}, {}, () => {});
         assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file1'));
-        assert.isOk(HtmlReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, null));
+        assert.isOk(HtmlReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, undefined));
         return done();
       });
     });
