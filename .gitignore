@@ -1,2 +1,4 @@
-node_modules
+/smoke
 /coverage
+node_modules
+dredd-transactions-*.tgz

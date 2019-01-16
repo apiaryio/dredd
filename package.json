@@ -7,14 +7,14 @@
     "node": ">= 6"
   },
   "scripts": {
-    "postshrinkwrap": "node ./scripts/postshrinkwrap.js",
+    "prepack": "node ./scripts/prepack.js",
     "clean": "rimraf ./coverage",
     "lint": "bash ./scripts/commitlint.sh && eslint --ignore-path .gitignore .",
     "test": "npm run clean && mocha ./test",
     "test:coverage": "npm run clean && istanbul cover ./node_modules/.bin/_mocha -- ./test",
-    "ci:install": "bash scripts/npm-install-ci.sh",
-    "ci:test": "npm run lint && npm run test:coverage",
-    "ci:coverage": "bash scripts/coveralls.sh",
+    "ci:lint": "npm run lint",
+    "ci:test": "npm run test:coverage && bash ./scripts/coveralls.sh",
+    "ci:test:smoke": "bash ./scripts/smoke.sh",
     "ci:release": "semantic-release"
   },
   "repository": {
@@ -23,7 +23,6 @@
   },
   "files": [
     "lib",
-    "npm-shrinkwrap.json",
     "README.md"
   ],
   "dependencies": {
@@ -32,6 +31,9 @@
     "fury-adapter-swagger": "0.23.1",
     "uri-template": "1.0.1"
   },
+  "bundledDependencies": [
+    "fury-adapter-apib-parser"
+  ],
   "devDependencies": {
     "@commitlint/cli": "7.2.1",
     "@commitlint/config-conventional": "7.1.2",
