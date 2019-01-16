@@ -29,9 +29,5 @@ jobs:
     # The GH_TOKEN and NPM_TOKEN environment variables are expected to be set
     # in https://travis-ci.org/apiaryio/dredd/settings
     - stage: "semantic release"
-      env:
-        global:
-          # GH_TOKEN and NPM_TOKEN encrypted by 'travis encrypt' utility
-          - secure: "wvzBndJSj08eo4AJWS7SyiPz1yG8PprxwaFbS4VNvd7cbnZvPAEsaAYvjt7ubn4KtcSXPpslUV12EO4xNPghaJUAsnJjRxf6+HSz+0M0BQBOpCwtg2BwXxll3FSRW+KZ/27bJXPl0F2nRDrsyBLbQ3+KQ9CF/QnenE6YvUfSPKrcg/OgZIQ6QeFMOgmP9Z/lP6zOkyigapsaMiRr2/8H9kx21Z6Wgd0lB+LMsKmPmNAUadN5TSJY6t4+aS5UrNsW8DMeYUDbcGk9XWh+YE86MqrP7FZCQoUfyP72ZEnUKrRJO+osDBGNJbxoIDVPQfPlIAx6gdsw+KAoyzT8/roc1MQBrlfhRAFlNyKjXqd0TUqg3I7ji4ZIababoCI4Qz4GGh6ZEJ2rQCYDnBw9cT2OzzoSx8QyiEnRu/qfKitIF7CcNCzclzp0EILXTZijgUaqK8g6rjwcLTnbN9S3KdpUTp3KN/NPgZm/lupxKVaPRqQH7MOWATYEzzw5wYx1H4ihNyKKasu5MHPJJelCW8X3qecYFahNQXaiI+ifZpG3jyH2s12Oi/tLxtYLPt8R+ScXdrGrs0FgX3azZn6YB3phWIV4OD+1jBGDJiym8Wk45Vm0EsneyOZaitFO2EDawWgyt1hQzbmvKUXVL70OG6tdaT8ztABYDz9jNjGhg80LYmQ="
       script: "npm run ci:release"
       if: fork = false AND branch = master AND type = push
