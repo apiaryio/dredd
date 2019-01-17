@@ -39,11 +39,11 @@ describe('DotReporter', () => {
   });
 
   describe('when starting', () => {
-    beforeEach(() => sinon.spy(loggerStub, 'info'));
+    beforeEach(() => sinon.spy(loggerStub, 'debug'));
 
-    afterEach(() => loggerStub.info.restore());
+    afterEach(() => loggerStub.debug.restore());
 
-    it('should log that testing has begun', () => emitter.emit('start', '', () => assert.isOk(loggerStub.info.called)));
+    it('should log that testing has begun', () => emitter.emit('start', '', () => assert.isOk(loggerStub.debug.called)));
   });
 
   describe('when ending', () => {

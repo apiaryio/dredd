@@ -25,15 +25,16 @@ describe('CLIReporter', () => {
   });
 
   describe('when starting', () => {
-    beforeEach(() => sinon.spy(loggerStub, 'info'));
+    beforeEach(() => sinon.spy(loggerStub, 'debug'));
 
-    afterEach(() => loggerStub.info.restore());
+    afterEach(() => loggerStub.debug.restore());
 
     it('should write starting to the console', (done) => {
       const emitter = new EventEmitter();
       (new CLIReporter(emitter, {}, {}, true));
+      loggerStub.debug.resetHistory();
       emitter.emit('start', '', () => {
-        assert.isOk(loggerStub.info.calledOnce);
+        assert.isOk(loggerStub.debug.calledOnce);
         done();
       });
     });

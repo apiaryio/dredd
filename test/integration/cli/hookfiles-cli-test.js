@@ -552,8 +552,8 @@ describe('CLI', () => {
         });
       });
 
-      it('should not display anything', () => {
-        assert.notInclude(runtimeInfo.dredd.output, 'info:');
+      it('should not display any debug logging', () => {
+        assert.notInclude(runtimeInfo.dredd.output, 'debug:');
       });
     });
 

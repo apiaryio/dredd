@@ -77,7 +77,7 @@ describe('CLI - Server Process', () => {
         done(err);
       }));
 
-      it('should inform about starting server with custom command', () => assert.include(cliInfo.stdout, 'Starting backend server process with command'));
+      it('should inform about starting server with custom command', () => assert.include(cliInfo.stderr, 'Starting backend server process with command'));
       it('should redirect server\'s welcome message', () => assert.include(cliInfo.stdout, `Dummy server listening on port ${DEFAULT_SERVER_PORT}`));
       it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
     });
@@ -97,7 +97,7 @@ describe('CLI - Server Process', () => {
         done(err);
       }));
 
-      it('should inform about starting server with custom command', () => assert.include(cliInfo.stdout, 'Starting backend server process with command'));
+      it('should inform about starting server with custom command', () => assert.include(cliInfo.stderr, 'Starting backend server process with command'));
       it('should report problem with server process spawn', () => assert.include(cliInfo.stderr, 'Command to start backend server process failed, exiting Dredd'));
       it('should exit with status 1', () => assert.equal(cliInfo.exitStatus, 1));
     });
@@ -142,7 +142,7 @@ describe('CLI - Server Process', () => {
           done(err);
         }));
 
-        it('should inform about starting server with custom command', () => assert.include(cliInfo.stdout, 'Starting backend server process with command'));
+        it('should inform about starting server with custom command', () => assert.include(cliInfo.stderr, 'Starting backend server process with command'));
         if (scenario.expectServerBoot) {
           it('should redirect server\'s boot message', () => assert.include(cliInfo.stdout, `Dummy server listening on port ${DEFAULT_SERVER_PORT}`));
         }
@@ -170,10 +170,10 @@ describe('CLI - Server Process', () => {
         done(err);
       }));
 
-      it('should inform about starting server with custom command', () => assert.include(cliInfo.stdout, 'Starting backend server process with command'));
-      it('should inform about gracefully terminating the server', () => assert.include(cliInfo.stdout, 'Gracefully terminating the backend server process'));
+      it('should inform about starting server with custom command', () => assert.include(cliInfo.stderr, 'Starting backend server process with command'));
+      it('should inform about gracefully terminating the server', () => assert.include(cliInfo.stderr, 'Gracefully terminating the backend server process'));
       it('should redirect server\'s message about ignoring termination', () => assert.include(cliInfo.stdout, 'ignoring termination'));
-      it('should inform about forcefully killing the server', () => assert.include(cliInfo.stdout, 'Killing the backend server process'));
+      it('should inform about forcefully killing the server', () => assert.include(cliInfo.stderr, 'Killing the backend server process'));
       it('the server should not be running', done => isProcessRunning('test/fixtures/scripts/', (err, isRunning) => {
         if (!err) { assert.isFalse(isRunning); }
         done(err);

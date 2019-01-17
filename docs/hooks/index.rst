@@ -137,7 +137,6 @@ You can get a list of all transaction names available in your API description do
          :emphasize-lines: 3, 5
 
          $ dredd ./blog.apib http://127.0.0.1 --names
-         info: Beginning Dredd testing...
          info: Articles > List articles
          skip: GET (200) /articles
          info: Articles > Publish an article
@@ -156,7 +155,6 @@ You can get a list of all transaction names available in your API description do
          :emphasize-lines: 3, 5
 
          $ dredd ./blog.yaml http://127.0.0.1 --names
-         info: Beginning Dredd testing...
          info: Articles > List articles > 200 > application/json
          skip: GET (200) /articles
          info: Articles > Publish an article > 201 > application/json

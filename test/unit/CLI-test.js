@@ -56,27 +56,25 @@ function execCommand(custom = {}, cb) {
     if (!finished) {
       finished = true;
       exitStatus = code || 0;
-      return cb(null, stdout, stderr, (code != null ? code : 0));
+      return cb();
     }
   })).run());
 }
 
 describe('CLI class', () => {
   before(() => {
-    ['warn', 'error'].forEach((method) => {
+    ['warn', 'error', 'debug'].forEach((method) => {
       sinon
         .stub(loggerStub, method)
         .callsFake((chunk) => { stderr += `\n${method}: ${chunk}`; });
     });
-    ['log', 'info', 'silly', 'verbose', 'debug'].forEach((method) => {
-      sinon
-        .stub(loggerStub, method)
-        .callsFake((chunk) => { stdout += `\n${method}: ${chunk}`; });
-    });
+    sinon
+      .stub(loggerStub, 'log')
+      .callsFake((chunk) => { stdout += chunk; });
   });
 
   after(() => {
-    ['warn', 'error', 'log', 'info', 'silly', 'verbose', 'debug'].forEach((method) => {
+    ['warn', 'error', 'debug', 'log'].forEach((method) => {
       loggerStub[method].restore();
     });
   });
@@ -247,7 +245,7 @@ describe('CLI class', () => {
 
   describe('when called w/ OR wo/ exiting arguments', () => {
     describe('--help', () => {
-      before(done => execCommand({ argv: ['--help'] }, () => done()));
+      before(done => execCommand({ argv: ['--help'] }, done));
 
       it('prints out some really nice help text with all options descriptions', () => {
         assert.include(stderr, 'Usage:');
@@ -258,15 +256,17 @@ describe('CLI class', () => {
     });
 
     describe('--version', () => {
-      before(done => execCommand({ argv: ['--version'] }, () => done()));
+      before(done => execCommand({ argv: ['--version'] }, done));
 
-      it('prints out version', () => assert.include(stdout, `${packageData.name} v${packageData.version}`));
+      it('prints out version', () => {
+        assert.include(stdout, `${packageData.name} v${packageData.version}`);
+      });
     });
 
     describe('init', () => {
       before((done) => {
         sinon.stub(configUtilsStub, 'save');
-        execCommand({ argv: ['init'] }, () => done());
+        execCommand({ argv: ['init'] }, done);
       });
 
       after(() => {
@@ -278,7 +278,7 @@ describe('CLI class', () => {
     });
 
     describe('without argv', () => {
-      before(done => execCommand({ argv: [] }, () => done()));
+      before(done => execCommand({ argv: [] }, done));
 
       it('prints out an error message', () => assert.include(stderr, 'Error: Must specify'));
     });
@@ -332,7 +332,7 @@ describe('CLI class', () => {
         $0: 'node ./bin/dredd',
       }));
 
-      execCommand({ argv: ['--names'] }, () => done());
+      execCommand({ argv: ['--names'] }, done);
     });
 
     after(() => {
@@ -367,7 +367,7 @@ describe('CLI class', () => {
           '--server',
           'foo/bar',
         ],
-      }, () => done());
+      }, done);
     });
 
     after(() => crossSpawnStub.spawn.restore());

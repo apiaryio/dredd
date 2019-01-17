@@ -664,10 +664,10 @@ GET /url
   });
 
   describe('#logProxySettings', () => {
-    let verboseLogger;
+    let debugLogger;
 
-    beforeEach(() => { verboseLogger = sinon.spy(loggerStub, 'verbose'); });
-    afterEach(() => loggerStub.verbose.restore());
+    beforeEach(() => { debugLogger = sinon.spy(loggerStub, 'debug'); });
+    afterEach(() => loggerStub.debug.restore());
 
     describe('when the proxy is set by lowercase environment variable', () => {
       beforeEach(() => {
@@ -676,7 +676,7 @@ GET /url
       });
       afterEach(() => delete process.env.http_proxy);
 
-      it('logs about the setting', () => assert.include(verboseLogger.lastCall.args[0],
+      it('logs about the setting', () => assert.include(debugLogger.lastCall.args[0],
         'HTTP(S) proxy specified by environment variables: http_proxy=http://proxy.example.com'));
     });
 
@@ -687,7 +687,7 @@ GET /url
       });
       afterEach(() => delete process.env.HTTPS_PROXY);
 
-      it('logs about the setting', () => assert.include(verboseLogger.lastCall.args[0],
+      it('logs about the setting', () => assert.include(debugLogger.lastCall.args[0],
         'HTTP(S) proxy specified by environment variables: '
           + 'HTTPS_PROXY=http://proxy.example.com'));
     });
@@ -703,7 +703,7 @@ GET /url
         delete process.env.NO_PROXY;
       });
 
-      it('logs about the setting', () => assert.include(verboseLogger.lastCall.args[0],
+      it('logs about the setting', () => assert.include(debugLogger.lastCall.args[0],
         'HTTP(S) proxy specified by environment variables: '
           + 'HTTPS_PROXY=http://proxy.example.com, '
           + 'NO_PROXY=whitelisted.example.com'));
@@ -720,7 +720,7 @@ GET /url
         delete process.env.NO_PROXY;
       });
 
-      it('is ignored', () => assert.include(verboseLogger.lastCall.args[0],
+      it('is ignored', () => assert.include(debugLogger.lastCall.args[0],
         'HTTP(S) proxy specified by environment variables: '
           + 'NO_PROXY=whitelisted.example.com'));
     });

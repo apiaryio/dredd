@@ -12,7 +12,6 @@ const PORT = 9876;
 let exitStatus;
 
 let stderr = '';
-let stdout = '';
 
 const addHooksStub = proxyquire('../../../lib/addHooks', {
   './logger': loggerStub,
@@ -36,7 +35,6 @@ const CLIStub = proxyquire('../../../lib/CLI', {
 });
 
 function execCommand(custom = {}, cb) {
-  stdout = '';
   stderr = '';
   exitStatus = null;
   let finished = false;
@@ -44,7 +42,7 @@ function execCommand(custom = {}, cb) {
     if (!finished) {
       finished = true;
       exitStatus = (exitStatusCode != null ? exitStatusCode : 0);
-      cb(null, stdout, stderr, (exitStatusCode != null ? exitStatusCode : 0));
+      cb();
     }
   }));
 
@@ -53,20 +51,15 @@ function execCommand(custom = {}, cb) {
 
 describe('CLI class Integration', () => {
   before(() => {
-    ['warn', 'error'].forEach((method) => {
+    ['warn', 'error', 'debug'].forEach((method) => {
       sinon
         .stub(loggerStub, method)
         .callsFake((chunk) => { stderr += `\n${method}: ${chunk}`; });
     });
-    ['log', 'info', 'silly', 'verbose', 'debug'].forEach((method) => {
-      sinon
-        .stub(loggerStub, method)
-        .callsFake((chunk) => { stdout += `\n${method}: ${chunk}`; });
-    });
   });
 
   after(() => {
-    ['warn', 'error', 'log', 'info', 'silly', 'verbose', 'debug'].forEach((method) => {
+    ['warn', 'error', 'debug'].forEach((method) => {
       loggerStub[method].restore();
     });
   });
@@ -74,7 +67,7 @@ describe('CLI class Integration', () => {
   describe('When using configuration file', () => {
     describe('When specifying custom configuration file by --config', () => {
       const configPath = '../../../custom-dredd-config-path.yaml';
-      const cmd = { argv: ['--config', configPath] };
+      const cmd = { argv: ['--config', configPath, '--loglevel=debug'] };
       const options = { _: ['api-description.apib', 'http://127.0.0.1'] };
 
       let fsExistsSync;
@@ -92,12 +85,12 @@ describe('CLI class Integration', () => {
 
       it('should call fs.existsSync with given path', () => assert.isTrue(fsExistsSync.calledWith(configPath)));
       it('should call configUtils.load with given path', () => assert.isTrue(configUtilsLoad.calledWith(configPath)));
-      it('should print message about using given configuration file', () => assert.include(stdout, `info: Configuration '${configPath}' found`));
+      it('should print message about using given configuration file', () => assert.include(stderr, `debug: Configuration '${configPath}' found`));
     });
 
     describe('When dredd.yml exists', () => {
       const configPath = './dredd.yml';
-      const cmd = { argv: [] };
+      const cmd = { argv: ['--loglevel=debug'] };
       const options = { _: ['api-description.apib', 'http://127.0.0.1'] };
 
       let fsExistsSync;
@@ -115,12 +108,12 @@ describe('CLI class Integration', () => {
 
       it('should call fs.existsSync with dredd.yml', () => assert.isTrue(fsExistsSync.calledWith(configPath)));
       it('should call configUtils.load with dredd.yml', () => assert.isTrue(configUtilsLoad.calledWith(configPath)));
-      it('should print message about using dredd.yml', () => assert.include(stdout, `info: Configuration '${configPath}' found`));
+      it('should print message about using dredd.yml', () => assert.include(stderr, `debug: Configuration '${configPath}' found`));
     });
 
     describe('When dredd.yml does not exist', () => {
       const configPath = './dredd.yml';
-      const cmd = { argv: [] };
+      const cmd = { argv: ['--loglevel=debug'] };
 
       let fsExistsSync;
       let configUtilsLoad;
@@ -137,7 +130,7 @@ describe('CLI class Integration', () => {
 
       it('should call fs.existsSync with dredd.yml', () => assert.isTrue(fsExistsSync.calledWith(configPath)));
       it('should never call configUtils.load', () => assert.isFalse(configUtilsLoad.called));
-      it('should not print message about using configuration file', () => assert.notInclude(stdout, 'info: Configuration'));
+      it('should not print message about using configuration file', () => assert.notInclude(stderr, 'debug: Configuration'));
     });
   });
 
@@ -187,7 +180,7 @@ describe('CLI class Integration', () => {
     }));
 
     describe('and I try to load a file from bad hostname at all', () => {
-      before(done => execCommand(errorCmd, () => done()));
+      before(done => execCommand(errorCmd, done));
 
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
@@ -199,7 +192,7 @@ describe('CLI class Integration', () => {
     });
 
     describe('and I try to load a file that does not exist from an existing server', () => {
-      before(done => execCommand(wrongCmd, () => done()));
+      before(done => execCommand(wrongCmd, done));
 
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
@@ -211,7 +204,7 @@ describe('CLI class Integration', () => {
     });
 
     describe('and I try to load a file that actually is there', () => {
-      before(done => execCommand(goodCmd, () => done()));
+      before(done => execCommand(goodCmd, done));
 
       it('should exit with status 0', () => assert.equal(exitStatus, 0));
     });

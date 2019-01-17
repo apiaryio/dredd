@@ -98,7 +98,7 @@ describe('Dredd class Integration', () => {
   });
 
 
-  describe("when using reporter -r apiary with 'verbose' logging with custom apiaryApiKey and apiaryApiName", () => {
+  describe("when using reporter -r apiary with 'debug' logging with custom apiaryApiKey and apiaryApiName", () => {
     let server;
     let server2;
     let receivedRequest;

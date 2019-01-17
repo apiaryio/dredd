@@ -20,12 +20,12 @@ nock.enableNetConnect();
 describe('ApiaryReporter', () => {
   let env = {};
   beforeEach(() => {
-    sinon.stub(loggerStub, 'verbose');
+    sinon.stub(loggerStub, 'debug');
     sinon.stub(reporterOutputLoggerStub, 'complete');
   });
 
   afterEach(() => {
-    sinon.stub(loggerStub.verbose.restore());
+    sinon.stub(loggerStub.debug.restore());
     sinon.stub(reporterOutputLoggerStub.complete.restore());
   });
 
@@ -199,7 +199,7 @@ describe('ApiaryReporter', () => {
           emitter = new EventEmitter();
           const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom });
           apiaryReporter._performRequestAsync('/', 'POST', '', () => {
-            assert.isOk(loggerStub.verbose.calledWithMatch('POST https://api.example.com:1234/ (without body)'));
+            assert.isOk(loggerStub.debug.calledWithMatch('POST https://api.example.com:1234/ (without body)'));
             done();
           });
         });
@@ -215,7 +215,7 @@ describe('ApiaryReporter', () => {
           emitter = new EventEmitter();
           const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom });
           apiaryReporter._performRequestAsync('/', 'POST', '', () => {
-            assert.isOk(loggerStub.verbose.calledWithMatch('POST https://api.example.com:1234/ (without body)'));
+            assert.isOk(loggerStub.debug.calledWithMatch('POST https://api.example.com:1234/ (without body)'));
             done();
           });
         }));
@@ -224,7 +224,7 @@ describe('ApiaryReporter', () => {
           emitter = new EventEmitter();
           const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom });
           apiaryReporter._performRequestAsync('/hello?q=1', 'POST', '', () => {
-            assert.isOk(loggerStub.verbose.calledWithMatch('POST https://api.example.com:1234/hello?q=1 (without body)'));
+            assert.isOk(loggerStub.debug.calledWithMatch('POST https://api.example.com:1234/hello?q=1 (without body)'));
             done();
           });
         }));
