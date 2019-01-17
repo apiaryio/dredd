@@ -149,7 +149,7 @@ function runDredd(dredd, serverPort, callback) {
   if (dredd.configuration.server == null) { dredd.configuration.server = `http://127.0.0.1:${serverPort}`; }
 
   if (dredd.configuration.options == null) { dredd.configuration.options = {}; }
-  if (dredd.configuration.options.level == null) { dredd.configuration.options.level = 'silly'; }
+  if (dredd.configuration.options.loglevel == null) { dredd.configuration.options.loglevel = 'debug'; }
 
   let stats;
 

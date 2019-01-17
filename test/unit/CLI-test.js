@@ -326,9 +326,8 @@ describe('CLI class', () => {
         details: false,
         method: [],
         color: true,
-        level: 'info',
+        loglevel: 'warning',
         timestamp: false,
-        silent: false,
         path: [],
         $0: 'node ./bin/dredd',
       }));

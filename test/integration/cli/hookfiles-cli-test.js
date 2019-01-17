@@ -533,7 +533,7 @@ describe('CLI', () => {
       });
     });
 
-    describe('when setting the log output level with --level', () => {
+    describe('when setting the log output level with --loglevel', () => {
       let runtimeInfo;
 
       before((done) => {
@@ -543,7 +543,7 @@ describe('CLI', () => {
         const args = [
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-          '--level=error',
+          '--loglevel=error',
           '--color=false',
         ];
         runCLIWithServer(args, app, (err, info) => {
@@ -734,6 +734,7 @@ describe('CLI', () => {
           './test/fixtures/multifile/*.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--names',
+          '--loglevel=debug',
         ];
         runCLI(args, (err, info) => {
           cliInfo = info;
@@ -800,6 +801,7 @@ describe('CLI', () => {
         './test/fixtures/multiple-examples.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--path=./test/fixtures/multifile/*.apib',
+        '--loglevel=debug',
         '--names',
       ];
       runCLI(args, (err, info) => {

@@ -52,7 +52,6 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
     options: {
       reporter: [],
       output: [],
-      silent: false,
       'inline-errors': false,
     },
   };
@@ -71,15 +70,15 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
     });
 
     describe('when silent', () => {
-      before(() => configuration.options.silent = true);
+      before(() => configuration.options.loglevel = 'silent');
 
-      after(() => configuration.options.silent = false);
+      after(() => configuration.options.loglevel = 'silent');
 
       beforeEach(() => resetStubs());
 
-      it('should not add any reporters', (done) => {
+      it('should still add reporters', (done) => {
         configureReporters(configuration, {}, {}, null);
-        assert.notOk(CliReporterStub.called);
+        assert.ok(CliReporterStub.called);
         return done();
       });
     });

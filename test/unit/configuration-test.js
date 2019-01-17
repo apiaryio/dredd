@@ -14,13 +14,13 @@ describe('configuration.applyLoggingOptions()', () => {
   it('applies logging options', () => {
     config = configuration.applyLoggingOptions({
       color: 'true',
-      level: 'debug',
+      loglevel: 'debug',
     });
 
     assert.propertyVal(config, 'color', true);
     assert.equal(logger.transports.console.colorize, true);
 
-    assert.propertyVal(config, 'level', 'debug');
+    assert.propertyVal(config, 'loglevel', 'debug');
     assert.equal(logger.transports.console.level, 'debug');
   });
 
@@ -46,14 +46,14 @@ describe('configuration.applyConfiguration()', () => {
     config = configuration.applyConfiguration({
       options: {
         color: 'true',
-        level: 'debug',
+        loglevel: 'debug',
       },
     });
 
     assert.nestedPropertyVal(config, 'options.color', true);
     assert.equal(logger.transports.console.colorize, true);
 
-    assert.nestedPropertyVal(config, 'options.level', 'debug');
+    assert.nestedPropertyVal(config, 'options.loglevel', 'debug');
     assert.equal(logger.transports.console.level, 'debug');
   });
 });

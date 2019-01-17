@@ -49,12 +49,10 @@ const argvData = {
   m: [],
   color: true,
   c: true,
-  level: 'info',
-  l: 'info',
+  loglevel: 'warning',
+  l: 'warning',
   timestamp: false,
   t: false,
-  silent: false,
-  q: false,
   path: [],
   p: [],
   $0: 'node ./bin/dredd',
@@ -163,9 +161,8 @@ inline-errors: false
 details: false
 method: []
 color: true
-level: info
+loglevel: info
 timestamp: false
-silent: false
 path: []
 blueprint: blueprint
 endpoint: endpoint\

@@ -69,6 +69,7 @@ describe('CLI - Server Process', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         `--server=node ./test/fixtures/scripts/dummy-server.js ${DEFAULT_SERVER_PORT}`,
         '--server-wait=1',
+        '--loglevel=debug',
       ];
 
       before(done => runCLI(args, (err, info) => {
@@ -88,6 +89,7 @@ describe('CLI - Server Process', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--server=/foo/bar/baz',
         '--server-wait=1',
+        '--loglevel=debug',
       ];
 
       before(done => runCLI(args, (err, info) => {
@@ -101,25 +103,25 @@ describe('CLI - Server Process', () => {
     });
 
     for (const scenario of [{
-      description: 'When crashes before requests',
+      description: 'when crashes before requests',
       apiDescriptionDocument: './test/fixtures/single-get.apib',
       server: 'node test/fixtures/scripts/exit-3.js',
       expectServerBoot: false,
     },
     {
-      description: 'When crashes during requests',
+      description: 'when crashes during requests',
       apiDescriptionDocument: './test/fixtures/apiary.apib',
       server: `node test/fixtures/scripts/dummy-server-crash.js ${DEFAULT_SERVER_PORT}`,
       expectServerBoot: true,
     },
     {
-      description: 'When killed before requests',
+      description: 'when killed before requests',
       apiDescriptionDocument: './test/fixtures/single-get.apib',
       server: 'node test/fixtures/scripts/kill-self.js',
       expectServerBoot: false,
     },
     {
-      description: 'When killed during requests',
+      description: 'when killed during requests',
       apiDescriptionDocument: './test/fixtures/apiary.apib',
       server: `node test/fixtures/scripts/dummy-server-kill.js ${DEFAULT_SERVER_PORT}`,
       expectServerBoot: true,
@@ -132,6 +134,7 @@ describe('CLI - Server Process', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           `--server=${scenario.server}`,
           '--server-wait=1',
+          '--loglevel=debug',
         ];
 
         before(done => runCLI(args, (err, info) => {
@@ -159,7 +162,7 @@ describe('CLI - Server Process', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         `--server=node test/fixtures/scripts/dummy-server-ignore-term.js ${DEFAULT_SERVER_PORT}`,
         '--server-wait=1',
-        '--level=verbose',
+        '--loglevel=debug',
       ];
 
       before(done => runCLI(args, (err, info) => {

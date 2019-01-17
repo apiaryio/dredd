@@ -19,7 +19,7 @@ function execCommand(options = {}, cb) {
   exitStatus = null;
   let finished = false;
   if (!options.server) { options.server = `http://127.0.0.1:${PORT}`; }
-  if (!options.level) { options.level = 'info'; }
+  if (!options.loglevel) { options.loglevel = 'warning'; }
   new Dredd(options).run((error, stats = {}) => {
     if (!finished) {
       finished = true;
@@ -112,7 +112,7 @@ describe('Dredd class Integration', () => {
         options: {
           path: ['./test/fixtures/single-get.apib'],
           reporter: ['apiary'],
-          level: 'verbose',
+          loglevel: 'debug',
         },
         custom: {
           apiaryApiUrl: `http://127.0.0.1:${PORT + 1}`,
@@ -224,7 +224,7 @@ describe('Dredd class Integration', () => {
           options: {
             path: ['./test/fixtures/single-get.apib'],
             reporter: ['apiary'],
-            level: 'verbose',
+            loglevel: 'debug',
           },
           custom: {
             apiaryReporterEnv: {
@@ -281,7 +281,7 @@ describe('Dredd class Integration', () => {
           options: {
             path: ['./test/fixtures/single-get.apib'],
             reporter: ['apiary'],
-            level: 'verbose',
+            loglevel: 'debug',
           },
           custom: {
             apiaryReporterEnv: {

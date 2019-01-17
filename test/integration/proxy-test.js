@@ -19,8 +19,7 @@ const REGULAR_HTTP_METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
 function createAndRunDredd(configuration, done) {
   if (!configuration.options) { configuration.options = {}; }
   configuration.options.color = false;
-  configuration.options.silent = true;
-  configuration.options.level = 'silly';
+  configuration.options.loglevel = 'debug';
 
   let dredd;
   recordLogging((next) => {
@@ -172,6 +171,7 @@ ${protocol}_proxy=${PROXY_URL}\
     describe('Requesting Server Under Test', () => test({
       protocol,
       configureDredd(configuration) {
+        configuration.loglevel = 'debug';
         configuration.server = serverUrl;
         configuration.options.path = './test/fixtures/single-get.apib';
       },
@@ -230,6 +230,7 @@ http_proxy=${PROXY_URL}, no_proxy=${SERVER_HOST}\
   describe('Requesting Server Under Test', () => test({
     protocol: 'http',
     configureDredd(configuration) {
+      configuration.loglevel = 'debug';
       configuration.server = serverUrl;
       configuration.options.path = './test/fixtures/single-get.apib';
     },
