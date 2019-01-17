@@ -92,19 +92,14 @@
     "description": "Determines whether console output should include colors.",
     "default": true
   },
-  "level": {
+  "loglevel": {
     "alias": "l",
-    "description": "The level of logging to output. Options: silly, debug, verbose, info, warn, error.",
-    "default": "info"
+    "description": "The level of logging to output. Options: 'debug', 'warning', 'error', 'silent'.",
+    "default": "warning"
   },
   "timestamp": {
     "alias": "t",
     "description": "Determines whether console output should include timestamps.",
-    "default": false
-  },
-  "silent": {
-    "alias": "q",
-    "description": "Silences commandline output.",
     "default": false
   },
   "path": {
