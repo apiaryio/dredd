@@ -6,18 +6,18 @@ const logger = require('../../lib/logger');
 const reporterOutputLogger = require('../../lib/reporters/reporterOutputLogger');
 
 
-describe('configuration.applyLoggingOptions()', () => {
-  let loggerSettings;
-  let reporterOutputLoggerSettings;
+const defaultLoggerConsole = clone(logger.transports.console);
+const defaultReporterOutputLoggerConsole = clone(reporterOutputLogger.transports.console);
 
-  beforeEach(() => {
-    loggerSettings = clone(logger.transports.console);
-    reporterOutputLoggerSettings = clone(reporterOutputLogger.transports.console);
-  });
-  afterEach(() => {
-    logger.transports.console = loggerSettings;
-    reporterOutputLogger.transports.console = reporterOutputLoggerSettings;
-  });
+function resetLoggerConsoles() {
+  logger.transports.console = defaultLoggerConsole;
+  reporterOutputLogger.transports.console = defaultReporterOutputLoggerConsole;
+}
+
+
+describe('configuration.applyLoggingOptions()', () => {
+  beforeEach(resetLoggerConsoles);
+  afterEach(resetLoggerConsoles);
 
   describe('with color not set', () => {
     beforeEach(() => {
