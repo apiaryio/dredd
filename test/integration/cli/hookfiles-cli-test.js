@@ -508,31 +508,6 @@ describe('CLI', () => {
       });
     });
 
-    describe('when suppressing color with --color=false', () => {
-      let runtimeInfo;
-
-      before((done) => {
-        const app = createServer();
-        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
-
-        const args = [
-          './test/fixtures/single-get.apib',
-          `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-          '--color=false',
-        ];
-        runCLIWithServer(args, app, (err, info) => {
-          runtimeInfo = info;
-          done(err);
-        });
-      });
-
-      it('should print without colors', () => {
-        // If colors are not on, there is no closing color code between
-        // the "pass" and the ":"
-        assert.include(runtimeInfo.dredd.stdout, 'pass:');
-      });
-    });
-
     describe('when setting the log output level with --loglevel', () => {
       let runtimeInfo;
 
@@ -544,7 +519,7 @@ describe('CLI', () => {
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--loglevel=error',
-          '--color=false',
+          '--no-color',
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;

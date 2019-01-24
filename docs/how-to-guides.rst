@@ -712,7 +712,7 @@ As you can see, the parameters go like this:
 
 ::
 
-   $ dredd -c apiaryApiKey:<Apiary API Key> -c apiaryApiName:<API Project Subdomain>
+   $ dredd -j apiaryApiKey:<Apiary API Key> -j apiaryApiName:<API Project Subdomain>
 
 In addition to using parameters and ``dredd.yml``, you can also use environment variables:
 

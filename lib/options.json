@@ -88,8 +88,8 @@
     "default": []
   },
   "color": {
-    "alias": "c",
-    "description": "Determines whether console output should include colors.",
+    "description": "Use --no-color to suppress colors on the output",
+    "boolean": true,
     "default": true
   },
   "loglevel": {

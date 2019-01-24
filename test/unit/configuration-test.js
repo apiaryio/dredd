@@ -19,35 +19,9 @@ describe('configuration.applyLoggingOptions()', () => {
     reporterOutputLogger.transports.console = reporterOutputLoggerSettings;
   });
 
-  describe('with color set to true', () => {
-    let options;
-
+  describe('with color not set', () => {
     beforeEach(() => {
-      options = configuration.applyLoggingOptions({ color: true });
-    });
-
-    it('resulting configuration should contain \'color\' set to boolean true', () => {
-      assert.isTrue(options.color);
-    });
-
-    it('the application logger should be set to colorize', () => {
-      assert.isTrue(logger.transports.console.colorize);
-    });
-
-    it('the application output should be set to colorize', () => {
-      assert.isTrue(reporterOutputLogger.transports.console.colorize);
-    });
-  });
-
-  describe('with color set to \'true\' string value', () => {
-    let options;
-
-    beforeEach(() => {
-      options = configuration.applyLoggingOptions({ color: 'true' });
-    });
-
-    it('resulting configuration should contain \'color\' set to boolean true', () => {
-      assert.isTrue(options.color);
+      configuration.applyLoggingOptions({});
     });
 
     it('the application logger should be set to colorize', () => {
@@ -60,34 +34,8 @@ describe('configuration.applyLoggingOptions()', () => {
   });
 
   describe('with color set to false', () => {
-    let options;
-
     beforeEach(() => {
-      options = configuration.applyLoggingOptions({ color: false });
-    });
-
-    it('resulting configuration should contain \'color\' set to boolean false', () => {
-      assert.isFalse(options.color);
-    });
-
-    it('the application logger should be set not to colorize', () => {
-      assert.isFalse(logger.transports.console.colorize);
-    });
-
-    it('the application output should be set not to colorize', () => {
-      assert.isFalse(reporterOutputLogger.transports.console.colorize);
-    });
-  });
-
-  describe('with color set to \'false\' string value', () => {
-    let options;
-
-    beforeEach(() => {
-      options = configuration.applyLoggingOptions({ color: 'false' });
-    });
-
-    it('resulting configuration should contain \'color\' set to boolean false', () => {
-      assert.isFalse(options.color);
+      configuration.applyLoggingOptions({ color: false });
     });
 
     it('the application logger should be set not to colorize', () => {
@@ -212,28 +160,5 @@ describe('configuration.applyLoggingOptions()', () => {
     it('the application logger is set to add timestamps', () => {
       assert.isTrue(logger.transports.console.timestamp);
     });
-  });
-});
-
-describe('configuration.applyConfiguration()', () => {
-  let loggerSettings;
-  let config;
-
-  beforeEach(() => { loggerSettings = clone(logger.transports.console); });
-  afterEach(() => { logger.transports.console = loggerSettings; });
-
-  it('applies logging options', () => {
-    config = configuration.applyConfiguration({
-      options: {
-        color: 'true',
-        loglevel: 'debug',
-      },
-    });
-
-    assert.nestedPropertyVal(config, 'options.color', true);
-    assert.equal(logger.transports.console.colorize, true);
-
-    assert.nestedPropertyVal(config, 'options.loglevel', 'debug');
-    assert.equal(logger.transports.console.level, 'debug');
   });
 });
