@@ -557,7 +557,7 @@ describe('CLI', () => {
       });
     });
 
-    describe('when showing timestamps with -t', () => {
+    describe('when showing timestamps with --loglevel=debug', () => {
       let runtimeInfo;
 
       before((done) => {
@@ -567,7 +567,7 @@ describe('CLI', () => {
         const args = [
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-          '-t',
+          '--loglevel=debug',
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -577,7 +577,7 @@ describe('CLI', () => {
 
       it('should display timestamps', () => {
         // Look for the prefix for cli output with timestamps
-        assert.notEqual(runtimeInfo.dredd.stdout.indexOf('Z -'), -1);
+        assert.include(runtimeInfo.dredd.stderr, 'Z -');
       });
     });
   });

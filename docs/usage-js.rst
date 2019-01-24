@@ -56,8 +56,7 @@ Let’s have a look at an example configuration first. (Please also see the :ref
 
        'require': null, // String, When using nodejs hooks, require the given module before executing hooks
 
-       'color': true,
-       'timestamp': false
+       'no-color': false,
      },
 
      'emitter': EventEmitterInstance, // optional - listen to test progress, your own instance of EventEmitter

@@ -71,7 +71,6 @@ See below how sample configuration file could look like. The structure is the sa
    details: false
    method: []
    loglevel: warning
-   timestamp: false
    path: []
    blueprint: api-description.apib
    endpoint: "http://127.0.0.1:3000"

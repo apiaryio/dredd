@@ -99,34 +99,6 @@ describe('configuration.applyLoggingOptions()', () => {
     });
   });
 
-  describe('with timestamp set to true', () => {
-    beforeEach(() => {
-      configuration.applyLoggingOptions({ timestamp: true });
-    });
-
-    it('the application logger should be set to add timestamps', () => {
-      assert.isTrue(logger.transports.console.timestamp);
-    });
-
-    it('the application output should be set to add timestamps', () => {
-      assert.isTrue(reporterOutputLogger.transports.console.timestamp);
-    });
-  });
-
-  describe('with timestamp set to false', () => {
-    beforeEach(() => {
-      configuration.applyLoggingOptions({ timestamp: false });
-    });
-
-    it('the application logger should be set not to add timestamps', () => {
-      assert.isFalse(logger.transports.console.timestamp);
-    });
-
-    it('the application output should be set not to add timestamps', () => {
-      assert.isFalse(reporterOutputLogger.transports.console.timestamp);
-    });
-  });
-
   describe('with loglevel not set', () => {
     beforeEach(() => {
       configuration.applyLoggingOptions({});
@@ -162,7 +134,7 @@ describe('configuration.applyLoggingOptions()', () => {
       configuration.applyLoggingOptions({ loglevel: 'ERROR' });
     });
 
-    it('the application logger level is set', () => {
+    it('the value is understood', () => {
       assert.equal(logger.transports.console.level, 'error');
     });
   });
@@ -190,6 +162,16 @@ describe('configuration.applyLoggingOptions()', () => {
     });
   });
 
+  describe('with loglevel set to warning', () => {
+    beforeEach(() => {
+      configuration.applyLoggingOptions({ loglevel: 'warning' });
+    });
+
+    it('the value is understood as warn', () => {
+      assert.equal(logger.transports.console.level, 'warn');
+    });
+  });
+
   describe('with loglevel set to warn', () => {
     beforeEach(() => {
       configuration.applyLoggingOptions({ loglevel: 'warn' });
@@ -198,15 +180,9 @@ describe('configuration.applyLoggingOptions()', () => {
     it('the application logger level is set to warn', () => {
       assert.equal(logger.transports.console.level, 'warn');
     });
-  });
 
-  describe('with loglevel set to warning', () => {
-    beforeEach(() => {
-      configuration.applyLoggingOptions({ loglevel: 'warning' });
-    });
-
-    it('the application logger level is set to warn', () => {
-      assert.equal(logger.transports.console.level, 'warn');
+    it('the application logger is not set to add timestamps', () => {
+      assert.isFalse(logger.transports.console.timestamp);
     });
   });
 
@@ -218,6 +194,10 @@ describe('configuration.applyLoggingOptions()', () => {
     it('the application logger level is set to error', () => {
       assert.equal(logger.transports.console.level, 'error');
     });
+
+    it('the application logger is not set to add timestamps', () => {
+      assert.isFalse(logger.transports.console.timestamp);
+    });
   });
 
   describe('with loglevel set to debug', () => {
@@ -227,6 +207,10 @@ describe('configuration.applyLoggingOptions()', () => {
 
     it('the application logger level is set to debug', () => {
       assert.equal(logger.transports.console.level, 'debug');
+    });
+
+    it('the application logger is set to add timestamps', () => {
+      assert.isTrue(logger.transports.console.timestamp);
     });
   });
 });

@@ -94,13 +94,8 @@
   },
   "loglevel": {
     "alias": "l",
-    "description": "The level of logging to output. Options: 'debug', 'warning', 'error', 'silent'.",
+    "description": "Application logging level. Supported levels: 'debug', 'warning', 'error', 'silent'. The value 'debug' also displays timestamps.",
     "default": "warning"
-  },
-  "timestamp": {
-    "alias": "t",
-    "description": "Determines whether console output should include timestamps.",
-    "default": false
   },
   "path": {
     "alias": "p",
