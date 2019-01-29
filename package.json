@@ -40,7 +40,7 @@
     "chai": "4.1.2",
     "clone": "2.1.2",
     "cross-spawn": "6.0.5",
-    "dredd-transactions": "6.3.0",
+    "dredd-transactions": "6.4.0",
     "gavel": "2.2.1",
     "glob": "7.1.3",
     "html": "1.0.0",

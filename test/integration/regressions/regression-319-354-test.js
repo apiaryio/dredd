@@ -94,7 +94,12 @@ describe('Regression: Issues #319 and #354', () => {
           address: {
             type: 'object',
             properties: {
-              city: { type: ['string', 'null'] },
+              city: {
+                anyOf: [
+                  { type: 'null' },
+                  { type: 'string' },
+                ],
+              },
               street: { type: 'string' },
             },
           },
@@ -124,7 +129,12 @@ describe('Regression: Issues #319 and #354', () => {
       address: {
         type: 'object',
         properties: {
-          city: { type: ['string', 'null'] },
+          city: {
+            anyOf: [
+              { type: 'null' },
+              { type: 'string' },
+            ],
+          },
           street: { type: 'string' },
         },
       },
