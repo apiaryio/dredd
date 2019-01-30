@@ -28,7 +28,7 @@
   "dependencies": {
     "fury": "3.0.0-beta.8",
     "fury-adapter-apib-parser": "0.13.0-beta",
-    "fury-adapter-oas3-parser": "0.3.0",
+    "fury-adapter-oas3-parser": "0.5.1",
     "fury-adapter-swagger": "0.23.1",
     "uri-template": "1.0.1"
   },
