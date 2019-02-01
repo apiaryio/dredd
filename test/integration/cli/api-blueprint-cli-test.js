@@ -8,7 +8,7 @@ describe('CLI - API Blueprint Document', () => {
       let runtimeInfo;
       const args = ['./test/fixtures/single-get.apib', `http://127.0.0.1:${DEFAULT_SERVER_PORT}`];
 
-      beforeEach((done) => {
+      before((done) => {
         const app = createServer();
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
@@ -29,7 +29,7 @@ describe('CLI - API Blueprint Document', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
       ];
 
-      beforeEach((done) => {
+      before((done) => {
         const app = createServer();
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -49,7 +49,7 @@ describe('CLI - API Blueprint Document', () => {
         '--no-color',
       ];
 
-      beforeEach((done) => {
+      before((done) => {
         const app = createServer();
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;

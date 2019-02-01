@@ -9,7 +9,7 @@ const APIARY_PORT = DEFAULT_SERVER_PORT + 1;
 describe('CLI - Reporters', () => {
   let server;
 
-  beforeEach((done) => {
+  before((done) => {
     const app = createServer();
 
     app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
@@ -19,7 +19,7 @@ describe('CLI - Reporters', () => {
     });
   });
 
-  afterEach(done => server.close(done));
+  after(done => server.close(done));
 
 
   describe('when -r/--reporter is provided to use additional reporters', () => {
@@ -30,7 +30,7 @@ describe('CLI - Reporters', () => {
       '--reporter=nyan',
     ];
 
-    beforeEach((done) => {
+    before((done) => {
       runCLI(args, (err, info) => {
         cliInfo = info;
         done(err);
@@ -51,7 +51,7 @@ describe('CLI - Reporters', () => {
     const env = clone(process.env);
     env.APIARY_API_URL = `http://127.0.0.1:${APIARY_PORT}`;
 
-    beforeEach((done) => {
+    before((done) => {
       const app = createServer();
 
       app.post('/apis/*', (req, res) => {
@@ -70,7 +70,7 @@ describe('CLI - Reporters', () => {
       });
     });
 
-    afterEach(done => apiary.close(done));
+    after(done => apiary.close(done));
 
     describe('when Dredd successfully performs requests to Apiary', () => {
       let cliInfo;
@@ -81,11 +81,14 @@ describe('CLI - Reporters', () => {
         '--reporter=apiary',
       ];
 
-      beforeEach(done => runCLI(args, { env }, (err, info) => {
-        cliInfo = info;
-        stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
-        done(err);
-      }));
+      before((done) => {
+        apiaryRuntimeInfo.reset();
+        runCLI(args, { env }, (err, info) => {
+          cliInfo = info;
+          stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
+          done(err);
+        });
+      });
 
       it('should print URL of the test report', () => assert.include(cliInfo.stdout, 'http://example.com/test/run/1234_id'));
       it('should print warning about missing Apiary API settings', () => assert.include(cliInfo.stdout, 'Apiary API Key or API Project Subdomain were not provided.'));
@@ -120,7 +123,8 @@ describe('CLI - Reporters', () => {
         '--hookfiles=./test/fixtures/hooks-log.coffee',
       ];
 
-      beforeEach((done) => {
+      before((done) => {
+        apiaryRuntimeInfo.reset();
         runCLI(args, { env }, (err, info) => {
           cliInfo = info;
           updateRequest = apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0];
@@ -193,11 +197,11 @@ describe('CLI - Reporters', () => {
       '--output=__test_file_output__.xml',
     ];
 
-    beforeEach(done => runCLI(args, (err) => {
+    before(done => runCLI(args, (err) => {
       done(err);
     }));
 
-    afterEach(() => fs.unlinkSync(`${process.cwd()}/__test_file_output__.xml`));
+    after(() => fs.unlinkSync(`${process.cwd()}/__test_file_output__.xml`));
 
     it('should create given file', () => assert.isOk(fs.existsSync(`${process.cwd()}/__test_file_output__.xml`)));
   });
@@ -212,11 +216,11 @@ describe('CLI - Reporters', () => {
       '--output=__test_file_output2__.xml',
     ];
 
-    beforeEach(done => runCLI(args, (err) => {
+    before(done => runCLI(args, (err) => {
       done(err);
     }));
 
-    afterEach(() => {
+    after(() => {
       fs.unlinkSync(`${process.cwd()}/__test_file_output1__.xml`);
       fs.unlinkSync(`${process.cwd()}/__test_file_output2__.xml`);
     });
@@ -235,7 +239,7 @@ describe('CLI - Reporters', () => {
       '--output=./__test_directory/__test_file_output__.xml',
     ];
 
-    beforeEach((done) => {
+    before((done) => {
       try {
         fs.unlinkSync(`${process.cwd()}/__test_directory/__test_file_output__.xml`);
       } catch (error) {
@@ -247,7 +251,7 @@ describe('CLI - Reporters', () => {
       });
     });
 
-    afterEach(() => {
+    after(() => {
       fs.unlinkSync(`${process.cwd()}/__test_directory/__test_file_output__.xml`);
       fs.rmdirSync(`${process.cwd()}/__test_directory`);
     });
@@ -264,7 +268,7 @@ describe('CLI - Reporters', () => {
       '--reporter=apiary',
     ];
 
-    beforeEach((done) => {
+    before((done) => {
       apiaryApiUrl = process.env.APIARY_API_URL;
 
       const nonExistentPort = DEFAULT_SERVER_PORT + 42;
@@ -275,7 +279,7 @@ describe('CLI - Reporters', () => {
         done(err);
       });
     });
-    afterEach(() => { process.env.APIARY_API_URL = apiaryApiUrl; });
+    after(() => { process.env.APIARY_API_URL = apiaryApiUrl; });
 
     it('ends successfully', () => assert.equal(cliInfo.exitStatus, 0));
     it('prints error about Apiary API connection issues', () => assert.include(cliInfo.stderr, 'Apiary reporter could not connect to Apiary API'));

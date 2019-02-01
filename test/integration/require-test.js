@@ -12,7 +12,7 @@ const API_DESCRIPTION = './test/fixtures/single-get.apib';
 describe('Dredd requiring language compilers', () => {
   let apiary;
 
-  beforeEach((done) => {
+  before((done) => {
     const app = createServer();
 
     app.post('/apis/*', (req, res) => res.json({
@@ -28,7 +28,7 @@ describe('Dredd requiring language compilers', () => {
     });
   });
 
-  afterEach(done => apiary.close(done));
+  after(done => apiary.close(done));
 
   it('should work with CoffeScript', (done) => {
     const dredd = new Dredd({

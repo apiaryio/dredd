@@ -96,6 +96,13 @@ function createServer(options = {}) {
     lastRequest: null,
     requests: {},
     requestCounts: {},
+    reset: function reset() {
+      this.requestedOnce = false;
+      this.requested = false;
+      this.lastRequest = null;
+      this.requests = {};
+      this.requestCounts = {};
+    },
   };
 
   let app = express();

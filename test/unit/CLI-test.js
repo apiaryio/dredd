@@ -367,7 +367,7 @@ describe('CLI class', () => {
   });
 
   describe('when using --server', () => {
-    beforeEach((done) => {
+    before((done) => {
       sinon.stub(crossSpawnStub, 'spawn').callsFake();
       sinon.stub(transactionRunner.prototype, 'executeAllTransactions').callsFake((transactions, hooks, cb) => cb());
       execCommand({
@@ -380,7 +380,7 @@ describe('CLI class', () => {
       }, () => done());
     });
 
-    afterEach(() => crossSpawnStub.spawn.restore());
+    after(() => crossSpawnStub.spawn.restore());
 
     it('should run child process', () => assert.isTrue(crossSpawnStub.spawn.called));
   });

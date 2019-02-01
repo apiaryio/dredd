@@ -74,7 +74,7 @@ describe('getGoBinary()', () => {
         done();
       });
     });
-    afterEach(() => childProcess.exec.restore());
+    after(() => childProcess.exec.restore());
 
     it('calls \'go env GOPATH\' + /bin', () => assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gopath', 'path', 'bin')]));
   });
@@ -90,7 +90,7 @@ describe('getGoBinary()', () => {
         done();
       });
     });
-    afterEach(() => childProcess.exec.restore());
+    after(() => childProcess.exec.restore());
 
     it('propagates the error', () => assert.deepEqual(callbackArgs, [error]));
   });

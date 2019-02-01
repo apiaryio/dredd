@@ -151,7 +151,7 @@ describe('Regression: Issues #319 and #354', () => {
   };
 
   describe('Tested app is consistent with the API description', () => {
-    beforeEach((done) => {
+    before((done) => {
       const app = createServer();
 
       // Attaching endpoint for each testing scenario
@@ -224,7 +224,7 @@ describe('Regression: Issues #319 and #354', () => {
       items: [incorrectUserPayload],
     };
 
-    beforeEach((done) => {
+    before((done) => {
       const app = createServer();
 
       // Attaching endpoint for each testing scenario

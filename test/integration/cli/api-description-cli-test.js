@@ -12,7 +12,7 @@ describe('CLI - API Description Document', () => {
       let runtimeInfo;
       const args = ['./test/fixtures/single-g*t.apib', `http://127.0.0.1:${DEFAULT_SERVER_PORT}`];
 
-      beforeEach((done) => {
+      before((done) => {
         const app = createServer();
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 
@@ -33,7 +33,7 @@ describe('CLI - API Description Document', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
       ];
 
-      beforeEach((done) => {
+      before((done) => {
         const app = createServer();
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -52,7 +52,7 @@ describe('CLI - API Description Document', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
       ];
 
-      beforeEach((done) => {
+      before((done) => {
         const app = createServer();
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -74,7 +74,7 @@ describe('CLI - API Description Document', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
       ];
 
-      beforeEach((done) => {
+      before((done) => {
         const app = createServer();
         app.get('/single-get.apib', (req, res) => {
           res.type('text/vnd.apiblueprint');
@@ -100,7 +100,7 @@ describe('CLI - API Description Document', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
       ];
 
-      beforeEach((done) => {
+      before((done) => {
         const app = createServer();
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -124,7 +124,7 @@ describe('CLI - API Description Document', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
       ];
 
-      beforeEach((done) => {
+      before((done) => {
         const app = createServer();
         app.get('/__non-existent__.apib', (req, res) => res.sendStatus(404));
 
@@ -154,7 +154,7 @@ describe('CLI - API Description Document', () => {
         '--path=./test/fixtures/single-get-uri-template.apib',
       ];
 
-      beforeEach((done) => {
+      before((done) => {
         const app = createServer();
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
         app.get('/machines/willy', (req, res) => res.json({ type: 'bulldozer', name: 'willy' }));
@@ -177,7 +177,7 @@ describe('CLI - API Description Document', () => {
         `--path=http://127.0.0.1:${DEFAULT_SERVER_PORT}/single-get.yaml`,
       ];
 
-      beforeEach((done) => {
+      before((done) => {
         const app = createServer();
         app.get('/single-get.yaml', (req, res) => {
           res.type('application/yaml');
@@ -206,7 +206,7 @@ describe('CLI - API Description Document', () => {
         '--path=./test/fixtures/single-get-path.apib',
       ];
 
-      beforeEach((done) => {
+      before((done) => {
         const app = createServer();
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
         app.get('/machines/willy', (req, res) => res.json({ type: 'bulldozer', name: 'willy' }));
@@ -230,7 +230,7 @@ describe('CLI - API Description Document', () => {
         '--path=./test/fixtures/single-get-uri-temp*.apib',
       ];
 
-      beforeEach((done) => {
+      before((done) => {
         const app = createServer();
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
         app.get('/machines/willy', (req, res) => res.json({ type: 'bulldozer', name: 'willy' }));
@@ -253,7 +253,7 @@ describe('CLI - API Description Document', () => {
         '--path=./test/fixtures/__non-existent__.apib',
       ];
 
-      beforeEach((done) => {
+      before((done) => {
         const app = createServer();
         app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
 

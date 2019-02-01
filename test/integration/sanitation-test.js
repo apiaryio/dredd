@@ -11,13 +11,9 @@ describe('Sanitation of Reported Data', () => {
   const sensitiveHeaderName = 'authorization';
   const sensitiveValue = '5229c6e8e4b0bd7dbb07e29c';
 
-  // Recording events sent to reporters
-  let events;
-  let emitter;
-
-  beforeEach(() => {
-    events = [];
-    emitter = new EventEmitter();
+  // Create an EventEmitter to record events sent to reporters
+  function createEventEmitter(events) {
+    const emitter = new EventEmitter();
 
     // Dredd emits 'test *' events and reporters listen on them. To test whether
     // sensitive data will or won't make it to reporters, we need to capture all
@@ -34,12 +30,14 @@ describe('Sanitation of Reported Data', () => {
     // significant for following scenarios
     emitter.on('start', (apiDescription, cb) => { events.push({ name: 'start' }); return cb(); });
     emitter.on('end', (cb) => { events.push({ name: 'end' }); return cb(); });
-  });
+
+    return emitter;
+  }
 
   // Helper for preparing Dredd instance with our custom emitter
-  function createDreddFromFixture(fixtureName) {
+  function createDreddFromFixture(events, fixtureName) {
     return new Dredd({
-      emitter,
+      emitter: createEventEmitter(events),
       options: {
         path: `./test/fixtures/sanitation/${fixtureName}.apib`,
         hookfiles: `./test/fixtures/sanitation/${fixtureName}.js`,
@@ -55,10 +53,11 @@ describe('Sanitation of Reported Data', () => {
   }
 
   describe('Sanitation of the Entire Request Body', () => {
+    const events = [];
     let dreddRuntimeInfo;
 
-    beforeEach((done) => {
-      const dredd = createDreddFromFixture('entire-request-body');
+    before((done) => {
+      const dredd = createDreddFromFixture(events, 'entire-request-body');
       const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
       runDreddWithServer(dredd, app, (err, runtimeInfo) => {
@@ -88,10 +87,11 @@ describe('Sanitation of Reported Data', () => {
   });
 
   describe('Sanitation of the Entire Response Body', () => {
+    const events = [];
     let dreddRuntimeInfo;
 
-    beforeEach((done) => {
-      const dredd = createDreddFromFixture('entire-response-body');
+    before((done) => {
+      const dredd = createDreddFromFixture(events, 'entire-response-body');
       const app = createServerFromResponse({ token: 123 }); // 'token' should be string → failing test
 
       runDreddWithServer(dredd, app, (err, runtimeInfo) => {
@@ -124,10 +124,11 @@ describe('Sanitation of Reported Data', () => {
   });
 
   describe('Sanitation of a Request Body Attribute', () => {
+    const events = [];
     let dreddRuntimeInfo;
 
-    beforeEach((done) => {
-      const dredd = createDreddFromFixture('request-body-attribute');
+    before((done) => {
+      const dredd = createDreddFromFixture(events, 'request-body-attribute');
       const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
       runDreddWithServer(dredd, app, (err, runtimeInfo) => {
@@ -160,10 +161,11 @@ describe('Sanitation of Reported Data', () => {
   });
 
   describe('Sanitation of a Response Body Attribute', () => {
+    const events = [];
     let dreddRuntimeInfo;
 
-    beforeEach((done) => {
-      const dredd = createDreddFromFixture('response-body-attribute');
+    before((done) => {
+      const dredd = createDreddFromFixture(events, 'response-body-attribute');
       const app = createServerFromResponse({ token: 123, name: 'Bob' }); // 'token' should be string → failing test
 
       runDreddWithServer(dredd, app, (err, runtimeInfo) => {
@@ -199,10 +201,11 @@ describe('Sanitation of Reported Data', () => {
   });
 
   describe('Sanitation of Plain Text Response Body by Pattern Matching', () => {
+    const events = [];
     let dreddRuntimeInfo;
 
-    beforeEach((done) => {
-      const dredd = createDreddFromFixture('plain-text-response-body');
+    before((done) => {
+      const dredd = createDreddFromFixture(events, 'plain-text-response-body');
       const app = createServerFromResponse(`${sensitiveKey}=42${sensitiveValue}`); // should be without '42' → failing test
 
       runDreddWithServer(dredd, app, (err, runtimeInfo) => {
@@ -228,10 +231,11 @@ describe('Sanitation of Reported Data', () => {
   });
 
   describe('Sanitation of Request Headers', () => {
+    const events = [];
     let dreddRuntimeInfo;
 
-    beforeEach((done) => {
-      const dredd = createDreddFromFixture('request-headers');
+    before((done) => {
+      const dredd = createDreddFromFixture(events, 'request-headers');
       const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
       runDreddWithServer(dredd, app, (err, runtimeInfo) => {
@@ -265,10 +269,11 @@ describe('Sanitation of Reported Data', () => {
   });
 
   describe('Sanitation of Response Headers', () => {
+    const events = [];
     let dreddRuntimeInfo;
 
-    beforeEach((done) => {
-      const dredd = createDreddFromFixture('response-headers');
+    before((done) => {
+      const dredd = createDreddFromFixture(events, 'response-headers');
       const app = createServerFromResponse({ name: 'Bob' }); // Authorization header is missing → failing test
 
       runDreddWithServer(dredd, app, (err, runtimeInfo) => {
@@ -305,10 +310,11 @@ describe('Sanitation of Reported Data', () => {
   });
 
   describe('Sanitation of URI Parameters by Pattern Matching', () => {
+    const events = [];
     let dreddRuntimeInfo;
 
-    beforeEach((done) => {
-      const dredd = createDreddFromFixture('uri-parameters');
+    before((done) => {
+      const dredd = createDreddFromFixture(events, 'uri-parameters');
       const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
       runDreddWithServer(dredd, app, (err, runtimeInfo) => {
@@ -333,10 +339,11 @@ describe('Sanitation of Reported Data', () => {
   // This fails because it's not possible to do 'transaction.test = myOwnTestObject;'
   // at the moment, Dredd ignores the new object.
   describe('Sanitation of Any Content by Pattern Matching', () => {
+    const events = [];
     let dreddRuntimeInfo;
 
-    beforeEach((done) => {
-      const dredd = createDreddFromFixture('any-content-pattern-matching');
+    before((done) => {
+      const dredd = createDreddFromFixture(events, 'any-content-pattern-matching');
       const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
       runDreddWithServer(dredd, app, (err, runtimeInfo) => {
@@ -359,10 +366,11 @@ describe('Sanitation of Reported Data', () => {
   });
 
   describe('Ultimate \'afterEach\' Guard Using Pattern Matching', () => {
+    const events = [];
     let dreddRuntimeInfo;
 
-    beforeEach((done) => {
-      const dredd = createDreddFromFixture('any-content-guard-pattern-matching');
+    before((done) => {
+      const dredd = createDreddFromFixture(events, 'any-content-guard-pattern-matching');
       const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
       runDreddWithServer(dredd, app, (err, runtimeInfo) => {
@@ -388,10 +396,11 @@ describe('Sanitation of Reported Data', () => {
   });
 
   describe('Sanitation of Test Data of Passing Transaction', () => {
+    const events = [];
     let dreddRuntimeInfo;
 
-    beforeEach((done) => {
-      const dredd = createDreddFromFixture('transaction-passing');
+    before((done) => {
+      const dredd = createDreddFromFixture(events, 'transaction-passing');
       const app = createServerFromResponse({ name: 'Bob' }); // Passing test
 
       runDreddWithServer(dredd, app, (err, runtimeInfo) => {
@@ -421,10 +430,11 @@ describe('Sanitation of Reported Data', () => {
   });
 
   describe('Sanitation of Test Data When Transaction Is Marked as Failed in \'before\' Hook', () => {
+    const events = [];
     let dreddRuntimeInfo;
 
-    beforeEach((done) => {
-      const dredd = createDreddFromFixture('transaction-marked-failed-before');
+    before((done) => {
+      const dredd = createDreddFromFixture(events, 'transaction-marked-failed-before');
 
       runDredd(dredd, (...args) => {
         let err;
@@ -458,10 +468,11 @@ describe('Sanitation of Reported Data', () => {
   });
 
   describe('Sanitation of Test Data When Transaction Is Marked as Failed in \'after\' Hook', () => {
+    const events = [];
     let dreddRuntimeInfo;
 
-    beforeEach((done) => {
-      const dredd = createDreddFromFixture('transaction-marked-failed-after');
+    before((done) => {
+      const dredd = createDreddFromFixture(events, 'transaction-marked-failed-after');
       const app = createServerFromResponse({ name: 'Bob' }); // Passing test
 
       runDreddWithServer(dredd, app, (err, runtimeInfo) => {
@@ -496,10 +507,11 @@ describe('Sanitation of Reported Data', () => {
   });
 
   describe('Sanitation of Test Data When Transaction Is Marked as Skipped', () => {
+    const events = [];
     let dreddRuntimeInfo;
 
-    beforeEach((done) => {
-      const dredd = createDreddFromFixture('transaction-marked-skipped');
+    before((done) => {
+      const dredd = createDreddFromFixture(events, 'transaction-marked-skipped');
 
       runDredd(dredd, (...args) => {
         let err;
@@ -533,10 +545,11 @@ describe('Sanitation of Reported Data', () => {
   });
 
   describe('Sanitation of Test Data of Transaction With Erroring Hooks', () => {
+    const events = [];
     let dreddRuntimeInfo;
 
-    beforeEach((done) => {
-      const dredd = createDreddFromFixture('transaction-erroring-hooks');
+    before((done) => {
+      const dredd = createDreddFromFixture(events, 'transaction-erroring-hooks');
       const app = createServerFromResponse({ name: 'Bob' }); // passing test
 
       runDreddWithServer(dredd, app, (err, runtimeInfo) => {
@@ -565,10 +578,11 @@ describe('Sanitation of Reported Data', () => {
   });
 
   describe('Sanitation of Test Data of Transaction With Secured Erroring Hooks', () => {
+    const events = [];
     let dreddRuntimeInfo;
 
-    beforeEach((done) => {
-      const dredd = createDreddFromFixture('transaction-secured-erroring-hooks');
+    before((done) => {
+      const dredd = createDreddFromFixture(events, 'transaction-secured-erroring-hooks');
       const app = createServerFromResponse({ name: 'Bob' }); // passing test
 
       runDreddWithServer(dredd, app, (err, runtimeInfo) => {

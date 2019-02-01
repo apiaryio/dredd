@@ -89,7 +89,7 @@ describe('addHooks(runner, transactions, callback)', () => {
   describe('with non `nodejs` language option', () => {
     let runner = null;
 
-    beforeEach(() => {
+    before(() => {
       runner = {
         configuration: {
           options: {
@@ -102,7 +102,7 @@ describe('addHooks(runner, transactions, callback)', () => {
       sinon.stub(hooksWorkerClientStub.prototype, 'start').callsFake(cb => cb());
     });
 
-    afterEach(() => hooksWorkerClientStub.prototype.start.restore());
+    after(() => hooksWorkerClientStub.prototype.start.restore());
 
     it('should start the hooks worker client', done => addHooks(runner, transactions, (err) => {
       if (err) { return done(err); }
@@ -114,7 +114,7 @@ describe('addHooks(runner, transactions, callback)', () => {
 
   describe('with valid pattern', () => {
     let runner = null;
-    beforeEach(() => {
+    before(() => {
       runner = {
         configuration: {
           options: {
