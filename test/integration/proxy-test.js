@@ -86,11 +86,11 @@ function test(scenario) {
   let proxy;
   let proxyRequestInfo = {};
 
-  beforeEach((done) => {
+  before((done) => {
     const app = createProxyServer(scenario.protocol, proxyRequestInfo);
     proxy = app.listen(PROXY_PORT, done);
   });
-  afterEach((done) => {
+  after((done) => {
     proxyRequestInfo = {};
     proxy.close(done);
   });
@@ -99,14 +99,14 @@ function test(scenario) {
   let server;
   let serverRuntimeInfo;
 
-  beforeEach((done) => {
+  before((done) => {
     const app = createServer({ protocol: scenario.protocol });
     server = app.listen(DEFAULT_SERVER_PORT, (err, info) => {
       serverRuntimeInfo = info;
       done(err);
     });
   });
-  afterEach((done) => {
+  after((done) => {
     serverRuntimeInfo = undefined;
     server.close(done);
   });
@@ -114,7 +114,7 @@ function test(scenario) {
   // Setup and run Dredd
   let dreddLogging;
 
-  beforeEach((done) => {
+  before((done) => {
     const configuration = { options: {} };
     scenario.configureDredd(configuration);
 
@@ -166,8 +166,8 @@ proxy specified by environment variables: \
 ${protocol}_proxy=${PROXY_URL}\
 `;
 
-    beforeEach(() => { process.env[`${protocol}_proxy`] = PROXY_URL; });
-    afterEach(() => delete process.env[`${protocol}_proxy`]);
+    before(() => { process.env[`${protocol}_proxy`] = PROXY_URL; });
+    after(() => delete process.env[`${protocol}_proxy`]);
 
     describe('Requesting Server Under Test', () => test({
       protocol,
@@ -181,8 +181,8 @@ ${protocol}_proxy=${PROXY_URL}\
     }));
 
     describe('Using Apiary Reporter', () => {
-      beforeEach(() => { process.env.APIARY_API_URL = serverUrl; });
-      afterEach(() => delete process.env.APIARY_API_URL);
+      before(() => { process.env.APIARY_API_URL = serverUrl; });
+      after(() => delete process.env.APIARY_API_URL);
 
       test({
         protocol,
@@ -218,11 +218,11 @@ proxy specified by environment variables: \
 http_proxy=${PROXY_URL}, no_proxy=${SERVER_HOST}\
 `;
 
-  beforeEach(() => {
+  before(() => {
     process.env.http_proxy = PROXY_URL;
     process.env.no_proxy = SERVER_HOST;
   });
-  afterEach(() => {
+  after(() => {
     delete process.env.http_proxy;
     delete process.env.no_proxy;
   });
@@ -239,8 +239,8 @@ http_proxy=${PROXY_URL}, no_proxy=${SERVER_HOST}\
   }));
 
   describe('Using Apiary Reporter', () => {
-    beforeEach(() => { process.env.APIARY_API_URL = serverUrl; });
-    afterEach(() => delete process.env.APIARY_API_URL);
+    before(() => { process.env.APIARY_API_URL = serverUrl; });
+    after(() => delete process.env.APIARY_API_URL);
 
     test({
       protocol: 'http',

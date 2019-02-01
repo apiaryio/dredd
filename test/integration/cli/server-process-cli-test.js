@@ -10,7 +10,7 @@ describe('CLI - Server Process', () => {
     let server;
     let serverRuntimeInfo;
 
-    beforeEach((done) => {
+    before((done) => {
       const app = createServer();
 
       app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
@@ -23,14 +23,14 @@ describe('CLI - Server Process', () => {
       });
     });
 
-    afterEach(done => server.close(done));
+    after(done => server.close(done));
 
 
     describe('when is running', () => {
       let cliInfo;
       const args = ['./test/fixtures/single-get.apib', `http://127.0.0.1:${DEFAULT_SERVER_PORT}`];
 
-      beforeEach(done => runCLI(args, (err, info) => {
+      before(done => runCLI(args, (err, info) => {
         cliInfo = info;
         done(err);
       }));
@@ -43,7 +43,7 @@ describe('CLI - Server Process', () => {
       let cliInfo;
       const args = ['./test/fixtures/apiary.apib', `http://127.0.0.1:${NON_EXISTENT_PORT}`];
 
-      beforeEach(done => runCLI(args, (err, info) => {
+      before(done => runCLI(args, (err, info) => {
         cliInfo = info;
         done(err);
       }));
@@ -71,7 +71,7 @@ describe('CLI - Server Process', () => {
         '--server-wait=1',
       ];
 
-      beforeEach(done => runCLI(args, (err, info) => {
+      before(done => runCLI(args, (err, info) => {
         cliInfo = info;
         done(err);
       }));
@@ -90,7 +90,7 @@ describe('CLI - Server Process', () => {
         '--server-wait=1',
       ];
 
-      beforeEach(done => runCLI(args, (err, info) => {
+      before(done => runCLI(args, (err, info) => {
         cliInfo = info;
         done(err);
       }));
@@ -134,7 +134,7 @@ describe('CLI - Server Process', () => {
           '--server-wait=1',
         ];
 
-        beforeEach(done => runCLI(args, (err, info) => {
+        before(done => runCLI(args, (err, info) => {
           cliInfo = info;
           done(err);
         }));
@@ -162,7 +162,7 @@ describe('CLI - Server Process', () => {
         '--level=verbose',
       ];
 
-      beforeEach(done => runCLI(args, (err, info) => {
+      before(done => runCLI(args, (err, info) => {
         cliInfo = info;
         done(err);
       }));

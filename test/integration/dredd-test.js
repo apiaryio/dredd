@@ -542,7 +542,7 @@ describe('Dredd class Integration', () => {
     const reTransactionName = /hook: (.+)/g;
     let matches;
 
-    beforeEach(done => execCommand({
+    before(done => execCommand({
       options: {
         path: './test/fixtures/multiple-responses.yaml',
         hookfiles: './test/fixtures/openapi2-transaction-names.js',

@@ -29,7 +29,7 @@ describe('Hooks', () => {
   describe('#log', () => {
     let options = null;
 
-    beforeEach(() => {
+    before(() => {
       options = {
         logs: [{ content: 'message1' }, { content: 'message2' }],
         logger: {
@@ -41,7 +41,7 @@ describe('Hooks', () => {
       sinon.spy(options.logger, 'error');
     });
 
-    afterEach(() => {
+    after(() => {
       options.logger.hook.restore();
       options.logger.error.restore();
     });
