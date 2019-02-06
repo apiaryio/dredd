@@ -14,7 +14,7 @@
     "docs:test-extensions": "python -m unittest docs/_extensions/*.py --verbose",
     "docs:build": "sphinx-build -nW -b html ./docs ./docs/_build",
     "docs:serve": "sphinx-autobuild ./docs ./docs/_build",
-    "lint": "./scripts/commitlint.sh && eslint .",
+    "lint": "./scripts/commitlint.sh && eslint . bin/dredd",
     "test": "mocha \"./test/**/*-test.js\"",
     "test:coverage": "bash ./scripts/coverage.sh",
     "test:debug": "mocha --debug-brk \"./test/**/*-test.js\"",
