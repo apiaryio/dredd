@@ -113,8 +113,12 @@
     "default": []
   },
   "help": {
-    "description": "Show usage information."  }, "version": {
-    "description": "Show version number."  }, "hooks-worker-timeout": {
+    "description": "Show usage information."
+  },
+  "version": {
+    "description": "Show version number."
+  },
+  "hooks-worker-timeout": {
     "description": "How long to wait for hooks worker to start. [ms]",
     "default": 5000
   },
