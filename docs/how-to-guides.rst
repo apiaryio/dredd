@@ -656,7 +656,6 @@ Dredd will detect two HTTP transaction examples and will compile following trans
 ::
 
    $ dredd api-description.apib http://127.0.0.1 --names
-   info: Beginning Dredd testing...
    info: Resource > Update Resource > Example 1
    info: Resource > Update Resource > Example 2
 
@@ -687,7 +686,6 @@ Command-line output of complex HTTP responses and expectations can be hard to re
 
    $ dredd apiary.apib http://127.0.0.1 --reporter=apiary
    warn: Apiary API Key or API Project Subdomain were not provided. Configure Dredd to be able to save test reports alongside your Apiary API project: https://dredd.org/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests
-   info: Beginning Dredd testing...
    pass: DELETE /honey duration: 884ms
    complete: 1 passing, 0 failing, 0 errors, 0 skipped, 1 total
    complete: Tests took 1631ms
@@ -714,7 +712,7 @@ As you can see, the parameters go like this:
 
 ::
 
-   $ dredd -c apiaryApiKey:<Apiary API Key> -c apiaryApiName:<API Project Subdomain>
+   $ dredd -j apiaryApiKey:<Apiary API Key> -j apiaryApiName:<API Project Subdomain>
 
 In addition to using parameters and ``dredd.yml``, you can also use environment variables:
 

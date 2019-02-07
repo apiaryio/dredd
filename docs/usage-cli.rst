@@ -70,9 +70,7 @@ See below how sample configuration file could look like. The structure is the sa
    inline-errors: false
    details: false
    method: []
-   level: info
-   timestamp: false
-   silent: false
+   loglevel: warning
    path: []
    blueprint: api-description.apib
    endpoint: "http://127.0.0.1:3000"

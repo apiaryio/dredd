@@ -69,6 +69,7 @@ describe('CLI - Server Process', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         `--server=node ./test/fixtures/scripts/dummy-server.js ${DEFAULT_SERVER_PORT}`,
         '--server-wait=1',
+        '--loglevel=debug',
       ];
 
       before(done => runCLI(args, (err, info) => {
@@ -76,7 +77,7 @@ describe('CLI - Server Process', () => {
         done(err);
       }));
 
-      it('should inform about starting server with custom command', () => assert.include(cliInfo.stdout, 'Starting backend server process with command'));
+      it('should inform about starting server with custom command', () => assert.include(cliInfo.stderr, 'Starting backend server process with command'));
       it('should redirect server\'s welcome message', () => assert.include(cliInfo.stdout, `Dummy server listening on port ${DEFAULT_SERVER_PORT}`));
       it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
     });
@@ -88,6 +89,7 @@ describe('CLI - Server Process', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--server=/foo/bar/baz',
         '--server-wait=1',
+        '--loglevel=debug',
       ];
 
       before(done => runCLI(args, (err, info) => {
@@ -95,31 +97,31 @@ describe('CLI - Server Process', () => {
         done(err);
       }));
 
-      it('should inform about starting server with custom command', () => assert.include(cliInfo.stdout, 'Starting backend server process with command'));
+      it('should inform about starting server with custom command', () => assert.include(cliInfo.stderr, 'Starting backend server process with command'));
       it('should report problem with server process spawn', () => assert.include(cliInfo.stderr, 'Command to start backend server process failed, exiting Dredd'));
       it('should exit with status 1', () => assert.equal(cliInfo.exitStatus, 1));
     });
 
     for (const scenario of [{
-      description: 'When crashes before requests',
+      description: 'when crashes before requests',
       apiDescriptionDocument: './test/fixtures/single-get.apib',
       server: 'node test/fixtures/scripts/exit-3.js',
       expectServerBoot: false,
     },
     {
-      description: 'When crashes during requests',
+      description: 'when crashes during requests',
       apiDescriptionDocument: './test/fixtures/apiary.apib',
       server: `node test/fixtures/scripts/dummy-server-crash.js ${DEFAULT_SERVER_PORT}`,
       expectServerBoot: true,
     },
     {
-      description: 'When killed before requests',
+      description: 'when killed before requests',
       apiDescriptionDocument: './test/fixtures/single-get.apib',
       server: 'node test/fixtures/scripts/kill-self.js',
       expectServerBoot: false,
     },
     {
-      description: 'When killed during requests',
+      description: 'when killed during requests',
       apiDescriptionDocument: './test/fixtures/apiary.apib',
       server: `node test/fixtures/scripts/dummy-server-kill.js ${DEFAULT_SERVER_PORT}`,
       expectServerBoot: true,
@@ -132,6 +134,7 @@ describe('CLI - Server Process', () => {
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           `--server=${scenario.server}`,
           '--server-wait=1',
+          '--loglevel=debug',
         ];
 
         before(done => runCLI(args, (err, info) => {
@@ -139,7 +142,7 @@ describe('CLI - Server Process', () => {
           done(err);
         }));
 
-        it('should inform about starting server with custom command', () => assert.include(cliInfo.stdout, 'Starting backend server process with command'));
+        it('should inform about starting server with custom command', () => assert.include(cliInfo.stderr, 'Starting backend server process with command'));
         if (scenario.expectServerBoot) {
           it('should redirect server\'s boot message', () => assert.include(cliInfo.stdout, `Dummy server listening on port ${DEFAULT_SERVER_PORT}`));
         }
@@ -159,7 +162,7 @@ describe('CLI - Server Process', () => {
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         `--server=node test/fixtures/scripts/dummy-server-ignore-term.js ${DEFAULT_SERVER_PORT}`,
         '--server-wait=1',
-        '--level=verbose',
+        '--loglevel=debug',
       ];
 
       before(done => runCLI(args, (err, info) => {
@@ -167,10 +170,10 @@ describe('CLI - Server Process', () => {
         done(err);
       }));
 
-      it('should inform about starting server with custom command', () => assert.include(cliInfo.stdout, 'Starting backend server process with command'));
-      it('should inform about gracefully terminating the server', () => assert.include(cliInfo.stdout, 'Gracefully terminating the backend server process'));
+      it('should inform about starting server with custom command', () => assert.include(cliInfo.stderr, 'Starting backend server process with command'));
+      it('should inform about gracefully terminating the server', () => assert.include(cliInfo.stderr, 'Gracefully terminating the backend server process'));
       it('should redirect server\'s message about ignoring termination', () => assert.include(cliInfo.stdout, 'ignoring termination'));
-      it('should inform about forcefully killing the server', () => assert.include(cliInfo.stdout, 'Killing the backend server process'));
+      it('should inform about forcefully killing the server', () => assert.include(cliInfo.stderr, 'Killing the backend server process'));
       it('the server should not be running', done => isProcessRunning('test/fixtures/scripts/', (err, isRunning) => {
         if (!err) { assert.isFalse(isRunning); }
         done(err);

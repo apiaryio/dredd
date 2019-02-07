@@ -409,18 +409,18 @@ describe('TransactionRunner', () => {
 
     describe('when printing the names', () => {
       beforeEach(() => {
-        sinon.spy(loggerStub, 'info');
+        sinon.spy(loggerStub, 'debug');
         configuration.options.names = true;
         runner = new Runner(configuration);
       });
 
       afterEach(() => {
-        loggerStub.info.restore();
+        loggerStub.debug.restore();
         configuration.options.names = false;
       });
 
       it('should print the names and return', done => runner.executeTransaction(transaction, () => {
-        assert.isOk(loggerStub.info.called);
+        assert.isOk(loggerStub.debug.called);
         done();
       }));
     });
@@ -1268,75 +1268,75 @@ describe('TransactionRunner', () => {
 
     describe('with hooks', () => {
       beforeEach(() => {
-        sinon.spy(loggerStub, 'info');
+        sinon.spy(loggerStub, 'debug');
         runner.hooks.beforeHooks = {
           'Group Machine > Machine > Delete Message > Bogus example name': [
             // eslint-disable-next-line
-            transaction => loggerStub.info('before')
+            transaction => loggerStub.debug('before')
           ],
         };
         runner.hooks.beforeValidationHooks = {
           'Group Machine > Machine > Delete Message > Bogus example name': [
             // eslint-disable-next-line
-            transaction => loggerStub.info('beforeValidation')
+            transaction => loggerStub.debug('beforeValidation')
           ],
         };
         runner.hooks.afterHooks = {
           'Group Machine > Machine > Delete Message > Bogus example name': [
             // eslint-disable-next-line
             function (transaction, done) {
-              loggerStub.info('after');
+              loggerStub.debug('after');
               done();
             },
           ],
         };
       });
 
-      afterEach(() => loggerStub.info.restore());
+      afterEach(() => loggerStub.debug.restore());
 
       it('should run the hooks', done => runner.executeAllTransactions([transaction], runner.hooks, () => {
-        assert.isOk(loggerStub.info.calledWith('before'));
-        assert.isOk(loggerStub.info.calledWith('beforeValidation'));
-        assert.isOk(loggerStub.info.calledWith('after'));
+        assert.isOk(loggerStub.debug.calledWith('before'));
+        assert.isOk(loggerStub.debug.calledWith('beforeValidation'));
+        assert.isOk(loggerStub.debug.calledWith('after'));
         done();
       }));
     });
 
     describe('with hooks, but without hooks.transactions set', () => {
       beforeEach(() => {
-        sinon.spy(loggerStub, 'info');
+        sinon.spy(loggerStub, 'debug');
         runner.hooks.transactions = null;
         runner.hooks.beforeHooks = {
           'Group Machine > Machine > Delete Message > Bogus example name': [
             // eslint-disable-next-line
-            transaction => loggerStub.info('before')
+            transaction => loggerStub.debug('before')
           ],
         };
         runner.hooks.beforeValidationHooks = {
           'Group Machine > Machine > Delete Message > Bogus example name': [
             // eslint-disable-next-line
-            transaction => loggerStub.info('beforeValidation')
+            transaction => loggerStub.debug('beforeValidation')
           ],
         };
         runner.hooks.afterHooks = {
           'Group Machine > Machine > Delete Message > Bogus example name': [
             // eslint-disable-next-line
             function (transaction, done) {
-              loggerStub.info('after');
+              loggerStub.debug('after');
               done();
             },
           ],
         };
       });
 
-      afterEach(() => loggerStub.info.restore());
+      afterEach(() => loggerStub.debug.restore());
 
       it('should run the hooks', (done) => {
         runner.hooks.transactions = null;
         runner.executeAllTransactions([transaction], runner.hooks, () => {
-          assert.isOk(loggerStub.info.calledWith('before'));
-          assert.isOk(loggerStub.info.calledWith('beforeValidation'));
-          assert.isOk(loggerStub.info.calledWith('after'));
+          assert.isOk(loggerStub.debug.calledWith('before'));
+          assert.isOk(loggerStub.debug.calledWith('beforeValidation'));
+          assert.isOk(loggerStub.debug.calledWith('after'));
           done();
         });
       });
@@ -1344,25 +1344,25 @@ describe('TransactionRunner', () => {
 
     describe('with multiple hooks for the same transaction', () => {
       beforeEach(() => {
-        sinon.spy(loggerStub, 'info');
+        sinon.spy(loggerStub, 'debug');
         runner.hooks.beforeHooks = {
           'Group Machine > Machine > Delete Message > Bogus example name': [
             // eslint-disable-next-line
-            transaction => loggerStub.info('first'),
+            transaction => loggerStub.debug('first'),
             // eslint-disable-next-line
             function (transaction, cb) {
-              loggerStub.info('second');
+              loggerStub.debug('second');
               cb();
             },
           ],
         };
       });
 
-      afterEach(() => loggerStub.info.restore());
+      afterEach(() => loggerStub.debug.restore());
 
       it('should run all hooks', done => runner.executeAllTransactions([transaction], runner.hooks, () => {
-        assert.isOk(loggerStub.info.calledWith('first'));
-        assert.isOk(loggerStub.info.calledWith('second'));
+        assert.isOk(loggerStub.debug.calledWith('first'));
+        assert.isOk(loggerStub.debug.calledWith('second'));
         done();
       }));
     });

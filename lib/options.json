@@ -88,24 +88,14 @@
     "default": []
   },
   "color": {
-    "alias": "c",
-    "description": "Determines whether console output should include colors.",
+    "description": "Use --color/--no-color to enable/disable colored output",
+    "boolean": true,
     "default": true
   },
-  "level": {
+  "loglevel": {
     "alias": "l",
-    "description": "The level of logging to output. Options: silly, debug, verbose, info, warn, error.",
-    "default": "info"
-  },
-  "timestamp": {
-    "alias": "t",
-    "description": "Determines whether console output should include timestamps.",
-    "default": false
-  },
-  "silent": {
-    "alias": "q",
-    "description": "Silences commandline output.",
-    "default": false
+    "description": "Application logging level. Supported levels: 'debug', 'warning', 'error', 'silent'. The value 'debug' also displays timestamps.",
+    "default": "warning"
   },
   "path": {
     "alias": "p",

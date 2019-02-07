@@ -6,6 +6,7 @@ const { assert } = require('chai');
 const { EventEmitter } = require('events');
 
 const loggerStub = require('../../../lib/logger');
+const reporterOutputLoggerStub = require('../../../lib/reporters/reporterOutputLogger');
 
 const makeDirStub = (input, options) => makeDirStubImpl(input, options);
 let makeDirStubImpl = () => Promise.resolve();
@@ -13,6 +14,7 @@ const makeDirStubImplBackup = makeDirStubImpl;
 
 const MarkdownReporter = proxyquire('../../../lib/reporters/MarkdownReporter', {
   '../logger': loggerStub,
+  './reporterOutputLogger': reporterOutputLoggerStub,
   fs: fsStub,
   'make-dir': makeDirStub,
 });
@@ -24,9 +26,15 @@ describe('MarkdownReporter', () => {
   let test = {};
   let tests;
 
-  before(() => { loggerStub.transports.console.silent = true; });
+  before(() => {
+    loggerStub.transports.console.silent = true;
+    reporterOutputLoggerStub.transports.console.silent = true;
+  });
 
-  after(() => { loggerStub.transports.console.silent = false; });
+  after(() => {
+    loggerStub.transports.console.silent = false;
+    reporterOutputLoggerStub.transports.console.silent = false;
+  });
 
   beforeEach(() => {
     emitter = new EventEmitter();
@@ -49,15 +57,15 @@ describe('MarkdownReporter', () => {
     describe('when file exists', () => {
       before(() => {
         sinon.stub(fsStub, 'existsSync').callsFake(() => true);
-        sinon.stub(loggerStub, 'info');
+        sinon.stub(loggerStub, 'warn');
       });
 
       after(() => {
         fsStub.existsSync.restore();
-        loggerStub.info.restore();
+        loggerStub.warn.restore();
       });
 
-      it('should inform about the existing file', () => assert.isOk(loggerStub.info.called));
+      it('should warn about the existing file', () => assert.isOk(loggerStub.warn.called));
     });
 
     describe('when file does not exist', () => {
@@ -106,20 +114,20 @@ describe('MarkdownReporter', () => {
     describe('when cannot create output directory', () => {
       beforeEach(() => {
         sinon.stub(fsStub, 'writeFile').callsFake((path, data, callback) => callback());
-        sinon.stub(loggerStub, 'error');
+        sinon.stub(reporterOutputLoggerStub, 'error');
         makeDirStubImpl = sinon.stub().callsFake(() => Promise.reject(new Error()));
       });
 
       after(() => {
         fsStub.writeFile.restore();
-        loggerStub.error.restore();
+        reporterOutputLoggerStub.error.restore();
         makeDirStubImpl = makeDirStubImplBackup;
       });
 
       it('should write to log', done => emitter.emit('end', () => {
         assert.isOk(makeDirStubImpl.called);
         assert.isOk(fsStub.writeFile.notCalled);
-        assert.isOk(loggerStub.error.called);
+        assert.isOk(reporterOutputLoggerStub.error.called);
         done();
       }));
     });

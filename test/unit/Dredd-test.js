@@ -29,7 +29,6 @@ describe('Dredd class', () => {
       configuration = {
         server: 'http://127.0.0.1:3000/',
         options: {
-          silent: true,
           method: 'get',
           header: 'Accept:application/json',
           user: 'bob:test',
@@ -41,7 +40,7 @@ describe('Dredd class', () => {
 
     it('should copy configuration on creation', () => {
       dredd = new Dredd(configuration);
-      assert.isOk(dredd.configuration.options.silent);
+      assert.isOk(dredd.configuration.options.sorted);
       assert.notOk(dredd.configuration.options['dry-run']);
     });
 
@@ -91,7 +90,7 @@ describe('Dredd class', () => {
         configuration = {
           server: 'http://127.0.0.1:3000/',
           options: {
-            silent: true,
+
             path: ['./test/fixtures/multifile/*.apib', './test/fixtures/multifile/*.apib'],
           },
         };
@@ -141,7 +140,7 @@ describe('Dredd class', () => {
         configuration = {
           server: 'http://127.0.0.1:3000/',
           options: {
-            silent: true,
+
             path: ['./test/fixtures/multifile/*.balony', './test/fixtures/multifile/*.apib'],
           },
         };
@@ -164,7 +163,7 @@ describe('Dredd class', () => {
         configuration = {
           server: 'http://127.0.0.1:3000/',
           options: {
-            silent: true,
+
             path: ['./test/fixtures/multifile/*.balony'],
           },
         };
@@ -187,7 +186,7 @@ describe('Dredd class', () => {
         configuration = {
           server: 'http://127.0.0.1:3000/',
           options: {
-            silent: true,
+
           },
           data: {
             testingDirectObject: {
@@ -279,7 +278,7 @@ GET /url
         configuration = {
           server: 'http://127.0.0.1:3000/',
           options: {
-            silent: true,
+
             path: ['http://some.path.to/file.apib', 'https://another.path.to/apiary.apib', './test/fixtures/multifile/*.apib'],
           },
         };
@@ -411,7 +410,6 @@ GET /url
       configuration = {
         url: 'http://127.0.0.1:3000/',
         options: {
-          silent: true,
           path: ['./test/fixtures/error-blueprint.apib'],
         },
       };
@@ -438,7 +436,6 @@ GET /url
       configuration = {
         url: 'http://127.0.0.1:3000/',
         options: {
-          silent: true,
           path: ['./test/fixtures/warning-ambiguous.apib'],
         },
       };
@@ -471,7 +468,6 @@ GET /url
       configuration = {
         url: 'http://127.0.0.1:3000/',
         options: {
-          silent: true,
           path: ['./balony/path.apib'],
         },
       };
@@ -497,7 +493,6 @@ GET /url
       configuration = {
         server: 'http://127.0.0.1:3000/',
         options: {
-          silent: true,
           path: ['./test/fixtures/error-uri-template.apib'],
         },
       };
@@ -524,7 +519,6 @@ GET /url
       configuration = {
         server: 'http://127.0.0.1:3000/',
         options: {
-          silent: true,
           path: ['./test/fixtures/warning-ambiguous.apib'],
         },
       };
@@ -559,7 +553,6 @@ GET /url
       configuration = {
         server: 'http://127.0.0.1:3000/',
         options: {
-          silent: true,
           path: ['./test/fixtures/apiary.apib'],
         },
       };
@@ -585,7 +578,7 @@ GET /url
         configuration = {
           server: 'http://127.0.0.1:3000/',
           options: {
-            silent: true,
+
             reporter: ['apiary'],
             path: ['./test/fixtures/apiary.apib'],
             custom: {
@@ -671,10 +664,10 @@ GET /url
   });
 
   describe('#logProxySettings', () => {
-    let verboseLogger;
+    let debugLogger;
 
-    beforeEach(() => { verboseLogger = sinon.spy(loggerStub, 'verbose'); });
-    afterEach(() => loggerStub.verbose.restore());
+    beforeEach(() => { debugLogger = sinon.spy(loggerStub, 'debug'); });
+    afterEach(() => loggerStub.debug.restore());
 
     describe('when the proxy is set by lowercase environment variable', () => {
       beforeEach(() => {
@@ -683,7 +676,7 @@ GET /url
       });
       afterEach(() => delete process.env.http_proxy);
 
-      it('logs about the setting', () => assert.include(verboseLogger.lastCall.args[0],
+      it('logs about the setting', () => assert.include(debugLogger.lastCall.args[0],
         'HTTP(S) proxy specified by environment variables: http_proxy=http://proxy.example.com'));
     });
 
@@ -694,7 +687,7 @@ GET /url
       });
       afterEach(() => delete process.env.HTTPS_PROXY);
 
-      it('logs about the setting', () => assert.include(verboseLogger.lastCall.args[0],
+      it('logs about the setting', () => assert.include(debugLogger.lastCall.args[0],
         'HTTP(S) proxy specified by environment variables: '
           + 'HTTPS_PROXY=http://proxy.example.com'));
     });
@@ -710,7 +703,7 @@ GET /url
         delete process.env.NO_PROXY;
       });
 
-      it('logs about the setting', () => assert.include(verboseLogger.lastCall.args[0],
+      it('logs about the setting', () => assert.include(debugLogger.lastCall.args[0],
         'HTTP(S) proxy specified by environment variables: '
           + 'HTTPS_PROXY=http://proxy.example.com, '
           + 'NO_PROXY=whitelisted.example.com'));
@@ -727,7 +720,7 @@ GET /url
         delete process.env.NO_PROXY;
       });
 
-      it('is ignored', () => assert.include(verboseLogger.lastCall.args[0],
+      it('is ignored', () => assert.include(debugLogger.lastCall.args[0],
         'HTTP(S) proxy specified by environment variables: '
           + 'NO_PROXY=whitelisted.example.com'));
     });

@@ -7,9 +7,11 @@ const { EventEmitter } = require('events');
 
 const blueprintData = require('../../fixtures/blueprint-data');
 const loggerStub = require('../../../lib/logger');
+const reporterOutputLoggerStub = require('../../../lib/reporters/reporterOutputLogger');
 
 const ApiaryReporter = proxyquire('../../../lib/reporters/ApiaryReporter', {
   '../logger': loggerStub,
+  './reporterOutputLogger': reporterOutputLoggerStub,
 });
 
 const PORT = 9876;
@@ -18,21 +20,13 @@ nock.enableNetConnect();
 describe('ApiaryReporter', () => {
   let env = {};
   beforeEach(() => {
-    sinon.stub(loggerStub, 'info');
-    sinon.stub(loggerStub, 'complete');
-    sinon.stub(loggerStub, 'error');
-    sinon.stub(loggerStub, 'warn');
-    sinon.stub(loggerStub, 'log');
-    sinon.stub(loggerStub, 'verbose');
+    sinon.stub(loggerStub, 'debug');
+    sinon.stub(reporterOutputLoggerStub, 'complete');
   });
 
   afterEach(() => {
-    sinon.stub(loggerStub.info.restore());
-    sinon.stub(loggerStub.complete.restore());
-    sinon.stub(loggerStub.error.restore());
-    sinon.stub(loggerStub.warn.restore());
-    sinon.stub(loggerStub.log.restore());
-    sinon.stub(loggerStub.verbose.restore());
+    sinon.stub(loggerStub.debug.restore());
+    sinon.stub(reporterOutputLoggerStub.complete.restore());
   });
 
   before(() => nock.disableNetConnect());
@@ -205,7 +199,7 @@ describe('ApiaryReporter', () => {
           emitter = new EventEmitter();
           const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom });
           apiaryReporter._performRequestAsync('/', 'POST', '', () => {
-            assert.isOk(loggerStub.verbose.calledWithMatch('POST https://api.example.com:1234/ (without body)'));
+            assert.isOk(loggerStub.debug.calledWithMatch('POST https://api.example.com:1234/ (without body)'));
             done();
           });
         });
@@ -221,7 +215,7 @@ describe('ApiaryReporter', () => {
           emitter = new EventEmitter();
           const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom });
           apiaryReporter._performRequestAsync('/', 'POST', '', () => {
-            assert.isOk(loggerStub.verbose.calledWithMatch('POST https://api.example.com:1234/ (without body)'));
+            assert.isOk(loggerStub.debug.calledWithMatch('POST https://api.example.com:1234/ (without body)'));
             done();
           });
         }));
@@ -230,7 +224,7 @@ describe('ApiaryReporter', () => {
           emitter = new EventEmitter();
           const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom });
           apiaryReporter._performRequestAsync('/hello?q=1', 'POST', '', () => {
-            assert.isOk(loggerStub.verbose.calledWithMatch('POST https://api.example.com:1234/hello?q=1 (without body)'));
+            assert.isOk(loggerStub.debug.calledWithMatch('POST https://api.example.com:1234/hello?q=1 (without body)'));
             done();
           });
         }));
@@ -692,7 +686,7 @@ describe('ApiaryReporter', () => {
         const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
         apiaryReporter.remoteId = runId;
         emitter.emit('end', () => {
-          assert.isOk(loggerStub.complete.calledWith('See results in Apiary at: https://app.apiary.io/public/tests/run/507f1f77bcf86cd799439011'));
+          assert.isOk(reporterOutputLoggerStub.complete.calledWith('See results in Apiary at: https://app.apiary.io/public/tests/run/507f1f77bcf86cd799439011'));
           done();
         });
       });
@@ -703,7 +697,7 @@ describe('ApiaryReporter', () => {
         apiaryReporter.remoteId = runId;
         apiaryReporter.reportUrl = 'https://absolutely.fancy.url/wich-can-change/some/id';
         emitter.emit('end', () => {
-          assert.isOk(loggerStub.complete.calledWith('See results in Apiary at: https://absolutely.fancy.url/wich-can-change/some/id'));
+          assert.isOk(reporterOutputLoggerStub.complete.calledWith('See results in Apiary at: https://absolutely.fancy.url/wich-can-change/some/id'));
           done();
         });
       });
@@ -1002,7 +996,7 @@ describe('ApiaryReporter', () => {
         const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
         apiaryReporter.remoteId = runId;
         emitter.emit('end', () => {
-          assert.isOk(loggerStub.complete.calledWith('See results in Apiary at: https://app.apiary.io/jakubtest/tests/run/507f1f77bcf86cd799439011'));
+          assert.isOk(reporterOutputLoggerStub.complete.calledWith('See results in Apiary at: https://app.apiary.io/jakubtest/tests/run/507f1f77bcf86cd799439011'));
           done();
         });
       });
@@ -1013,7 +1007,7 @@ describe('ApiaryReporter', () => {
         apiaryReporter.remoteId = runId;
         apiaryReporter.reportUrl = 'https://absolutely.fancy.url/wich-can-change/some/id';
         emitter.emit('end', () => {
-          assert.isOk(loggerStub.complete.calledWith('See results in Apiary at: https://absolutely.fancy.url/wich-can-change/some/id'));
+          assert.isOk(reporterOutputLoggerStub.complete.calledWith('See results in Apiary at: https://absolutely.fancy.url/wich-can-change/some/id'));
           done();
         });
       });

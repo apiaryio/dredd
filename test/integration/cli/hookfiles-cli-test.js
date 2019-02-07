@@ -508,7 +508,7 @@ describe('CLI', () => {
       });
     });
 
-    describe('when suppressing color with --color=false', () => {
+    describe('when setting the log output level with --loglevel', () => {
       let runtimeInfo;
 
       before((done) => {
@@ -518,7 +518,8 @@ describe('CLI', () => {
         const args = [
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-          '--color=false',
+          '--loglevel=error',
+          '--no-color',
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -526,14 +527,12 @@ describe('CLI', () => {
         });
       });
 
-      it('should print without colors', () => {
-        // If colors are not on, there is no closing color code between
-        // the "pass" and the ":"
-        assert.include(runtimeInfo.dredd.stdout, 'pass:');
+      it('should not display any debug logging', () => {
+        assert.notInclude(runtimeInfo.dredd.output, 'debug:');
       });
     });
 
-    describe('when setting the log output level with -l', () => {
+    describe('when showing timestamps with --loglevel=debug', () => {
       let runtimeInfo;
 
       before((done) => {
@@ -543,31 +542,7 @@ describe('CLI', () => {
         const args = [
           './test/fixtures/single-get.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-          '-l=error',
-        ];
-        runCLIWithServer(args, app, (err, info) => {
-          runtimeInfo = info;
-          done(err);
-        });
-      });
-
-      it('should not display anything', () => {
-        // At the "error" level, complete should not be shown
-        assert.isOk(runtimeInfo.dredd.stdout.indexOf('complete') === -1);
-      });
-    });
-
-    describe('when showing timestamps with -t', () => {
-      let runtimeInfo;
-
-      before((done) => {
-        const app = createServer();
-        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
-
-        const args = [
-          './test/fixtures/single-get.apib',
-          `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-          '-t',
+          '--loglevel=debug',
         ];
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -577,7 +552,7 @@ describe('CLI', () => {
 
       it('should display timestamps', () => {
         // Look for the prefix for cli output with timestamps
-        assert.notEqual(runtimeInfo.dredd.stdout.indexOf('Z -'), -1);
+        assert.include(runtimeInfo.dredd.stderr, 'Z -');
       });
     });
   });
@@ -734,6 +709,7 @@ describe('CLI', () => {
           './test/fixtures/multifile/*.apib',
           `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
           '--names',
+          '--loglevel=debug',
         ];
         runCLI(args, (err, info) => {
           cliInfo = info;
@@ -800,6 +776,7 @@ describe('CLI', () => {
         './test/fixtures/multiple-examples.apib',
         `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
         '--path=./test/fixtures/multifile/*.apib',
+        '--loglevel=debug',
         '--names',
       ];
       runCLI(args, (err, info) => {

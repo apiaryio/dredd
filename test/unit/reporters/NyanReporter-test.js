@@ -4,10 +4,10 @@ const sinon = require('sinon');
 const { assert } = require('chai');
 const { EventEmitter } = require('events');
 
-const loggerStub = require('../../../lib/logger');
+const reporterOutputLoggerStub = require('../../../lib/reporters/reporterOutputLogger');
 
 const NyanCatReporter = proxyquire('../../../lib/reporters/NyanReporter', {
-  '../logger': loggerStub,
+  './reporterOutputLogger': reporterOutputLoggerStub,
 });
 
 describe('NyanCatReporter', () => {
@@ -16,9 +16,13 @@ describe('NyanCatReporter', () => {
   let tests;
   let nyanReporter;
 
-  before(() => { loggerStub.transports.console.silent = true; });
+  before(() => {
+    reporterOutputLoggerStub.transports.console.silent = true;
+  });
 
-  after(() => { loggerStub.transports.console.silent = false; });
+  after(() => {
+    reporterOutputLoggerStub.transports.console.silent = false;
+  });
 
   beforeEach(() => {
     emitter = new EventEmitter();
@@ -58,19 +62,19 @@ describe('NyanCatReporter', () => {
 
   describe('when ending', () => {
     beforeEach(() => {
-      sinon.spy(loggerStub, 'complete');
+      sinon.spy(reporterOutputLoggerStub, 'complete');
       sinon.spy(nyanReporter, 'draw');
       sinon.stub(nyanReporter, 'write');
     });
 
     afterEach(() => {
-      loggerStub.complete.restore();
+      reporterOutputLoggerStub.complete.restore();
       nyanReporter.draw.restore();
       nyanReporter.write.restore();
     });
 
     it('should log that testing is complete', done => emitter.emit('end', () => {
-      assert.isOk(loggerStub.complete.calledTwice);
+      assert.isOk(reporterOutputLoggerStub.complete.calledTwice);
       done();
     }));
 
@@ -82,13 +86,13 @@ describe('NyanCatReporter', () => {
         };
         nyanReporter.errors = [test];
         emitter.emit('test start', test);
-        sinon.spy(loggerStub, 'fail');
+        sinon.spy(reporterOutputLoggerStub, 'fail');
       });
 
-      afterEach(() => loggerStub.fail.restore());
+      afterEach(() => reporterOutputLoggerStub.fail.restore());
 
       it('should log the failures at the end of testing', done => emitter.emit('end', () => {
-        assert.isOk(loggerStub.fail.calledTwice);
+        assert.isOk(reporterOutputLoggerStub.fail.calledTwice);
         done();
       }));
     });

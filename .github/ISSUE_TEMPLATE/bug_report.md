@@ -25,7 +25,7 @@ A clear and concise description of what you expected to happen.
 ( paste your output here )
 ```
 
-**Does `dredd --level=debug` uncover something?**
+**Does `dredd --loglevel=debug` uncover something?**
 If you run Dredd with debugging output, do you see any interesting information relevant to the bug?
 
 **Can you send us failing test in a Pull Request?**

@@ -39,8 +39,7 @@ Let’s have a look at an example configuration first. (Please also see the :ref
        'dry-run': false, // Boolean, do not run any real HTTP transaction
        'names': false,   // Boolean, Print Transaction names and finish, similar to dry-run
 
-       'level': 'info', // String, log-level (info, silly, debug, verbose, ...)
-       'silent': false, // Boolean, Silences all logging output
+       'loglevel': 'warning', // String, logging level (debug, warning, error, silent)
 
        'only': [],      // Array of Strings, run only transaction that match these names
 
@@ -58,7 +57,6 @@ Let’s have a look at an example configuration first. (Please also see the :ref
        'require': null, // String, When using nodejs hooks, require the given module before executing hooks
 
        'color': true,
-       'timestamp': false
      },
 
      'emitter': EventEmitterInstance, // optional - listen to test progress, your own instance of EventEmitter

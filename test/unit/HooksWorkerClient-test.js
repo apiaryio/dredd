@@ -25,7 +25,7 @@ const MIN_COMMAND_EXECUTION_DURATION_MS = 2 * measureExecutionDurationMs(() => c
 const PORT = 61321;
 
 let runner;
-const logLevels = ['error', 'log', 'info', 'warn'];
+const logLevels = ['error', 'warn', 'debug'];
 
 const HooksWorkerClient = proxyquire('../../lib/HooksWorkerClient', {
   'cross-spawn': crossSpawnStub,
