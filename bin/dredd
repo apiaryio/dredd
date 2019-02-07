@@ -1,44 +1,44 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var path = require('path');
+/* eslint-disable global-require */
 
+const fs = require('fs');
+const path = require('path');
 
 // Ignore this block, it's pure magic, temporary fix
 // for https://github.com/nodejs/node/issues/6456
-[process.stdout, process.stderr].forEach(function (s) {
-  s && s.isTTY && s._handle && s._handle.setBlocking && s._handle.setBlocking(true);
-});
-
-
-var CLI = require('../lib/CLI');
-
-
-var dreddCli = new CLI({
-  custom: {
-    cwd: process.cwd(),
-    argv: process.argv.slice(2)
+[process.stdout, process.stderr].forEach((s) => {
+  if (s && s.isTTY && s._handle && s._handle.setBlocking) {
+    s._handle.setBlocking(true);
   }
 });
 
+const CLI = require('../lib/CLI');
+
+const dreddCli = new CLI({
+  custom: {
+    cwd: process.cwd(),
+    argv: process.argv.slice(2),
+  },
+});
 
 if (process.env.COVERAGE_DIR) {
-  process.on('exit', function () {
+  process.on('exit', () => {
     // Before Dredd exits, we need to collect coverage stats and save them to
     // a file. We abuse 'mocha-lcov-reporter' to do this.
-    var LCov = require('mocha-lcov-reporter');
+    const LCov = require('mocha-lcov-reporter');
 
     // Pretending there is Mocha runner
-    var EventEmitter = require('events').EventEmitter;
-    var runner = new EventEmitter();
+    const EventEmitter = require('events').EventEmitter;
+    const runner = new EventEmitter();
 
     // Monkey-patching 'LCov.prototype.write' to catch all output to a variable
-    var content = '';
-    var write = LCov.prototype.write;
+    let content = '';
+    const write = LCov.prototype.write;
 
-    LCov.prototype.write = function(string) {
+    LCov.prototype.write = (string) => {
       content += string;
-    }
+    };
 
     // Collecting the stats
     new LCov(runner);
@@ -48,10 +48,9 @@ if (process.env.COVERAGE_DIR) {
     LCov.prototype.write = write;
 
     // Save stats as lcov file
-    var file = path.join(process.env.COVERAGE_DIR, 'dredd-bin.info');
+    const file = path.join(process.env.COVERAGE_DIR, 'dredd-bin.info');
     fs.appendFileSync(file, content);
-  })
+  });
 }
-
 
 dreddCli.run();
