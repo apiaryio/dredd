@@ -171,16 +171,15 @@ describe('configuration.applyLoggingOptions()', () => {
 
 describe('configuration._coerceRemovedOptions()', () => {
   describe("with -c set to string 'true'", () => {
+    const config = { options: { c: 'true' } };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        options: { c: 'true' },
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets coerced to color set to boolean true', () => {
-      assert.deepEqual(coerceResult.config, { options: { color: true } });
+      assert.deepEqual(config, { options: { color: true } });
     });
     it('produces no errors', () => {
       assert.deepEqual(coerceResult.errors, []);
@@ -191,16 +190,15 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe("with -c set to string 'false'", () => {
+    const config = { options: { c: 'false' } };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        options: { c: 'false' },
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets coerced to color set to boolean false', () => {
-      assert.deepEqual(coerceResult.config, { options: { color: false } });
+      assert.deepEqual(config, { options: { color: false } });
     });
     it('produces no errors', () => {
       assert.deepEqual(coerceResult.errors, []);
@@ -211,16 +209,15 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe('with -c set to true', () => {
+    const config = { options: { c: true } };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        options: { c: true },
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets coerced to color set to boolean true', () => {
-      assert.deepEqual(coerceResult.config, { options: { color: true } });
+      assert.deepEqual(config, { options: { color: true } });
     });
     it('produces no errors', () => {
       assert.deepEqual(coerceResult.errors, []);
@@ -231,16 +228,15 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe('with -c set to false', () => {
+    const config = { options: { c: false } };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        options: { c: false },
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets coerced to color set to boolean false', () => {
-      assert.deepEqual(coerceResult.config, { options: { color: false } });
+      assert.deepEqual(config, { options: { color: false } });
     });
     it('produces no errors', () => {
       assert.deepEqual(coerceResult.errors, []);
@@ -251,16 +247,15 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe("with --color set to string 'true'", () => {
+    const config = { options: { color: 'true' } };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        options: { color: 'true' },
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets coerced to color set to boolean true', () => {
-      assert.deepEqual(coerceResult.config, { options: { color: true } });
+      assert.deepEqual(config, { options: { color: true } });
     });
     it('produces no errors', () => {
       assert.deepEqual(coerceResult.errors, []);
@@ -271,16 +266,15 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe("with --color set to string 'false'", () => {
+    const config = { options: { color: 'false' } };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        options: { color: 'false' },
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets coerced to color set to boolean false', () => {
-      assert.deepEqual(coerceResult.config, { options: { color: false } });
+      assert.deepEqual(config, { options: { color: false } });
     });
     it('produces no errors', () => {
       assert.deepEqual(coerceResult.errors, []);
@@ -291,16 +285,15 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe('with --color set to true', () => {
+    const config = { options: { color: true } };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        options: { color: true },
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets coerced to color set to boolean true', () => {
-      assert.deepEqual(coerceResult.config, { options: { color: true } });
+      assert.deepEqual(config, { options: { color: true } });
     });
     it('produces no errors', () => {
       assert.deepEqual(coerceResult.errors, []);
@@ -311,16 +304,15 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe('with --color set to false', () => {
+    const config = { options: { color: false } };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        options: { color: false },
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets coerced to color set to boolean false', () => {
-      assert.deepEqual(coerceResult.config, { options: { color: false } });
+      assert.deepEqual(config, { options: { color: false } });
     });
     it('produces no errors', () => {
       assert.deepEqual(coerceResult.errors, []);
@@ -331,16 +323,15 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe('with --level/-l set to a supported value', () => {
+    const config = { options: { l: 'debug', level: 'debug' } };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        options: { l: 'debug', level: 'debug' },
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets coerced to loglevel set to the value', () => {
-      assert.deepEqual(coerceResult.config, {
+      assert.deepEqual(config, {
         options: { l: 'debug', loglevel: 'debug' },
       });
     });
@@ -353,16 +344,15 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe('with --level/-l set to a consolidated value', () => {
+    const config = { options: { l: 'verbose', level: 'verbose' } };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        options: { l: 'verbose', level: 'verbose' },
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets coerced to loglevel set to a corresponding value', () => {
-      assert.deepEqual(coerceResult.config, {
+      assert.deepEqual(config, {
         options: { l: 'debug', loglevel: 'debug' },
       });
     });
@@ -375,16 +365,15 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe('with --level/-l set to a removed value', () => {
+    const config = { options: { l: 'complete', level: 'complete' } };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        options: { l: 'complete', level: 'complete' },
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets coerced to loglevel set to the default value', () => {
-      assert.deepEqual(coerceResult.config, {
+      assert.deepEqual(config, {
         options: { l: 'warn', loglevel: 'warn' },
       });
     });
@@ -397,16 +386,15 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe("with -l set to 'silent'", () => {
+    const config = { options: { l: 'silent' } };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        options: { l: 'silent' },
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets coerced to loglevel set to silent', () => {
-      assert.deepEqual(coerceResult.config, {
+      assert.deepEqual(config, {
         options: { l: 'silent', loglevel: 'silent' },
       });
     });
@@ -419,16 +407,15 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe('with --timestamp/-t set', () => {
+    const config = { options: { timestamp: true, t: true } };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        options: { timestamp: true, t: true },
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets coerced to loglevel set to debug', () => {
-      assert.deepEqual(coerceResult.config, {
+      assert.deepEqual(config, {
         options: { l: 'debug', loglevel: 'debug' },
       });
     });
@@ -441,16 +428,15 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe('with --silent/-q set', () => {
+    const config = { options: { silent: true, q: true } };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        options: { silent: true, q: true },
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets coerced to loglevel set to silent', () => {
-      assert.deepEqual(coerceResult.config, {
+      assert.deepEqual(config, {
         options: { l: 'silent', loglevel: 'silent' },
       });
     });
@@ -463,16 +449,15 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe('with --sandbox/-b set', () => {
+    const config = { options: { sandbox: true, b: true } };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        options: { sandbox: true, b: true },
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets removed', () => {
-      assert.deepEqual(coerceResult.config, { options: {} });
+      assert.deepEqual(config, { options: {} });
     });
     it('produces one error', () => {
       assert.lengthOf(coerceResult.errors, 1);
@@ -483,16 +468,15 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe('with hooksData set', () => {
+    const config = { hooksData: {} };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        hooksData: {},
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets removed', () => {
-      assert.deepEqual(coerceResult.config, {});
+      assert.deepEqual(config, {});
     });
     it('produces one error', () => {
       assert.lengthOf(coerceResult.errors, 1);
@@ -503,16 +487,15 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe('with blueprintPath set and empty path', () => {
+    const config = { blueprintPath: 'foo/bar' };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        blueprintPath: 'foo/bar',
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets reassigned as path', () => {
-      assert.deepEqual(coerceResult.config, { options: { path: ['foo/bar'] } });
+      assert.deepEqual(config, { options: { path: ['foo/bar'] } });
     });
     it('produces no errors', () => {
       assert.deepEqual(coerceResult.errors, []);
@@ -523,18 +506,16 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe('with blueprintPath set and path set to a string', () => {
+    const config = { blueprintPath: 'foo/bar', options: { path: 'moo.js' } };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        blueprintPath: 'foo/bar',
-        options: { path: 'moo.js' },
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets reassigned as path', () => {
-      assert.deepEqual(coerceResult.config, {
-        options: { path: ['moo.js', 'foo/bar'] },
+      assert.deepEqual(config, {
+        options: { path: ['foo/bar', 'moo.js'] },
       });
     });
     it('produces no errors', () => {
@@ -546,18 +527,16 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe('with blueprintPath set and path set to an array', () => {
+    const config = { blueprintPath: 'foo/bar', options: { path: ['moo.js'] } };
     let coerceResult;
 
     before(() => {
-      coerceResult = configuration._coerceRemovedOptions({
-        blueprintPath: 'foo/bar',
-        options: { path: ['moo.js'] },
-      });
+      coerceResult = configuration._coerceRemovedOptions(config);
     });
 
     it('gets reassigned as path', () => {
-      assert.deepEqual(coerceResult.config, {
-        options: { path: ['moo.js', 'foo/bar'] },
+      assert.deepEqual(config, {
+        options: { path: ['foo/bar', 'moo.js'] },
       });
     });
     it('produces no errors', () => {
