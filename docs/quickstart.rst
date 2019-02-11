@@ -44,31 +44,31 @@ First, let’s design the API we are about to build and test. That means you wil
 
       .. code-block:: openapi2
 
-         swagger: "2.0"
+         swagger: '2.0'
          info:
-         version: "1.0"
-         title: Example API
-         license:
-            name: MIT
+           version: '1.0'
+           title: Example API
+           license:
+             name: MIT
          host: www.example.com
          basePath: /
          schemes:
-         - http
+           - http
          paths:
-         /:
-            get:
+           /:
+             get:
                produces:
-               - application/json; charset=utf-8
+                 - application/json; charset=utf-8
                responses:
-               200:
-                  description: ""
-                  schema:
+                 '200':
+                   description: ''
+                   schema:
                      type: object
                      properties:
-                     message:
-                        type: string
+                       message:
+                         type: string
                      required:
-                     - message
+                       - message
 
 Implement Your API
 ------------------
