@@ -1,0 +1,202 @@
+const sinon = require('sinon');
+const { assert } = require('chai');
+
+const Dredd = require('../../lib/Dredd');
+
+
+function compileTransactions(apiDescription, logger, callback) {
+  const dredd = new Dredd({});
+  dredd.logger = logger;
+  dredd.configuration.data = { 'filename.api': { raw: apiDescription } };
+  dredd.compileTransactions(callback);
+}
+
+
+describe('Parser and compiler annotations', () => {
+  describe('when processing API Blueprint file with parser annotations', () => {
+    const logger = { debug: sinon.spy(), warn: sinon.spy() };
+
+    before((done) => {
+      compileTransactions(`
+FORMAT: 1A
+# Dummy API
+## Index [GET /]
++ Response
+      `, logger, done);
+    });
+
+    it('logs the annotations with the expected line numbers', () => {
+      assert.match(
+        logger.warn.getCall(0).args[0],
+        /^parser warning in file 'filename\.api': [\s\S]+ on line 5$/i
+      );
+    });
+  });
+
+  describe('when processing OpenAPI 2 file with parser annotations', () => {
+    const logger = { debug: sinon.spy(), warn: sinon.spy() };
+
+    before((done) => {
+      compileTransactions(`
+swagger: '2.0'
+info:
+  title: Dummy API
+  version: '1.0'
+paths:
+  /:
+    get:
+      responses:
+        200:
+          description: Index
+        default:
+          description: Test
+      `, logger, done);
+    });
+
+    it('logs the annotations with the expected line numbers', () => {
+      assert.match(
+        logger.warn.getCall(0).args[0],
+        /^parser warning in file 'filename\.api': [\s\S]+ on line 12$/i
+      );
+    });
+  });
+
+  describe('when processing OpenAPI 3 file with parser annotations', () => {
+    const logger = { debug: sinon.spy(), warn: sinon.spy() };
+
+    before((done) => {
+      compileTransactions(`
+openapi: '3.0.0'
+info:
+  title: Dummy API
+  version: '1.0'
+paths:
+  /:
+    get:
+      responses:
+        '200':
+          description: Index
+        default:
+          description: Test
+      `, logger, done);
+    });
+
+    it('logs the annotations with the expected line numbers', () => {
+      assert.match(
+        logger.warn.getCall(0).args[0],
+        /^parser warning in file 'filename\.api': [\s\S]+ on line 12$/i
+      );
+    });
+  });
+
+  describe('when processing a file with parser warnings', () => {
+    const logger = { debug: sinon.spy(), warn: sinon.spy() };
+    let error;
+
+    before((done) => {
+      compileTransactions(`
+FORMAT: 1A
+# Dummy API
+## Index [GET /]
++ Response
+      `, logger, (compileError) => {
+        error = compileError;
+        done();
+      });
+    });
+
+    it("doesn't abort Dredd", () => {
+      assert.isUndefined(error);
+    });
+    it('logs the warnings with line numbers', () => {
+      assert.match(
+        logger.warn.getCall(0).args[0],
+        /^parser warning in file 'filename\.api': [\s\S]+ on line 5$/i
+      );
+    });
+  });
+
+  describe('when processing a file with parser errors', () => {
+    const logger = { debug: sinon.spy(), error: sinon.spy() };
+    let error;
+
+    before((done) => {
+      compileTransactions(`
+FORMAT: 1A
+# Dummy API
+## Index [GET /]
++ Response
+\t+ Body
+      `, logger, (compileError) => {
+        error = compileError;
+        done();
+      });
+    });
+
+    it('aborts Dredd', () => {
+      assert.instanceOf(error, Error);
+    });
+    it('logs the errors with line numbers', () => {
+      assert.match(
+        logger.error.getCall(0).args[0],
+        /^parser error in file 'filename\.api': [\s\S]+ on line 6$/i
+      );
+    });
+  });
+
+  describe('when processing a file with compilation warnings', () => {
+    const logger = { debug: sinon.spy(), warn: sinon.spy() };
+    let error;
+
+    before((done) => {
+      compileTransactions(`
+FORMAT: 1A
+# Dummy API
+## Index [GET /{foo}]
++ Response 200
+      `, logger, (compileError) => {
+        error = compileError;
+        done();
+      });
+    });
+
+    it("doesn't abort Dredd", () => {
+      assert.isUndefined(error);
+    });
+    it('logs the warnings with a transaction path', () => {
+      assert.match(
+        logger.warn.getCall(0).args[0],
+        /^compilation warning in file 'filename\.api': [\s\S]+ \(Dummy API > Index > Index\)$/i
+      );
+    });
+  });
+
+  describe('when processing a file with compilation errors', () => {
+    const logger = { debug: sinon.spy(), error: sinon.spy(), warn: sinon.spy() };
+    let error;
+
+    before((done) => {
+      compileTransactions(`
+FORMAT: 1A
+# Dummy API
+## Index [DELETE /{?param}]
++ Parameters
+    + param (required)
++ Response 204
+      `, logger, (compileError) => {
+        error = compileError;
+        done();
+      });
+    });
+
+    it('aborts Dredd', () => {
+      assert.instanceOf(error, Error);
+    });
+    it('logs the errors with a transaction path', () => {
+      assert.match(
+        logger.error.getCall(0).args[0],
+        /^compilation error in file 'filename\.api': [\s\S]+ \(Dummy API > Index > Index\)$/i
+      );
+    });
+  });
+});
