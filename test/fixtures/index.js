@@ -35,11 +35,10 @@ function fixtures(basename) {
     // fixtures with the API Elements JSON missing (should blow up and the
     // scripts/pretest.js should be ran to mitigate the issue)
     .filter(fixture => fs.existsSync(fixture.apiDescriptionPath))
-    .map(fixture => ({
+    .map(fixture => Object.assign({
       apiDescription: fs.readFileSync(fixture.apiDescriptionPath, { encoding: 'utf8' }),
       apiElements: readAPIelements(fixture.apiElementsPath),
-      ...fixture,
-    }));
+    }, fixture));
 
   // prevent invalid fixture names
   if (array.length < 1) {
