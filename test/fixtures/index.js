@@ -4,8 +4,6 @@ const path = require('path');
 const fury = require('fury');
 
 
-const CACHE = {};
-
 const FORMATS = {
   apib: { name: 'API Blueprint', ext: '.apib', mediaType: 'text/vnd.apiblueprint' },
   openapi2: { name: 'OpenAPI 2', ext: '.yml', mediaType: 'application/swagger+yaml' },
@@ -25,8 +23,6 @@ function forEachDescribe(fn) {
 }
 
 function fixtures(basename) {
-  if (CACHE[basename]) { return CACHE[basename]; }
-
   const array = Object.keys(FORMATS)
     .map(format => ({
       format,
@@ -58,7 +54,6 @@ function fixtures(basename) {
     array[fixture.format] = fixture;
   });
 
-  CACHE[basename] = array;
   return array;
 }
 
