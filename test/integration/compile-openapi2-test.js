@@ -1,23 +1,18 @@
 const sinon = require('sinon');
+const proxyquire = require('proxyquire');
 
 const createAnnotationSchema = require('../schemas/annotation');
 const createCompilationResultSchema = require('../schemas/compilation-result');
 const detectTransactionExampleNumbers = require('../../lib/detect-transaction-example-numbers');
-const fixtures = require('../fixtures');
 
-const { assert, compileFixture } = require('../utils');
+const { assert, fixtures } = require('../support');
+const compile = require('../../lib/compile');
+
 
 describe('compile() · OpenAPI 2', () => {
   describe('causing a \'not specified in URI Template\' error', () => {
-    let compilationResult;
-
-    before((done) => {
-      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.openapi2, (...args) => {
-        let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      });
-    });
+    const { mediaType, apiElements } = fixtures('not-specified-in-uri-template-annotation').openapi2;
+    const compilationResult = compile(mediaType, apiElements);
 
     it('produces one annotation and no transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       annotations: 1,
@@ -32,13 +27,8 @@ describe('compile() · OpenAPI 2', () => {
   });
 
   describe('with \'produces\' containing JSON media type', () => {
-    let compilationResult;
-
-    before(done => compileFixture(fixtures.produces.openapi2, (...args) => {
-      let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-      done(err);
-    }));
+    const { mediaType, apiElements } = fixtures('produces').openapi2;
+    const compilationResult = compile(mediaType, apiElements);
 
     it('produces two transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       transactions: 2,
@@ -59,13 +49,8 @@ describe('compile() · OpenAPI 2', () => {
   });
 
   describe('with \'produces\' containing JSON media type with parameters', () => {
-    let compilationResult;
-
-    before(done => compileFixture(fixtures.producesCharset.openapi2, (...args) => {
-      let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-      done(err);
-    }));
+    const { mediaType, apiElements } = fixtures('produces-charset').openapi2;
+    const compilationResult = compile(mediaType, apiElements);
 
     it('produces two transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       transactions: 2,
@@ -86,13 +71,8 @@ describe('compile() · OpenAPI 2', () => {
   });
 
   describe('with \'produces\' containing a non-JSON media type with an example', () => {
-    let compilationResult;
-
-    before(done => compileFixture(fixtures.producesNonJSONExample.openapi2, (...args) => {
-      let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-      done(err);
-    }));
+    const { mediaType, apiElements } = fixtures('produces-non-json-example').openapi2;
+    const compilationResult = compile(mediaType, apiElements);
 
     it('produces two transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       transactions: 2,
@@ -113,21 +93,16 @@ describe('compile() · OpenAPI 2', () => {
   });
 
   describe('with \'consumes\'', () => {
-    let compilationResult;
-
-    before(done => compileFixture(fixtures.consumes.openapi2, (...args) => {
-      let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-      done(err);
-    }));
+    const { mediaType, apiElements } = fixtures('consumes').openapi2;
+    const compilationResult = compile(mediaType, apiElements);
 
     it('produces two transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       transactions: 3,
     })));
 
-    ['application/json', 'application/xml', 'application/json'].forEach((mediaType, i) => context(`compiles a transaction for the '${mediaType}' media type`, () => {
+    ['application/json', 'application/xml', 'application/json'].forEach((contentType, i) => context(`compiles a transaction for the '${contentType}' content type`, () => {
       it('with expected request headers', () => assert.deepEqual(compilationResult.transactions[i].request.headers, [
-        { name: 'Content-Type', value: mediaType },
+        { name: 'Content-Type', value: contentType },
       ]));
 
       it('with expected response headers', () => assert.deepEqual(compilationResult.transactions[i].response.headers, []));
@@ -135,19 +110,15 @@ describe('compile() · OpenAPI 2', () => {
   });
 
   describe('with multiple responses', () => {
-    let compilationResult;
     const filename = 'apiDescription.json';
     const detectTransactionExampleNumbersStub = sinon.spy(detectTransactionExampleNumbers);
-    const expectedStatusCodes = [200, 400, 500];
-
-    before((done) => {
-      const stubs = { './detect-transaction-example-numbers': detectTransactionExampleNumbersStub };
-      compileFixture(fixtures.multipleResponses.openapi2, { filename, stubs }, (...args) => {
-        let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      });
+    const stubbedCompile = proxyquire('../../lib/compile', {
+      './detect-transaction-example-numbers': detectTransactionExampleNumbersStub,
     });
+    const { mediaType, apiElements } = fixtures('multiple-responses').openapi2;
+    const compilationResult = stubbedCompile(mediaType, apiElements, filename);
+
+    const expectedStatusCodes = [200, 400, 500];
 
     it('does not call the detection of transaction examples', () => assert.isFalse(detectTransactionExampleNumbersStub.called));
 
@@ -175,15 +146,8 @@ describe('compile() · OpenAPI 2', () => {
   });
 
   describe('with \'securityDefinitions\' and multiple responses', () => {
-    let compilationResult;
-
-    before((done) => {
-      compileFixture(fixtures.securityDefinitionsMultipleResponses.openapi2, (...args) => {
-        let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      });
-    });
+    const { mediaType, apiElements } = fixtures('security-definitions-multiple-responses').openapi2;
+    const compilationResult = compile(mediaType, apiElements);
 
     it('produces two transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       transactions: 2,
@@ -191,13 +155,8 @@ describe('compile() · OpenAPI 2', () => {
   });
 
   describe('with \'securityDefinitions\' containing transitions', () => {
-    let compilationResult;
-
-    before(done => compileFixture(fixtures.securityDefinitionsTransitions.openapi2, (...args) => {
-      let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-      done(err);
-    }));
+    const { mediaType, apiElements } = fixtures('security-definitions-transitions').openapi2;
+    const compilationResult = compile(mediaType, apiElements);
 
     it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       transactions: 1,
@@ -205,13 +164,8 @@ describe('compile() · OpenAPI 2', () => {
   });
 
   describe('with default response (without explicit status code)', () => {
-    let compilationResult;
-
-    before(done => compileFixture(fixtures.defaultResponse.openapi2, (...args) => {
-      let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-      done(err);
-    }));
+    const { mediaType, apiElements } = fixtures('default-response').openapi2;
+    const compilationResult = compile(mediaType, apiElements);
 
     it('produces two annotations and two transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       annotations: 2,

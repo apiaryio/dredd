@@ -2,36 +2,24 @@ const proxyquire = require('proxyquire').noPreserveCache();
 
 const createAnnotationSchema = require('../schemas/annotation');
 const createCompilationResultSchema = require('../schemas/compilation-result');
-const fixtures = require('../fixtures');
 
-const { assert, compileFixture } = require('../utils');
+const { assert, fixtures } = require('../support');
+const compile = require('../../lib/compile');
+
 
 describe('compile() · all API description formats', () => {
   describe('ordinary, valid API description', () => {
-    const filename = 'apiDescription.ext';
-
-    fixtures.ordinary.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, { filename }, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('ordinary').forEachDescribe(({ mediaType, apiElements }) => {
+      const filename = 'apiDescription.ext';
+      const compilationResult = compile(mediaType, apiElements, filename);
 
       it('is compiled into a compilation result of expected structure', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({ filename })));
     });
   });
 
   describe('causing an error in the parser', () => {
-    fixtures.parserError.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('parser-error').forEachDescribe(({ mediaType, apiElements }) => {
+      const compilationResult = compile(mediaType, apiElements);
 
       it('produces one annotation and no transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         annotations: 1,
@@ -51,15 +39,8 @@ describe('compile() · all API description formats', () => {
     // in case Dredd Transactions are not able to parse the URI template.
     // Mind that situations when parser gives the warning and when this error
     // is thrown can differ and also the severity is different.
-
-    fixtures.uriExpansionAnnotation.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('uri-expansion-annotation').forEachDescribe(({ mediaType, apiElements }) => {
+      const compilationResult = compile(mediaType, apiElements);
 
       it('produces some annotations and no transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         annotations: [1, 2],
@@ -94,15 +75,8 @@ describe('compile() · all API description formats', () => {
     // expanding the URI template. Mind that situations when parser gives
     // the warning and when this error is returned can differ and also
     // the severity is different.
-
-    fixtures.uriValidationAnnotation.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('uri-validation-annotation').forEachDescribe(({ mediaType, apiElements }) => {
+      const compilationResult = compile(mediaType, apiElements);
 
       it('produces some annotations and no transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         annotations: [2, 3],
@@ -135,14 +109,8 @@ describe('compile() · all API description formats', () => {
   });
 
   describe('causing a warning in the parser', () => {
-    fixtures.parserWarning.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('parser-warning').forEachDescribe(({ mediaType, apiElements }) => {
+      const compilationResult = compile(mediaType, apiElements);
 
       it('produces some annotations and one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         annotations: [1],
@@ -162,23 +130,14 @@ describe('compile() · all API description formats', () => {
     // doesn't have any other special side effect. Since there are no such
     // warnings as of now (but were in the past and could be in the future),
     // we need to pretend it's possible in this test.
-
-    const message = '... dummy warning message ...';
-
-    const stubs = {
-      './compile-uri': proxyquire('../../lib/compile-uri', {
-        './expand-uri-template': () => ({ uri: '/honey?beekeeper=Honza', errors: [], warnings: [message] }),
-      }),
-    };
-
-    fixtures.ordinary.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, { stubs }, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('ordinary').forEachDescribe(({ mediaType, apiElements }) => {
+      const message = '... dummy warning message ...';
+      const stubbedCompile = proxyquire('../../lib/compile', {
+        './compile-uri': proxyquire('../../lib/compile-uri', {
+          './expand-uri-template': () => ({ uri: '/honey?beekeeper=Honza', errors: [], warnings: [message] }),
+        }),
+      });
+      const compilationResult = stubbedCompile(mediaType, apiElements);
 
       it('produces some annotations', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         annotations: [1],
@@ -204,15 +163,8 @@ describe('compile() · all API description formats', () => {
     //
     // Special side effect of the warning is that affected transactions
     // should be skipped (shouldn't appear in output of the compilation).
-
-    fixtures.ambiguousParametersAnnotation.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('ambiguous-parameters-annotation').forEachDescribe(({ mediaType, apiElements }) => {
+      const compilationResult = compile(mediaType, apiElements);
 
       it('produces two annotations and no transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         annotations: 2,
@@ -233,22 +185,14 @@ describe('compile() · all API description formats', () => {
     // Since 'validateParams' doesn't actually return any warnings
     // (but could in the future), we need to pretend it's possible for this
     // test.
-
-    const message = '... dummy warning message ...';
-    const stubs = {
-      './compile-uri': proxyquire('../../lib/compile-uri', {
-        './validate-params': () => ({ errors: [], warnings: [message] }),
-      }),
-    };
-
-    fixtures.ordinary.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, { stubs }, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('ordinary').forEachDescribe(({ mediaType, apiElements }) => {
+      const message = '... dummy warning message ...';
+      const stubbedCompile = proxyquire('../../lib/compile', {
+        './compile-uri': proxyquire('../../lib/compile-uri', {
+          './validate-params': () => ({ errors: [], warnings: [message] }),
+        }),
+      });
+      const compilationResult = stubbedCompile(mediaType, apiElements);
 
       it('produces some annotations', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         annotations: [1],
@@ -266,14 +210,8 @@ describe('compile() · all API description formats', () => {
   });
 
   describe('with enum parameter', () => {
-    fixtures.enumParameter.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('enum-parameter').forEachDescribe(({ mediaType, apiElements }) => {
+      const compilationResult = compile(mediaType, apiElements);
 
       it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         transactions: 1,
@@ -284,14 +222,8 @@ describe('compile() · all API description formats', () => {
   });
 
   describe('with enum parameter having example value', () => {
-    fixtures.enumParameterExample.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('enum-parameter-example').forEachDescribe(({ mediaType, apiElements }) => {
+      const compilationResult = compile(mediaType, apiElements);
 
       it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         transactions: 1,
@@ -307,15 +239,8 @@ describe('compile() · all API description formats', () => {
     // in case enum parameters have an example value, which is not allowed
     // by the enum. Mind that situations when parser gives the warning and
     // when this error is returned can differ and also the severity is different.
-
-    fixtures.enumParameterUnlistedExample.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('enum-parameter-unlisted-example').forEachDescribe(({ mediaType, apiElements }) => {
+      const compilationResult = compile(mediaType, apiElements);
 
       it('produces some annotations and one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         annotations: [1, 2],
@@ -346,14 +271,8 @@ describe('compile() · all API description formats', () => {
   });
 
   describe('with parameters having example values', () => {
-    fixtures.exampleParameters.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('example-parameters').forEachDescribe(({ mediaType, apiElements }) => {
+      const compilationResult = compile(mediaType, apiElements);
 
       it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         transactions: 1,
@@ -364,14 +283,8 @@ describe('compile() · all API description formats', () => {
   });
 
   describe('with response schema', () => {
-    fixtures.responseSchema.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('response-schema').forEachDescribe(({ mediaType, apiElements }) => {
+      const compilationResult = compile(mediaType, apiElements);
 
       it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         transactions: 2,
@@ -401,14 +314,8 @@ describe('compile() · all API description formats', () => {
   });
 
   describe('with inheritance of URI parameters', () => {
-    fixtures.parametersInheritance.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('parameters-inheritance').forEachDescribe(({ mediaType, apiElements }) => {
+      const compilationResult = compile(mediaType, apiElements);
 
       it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         transactions: 1,
@@ -419,14 +326,8 @@ describe('compile() · all API description formats', () => {
   });
 
   describe('with different default value and first enum value of URI parameter', () => {
-    fixtures.preferDefault.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('prefer-default').forEachDescribe(({ mediaType, apiElements }) => {
+      const compilationResult = compile(mediaType, apiElements);
 
       it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         transactions: 1,
@@ -437,14 +338,8 @@ describe('compile() · all API description formats', () => {
   });
 
   describe('with default value for a required URI parameter', () => {
-    fixtures.defaultRequired.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('default-required').forEachDescribe(({ mediaType, apiElements }) => {
+      const compilationResult = compile(mediaType, apiElements);
 
       it('produces some annotations and one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         annotations: [1, 2],
@@ -475,14 +370,8 @@ describe('compile() · all API description formats', () => {
   });
 
   describe('with HTTP headers', () => {
-    fixtures.httpHeaders.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('http-headers').forEachDescribe(({ mediaType, apiElements }) => {
+      const compilationResult = compile(mediaType, apiElements);
 
       it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         transactions: 1,
@@ -501,14 +390,8 @@ describe('compile() · all API description formats', () => {
   });
 
   describe('without explicit body', () => {
-    fixtures.noBody.forEachDescribe(({ source }) => {
-      let compilationResult;
-
-      before(done => compileFixture(source, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
+    fixtures('no-body').forEachDescribe(({ mediaType, apiElements }) => {
+      const compilationResult = compile(mediaType, apiElements);
 
       it('produces 2 transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         transactions: 2,
@@ -520,23 +403,17 @@ describe('compile() · all API description formats', () => {
   });
 
   describe('without explicit schema', () => {
-    fixtures.noSchema.forEachDescribe(({ source }) => {
-      let compilationResult;
-      const expectedMediaTypes = ['application/json', 'application/json', 'text/csv', 'text/yaml'];
+    fixtures('no-schema').forEachDescribe(({ mediaType, apiElements }) => {
+      const expectedContentTypes = ['application/json', 'application/json', 'text/csv', 'text/yaml'];
+      const compilationResult = compile(mediaType, apiElements);
 
-      before(done => compileFixture(source, (...args) => {
-        let err;
-          [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      }));
-
-      it(`produces ${expectedMediaTypes.length} transactions`, () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        transactions: expectedMediaTypes.length,
+      it(`produces ${expectedContentTypes.length} transactions`, () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        transactions: expectedContentTypes.length,
       })));
 
-      expectedMediaTypes.forEach((mediaType, i) => context(`transaction #${i + 1}`, () => {
-        it(`has '${mediaType}' response`, () => assert.deepEqual(compilationResult.transactions[i].response.headers, [
-          { name: 'Content-Type', value: mediaType },
+      expectedContentTypes.forEach((contentType, i) => context(`transaction #${i + 1}`, () => {
+        it(`has '${contentType}' response`, () => assert.deepEqual(compilationResult.transactions[i].response.headers, [
+          { name: 'Content-Type', value: contentType },
         ]));
 
         it('has no schema', () => assert.isUndefined(compilationResult.transactions[i].response.schema));
@@ -545,8 +422,7 @@ describe('compile() · all API description formats', () => {
   });
 
   describe('with \'multipart/form-data\' message bodies', () => {
-    fixtures.multipartFormData.forEachDescribe(({ source, format }) => {
-      let compilationResult;
+    fixtures('multipart-form-data').forEachDescribe(({ format, mediaType, apiElements }) => {
       const expectedBody = [
         '--CUSTOM-BOUNDARY',
         'Content-Disposition: form-data; name="text"',
@@ -562,12 +438,7 @@ describe('compile() · all API description formats', () => {
         '--CUSTOM-BOUNDARY--',
         '',
       ].join('\r\n');
-
-      before(done => compileFixture(source, (...args) => {
-        let err;
-        [err, compilationResult] = args;
-        done(err);
-      }));
+      const compilationResult = compile(mediaType, apiElements);
 
       it('produces no annotations and 1 transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
         annotations: 0,
@@ -578,7 +449,7 @@ describe('compile() · all API description formats', () => {
         it('has the expected request body', () => {
           // Remove the lines with Content-Type headers as OpenAPI 2 doesn't
           // support generating them for 'multipart/form-data' request bodies
-          const expectedRequestBody = format === 'OpenAPI 2'
+          const expectedRequestBody = format === 'openapi2'
             ? expectedBody.split('\r\n').filter(line => !line.match(/Content-Type/)).join('\r\n')
             : expectedBody;
 
