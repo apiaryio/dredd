@@ -10,7 +10,9 @@
     "prepack": "node ./scripts/prepack.js",
     "clean": "rimraf ./coverage",
     "lint": "bash ./scripts/commitlint.sh && eslint --ignore-path .gitignore .",
+    "pretest": "node ./scripts/pretest.js",
     "test": "npm run clean && mocha ./test",
+    "pretest:coverage": "node ./scripts/pretest.js",
     "test:coverage": "npm run clean && istanbul cover ./node_modules/.bin/_mocha -- ./test",
     "ci:lint": "npm run lint",
     "ci:test": "npm run test:coverage && bash ./scripts/coveralls.sh",
@@ -51,8 +53,7 @@
     "proxyquire": "2.1.0",
     "rimraf": "2.6.3",
     "semantic-release": "15.13.3",
-    "sinon": "7.2.4",
-    "swagger-zoo": "2.20.0"
+    "sinon": "7.2.4"
   },
   "keywords": [
     "api",
