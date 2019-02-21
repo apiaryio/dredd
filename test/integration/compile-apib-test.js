@@ -1,21 +1,18 @@
 const sinon = require('sinon');
+const proxyquire = require('proxyquire').noPreserveCache();
 
 const createAnnotationSchema = require('../schemas/annotation');
 const createCompilationResultSchema = require('../schemas/compilation-result');
 const detectTransactionExampleNumbers = require('../../lib/detect-transaction-example-numbers');
-const fixtures = require('../fixtures');
 
-const { assert, compileFixture } = require('../utils');
+const { assert, fixtures } = require('../support');
+const compile = require('../../lib/compile');
+
 
 describe('compile() · API Blueprint', () => {
   describe('causing a \'missing title\' warning', () => {
-    let compilationResult;
-
-    before(done => compileFixture(fixtures.missingTitleAnnotation.apib, (...args) => {
-      let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-      done(err);
-    }));
+    const { mediaType, apiElements } = fixtures('missing-title-annotation').apib;
+    const compilationResult = compile(mediaType, apiElements);
 
     it('produces one annotation and no transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       annotations: 1,
@@ -32,16 +29,8 @@ describe('compile() · API Blueprint', () => {
   describe('causing a \'not found within URI Template\' warning', () => {
     // The warning was previously handled by compiler, but now parser should
     // already provide the same kind of warning.
-
-    let compilationResult;
-
-    before((done) => {
-      compileFixture(fixtures.notSpecifiedInUriTemplateAnnotation.apib, (...args) => {
-        let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      });
-    });
+    const { mediaType, apiElements } = fixtures('not-specified-in-uri-template-annotation').apib;
+    const compilationResult = compile(mediaType, apiElements);
 
     it('produces one annotation and one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       annotations: 1,
@@ -56,24 +45,18 @@ describe('compile() · API Blueprint', () => {
   });
 
   describe('with multiple transaction examples', () => {
-    let compilationResult;
-
     const detectTransactionExampleNumbersStub = sinon.spy(detectTransactionExampleNumbers);
+    const stubbedCompile = proxyquire('../../lib/compile', {
+      './detect-transaction-example-numbers': detectTransactionExampleNumbersStub,
+    });
+    const { mediaType, apiElements } = fixtures('multiple-transaction-examples').apib;
+    const compilationResult = stubbedCompile(mediaType, apiElements);
 
     const expected = [
       { exampleName: '', requestContentType: 'application/json', responseStatusCode: 200 },
       { exampleName: 'Example 1', requestContentType: 'application/json', responseStatusCode: 200 },
       { exampleName: 'Example 2', requestContentType: 'text/plain', responseStatusCode: 415 },
     ];
-
-    before((done) => {
-      const stubs = { './detect-transaction-example-numbers': detectTransactionExampleNumbersStub };
-      compileFixture(fixtures.multipleTransactionExamples.apib, { stubs }, (...args) => {
-        let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      });
-    });
 
     it('calls the detection of transaction examples', () => assert.isTrue(detectTransactionExampleNumbersStub.called));
 
@@ -106,16 +89,11 @@ describe('compile() · API Blueprint', () => {
 
   describe('without multiple transaction examples', () => {
     const detectTransactionExampleNumbersStub = sinon.spy(detectTransactionExampleNumbers);
-    let compilationResult;
-
-    before((done) => {
-      const stubs = { './detect-transaction-example-numbers': detectTransactionExampleNumbersStub };
-      compileFixture(fixtures.oneTransactionExample.apib, { stubs }, (...args) => {
-        let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      });
+    const stubbedCompile = proxyquire('../../lib/compile', {
+      './detect-transaction-example-numbers': detectTransactionExampleNumbersStub,
     });
+    const { mediaType, apiElements } = fixtures('one-transaction-example').apib;
+    const compilationResult = stubbedCompile(mediaType, apiElements);
 
     it('calls the detection of transaction examples', () => assert.isTrue(detectTransactionExampleNumbersStub.called));
 
@@ -129,16 +107,9 @@ describe('compile() · API Blueprint', () => {
   });
 
   describe('with arbitrary action', () => {
-    let compilationResult;
     const filename = 'apiDescription.apib';
-
-    before((done) => {
-      compileFixture(fixtures.arbitraryAction.apib, { filename }, (...args) => {
-        let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      });
-    });
+    const { mediaType, apiElements } = fixtures('arbitrary-action').apib;
+    const compilationResult = compile(mediaType, apiElements, filename);
 
     it('produces two transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       transactions: 2,
@@ -156,16 +127,9 @@ describe('compile() · API Blueprint', () => {
   });
 
   describe('without sections', () => {
-    let compilationResult;
     const filename = 'apiDescription.apib';
-
-    before((done) => {
-      compileFixture(fixtures.withoutSections.apib, { filename }, (...args) => {
-        let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-        done(err);
-      });
-    });
+    const { mediaType, apiElements } = fixtures('without-sections').apib;
+    const compilationResult = compile(mediaType, apiElements, filename);
 
     it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       transactions: 1,
@@ -180,13 +144,8 @@ describe('compile() · API Blueprint', () => {
   });
 
   describe('with different sample and default value of URI parameter', () => {
-    let compilationResult;
-
-    before(done => compileFixture(fixtures.preferSample.apib, (...args) => {
-      let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-      done(err);
-    }));
+    const { mediaType, apiElements } = fixtures('prefer-sample').apib;
+    const compilationResult = compile(mediaType, apiElements);
 
     it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       transactions: 1,
@@ -196,13 +155,8 @@ describe('compile() · API Blueprint', () => {
   });
 
   describe('with response without explicit status code', () => {
-    let compilationResult;
-
-    before(done => compileFixture(fixtures.noStatus.apib, (...args) => {
-      let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-      done(err);
-    }));
+    const { mediaType, apiElements } = fixtures('no-status').apib;
+    const compilationResult = compile(mediaType, apiElements);
 
     it('produces 1 annotation and 1 transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       annotations: 1,
@@ -219,13 +173,8 @@ describe('compile() · API Blueprint', () => {
   });
 
   describe('with multiple HTTP headers of the same name', () => {
-    let compilationResult;
-
-    before(done => compileFixture(fixtures.httpHeadersMultiple.apib, (...args) => {
-      let err;
-        [err, compilationResult] = Array.from(args); // eslint-disable-line
-      done(err);
-    }));
+    const { mediaType, apiElements } = fixtures('http-headers-multiple').apib;
+    const compilationResult = compile(mediaType, apiElements);
 
     it('produces 1 annotation and 1 transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
       annotations: 1,

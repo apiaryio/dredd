@@ -1,20 +1,20 @@
 const fury = require('fury');
 const sinon = require('sinon');
 
-const fixtures = require('../fixtures');
 const parse = require('../../lib/parse');
 
-const { assert } = require('../utils');
+const { assert, fixtures } = require('../support');
+
 
 describe('parse()', () => {
   const reMediaType = /\w+\/[\w.+]+/;
 
-  describe('when valid document gets correctly parsed', () => fixtures.ordinary.forEachDescribe(({ source }) => {
+  describe('when valid document gets correctly parsed', () => fixtures('ordinary').forEachDescribe(({ apiDescription }) => {
     let error;
     let mediaType;
     let apiElements;
 
-    beforeEach(done => parse(source, (err, parseResult) => {
+    beforeEach(done => parse(apiDescription, (err, parseResult) => {
       error = err;
       if (parseResult) { ({ mediaType, apiElements } = parseResult); }
       done();
@@ -33,12 +33,12 @@ describe('parse()', () => {
     });
   }));
 
-  describe('when invalid document causes error', () => fixtures.parserError.forEachDescribe(({ source }) => {
+  describe('when invalid document causes error', () => fixtures('parser-error').forEachDescribe(({ apiDescription }) => {
     let error;
     let mediaType;
     let apiElements;
 
-    beforeEach(done => parse(source, (err, parseResult) => {
+    beforeEach(done => parse(apiDescription, (err, parseResult) => {
       error = err;
       if (parseResult) { ({ mediaType, apiElements } = parseResult); }
       done();
@@ -51,12 +51,12 @@ describe('parse()', () => {
     it('the annotations are errors', () => assert.equal(apiElements.errors ? apiElements.errors.length : undefined, apiElements.annotations.length));
   }));
 
-  describe('when defective document causes warning', () => fixtures.parserWarning.forEachDescribe(({ source }) => {
+  describe('when defective document causes warning', () => fixtures('parser-warning').forEachDescribe(({ apiDescription }) => {
     let error;
     let mediaType;
     let apiElements;
 
-    beforeEach(done => parse(source, (err, parseResult) => {
+    beforeEach(done => parse(apiDescription, (err, parseResult) => {
       error = err;
       if (parseResult) { ({ mediaType, apiElements } = parseResult); }
       done();
@@ -112,7 +112,7 @@ describe('parse()', () => {
     let mediaType;
     let apiElements;
 
-    beforeEach(done => parse(fixtures.unrecognizable.apib, (err, parseResult) => {
+    beforeEach(done => parse(fixtures('unrecognizable').apib.apiDescription, (err, parseResult) => {
       error = err;
       if (parseResult) { ({ mediaType, apiElements } = parseResult); }
       done();

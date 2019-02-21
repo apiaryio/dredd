@@ -1,0 +1,25 @@
+swagger: '2.0'
+info:
+  title: Title
+  version: '1.0'
+host: api.example.com
+schemes:
+- https
+- http
+securityDefinitions: {}
+security: []
+paths:
+  /foo:
+    parameters:
+      - name: theBody
+        in: body
+        schema: {}
+    get:
+      responses:
+        200:
+          description: Test
+          examples:
+            application/json:
+              status: ok
+        default:
+          description: Test

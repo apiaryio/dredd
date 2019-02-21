@@ -1,7 +1,7 @@
 const detectTransactionExampleNumbers = require('../../lib/detect-transaction-example-numbers');
 const parse = require('../../lib/parse');
 
-const { assert } = require('../utils');
+const { assert } = require('../support');
 
 // Encapsulates a single test scenario.
 const scenario = (description, { actionContent, exampleNumbersPerTransaction }) => describe(`${description}`, () => {

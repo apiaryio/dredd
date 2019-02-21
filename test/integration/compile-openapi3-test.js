@@ -1,18 +1,13 @@
 const createCompilationResultSchema = require('../schemas/compilation-result');
-const fixtures = require('../fixtures');
 
-const { assert, compileFixture } = require('../utils');
+const { assert, fixtures } = require('../support');
+const compile = require('../../lib/compile');
+
 
 describe('compile() · OpenAPI 3', () => {
   describe('ordinary, valid API description', () => {
-    let compilationResult;
-
-    before((done) => {
-      compileFixture(fixtures.proofOfConcept.openapi3, (err, result) => {
-        compilationResult = result;
-        done(err);
-      });
-    });
+    const { mediaType, apiElements } = fixtures('proof-of-concept').openapi3;
+    const compilationResult = compile(mediaType, apiElements);
 
     it('produces some annotation and some transactions', () => {
       assert.jsonSchema(compilationResult, createCompilationResultSchema({
