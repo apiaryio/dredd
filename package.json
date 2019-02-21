@@ -45,7 +45,7 @@
     "glob": "7.1.3",
     "html": "1.0.0",
     "htmlencode": "0.0.4",
-    "inquirer": "6.2.1",
+    "inquirer": "6.2.2",
     "js-yaml": "3.12.1",
     "make-dir": "1.3.0",
     "markdown-it": "8.4.2",
