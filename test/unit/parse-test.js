@@ -1,5 +1,4 @@
 const fury = require('fury');
-const sinon = require('sinon');
 
 const parse = require('../../lib/parse');
 
@@ -44,7 +43,7 @@ describe('parse()', () => {
       done();
     }));
 
-    it('produces error', () => assert.instanceOf(error, Error));
+    it('produces no error', () => assert.isNull(error));
     it('produces API Elements', () => assert.isObject(apiElements));
     it('produces media type', () => assert.match(mediaType, reMediaType));
     it('the parse result contains annotation elements', () => assert.isFalse(apiElements.annotations ? apiElements.annotations.isEmpty : undefined));
@@ -69,25 +68,6 @@ describe('parse()', () => {
     it('the annotations are warnings', () => assert.equal(apiElements.warnings ? apiElements.warnings.length : undefined, apiElements.annotations.length));
   }));
 
-  describe('when unexpected parser behavior causes \'unexpected parser error\'', () => {
-    let error;
-    let apiElements;
-
-    beforeEach((done) => {
-      sinon.stub(fury, 'parse').callsFake((...args) => args.pop()());
-      return parse('... dummy API description document ...', (err, parseResult) => {
-        error = err;
-        if (parseResult) { ({ apiElements } = parseResult); }
-        return done();
-      });
-    });
-    afterEach(() => fury.parse.restore());
-
-    it('produces error', () => assert.instanceOf(error, Error));
-    it('the error is the \'unexpected parser error\' error', () => assert.include(error.message.toLowerCase(), 'unexpected parser error'));
-    it('produces no parse result', () => assert.isNull(apiElements));
-  });
-
   describe('when completely unknown document format is treated as API Blueprint', () => {
     let error;
     let mediaType;
@@ -104,7 +84,7 @@ describe('parse()', () => {
     it('produces media type', () => assert.match(mediaType, reMediaType));
     it('the parse result contains annotation elements', () => assert.isFalse(apiElements.annotations ? apiElements.annotations.isEmpty : undefined));
     it('the annotations are warnings', () => assert.equal(apiElements.warnings ? apiElements.warnings.length : undefined, apiElements.annotations.length));
-    it('the first warning is about falling back to API Blueprint', () => assert.include(apiElements.warnings.getValue(0), 'to API Blueprint'));
+    it('the first warning is about falling back to API Blueprint', () => assert.include(apiElements.warnings.getValue(0), 'assuming API Blueprint'));
   });
 
   describe('when unrecognizable API Blueprint is treated as API Blueprint', () => {
@@ -123,6 +103,6 @@ describe('parse()', () => {
     it('produces media type', () => assert.match(mediaType, reMediaType));
     it('the parse result contains annotation elements', () => assert.isFalse(apiElements.annotations.isEmpty));
     it('the annotations are warnings', () => assert.equal(apiElements.warnings.length, apiElements.annotations.length));
-    it('the first warning is about falling back to API Blueprint', () => assert.include(apiElements.warnings.getValue(0), 'to API Blueprint'));
+    it('the first warning is about falling back to API Blueprint', () => assert.include(apiElements.warnings.getValue(0), 'assuming API Blueprint'));
   });
 });

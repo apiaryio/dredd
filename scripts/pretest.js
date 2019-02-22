@@ -27,7 +27,7 @@ function parseFixture(fixturePath) {
   return new Promise((resolve, reject) => {
     const fixture = fs.readFileSync(fixturePath, { encoding: 'utf8' });
     parse(fixture, (err, result) => {
-      if (err && !result.apiElements) reject(err); // because of strange error handling in parse.js
+      if (err) reject(err);
       else resolve(result.apiElements);
     });
   }).then((apiElements) => {
@@ -48,4 +48,4 @@ console.log(`Parsing ${fixtures.length} fixtures...`);
 Promise
   .all(fixtures.map(parseFixture))
   .then(() => { console.log('Fixtures ready!'); })
-  .catch(console.error);
+  .catch((err) => { console.error(err); process.exitCode = 1; });

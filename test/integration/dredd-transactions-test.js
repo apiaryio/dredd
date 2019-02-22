@@ -44,7 +44,7 @@ describe('Dredd Transactions', () => {
     it('produces warning about falling back to API Blueprint', () => assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
       type: 'warning',
       component: 'apiDescriptionParser',
-      message: 'to API Blueprint',
+      message: 'assuming API Blueprint',
     })));
   });
 
@@ -67,7 +67,7 @@ describe('Dredd Transactions', () => {
     it('produces warning about falling back to API Blueprint', () => assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
       type: 'warning',
       component: 'apiDescriptionParser',
-      message: 'to API Blueprint',
+      message: 'assuming API Blueprint',
     })));
 
     it('produces a warning about the API Blueprint not being valid', () => assert.jsonSchema(compilationResult.annotations[1], createAnnotationSchema({
@@ -101,7 +101,7 @@ describe('Dredd Transactions', () => {
     it('produces a warning about falling back to API Blueprint', () => assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
       type: 'warning',
       component: 'apiDescriptionParser',
-      message: 'to API Blueprint',
+      message: 'assuming API Blueprint',
     })));
   });
 
@@ -165,80 +165,22 @@ describe('Dredd Transactions', () => {
     });
   });
 
-  describe('when parser unexpectedly provides just error and no API Elements', () => {
-    const apiDescription = '... dummy API description document ...';
-    const message = '... dummy error message ...';
+  describe('when parser unexpectedly provides an error', () => {
+    const error = new Error('... dummy message ...');
+    let err;
     let compilationResult;
 
     beforeEach((done) => {
       const stubbedDreddTransactions = proxyquire('../../lib/index', {
-        './parse': (input, callback) => callback(new Error(message)),
+        './parse': (apiDescription, callback) => callback(error),
       });
-      stubbedDreddTransactions.compile(apiDescription, null, (err, result) => {
-        compilationResult = result;
-        done(err);
-      });
-    });
-
-    it('produces one annotation, no transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-      annotations: 1,
-      transactions: 0,
-    })));
-
-    it('turns the parser error into a valid annotation', () => assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
-      type: 'error',
-      message,
-    })));
-  });
-
-  describe('when parser unexpectedly provides error and malformed API Elements', () => {
-    const apiDescription = '... dummy API description document ...';
-    const message = '... dummy error message ...';
-    let compilationResult;
-
-    beforeEach((done) => {
-      const stubbedDreddTransactions = proxyquire('../../lib/index', {
-        './parse': (input, callback) => callback(new Error(message), { dummy: true }),
-      });
-      stubbedDreddTransactions.compile(apiDescription, null, (err, result) => {
-        compilationResult = result;
-        done(err);
+      stubbedDreddTransactions.compile('... dummy API description document ...', null, (...args) => {
+        [err, compilationResult] = args;
+        done();
       });
     });
 
-    it('produces one annotation, no transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-      annotations: 1,
-      transactions: 0,
-    })));
-
-    it('turns the parser error into a valid annotation', () => assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
-      type: 'error',
-      message,
-    })));
-  });
-
-  describe('when parser unexpectedly provides malformed API Elements only', () => {
-    const apiDescription = '... dummy API description document ...';
-    let compilationResult;
-
-    beforeEach((done) => {
-      const stubbedDreddTransactions = proxyquire('../../lib/index', {
-        './parse': (input, callback) => callback(null, { dummy: true }),
-      });
-      stubbedDreddTransactions.compile(apiDescription, null, (err, result) => {
-        compilationResult = result;
-        done(err);
-      });
-    });
-
-    it('produces one annotation, no transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-      annotations: 1,
-      transactions: 0,
-    })));
-
-    it('produces an error about parser failure', () => assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
-      type: 'error',
-      message: 'parser was unable to provide a valid parse result',
-    })));
+    it('passes the error to callback', () => assert.equal(err, error));
+    it('passes no compilation result to callback', () => assert.isUndefined(compilationResult));
   });
 });
