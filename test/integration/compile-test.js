@@ -1,7 +1,7 @@
 const proxyquire = require('proxyquire').noPreserveCache();
 
 const createAnnotationSchema = require('../schemas/annotation');
-const createCompilationResultSchema = require('../schemas/compilation-result');
+const createCompileResultSchema = require('../schemas/compile-result');
 
 const { assert, fixtures } = require('../support');
 const compile = require('../../lib/compile');
@@ -11,26 +11,26 @@ describe('compile() · all API description formats', () => {
   describe('ordinary, valid API description', () => {
     fixtures('ordinary').forEachDescribe(({ mediaType, apiElements }) => {
       const filename = 'apiDescription.ext';
-      const compilationResult = compile(mediaType, apiElements, filename);
+      const compileResult = compile(mediaType, apiElements, filename);
 
-      it('is compiled into a compilation result of expected structure', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({ filename }));
+      it('is compiled into a compile result of expected structure', () => {
+        assert.jsonSchema(compileResult, createCompileResultSchema({ filename }));
       });
     });
   });
 
   describe('causing an error in the parser', () => {
     fixtures('parser-error').forEachDescribe(({ mediaType, apiElements }) => {
-      const compilationResult = compile(mediaType, apiElements);
+      const compileResult = compile(mediaType, apiElements);
 
       it('produces one annotation and no transactions', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           annotations: 1,
           transactions: 0,
         }));
       });
       it('produces error from parser', () => {
-        assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
+        assert.jsonSchema(compileResult.annotations[0], createAnnotationSchema({
           type: 'error',
           component: 'apiDescriptionParser',
         }));
@@ -45,10 +45,10 @@ describe('compile() · all API description formats', () => {
     // Mind that situations when parser gives the warning and when this error
     // is thrown can differ and also the severity is different.
     fixtures('uri-expansion-annotation').forEachDescribe(({ mediaType, apiElements }) => {
-      const compilationResult = compile(mediaType, apiElements);
+      const compileResult = compile(mediaType, apiElements);
 
       it('produces some annotations and no transactions', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           annotations: [1, 2],
           transactions: 0,
         }));
@@ -64,7 +64,7 @@ describe('compile() · all API description formats', () => {
           message: /failed to parse uri template/i,
         });
 
-        assert.jsonSchema(compilationResult.annotations, {
+        assert.jsonSchema(compileResult.annotations, {
           oneOf: [
             { type: 'array', items: [warning, error] },
             { type: 'array', items: [error] },
@@ -82,10 +82,10 @@ describe('compile() · all API description formats', () => {
     // the warning and when this error is returned can differ and also
     // the severity is different.
     fixtures('uri-validation-annotation').forEachDescribe(({ mediaType, apiElements }) => {
-      const compilationResult = compile(mediaType, apiElements);
+      const compileResult = compile(mediaType, apiElements);
 
       it('produces some annotations and no transactions', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           annotations: [2, 3],
           transactions: 0,
         }));
@@ -105,7 +105,7 @@ describe('compile() · all API description formats', () => {
           message: 'no example',
         });
 
-        assert.jsonSchema(compilationResult.annotations, {
+        assert.jsonSchema(compileResult.annotations, {
           oneOf: [
             { type: 'array', items: [parserWarning, uriValidationError, uriExpansionWarning] },
             { type: 'array', items: [uriValidationError, uriExpansionWarning] },
@@ -117,10 +117,10 @@ describe('compile() · all API description formats', () => {
 
   describe('causing a warning in the parser', () => {
     fixtures('parser-warning').forEachDescribe(({ mediaType, apiElements }) => {
-      const compilationResult = compile(mediaType, apiElements);
+      const compileResult = compile(mediaType, apiElements);
 
       it('produces some annotations and one transaction', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           annotations: [1],
           transactions: 1,
         }));
@@ -128,11 +128,11 @@ describe('compile() · all API description formats', () => {
 
       context('the annotations', () => {
         it('are warnings', () => {
-          compilationResult.annotations
+          compileResult.annotations
             .map(ann => assert.equal(ann.type, 'warning'));
         });
         it('come from parser', () => {
-          compilationResult.annotations
+          compileResult.annotations
             .map(ann => assert.equal(ann.component, 'apiDescriptionParser'));
         });
       });
@@ -151,15 +151,15 @@ describe('compile() · all API description formats', () => {
           './expand-uri-template': () => ({ uri: '/honey?beekeeper=Honza', errors: [], warnings: [message] }),
         }),
       });
-      const compilationResult = stubbedCompile(mediaType, apiElements);
+      const compileResult = stubbedCompile(mediaType, apiElements);
 
       it('produces some annotations', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           annotations: [1],
         }));
       });
       it('produces warnings from URI expansion', () => {
-        assert.jsonSchema(compilationResult.annotations, {
+        assert.jsonSchema(compileResult.annotations, {
           type: 'array',
           items: createAnnotationSchema({
             type: 'warning',
@@ -181,16 +181,16 @@ describe('compile() · all API description formats', () => {
     // Special side effect of the warning is that affected transactions
     // should be skipped (shouldn't appear in output of the compilation).
     fixtures('ambiguous-parameters-annotation').forEachDescribe(({ mediaType, apiElements }) => {
-      const compilationResult = compile(mediaType, apiElements);
+      const compileResult = compile(mediaType, apiElements);
 
       it('produces two annotations and no transactions', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           annotations: 2,
           transactions: 0,
         }));
       });
       it('produces one warning from URI expansion and one error from URI parameters validation', () => {
-        assert.jsonSchema(compilationResult.annotations, {
+        assert.jsonSchema(compileResult.annotations, {
           type: 'array',
           items: [
             createAnnotationSchema({ type: 'error', component: 'parametersValidation' }),
@@ -212,15 +212,15 @@ describe('compile() · all API description formats', () => {
           './validate-params': () => ({ errors: [], warnings: [message] }),
         }),
       });
-      const compilationResult = stubbedCompile(mediaType, apiElements);
+      const compileResult = stubbedCompile(mediaType, apiElements);
 
       it('produces some annotations', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           annotations: [1],
         }));
       });
       it('produces warnings from URI parameters validation', () => {
-        assert.jsonSchema(compilationResult.annotations, {
+        assert.jsonSchema(compileResult.annotations, {
           type: 'array',
           items: createAnnotationSchema({
             type: 'warning',
@@ -234,30 +234,30 @@ describe('compile() · all API description formats', () => {
 
   describe('with enum parameter', () => {
     fixtures('enum-parameter').forEachDescribe(({ mediaType, apiElements }) => {
-      const compilationResult = compile(mediaType, apiElements);
+      const compileResult = compile(mediaType, apiElements);
 
       it('produces one transaction', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           transactions: 1,
         }));
       });
       it('expands the request URI with the first enum value', () => {
-        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Adam');
+        assert.equal(compileResult.transactions[0].request.uri, '/honey?beekeeper=Adam');
       });
     });
   });
 
   describe('with enum parameter having example value', () => {
     fixtures('enum-parameter-example').forEachDescribe(({ mediaType, apiElements }) => {
-      const compilationResult = compile(mediaType, apiElements);
+      const compileResult = compile(mediaType, apiElements);
 
       it('produces one transaction', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           transactions: 1,
         }));
       });
       it('expands the request URI with the example value', () => {
-        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza');
+        assert.equal(compileResult.transactions[0].request.uri, '/honey?beekeeper=Honza');
       });
     });
   });
@@ -269,10 +269,10 @@ describe('compile() · all API description formats', () => {
     // by the enum. Mind that situations when parser gives the warning and
     // when this error is returned can differ and also the severity is different.
     fixtures('enum-parameter-unlisted-example').forEachDescribe(({ mediaType, apiElements }) => {
-      const compilationResult = compile(mediaType, apiElements);
+      const compileResult = compile(mediaType, apiElements);
 
       it('produces some annotations and one transaction', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           annotations: [1, 2],
           transactions: 1,
         }));
@@ -288,7 +288,7 @@ describe('compile() · all API description formats', () => {
           message: 'example value is not one of enum values',
         });
 
-        assert.jsonSchema(compilationResult.annotations, {
+        assert.jsonSchema(compileResult.annotations, {
           oneOf: [
             { type: 'array', items: [warning, error] },
             { type: 'array', items: [error] },
@@ -296,54 +296,54 @@ describe('compile() · all API description formats', () => {
         });
       });
       it('expands the request URI with the example value', () => {
-        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Pavan');
+        assert.equal(compileResult.transactions[0].request.uri, '/honey?beekeeper=Pavan');
       });
     });
   });
 
   describe('with parameters having example values', () => {
     fixtures('example-parameters').forEachDescribe(({ mediaType, apiElements }) => {
-      const compilationResult = compile(mediaType, apiElements);
+      const compileResult = compile(mediaType, apiElements);
 
       it('produces one transaction', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           transactions: 1,
         }));
       });
       it('expands the request URI with the example value', () => {
-        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&flavour=spicy');
+        assert.equal(compileResult.transactions[0].request.uri, '/honey?beekeeper=Honza&flavour=spicy');
       });
     });
   });
 
   describe('with response schema', () => {
     fixtures('response-schema').forEachDescribe(({ mediaType, apiElements }) => {
-      const compilationResult = compile(mediaType, apiElements);
+      const compileResult = compile(mediaType, apiElements);
 
       it('produces one transaction', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           transactions: 2,
         }));
       });
 
       context('the first transaction', () => {
         it('has the body in response data', () => {
-          assert.ok(compilationResult.transactions[0].response.body);
-          assert.doesNotThrow(() => JSON.parse(compilationResult.transactions[0].response.body));
+          assert.ok(compileResult.transactions[0].response.body);
+          assert.doesNotThrow(() => JSON.parse(compileResult.transactions[0].response.body));
         });
         it('has the schema in response data', () => {
-          assert.ok(compilationResult.transactions[0].response.schema);
-          assert.doesNotThrow(() => JSON.parse(compilationResult.transactions[0].response.schema));
+          assert.ok(compileResult.transactions[0].response.schema);
+          assert.doesNotThrow(() => JSON.parse(compileResult.transactions[0].response.schema));
         });
       });
 
       context('the second transaction', () => {
         it('has no body in response data', () => {
-          assert.notOk(compilationResult.transactions[1].response.body);
+          assert.notOk(compileResult.transactions[1].response.body);
         });
         it('has the schema in response data', () => {
-          assert.ok(compilationResult.transactions[1].response.schema);
-          assert.doesNotThrow(() => JSON.parse(compilationResult.transactions[1].response.schema));
+          assert.ok(compileResult.transactions[1].response.schema);
+          assert.doesNotThrow(() => JSON.parse(compileResult.transactions[1].response.schema));
         });
       });
     });
@@ -351,40 +351,40 @@ describe('compile() · all API description formats', () => {
 
   describe('with inheritance of URI parameters', () => {
     fixtures('parameters-inheritance').forEachDescribe(({ mediaType, apiElements }) => {
-      const compilationResult = compile(mediaType, apiElements);
+      const compileResult = compile(mediaType, apiElements);
 
       it('produces one transaction', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           transactions: 1,
         }));
       });
       it('expands the request URI using correct inheritance cascade', () => {
-        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&amount=42');
+        assert.equal(compileResult.transactions[0].request.uri, '/honey?beekeeper=Honza&amount=42');
       });
     });
   });
 
   describe('with different default value and first enum value of URI parameter', () => {
     fixtures('prefer-default').forEachDescribe(({ mediaType, apiElements }) => {
-      const compilationResult = compile(mediaType, apiElements);
+      const compileResult = compile(mediaType, apiElements);
 
       it('produces one transaction', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           transactions: 1,
         }));
       });
       it('expands the request URI using the default value', () => {
-        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Adam');
+        assert.equal(compileResult.transactions[0].request.uri, '/honey?beekeeper=Adam');
       });
     });
   });
 
   describe('with default value for a required URI parameter', () => {
     fixtures('default-required').forEachDescribe(({ mediaType, apiElements }) => {
-      const compilationResult = compile(mediaType, apiElements);
+      const compileResult = compile(mediaType, apiElements);
 
       it('produces some annotations and one transaction', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           annotations: [1, 2],
           transactions: 1,
         }));
@@ -400,7 +400,7 @@ describe('compile() · all API description formats', () => {
           message: /default value for a required parameter/i,
         });
 
-        assert.jsonSchema(compilationResult.annotations, {
+        assert.jsonSchema(compileResult.annotations, {
           oneOf: [
             { type: 'array', items: [parserWarning, uriExpansionWarning] },
             { type: 'array', items: [uriExpansionWarning] },
@@ -408,28 +408,28 @@ describe('compile() · all API description formats', () => {
         });
       });
       it('expands the request URI using the default value', () => {
-        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza');
+        assert.equal(compileResult.transactions[0].request.uri, '/honey?beekeeper=Honza');
       });
     });
   });
 
   describe('with HTTP headers', () => {
     fixtures('http-headers').forEachDescribe(({ mediaType, apiElements }) => {
-      const compilationResult = compile(mediaType, apiElements);
+      const compileResult = compile(mediaType, apiElements);
 
       it('produces one transaction', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           transactions: 1,
         }));
       });
       it('produces expected request headers', () => {
-        assert.deepEqual(compilationResult.transactions[0].request.headers, [
+        assert.deepEqual(compileResult.transactions[0].request.headers, [
           { name: 'Content-Type', value: 'application/json' },
           { name: 'Accept', value: 'application/json' },
         ]);
       });
       it('produces expected response headers', () => {
-        assert.deepEqual(compilationResult.transactions[0].response.headers, [
+        assert.deepEqual(compileResult.transactions[0].response.headers, [
           { name: 'Content-Type', value: 'application/json' },
           { name: 'X-Test', value: 'Adam' },
         ]);
@@ -439,18 +439,18 @@ describe('compile() · all API description formats', () => {
 
   describe('without explicit body', () => {
     fixtures('no-body').forEachDescribe(({ mediaType, apiElements }) => {
-      const compilationResult = compile(mediaType, apiElements);
+      const compileResult = compile(mediaType, apiElements);
 
       it('produces 2 transactions', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           transactions: 2,
         }));
       });
       it('produces transaction #1 with no body', () => {
-        assert.isUndefined(compilationResult.transactions[0].response.body);
+        assert.isUndefined(compileResult.transactions[0].response.body);
       });
       it('produces transaction #2 with no body', () => {
-        assert.isUndefined(compilationResult.transactions[0].response.body);
+        assert.isUndefined(compileResult.transactions[0].response.body);
       });
     });
   });
@@ -458,21 +458,21 @@ describe('compile() · all API description formats', () => {
   describe('without explicit schema', () => {
     fixtures('no-schema').forEachDescribe(({ mediaType, apiElements }) => {
       const expectedContentTypes = ['application/json', 'application/json', 'text/csv', 'text/yaml'];
-      const compilationResult = compile(mediaType, apiElements);
+      const compileResult = compile(mediaType, apiElements);
 
       it(`produces ${expectedContentTypes.length} transactions`, () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           transactions: expectedContentTypes.length,
         }));
       });
       expectedContentTypes.forEach((contentType, i) => context(`transaction #${i + 1}`, () => {
         it(`has '${contentType}' response`, () => {
-          assert.deepEqual(compilationResult.transactions[i].response.headers, [
+          assert.deepEqual(compileResult.transactions[i].response.headers, [
             { name: 'Content-Type', value: contentType },
           ]);
         });
         it('has no schema', () => {
-          assert.isUndefined(compilationResult.transactions[i].response.schema);
+          assert.isUndefined(compileResult.transactions[i].response.schema);
         });
       }));
     });
@@ -495,10 +495,10 @@ describe('compile() · all API description formats', () => {
         '--CUSTOM-BOUNDARY--',
         '',
       ].join('\r\n');
-      const compilationResult = compile(mediaType, apiElements);
+      const compileResult = compile(mediaType, apiElements);
 
       it('produces no annotations and 1 transaction', () => {
-        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+        assert.jsonSchema(compileResult, createCompileResultSchema({
           annotations: 0,
           transactions: 1,
         }));
@@ -513,13 +513,13 @@ describe('compile() · all API description formats', () => {
             : expectedBody;
 
           assert.deepEqual(
-            compilationResult.transactions[0].request.body,
+            compileResult.transactions[0].request.body,
             expectedRequestBody
           );
         });
         it('has the expected response body', () => {
           assert.deepEqual(
-            compilationResult.transactions[0].response.body,
+            compileResult.transactions[0].response.body,
             expectedBody
           );
         });

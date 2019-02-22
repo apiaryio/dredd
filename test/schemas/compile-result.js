@@ -15,7 +15,7 @@ function addMinMax(schema, n) {
   return modifiedSchema;
 }
 
-module.exports = function createCompilationResultSchema(options = {}) {
+module.exports = function createCompileResultSchema(options = {}) {
   // Either filename string or undefined (= doesn't matter)
   const { filename } = options;
 
