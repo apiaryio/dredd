@@ -3,30 +3,39 @@ const parse = require('../../lib/parse');
 
 const { assert } = require('../support');
 
+
 // Encapsulates a single test scenario.
-const scenario = (description, { actionContent, exampleNumbersPerTransaction }) => describe(`${description}`, () => {
-  const apib = `
+function scenario(description, { actionContent, exampleNumbersPerTransaction }) {
+  describe(`${description}`, () => {
+    const apiDescription = `
 FORMAT: 1A
 # Gargamel API
 # Group Smurfs
 ## Smurfs [/smurfs]
 ### Catch a Smurf [POST]
 ${actionContent}
-`;
+    `;
 
-  let transitionElements;
-  let transactionExampleNumbers;
+    let transactionExampleNumbers;
 
-  beforeEach(done => parse(apib, (...args) => {
-        const [error, { apiElements }] = Array.from(args); // eslint-disable-line
-    transitionElements = apiElements.api.resourceGroups
-      .get(0).resources.get(0).transitions.get(0);
-    transactionExampleNumbers = detectTransactionExampleNumbers(transitionElements);
-    done();
-  }));
+    beforeEach((done) => {
+      parse(apiDescription, (err, result) => {
+        if (err) { done(err); return; }
+        transactionExampleNumbers = detectTransactionExampleNumbers(result.apiElements
+          .api.resourceGroups.get(0)
+          .resources.get(0)
+          .transitions.get(0));
+        done();
+      });
+    });
 
-  it('transactions got expected example numbers', () => assert.deepEqual(exampleNumbersPerTransaction, transactionExampleNumbers));
-});
+    it('transactions got expected example numbers', () => {
+      assert.deepEqual(exampleNumbersPerTransaction, transactionExampleNumbers);
+    });
+  });
+}
+
+
 describe('detectTransactionExamples()', () => {
   describe('various combinations of requests and responses', () => {
     scenario('empty action', {

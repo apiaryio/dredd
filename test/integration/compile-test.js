@@ -13,7 +13,9 @@ describe('compile() · all API description formats', () => {
       const filename = 'apiDescription.ext';
       const compilationResult = compile(mediaType, apiElements, filename);
 
-      it('is compiled into a compilation result of expected structure', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({ filename })));
+      it('is compiled into a compilation result of expected structure', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({ filename }));
+      });
     });
   });
 
@@ -21,15 +23,18 @@ describe('compile() · all API description formats', () => {
     fixtures('parser-error').forEachDescribe(({ mediaType, apiElements }) => {
       const compilationResult = compile(mediaType, apiElements);
 
-      it('produces one annotation and no transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        annotations: 1,
-        transactions: 0,
-      })));
-
-      it('produces error from parser', () => assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
-        type: 'error',
-        component: 'apiDescriptionParser',
-      })));
+      it('produces one annotation and no transactions', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          annotations: 1,
+          transactions: 0,
+        }));
+      });
+      it('produces error from parser', () => {
+        assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
+          type: 'error',
+          component: 'apiDescriptionParser',
+        }));
+      });
     });
   });
 
@@ -42,11 +47,12 @@ describe('compile() · all API description formats', () => {
     fixtures('uri-expansion-annotation').forEachDescribe(({ mediaType, apiElements }) => {
       const compilationResult = compile(mediaType, apiElements);
 
-      it('produces some annotations and no transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        annotations: [1, 2],
-        transactions: 0,
-      })));
-
+      it('produces some annotations and no transactions', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          annotations: [1, 2],
+          transactions: 0,
+        }));
+      });
       it('produces maximum one warning from parser and exactly one error from URI expansion', () => {
         const warning = createAnnotationSchema({
           type: 'warning',
@@ -78,11 +84,12 @@ describe('compile() · all API description formats', () => {
     fixtures('uri-validation-annotation').forEachDescribe(({ mediaType, apiElements }) => {
       const compilationResult = compile(mediaType, apiElements);
 
-      it('produces some annotations and no transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        annotations: [2, 3],
-        transactions: 0,
-      })));
-
+      it('produces some annotations and no transactions', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          annotations: [2, 3],
+          transactions: 0,
+        }));
+      });
       it('produces maximum one warning from parser, exactly one warning from URI expansion, and exactly one error from URI parameters validation', () => {
         const parserWarning = createAnnotationSchema({
           type: 'warning',
@@ -112,15 +119,22 @@ describe('compile() · all API description formats', () => {
     fixtures('parser-warning').forEachDescribe(({ mediaType, apiElements }) => {
       const compilationResult = compile(mediaType, apiElements);
 
-      it('produces some annotations and one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        annotations: [1],
-        transactions: 1,
-      })));
+      it('produces some annotations and one transaction', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          annotations: [1],
+          transactions: 1,
+        }));
+      });
 
       context('the annotations', () => {
-        it('are warnings', () => Array.from(compilationResult.annotations).map(ann => assert.equal(ann.type, 'warning')));
-
-        it('come from parser', () => Array.from(compilationResult.annotations).map(ann => assert.equal(ann.component, 'apiDescriptionParser')));
+        it('are warnings', () => {
+          compilationResult.annotations
+            .map(ann => assert.equal(ann.type, 'warning'));
+        });
+        it('come from parser', () => {
+          compilationResult.annotations
+            .map(ann => assert.equal(ann.component, 'apiDescriptionParser'));
+        });
       });
     });
   });
@@ -139,18 +153,21 @@ describe('compile() · all API description formats', () => {
       });
       const compilationResult = stubbedCompile(mediaType, apiElements);
 
-      it('produces some annotations', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        annotations: [1],
-      })));
-
-      it('produces warnings from URI expansion', () => assert.jsonSchema(compilationResult.annotations, {
-        type: 'array',
-        items: createAnnotationSchema({
-          type: 'warning',
-          component: 'uriTemplateExpansion',
-          message,
-        }),
-      }));
+      it('produces some annotations', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          annotations: [1],
+        }));
+      });
+      it('produces warnings from URI expansion', () => {
+        assert.jsonSchema(compilationResult.annotations, {
+          type: 'array',
+          items: createAnnotationSchema({
+            type: 'warning',
+            component: 'uriTemplateExpansion',
+            message,
+          }),
+        });
+      });
     });
   });
 
@@ -166,18 +183,21 @@ describe('compile() · all API description formats', () => {
     fixtures('ambiguous-parameters-annotation').forEachDescribe(({ mediaType, apiElements }) => {
       const compilationResult = compile(mediaType, apiElements);
 
-      it('produces two annotations and no transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        annotations: 2,
-        transactions: 0,
-      })));
-
-      it('produces one warning from URI expansion and one error from URI parameters validation', () => assert.jsonSchema(compilationResult.annotations, {
-        type: 'array',
-        items: [
-          createAnnotationSchema({ type: 'error', component: 'parametersValidation' }),
-          createAnnotationSchema({ type: 'warning', component: 'uriTemplateExpansion' }),
-        ],
-      }));
+      it('produces two annotations and no transactions', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          annotations: 2,
+          transactions: 0,
+        }));
+      });
+      it('produces one warning from URI expansion and one error from URI parameters validation', () => {
+        assert.jsonSchema(compilationResult.annotations, {
+          type: 'array',
+          items: [
+            createAnnotationSchema({ type: 'error', component: 'parametersValidation' }),
+            createAnnotationSchema({ type: 'warning', component: 'uriTemplateExpansion' }),
+          ],
+        });
+      });
     });
   });
 
@@ -194,18 +214,21 @@ describe('compile() · all API description formats', () => {
       });
       const compilationResult = stubbedCompile(mediaType, apiElements);
 
-      it('produces some annotations', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        annotations: [1],
-      })));
-
-      it('produces warnings from URI parameters validation', () => assert.jsonSchema(compilationResult.annotations, {
-        type: 'array',
-        items: createAnnotationSchema({
-          type: 'warning',
-          component: 'parametersValidation',
-          message,
-        }),
-      }));
+      it('produces some annotations', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          annotations: [1],
+        }));
+      });
+      it('produces warnings from URI parameters validation', () => {
+        assert.jsonSchema(compilationResult.annotations, {
+          type: 'array',
+          items: createAnnotationSchema({
+            type: 'warning',
+            component: 'parametersValidation',
+            message,
+          }),
+        });
+      });
     });
   });
 
@@ -213,11 +236,14 @@ describe('compile() · all API description formats', () => {
     fixtures('enum-parameter').forEachDescribe(({ mediaType, apiElements }) => {
       const compilationResult = compile(mediaType, apiElements);
 
-      it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        transactions: 1,
-      })));
-
-      it('expands the request URI with the first enum value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Adam'));
+      it('produces one transaction', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          transactions: 1,
+        }));
+      });
+      it('expands the request URI with the first enum value', () => {
+        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Adam');
+      });
     });
   });
 
@@ -225,11 +251,14 @@ describe('compile() · all API description formats', () => {
     fixtures('enum-parameter-example').forEachDescribe(({ mediaType, apiElements }) => {
       const compilationResult = compile(mediaType, apiElements);
 
-      it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        transactions: 1,
-      })));
-
-      it('expands the request URI with the example value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza'));
+      it('produces one transaction', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          transactions: 1,
+        }));
+      });
+      it('expands the request URI with the example value', () => {
+        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza');
+      });
     });
   });
 
@@ -242,11 +271,12 @@ describe('compile() · all API description formats', () => {
     fixtures('enum-parameter-unlisted-example').forEachDescribe(({ mediaType, apiElements }) => {
       const compilationResult = compile(mediaType, apiElements);
 
-      it('produces some annotations and one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        annotations: [1, 2],
-        transactions: 1,
-      })));
-
+      it('produces some annotations and one transaction', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          annotations: [1, 2],
+          transactions: 1,
+        }));
+      });
       it('produces maximum one warning from parser, and exactly one error from URI parameters validation', () => {
         const warning = createAnnotationSchema({
           type: 'warning',
@@ -265,8 +295,9 @@ describe('compile() · all API description formats', () => {
           ],
         });
       });
-
-      it('expands the request URI with the example value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Pavan'));
+      it('expands the request URI with the example value', () => {
+        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Pavan');
+      });
     });
   });
 
@@ -274,11 +305,14 @@ describe('compile() · all API description formats', () => {
     fixtures('example-parameters').forEachDescribe(({ mediaType, apiElements }) => {
       const compilationResult = compile(mediaType, apiElements);
 
-      it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        transactions: 1,
-      })));
-
-      it('expands the request URI with the example value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&flavour=spicy'));
+      it('produces one transaction', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          transactions: 1,
+        }));
+      });
+      it('expands the request URI with the example value', () => {
+        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&flavour=spicy');
+      });
     });
   });
 
@@ -286,16 +320,17 @@ describe('compile() · all API description formats', () => {
     fixtures('response-schema').forEachDescribe(({ mediaType, apiElements }) => {
       const compilationResult = compile(mediaType, apiElements);
 
-      it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        transactions: 2,
-      })));
+      it('produces one transaction', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          transactions: 2,
+        }));
+      });
 
       context('the first transaction', () => {
         it('has the body in response data', () => {
           assert.ok(compilationResult.transactions[0].response.body);
           assert.doesNotThrow(() => JSON.parse(compilationResult.transactions[0].response.body));
         });
-
         it('has the schema in response data', () => {
           assert.ok(compilationResult.transactions[0].response.schema);
           assert.doesNotThrow(() => JSON.parse(compilationResult.transactions[0].response.schema));
@@ -303,8 +338,9 @@ describe('compile() · all API description formats', () => {
       });
 
       context('the second transaction', () => {
-        it('has no body in response data', () => assert.notOk(compilationResult.transactions[1].response.body));
-
+        it('has no body in response data', () => {
+          assert.notOk(compilationResult.transactions[1].response.body);
+        });
         it('has the schema in response data', () => {
           assert.ok(compilationResult.transactions[1].response.schema);
           assert.doesNotThrow(() => JSON.parse(compilationResult.transactions[1].response.schema));
@@ -317,11 +353,14 @@ describe('compile() · all API description formats', () => {
     fixtures('parameters-inheritance').forEachDescribe(({ mediaType, apiElements }) => {
       const compilationResult = compile(mediaType, apiElements);
 
-      it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        transactions: 1,
-      })));
-
-      it('expands the request URI using correct inheritance cascade', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&amount=42'));
+      it('produces one transaction', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          transactions: 1,
+        }));
+      });
+      it('expands the request URI using correct inheritance cascade', () => {
+        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza&amount=42');
+      });
     });
   });
 
@@ -329,11 +368,14 @@ describe('compile() · all API description formats', () => {
     fixtures('prefer-default').forEachDescribe(({ mediaType, apiElements }) => {
       const compilationResult = compile(mediaType, apiElements);
 
-      it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        transactions: 1,
-      })));
-
-      it('expands the request URI using the default value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Adam'));
+      it('produces one transaction', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          transactions: 1,
+        }));
+      });
+      it('expands the request URI using the default value', () => {
+        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Adam');
+      });
     });
   });
 
@@ -341,11 +383,12 @@ describe('compile() · all API description formats', () => {
     fixtures('default-required').forEachDescribe(({ mediaType, apiElements }) => {
       const compilationResult = compile(mediaType, apiElements);
 
-      it('produces some annotations and one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        annotations: [1, 2],
-        transactions: 1,
-      })));
-
+      it('produces some annotations and one transaction', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          annotations: [1, 2],
+          transactions: 1,
+        }));
+      });
       it('produces maximum one warning from parser, and exactly one warning from URI expansion', () => {
         const parserWarning = createAnnotationSchema({
           type: 'warning',
@@ -364,8 +407,9 @@ describe('compile() · all API description formats', () => {
           ],
         });
       });
-
-      it('expands the request URI using the default value', () => assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza'));
+      it('expands the request URI using the default value', () => {
+        assert.equal(compilationResult.transactions[0].request.uri, '/honey?beekeeper=Honza');
+      });
     });
   });
 
@@ -373,19 +417,23 @@ describe('compile() · all API description formats', () => {
     fixtures('http-headers').forEachDescribe(({ mediaType, apiElements }) => {
       const compilationResult = compile(mediaType, apiElements);
 
-      it('produces one transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        transactions: 1,
-      })));
-
-      it('produces expected request headers', () => assert.deepEqual(compilationResult.transactions[0].request.headers, [
-        { name: 'Content-Type', value: 'application/json' },
-        { name: 'Accept', value: 'application/json' },
-      ]));
-
-      it('produces expected response headers', () => assert.deepEqual(compilationResult.transactions[0].response.headers, [
-        { name: 'Content-Type', value: 'application/json' },
-        { name: 'X-Test', value: 'Adam' },
-      ]));
+      it('produces one transaction', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          transactions: 1,
+        }));
+      });
+      it('produces expected request headers', () => {
+        assert.deepEqual(compilationResult.transactions[0].request.headers, [
+          { name: 'Content-Type', value: 'application/json' },
+          { name: 'Accept', value: 'application/json' },
+        ]);
+      });
+      it('produces expected response headers', () => {
+        assert.deepEqual(compilationResult.transactions[0].response.headers, [
+          { name: 'Content-Type', value: 'application/json' },
+          { name: 'X-Test', value: 'Adam' },
+        ]);
+      });
     });
   });
 
@@ -393,12 +441,17 @@ describe('compile() · all API description formats', () => {
     fixtures('no-body').forEachDescribe(({ mediaType, apiElements }) => {
       const compilationResult = compile(mediaType, apiElements);
 
-      it('produces 2 transactions', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        transactions: 2,
-      })));
-
-      it('produces transaction #1 with no body', () => assert.isUndefined(compilationResult.transactions[0].response.body));
-      it('produces transaction #2 with no body', () => assert.isUndefined(compilationResult.transactions[0].response.body));
+      it('produces 2 transactions', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          transactions: 2,
+        }));
+      });
+      it('produces transaction #1 with no body', () => {
+        assert.isUndefined(compilationResult.transactions[0].response.body);
+      });
+      it('produces transaction #2 with no body', () => {
+        assert.isUndefined(compilationResult.transactions[0].response.body);
+      });
     });
   });
 
@@ -407,16 +460,20 @@ describe('compile() · all API description formats', () => {
       const expectedContentTypes = ['application/json', 'application/json', 'text/csv', 'text/yaml'];
       const compilationResult = compile(mediaType, apiElements);
 
-      it(`produces ${expectedContentTypes.length} transactions`, () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        transactions: expectedContentTypes.length,
-      })));
-
+      it(`produces ${expectedContentTypes.length} transactions`, () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          transactions: expectedContentTypes.length,
+        }));
+      });
       expectedContentTypes.forEach((contentType, i) => context(`transaction #${i + 1}`, () => {
-        it(`has '${contentType}' response`, () => assert.deepEqual(compilationResult.transactions[i].response.headers, [
-          { name: 'Content-Type', value: contentType },
-        ]));
-
-        it('has no schema', () => assert.isUndefined(compilationResult.transactions[i].response.schema));
+        it(`has '${contentType}' response`, () => {
+          assert.deepEqual(compilationResult.transactions[i].response.headers, [
+            { name: 'Content-Type', value: contentType },
+          ]);
+        });
+        it('has no schema', () => {
+          assert.isUndefined(compilationResult.transactions[i].response.schema);
+        });
       }));
     });
   });
@@ -440,10 +497,12 @@ describe('compile() · all API description formats', () => {
       ].join('\r\n');
       const compilationResult = compile(mediaType, apiElements);
 
-      it('produces no annotations and 1 transaction', () => assert.jsonSchema(compilationResult, createCompilationResultSchema({
-        annotations: 0,
-        transactions: 1,
-      })));
+      it('produces no annotations and 1 transaction', () => {
+        assert.jsonSchema(compilationResult, createCompilationResultSchema({
+          annotations: 0,
+          transactions: 1,
+        }));
+      });
 
       context('the transaction', () => {
         it('has the expected request body', () => {
@@ -458,10 +517,12 @@ describe('compile() · all API description formats', () => {
             expectedRequestBody
           );
         });
-        it('has the expected response body', () => assert.deepEqual(
-          compilationResult.transactions[0].response.body,
-          expectedBody
-        ));
+        it('has the expected response body', () => {
+          assert.deepEqual(
+            compilationResult.transactions[0].response.body,
+            expectedBody
+          );
+        });
       });
     });
   });
