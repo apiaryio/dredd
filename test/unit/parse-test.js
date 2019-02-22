@@ -1,5 +1,4 @@
 const fury = require('fury');
-const sinon = require('sinon');
 
 const parse = require('../../lib/parse');
 
