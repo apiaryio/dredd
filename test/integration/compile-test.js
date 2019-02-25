@@ -1,7 +1,7 @@
 const proxyquire = require('proxyquire').noPreserveCache();
 
-const createAnnotationSchema = require('../schemas/annotation');
-const createCompileResultSchema = require('../schemas/compile-result');
+const createAnnotationSchema = require('../schemas/createAnnotationSchema');
+const createCompileResultSchema = require('../schemas/createCompileResultSchema');
 
 const { assert, fixtures } = require('../support');
 const compile = require('../../lib/compile');
@@ -147,8 +147,8 @@ describe('compile() · all API description formats', () => {
     fixtures('ordinary').forEachDescribe(({ mediaType, apiElements }) => {
       const message = '... dummy warning message ...';
       const stubbedCompile = proxyquire('../../lib/compile', {
-        './compile-uri': proxyquire('../../lib/compile-uri', {
-          './expand-uri-template': () => ({ uri: '/honey?beekeeper=Honza', errors: [], warnings: [message] }),
+        './compileURI': proxyquire('../../lib/compileURI', {
+          './expandURItemplate': () => ({ uri: '/honey?beekeeper=Honza', errors: [], warnings: [message] }),
         }),
       });
       const compileResult = stubbedCompile(mediaType, apiElements);
@@ -208,8 +208,8 @@ describe('compile() · all API description formats', () => {
     fixtures('ordinary').forEachDescribe(({ mediaType, apiElements }) => {
       const message = '... dummy warning message ...';
       const stubbedCompile = proxyquire('../../lib/compile', {
-        './compile-uri': proxyquire('../../lib/compile-uri', {
-          './validate-params': () => ({ errors: [], warnings: [message] }),
+        './compileURI': proxyquire('../../lib/compileURI', {
+          './validateParams': () => ({ errors: [], warnings: [message] }),
         }),
       });
       const compileResult = stubbedCompile(mediaType, apiElements);

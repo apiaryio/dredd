@@ -1,8 +1,9 @@
-const createLocationSchema = require('./location');
-const createOriginSchema = require('./origin');
+const createLocationSchema = require('./createLocationSchema');
+const createOriginSchema = require('./createOriginSchema');
 
 const TYPES = ['error', 'warning'];
 const COMPONENTS = ['apiDescriptionParser', 'parametersValidation', 'uriTemplateExpansion'];
+
 
 module.exports = function createAnnotationSchema(options = {}) {
   // Either filename string or undefined (= doesn't matter)

@@ -1,12 +1,13 @@
 const { assert } = require('chai');
 
-const getTransactionName = require('../../../lib/transaction-name');
+const compileTransactionName = require('../../lib/compileTransactionName');
 
-describe('getTransactionName()', () => {
-  it('is a function', () => assert.isFunction(getTransactionName));
+
+describe('compileTransactionName()', () => {
+  it('is a function', () => assert.isFunction(compileTransactionName));
 
   it('joins all parts of the origin object', () => {
-    const name = getTransactionName({
+    const name = compileTransactionName({
       apiName: 'a',
       resourceGroupName: 'b',
       resourceName: 'c',
@@ -17,7 +18,7 @@ describe('getTransactionName()', () => {
   });
 
   it('joins just the parts of the origin object, which are available', () => {
-    const name = getTransactionName({
+    const name = compileTransactionName({
       apiName: null,
       resourceGroupName: 'a',
       resourceName: undefined,
@@ -28,7 +29,7 @@ describe('getTransactionName()', () => {
   });
 
   it('returns no separators if the origin object contains just one part', () => {
-    const name = getTransactionName({
+    const name = compileTransactionName({
       apiName: null,
       resourceGroupName: 'a',
       resourceName: undefined,
@@ -39,7 +40,7 @@ describe('getTransactionName()', () => {
   });
 
   it('does not mind if any part of the origin object already contains the separator', () => {
-    const name = getTransactionName({
+    const name = compileTransactionName({
       apiName: 'a',
       resourceGroupName: 'b',
       resourceName: 'c',

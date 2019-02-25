@@ -1,4 +1,4 @@
-const createCompileResultSchema = require('../schemas/compile-result');
+const createCompileResultSchema = require('../schemas/createCompileResultSchema');
 
 const { assert, fixtures } = require('../support');
 const compile = require('../../lib/compile');

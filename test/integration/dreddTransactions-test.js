@@ -1,10 +1,11 @@
 const proxyquire = require('proxyquire').noPreserveCache();
 
-const createCompileResultSchema = require('../schemas/compile-result');
-const createAnnotationSchema = require('../schemas/annotation');
+const createCompileResultSchema = require('../schemas/createCompileResultSchema');
+const createAnnotationSchema = require('../schemas/createAnnotationSchema');
 const dreddTransactions = require('../../lib/index');
 
 const { assert, fixtures } = require('../support');
+
 
 describe('Dredd Transactions', () => {
   describe('when compilation throws an exception', () => {

@@ -1,7 +1,7 @@
 const { assert } = require('chai');
 const fury = require('fury');
 
-const compileParams = require('../../../lib/compile-uri/compile-params');
+const compileParams = require('../../../lib/compileURI/compileParams');
 
 
 describe('compileParams()', () => {
