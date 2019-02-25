@@ -3,10 +3,10 @@ const proxyquire = require('proxyquire');
 
 const createAnnotationSchema = require('../schemas/createAnnotationSchema');
 const createCompileResultSchema = require('../schemas/createCompileResultSchema');
-const detectTransactionExampleNumbers = require('../../lib/detectTransactionExampleNumbers');
+const detectTransactionExampleNumbers = require('../../compile/detectTransactionExampleNumbers');
 
 const { assert, fixtures } = require('../support');
-const compile = require('../../lib/compile');
+const compile = require('../../compile');
 
 
 describe('compile() · OpenAPI 2', () => {
@@ -135,7 +135,7 @@ describe('compile() · OpenAPI 2', () => {
   describe('with multiple responses', () => {
     const filename = 'apiDescription.json';
     const detectTransactionExampleNumbersStub = sinon.spy(detectTransactionExampleNumbers);
-    const stubbedCompile = proxyquire('../../lib/compile', {
+    const stubbedCompile = proxyquire('../../compile', {
       './detectTransactionExampleNumbers': detectTransactionExampleNumbersStub,
     });
     const { mediaType, apiElements } = fixtures('multiple-responses').openapi2;

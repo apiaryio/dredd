@@ -5,7 +5,7 @@ const fs = require('fs');
 
 const fury = require('fury');
 
-const parse = require('../lib/parse');
+const parse = require('../parse');
 
 
 const FIXTURES_DIR = path.join(__dirname, '..', 'test', 'fixtures');

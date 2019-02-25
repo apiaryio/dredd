@@ -1,6 +1,6 @@
 const fury = require('fury');
 
-const parse = require('../../lib/parse');
+const parse = require('../../parse');
 
 const { assert, fixtures } = require('../support');
 

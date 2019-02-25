@@ -3,10 +3,10 @@ const proxyquire = require('proxyquire').noPreserveCache();
 
 const createAnnotationSchema = require('../schemas/createAnnotationSchema');
 const createCompileResultSchema = require('../schemas/createCompileResultSchema');
-const detectTransactionExampleNumbers = require('../../lib/detectTransactionExampleNumbers');
+const detectTransactionExampleNumbers = require('../../compile/detectTransactionExampleNumbers');
 
 const { assert, fixtures } = require('../support');
-const compile = require('../../lib/compile');
+const compile = require('../../compile');
 
 
 describe('compile() · API Blueprint', () => {
@@ -52,7 +52,7 @@ describe('compile() · API Blueprint', () => {
 
   describe('with multiple transaction examples', () => {
     const detectTransactionExampleNumbersStub = sinon.spy(detectTransactionExampleNumbers);
-    const stubbedCompile = proxyquire('../../lib/compile', {
+    const stubbedCompile = proxyquire('../../compile', {
       './detectTransactionExampleNumbers': detectTransactionExampleNumbersStub,
     });
     const { mediaType, apiElements } = fixtures('multiple-transaction-examples').apib;
@@ -99,7 +99,7 @@ describe('compile() · API Blueprint', () => {
 
   describe('without multiple transaction examples', () => {
     const detectTransactionExampleNumbersStub = sinon.spy(detectTransactionExampleNumbers);
-    const stubbedCompile = proxyquire('../../lib/compile', {
+    const stubbedCompile = proxyquire('../../compile', {
       './detectTransactionExampleNumbers': detectTransactionExampleNumbersStub,
     });
     const { mediaType, apiElements } = fixtures('one-transaction-example').apib;

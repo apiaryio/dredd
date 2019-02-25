@@ -48,31 +48,45 @@ Dredd Transactions library is written in JavaScript (ES2015+).
 
 ## Usage
 
-### `compile`
+### `parse`
 
-Compiles *HTTP Transactions* from given API description document.
+Parses given API description document into API Elements with options specific
+to Dredd. Assumes that documents with unrecognizable format are
+[API Blueprint][api-blueprint]. Turns any parser failures, including
+the unexpected ones, into [API Elements][api-elements] annotations.
 
 ```javascript
-var dt = require('dredd-transactions');
+const parse = require('dredd-transactions/parse');
+// const { parse } = require('dredd-transactions');
 
-dt.compile('# My API\n...', 'apiary.apib', function (error, compileResult) {
+parse('# My API\n...', (error, parseResult) => {
   // ...
 });
 ```
 
-### Arguments
+### `compile`
 
-- (string) - API description document provided as string.
-- (string) - Original file name of the API description document. **To be removed! See [#6][filename-deprecation].**
-- (function) - Callback.
+Compiles *HTTP Transactions* from given [API Elements][api-elements]. *HTTP Transactions* are a backbone data structure to Dredd.
 
-### Callback Arguments
+```javascript
+const compile = require('dredd-transactions/compile');
+// const { compile } = require('dredd-transactions');
 
-- (enum[null, object]) - Standard JavaScript error object.
-- ([Compile Result][compile-result-object-spec])
+const compileResult = compile(mediaType, apiElements, filename);
+```
+
+> **Note:** The `filename` argument is optional and about to get deprecated, see [#6][filename-deprecation]
 
 
 ## Data Structures
+
+<a name="parse-result-object"></a>
+### Parse Result (object)
+
+Result of parsing.
+
+- `mediaType`: `text/vnd.apiblueprint` (string, default, nullable) - Media type of the input format, can be empty in case of some fatal errors
+- `apiElements` ([API Elements][api-elements]) - API Elements parse result
 
 <a name="compile-result-object"></a>
 ### Compile Result (object)
@@ -161,9 +175,10 @@ Description of an error or warning which occurred during parsing of the API desc
 > **Note:** These properties are to be superseded by whatever comes out of the proposal in [apiaryio/dredd#227](https://github.com/apiaryio/dredd/issues/227).
 
 
-[dredd]: https://github.com/apiaryio/dredd
+[dredd]: https://dredd.org
 [mson-spec]: https://github.com/apiaryio/mson
 [api-elements]: http://api-elements.readthedocs.org/
+[api-blueprint]: https://apiblueprint.org/
 [api-blueprint-glossary]: https://github.com/apiaryio/api-blueprint/blob/master/Glossary%20of%20Terms.md
 [blueprint-transactions]: https://github.com/apiaryio/blueprint-transactions/
 

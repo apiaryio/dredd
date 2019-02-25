@@ -2,7 +2,7 @@
   "name": "dredd-transactions",
   "version": "0.0.0-semantically-released",
   "description": "Compiles HTTP Transactions (Request-Response pairs) from an API description document",
-  "main": "lib/index.js",
+  "main": "index.js",
   "engines": {
     "node": ">= 6"
   },
@@ -24,7 +24,8 @@
     "url": "https://github.com/apiaryio/dredd-transactions"
   },
   "files": [
-    "lib",
+    "parse",
+    "compile",
     "README.md"
   ],
   "dependencies": {

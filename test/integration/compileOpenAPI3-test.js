@@ -1,7 +1,7 @@
 const createCompileResultSchema = require('../schemas/createCompileResultSchema');
 
 const { assert, fixtures } = require('../support');
-const compile = require('../../lib/compile');
+const compile = require('../../compile');
 
 
 describe('compile() · OpenAPI 3', () => {
