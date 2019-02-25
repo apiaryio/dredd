@@ -2,7 +2,7 @@ const sinon = require('sinon');
 const proxyquire = require('proxyquire');
 
 const createAnnotationSchema = require('../schemas/annotation');
-const createCompilationResultSchema = require('../schemas/compilation-result');
+const createCompileResultSchema = require('../schemas/compile-result');
 const detectTransactionExampleNumbers = require('../../lib/detect-transaction-example-numbers');
 
 const { assert, fixtures } = require('../support');
@@ -12,16 +12,16 @@ const compile = require('../../lib/compile');
 describe('compile() · OpenAPI 2', () => {
   describe('causing a \'not specified in URI Template\' error', () => {
     const { mediaType, apiElements } = fixtures('not-specified-in-uri-template-annotation').openapi2;
-    const compilationResult = compile(mediaType, apiElements);
+    const compileResult = compile(mediaType, apiElements);
 
     it('produces one annotation and no transactions', () => {
-      assert.jsonSchema(compilationResult, createCompilationResultSchema({
+      assert.jsonSchema(compileResult, createCompileResultSchema({
         annotations: 1,
         transactions: 0,
       }));
     });
     it('produces error about parameter not being in the URI Template', () => {
-      assert.jsonSchema(compilationResult.annotations[0], createAnnotationSchema({
+      assert.jsonSchema(compileResult.annotations[0], createAnnotationSchema({
         type: 'error',
         component: 'apiDescriptionParser',
         message: /no corresponding.+in the path string/,
@@ -31,10 +31,10 @@ describe('compile() · OpenAPI 2', () => {
 
   describe('with \'produces\' containing JSON media type', () => {
     const { mediaType, apiElements } = fixtures('produces').openapi2;
-    const compilationResult = compile(mediaType, apiElements);
+    const compileResult = compile(mediaType, apiElements);
 
     it('produces two transactions', () => {
-      assert.jsonSchema(compilationResult, createCompilationResultSchema({
+      assert.jsonSchema(compileResult, createCompileResultSchema({
         transactions: 2,
       }));
     });
@@ -44,12 +44,12 @@ describe('compile() · OpenAPI 2', () => {
       { accept: 'application/json', contentType: 'text/plain' },
     ].forEach(({ accept, contentType }, i) => context(`compiles a transaction for the '${contentType}' media type`, () => {
       it('with expected request headers', () => {
-        assert.deepEqual(compilationResult.transactions[i].request.headers, [
+        assert.deepEqual(compileResult.transactions[i].request.headers, [
           { name: 'Accept', value: accept },
         ]);
       });
       it('with expected response headers', () => {
-        assert.deepEqual(compilationResult.transactions[i].response.headers, [
+        assert.deepEqual(compileResult.transactions[i].response.headers, [
           { name: 'Content-Type', value: contentType },
         ]);
       });
@@ -58,10 +58,10 @@ describe('compile() · OpenAPI 2', () => {
 
   describe('with \'produces\' containing JSON media type with parameters', () => {
     const { mediaType, apiElements } = fixtures('produces-charset').openapi2;
-    const compilationResult = compile(mediaType, apiElements);
+    const compileResult = compile(mediaType, apiElements);
 
     it('produces two transactions', () => {
-      assert.jsonSchema(compilationResult, createCompilationResultSchema({
+      assert.jsonSchema(compileResult, createCompileResultSchema({
         transactions: 2,
       }));
     });
@@ -71,12 +71,12 @@ describe('compile() · OpenAPI 2', () => {
       { accept: 'application/json; charset=utf-8', contentType: 'text/plain' },
     ].forEach((mediaTypes, i) => context(`compiles transaction #${i}`, () => {
       it('with expected request headers', () => {
-        assert.deepEqual(compilationResult.transactions[i].request.headers, [
+        assert.deepEqual(compileResult.transactions[i].request.headers, [
           { name: 'Accept', value: mediaTypes.accept },
         ]);
       });
       it('with expected response headers', () => {
-        assert.deepEqual(compilationResult.transactions[i].response.headers, [
+        assert.deepEqual(compileResult.transactions[i].response.headers, [
           { name: 'Content-Type', value: mediaTypes.contentType },
         ]);
       });
@@ -85,10 +85,10 @@ describe('compile() · OpenAPI 2', () => {
 
   describe('with \'produces\' containing a non-JSON media type with an example', () => {
     const { mediaType, apiElements } = fixtures('produces-non-json-example').openapi2;
-    const compilationResult = compile(mediaType, apiElements);
+    const compileResult = compile(mediaType, apiElements);
 
     it('produces two transactions', () => {
-      assert.jsonSchema(compilationResult, createCompilationResultSchema({
+      assert.jsonSchema(compileResult, createCompileResultSchema({
         transactions: 2,
       }));
     });
@@ -98,12 +98,12 @@ describe('compile() · OpenAPI 2', () => {
       { accept: 'text/plain', contentType: 'text/plain' },
     ].forEach((mediaTypes, i) => context(`compiles transaction #${i}`, () => {
       it('with expected request headers', () => {
-        assert.deepEqual(compilationResult.transactions[i].request.headers, [
+        assert.deepEqual(compileResult.transactions[i].request.headers, [
           { name: 'Accept', value: mediaTypes.accept },
         ]);
       });
       it('with expected response headers', () => {
-        assert.deepEqual(compilationResult.transactions[i].response.headers, [
+        assert.deepEqual(compileResult.transactions[i].response.headers, [
           { name: 'Content-Type', value: mediaTypes.contentType },
         ]);
       });
@@ -112,22 +112,22 @@ describe('compile() · OpenAPI 2', () => {
 
   describe('with \'consumes\'', () => {
     const { mediaType, apiElements } = fixtures('consumes').openapi2;
-    const compilationResult = compile(mediaType, apiElements);
+    const compileResult = compile(mediaType, apiElements);
 
     it('produces two transactions', () => {
-      assert.jsonSchema(compilationResult, createCompilationResultSchema({
+      assert.jsonSchema(compileResult, createCompileResultSchema({
         transactions: 3,
       }));
     });
 
     ['application/json', 'application/xml', 'application/json'].forEach((contentType, i) => context(`compiles a transaction for the '${contentType}' content type`, () => {
       it('with expected request headers', () => {
-        assert.deepEqual(compilationResult.transactions[i].request.headers, [
+        assert.deepEqual(compileResult.transactions[i].request.headers, [
           { name: 'Content-Type', value: contentType },
         ]);
       });
       it('with expected response headers', () => {
-        assert.deepEqual(compilationResult.transactions[i].response.headers, []);
+        assert.deepEqual(compileResult.transactions[i].response.headers, []);
       });
     }));
   });
@@ -139,7 +139,7 @@ describe('compile() · OpenAPI 2', () => {
       './detect-transaction-example-numbers': detectTransactionExampleNumbersStub,
     });
     const { mediaType, apiElements } = fixtures('multiple-responses').openapi2;
-    const compilationResult = stubbedCompile(mediaType, apiElements, filename);
+    const compileResult = stubbedCompile(mediaType, apiElements, filename);
 
     const expectedStatusCodes = [200, 400, 500];
 
@@ -148,11 +148,11 @@ describe('compile() · OpenAPI 2', () => {
     });
 
     it(`produces ${expectedStatusCodes.length} transactions`, () => {
-      assert.jsonSchema(compilationResult, createCompilationResultSchema({
+      assert.jsonSchema(compileResult, createCompileResultSchema({
         transactions: expectedStatusCodes.length,
       }));
     });
-    it('skips non-JSON media types in \'produces\'', () => compilationResult.transactions.forEach((transaction) => {
+    it('skips non-JSON media types in \'produces\'', () => compileResult.transactions.forEach((transaction) => {
       const contentType = transaction.response.headers
         .filter(header => header.name.toLowerCase() === 'content-type')
         .map(header => header.value)[0];
@@ -161,14 +161,14 @@ describe('compile() · OpenAPI 2', () => {
 
     Array.from(expectedStatusCodes).map((statusCode, i) => context(`origin of transaction #${i + 1}`, () => {
       it('uses URI as resource name', () => {
-        assert.equal(compilationResult.transactions[i].origin.resourceName, '/honey');
+        assert.equal(compileResult.transactions[i].origin.resourceName, '/honey');
       });
       it('uses method as action name', () => {
-        assert.equal(compilationResult.transactions[i].origin.actionName, 'GET');
+        assert.equal(compileResult.transactions[i].origin.actionName, 'GET');
       });
       it('uses status code and response\'s Content-Type as example name', () => {
         assert.equal(
-          compilationResult.transactions[i].origin.exampleName,
+          compileResult.transactions[i].origin.exampleName,
           `${statusCode} > application/json`
         );
       });
@@ -177,10 +177,10 @@ describe('compile() · OpenAPI 2', () => {
 
   describe('with \'securityDefinitions\' and multiple responses', () => {
     const { mediaType, apiElements } = fixtures('security-definitions-multiple-responses').openapi2;
-    const compilationResult = compile(mediaType, apiElements);
+    const compileResult = compile(mediaType, apiElements);
 
     it('produces two transactions', () => {
-      assert.jsonSchema(compilationResult, createCompilationResultSchema({
+      assert.jsonSchema(compileResult, createCompileResultSchema({
         transactions: 2,
       }));
     });
@@ -188,10 +188,10 @@ describe('compile() · OpenAPI 2', () => {
 
   describe('with \'securityDefinitions\' containing transitions', () => {
     const { mediaType, apiElements } = fixtures('security-definitions-transitions').openapi2;
-    const compilationResult = compile(mediaType, apiElements);
+    const compileResult = compile(mediaType, apiElements);
 
     it('produces one transaction', () => {
-      assert.jsonSchema(compilationResult, createCompilationResultSchema({
+      assert.jsonSchema(compileResult, createCompileResultSchema({
         transactions: 1,
       }));
     });
@@ -199,16 +199,16 @@ describe('compile() · OpenAPI 2', () => {
 
   describe('with default response (without explicit status code)', () => {
     const { mediaType, apiElements } = fixtures('default-response').openapi2;
-    const compilationResult = compile(mediaType, apiElements);
+    const compileResult = compile(mediaType, apiElements);
 
     it('produces two annotations and two transactions', () => {
-      assert.jsonSchema(compilationResult, createCompilationResultSchema({
+      assert.jsonSchema(compileResult, createCompileResultSchema({
         annotations: 2,
         transactions: 2,
       }));
     });
     it('produces warnings about the default response being unsupported', () => {
-      assert.jsonSchema(compilationResult.annotations, {
+      assert.jsonSchema(compileResult.annotations, {
         type: 'array',
         items: createAnnotationSchema({
           type: 'warning',
@@ -218,10 +218,10 @@ describe('compile() · OpenAPI 2', () => {
       });
     });
     it('assumes the solitary default response to be HTTP 200', () => {
-      assert.equal(compilationResult.transactions[0].response.status, '200');
+      assert.equal(compileResult.transactions[0].response.status, '200');
     });
     it('ignores non-solitary default response, propagates only HTTP 204', () => {
-      assert.equal(compilationResult.transactions[1].response.status, '204');
+      assert.equal(compileResult.transactions[1].response.status, '204');
     });
   });
 });

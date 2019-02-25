@@ -55,7 +55,7 @@ Compiles *HTTP Transactions* from given API description document.
 ```javascript
 var dt = require('dredd-transactions');
 
-dt.compile('# My API\n...', 'apiary.apib', function (error, compilationResult) {
+dt.compile('# My API\n...', 'apiary.apib', function (error, compileResult) {
   // ...
 });
 ```
@@ -69,13 +69,13 @@ dt.compile('# My API\n...', 'apiary.apib', function (error, compilationResult) {
 ### Callback Arguments
 
 - (enum[null, object]) - Standard JavaScript error object.
-- ([Compilation Result][compilation-result-object-spec])
+- ([Compile Result][compile-result-object-spec])
 
 
 ## Data Structures
 
-<a name="compilation-result-object"></a>
-### Compilation Result (object)
+<a name="compile-result-object"></a>
+### Compile Result (object)
 
 Result of compilation. Alongside compiled [Transaction][transaction-object-spec] objects contains also errors and warnings, mainly from API description parser.
 
@@ -169,7 +169,7 @@ Description of an error or warning which occurred during parsing of the API desc
 
 
 [filename-deprecation]: https://github.com/apiaryio/dredd-transactions/issues/6
-[compilation-result-object-spec]: #compilation-result-object
+[compile-result-object-spec]: #compile-result-object
 [transaction-object-spec]: #transaction-object
 [annotation-object-spec]: #annotation-object
 [source-map]: https://github.com/refractproject/refract-spec/blob/master/namespaces/parse-result-namespace.md#source-map-element
