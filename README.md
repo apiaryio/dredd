@@ -152,15 +152,18 @@ Description of an error or warning which occurred during parsing of the API desc
 - type (enum[string])
     - `error`
     - `warning`
-- component (enum[string]) - In which component of the compilation process the annotation occurred.
+- component (enum[string]) - In which component of the compilation process the annotation occurred
     - `apiDescriptionParser`
     - `parametersValidation`
     - `uriTemplateExpansion`
-- message (string) - Textual annotation. This is – in most cases – a human-readable message to be displayed to user.
-- location (array) - Locations of the annotation in the source file. A series of character-blocks, which may be non-continuous. For further details refer to API Elements' [Source Map](source-map) element.
-    - (array, fixed) - Continuous characters block. A pair of character index and character count.
-        - (number) - Zero-based index of a character in the source document.
-        - (number) - Count of characters starting from the character index.
+- message (string) - Textual annotation. This is – in most cases – a human-readable message to be displayed to user
+- location (array, fixed, nullable) - Location of the annotation in the source file, represented by a single range of line and column number pairs if available, or by `null` otherwise
+    - (array) - Start location
+        - (number) - Line number
+        - (number) - Column number
+    - (array) - End location
+        - (number) - Line number
+        - (number) - Column number
 
 ### Deprecated Properties
 
