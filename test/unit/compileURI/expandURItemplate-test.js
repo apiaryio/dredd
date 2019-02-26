@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const expandUriTemplate = require('../../../lib/compileURI/expandURItemplate');
+const expandUriTemplate = require('../../../compile/compileURI/expandURItemplate');
 
 
 describe('expandUriTemplate()', () => {

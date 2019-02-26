@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const compileTransactionName = require('../../lib/compileTransactionName');
+const compileTransactionName = require('../../compile/compileTransactionName');
 
 
 describe('compileTransactionName()', () => {

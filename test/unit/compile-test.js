@@ -3,7 +3,7 @@ const { assert } = require('chai');
 const {
   _compileBody: compileBody,
   _hasMultipartBody: hasMultipartBody,
-} = require('../../lib/compile');
+} = require('../../compile');
 
 
 describe('compile()', () => {

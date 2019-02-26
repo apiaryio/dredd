@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const validateParams = require('../../../lib/compileURI/validateParams');
+const validateParams = require('../../../compile/compileURI/validateParams');
 
 
 describe('validateParams()', () => {
