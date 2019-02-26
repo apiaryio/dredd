@@ -1,6 +1,7 @@
 const detectTransactionExampleNumbers = require('./detectTransactionExampleNumbers');
 const compileUri = require('./compileURI');
 const compileTransactionName = require('./compileTransactionName');
+const compileAnnotation = require('./compileAnnotation');
 
 
 function findRelevantTransactions(mediaType, apiElements) {
@@ -164,15 +165,6 @@ function compileTransaction(mediaType, filename, httpTransactionElement, example
     request, response, origin, name,
   };
   return { transaction, annotations };
-}
-
-function compileAnnotation(annotationElement) {
-  return {
-    type: annotationElement.classes.getValue(0),
-    component: 'apiDescriptionParser',
-    message: annotationElement.toValue(),
-    location: annotationElement.sourceMapValue || [[0, 1]],
-  };
 }
 
 function compile(mediaType, apiElements, filename) {
