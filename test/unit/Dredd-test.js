@@ -5,13 +5,18 @@ const proxyquire = require('proxyquire').noCallThru();
 const requestStub = require('request');
 const sinon = require('sinon');
 const { assert } = require('chai');
+const parse = require('dredd-transactions/parse');
+const compile = require('dredd-transactions/compile');
 
-const dreddTransactionsStub = require('dredd-transactions');
 const loggerStub = require('../../lib/logger');
+
+const parseStub = sinon.spy(parse);
+const compileStub = sinon.spy(compile);
 
 const Dredd = proxyquire('../../lib/Dredd', {
   request: requestStub,
-  'dredd-transactions': dreddTransactionsStub,
+  'dredd-transactions/parse': parseStub,
+  'dredd-transactions/compile': compileStub,
   fs: fsStub,
   './logger': loggerStub,
 });
@@ -75,11 +80,11 @@ describe('Dredd class', () => {
     });
 
     it('should convert ast to runtime', (done) => {
-      sinon.spy(dreddTransactionsStub, 'compile');
       dredd = new Dredd(configuration);
       sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
       dredd.run(() => {
-        assert.isOk(dreddTransactionsStub.compile.called);
+        assert.isOk(parseStub.called);
+        assert.isOk(compileStub.called);
         dredd.runner.executeTransaction.restore();
         done();
       });
