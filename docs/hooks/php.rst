@@ -178,7 +178,7 @@ Adding or Changing URI Query Parameters to All Requests
 
        $paramToAdd = 'api-key=23456';
 
-       if (strpos($transaction->fullPath, "?") {
+       if (strpos($transaction->fullPath, "?")) {
 
            $transaction->fullPath .= "&{$paramToAdd}";
        }
