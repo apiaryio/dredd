@@ -15,9 +15,9 @@ function prepareData(apiDescriptionDocument, filename, done) {
     if (err) { done(err); return; }
 
     const { annotations } = compile(parseResult.mediaType, parseResult.apiElements, filename);
-    done(null, {
-      [filename]: { raw: apiDescriptionDocument, filename, annotations },
-    });
+    done(null, [
+      { content: apiDescriptionDocument, location: filename, annotations },
+    ]);
   });
 }
 

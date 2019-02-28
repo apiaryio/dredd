@@ -546,4 +546,99 @@ describe('configuration._coerceRemovedOptions()', () => {
       assert.lengthOf(coerceResult.warnings, 1);
     });
   });
+
+  describe('with data set to { filename: apiDescription }', () => {
+    const config = { data: { 'filename.api': 'FORMAT: 1A\n# Sample API\n' } };
+    let coerceResult;
+
+    before(() => {
+      coerceResult = configuration._coerceRemovedOptions(config);
+    });
+
+    it('gets reformatted', () => {
+      assert.deepEqual(config, {
+        apiDescriptions: [
+          {
+            location: 'filename.api',
+            content: 'FORMAT: 1A\n# Sample API\n',
+          },
+        ],
+      });
+    });
+    it('produces no errors', () => {
+      assert.deepEqual(coerceResult.errors, []);
+    });
+    it('produces one warning', () => {
+      assert.lengthOf(coerceResult.warnings, 1);
+    });
+  });
+
+  describe('with data set to { filename: { filename, raw: apiDescription } }', () => {
+    const config = {
+      data: {
+        'filename.api': {
+          raw: 'FORMAT: 1A\n# Sample API\n',
+          filename: 'filename.api',
+        },
+      },
+    };
+    let coerceResult;
+
+    before(() => {
+      coerceResult = configuration._coerceRemovedOptions(config);
+    });
+
+    it('gets reformatted', () => {
+      assert.deepEqual(config, {
+        apiDescriptions: [
+          {
+            location: 'filename.api',
+            content: 'FORMAT: 1A\n# Sample API\n',
+          },
+        ],
+      });
+    });
+    it('produces no errors', () => {
+      assert.deepEqual(coerceResult.errors, []);
+    });
+    it('produces one warning', () => {
+      assert.lengthOf(coerceResult.warnings, 1);
+    });
+  });
+
+  describe('with both data and apiDescriptions set', () => {
+    const config = {
+      data: { 'filename.api': 'FORMAT: 1A\n# Sample API v1\n' },
+      apiDescriptions: [{
+        location: 'configuration.apiDescriptions[0]',
+        content: 'FORMAT: 1A\n# Sample API v2\n',
+      }],
+    };
+    let coerceResult;
+
+    before(() => {
+      coerceResult = configuration._coerceRemovedOptions(config);
+    });
+
+    it('gets reformatted', () => {
+      assert.deepEqual(config, {
+        apiDescriptions: [
+          {
+            location: 'configuration.apiDescriptions[0]',
+            content: 'FORMAT: 1A\n# Sample API v2\n',
+          },
+          {
+            location: 'filename.api',
+            content: 'FORMAT: 1A\n# Sample API v1\n',
+          },
+        ],
+      });
+    });
+    it('produces no errors', () => {
+      assert.deepEqual(coerceResult.errors, []);
+    });
+    it('produces one warning', () => {
+      assert.lengthOf(coerceResult.warnings, 1);
+    });
+  });
 });

@@ -33,71 +33,55 @@ Let’s have a look at an example configuration first. (Please also see the :ref
    {
      server: 'http://127.0.0.1:3000/api', // your URL to API endpoint the tests will run against
      options: {
-
-       'path': [],       // Required Array if Strings; filepaths to API description documents, can use glob wildcards
-
+       path: [],         // Required Array if Strings; filepaths to API description documents, can use glob wildcards
        'dry-run': false, // Boolean, do not run any real HTTP transaction
-       'names': false,   // Boolean, Print Transaction names and finish, similar to dry-run
-
-       'loglevel': 'warning', // String, logging level (debug, warning, error, silent)
-
-       'only': [],      // Array of Strings, run only transaction that match these names
-
-       'header': [],    // Array of Strings, these strings are then added as headers (key:value) to every transaction
-       'user': null,    // String, Basic Auth credentials in the form username:password
-
-       'hookfiles': [], // Array of Strings, filepaths to files containing hooks (can use glob wildcards)
-
-       'reporter': ['dot', 'html'], // Array of possible reporters, see folder lib/reporters
-
-       'output': [],     // Array of Strings, filepaths to files used for output of file-based reporters
-
+       names: false,     // Boolean, Print Transaction names and finish, similar to dry-run
+       loglevel: 'warning', // String, logging level (debug, warning, error, silent)
+       only: [],         // Array of Strings, run only transaction that match these names
+       header: [],       // Array of Strings, these strings are then added as headers (key:value) to every transaction
+       user: null,       // String, Basic Auth credentials in the form username:password
+       hookfiles: [],    // Array of Strings, filepaths to files containing hooks (can use glob wildcards)
+       reporter: ['dot', 'html'], // Array of possible reporters, see folder lib/reporters
+       output: [],       // Array of Strings, filepaths to files used for output of file-based reporters
        'inline-errors': false, // Boolean, If failures/errors are display immediately in Dredd run
-
-       'require': null, // String, When using nodejs hooks, require the given module before executing hooks
-
-       'color': true,
+       require: null,    // String, When using nodejs hooks, require the given module before executing hooks
+       color: true,
      },
-
-     'emitter': EventEmitterInstance, // optional - listen to test progress, your own instance of EventEmitter
-
-     'data': {
-       'path/to/file': '...'
-     }
+     emitter: new EventEmitter(), // listen to test progress, your own instance of EventEmitter
+     apiDescriptions: ['FORMAT: 1A\n# Sample API\n']
    }
 
-Properties
-----------
+.. js:data:: configuration
 
-server (string)
-~~~~~~~~~~~~~~~
+.. js:attribute:: configuration.server
 
-Your choice of the API endpoint to test the API description against. It must be a valid URL (you can specify ``port``, ``path`` and http or https ``protocol``).
+   The HTTP(S) address of the API server to test against the API description(s). A valid URL is expected, e.g. ``http://127.0.0.1:8000``
 
-options (object)
-~~~~~~~~~~~~~~~~
+   :type: string
+   :required: yes
 
-Because ``options.path`` array is required, you must specify options. You’ll end with errors otherwise.
+.. js:attribute:: configuration.options
 
-.. _optionspath-object:
+   Because :js:attr:`configuration.options.path` array is required, you must specify options. You’ll end with errors otherwise.
 
-options.path (object)
-^^^^^^^^^^^^^^^^^^^^^
+   :type: object
+   :required: yes
 
-**Required** Array of filepaths to API description documents. Or it can also be an URL to download the API description from internet via http(s) protocol.
+.. js:attribute:: configuration.options.path
 
-data (object)
-^^^^^^^^^^^^^
+   Array of paths or URLs to API description documents.
 
-**Optional** Object with keys as ``filename`` and value as ``blueprint``-code.
+   :type: array
+   :required: yes
 
-Useful when you don’t want to operate on top of filesystem and want to pass code of your API description as a string. You get the point.
+.. js:attribute:: configuration.emitter
 
-.. code-block:: javascript
+   Listen to test progress by providing your own instance of `EventEmitter <https://nodejs.org/api/events.html#events_class_eventemitter>`__.
 
-   {
-     'data': {
-       './api-description.apib': 'FORMAT: 1A\n\n# My String API\n\nGET /url\n+ Response 200\n\n        Some content',
-       './directory/another-api-description.apib': '# Another API\n\n## Group Machines\n\n### Machine [/machine]\n\n#### Read machine [GET]\n\n...'
-     }
-   }
+   :type: EventEmitter
+
+.. js:attribute:: configuration.apiDescriptions
+
+   API descriptions as strings. Useful when you don't want to operate on top of the filesystem.
+
+   :type: array

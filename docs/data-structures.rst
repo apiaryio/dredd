@@ -24,6 +24,7 @@ Transaction object is passed as a first argument to :ref:`hook functions <hooks>
    -  actionName: ``Retrieve Message`` (string)
    -  exampleName: ``Example 2`` (string)
 
+-  apiDescriptionMediaType: ``text/vnd.apiblueprint`` (string) - Media type of the original API description document
 -  host: ``127.0.0.1`` (string) - server hostname without port number
 -  port: ``3000`` (number) - server port number
 -  protocol: ``https:`` (enum[string]) - server protocol
