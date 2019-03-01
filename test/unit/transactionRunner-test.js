@@ -57,6 +57,50 @@ describe('TransactionRunner', () => {
     it('should have an empty array of logs object', () => assert.deepEqual(runner.logs, []));
   });
 
+  describe('config(config)', () => {
+    describe('when single file in apiDescriptions is present', () => it('should set multiBlueprint to false', () => {
+      configuration = {
+        server: 'http://127.0.0.1:3000',
+        emitter: new EventEmitter(),
+        apiDescriptions: [{ location: 'filename.api', content: '...' }],
+        options: {
+          'dry-run': false,
+          method: [],
+          only: [],
+          header: [],
+          reporter: [],
+        },
+      };
+
+      runner = new Runner(configuration);
+      runner.config(configuration);
+
+      assert.notOk(runner.multiBlueprint);
+    }));
+
+    describe('when multiple files in apiDescriptions are present', () => it('should set multiBlueprint to true', () => {
+      configuration = {
+        server: 'http://127.0.0.1:3000',
+        emitter: new EventEmitter(),
+        apiDescriptions: [
+          { location: 'filename1.api', content: '...' },
+          { location: 'filename2.api', content: '...' },
+        ],
+        options: {
+          'dry-run': false,
+          method: [],
+          only: [],
+          header: [],
+          reporter: [],
+        },
+      };
+      runner = new Runner(configuration);
+      runner.config(configuration);
+
+      assert.isOk(runner.multiBlueprint);
+    }));
+  });
+
   describe('configureTransaction(transaction)', () => {
     beforeEach(() => {
       transaction = {
