@@ -47,7 +47,7 @@
     "htmlencode": "0.0.4",
     "inquirer": "6.2.2",
     "js-yaml": "3.12.2",
-    "make-dir": "2.0.0",
+    "make-dir": "2.1.0",
     "markdown-it": "8.4.2",
     "optimist": "0.6.1",
     "proxyquire": "2.1.0",
