@@ -21,7 +21,8 @@ Error: ${e}\
   // Get parameters from expression object
   const uriParameters = parsed.expressions
     .map(expression => expression.params.map(param => param.name))
-    .reduce((accumulator, current) => accumulator.concat(current), []);
+    .reduce((accumulator, current) => accumulator.concat(current), [])
+    .map(decodeURI);
 
   if (parsed.expressions.length === 0) {
     result.uri = uriTemplate;
