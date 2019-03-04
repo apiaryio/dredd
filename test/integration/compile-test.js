@@ -201,6 +201,19 @@ describe('compile() · all API description formats', () => {
     });
   });
 
+  describe('with dotted query parameters', () => {
+    fixtures('dotted-query-parameters').forEachDescribe(({ mediaType, apiElements }) => {
+      const compileResult = compile(mediaType, apiElements);
+
+      it('produces no annotations and one transactions', () => {
+        assert.jsonSchema(compileResult, createCompileResultSchema({
+          annotations: 0,
+          transactions: 1,
+        }));
+      });
+    });
+  });
+
   describe('causing a warning in URI parameters validation', () => {
     // Since 'validateParams' doesn't actually return any warnings
     // (but could in the future), we need to pretend it's possible for this
