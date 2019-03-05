@@ -21,6 +21,14 @@ const Dredd = proxyquire('../../lib/Dredd', {
   './logger': loggerStub,
 });
 
+
+function compareLocation(ad1, ad2) {
+  if (ad1.location < ad2.location) { return -1; }
+  if (ad1.location > ad2.location) { return 1; }
+  return 0;
+}
+
+
 describe('Dredd class', () => {
   let configuration = {};
   let dredd = {};
@@ -125,7 +133,7 @@ describe('Dredd class', () => {
       it('should load file contents on paths to config', done => dredd.run((error) => {
         if (error) { return done(error); }
         assert.lengthOf(dredd.configuration.apiDescriptions, 3);
-        dredd.configuration.apiDescriptions.sort((ad1, ad2) => ad1.location.localeCompare(ad2.location));
+        dredd.configuration.apiDescriptions.sort(compareLocation);
 
         assert.isObject(dredd.configuration.apiDescriptions[0]);
         assert.propertyVal(dredd.configuration.apiDescriptions[0], 'location', './test/fixtures/multifile/greeting.apib');
@@ -144,7 +152,7 @@ describe('Dredd class', () => {
       it('should parse loaded files', done => dredd.run((error) => {
         if (error) { return done(error); }
         assert.lengthOf(dredd.configuration.apiDescriptions, 3);
-        dredd.configuration.apiDescriptions.sort((ad1, ad2) => ad1.location.localeCompare(ad2.location));
+        dredd.configuration.apiDescriptions.sort(compareLocation);
 
         assert.property(dredd.configuration.apiDescriptions[0], 'annotations');
         assert.property(dredd.configuration.apiDescriptions[1], 'annotations');
@@ -244,7 +252,7 @@ GET /url
       it('should pass data contents to config', done => dredd.run((error) => {
         if (error) { return done(error); }
         assert.lengthOf(dredd.configuration.apiDescriptions, 2);
-        dredd.configuration.apiDescriptions.sort((ad1, ad2) => ad1.location.localeCompare(ad2.location));
+        dredd.configuration.apiDescriptions.sort(compareLocation);
 
         assert.isObject(dredd.configuration.apiDescriptions[0]);
         assert.propertyVal(dredd.configuration.apiDescriptions[0], 'location', 'testingDirectBlueprintString');
@@ -345,7 +353,7 @@ GET /url
           if (error) { return done(error); }
 
           assert.lengthOf(dredd.configuration.apiDescriptions, 5);
-          dredd.configuration.apiDescriptions.sort((ad1, ad2) => ad1.location.localeCompare(ad2.location));
+          dredd.configuration.apiDescriptions.sort(compareLocation);
 
           assert.isObject(dredd.configuration.apiDescriptions[0]);
           assert.propertyVal(dredd.configuration.apiDescriptions[0], 'location', './test/fixtures/multifile/greeting.apib');
