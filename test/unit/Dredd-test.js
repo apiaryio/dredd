@@ -107,8 +107,8 @@ describe('Dredd class', () => {
 
       it('should expand all glob patterns and resolved paths should be unique', done => dredd.run((error) => {
         if (error) { return done(error); }
-        assert.lengthOf(dredd.configuration.files, 3);
-        assert.deepEqual(dredd.configuration.files, [
+        assert.lengthOf(dredd.files, 3);
+        assert.deepEqual(dredd.files, [
           './test/fixtures/multifile/greeting.apib',
           './test/fixtures/multifile/message.apib',
           './test/fixtures/multifile/name.apib',
@@ -118,7 +118,7 @@ describe('Dredd class', () => {
 
       it('should remove globs from config', done => dredd.run((error) => {
         if (error) { return done(error); }
-        assert.notInclude(dredd.configuration.files, './test/fixtures/multifile/*.apib');
+        assert.notInclude(dredd.files, './test/fixtures/multifile/*.apib');
         done();
       }));
 
@@ -237,7 +237,7 @@ GET /url
 
       it('should not expand any glob patterns', done => dredd.run((error) => {
         if (error) { return done(error); }
-        assert.lengthOf(dredd.configuration.files, 0);
+        assert.lengthOf(dredd.files, 0);
         done();
       }));
 
@@ -271,7 +271,7 @@ GET /url
 
         it('should fill configuration data with data and one file at that path', done => localdredd.run((error) => {
           if (error) { return done(error); }
-          assert.lengthOf(localdredd.configuration.files, 1);
+          assert.lengthOf(localdredd.files, 1);
           assert.lengthOf(localdredd.configuration.apiDescriptions, 3);
 
           assert.isObject(localdredd.configuration.apiDescriptions[0]);
@@ -324,8 +324,8 @@ GET /url
 
         it('should expand glob pattern and resolved paths should be unique', done => dredd.run((error) => {
           if (error) { return done(error); }
-          assert.lengthOf(dredd.configuration.files, 5);
-          assert.deepEqual(dredd.configuration.files, [
+          assert.lengthOf(dredd.files, 5);
+          assert.deepEqual(dredd.files, [
             'http://some.path.to/file.apib',
             'https://another.path.to/apiary.apib',
             './test/fixtures/multifile/greeting.apib',
@@ -337,7 +337,7 @@ GET /url
 
         it('should remove globs from config', done => dredd.run((error) => {
           if (error) { return done(error); }
-          assert.notInclude(dredd.configuration.files, './test/fixtures/multifile/*.apib');
+          assert.notInclude(dredd.files, './test/fixtures/multifile/*.apib');
           done();
         }));
 
