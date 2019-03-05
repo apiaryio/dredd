@@ -2,7 +2,8 @@ const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 const { assert } = require('chai');
 
-const dreddTransactions = require('dredd-transactions');
+const parse = require('dredd-transactions/parse');
+const compile = require('dredd-transactions/compile');
 
 const logger = require('../../lib/logger');
 
@@ -10,13 +11,13 @@ const handleRuntimeProblems = proxyquire('../../lib/handleRuntimeProblems',
   { './logger': logger });
 
 function prepareData(apiDescriptionDocument, filename, done) {
-  dreddTransactions.compile(apiDescriptionDocument, filename, (err, { annotations }) => {
-    if (err) { return done(err); }
+  parse(apiDescriptionDocument, (err, parseResult) => {
+    if (err) { done(err); return; }
 
-    const data = {};
-    data[filename] = { raw: apiDescriptionDocument, filename, annotations };
-
-    done(null, data);
+    const { annotations } = compile(parseResult.mediaType, parseResult.apiElements, filename);
+    done(null, {
+      [filename]: { raw: apiDescriptionDocument, filename, annotations },
+    });
   });
 }
 
