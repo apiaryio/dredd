@@ -108,4 +108,19 @@ describe('resolvePaths()', () => {
       ]);
     });
   });
+
+  describe('when given duplicate paths', () => {
+    it('returns only the distinct ones', () => {
+      const paths = resolvePaths(cwd, [
+        './test2_hooks.js',
+        './**/*_hooks.*',
+        'multifile/multifile_hooks.coffee',
+      ]);
+      assert.deepEqual(paths, [
+        path.join(cwd, 'multifile/multifile_hooks.coffee'),
+        path.join(cwd, 'test2_hooks.js'),
+        path.join(cwd, 'test_hooks.coffee'),
+      ]);
+    });
+  });
 });
