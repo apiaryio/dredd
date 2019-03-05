@@ -1,15 +1,15 @@
 const path = require('path');
 const { assert } = require('chai');
 
-const resolveHookfiles = require('../../lib/resolveHookfiles');
+const resolvePaths = require('../../lib/resolvePaths');
 
 
-describe('resolveHookfiles()', () => {
+describe('resolvePaths()', () => {
   const cwd = path.join(__filename, '..', '..', 'fixtures');
 
   describe('when given no paths', () => {
     it('produces no results', () => {
-      const paths = resolveHookfiles(cwd, []);
+      const paths = resolvePaths(cwd, []);
       assert.deepEqual(paths, []);
     });
   });
@@ -20,14 +20,14 @@ describe('resolveHookfiles()', () => {
         path.join(cwd, 'hooks.js'),
         path.join(cwd, 'non-js-hooks.rb'),
       ];
-      const paths = resolveHookfiles(cwd, hookfiles);
+      const paths = resolvePaths(cwd, hookfiles);
       assert.deepEqual(paths, hookfiles);
     });
   });
 
   describe('when given existing relative filenames', () => {
     it('resolves them into absolute paths', () => {
-      const paths = resolveHookfiles(cwd, ['./hooks.js', './non-js-hooks.rb']);
+      const paths = resolvePaths(cwd, ['./hooks.js', './non-js-hooks.rb']);
       assert.deepEqual(paths, [
         path.join(cwd, 'hooks.js'),
         path.join(cwd, 'non-js-hooks.rb'),
@@ -38,14 +38,14 @@ describe('resolveHookfiles()', () => {
   describe('when given non-existing filenames', () => {
     it('throws an error', () => {
       assert.throws(() => {
-        resolveHookfiles(cwd, ['./hooks.js', './foo/bar/42']);
+        resolvePaths(cwd, ['./hooks.js', './foo/bar/42']);
       }, './foo/bar/42');
     });
   });
 
   describe('when given glob pattern resolving to existing files', () => {
     it('resolves them into absolute paths', () => {
-      const paths = resolveHookfiles(cwd, ['./**/hooks.js']);
+      const paths = resolvePaths(cwd, ['./**/hooks.js']);
       assert.deepEqual(paths, [
         path.join(cwd, 'hooks.js'),
       ]);
@@ -55,14 +55,14 @@ describe('resolveHookfiles()', () => {
   describe('when given glob pattern resolving to no files', () => {
     it('throws an error', () => {
       assert.throws(() => {
-        resolveHookfiles(cwd, ['./**/hooks.js', './**/foo/bar/foobar.js']);
+        resolvePaths(cwd, ['./**/hooks.js', './**/foo/bar/foobar.js']);
       }, './**/foo/bar/foobar.js');
     });
   });
 
   describe('when given both globs and filenames', () => {
     it('resolves them into absolute paths', () => {
-      const paths = resolveHookfiles(cwd, ['./non-js-hooks.rb', './**/hooks.js']);
+      const paths = resolvePaths(cwd, ['./non-js-hooks.rb', './**/hooks.js']);
       assert.deepEqual(paths, [
         path.join(cwd, 'hooks.js'),
         path.join(cwd, 'non-js-hooks.rb'),
@@ -71,18 +71,18 @@ describe('resolveHookfiles()', () => {
 
     it('throws an error on non-existing filenams', () => {
       assert.throws(() => {
-        resolveHookfiles(cwd, ['./**/hooks.js', './foo/bar/42']);
+        resolvePaths(cwd, ['./**/hooks.js', './foo/bar/42']);
       }, './foo/bar/42');
     });
 
     it('throws an error on globs resolving to no files', () => {
       assert.throws(() => {
-        resolveHookfiles(cwd, ['./hooks.js', './**/foo/bar/foobar.js']);
+        resolvePaths(cwd, ['./hooks.js', './**/foo/bar/foobar.js']);
       }, './**/foo/bar/foobar.js');
     });
 
     it('returns the absolute paths alphabetically sorted by their basename', () => {
-      const paths = resolveHookfiles(cwd, [
+      const paths = resolvePaths(cwd, [
         './**/*_hooks.*',
         './hooks-glob/baz/x.js',
         './hooks-glob/foo/y.js',
