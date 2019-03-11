@@ -38,6 +38,10 @@ describe('init._applyAnswers()', () => {
     const config = applyAnswers(createConfig(), { language: 'python' });
     assert.equal(config.language, 'python');
   });
+  it('sets the language when not prompted', () => {
+    const config = applyAnswers(createConfig({ language: 'python' }), {});
+    assert.equal(config.language, 'python');
+  });
   it('sets no reporter by default', () => {
     const config = applyAnswers(createConfig(), {});
     assert.isUndefined(config.reporter);
