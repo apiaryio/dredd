@@ -28,7 +28,7 @@ describe('Sanitation of Reported Data', () => {
 
     // 'start' and 'end' events are asynchronous and they do not carry any data
     // significant for following scenarios
-    emitter.on('start', (apiDescription, cb) => { events.push({ name: 'start' }); return cb(); });
+    emitter.on('start', (apiDescriptions, cb) => { events.push({ name: 'start' }); return cb(); });
     emitter.on('end', (cb) => { events.push({ name: 'end' }); return cb(); });
 
     return emitter;

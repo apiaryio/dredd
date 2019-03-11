@@ -58,11 +58,11 @@ describe('TransactionRunner', () => {
   });
 
   describe('config(config)', () => {
-    describe('when single file in data is present', () => it('should set multiBlueprint to false', () => {
+    describe('when single file in apiDescriptions is present', () => it('should set multiBlueprint to false', () => {
       configuration = {
         server: 'http://127.0.0.1:3000',
         emitter: new EventEmitter(),
-        data: { file1: { raw: 'blueprint1' } },
+        apiDescriptions: [{ location: 'filename.api', content: '...' }],
         options: {
           'dry-run': false,
           method: [],
@@ -78,11 +78,14 @@ describe('TransactionRunner', () => {
       assert.notOk(runner.multiBlueprint);
     }));
 
-    describe('when multiple files in data are present', () => it('should set multiBlueprint to true', () => {
+    describe('when multiple files in apiDescriptions are present', () => it('should set multiBlueprint to true', () => {
       configuration = {
         server: 'http://127.0.0.1:3000',
         emitter: new EventEmitter(),
-        data: { file1: { raw: 'blueprint1' }, file2: { raw: 'blueprint2' } },
+        apiDescriptions: [
+          { location: 'filename1.api', content: '...' },
+          { location: 'filename2.api', content: '...' },
+        ],
         options: {
           'dry-run': false,
           method: [],
@@ -128,6 +131,7 @@ describe('TransactionRunner', () => {
           actionName: 'Delete Message',
           exampleName: 'Bogus example name',
         },
+        apiDescriptionMediaType: 'text/vnd.apiblueprint',
       };
 
       runner = new Runner(configuration);
@@ -231,14 +235,10 @@ describe('TransactionRunner', () => {
 
       ].forEach(({ description, input, expected }) => context(`${description}: '${input.serverUrl}' + '${input.requestPath}'`, () => {
         beforeEach(() => {
+          runner.configuration.server = input.serverUrl;
           transaction.request.uri = input.requestPath;
           transaction.origin.filename = filename;
-
-          runner.configuration.server = input.serverUrl;
-          if (!runner.configuration.data) { runner.configuration.data = {}; }
-          if (!runner.configuration.data[filename]) { runner.configuration.data[filename] = {}; }
-          runner.configuration.data[filename].mediaType = 'text/vnd.apiblueprint';
-
+          transaction.apiDescriptionMediaType = 'text/vnd.apiblueprint';
           configuredTransaction = runner.configureTransaction(transaction);
         });
 
@@ -259,11 +259,7 @@ describe('TransactionRunner', () => {
         beforeEach(() => {
           transaction.response.status = status;
           transaction.origin.filename = filename;
-
-          if (!runner.configuration.data) { runner.configuration.data = {}; }
-          if (!runner.configuration.data[filename]) { runner.configuration.data[filename] = {}; }
-          runner.configuration.data[filename].mediaType = 'application/swagger+json';
-
+          transaction.apiDescriptionMediaType = 'application/swagger+json';
           configuredTransaction = runner.configureTransaction(transaction);
         });
 
@@ -279,11 +275,7 @@ describe('TransactionRunner', () => {
         beforeEach(() => {
           transaction.response.status = status;
           transaction.origin.filename = filename;
-
-          if (!runner.configuration.data) { runner.configuration.data = {}; }
-          if (!runner.configuration.data[filename]) { runner.configuration.data[filename] = {}; }
-          runner.configuration.data[filename].mediaType = 'application/swagger+json';
-
+          transaction.apiDescriptionMediaType = 'application/swagger+json';
           configuredTransaction = runner.configureTransaction(transaction);
         });
 
@@ -298,11 +290,7 @@ describe('TransactionRunner', () => {
       beforeEach(() => {
         transaction.response.status = 400;
         transaction.origin.filename = filename;
-
-        if (!runner.configuration.data) { runner.configuration.data = {}; }
-        if (!runner.configuration.data[filename]) { runner.configuration.data[filename] = {}; }
-        runner.configuration.data[filename].mediaType = 'text/plain';
-
+        transaction.apiDescriptionMediaType = 'text/plain';
         configuredTransaction = runner.configureTransaction(transaction);
       });
 

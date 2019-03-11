@@ -5,7 +5,7 @@ const sinon = require('sinon');
 const { assert } = require('chai');
 const { EventEmitter } = require('events');
 
-const blueprintData = require('../../fixtures/blueprint-data');
+const apiDescriptions = require('../../fixtures/apiDescriptions');
 const loggerStub = require('../../../lib/logger');
 const reporterOutputLoggerStub = require('../../../lib/reporters/reporterOutputLogger');
 
@@ -281,7 +281,7 @@ describe('ApiaryReporter', () => {
       it('should set uuid', (done) => {
         emitter = new EventEmitter();
         const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
-        return emitter.emit('start', blueprintData, () => {
+        return emitter.emit('start', apiDescriptions, () => {
           assert.isNotNull(apiaryReporter.uuid);
           return done();
         });
@@ -290,7 +290,7 @@ describe('ApiaryReporter', () => {
       it('should set start time', (done) => {
         emitter = new EventEmitter();
         const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
-        emitter.emit('start', blueprintData, () => {
+        emitter.emit('start', apiDescriptions, () => {
           assert.isNotNull(apiaryReporter.startedAt);
           done();
         });
@@ -299,7 +299,7 @@ describe('ApiaryReporter', () => {
       it('should call "create new test run" HTTP resource', (done) => {
         emitter = new EventEmitter();
         (new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } }));
-        emitter.emit('start', blueprintData, () => {
+        emitter.emit('start', apiDescriptions, () => {
           assert.isTrue(call.isDone());
           done();
         });
@@ -308,7 +308,7 @@ describe('ApiaryReporter', () => {
       it('should attach test run ID back to the reporter as remoteId', (done) => {
         emitter = new EventEmitter();
         const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
-        emitter.emit('start', blueprintData, () => {
+        emitter.emit('start', apiDescriptions, () => {
           assert.isNotNull(apiaryReporter.remoteId);
           done();
         });
@@ -317,7 +317,7 @@ describe('ApiaryReporter', () => {
       it('should attach test run reportUrl to the reporter as reportUrl', (done) => {
         emitter = new EventEmitter();
         const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
-        emitter.emit('start', blueprintData, () => {
+        emitter.emit('start', apiDescriptions, () => {
           assert.isNotNull(apiaryReporter.reportUrl);
           done();
         });
@@ -326,7 +326,7 @@ describe('ApiaryReporter', () => {
       it('should have blueprints key in the request and it should be an array and members should have proper structure', (done) => {
         emitter = new EventEmitter();
         (new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } }));
-        emitter.emit('start', blueprintData, () => {
+        emitter.emit('start', apiDescriptions, () => {
           const parsedBody = JSON.parse(requestBody);
           assert.isArray(parsedBody.blueprints);
           assert.lengthOf(parsedBody.blueprints, 1);
@@ -345,7 +345,7 @@ describe('ApiaryReporter', () => {
       it('should have various needed keys in test-run payload sent to apiary', (done) => {
         emitter = new EventEmitter();
         (new ApiaryReporter(emitter, {}, {}, { server: 'http://my.server.co:8080', custom: { apiaryReporterEnv: env } }));
-        emitter.emit('start', blueprintData, () => {
+        emitter.emit('start', apiDescriptions, () => {
           const parsedBody = JSON.parse(requestBody);
           assert.propertyVal(parsedBody, 'endpoint', 'http://my.server.co:8080');
           done();
@@ -355,7 +355,7 @@ describe('ApiaryReporter', () => {
       it('should send the test-run as public one', (done) => {
         emitter = new EventEmitter();
         (new ApiaryReporter(emitter, {}, {}, { server: 'http://my.server.co:8080', custom: { apiaryReporterEnv: env } }));
-        emitter.emit('start', blueprintData, () => {
+        emitter.emit('start', apiDescriptions, () => {
           const parsedBody = JSON.parse(requestBody);
           assert.strictEqual(parsedBody.public, true);
           done();
@@ -366,7 +366,7 @@ describe('ApiaryReporter', () => {
         emitter = new EventEmitter();
         const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
         apiaryReporter.serverError = true;
-        emitter.emit('start', blueprintData, () => {
+        emitter.emit('start', apiDescriptions, () => {
           assert.isFalse(call.isDone());
           done();
         });
@@ -867,7 +867,7 @@ describe('ApiaryReporter', () => {
       it('should set uuid', (done) => {
         emitter = new EventEmitter();
         const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
-        emitter.emit('start', blueprintData, () => {
+        emitter.emit('start', apiDescriptions, () => {
           assert.isNotNull(apiaryReporter.uuid);
           done();
         });
@@ -876,7 +876,7 @@ describe('ApiaryReporter', () => {
       it('should set start time', (done) => {
         emitter = new EventEmitter();
         const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
-        emitter.emit('start', blueprintData, () => {
+        emitter.emit('start', apiDescriptions, () => {
           assert.isNotNull(apiaryReporter.startedAt);
           done();
         });
@@ -885,7 +885,7 @@ describe('ApiaryReporter', () => {
       it('should call "create new test run" HTTP resource', (done) => {
         emitter = new EventEmitter();
         (new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } }));
-        emitter.emit('start', blueprintData, () => {
+        emitter.emit('start', apiDescriptions, () => {
           assert.isTrue(call.isDone());
           done();
         });
@@ -894,7 +894,7 @@ describe('ApiaryReporter', () => {
       it('should attach test run ID back to the reporter as remoteId', (done) => {
         emitter = new EventEmitter();
         const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
-        emitter.emit('start', blueprintData, () => {
+        emitter.emit('start', apiDescriptions, () => {
           assert.isNotNull(apiaryReporter.remoteId);
           done();
         });
@@ -903,7 +903,7 @@ describe('ApiaryReporter', () => {
       it('should attach test run reportUrl to the reporter as reportUrl', (done) => {
         emitter = new EventEmitter();
         const apiaryReporter = new ApiaryReporter(emitter, {}, {}, { custom: { apiaryReporterEnv: env } });
-        emitter.emit('start', blueprintData, () => {
+        emitter.emit('start', apiDescriptions, () => {
           assert.isNotNull(apiaryReporter.reportUrl);
           done();
         });
@@ -912,7 +912,7 @@ describe('ApiaryReporter', () => {
       it('should send the test-run as non-public', (done) => {
         emitter = new EventEmitter();
         (new ApiaryReporter(emitter, {}, {}, { server: 'http://my.server.co:8080', custom: { apiaryReporterEnv: env } }));
-        emitter.emit('start', blueprintData, () => {
+        emitter.emit('start', apiDescriptions, () => {
           const parsedBody = JSON.parse(requestBody);
           assert.strictEqual(parsedBody.public, false);
           done();
