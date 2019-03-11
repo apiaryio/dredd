@@ -16,12 +16,14 @@ describe('resolvePaths()', () => {
 
   describe('when given existing absolute filenames', () => {
     it('resolves them into absolute paths', () => {
-      const hookfiles = [
+      const paths = resolvePaths(cwd, [
         path.join(cwd, 'hooks.js'),
         path.join(cwd, 'non-js-hooks.rb'),
-      ];
-      const paths = resolvePaths(cwd, hookfiles);
-      assert.deepEqual(paths, hookfiles);
+      ]);
+      assert.deepEqual(paths, [
+        path.join(cwd, 'hooks.js'),
+        path.join(cwd, 'non-js-hooks.rb'),
+      ]);
     });
   });
 
