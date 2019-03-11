@@ -42,7 +42,7 @@ Now let's say the real instance of the API has the POST request protected so it 
 Writing hooks
 ~~~~~~~~~~~~~
 
-Hooks are functions, which are registered to be ran for a specific test step (HTTP transaction) and at a specific point in Dredd's :ref:`execution life cycle <execution-life-cycle>`. Hook functions take one or more `transaction objects <transaction>`__, which they can modify. Let's use hooks to add an `Authorization header <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization>`__ to Dredd's request.
+Hooks are functions, which are registered to be ran for a specific test step (HTTP transaction) and at a specific point in Dredd's :ref:`execution life cycle <execution-life-cycle>`. Hook functions take one or more :ref:`transaction objects <transaction>`, which they can modify. Let's use hooks to add an `Authorization header <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization>`__ to Dredd's request.
 
 Dredd supports :ref:`writing hooks in multiple programming languages <supported-languages>`, but we'll go with JavaScript hooks in this tutorial as they're available out of the box.
 
