@@ -4,6 +4,7 @@ const fsStub = require('fs');
 const proxyquire = require('proxyquire').noCallThru();
 const requestStub = require('request');
 const sinon = require('sinon');
+const path = require('path');
 const { assert } = require('chai');
 const parse = require('dredd-transactions/parse');
 const compile = require('dredd-transactions/compile');
@@ -64,7 +65,7 @@ describe('Dredd class', () => {
       dredd = new Dredd(configuration);
       sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
       dredd.run(() => {
-        assert.isOk(fsStub.readFile.calledWith(`${CWD}/test/fixtures/apiary.apib`));
+        assert.isOk(fsStub.readFile.calledWith(path.join(CWD, '/test/fixtures/apiary.apib')));
         dredd.runner.executeTransaction.restore();
         done();
       });
@@ -120,9 +121,9 @@ describe('Dredd class', () => {
         if (error) { return done(error); }
         assert.lengthOf(dredd.files, 3);
         assert.deepEqual(dredd.files, [
-          `${CWD}/test/fixtures/multifile/greeting.apib`,
-          `${CWD}/test/fixtures/multifile/message.apib`,
-          `${CWD}/test/fixtures/multifile/name.apib`,
+          path.join(CWD, '/test/fixtures/multifile/greeting.apib'),
+          path.join(CWD, '/test/fixtures/multifile/message.apib'),
+          path.join(CWD, '/test/fixtures/multifile/name.apib'),
         ]);
         done();
       }));
@@ -139,15 +140,15 @@ describe('Dredd class', () => {
         dredd.configuration.apiDescriptions.sort(compareLocation);
 
         assert.isObject(dredd.configuration.apiDescriptions[0]);
-        assert.propertyVal(dredd.configuration.apiDescriptions[0], 'location', `${CWD}/test/fixtures/multifile/greeting.apib`);
+        assert.propertyVal(dredd.configuration.apiDescriptions[0], 'location', path.join(CWD, '/test/fixtures/multifile/greeting.apib'));
         assert.property(dredd.configuration.apiDescriptions[0], 'content');
 
         assert.isObject(dredd.configuration.apiDescriptions[1]);
-        assert.propertyVal(dredd.configuration.apiDescriptions[1], 'location', `${CWD}/test/fixtures/multifile/message.apib`);
+        assert.propertyVal(dredd.configuration.apiDescriptions[1], 'location', path.join(CWD, '/test/fixtures/multifile/message.apib'));
         assert.property(dredd.configuration.apiDescriptions[1], 'content');
 
         assert.isObject(dredd.configuration.apiDescriptions[2]);
-        assert.propertyVal(dredd.configuration.apiDescriptions[2], 'location', `${CWD}/test/fixtures/multifile/name.apib`);
+        assert.propertyVal(dredd.configuration.apiDescriptions[2], 'location', path.join(CWD, '/test/fixtures/multifile/name.apib'));
         assert.property(dredd.configuration.apiDescriptions[2], 'content');
         done();
       }));
@@ -296,7 +297,7 @@ GET /url
           assert.property(localdredd.configuration.apiDescriptions[1], 'annotations');
 
           assert.isObject(localdredd.configuration.apiDescriptions[2]);
-          assert.propertyVal(localdredd.configuration.apiDescriptions[2], 'location', `${CWD}/test/fixtures/apiary.apib`);
+          assert.propertyVal(localdredd.configuration.apiDescriptions[2], 'location', path.join(CWD, '/test/fixtures/apiary.apib'));
           assert.property(localdredd.configuration.apiDescriptions[2], 'content');
           assert.property(localdredd.configuration.apiDescriptions[2], 'annotations');
           done();
@@ -339,9 +340,9 @@ GET /url
           assert.deepEqual(dredd.files, [
             'http://some.path.to/file.apib',
             'https://another.path.to/apiary.apib',
-            `${CWD}/test/fixtures/multifile/greeting.apib`,
-            `${CWD}/test/fixtures/multifile/message.apib`,
-            `${CWD}/test/fixtures/multifile/name.apib`,
+            path.join(CWD, '/test/fixtures/multifile/greeting.apib'),
+            path.join(CWD, '/test/fixtures/multifile/message.apib'),
+            path.join(CWD, '/test/fixtures/multifile/name.apib'),
           ]);
           done();
         }));
@@ -354,22 +355,21 @@ GET /url
 
         it('should load file contents on paths to config and parse these files', done => dredd.run((error) => {
           if (error) { return done(error); }
-
           assert.lengthOf(dredd.configuration.apiDescriptions, 5);
           dredd.configuration.apiDescriptions.sort(compareLocation);
 
           assert.isObject(dredd.configuration.apiDescriptions[0]);
-          assert.propertyVal(dredd.configuration.apiDescriptions[0], 'location', `${CWD}/test/fixtures/multifile/greeting.apib`);
+          assert.propertyVal(dredd.configuration.apiDescriptions[0], 'location', path.join(CWD, '/test/fixtures/multifile/greeting.apib'));
           assert.property(dredd.configuration.apiDescriptions[0], 'content');
           assert.property(dredd.configuration.apiDescriptions[0], 'annotations');
 
           assert.isObject(dredd.configuration.apiDescriptions[1]);
-          assert.propertyVal(dredd.configuration.apiDescriptions[1], 'location', `${CWD}/test/fixtures/multifile/message.apib`);
+          assert.propertyVal(dredd.configuration.apiDescriptions[1], 'location', path.join(CWD, '/test/fixtures/multifile/message.apib'));
           assert.property(dredd.configuration.apiDescriptions[1], 'content');
           assert.property(dredd.configuration.apiDescriptions[1], 'annotations');
 
           assert.isObject(dredd.configuration.apiDescriptions[2]);
-          assert.propertyVal(dredd.configuration.apiDescriptions[2], 'location', `${CWD}/test/fixtures/multifile/name.apib`);
+          assert.propertyVal(dredd.configuration.apiDescriptions[2], 'location', path.join(CWD, '/test/fixtures/multifile/name.apib'));
           assert.property(dredd.configuration.apiDescriptions[2], 'content');
           assert.property(dredd.configuration.apiDescriptions[2], 'annotations');
 

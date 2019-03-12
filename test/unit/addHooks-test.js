@@ -44,16 +44,16 @@ describe('addHooks()', () => {
   it('sets transactionRunner.configuation.options.hookfiles', (done) => {
     const transactionRunner = createTransactionRunner();
     transactionRunner.configuration.options.hookfiles = [
-      './multifile/*.apib',
-      './apiary.apib',
+      './hooks-glob/f*/*.js',
+      './hooks.js',
     ];
 
     addHooks(transactionRunner, [], (err) => {
       assert.deepEqual(transactionRunner.configuration.options.hookfiles, [
-        path.join(CWD, 'apiary.apib'),
-        path.join(CWD, 'multifile/greeting.apib'),
-        path.join(CWD, 'multifile/message.apib'),
-        path.join(CWD, 'multifile/name.apib'),
+        path.join(CWD, 'hooks-glob/foo/a.js'),
+        path.join(CWD, 'hooks.js'),
+        path.join(CWD, 'hooks-glob/foo/o.js'),
+        path.join(CWD, 'hooks-glob/foo/y.js'),
       ]);
       done(err);
     });
@@ -62,12 +62,12 @@ describe('addHooks()', () => {
   it('propagates errors when resolving hookfiles is not possible', (done) => {
     const transactionRunner = createTransactionRunner();
     transactionRunner.configuration.options.hookfiles = [
-      './__non-existing-directory__/non-existing-file.yml',
+      './__non-existing-directory__/non-existing-file.js',
     ];
 
     addHooks(transactionRunner, [], (err) => {
       assert.instanceOf(err, Error);
-      assert.match(err.message, /non-existing-file\.yml/);
+      assert.match(err.message, /non-existing-file\.js/);
       done();
     });
   });
