@@ -214,7 +214,7 @@ Modifying the Request Body Prior to Execution
            body["someKey"] = "new value"
 
            newBody, _ := json.Marshal(body)
-           t.Request.body = string(newBody)
+           t.Request.Body = string(newBody)
        })
        server.Serve()
        defer server.Listener.Close()
