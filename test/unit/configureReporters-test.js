@@ -46,7 +46,7 @@ function resetStubs() {
 }
 
 
-describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
+describe('configureReporters()', () => {
   const configuration = {
     emitter: emitterStub,
     options: {
@@ -64,7 +64,7 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
     beforeEach(() => resetStubs());
 
     it('should only add a CLIReporter', (done) => {
-      configureReporters(configuration, {}, {}, null);
+      configureReporters(configuration, {}, null);
       assert.isOk(CliReporterStub.called);
       return done();
     });
@@ -77,7 +77,7 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
       beforeEach(() => resetStubs());
 
       it('should still add reporters', (done) => {
-        configureReporters(configuration, {}, {}, null);
+        configureReporters(configuration, {}, null);
         assert.ok(CliReporterStub.called);
         return done();
       });
@@ -92,13 +92,13 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
     beforeEach(() => resetStubs());
 
     it('should add a cli-based reporter', (done) => {
-      configureReporters(configuration, {}, {}, null);
+      configureReporters(configuration, {}, null);
       assert.isOk(DotReporterStub.called);
       return done();
     });
 
     it('should not add more than one cli-based reporters', (done) => {
-      configureReporters(configuration, {}, {}, null);
+      configureReporters(configuration, {}, null);
       assert.notOk(CliReporterStub.called);
       return done();
     });
@@ -113,7 +113,7 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
     beforeEach(() => resetStubs());
 
     it('should add a CLIReporter', (done) => {
-      configureReporters(configuration, {}, {}, () => {});
+      configureReporters(configuration, {}, () => {});
       assert.isOk(CliReporterStub.called);
       return done();
     });
@@ -126,9 +126,9 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
       beforeEach(() => resetStubs());
 
       it('should use the output paths in the order provided', (done) => {
-        configureReporters(configuration, {}, {}, () => {});
-        assert.isOk(XUnitReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file1'));
-        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file2'));
+        configureReporters(configuration, {}, () => {});
+        assert.isOk(XUnitReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, 'file1'));
+        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, 'file2'));
         return done();
       });
     });
@@ -141,9 +141,9 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
       beforeEach(() => resetStubs());
 
       it('should use the default output paths for the additional reporters', (done) => {
-        configureReporters(configuration, {}, {}, () => {});
-        assert.isOk(XUnitReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file1'));
-        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, undefined));
+        configureReporters(configuration, {}, () => {});
+        assert.isOk(XUnitReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, 'file1'));
+        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, undefined));
         return done();
       });
     });
@@ -157,13 +157,13 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
     beforeEach(() => resetStubs());
 
     it('should add a cli-based reporter', (done) => {
-      configureReporters(configuration, {}, {}, () => {});
+      configureReporters(configuration, {}, () => {});
       assert.isOk(NyanCatReporterStub.called);
       return done();
     });
 
     it('should not add more than one cli-based reporters', (done) => {
-      configureReporters(configuration, {}, {}, () => {});
+      configureReporters(configuration, {}, () => {});
       assert.notOk(CliReporterStub.called);
       assert.notOk(DotReporterStub.called);
       return done();
@@ -177,9 +177,9 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
       beforeEach(() => resetStubs());
 
       it('should use the output paths in the order provided', (done) => {
-        configureReporters(configuration, {}, {}, () => {});
-        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file1'));
-        assert.isOk(HtmlReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file2'));
+        configureReporters(configuration, {}, () => {});
+        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, 'file1'));
+        assert.isOk(HtmlReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, 'file2'));
         return done();
       });
     });
@@ -192,9 +192,9 @@ describe('configureReporters(config, stats, tests, onSaveCallback)', () => {
       beforeEach(() => resetStubs());
 
       it('should use the default output paths for the additional reporters', (done) => {
-        configureReporters(configuration, {}, {}, () => {});
-        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, 'file1'));
-        assert.isOk(HtmlReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, {}, undefined));
+        configureReporters(configuration, {}, () => {});
+        assert.isOk(MarkdownReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, 'file1'));
+        assert.isOk(HtmlReporterStub.calledWith(emitterStub, { fileBasedReporters: 2 }, undefined));
         return done();
       });
     });

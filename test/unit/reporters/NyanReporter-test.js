@@ -13,7 +13,6 @@ const NyanCatReporter = proxyquire('../../../lib/reporters/NyanReporter', {
 describe('NyanCatReporter', () => {
   let emitter;
   let stats;
-  let tests;
   let nyanReporter;
 
   before(() => {
@@ -36,8 +35,7 @@ describe('NyanCatReporter', () => {
       end: 0,
       duration: 0,
     };
-    tests = [];
-    nyanReporter = new NyanCatReporter(emitter, stats, tests);
+    nyanReporter = new NyanCatReporter(emitter, stats);
   });
 
   describe('when starting', () => {

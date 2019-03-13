@@ -14,7 +14,6 @@ const DotReporter = proxyquire('../../../lib/reporters/DotReporter', {
 describe('DotReporter', () => {
   let stats = {};
   let test = [];
-  let tests;
   let emitter;
   let dotReporter;
 
@@ -33,9 +32,8 @@ describe('DotReporter', () => {
       end: 0,
       duration: 0,
     };
-    tests = [];
     emitter = new EventEmitter();
-    dotReporter = new DotReporter(emitter, stats, tests);
+    dotReporter = new DotReporter(emitter, stats);
   });
 
   describe('when starting', () => {
