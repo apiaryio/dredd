@@ -30,7 +30,7 @@ function compareLocation(ad1, ad2) {
 }
 
 
-describe('Dredd class', () => {
+describe.skip('Dredd class', () => {
   const workingDirectory = process.cwd();
   let configuration = {};
   let dredd = {};
