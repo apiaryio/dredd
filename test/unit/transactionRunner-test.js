@@ -25,6 +25,7 @@ describe('TransactionRunner', () => {
   let configuration = {
     server: 'http://127.0.0.1:3000',
     emitter: new EventEmitter(),
+    custom: { cwd: process.cwd() },
     options: {
       'dry-run': false,
       method: [],
@@ -63,6 +64,7 @@ describe('TransactionRunner', () => {
         server: 'http://127.0.0.1:3000',
         emitter: new EventEmitter(),
         apiDescriptions: [{ location: 'filename.api', content: '...' }],
+        custom: { cwd: process.cwd() },
         options: {
           'dry-run': false,
           method: [],
@@ -86,6 +88,7 @@ describe('TransactionRunner', () => {
           { location: 'filename1.api', content: '...' },
           { location: 'filename2.api', content: '...' },
         ],
+        custom: { cwd: process.cwd() },
         options: {
           'dry-run': false,
           method: [],
@@ -1195,6 +1198,7 @@ describe('TransactionRunner', () => {
     configuration = {
       server: 'http://127.0.0.1:3000',
       emitter: new EventEmitter(),
+      custom: { cwd: process.cwd() },
       options: {
         'dry-run': false,
         method: [],

@@ -4,6 +4,7 @@ const fsStub = require('fs');
 const proxyquire = require('proxyquire').noCallThru();
 const requestStub = require('request');
 const sinon = require('sinon');
+const path = require('path');
 const { assert } = require('chai');
 const parse = require('dredd-transactions/parse');
 const compile = require('dredd-transactions/compile');
@@ -30,6 +31,7 @@ function compareLocation(ad1, ad2) {
 
 
 describe('Dredd class', () => {
+  const workingDirectory = process.cwd();
   let configuration = {};
   let dredd = {};
 
@@ -61,7 +63,7 @@ describe('Dredd class', () => {
       dredd = new Dredd(configuration);
       sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
       dredd.run(() => {
-        assert.isOk(fsStub.readFile.calledWith(configuration.options.path[0]));
+        assert.isOk(fsStub.readFile.calledWith(path.join(workingDirectory, '/test/fixtures/apiary.apib')));
         dredd.runner.executeTransaction.restore();
         done();
       });
@@ -115,18 +117,18 @@ describe('Dredd class', () => {
 
       it('should expand all glob patterns and resolved paths should be unique', done => dredd.run((error) => {
         if (error) { return done(error); }
-        assert.lengthOf(dredd.configuration.files, 3);
-        assert.deepEqual(dredd.configuration.files, [
-          './test/fixtures/multifile/greeting.apib',
-          './test/fixtures/multifile/message.apib',
-          './test/fixtures/multifile/name.apib',
+        assert.lengthOf(dredd.files, 3);
+        assert.deepEqual(dredd.files, [
+          path.join(workingDirectory, '/test/fixtures/multifile/greeting.apib'),
+          path.join(workingDirectory, '/test/fixtures/multifile/message.apib'),
+          path.join(workingDirectory, '/test/fixtures/multifile/name.apib'),
         ]);
         done();
       }));
 
       it('should remove globs from config', done => dredd.run((error) => {
         if (error) { return done(error); }
-        assert.notInclude(dredd.configuration.files, './test/fixtures/multifile/*.apib');
+        assert.notInclude(dredd.files, 'test/fixtures/multifile/*.apib');
         done();
       }));
 
@@ -136,15 +138,15 @@ describe('Dredd class', () => {
         dredd.configuration.apiDescriptions.sort(compareLocation);
 
         assert.isObject(dredd.configuration.apiDescriptions[0]);
-        assert.propertyVal(dredd.configuration.apiDescriptions[0], 'location', './test/fixtures/multifile/greeting.apib');
+        assert.propertyVal(dredd.configuration.apiDescriptions[0], 'location', path.join(workingDirectory, '/test/fixtures/multifile/greeting.apib'));
         assert.property(dredd.configuration.apiDescriptions[0], 'content');
 
         assert.isObject(dredd.configuration.apiDescriptions[1]);
-        assert.propertyVal(dredd.configuration.apiDescriptions[1], 'location', './test/fixtures/multifile/message.apib');
+        assert.propertyVal(dredd.configuration.apiDescriptions[1], 'location', path.join(workingDirectory, '/test/fixtures/multifile/message.apib'));
         assert.property(dredd.configuration.apiDescriptions[1], 'content');
 
         assert.isObject(dredd.configuration.apiDescriptions[2]);
-        assert.propertyVal(dredd.configuration.apiDescriptions[2], 'location', './test/fixtures/multifile/name.apib');
+        assert.propertyVal(dredd.configuration.apiDescriptions[2], 'location', path.join(workingDirectory, '/test/fixtures/multifile/name.apib'));
         assert.property(dredd.configuration.apiDescriptions[2], 'content');
         done();
       }));
@@ -245,7 +247,7 @@ GET /url
 
       it('should not expand any glob patterns', done => dredd.run((error) => {
         if (error) { return done(error); }
-        assert.lengthOf(dredd.configuration.files, 0);
+        assert.lengthOf(dredd.files, 0);
         done();
       }));
 
@@ -279,7 +281,7 @@ GET /url
 
         it('should fill configuration data with data and one file at that path', done => localdredd.run((error) => {
           if (error) { return done(error); }
-          assert.lengthOf(localdredd.configuration.files, 1);
+          assert.lengthOf(localdredd.files, 1);
           assert.lengthOf(localdredd.configuration.apiDescriptions, 3);
 
           assert.isObject(localdredd.configuration.apiDescriptions[0]);
@@ -293,7 +295,7 @@ GET /url
           assert.property(localdredd.configuration.apiDescriptions[1], 'annotations');
 
           assert.isObject(localdredd.configuration.apiDescriptions[2]);
-          assert.propertyVal(localdredd.configuration.apiDescriptions[2], 'location', './test/fixtures/apiary.apib');
+          assert.propertyVal(localdredd.configuration.apiDescriptions[2], 'location', path.join(workingDirectory, '/test/fixtures/apiary.apib'));
           assert.property(localdredd.configuration.apiDescriptions[2], 'content');
           assert.property(localdredd.configuration.apiDescriptions[2], 'annotations');
           done();
@@ -332,41 +334,40 @@ GET /url
 
         it('should expand glob pattern and resolved paths should be unique', done => dredd.run((error) => {
           if (error) { return done(error); }
-          assert.lengthOf(dredd.configuration.files, 5);
-          assert.deepEqual(dredd.configuration.files, [
+          assert.lengthOf(dredd.files, 5);
+          assert.deepEqual(dredd.files, [
             'http://some.path.to/file.apib',
             'https://another.path.to/apiary.apib',
-            './test/fixtures/multifile/greeting.apib',
-            './test/fixtures/multifile/message.apib',
-            './test/fixtures/multifile/name.apib',
+            path.join(workingDirectory, '/test/fixtures/multifile/greeting.apib'),
+            path.join(workingDirectory, '/test/fixtures/multifile/message.apib'),
+            path.join(workingDirectory, '/test/fixtures/multifile/name.apib'),
           ]);
           done();
         }));
 
         it('should remove globs from config', done => dredd.run((error) => {
           if (error) { return done(error); }
-          assert.notInclude(dredd.configuration.files, './test/fixtures/multifile/*.apib');
+          assert.notInclude(dredd.files, 'test/fixtures/multifile/*.apib');
           done();
         }));
 
         it('should load file contents on paths to config and parse these files', done => dredd.run((error) => {
           if (error) { return done(error); }
-
           assert.lengthOf(dredd.configuration.apiDescriptions, 5);
           dredd.configuration.apiDescriptions.sort(compareLocation);
 
           assert.isObject(dredd.configuration.apiDescriptions[0]);
-          assert.propertyVal(dredd.configuration.apiDescriptions[0], 'location', './test/fixtures/multifile/greeting.apib');
+          assert.propertyVal(dredd.configuration.apiDescriptions[0], 'location', path.join(workingDirectory, '/test/fixtures/multifile/greeting.apib'));
           assert.property(dredd.configuration.apiDescriptions[0], 'content');
           assert.property(dredd.configuration.apiDescriptions[0], 'annotations');
 
           assert.isObject(dredd.configuration.apiDescriptions[1]);
-          assert.propertyVal(dredd.configuration.apiDescriptions[1], 'location', './test/fixtures/multifile/message.apib');
+          assert.propertyVal(dredd.configuration.apiDescriptions[1], 'location', path.join(workingDirectory, '/test/fixtures/multifile/message.apib'));
           assert.property(dredd.configuration.apiDescriptions[1], 'content');
           assert.property(dredd.configuration.apiDescriptions[1], 'annotations');
 
           assert.isObject(dredd.configuration.apiDescriptions[2]);
-          assert.propertyVal(dredd.configuration.apiDescriptions[2], 'location', './test/fixtures/multifile/name.apib');
+          assert.propertyVal(dredd.configuration.apiDescriptions[2], 'location', path.join(workingDirectory, '/test/fixtures/multifile/name.apib'));
           assert.property(dredd.configuration.apiDescriptions[2], 'content');
           assert.property(dredd.configuration.apiDescriptions[2], 'annotations');
 

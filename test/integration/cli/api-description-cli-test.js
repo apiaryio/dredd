@@ -42,7 +42,7 @@ describe('CLI - API Description Document', () => {
       });
 
       it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
-      it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr, 'not found'));
+      it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr.toLowerCase(), 'could not find'));
     });
 
     describe('when given path exists, but can\'t be read', () => {
@@ -265,7 +265,7 @@ describe('CLI - API Description Document', () => {
 
       it('should not request server', () => assert.isFalse(runtimeInfo.server.requested));
       it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
-      it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr, 'not found'));
+      it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr.toLowerCase(), 'could not find'));
     });
   });
 });
