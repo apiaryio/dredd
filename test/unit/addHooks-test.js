@@ -5,12 +5,13 @@ const Hooks = require('../../lib/Hooks');
 const addHooks = require('../../lib/addHooks');
 
 
-const CWD = path.join(__dirname, '..', 'fixtures');
+const WORKING_DIRECTORY = path.join(__dirname, '..', 'fixtures');
+
 
 function createTransactionRunner() {
   return {
     configuration: {
-      custom: { cwd: CWD },
+      custom: { cwd: WORKING_DIRECTORY },
       options: {},
     },
   };
@@ -50,10 +51,10 @@ describe('addHooks()', () => {
 
     addHooks(transactionRunner, [], (err) => {
       assert.deepEqual(transactionRunner.configuration.options.hookfiles, [
-        path.join(CWD, 'hooks-glob/foo/a.js'),
-        path.join(CWD, 'hooks.js'),
-        path.join(CWD, 'hooks-glob/foo/o.js'),
-        path.join(CWD, 'hooks-glob/foo/y.js'),
+        path.join(WORKING_DIRECTORY, 'hooks-glob/foo/a.js'),
+        path.join(WORKING_DIRECTORY, 'hooks.js'),
+        path.join(WORKING_DIRECTORY, 'hooks-glob/foo/o.js'),
+        path.join(WORKING_DIRECTORY, 'hooks-glob/foo/y.js'),
       ]);
       done(err);
     });
