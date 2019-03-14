@@ -1,0 +1,1 @@
+global.__requiredModule = true;

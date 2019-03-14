@@ -30,6 +30,20 @@ describe('Dredd requiring language compilers', () => {
 
   after(done => apiary.close(done));
 
+  it('should work with local modules', (done) => {
+    const dredd = new Dredd({
+      options: {
+        path: [API_DESCRIPTION],
+        require: './test/fixtures/requiredModule',
+      },
+    });
+
+    runDredd(dredd, APIARY_PORT, (err) => {
+      assert.isTrue(global.__requiredModule);
+      done(err);
+    });
+  });
+
   it('should work with CoffeScript', (done) => {
     const dredd = new Dredd({
       options: {
@@ -39,9 +53,9 @@ describe('Dredd requiring language compilers', () => {
       },
     });
 
-    runDredd(dredd, APIARY_PORT, (error, info) => {
+    runDredd(dredd, APIARY_PORT, (err, info) => {
       assert.include(info.logging, 'using hooks.log to debug');
-      done();
+      done(err);
     });
   });
 
@@ -54,11 +68,11 @@ describe('Dredd requiring language compilers', () => {
       },
     });
 
-    runDredd(dredd, APIARY_PORT, (error, info) => {
+    runDredd(dredd, APIARY_PORT, (err, info) => {
       assert.equal(info.err.code, 'MODULE_NOT_FOUND');
       assert.equal(info.err.message, 'Cannot find module \'no-such-module\'');
       assert.equal(info.logging, 'error: Error requiring module \'no-such-module\': Cannot find module \'no-such-module\'\n');
-      done();
+      done(err);
     });
   });
 });
