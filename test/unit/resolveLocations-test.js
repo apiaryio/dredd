@@ -14,43 +14,83 @@ describe('resolveLocations()', () => {
     });
   });
 
-  describe('when given filenames', () => {
-    it('resolves them into absolute locations', () => {
+  describe('when given paths', () => {
+    it('resolves them into absolute paths', () => {
       const locations = resolveLocations(workingDirectory, [
         './multifile/*.apib',
         './apiary.apib',
       ]);
       assert.deepEqual(locations, [
-        path.join(workingDirectory, 'apiary.apib'),
-        path.join(workingDirectory, '/multifile/greeting.apib'),
-        path.join(workingDirectory, '/multifile/message.apib'),
-        path.join(workingDirectory, '/multifile/name.apib'),
+        {
+          location: path.join(workingDirectory, '/multifile/greeting.apib'),
+          isURL: false,
+          index: 0,
+        },
+        {
+          location: path.join(workingDirectory, '/multifile/message.apib'),
+          isURL: false,
+          index: 1,
+        },
+        {
+          location: path.join(workingDirectory, '/multifile/name.apib'),
+          isURL: false,
+          index: 2,
+        },
+        {
+          location: path.join(workingDirectory, 'apiary.apib'),
+          isURL: false,
+          index: 3,
+        },
       ]);
     });
   });
 
+  describe('when given non-existing paths', () => {
+    it('throws an error', () => {
+      assert.throws(() => {
+        resolveLocations(workingDirectory, ['./foo/bar/moo/boo/*.apib']);
+      }, './foo/bar/moo/boo/*.apib');
+    });
+  });
+
   describe('when given HTTP URLs', () => {
-    it('keeps them as they are', () => {
+    it('recognizes they are URLs', () => {
       const locations = resolveLocations(workingDirectory, [
         'http://example.com/foo.yaml',
         './apiary.apib',
       ]);
       assert.deepEqual(locations, [
-        'http://example.com/foo.yaml',
-        path.join(workingDirectory, 'apiary.apib'),
+        {
+          location: 'http://example.com/foo.yaml',
+          isURL: true,
+          index: 0,
+        },
+        {
+          location: path.join(workingDirectory, 'apiary.apib'),
+          isURL: false,
+          index: 1,
+        },
       ]);
     });
   });
 
   describe('when given HTTPS URLs', () => {
-    it('keeps them as they are', () => {
+    it('recognizes they are URLs', () => {
       const locations = resolveLocations(workingDirectory, [
         'https://example.com/foo.yaml',
         './apiary.apib',
       ]);
       assert.deepEqual(locations, [
-        'https://example.com/foo.yaml',
-        path.join(workingDirectory, 'apiary.apib'),
+        {
+          location: 'https://example.com/foo.yaml',
+          isURL: true,
+          index: 0,
+        },
+        {
+          location: path.join(workingDirectory, 'apiary.apib'),
+          isURL: false,
+          index: 1,
+        },
       ]);
     });
   });
@@ -58,14 +98,65 @@ describe('resolveLocations()', () => {
   describe('when given duplicate locations', () => {
     it('returns only the distinct ones', () => {
       const locations = resolveLocations(workingDirectory, [
-        'http://example.com/foo.yaml',
         './apiary.apib',
+        'http://example.com/foo.yaml',
         'http://example.com/foo.yaml',
         './apiar*.apib',
       ]);
       assert.deepEqual(locations, [
-        'http://example.com/foo.yaml',
-        path.join(workingDirectory, 'apiary.apib'),
+        {
+          location: path.join(workingDirectory, 'apiary.apib'),
+          isURL: false,
+          index: 0,
+        },
+        {
+          location: 'http://example.com/foo.yaml',
+          isURL: true,
+          index: 1,
+        },
+      ]);
+    });
+  });
+
+  describe('when given various locations', () => {
+    it('keeps and records their original order', () => {
+      const locations = resolveLocations(workingDirectory, [
+        './apiar*.apib',
+        'https://example.com/foo.yaml',
+        './multifile/*.apib',
+        'http://example.com/bar.yaml',
+      ]);
+      assert.deepEqual(locations, [
+        {
+          location: path.join(workingDirectory, 'apiary.apib'),
+          isURL: false,
+          index: 0,
+        },
+        {
+          location: 'https://example.com/foo.yaml',
+          isURL: true,
+          index: 1,
+        },
+        {
+          location: path.join(workingDirectory, '/multifile/greeting.apib'),
+          isURL: false,
+          index: 2,
+        },
+        {
+          location: path.join(workingDirectory, '/multifile/message.apib'),
+          isURL: false,
+          index: 3,
+        },
+        {
+          location: path.join(workingDirectory, '/multifile/name.apib'),
+          isURL: false,
+          index: 4,
+        },
+        {
+          location: 'http://example.com/bar.yaml',
+          isURL: true,
+          index: 5,
+        },
       ]);
     });
   });
