@@ -1,5 +1,3 @@
-const bodyParser = require('body-parser');
-const express = require('express');
 const fsStub = require('fs');
 const proxyquire = require('proxyquire').noCallThru();
 const requestStub = require('request');
@@ -61,41 +59,41 @@ describe('Dredd class', () => {
 
     it('should load the file on given path', (done) => {
       dredd = new Dredd(configuration);
-      sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
+      sinon.stub(dredd.transactionRunner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
       dredd.run(() => {
         assert.isOk(fsStub.readFile.calledWith(path.join(workingDirectory, '/test/fixtures/apiary.apib')));
-        dredd.runner.executeTransaction.restore();
+        dredd.transactionRunner.executeTransaction.restore();
         done();
       });
     });
 
     it('should not pass any error to the callback function', (done) => {
       dredd = new Dredd(configuration);
-      sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
+      sinon.stub(dredd.transactionRunner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
       dredd.run((error) => {
-        assert.isNull(error);
-        dredd.runner.executeTransaction.restore();
+        assert.isNotOk(error);
+        dredd.transactionRunner.executeTransaction.restore();
         done();
       });
     });
 
-    it('should pass the reporter as second argument', (done) => {
+    it('should pass the stats as second argument', (done) => {
       dredd = new Dredd(configuration);
-      sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
-      dredd.run((error, reporter) => {
-        assert.isDefined(reporter);
-        dredd.runner.executeTransaction.restore();
+      sinon.stub(dredd.transactionRunner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
+      dredd.run((error, stats) => {
+        assert.isDefined(stats);
+        dredd.transactionRunner.executeTransaction.restore();
         done();
       });
     });
 
     it('should convert ast to runtime', (done) => {
       dredd = new Dredd(configuration);
-      sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
+      sinon.stub(dredd.transactionRunner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
       dredd.run(() => {
         assert.isOk(parseStub.called);
         assert.isOk(compileStub.called);
-        dredd.runner.executeTransaction.restore();
+        dredd.transactionRunner.executeTransaction.restore();
         done();
       });
     });
@@ -110,10 +108,10 @@ describe('Dredd class', () => {
         };
         dredd = new Dredd(configuration);
         sinon
-          .stub(dredd.runner, 'executeTransaction')
+          .stub(dredd.transactionRunner, 'executeTransaction')
           .callsFake((transaction, hooks, callback) => callback());
       });
-      afterEach(() => dredd.runner.executeTransaction.restore());
+      afterEach(() => dredd.transactionRunner.executeTransaction.restore());
 
       it('should expand all glob patterns and resolved paths should be unique', done => dredd.run((error) => {
         if (error) { return done(error); }
@@ -176,9 +174,9 @@ describe('Dredd class', () => {
         dredd = new Dredd(configuration);
       });
 
-      beforeEach(() => sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback()));
+      beforeEach(() => sinon.stub(dredd.transactionRunner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback()));
 
-      afterEach(() => dredd.runner.executeTransaction.restore());
+      afterEach(() => dredd.transactionRunner.executeTransaction.restore());
 
       it('should return error', done => dredd.run((error) => {
         assert.isOk(error);
@@ -199,9 +197,9 @@ describe('Dredd class', () => {
         dredd = new Dredd(configuration);
       });
 
-      beforeEach(() => sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback()));
+      beforeEach(() => sinon.stub(dredd.transactionRunner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback()));
 
-      afterEach(() => dredd.runner.executeTransaction.restore());
+      afterEach(() => dredd.transactionRunner.executeTransaction.restore());
 
       it('should return error', done => dredd.run((error) => {
         assert.isOk(error);
@@ -240,10 +238,10 @@ GET /url
           },
         };
         dredd = new Dredd(configuration);
-        sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
+        sinon.stub(dredd.transactionRunner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
       });
 
-      afterEach(() => dredd.runner.executeTransaction.restore());
+      afterEach(() => dredd.transactionRunner.executeTransaction.restore());
 
       it('should not expand any glob patterns', done => dredd.run((error) => {
         if (error) { return done(error); }
@@ -274,10 +272,10 @@ GET /url
           if (!configuration.options) { configuration.options = {}; }
           configuration.options.path = ['./test/fixtures/apiary.apib'];
           localdredd = new Dredd(configuration);
-          sinon.stub(localdredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
+          sinon.stub(localdredd.transactionRunner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
         });
 
-        afterEach(() => localdredd.runner.executeTransaction.restore());
+        afterEach(() => localdredd.transactionRunner.executeTransaction.restore());
 
         it('should fill configuration data with data and one file at that path', done => localdredd.run((error) => {
           if (error) { return done(error); }
@@ -319,11 +317,11 @@ GET /url
           done(err);
         });
         sinon
-          .stub(dredd.runner, 'executeTransaction')
+          .stub(dredd.transactionRunner, 'executeTransaction')
           .callsFake((transaction, hooks, callback) => callback());
       });
 
-      afterEach(() => dredd.runner.executeTransaction.restore());
+      afterEach(() => dredd.transactionRunner.executeTransaction.restore());
 
       describe('when all URLs can be downloaded', () => {
         before(() =>
@@ -404,7 +402,7 @@ GET /url
         }));
 
         it('should not execute any transaction', done => dredd.run(() => {
-          assert.notOk(dredd.runner.executeTransaction.called);
+          assert.notOk(dredd.transactionRunner.executeTransaction.called);
           done();
         }));
       });
@@ -429,7 +427,7 @@ GET /url
         }));
 
         it('should not execute any transaction', done => dredd.run(() => {
-          assert.notOk(dredd.runner.executeTransaction.called);
+          assert.notOk(dredd.transactionRunner.executeTransaction.called);
           done();
         }));
       });
@@ -447,9 +445,9 @@ GET /url
       dredd = new Dredd(configuration);
     });
 
-    beforeEach(() => sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback()));
+    beforeEach(() => sinon.stub(dredd.transactionRunner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback()));
 
-    afterEach(() => dredd.runner.executeTransaction.restore());
+    afterEach(() => dredd.transactionRunner.executeTransaction.restore());
 
     it('should exit with an error', done => dredd.run((error) => {
       assert.isOk(error);
@@ -457,7 +455,7 @@ GET /url
     }));
 
     it('should NOT execute any transaction', done => dredd.run(() => {
-      assert.notOk(dredd.runner.executeTransaction.called);
+      assert.notOk(dredd.transactionRunner.executeTransaction.called);
       done();
     }));
   });
@@ -474,17 +472,17 @@ GET /url
     });
 
     beforeEach(() => {
-      sinon.stub(dredd.runner, 'run').callsFake((transaction, callback) => callback());
+      sinon.stub(dredd.transactionRunner, 'run').callsFake((transaction, callback) => callback());
       sinon.spy(loggerStub, 'warn');
     });
 
     afterEach(() => {
-      dredd.runner.run.restore();
+      dredd.transactionRunner.run.restore();
       loggerStub.warn.restore();
     });
 
     it('should execute the runtime', done => dredd.run(() => {
-      assert.isOk(dredd.runner.run.called);
+      assert.isOk(dredd.transactionRunner.run.called);
       done();
     }));
 
@@ -503,10 +501,10 @@ GET /url
         },
       };
       dredd = new Dredd(configuration);
-      sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
+      sinon.stub(dredd.transactionRunner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
     });
 
-    afterEach(() => dredd.runner.executeTransaction.resetHistory());
+    afterEach(() => dredd.transactionRunner.executeTransaction.resetHistory());
 
     it('should pass the error to the callback function', done => dredd.run((error) => {
       assert.isOk(error);
@@ -514,7 +512,7 @@ GET /url
     }));
 
     it('should NOT execute any transaction', done => dredd.run(() => {
-      assert.notOk(dredd.runner.executeTransaction.called);
+      assert.notOk(dredd.transactionRunner.executeTransaction.called);
       done();
     }));
   });
@@ -529,13 +527,13 @@ GET /url
       };
 
       dredd = new Dredd(configuration);
-      sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
+      sinon.stub(dredd.transactionRunner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
     });
 
-    afterEach(() => dredd.runner.executeTransaction.resetHistory());
+    afterEach(() => dredd.transactionRunner.executeTransaction.resetHistory());
 
     it('should NOT execute any transaction', done => dredd.run(() => {
-      assert.notOk(dredd.runner.executeTransaction.called);
+      assert.notOk(dredd.transactionRunner.executeTransaction.called);
       done();
     }));
 
@@ -555,16 +553,16 @@ GET /url
       };
       sinon.spy(loggerStub, 'warn');
       dredd = new Dredd(configuration);
-      sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
+      sinon.stub(dredd.transactionRunner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
     });
 
     afterEach(() => {
-      dredd.runner.executeTransaction.resetHistory();
+      dredd.transactionRunner.executeTransaction.resetHistory();
       loggerStub.warn.restore();
     });
 
     it('should execute some transaction', done => dredd.run(() => {
-      assert.isOk(dredd.runner.executeTransaction.called);
+      assert.isOk(dredd.transactionRunner.executeTransaction.called);
       done();
     }));
 
@@ -588,112 +586,14 @@ GET /url
         },
       };
       dredd = new Dredd(configuration);
-      sinon.stub(dredd.runner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
+      sinon.stub(dredd.transactionRunner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
     });
 
-    afterEach(() => dredd.runner.executeTransaction.resetHistory());
+    afterEach(() => dredd.transactionRunner.executeTransaction.resetHistory());
 
     it('should execute the runtime', done => dredd.run(() => {
-      assert.isOk(dredd.runner.executeTransaction.called);
+      assert.isOk(dredd.transactionRunner.executeTransaction.called);
       done();
     }));
-  });
-
-  describe('#emitStart', () => {
-    describe('no error in reporter occurs', () => {
-      const PORT = 9876;
-      dredd = null;
-      let apiaryServer;
-
-      beforeEach((done) => {
-        configuration = {
-          server: 'http://127.0.0.1:3000/',
-          options: {
-
-            reporter: ['apiary'],
-            path: ['./test/fixtures/apiary.apib'],
-            custom: {
-              apiaryApiUrl: `http://127.0.0.1:${PORT + 1}`,
-              apiaryApiKey: 'the-key',
-              apiaryApiName: 'the-api-name',
-              dreddRestDebug: '1',
-            },
-          },
-        };
-
-        dredd = new Dredd(configuration);
-        sinon.stub(dredd.runner, 'run').callsArg(1);
-
-        const apiary = express();
-        apiary.use(bodyParser.json({ size: '5mb' }));
-
-        apiary.post('/apis/*', (req, res) => res.status(201).json({
-          _id: '1234_id',
-          testRunId: '6789_testRunId',
-          reportUrl: 'http://url.me/test/run/1234_id',
-        }));
-
-        apiary.all('*', (req, res) => res.json({}));
-
-        apiaryServer = apiary.listen((PORT + 1), () => dredd.run(done));
-      });
-
-      afterEach(done => apiaryServer.close(() => done()));
-
-
-      it('should call the callback', (done) => {
-        const callback = sinon.spy((error) => {
-          if (error) { return done(error); }
-          assert.isOk(callback.called);
-          done();
-        });
-
-        dredd.emitStart(callback);
-      });
-    });
-
-    describe('an error in the apiary reporter occurs', () => {
-      const PORT = 9876;
-      dredd = null;
-      let errorLogger;
-
-      beforeEach((done) => {
-        errorLogger = sinon.spy(loggerStub, 'error');
-        configuration = {
-          server: 'http://127.0.0.1:3000/',
-          options: {
-
-            reporter: ['apiary'],
-            path: ['./test/fixtures/apiary.apib'],
-            custom: {
-              apiaryApiUrl: `http://127.0.0.1:${PORT + 1}`,
-              apiaryApiKey: 'the-key',
-              apiaryApiName: 'the-api-name',
-              dreddRestDebug: '1',
-            },
-          },
-        };
-
-        dredd = new Dredd(configuration);
-        sinon.stub(dredd.runner, 'run').callsArg(1);
-        dredd.run(done);
-      });
-
-      afterEach(() => loggerStub.error.restore());
-
-      it('should call the callback without the error', (done) => {
-        const callback = sinon.spy((error) => {
-          assert.isNull(error);
-          assert.isOk(callback.called);
-          done();
-        });
-        dredd.emitStart(callback);
-      });
-
-      it('should print the error', done => dredd.emitStart(() => {
-        assert.isTrue(errorLogger.called);
-        done();
-      }));
-    });
   });
 });
