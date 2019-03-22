@@ -338,7 +338,7 @@ describe('Apiary reporter', () => {
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
       it('should print error message to the output', () => {
-        assert.include(output, 'Error when loading file from URL');
+        assert.include(output, 'Unable to load API description document from');
         assert.include(output, 'connection-error.apib');
       });
     });
@@ -355,8 +355,8 @@ describe('Apiary reporter', () => {
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
       it('should print error message to the output', () => {
-        assert.include(output, 'Server did not send any blueprint back');
-        assert.include(output, 'responded with status code 404');
+        assert.include(output, 'Unable to load API description document from');
+        assert.include(output, 'Dredd got HTTP 404 response without body');
         assert.include(output, 'not-found.apib');
       });
     });
