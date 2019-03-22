@@ -61,7 +61,7 @@ describe('CLI - API Description Document', () => {
       });
 
       it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
-      it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr, 'Error when reading file'));
+      it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr, 'Unable to load API description document'));
     });
   });
 
@@ -111,8 +111,7 @@ describe('CLI - API Description Document', () => {
       it('should not request server', () => assert.isFalse(runtimeInfo.server.requested));
       it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
       it('should print error message to stderr', () => {
-        assert.include(runtimeInfo.dredd.stderr, 'Error when loading file from URL');
-        assert.include(runtimeInfo.dredd.stderr, 'Is the provided URL correct?');
+        assert.include(runtimeInfo.dredd.stderr, 'Unable to load API description document from');
         assert.include(runtimeInfo.dredd.stderr, `http://127.0.0.1:${NON_EXISTENT_PORT}/single-get.apib`);
       });
     });
@@ -137,8 +136,8 @@ describe('CLI - API Description Document', () => {
       it('should request server', () => assert.isTrue(runtimeInfo.server.requested));
       it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
       it('should print error message to stderr', () => {
-        assert.include(runtimeInfo.dredd.stderr, 'Unable to load file from URL');
-        assert.include(runtimeInfo.dredd.stderr, 'responded with status code 404');
+        assert.include(runtimeInfo.dredd.stderr, 'Unable to load API description document from');
+        assert.include(runtimeInfo.dredd.stderr, "Dredd got HTTP 404 response with 'text/plain; charset=utf-8' body");
         assert.include(runtimeInfo.dredd.stderr, `http://127.0.0.1:${DEFAULT_SERVER_PORT}/__non-existent__.apib`);
       });
     });
