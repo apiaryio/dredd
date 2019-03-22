@@ -5,17 +5,19 @@ const Dredd = require('../../lib/Dredd');
 
 
 function compileTransactions(apiDescription, logger, callback) {
-  const dredd = new Dredd({});
+  const dredd = new Dredd({
+    apiDescriptions: [{
+      location: 'filename.api',
+      content: apiDescription,
+    }],
+  });
   dredd.logger = logger;
-  dredd.configuration.apiDescriptions = [{
-    location: 'filename.api',
-    content: apiDescription,
-  }];
-  dredd.compileTransactions(callback);
+  dredd.transactionRunner.run = (transactions, cb) => { cb(); };
+  dredd.run(callback);
 }
 
 
-describe.skip('Parser and compiler annotations', () => {
+describe('Parser and compiler annotations', () => {
   describe('when processing a file with parser warnings', () => {
     const logger = { debug: sinon.spy(), warn: sinon.spy() };
     let error;
