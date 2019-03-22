@@ -21,26 +21,10 @@ describe('resolveLocations()', () => {
         './apiary.apib',
       ]);
       assert.deepEqual(locations, [
-        {
-          location: path.join(workingDirectory, '/multifile/greeting.apib'),
-          isURL: false,
-          index: 0,
-        },
-        {
-          location: path.join(workingDirectory, '/multifile/message.apib'),
-          isURL: false,
-          index: 1,
-        },
-        {
-          location: path.join(workingDirectory, '/multifile/name.apib'),
-          isURL: false,
-          index: 2,
-        },
-        {
-          location: path.join(workingDirectory, 'apiary.apib'),
-          isURL: false,
-          index: 3,
-        },
+        path.join(workingDirectory, '/multifile/greeting.apib'),
+        path.join(workingDirectory, '/multifile/message.apib'),
+        path.join(workingDirectory, '/multifile/name.apib'),
+        path.join(workingDirectory, 'apiary.apib'),
       ]);
     });
   });
@@ -60,16 +44,8 @@ describe('resolveLocations()', () => {
         './apiary.apib',
       ]);
       assert.deepEqual(locations, [
-        {
-          location: 'http://example.com/foo.yaml',
-          isURL: true,
-          index: 0,
-        },
-        {
-          location: path.join(workingDirectory, 'apiary.apib'),
-          isURL: false,
-          index: 1,
-        },
+        'http://example.com/foo.yaml',
+        path.join(workingDirectory, 'apiary.apib'),
       ]);
     });
   });
@@ -81,16 +57,8 @@ describe('resolveLocations()', () => {
         './apiary.apib',
       ]);
       assert.deepEqual(locations, [
-        {
-          location: 'https://example.com/foo.yaml',
-          isURL: true,
-          index: 0,
-        },
-        {
-          location: path.join(workingDirectory, 'apiary.apib'),
-          isURL: false,
-          index: 1,
-        },
+        'https://example.com/foo.yaml',
+        path.join(workingDirectory, 'apiary.apib'),
       ]);
     });
   });
@@ -104,22 +72,14 @@ describe('resolveLocations()', () => {
         './apiar*.apib',
       ]);
       assert.deepEqual(locations, [
-        {
-          location: path.join(workingDirectory, 'apiary.apib'),
-          isURL: false,
-          index: 0,
-        },
-        {
-          location: 'http://example.com/foo.yaml',
-          isURL: true,
-          index: 1,
-        },
+        path.join(workingDirectory, 'apiary.apib'),
+        'http://example.com/foo.yaml',
       ]);
     });
   });
 
   describe('when given various locations', () => {
-    it('keeps and records their original order', () => {
+    it('keeps their original order', () => {
       const locations = resolveLocations(workingDirectory, [
         './apiar*.apib',
         'https://example.com/foo.yaml',
@@ -127,36 +87,12 @@ describe('resolveLocations()', () => {
         'http://example.com/bar.yaml',
       ]);
       assert.deepEqual(locations, [
-        {
-          location: path.join(workingDirectory, 'apiary.apib'),
-          isURL: false,
-          index: 0,
-        },
-        {
-          location: 'https://example.com/foo.yaml',
-          isURL: true,
-          index: 1,
-        },
-        {
-          location: path.join(workingDirectory, '/multifile/greeting.apib'),
-          isURL: false,
-          index: 2,
-        },
-        {
-          location: path.join(workingDirectory, '/multifile/message.apib'),
-          isURL: false,
-          index: 3,
-        },
-        {
-          location: path.join(workingDirectory, '/multifile/name.apib'),
-          isURL: false,
-          index: 4,
-        },
-        {
-          location: 'http://example.com/bar.yaml',
-          isURL: true,
-          index: 5,
-        },
+        path.join(workingDirectory, 'apiary.apib'),
+        'https://example.com/foo.yaml',
+        path.join(workingDirectory, '/multifile/greeting.apib'),
+        path.join(workingDirectory, '/multifile/message.apib'),
+        path.join(workingDirectory, '/multifile/name.apib'),
+        'http://example.com/bar.yaml',
       ]);
     });
   });
