@@ -237,7 +237,7 @@ describe('TransactionRunner', () => {
           runner.configuration.endpoint = input.serverUrl;
           transaction.request.uri = input.requestPath;
           transaction.origin.filename = filename;
-          transaction.apiDescriptionMediaType = 'text/vnd.apiblueprint';
+          transaction.apiDescription = { mediaType: 'text/vnd.apiblueprint' };
           configuredTransaction = runner.configureTransaction(transaction);
         });
 
@@ -258,7 +258,7 @@ describe('TransactionRunner', () => {
         beforeEach(() => {
           transaction.response.status = status;
           transaction.origin.filename = filename;
-          transaction.apiDescriptionMediaType = 'application/swagger+json';
+          transaction.apiDescription = { mediaType: 'application/swagger+json' };
           configuredTransaction = runner.configureTransaction(transaction);
         });
 
@@ -274,7 +274,7 @@ describe('TransactionRunner', () => {
         beforeEach(() => {
           transaction.response.status = status;
           transaction.origin.filename = filename;
-          transaction.apiDescriptionMediaType = 'application/swagger+json';
+          transaction.apiDescription = { mediaType: 'application/swagger+json' };
           configuredTransaction = runner.configureTransaction(transaction);
         });
 
@@ -289,7 +289,7 @@ describe('TransactionRunner', () => {
       beforeEach(() => {
         transaction.response.status = 400;
         transaction.origin.filename = filename;
-        transaction.apiDescriptionMediaType = 'text/plain';
+        transaction.apiDescription = { mediaType: 'text/plain' };
         configuredTransaction = runner.configureTransaction(transaction);
       });
 
