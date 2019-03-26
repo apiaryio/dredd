@@ -1,78 +1,85 @@
 const { assert } = require('chai');
+
 const Dredd = require('../../lib/Dredd');
+const { runDredd } = require('./helpers');
 
-const {
-  createServer, DEFAULT_SERVER_PORT, runDredd,
-} = require('./helpers');
 
-const APIARY_PORT = DEFAULT_SERVER_PORT + 1;
+describe('Requiring user-provided modules (e.g. language compilers)', () => {
+  describe('when provided with a local module', () => {
+    let dreddRuntimeInfo;
 
-const API_DESCRIPTION = './test/fixtures/single-get.apib';
+    before((done) => {
+      delete global.__requiredModule;
 
-describe('Dredd requiring language compilers', () => {
-  let apiary;
-
-  before((done) => {
-    const app = createServer();
-
-    app.post('/apis/*', (req, res) => res.json({
-      _id: '1234_id',
-      testRunId: '6789_testRunId',
-      reportUrl: 'http://example.com/test/run/1234_id',
-    }));
-
-    app.all('*', (req, res) => res.json({}));
-
-    apiary = app.listen(APIARY_PORT, (err) => {
-      done(err);
-    });
-  });
-
-  after(done => apiary.close(done));
-
-  it('should work with local modules', (done) => {
-    const dredd = new Dredd({
-      options: {
-        path: [API_DESCRIPTION],
-        require: './test/fixtures/requiredModule',
-      },
+      const dredd = new Dredd({
+        options: {
+          path: './test/fixtures/single-get.apib',
+          require: './test/fixtures/requiredModule',
+        },
+      });
+      runDredd(dredd, (err, info) => {
+        dreddRuntimeInfo = info;
+        done(err);
+      });
     });
 
-    runDredd(dredd, APIARY_PORT, (err) => {
+    it('passes no error to the callback', () => {
+      assert.isNotOk(dreddRuntimeInfo.err);
+    });
+    it('requires the module', () => {
       assert.isTrue(global.__requiredModule);
-      done(err);
     });
   });
 
-  it('should work with CoffeScript', (done) => {
-    const dredd = new Dredd({
-      options: {
-        path: [API_DESCRIPTION],
-        hookfiles: ['./test/fixtures/hooks-log.coffee'],
-        require: 'coffeescript/register',
-      },
+  describe('when provided with an installed module', () => {
+    let dreddRuntimeInfo;
+
+    before((done) => {
+      const dredd = new Dredd({
+        options: {
+          path: './test/fixtures/single-get.apib',
+          hookfiles: './test/fixtures/hooks-log.coffee',
+          require: 'coffeescript/register',
+        },
+      });
+      runDredd(dredd, (err, info) => {
+        dreddRuntimeInfo = info;
+        done(err);
+      });
     });
 
-    runDredd(dredd, APIARY_PORT, (err, info) => {
-      assert.include(info.logging, 'using hooks.log to debug');
-      done(err);
+    it('passes no error to the callback', () => {
+      assert.isNotOk(dreddRuntimeInfo.err);
+    });
+    it('requires the module', () => {
+      assert.include(dreddRuntimeInfo.logging, 'using hooks.log to debug');
     });
   });
 
-  it('should handle non-existing modules', (done) => {
-    const dredd = new Dredd({
-      options: {
-        path: [API_DESCRIPTION],
-        hookfiles: ['./test/fixtures/hooks-log.coffee'],
-        require: 'no-such-module',
-      },
+  describe('when provided with a non-existing module', () => {
+    let dreddRuntimeInfo;
+
+    before((done) => {
+      const dredd = new Dredd({
+        options: {
+          path: './test/fixtures/single-get.apib',
+          require: 'no-such-module',
+        },
+      });
+      runDredd(dredd, (err, info) => {
+        dreddRuntimeInfo = info;
+        done(err);
+      });
     });
 
-    runDredd(dredd, APIARY_PORT, (err, info) => {
-      assert.equal(info.err.code, 'MODULE_NOT_FOUND');
-      assert.equal(info.err.message, 'Cannot find module \'no-such-module\'');
-      assert.equal(info.logging, 'Cannot find module \'no-such-module\'\n');
-      done(err);
+    it('passes error to the callback', () => {
+      assert.instanceOf(dreddRuntimeInfo.err, Error);
+    });
+    it('the error is a native MODULE_NOT_FOUND error', () => {
+      assert.equal(dreddRuntimeInfo.err.code, 'MODULE_NOT_FOUND');
+    });
+    it('the error message is descriptive', () => {
+      assert.equal(dreddRuntimeInfo.err.message, 'Cannot find module \'no-such-module\'');
     });
   });
 });
