@@ -71,7 +71,7 @@ describe('Dredd requiring language compilers', () => {
     runDredd(dredd, APIARY_PORT, (err, info) => {
       assert.equal(info.err.code, 'MODULE_NOT_FOUND');
       assert.equal(info.err.message, 'Cannot find module \'no-such-module\'');
-      assert.equal(info.logging, 'error: Error requiring module \'no-such-module\': Cannot find module \'no-such-module\'\n');
+      assert.equal(info.logging, 'Cannot find module \'no-such-module\'\n');
       done(err);
     });
   });
