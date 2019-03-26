@@ -5,13 +5,10 @@ const Dredd = require('../../lib/Dredd');
 
 
 function compileTransactions(apiDescription, logger, callback) {
-  const dredd = new Dredd({});
+  const dredd = new Dredd({ apiDescriptions: [apiDescription] });
   dredd.logger = logger;
-  dredd.configuration.apiDescriptions = [{
-    location: 'filename.api',
-    content: apiDescription,
-  }];
-  dredd.compileTransactions(callback);
+  dredd.transactionRunner.run = sinon.stub().callsArg(1);
+  dredd.run(callback);
 }
 
 
@@ -38,7 +35,7 @@ FORMAT: 1A
     it('logs the warnings with line numbers', () => {
       assert.match(
         logger.warn.getCall(0).args[0],
-        /^parser warning in 'filename\.api': [\s\S]+ on line 5$/i
+        /^parser warning in 'configuration\.apiDescriptions\[0\]': [\s\S]+ on line 5$/i
       );
     });
   });
@@ -66,7 +63,7 @@ FORMAT: 1A
     it('logs the errors with line numbers', () => {
       assert.match(
         logger.error.getCall(0).args[0],
-        /^parser error in 'filename\.api': [\s\S]+ on line 6$/i
+        /^parser error in 'configuration\.apiDescriptions\[0\]': [\s\S]+ on line 6$/i
       );
     });
   });
@@ -93,7 +90,7 @@ FORMAT: 1A
     it('logs the warnings with a transaction path', () => {
       assert.match(
         logger.warn.getCall(0).args[0],
-        /^compilation warning in 'filename\.api': [\s\S]+ \(Dummy API > Index > Index\)$/i
+        /^compilation warning in 'configuration\.apiDescriptions\[0\]': [\s\S]+ \(Dummy API > Index > Index\)$/i
       );
     });
   });
@@ -122,7 +119,7 @@ FORMAT: 1A
     it('logs the errors with a transaction path', () => {
       assert.match(
         logger.error.getCall(0).args[0],
-        /^compilation error in 'filename\.api': [\s\S]+ \(Dummy API > Index > Index\)$/i
+        /^compilation error in 'configuration\.apiDescriptions\[0\]': [\s\S]+ \(Dummy API > Index > Index\)$/i
       );
     });
   });
