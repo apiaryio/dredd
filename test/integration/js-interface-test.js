@@ -172,4 +172,10 @@ describe('Running Dredd from JavaScript', () => {
       assert.isAbove(dreddRuntimeInfo.stats.duration, 0);
     });
   });
+
+  describe('when API descriptions loading is erroring', () => {
+  });
+
+  describe('when running transactions is erroring', () => {
+  });
 });
