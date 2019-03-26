@@ -1,3 +1,4 @@
+const sinon = require('sinon');
 const { assert } = require('chai');
 
 const Dredd = require('../../lib/Dredd');
@@ -174,8 +175,109 @@ describe('Running Dredd from JavaScript', () => {
   });
 
   describe('when API descriptions loading is erroring', () => {
+    let dreddRuntimeInfo;
+
+    before((done) => {
+      const dredd = new Dredd({ options: { path: '__non-existing__.apib' } });
+      runDredd(dredd, (err, info) => {
+        dreddRuntimeInfo = info;
+        done(err);
+      });
+    });
+
+    it('passes error to the callback', () => {
+      assert.instanceOf(dreddRuntimeInfo.err, Error);
+    });
+    it('passes expected stats to the callback', () => {
+      assert.hasAllKeys(dreddRuntimeInfo.stats, [
+        'tests',
+        'failures',
+        'errors',
+        'passes',
+        'skipped',
+        'start',
+        'end',
+        'duration',
+      ]);
+    });
+    it('performs 0 tests', () => {
+      assert.equal(dreddRuntimeInfo.stats.tests, 0);
+    });
+    it('finishes with 0 failing tests', () => {
+      assert.equal(dreddRuntimeInfo.stats.failures, 0);
+    });
+    it('finishes with 0 erroring tests', () => {
+      assert.equal(dreddRuntimeInfo.stats.errors, 0);
+    });
+    it('finishes with 0 passing tests', () => {
+      assert.equal(dreddRuntimeInfo.stats.passes, 0);
+    });
+    it('finishes with 0 skipped tests', () => {
+      assert.equal(dreddRuntimeInfo.stats.skipped, 0);
+    });
+    it('does not record start', () => {
+      assert.equal(dreddRuntimeInfo.stats.start, 0);
+    });
+    it('does not record end', () => {
+      assert.equal(dreddRuntimeInfo.stats.end, 0);
+    });
+    it('does not record duration', () => {
+      assert.equal(dreddRuntimeInfo.stats.duration, 0);
+    });
   });
 
   describe('when running transactions is erroring', () => {
+    let dreddRuntimeInfo;
+    const error = new Error('Ouch!');
+
+    before((done) => {
+      const dredd = new Dredd({ options: { path: './test/fixtures/single-get.apib' } });
+      sinon.stub(dredd.transactionRunner, 'run').callsArgWithAsync(1, error);
+
+      runDredd(dredd, (err, info) => {
+        dreddRuntimeInfo = info;
+        done(err);
+      });
+    });
+
+    it('passes the error to the callback', () => {
+      assert.deepEqual(dreddRuntimeInfo.err, error);
+    });
+    it('passes expected stats to the callback', () => {
+      assert.hasAllKeys(dreddRuntimeInfo.stats, [
+        'tests',
+        'failures',
+        'errors',
+        'passes',
+        'skipped',
+        'start',
+        'end',
+        'duration',
+      ]);
+    });
+    it('performs 0 tests', () => {
+      assert.equal(dreddRuntimeInfo.stats.tests, 0);
+    });
+    it('finishes with 0 failing tests', () => {
+      assert.equal(dreddRuntimeInfo.stats.failures, 0);
+    });
+    it('finishes with 0 erroring tests', () => {
+      assert.equal(dreddRuntimeInfo.stats.errors, 0);
+    });
+    it('finishes with 0 passing tests', () => {
+      assert.equal(dreddRuntimeInfo.stats.passes, 0);
+    });
+    it('finishes with 0 skipped tests', () => {
+      assert.equal(dreddRuntimeInfo.stats.skipped, 0);
+    });
+    it('does not record start', () => {
+      assert.equal(dreddRuntimeInfo.stats.start, 0);
+    });
+    it('does not record end', () => {
+      assert.equal(dreddRuntimeInfo.stats.end, 0);
+    });
+    it('does not record duration', () => {
+      assert.equal(dreddRuntimeInfo.stats.duration, 0);
+    });
   });
 });
