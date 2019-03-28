@@ -15,13 +15,17 @@ describe('CLIReporter', () => {
   let test = {};
 
   before(() => {
-    loggerStub.transports.console.silent = true;
-    reporterOutputLoggerStub.transports.console.silent = true;
+    [loggerStub, reporterOutputLoggerStub].forEach((logger) => {
+      logger.configure({ silent: true });
+    })
   });
 
   after(() => {
-    loggerStub.transports.console.silent = false;
-    reporterOutputLoggerStub.transports.console.silent = false;
+    // Is this really a good idea to mutate logger instances
+    // vs creating logger instances for tests using the same factory function?
+    [loggerStub, reporterOutputLoggerStub].forEach((logger) => {
+      logger.configure({ silent: false });
+    })
   });
 
   describe('when starting', () => {
