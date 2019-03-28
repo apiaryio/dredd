@@ -75,6 +75,7 @@ $ npm install -g dredd
 
 ## Howtos, Tutorials, Blogposts (3rd party)
 
+- [Dredd - Language-agnostic HTTP API Testing Tool - Interview with Honza Javorek](https://survivejs.com/blog/dredd-interview/) *3/22/2019*
 - [Testing your API with Dredd](https://medium.com/mop-developers/testing-your-api-with-dredd-c02e6ca151f2) *9/27/2018*
 - [Writing Testable API Documentation Using APIB and Dredd (Rails)](https://blog.rebased.pl/2018/06/29/testable-api-docs.html) *6/29/2018*
 - [Design-first API Specification Workflow Matures](https://philsturgeon.uk/api/2018/03/01/api-specification-workflow-matures/) *3/1/2018*
