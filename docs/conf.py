@@ -123,7 +123,7 @@ sphinx_tabs_valid_builders = ['linkcheck']
 # -- Theme customization --------------------------------------------------
 
 # Directory with individual templates overriding the ones from the theme
-templates_path = ['_templates']
+templates_path = []
 
 
 # -- Custom Pygments lexers for OpenAPI -----------------------------------
