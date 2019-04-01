@@ -65,7 +65,7 @@
     "body-parser": "1.18.3",
     "coffeescript": "2.4.0",
     "coveralls": "3.0.3",
-    "eslint": "5.15.3",
+    "eslint": "5.16.0",
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "2.16.0",
     "express": "4.16.4",
