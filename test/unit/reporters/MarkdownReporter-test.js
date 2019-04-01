@@ -24,7 +24,6 @@ describe('MarkdownReporter', () => {
   let emitter;
   let stats;
   let test = {};
-  let tests;
 
   before(() => {
     loggerStub.transports.console.silent = true;
@@ -48,8 +47,7 @@ describe('MarkdownReporter', () => {
       end: 0,
       duration: 0,
     };
-    tests = [];
-    mdReporter = new MarkdownReporter(emitter, stats, tests, 'test.md');
+    mdReporter = new MarkdownReporter(emitter, stats, 'test.md');
   });
 
 

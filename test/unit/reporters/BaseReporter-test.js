@@ -10,7 +10,6 @@ const BaseReporter = proxyquire('../../../lib/reporters/BaseReporter', {
 
 describe('BaseReporter', () => {
   let stats = {};
-  let tests = [];
   let test = {};
   let emitter = {};
 
@@ -25,9 +24,8 @@ describe('BaseReporter', () => {
       end: 0,
       duration: 0,
     };
-    tests = [];
     emitter = new EventEmitter();
-    (new BaseReporter(emitter, stats, tests));
+    (new BaseReporter(emitter, stats));
   });
 
   describe('when starting', () => {
@@ -53,17 +51,17 @@ describe('BaseReporter', () => {
   });
 
   describe('when test starts', () => {
-    before(() => {
+    beforeEach(() => {
       test = {
         status: 'pass',
         title: 'Passing Test',
       };
+      emitter.emit('test start', test);
     });
 
-    it('should add the test', () => {
-      emitter.emit('test start', test);
-      assert.isOk(tests.length === 1);
-    });
+    it('should increment the counter', () => assert.equal(stats.tests, 1));
+
+    it('should set the start time', () => assert.isOk(test.start));
   });
 
   describe('when test passes', () => {
@@ -78,7 +76,7 @@ describe('BaseReporter', () => {
 
     it('should increment the counter', () => assert.equal(stats.passes, 1));
 
-    it('should set the end time', () => assert.isOk(tests[0].end));
+    it('should set the end time', () => assert.isOk(test.end));
   });
 
   describe('when test is skipped', () => {
@@ -106,7 +104,7 @@ describe('BaseReporter', () => {
 
     it('should increment the counter', () => assert.isOk(stats.failures === 1));
 
-    it('should set the end time', () => assert.isOk(tests[0].end));
+    it('should set the end time', () => assert.isOk(test.end));
   });
 
   describe('when test errors', () => {
@@ -121,7 +119,7 @@ describe('BaseReporter', () => {
 
     it('should increment the counter', () => assert.isOk(stats.errors === 1));
 
-    it('should set the end time', () => assert.isOk(tests[0].end));
+    it('should set the end time', () => assert.isOk(test.end));
   });
 
   describe('when passing test start is UTC string', () => {
@@ -135,7 +133,7 @@ describe('BaseReporter', () => {
       emitter.emit('test pass', test);
     });
 
-    it('should set the duration', () => assert.isNotNaN(tests[0].duration));
+    it('should set the duration', () => assert.isNotNaN(test.duration));
   });
 
   describe('when failed test start is UTC string', () => {
@@ -149,7 +147,7 @@ describe('BaseReporter', () => {
       emitter.emit('test fail', test);
     });
 
-    it('should set the duration', () => assert.isNotNaN(tests[0].duration));
+    it('should set the duration', () => assert.isNotNaN(test.duration));
   });
 
   describe('when errored test start is UTC string', () => {
@@ -163,6 +161,6 @@ describe('BaseReporter', () => {
       emitter.emit('test error', new Error('Error'), test);
     });
 
-    it('should set the duration', () => assert.isNotNaN(tests[0].duration));
+    it('should set the duration', () => assert.isNotNaN(test.duration));
   });
 });

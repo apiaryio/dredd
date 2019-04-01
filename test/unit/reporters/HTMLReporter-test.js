@@ -24,7 +24,6 @@ describe('HTMLReporter', () => {
   let htmlReporter;
   let stats;
   let test = {};
-  let tests;
 
   before(() => {
     loggerStub.transports.console.silent = true;
@@ -48,8 +47,7 @@ describe('HTMLReporter', () => {
       end: 0,
       duration: 0,
     };
-    tests = [];
-    htmlReporter = new HTMLReporter(emitter, stats, tests, 'test.html');
+    htmlReporter = new HTMLReporter(emitter, stats, 'test.html');
   });
 
   describe('when starting', () => {

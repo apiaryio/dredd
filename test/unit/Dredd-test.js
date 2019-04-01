@@ -622,6 +622,7 @@ GET /url
         };
 
         dredd = new Dredd(configuration);
+        sinon.stub(dredd.runner, 'run').callsArg(1);
 
         const apiary = express();
         apiary.use(bodyParser.json({ size: '5mb' }));
@@ -634,7 +635,7 @@ GET /url
 
         apiary.all('*', (req, res) => res.json({}));
 
-        apiaryServer = apiary.listen((PORT + 1), () => done());
+        apiaryServer = apiary.listen((PORT + 1), () => dredd.run(done));
       });
 
       afterEach(done => apiaryServer.close(() => done()));
@@ -656,7 +657,7 @@ GET /url
       dredd = null;
       let errorLogger;
 
-      beforeEach(() => {
+      beforeEach((done) => {
         errorLogger = sinon.spy(loggerStub, 'error');
         configuration = {
           server: 'http://127.0.0.1:3000/',
@@ -674,6 +675,8 @@ GET /url
         };
 
         dredd = new Dredd(configuration);
+        sinon.stub(dredd.runner, 'run').callsArg(1);
+        dredd.run(done);
       });
 
       afterEach(() => loggerStub.error.restore());
@@ -695,65 +698,92 @@ GET /url
   });
 
   describe('#logProxySettings', () => {
+    const docsLinkSuffix = 'Please read documentation on how Dredd works with '
+      + 'proxies: https://dredd.org/en/latest/how-it-works/#using-https-proxy';
     let debugLogger;
 
     beforeEach(() => { debugLogger = sinon.spy(loggerStub, 'debug'); });
     afterEach(() => loggerStub.debug.restore());
 
     describe('when the proxy is set by lowercase environment variable', () => {
-      beforeEach(() => {
+      beforeEach((done) => {
         process.env.http_proxy = 'http://proxy.example.com';
         dredd = new Dredd({ options: {} });
+        sinon.stub(dredd.runner, 'run').callsArg(1);
+        dredd.run(done);
       });
       afterEach(() => delete process.env.http_proxy);
 
-      it('logs about the setting', () => assert.include(debugLogger.lastCall.args[0],
-        'HTTP(S) proxy specified by environment variables: http_proxy=http://proxy.example.com'));
+      it('logs about the setting', () => {
+        assert.isTrue(debugLogger.calledWith(
+          'HTTP(S) proxy specified by environment variables: '
+          + 'http_proxy=http://proxy.example.com.'
+          + ` ${docsLinkSuffix}`
+        ));
+      });
     });
 
     describe('when the proxy is set by uppercase environment variable', () => {
-      beforeEach(() => {
+      beforeEach((done) => {
         process.env.HTTPS_PROXY = 'http://proxy.example.com';
         dredd = new Dredd({ options: {} });
+        sinon.stub(dredd.runner, 'run').callsArg(1);
+        dredd.run(done);
       });
       afterEach(() => delete process.env.HTTPS_PROXY);
 
-      it('logs about the setting', () => assert.include(debugLogger.lastCall.args[0],
-        'HTTP(S) proxy specified by environment variables: '
-          + 'HTTPS_PROXY=http://proxy.example.com'));
+      it('logs about the setting', () => {
+        assert.isTrue(debugLogger.calledWith(
+          'HTTP(S) proxy specified by environment variables: '
+          + 'HTTPS_PROXY=http://proxy.example.com.'
+          + ` ${docsLinkSuffix}`
+        ));
+      });
     });
 
     describe('when NO_PROXY environment variable is set', () => {
-      beforeEach(() => {
+      beforeEach((done) => {
         process.env.HTTPS_PROXY = 'http://proxy.example.com';
         process.env.NO_PROXY = 'whitelisted.example.com';
         dredd = new Dredd({ options: {} });
+        sinon.stub(dredd.runner, 'run').callsArg(1);
+        dredd.run(done);
       });
       afterEach(() => {
         delete process.env.HTTPS_PROXY;
         delete process.env.NO_PROXY;
       });
 
-      it('logs about the setting', () => assert.include(debugLogger.lastCall.args[0],
-        'HTTP(S) proxy specified by environment variables: '
+      it('logs about the setting', () => {
+        assert.isTrue(debugLogger.calledWith(
+          'HTTP(S) proxy specified by environment variables: '
           + 'HTTPS_PROXY=http://proxy.example.com, '
-          + 'NO_PROXY=whitelisted.example.com'));
+          + 'NO_PROXY=whitelisted.example.com.'
+          + ` ${docsLinkSuffix}`
+        ));
+      });
     });
 
     describe('when DUMMY_PROXY environment variable is set', () => {
-      beforeEach(() => {
+      beforeEach((done) => {
         process.env.DUMMY_PROXY = 'http://proxy.example.com';
         process.env.NO_PROXY = 'whitelisted.example.com';
         dredd = new Dredd({ options: {} });
+        sinon.stub(dredd.runner, 'run').callsArg(1);
+        dredd.run(done);
       });
       afterEach(() => {
         delete process.env.DUMMY_PROXY;
         delete process.env.NO_PROXY;
       });
 
-      it('is ignored', () => assert.include(debugLogger.lastCall.args[0],
-        'HTTP(S) proxy specified by environment variables: '
-          + 'NO_PROXY=whitelisted.example.com'));
+      it('is ignored', () => {
+        assert.isTrue(debugLogger.calledWith(
+          'HTTP(S) proxy specified by environment variables: '
+          + 'NO_PROXY=whitelisted.example.com.'
+          + ` ${docsLinkSuffix}`
+        ));
+      });
     });
   });
 });
