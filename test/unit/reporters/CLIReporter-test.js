@@ -11,6 +11,7 @@ const CLIReporter = proxyquire('../../../lib/reporters/CLIReporter', {
   './reporterOutputLogger': reporterOutputLoggerStub,
 });
 
+
 describe('CLIReporter', () => {
   let test = {};
 

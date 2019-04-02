@@ -27,6 +27,7 @@ function createAndRunDredd(configuration, done) {
     dredd.configuration.http.strictSSL = false;
     next();
   }, (err, args, dreddInitLogging) => runDredd(dredd, (error, info) => {
+    console.log({dreddInitLogging, info})
     info.logging = `${dreddInitLogging}\n${info.logging}`;
     done(error, info);
   }));
