@@ -170,82 +170,6 @@ describe('configuration.applyLoggingOptions()', () => {
 
 
 describe('configuration._coerceRemovedOptions()', () => {
-  describe("with -c set to string 'true'", () => {
-    const config = { options: { c: 'true' } };
-    let coerceResult;
-
-    before(() => {
-      coerceResult = configuration._coerceRemovedOptions(config);
-    });
-
-    it('gets coerced to color set to boolean true', () => {
-      assert.deepEqual(config, { options: { color: true } });
-    });
-    it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
-    });
-    it('produces one warning', () => {
-      assert.lengthOf(coerceResult.warnings, 1);
-    });
-  });
-
-  describe("with -c set to string 'false'", () => {
-    const config = { options: { c: 'false' } };
-    let coerceResult;
-
-    before(() => {
-      coerceResult = configuration._coerceRemovedOptions(config);
-    });
-
-    it('gets coerced to color set to boolean false', () => {
-      assert.deepEqual(config, { options: { color: false } });
-    });
-    it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
-    });
-    it('produces one warning', () => {
-      assert.lengthOf(coerceResult.warnings, 1);
-    });
-  });
-
-  describe('with -c set to true', () => {
-    const config = { options: { c: true } };
-    let coerceResult;
-
-    before(() => {
-      coerceResult = configuration._coerceRemovedOptions(config);
-    });
-
-    it('gets coerced to color set to boolean true', () => {
-      assert.deepEqual(config, { options: { color: true } });
-    });
-    it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
-    });
-    it('produces one warning', () => {
-      assert.lengthOf(coerceResult.warnings, 1);
-    });
-  });
-
-  describe('with -c set to false', () => {
-    const config = { options: { c: false } };
-    let coerceResult;
-
-    before(() => {
-      coerceResult = configuration._coerceRemovedOptions(config);
-    });
-
-    it('gets coerced to color set to boolean false', () => {
-      assert.deepEqual(config, { options: { color: false } });
-    });
-    it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
-    });
-    it('produces one warning', () => {
-      assert.lengthOf(coerceResult.warnings, 1);
-    });
-  });
-
   describe("with --color set to string 'true'", () => {
     const config = { options: { color: 'true' } };
     let coerceResult;
@@ -259,9 +183,6 @@ describe('configuration._coerceRemovedOptions()', () => {
     });
     it('produces no errors', () => {
       assert.deepEqual(coerceResult.errors, []);
-    });
-    it('produces one warning', () => {
-      assert.lengthOf(coerceResult.warnings, 1);
     });
   });
 
@@ -278,9 +199,6 @@ describe('configuration._coerceRemovedOptions()', () => {
     });
     it('produces no errors', () => {
       assert.deepEqual(coerceResult.errors, []);
-    });
-    it('produces one warning', () => {
-      assert.lengthOf(coerceResult.warnings, 1);
     });
   });
 
@@ -338,9 +256,6 @@ describe('configuration._coerceRemovedOptions()', () => {
     it('produces no errors', () => {
       assert.deepEqual(coerceResult.errors, []);
     });
-    it('produces one warning', () => {
-      assert.lengthOf(coerceResult.warnings, 1);
-    });
   });
 
   describe('with --level/-l set to a consolidated value', () => {
@@ -359,9 +274,6 @@ describe('configuration._coerceRemovedOptions()', () => {
     it('produces no errors', () => {
       assert.deepEqual(coerceResult.errors, []);
     });
-    it('produces two warnings', () => {
-      assert.lengthOf(coerceResult.warnings, 2);
-    });
   });
 
   describe('with --level/-l set to a removed value', () => {
@@ -379,9 +291,6 @@ describe('configuration._coerceRemovedOptions()', () => {
     });
     it('produces no errors', () => {
       assert.deepEqual(coerceResult.errors, []);
-    });
-    it('produces two warnings', () => {
-      assert.lengthOf(coerceResult.warnings, 2);
     });
   });
 
@@ -403,147 +312,6 @@ describe('configuration._coerceRemovedOptions()', () => {
     });
     it('produces no warnings', () => {
       assert.deepEqual(coerceResult.warnings, []);
-    });
-  });
-
-  describe('with --timestamp/-t set', () => {
-    const config = { options: { timestamp: true, t: true } };
-    let coerceResult;
-
-    before(() => {
-      coerceResult = configuration._coerceRemovedOptions(config);
-    });
-
-    it('gets coerced to loglevel set to debug', () => {
-      assert.deepEqual(config, {
-        options: { l: 'debug', loglevel: 'debug' },
-      });
-    });
-    it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
-    });
-    it('produces one warning', () => {
-      assert.lengthOf(coerceResult.warnings, 1);
-    });
-  });
-
-  describe('with --silent/-q set', () => {
-    const config = { options: { silent: true, q: true } };
-    let coerceResult;
-
-    before(() => {
-      coerceResult = configuration._coerceRemovedOptions(config);
-    });
-
-    it('gets coerced to loglevel set to silent', () => {
-      assert.deepEqual(config, {
-        options: { l: 'silent', loglevel: 'silent' },
-      });
-    });
-    it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
-    });
-    it('produces one warning', () => {
-      assert.lengthOf(coerceResult.warnings, 1);
-    });
-  });
-
-  describe('with --sandbox/-b set', () => {
-    const config = { options: { sandbox: true, b: true } };
-    let coerceResult;
-
-    before(() => {
-      coerceResult = configuration._coerceRemovedOptions(config);
-    });
-
-    it('gets removed', () => {
-      assert.deepEqual(config, { options: {} });
-    });
-    it('produces one error', () => {
-      assert.lengthOf(coerceResult.errors, 1);
-    });
-    it('produces no warnings', () => {
-      assert.deepEqual(coerceResult.warnings, []);
-    });
-  });
-
-  describe('with hooksData set', () => {
-    const config = { hooksData: {} };
-    let coerceResult;
-
-    before(() => {
-      coerceResult = configuration._coerceRemovedOptions(config);
-    });
-
-    it('gets removed', () => {
-      assert.deepEqual(config, {});
-    });
-    it('produces one error', () => {
-      assert.lengthOf(coerceResult.errors, 1);
-    });
-    it('produces no warnings', () => {
-      assert.deepEqual(coerceResult.warnings, []);
-    });
-  });
-
-  describe('with blueprintPath set and empty path', () => {
-    const config = { blueprintPath: 'foo/bar' };
-    let coerceResult;
-
-    before(() => {
-      coerceResult = configuration._coerceRemovedOptions(config);
-    });
-
-    it('gets reassigned as path', () => {
-      assert.deepEqual(config, { options: { path: ['foo/bar'] } });
-    });
-    it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
-    });
-    it('produces no warnings', () => {
-      assert.lengthOf(coerceResult.warnings, 1);
-    });
-  });
-
-  describe('with blueprintPath set and path set to a string', () => {
-    const config = { blueprintPath: 'foo/bar', options: { path: 'moo.js' } };
-    let coerceResult;
-
-    before(() => {
-      coerceResult = configuration._coerceRemovedOptions(config);
-    });
-
-    it('gets reassigned as path', () => {
-      assert.deepEqual(config, {
-        options: { path: ['foo/bar', 'moo.js'] },
-      });
-    });
-    it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
-    });
-    it('produces no warnings', () => {
-      assert.lengthOf(coerceResult.warnings, 1);
-    });
-  });
-
-  describe('with blueprintPath set and path set to an array', () => {
-    const config = { blueprintPath: 'foo/bar', options: { path: ['moo.js'] } };
-    let coerceResult;
-
-    before(() => {
-      coerceResult = configuration._coerceRemovedOptions(config);
-    });
-
-    it('gets reassigned as path', () => {
-      assert.deepEqual(config, {
-        options: { path: ['foo/bar', 'moo.js'] },
-      });
-    });
-    it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
-    });
-    it('produces no warnings', () => {
-      assert.lengthOf(coerceResult.warnings, 1);
     });
   });
 
