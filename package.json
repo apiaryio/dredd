@@ -51,6 +51,7 @@
     "markdown-it": "8.4.2",
     "optimist": "0.6.1",
     "proxyquire": "2.1.0",
+    "ramda": "0.26.1",
     "request": "2.88.0",
     "spawn-args": "0.2.0",
     "untildify": "3.0.3",
