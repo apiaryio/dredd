@@ -170,6 +170,25 @@ describe('configuration.applyLoggingOptions()', () => {
 
 
 describe('configuration._coerceRemovedOptions()', () => {
+  describe("with -c set to string 'true'", () => {
+    const config = { options: { c: 'true' } };
+    let coerceResult;
+
+    before(() => {
+      coerceResult = configuration._coerceRemovedOptions(config);
+    });
+
+    it('gets removed', () => {
+      assert.deepEqual(config, { options: {} });
+    });
+    it('produces no warnings', () => {
+      assert.lengthOf(coerceResult.warnings, 0);
+    });
+    it('produces one error', () => {
+      assert.lengthOf(coerceResult.errors, 1);
+    });
+  });
+
   describe("with --color set to string 'true'", () => {
     const config = { options: { color: 'true' } };
     let coerceResult;
@@ -181,8 +200,11 @@ describe('configuration._coerceRemovedOptions()', () => {
     it('gets coerced to color set to boolean true', () => {
       assert.deepEqual(config, { options: { color: true } });
     });
+    it('produces no warnings', () => {
+      assert.lengthOf(coerceResult.warnings, 0);
+    });
     it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
+      assert.lengthOf(coerceResult.errors, 0);
     });
   });
 
@@ -197,8 +219,11 @@ describe('configuration._coerceRemovedOptions()', () => {
     it('gets coerced to color set to boolean false', () => {
       assert.deepEqual(config, { options: { color: false } });
     });
+    it('produces no warnings', () => {
+      assert.lengthOf(coerceResult.warnings, 0);
+    });
     it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
+      assert.lengthOf(coerceResult.errors, 0);
     });
   });
 
@@ -214,10 +239,10 @@ describe('configuration._coerceRemovedOptions()', () => {
       assert.deepEqual(config, { options: { color: true } });
     });
     it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
+      assert.lengthOf(coerceResult.errors, 0);
     });
     it('produces no warnings', () => {
-      assert.deepEqual(coerceResult.warnings, []);
+      assert.lengthOf(coerceResult.warnings, 0);
     });
   });
 
@@ -233,10 +258,10 @@ describe('configuration._coerceRemovedOptions()', () => {
       assert.deepEqual(config, { options: { color: false } });
     });
     it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
+      assert.lengthOf(coerceResult.errors, 0);
     });
     it('produces no warnings', () => {
-      assert.deepEqual(coerceResult.warnings, []);
+      assert.lengthOf(coerceResult.warnings, 0);
     });
   });
 
@@ -253,8 +278,11 @@ describe('configuration._coerceRemovedOptions()', () => {
         options: { l: 'debug', loglevel: 'debug' },
       });
     });
-    it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
+    it('produces no warnings', () => {
+      assert.lengthOf(coerceResult.warnings, 0);
+    });
+    it('produces one error', () => {
+      assert.lengthOf(coerceResult.errors, 1);
     });
   });
 
@@ -271,8 +299,8 @@ describe('configuration._coerceRemovedOptions()', () => {
         options: { l: 'debug', loglevel: 'debug' },
       });
     });
-    it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
+    it('produces one error', () => {
+      assert.lengthOf(coerceResult.errors, 1);
     });
   });
 
@@ -289,8 +317,8 @@ describe('configuration._coerceRemovedOptions()', () => {
         options: { l: 'warn', loglevel: 'warn' },
       });
     });
-    it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
+    it('produces one error', () => {
+      assert.lengthOf(coerceResult.errors, 1);
     });
   });
 
@@ -308,10 +336,71 @@ describe('configuration._coerceRemovedOptions()', () => {
       });
     });
     it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
+      assert.lengthOf(coerceResult.errors, 0);
     });
     it('produces no warnings', () => {
-      assert.deepEqual(coerceResult.warnings, []);
+      assert.lengthOf(coerceResult.warnings, 0);
+    });
+  });
+
+  describe('with --timestamp/-t set', () => {
+    const config = { options: { timestamp: true, t: true } };
+    let coerceResult;
+
+    before(() => {
+      coerceResult = configuration._coerceRemovedOptions(config);
+    });
+
+    it('gets removed', () => {
+      assert.deepEqual(config, {
+        options: {},
+      });
+    });
+    it('produces one error', () => {
+      assert.lengthOf(coerceResult.errors, 1);
+    });
+    it('produces no warnings', () => {
+      assert.lengthOf(coerceResult.warnings, 0);
+    });
+  });
+
+  describe('with --silent/-q set', () => {
+    const config = { options: { silent: true, q: true } };
+    let coerceResult;
+
+    before(() => {
+      coerceResult = configuration._coerceRemovedOptions(config);
+    });
+
+    it('gets removed', () => {
+      assert.deepEqual(config, {
+        options: {},
+      });
+    });
+    it('produces one error', () => {
+      assert.lengthOf(coerceResult.errors, 1);
+    });
+    it('produces no warnings', () => {
+      assert.lengthOf(coerceResult.warnings, 0);
+    });
+  });
+
+  describe('with --sandbox/-b set', () => {
+    const config = { options: { sandbox: true, b: true } };
+    let coerceResult;
+
+    before(() => {
+      coerceResult = configuration._coerceRemovedOptions(config);
+    });
+
+    it('gets removed', () => {
+      assert.deepEqual(config, { options: {} });
+    });
+    it('produces one error', () => {
+      assert.lengthOf(coerceResult.errors, 1);
+    });
+    it('produces no warnings', () => {
+      assert.lengthOf(coerceResult.warnings, 0);
     });
   });
 
@@ -334,7 +423,7 @@ describe('configuration._coerceRemovedOptions()', () => {
       });
     });
     it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
+      assert.lengthOf(coerceResult.errors, 0);
     });
     it('produces one warning', () => {
       assert.lengthOf(coerceResult.warnings, 1);
@@ -367,7 +456,7 @@ describe('configuration._coerceRemovedOptions()', () => {
       });
     });
     it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
+      assert.lengthOf(coerceResult.errors, 0);
     });
     it('produces one warning', () => {
       assert.lengthOf(coerceResult.warnings, 1);
@@ -403,7 +492,7 @@ describe('configuration._coerceRemovedOptions()', () => {
       });
     });
     it('produces no errors', () => {
-      assert.deepEqual(coerceResult.errors, []);
+      assert.lengthOf(coerceResult.errors, 0);
     });
     it('produces one warning', () => {
       assert.lengthOf(coerceResult.warnings, 1);
