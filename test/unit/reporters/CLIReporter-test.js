@@ -11,18 +11,9 @@ const CLIReporter = proxyquire('../../../lib/reporters/CLIReporter', {
   './reporterOutputLogger': reporterOutputLoggerStub,
 });
 
+
 describe('CLIReporter', () => {
   let test = {};
-
-  before(() => {
-    loggerStub.transports.console.silent = true;
-    reporterOutputLoggerStub.transports.console.silent = true;
-  });
-
-  after(() => {
-    loggerStub.transports.console.silent = false;
-    reporterOutputLoggerStub.transports.console.silent = false;
-  });
 
   describe('when starting', () => {
     beforeEach(() => sinon.spy(loggerStub, 'debug'));

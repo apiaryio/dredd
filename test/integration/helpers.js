@@ -1,4 +1,5 @@
 const async = require('async');
+const sinon = require('sinon');
 const bodyParser = require('body-parser');
 const clone = require('clone');
 const express = require('express');
@@ -23,28 +24,44 @@ const DREDD_BIN = require.resolve('../../bin/dredd');
 //                  from the 'fn' function
 // - logging (string) - the recorded logging output
 function recordLogging(fn, callback) {
-  const loggerSilent = !!logger.transports.console.silent;
-  const reporterOutputLoggerSilent = !!reporterOutputLogger.transports.console.silent;
+  let logging = '';
+  const loggerSilent = !!logger.silent;
+  const reporterOutputLoggerSilent = !!reporterOutputLogger.silent;
 
   // Supress Dredd's console output (remove if debugging)
-  logger.transports.console.silent = true;
-  reporterOutputLogger.transports.console.silent = true;
+  [logger, reporterOutputLogger].forEach((loggerInstance) => {
+    loggerInstance.configure({ silent: true });
 
-  let logging = '';
-  const record = (transport, level, message) => {
-    logging += `${level}: ${message}\n`;
-  };
+    if (!loggerInstance.log.wrappedMethod) {
+      sinon.stub(loggerInstance, 'log').callsFake((level, message) => {
+        const nextLogging = `${level}: ${message}\n`;
+        console.log({nextLogging})
+        logging += nextLogging
+      });
+    }
+  });
 
-  logger.on('logging', record);
-  reporterOutputLogger.on('logging', record);
+  // logger.transports.console.silent = true;
+  // reporterOutputLogger.transports.console.silent = true;
+
+  // const record = (transport, level, message) => {
+  //   logging += `${level}: ${message}\n`;
+  // };
+
+  /**
+   * @todo "logging" is deprecated, replace.
+   */
+  // logger.on('logging', record);
+  // reporterOutputLogger.on('logging', record);
 
   fn((...args) => {
-    logger.removeListener('logging', record);
-    logger.transports.console.silent = loggerSilent;
+    // logger.removeListener('logging', record);
+    logger.configure({ silent: loggerSilent });
 
-    reporterOutputLogger.removeListener('logging', record);
-    reporterOutputLogger.transports.console.silent = reporterOutputLoggerSilent;
+    // reporterOutputLogger.removeListener('logging', record);
+    reporterOutputLogger.configure({ silent: reporterOutputLoggerSilent });
 
+    console.log('callbacking', logging)
     callback(null, args, logging);
   });
 }
