@@ -19,31 +19,31 @@ describe('configuration.applyLoggingOptions()', () => {
   beforeEach(resetLoggerConsoles);
   afterEach(resetLoggerConsoles);
 
-  // describe('with color not set', () => {
-  //   beforeEach(() => {
-  //     configuration.applyLoggingOptions({});
-  //   });
+  describe('with color not set', () => {
+    beforeEach(() => {
+      configuration.applyLoggingOptions({});
+    });
 
-  //   it('the application logger should be set to colorize', () => {
-  //     assert.isTrue(logger.transports.console.colorize);
-  //   });
-  //   it('the application output should be set to colorize', () => {
-  //     assert.isTrue(reporterOutputLogger.transports.console.colorize);
-  //   });
-  // });
+    it('the application logger should be set to colorize', () => {
+      assert.isTrue(logger.transports.console.colorize);
+    });
+    it('the application output should be set to colorize', () => {
+      assert.isTrue(reporterOutputLogger.transports.console.colorize);
+    });
+  });
 
-  // describe('with color set to true', () => {
-  //   beforeEach(() => {
-  //     configuration.applyLoggingOptions({ color: true });
-  //   });
+  describe('with color set to true', () => {
+    beforeEach(() => {
+      configuration.applyLoggingOptions({ color: true });
+    });
 
-  //   it('the application logger should be set to colorize', () => {
-  //     assert.isTrue(logger.transports.console.colorize);
-  //   });
-  //   it('the application output should be set to colorize', () => {
-  //     assert.isTrue(reporterOutputLogger.transports.console.colorize);
-  //   });
-  // });
+    it('the application logger should be set to colorize', () => {
+      assert.isTrue(logger.transports.console.colorize);
+    });
+    it('the application output should be set to colorize', () => {
+      assert.isTrue(reporterOutputLogger.transports.console.colorize);
+    });
+  });
 
   describe('with color set to false', () => {
     beforeEach(() => {
