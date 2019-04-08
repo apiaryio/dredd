@@ -171,7 +171,7 @@ describe('configuration.applyLoggingOptions()', () => {
 
 describe('configuration._coerceRemovedOptions()', () => {
   describe("with -c set to string 'true'", () => {
-    const config = { options: { c: 'true' } };
+    const config = { c: 'true' };
 
     it('gets removed', () => {
       const normalizedConfig = configuration._normalizeConfig(config);
@@ -187,162 +187,152 @@ describe('configuration._coerceRemovedOptions()', () => {
     });
   });
 
-  // describe("with --color set to string 'true'", () => {
-  //   const config = { options: { color: 'true' } };
-  //   let coerceResult;
+  describe("with --color set to string 'true'", () => {
+    const config = { color: 'true' };
 
-  //   before(() => {
-  //     coerceResult = configuration._coerceRemovedOptions(config);
-  //   });
+    it('gets coerced to color set to boolean true', () => {
+      const normalizedConfig = configuration._normalizeConfig(config);
+      assert.propertyVal(normalizedConfig, 'color', true);
+    });
+    it('produces no warnings', () => {
+      const { warnings } = configuration._validateConfig(config);
+      assert.lengthOf(warnings, 0);
+    });
+    it('produces no errors', () => {
+      const { errors } = configuration._validateConfig(config);
+      assert.lengthOf(errors, 0);
+    });
+  });
 
-  //   it('gets coerced to color set to boolean true', () => {
-  //     assert.deepEqual(config, { options: { color: true } });
-  //   });
-  //   it('produces no warnings', () => {
-  //     assert.lengthOf(coerceResult.warnings, 0);
-  //   });
-  //   it('produces no errors', () => {
-  //     assert.lengthOf(coerceResult.errors, 0);
-  //   });
-  // });
+  describe("with --color set to string 'false'", () => {
+    const config = { color: 'false' };
 
-  // describe("with --color set to string 'false'", () => {
-  //   const config = { options: { color: 'false' } };
-  //   let coerceResult;
+    it('gets coerced to color set to boolean false', () => {
+      const normalizedConfig = configuration._normalizeConfig(config);
+      assert.propertyVal(normalizedConfig, 'color', false);
+    });
+    it('produces no warnings', () => {
+      const { warnings } = configuration._validateConfig(config);
+      assert.lengthOf(warnings, 0);
+    });
+    it('produces no errors', () => {
+      const { errors } = configuration._validateConfig(config);
+      assert.lengthOf(errors, 0);
+    });
+  });
 
-  //   before(() => {
-  //     coerceResult = configuration._coerceRemovedOptions(config);
-  //   });
+  describe('with --color set to true', () => {
+    const config = { color: true };
 
-  //   it('gets coerced to color set to boolean false', () => {
-  //     assert.deepEqual(config, { options: { color: false } });
-  //   });
-  //   it('produces no warnings', () => {
-  //     assert.lengthOf(coerceResult.warnings, 0);
-  //   });
-  //   it('produces no errors', () => {
-  //     assert.lengthOf(coerceResult.errors, 0);
-  //   });
-  // });
+    it('gets coerced to color set to boolean true', () => {
+      const normalizedConfig = configuration._normalizeConfig(config);
+      assert.propertyVal(normalizedConfig, 'color', true);
+    });
+    it('produces no warnings', () => {
+      const { warnings } = configuration._validateConfig(config);
+      assert.lengthOf(warnings, 0);
+    });
+    it('produces no errors', () => {
+      const { errors } = configuration._validateConfig(config);
+      assert.lengthOf(errors, 0);
+    });
+  });
 
-  // describe('with --color set to true', () => {
-  //   const config = { options: { color: true } };
-  //   let coerceResult;
+  describe('with --color set to false', () => {
+    const config = { color: false };
 
-  //   before(() => {
-  //     coerceResult = configuration._coerceRemovedOptions(config);
-  //   });
+    it('gets coerced to color set to boolean false', () => {
+      const normalizedConfig = configuration._normalizeConfig(config);
+      assert.propertyVal(normalizedConfig, 'color', false);
+    });
+    it('produces no warnings', () => {
+      const { warnings } = configuration._validateConfig(config);
+      assert.lengthOf(warnings, 0);
+    });
+    it('produces no errors', () => {
+      const { errors } = configuration._validateConfig(config);
+      assert.lengthOf(errors, 0);
+    });
+  });
 
-  //   it('gets coerced to color set to boolean true', () => {
-  //     assert.deepEqual(config, { options: { color: true } });
-  //   });
-  //   it('produces no errors', () => {
-  //     assert.lengthOf(coerceResult.errors, 0);
-  //   });
-  //   it('produces no warnings', () => {
-  //     assert.lengthOf(coerceResult.warnings, 0);
-  //   });
-  // });
+  describe('with --level/-l set to a supported value', () => {
+    const config = { l: 'debug', level: 'debug' };
 
-  // describe('with --color set to false', () => {
-  //   const config = { options: { color: false } };
-  //   let coerceResult;
+    it('gets coerced to loglevel set to the value', () => {
+      const normalizedConfig = configuration._normalizeConfig(config);
+      assert.propertyVal(normalizedConfig, 'loglevel', 'debug');
+      assert.notProperty(normalizedConfig, 'l');
+      assert.notProperty(normalizedConfig, 'level');
+    });
+    it('produces no warnings', () => {
+      const { warnings } = configuration._validateConfig(config);
+      assert.lengthOf(warnings, 0);
+    });
+    it('produces one error', () => {
+      const { errors } = configuration._validateConfig(config);
+      assert.lengthOf(errors, 1);
+    });
+  });
 
-  //   before(() => {
-  //     coerceResult = configuration._coerceRemovedOptions(config);
-  //   });
+  describe('with --level/-l set to a consolidated value', () => {
+    const config = { l: 'verbose', level: 'verbose' };
 
-  //   it('gets coerced to color set to boolean false', () => {
-  //     assert.deepEqual(config, { options: { color: false } });
-  //   });
-  //   it('produces no errors', () => {
-  //     assert.lengthOf(coerceResult.errors, 0);
-  //   });
-  //   it('produces no warnings', () => {
-  //     assert.lengthOf(coerceResult.warnings, 0);
-  //   });
-  // });
+    it('gets coerced to loglevel set to a corresponding value', () => {
+      const normalizedConfig = configuration._normalizeConfig(config);
+      assert.propertyVal(normalizedConfig, 'loglevel', 'debug');
+      assert.notProperty(normalizedConfig, 'l');
+      assert.notProperty(normalizedConfig, 'level');
+    });
+    it('produces no warnings', () => {
+      const { warnings } = configuration._validateConfig(config);
+      assert.lengthOf(warnings, 0);
+    });
+    it('produces one error', () => {
+      const { errors } = configuration._validateConfig(config);
+      assert.lengthOf(errors, 1);
+    });
+  });
 
-  // describe('with --level/-l set to a supported value', () => {
-  //   const config = { options: { l: 'debug', level: 'debug' } };
-  //   let coerceResult;
+  describe('with --level/-l set to a removed value', () => {
+    const config = { l: 'complete', level: 'complete' };
 
-  //   before(() => {
-  //     coerceResult = configuration._coerceRemovedOptions(config);
-  //   });
+    it('gets coerced to loglevel set to the default value', () => {
+      const normalizedConfig = configuration._normalizeConfig(config);
+      assert.propertyVal(normalizedConfig, 'loglevel', 'warn');
+      assert.notProperty(normalizedConfig, 'l');
+      assert.notProperty(normalizedConfig, 'level');
+    });
+    it('produces no warnings', () => {
+      const { warnings } = configuration._validateConfig(config);
+      assert.lengthOf(warnings, 0);
+    });
+    it('produces one error', () => {
+      const { errors } = configuration._validateConfig(config);
+      assert.lengthOf(errors, 1);
+    });
+  });
 
-  //   it('gets coerced to loglevel set to the value', () => {
-  //     assert.deepEqual(config, {
-  //       options: { l: 'debug', loglevel: 'debug' },
-  //     });
-  //   });
-  //   it('produces no warnings', () => {
-  //     assert.lengthOf(coerceResult.warnings, 0);
-  //   });
-  //   it('produces one error', () => {
-  //     assert.lengthOf(coerceResult.errors, 1);
-  //   });
-  // });
+  describe("with -l set to 'silent'", () => {
+    const config = { l: 'silent' };
 
-  // describe('with --level/-l set to a consolidated value', () => {
-  //   const config = { options: { l: 'verbose', level: 'verbose' } };
-  //   let coerceResult;
-
-  //   before(() => {
-  //     coerceResult = configuration._coerceRemovedOptions(config);
-  //   });
-
-  //   it('gets coerced to loglevel set to a corresponding value', () => {
-  //     assert.deepEqual(config, {
-  //       options: { l: 'debug', loglevel: 'debug' },
-  //     });
-  //   });
-  //   it('produces one error', () => {
-  //     assert.lengthOf(coerceResult.errors, 1);
-  //   });
-  // });
-
-  // describe('with --level/-l set to a removed value', () => {
-  //   const config = { options: { l: 'complete', level: 'complete' } };
-  //   let coerceResult;
-
-  //   before(() => {
-  //     coerceResult = configuration._coerceRemovedOptions(config);
-  //   });
-
-  //   it('gets coerced to loglevel set to the default value', () => {
-  //     assert.deepEqual(config, {
-  //       options: { l: 'warn', loglevel: 'warn' },
-  //     });
-  //   });
-  //   it('produces one error', () => {
-  //     assert.lengthOf(coerceResult.errors, 1);
-  //   });
-  // });
-
-  // describe("with -l set to 'silent'", () => {
-  //   const config = { options: { l: 'silent' } };
-  //   let coerceResult;
-
-  //   before(() => {
-  //     coerceResult = configuration._coerceRemovedOptions(config);
-  //   });
-
-  //   it('gets coerced to loglevel set to silent', () => {
-  //     assert.deepEqual(config, {
-  //       options: { l: 'silent', loglevel: 'silent' },
-  //     });
-  //   });
-  //   it('produces no errors', () => {
-  //     assert.lengthOf(coerceResult.errors, 0);
-  //   });
-  //   it('produces no warnings', () => {
-  //     assert.lengthOf(coerceResult.warnings, 0);
-  //   });
-  // });
+    it('gets coerced to loglevel set to silent', () => {
+      const normalizedConfig = configuration._normalizeConfig(config);
+      assert.propertyVal(normalizedConfig, 'loglevel', 'silent');
+      assert.notProperty(normalizedConfig, 'l');
+      assert.notProperty(normalizedConfig, 'level');
+    });
+    it('produces no warnings', () => {
+      const { warnings } = configuration._validateConfig(config);
+      assert.lengthOf(warnings, 0);
+    });
+    it('produces no errors', () => {
+      const { errors } = configuration._validateConfig(config);
+      assert.lengthOf(errors, 0);
+    });
+  });
 
   describe('with --timestamp/-t set', () => {
-    const config = { options: { timestamp: true, t: true } };
+    const config = { timestamp: true, t: true };
 
     it('gets removed', () => {
       const normalizedConfig = configuration._normalizeConfig(config);
@@ -360,7 +350,7 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe('with --silent/-q set', () => {
-    const config = { options: { silent: true, q: true } };
+    const config = { silent: true, q: true };
 
     it('gets removed', () => {
       const normalizedConfig = configuration._normalizeConfig(config);
@@ -378,7 +368,7 @@ describe('configuration._coerceRemovedOptions()', () => {
   });
 
   describe('with --sandbox/-b set', () => {
-    const config = { options: { sandbox: true, b: true } };
+    const config = { sandbox: true, b: true };
 
     it('gets removed', () => {
       const normalizedConfig = configuration._normalizeConfig(config);
@@ -408,12 +398,14 @@ describe('configuration._coerceRemovedOptions()', () => {
         },
       ]);
     });
-    // it('produces no errors', () => {
-    //   assert.lengthOf(coerceResult.errors, 0);
-    // });
-    // it('produces one warning', () => {
-    //   assert.lengthOf(coerceResult.warnings, 1);
-    // });
+    it('produces one warning', () => {
+      const { warnings } = configuration._validateConfig(config);
+      assert.lengthOf(warnings, 1);
+    });
+    it('produces no errors', () => {
+      const { errors } = configuration._validateConfig(config);
+      assert.lengthOf(errors, 0);
+    });
   });
 
   describe('with data set to { filename: { filename, raw: apiDescription } }', () => {
@@ -435,12 +427,14 @@ describe('configuration._coerceRemovedOptions()', () => {
         },
       ]);
     });
-    // it('produces no errors', () => {
-    //   assert.lengthOf(coerceResult.errors, 0);
-    // });
-    // it('produces one warning', () => {
-    //   assert.lengthOf(coerceResult.warnings, 1);
-    // });
+    it('produces one warning', () => {
+      const { warnings } = configuration._validateConfig(config);
+      assert.lengthOf(warnings, 1);
+    });
+    it('produces no errors', () => {
+      const { errors } = configuration._validateConfig(config);
+      assert.lengthOf(errors, 0);
+    });
   });
 
   describe('with both data and apiDescriptions set', () => {
@@ -466,11 +460,13 @@ describe('configuration._coerceRemovedOptions()', () => {
         },
       ]);
     });
-    // it('produces no errors', () => {
-    //   assert.lengthOf(coerceResult.errors, 0);
-    // });
-    // it('produces one warning', () => {
-    //   assert.lengthOf(coerceResult.warnings, 1);
-    // });
+    it('produces one warning', () => {
+      const { warnings } = configuration._validateConfig(config);
+      assert.lengthOf(warnings, 1);
+    });
+    it('produces no errors', () => {
+      const { errors } = configuration._validateConfig(config);
+      assert.lengthOf(errors, 0);
+    });
   });
 });
