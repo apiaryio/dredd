@@ -172,225 +172,213 @@ describe('configuration.applyLoggingOptions()', () => {
 describe('configuration._coerceRemovedOptions()', () => {
   describe("with -c set to string 'true'", () => {
     const config = { c: 'true' };
+    const normalizedConfig = configuration._normalizeConfig(config);
+    const { warnings, errors } = configuration._validateConfig(config);
 
     it('gets removed', () => {
-      const normalizedConfig = configuration._normalizeConfig(config);
       assert.notProperty(normalizedConfig, 'c');
     });
-    it('produces no warnings', () => {
-      const { warnings } = configuration._validateConfig(config);
-      assert.lengthOf(warnings, 0);
+    it('produces one warning', () => {
+      assert.lengthOf(warnings, 1);
     });
-    it('produces one error', () => {
-      const { errors } = configuration._validateConfig(config);
-      assert.lengthOf(errors, 1);
+    it('produces no errors', () => {
+      assert.lengthOf(errors, 0);
     });
   });
 
   describe("with --color set to string 'true'", () => {
     const config = { color: 'true' };
+    const normalizedConfig = configuration._normalizeConfig(config);
+    const { warnings, errors } = configuration._validateConfig(config);
 
     it('gets coerced to color set to boolean true', () => {
-      const normalizedConfig = configuration._normalizeConfig(config);
       assert.propertyVal(normalizedConfig, 'color', true);
     });
     it('produces no warnings', () => {
-      const { warnings } = configuration._validateConfig(config);
       assert.lengthOf(warnings, 0);
     });
     it('produces no errors', () => {
-      const { errors } = configuration._validateConfig(config);
       assert.lengthOf(errors, 0);
     });
   });
 
   describe("with --color set to string 'false'", () => {
     const config = { color: 'false' };
+    const normalizedConfig = configuration._normalizeConfig(config);
+    const { warnings, errors } = configuration._validateConfig(config);
 
     it('gets coerced to color set to boolean false', () => {
-      const normalizedConfig = configuration._normalizeConfig(config);
       assert.propertyVal(normalizedConfig, 'color', false);
     });
     it('produces no warnings', () => {
-      const { warnings } = configuration._validateConfig(config);
       assert.lengthOf(warnings, 0);
     });
     it('produces no errors', () => {
-      const { errors } = configuration._validateConfig(config);
       assert.lengthOf(errors, 0);
     });
   });
 
   describe('with --color set to true', () => {
     const config = { color: true };
+    const normalizedConfig = configuration._normalizeConfig(config);
+    const { warnings, errors } = configuration._validateConfig(config);
 
     it('gets coerced to color set to boolean true', () => {
-      const normalizedConfig = configuration._normalizeConfig(config);
       assert.propertyVal(normalizedConfig, 'color', true);
     });
     it('produces no warnings', () => {
-      const { warnings } = configuration._validateConfig(config);
       assert.lengthOf(warnings, 0);
     });
     it('produces no errors', () => {
-      const { errors } = configuration._validateConfig(config);
       assert.lengthOf(errors, 0);
     });
   });
 
   describe('with --color set to false', () => {
     const config = { color: false };
+    const normalizedConfig = configuration._normalizeConfig(config);
+    const { warnings, errors } = configuration._validateConfig(config);
 
     it('gets coerced to color set to boolean false', () => {
-      const normalizedConfig = configuration._normalizeConfig(config);
       assert.propertyVal(normalizedConfig, 'color', false);
     });
     it('produces no warnings', () => {
-      const { warnings } = configuration._validateConfig(config);
       assert.lengthOf(warnings, 0);
     });
     it('produces no errors', () => {
-      const { errors } = configuration._validateConfig(config);
       assert.lengthOf(errors, 0);
     });
   });
 
   describe('with --level/-l set to a supported value', () => {
     const config = { l: 'debug', level: 'debug' };
+    const normalizedConfig = configuration._normalizeConfig(config);
+    const { warnings, errors } = configuration._validateConfig(config);
 
     it('gets coerced to loglevel set to the value', () => {
-      const normalizedConfig = configuration._normalizeConfig(config);
       assert.propertyVal(normalizedConfig, 'loglevel', 'debug');
       assert.notProperty(normalizedConfig, 'l');
       assert.notProperty(normalizedConfig, 'level');
     });
     it('produces no warnings', () => {
-      const { warnings } = configuration._validateConfig(config);
       assert.lengthOf(warnings, 0);
     });
     it('produces one error', () => {
-      const { errors } = configuration._validateConfig(config);
       assert.lengthOf(errors, 1);
     });
   });
 
   describe('with --level/-l set to a consolidated value', () => {
     const config = { l: 'verbose', level: 'verbose' };
+    const normalizedConfig = configuration._normalizeConfig(config);
+    const { warnings, errors } = configuration._validateConfig(config);
 
     it('gets coerced to loglevel set to a corresponding value', () => {
-      const normalizedConfig = configuration._normalizeConfig(config);
       assert.propertyVal(normalizedConfig, 'loglevel', 'debug');
       assert.notProperty(normalizedConfig, 'l');
       assert.notProperty(normalizedConfig, 'level');
     });
     it('produces no warnings', () => {
-      const { warnings } = configuration._validateConfig(config);
       assert.lengthOf(warnings, 0);
     });
     it('produces one error', () => {
-      const { errors } = configuration._validateConfig(config);
       assert.lengthOf(errors, 1);
     });
   });
 
   describe('with --level/-l set to a removed value', () => {
     const config = { l: 'complete', level: 'complete' };
+    const normalizedConfig = configuration._normalizeConfig(config);
+    const { warnings, errors } = configuration._validateConfig(config);
 
     it('gets coerced to loglevel set to the default value', () => {
-      const normalizedConfig = configuration._normalizeConfig(config);
       assert.propertyVal(normalizedConfig, 'loglevel', 'warn');
       assert.notProperty(normalizedConfig, 'l');
       assert.notProperty(normalizedConfig, 'level');
     });
     it('produces no warnings', () => {
-      const { warnings } = configuration._validateConfig(config);
       assert.lengthOf(warnings, 0);
     });
     it('produces one error', () => {
-      const { errors } = configuration._validateConfig(config);
       assert.lengthOf(errors, 1);
     });
   });
 
   describe("with -l set to 'silent'", () => {
     const config = { l: 'silent' };
+    const normalizedConfig = configuration._normalizeConfig(config);
+    const { warnings, errors } = configuration._validateConfig(config);
 
     it('gets coerced to loglevel set to silent', () => {
-      const normalizedConfig = configuration._normalizeConfig(config);
       assert.propertyVal(normalizedConfig, 'loglevel', 'silent');
       assert.notProperty(normalizedConfig, 'l');
       assert.notProperty(normalizedConfig, 'level');
     });
     it('produces no warnings', () => {
-      const { warnings } = configuration._validateConfig(config);
       assert.lengthOf(warnings, 0);
     });
     it('produces no errors', () => {
-      const { errors } = configuration._validateConfig(config);
       assert.lengthOf(errors, 0);
     });
   });
 
   describe('with --timestamp/-t set', () => {
     const config = { timestamp: true, t: true };
+    const normalizedConfig = configuration._normalizeConfig(config);
+    const { warnings, errors } = configuration._validateConfig(config);
 
     it('gets removed', () => {
-      const normalizedConfig = configuration._normalizeConfig(config);
       assert.notProperty(normalizedConfig, 't');
       assert.notProperty(normalizedConfig, 'timestamp');
     });
     it('produces no warnings', () => {
-      const { warnings } = configuration._validateConfig(config);
       assert.lengthOf(warnings, 0);
     });
     it('produces one error', () => {
-      const { errors } = configuration._validateConfig(config);
       assert.lengthOf(errors, 1);
     });
   });
 
   describe('with --silent/-q set', () => {
     const config = { silent: true, q: true };
+    const normalizedConfig = configuration._normalizeConfig(config);
+    const { warnings, errors } = configuration._validateConfig(config);
 
     it('gets removed', () => {
-      const normalizedConfig = configuration._normalizeConfig(config);
       assert.notProperty(normalizedConfig, 'q');
       assert.notProperty(normalizedConfig, 'silent');
     });
     it('produces no warnings', () => {
-      const { warnings } = configuration._validateConfig(config);
       assert.lengthOf(warnings, 0);
     });
     it('produces one error', () => {
-      const { errors } = configuration._validateConfig(config);
       assert.lengthOf(errors, 1);
     });
   });
 
   describe('with --sandbox/-b set', () => {
     const config = { sandbox: true, b: true };
+    const normalizedConfig = configuration._normalizeConfig(config);
+    const { warnings, errors } = configuration._validateConfig(config);
 
     it('gets removed', () => {
-      const normalizedConfig = configuration._normalizeConfig(config);
       assert.notProperty(normalizedConfig, 'b');
       assert.notProperty(normalizedConfig, 'sandbox');
     });
     it('produces no warnings', () => {
-      const { warnings } = configuration._validateConfig(config);
       assert.lengthOf(warnings, 0);
     });
     it('produces one error', () => {
-      const { errors } = configuration._validateConfig(config);
       assert.lengthOf(errors, 1);
     });
   });
 
   describe('with data set to { filename: apiDescription }', () => {
     const config = { data: { 'filename.api': 'FORMAT: 1A\n# Sample API\n' } };
+    const normalizedConfig = configuration._normalizeConfig(config);
+    const { warnings, errors } = configuration._validateConfig(config);
 
     it('gets reformatted', () => {
-      const normalizedConfig = configuration._normalizeConfig(config);
-
       assert.deepEqual(normalizedConfig.apiDescriptions, [
         {
           location: 'filename.api',
@@ -399,11 +387,9 @@ describe('configuration._coerceRemovedOptions()', () => {
       ]);
     });
     it('produces one warning', () => {
-      const { warnings } = configuration._validateConfig(config);
       assert.lengthOf(warnings, 1);
     });
     it('produces no errors', () => {
-      const { errors } = configuration._validateConfig(config);
       assert.lengthOf(errors, 0);
     });
   });
@@ -417,9 +403,10 @@ describe('configuration._coerceRemovedOptions()', () => {
         },
       },
     };
+    const normalizedConfig = configuration._normalizeConfig(config);
+    const { warnings, errors } = configuration._validateConfig(config);
 
     it('gets reformatted', () => {
-      const normalizedConfig = configuration._normalizeConfig(config);
       assert.deepEqual(normalizedConfig.apiDescriptions, [
         {
           location: 'filename.api',
@@ -428,11 +415,9 @@ describe('configuration._coerceRemovedOptions()', () => {
       ]);
     });
     it('produces one warning', () => {
-      const { warnings } = configuration._validateConfig(config);
       assert.lengthOf(warnings, 1);
     });
     it('produces no errors', () => {
-      const { errors } = configuration._validateConfig(config);
       assert.lengthOf(errors, 0);
     });
   });
@@ -445,10 +430,10 @@ describe('configuration._coerceRemovedOptions()', () => {
         content: 'FORMAT: 1A\n# Sample API v2\n',
       }],
     };
+    const normalizedConfig = configuration._normalizeConfig(config);
+    const { warnings, errors } = configuration._validateConfig(config);
 
     it('gets reformatted', () => {
-      const normalizedConfig = configuration._normalizeConfig(config);
-
       assert.deepEqual(normalizedConfig.apiDescriptions, [
         {
           location: 'configuration.apiDescriptions[0]',
@@ -461,11 +446,9 @@ describe('configuration._coerceRemovedOptions()', () => {
       ]);
     });
     it('produces one warning', () => {
-      const { warnings } = configuration._validateConfig(config);
       assert.lengthOf(warnings, 1);
     });
     it('produces no errors', () => {
-      const { errors } = configuration._validateConfig(config);
       assert.lengthOf(errors, 0);
     });
   });
