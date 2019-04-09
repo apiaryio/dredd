@@ -30,6 +30,8 @@ If you are familiar with `Docker <https://docs.docker.com>`__, you can get start
 
          $ docker run -it -v $PWD:/api -w /api apiaryio/dredd dredd init
 
+      When testing a service running on host (e.g. ``localhost:8080``), you need to use ``--network host`` parameter in Docker command. If you are using `Docker for Mac <https://docs.docker.com/docker-for-mac/>`__, you should use `host.docker.internal <https://docs.docker.com/docker-for-mac/networking/>`__ instead of 127.0.0.1/localhost.
+
    .. group-tab:: Windows
 
       Following line runs the ``dredd`` command using the `apiaryio/dredd <https://hub.docker.com/r/apiaryio/dredd/>`__ Docker image::
