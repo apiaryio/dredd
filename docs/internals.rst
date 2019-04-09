@@ -60,25 +60,41 @@ To hack Dredd locally, clone the repository and run ``npm install`` to install J
 Commit message format
 ~~~~~~~~~~~~~~~~~~~~~
 
-`Semantic Release <https://github.com/semantic-release/semantic-release>`__ automatically manages releasing of new Dredd versions to the `npm <https://www.npmjs.com/>`_ registry. It makes sure correct version numbers get increased according to the **meaning** of your changes once they are added to the ``master`` branch. This requires all commit messages to be in a specific format, called `Conventional Changelog <https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#user-content--git-commit-guidelines>`__::
+`Semantic Release <https://github.com/semantic-release/semantic-release>`__ automatically manages releasing of new Dredd versions to the `npm <https://www.npmjs.com/>`_ registry. It makes sure correct version numbers get increased according to the **meaning** of your changes once they are added to the ``master`` branch. This requires all commit messages to be in a specific format, called `Conventional Changelog <https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#user-content--git-commit-guidelines>`__:
+
+.. code-block:: text
 
     <type>: <message>
 
 Where ``<type>`` is a prefix, which tells Semantic Release what kind of changes you made in the commit:
 
--  ``feat`` - New functionality added
--  ``fix`` - Broken functionality fixed
+-  ``feat`` - New functionality added (results in _minor_ version bump)
+-  ``fix`` - Broken functionality fixed (results in _patch_ version bump)
+-  ``refactor`` - Changes in code, but no changes in behavior
 -  ``perf`` - Performance improved
+-  ``style`` - Changes in code formatting
+-  ``test`` - Changes in tests
 -  ``docs`` - Changes in documentation
 -  ``chore`` - Changes in package or repository configuration
--  ``refactor`` - Changes in code, but no changes in behavior
--  ``test`` - Changes in tests
 
 In the rare cases when your changes break backwards compatibility, the message must include ``BREAKING CHANGE:``, followed by an explanation. That will result in bumping the major version.
 
--  See `existing commits <https://github.com/apiaryio/dredd/commits/master>`__ as a reference
--  `Commitizen CLI <https://github.com/commitizen/cz-cli>`__ can help you to create correct commit messages
--  ``npm run lint`` validates format of your messages
+.. code-block:: text
+
+    feat: add option "--require" to support custom transpilers
+
+    Remove bult-in compilation of CoffeeScript.
+
+    Close #1234
+
+    BREAKING CHANGE: Hookfiles using CoffeeScript are not supported
+    out of the box anymore. Instead manually install the coffeescript
+    module and add --require=coffeescript/register to your command.
+
+-   See `existing commits <https://github.com/apiaryio/dredd/commits/master>`__ as a reference
+-   `Commitizen CLI <https://github.com/commitizen/cz-cli>`__ can help you to create correct commit messages
+-   Run ``npm run lint`` to validate format of your messages
+-   Use ``refactor`` together with ``BREAKING CHANGE:`` for changes in code which only remove features (there doesn't seem to be a better category for that use case) -- see `real-world example <https://github.com/apiaryio/dredd/commit/a5fe81b>`__
 
 
 GitHub labels
