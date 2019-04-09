@@ -178,7 +178,9 @@ describe('CLI class', () => {
         assert.isArray(dc.initDredd.firstCall.args);
         assert.lengthOf(dc.initDredd.firstCall.args, 1);
         assert.property(dc.initDredd.firstCall.args[0], 'server');
-        assert.property(dc.initDredd.firstCall.args[0], 'options');
+        assert.property(dc.initDredd.firstCall.args[0], 'path');
+        assert.property(dc.initDredd.firstCall.args[0], 'loglevel');
+        assert.property(dc.initDredd.firstCall.args[0], 'server');
         assert.property(dc.initDredd.firstCall.args[0], 'custom');
 
         assert.isObject(dc.dreddInstance);
@@ -225,7 +227,7 @@ describe('CLI class', () => {
       it('returns exit code 0', () => assert.equal(exitStatus, 0));
 
       it('propagates configuration options to Dredd class', () => {
-        assert.equal(dc.dreddInstance.configuration.options.path[0], './test/fixtures/single-get.apib');
+        assert.equal(dc.dreddInstance.configuration.path[0], './test/fixtures/single-get.apib');
         assert.equal(dc.dreddInstance.configuration.server, `http://127.0.0.1:${PORT}`);
       });
     });
@@ -236,7 +238,7 @@ describe('CLI class', () => {
       it('returns exit code 1', () => assert.equal(exitStatus, 1));
 
       it('propagates configuration options to Dredd class', () => {
-        assert.equal(dc.dreddInstance.configuration.options.path[0], './test/fixtures/single-get.apib');
+        assert.equal(dc.dreddInstance.configuration.path[0], './test/fixtures/single-get.apib');
         assert.equal(dc.dreddInstance.configuration.server, `http://127.0.0.1:${PORT}`);
       });
     });

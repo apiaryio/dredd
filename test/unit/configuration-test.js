@@ -453,3 +453,26 @@ describe('configuration._coerceRemovedOptions()', () => {
     });
   });
 });
+
+describe('configuration._resolveConfig()', () => {
+  it('retains class instances', () => {
+    const normalizedConfig = configuration._resolveConfig({});
+    assert.isNotNull(normalizedConfig.emitter.on);
+    assert.typeOf(normalizedConfig.emitter.on, 'Function');
+  });
+
+  describe('merges deep nested properties', () => {
+    it('custom', () => {
+      const normalizedConfig = configuration._resolveConfig({
+        custom: {
+          apiaryApiKey: 'the-key',
+          apiaryApiName: 'the-api-name',
+        },
+      });
+
+      assert.equal(normalizedConfig.custom.cwd, process.cwd());
+      assert.equal(normalizedConfig.custom.apiaryApiKey, 'the-key');
+      assert.equal(normalizedConfig.custom.apiaryApiName, 'the-api-name');
+    });
+  });
+});

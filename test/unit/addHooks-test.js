@@ -12,7 +12,6 @@ function createTransactionRunner() {
   return {
     configuration: {
       custom: { cwd: WORKING_DIRECTORY },
-      options: {},
     },
   };
 }
@@ -42,15 +41,15 @@ describe('addHooks()', () => {
     });
   });
 
-  it('sets transactionRunner.configuation.options.hookfiles', (done) => {
+  it('sets transactionRunner.configuation.hookfiles', (done) => {
     const transactionRunner = createTransactionRunner();
-    transactionRunner.configuration.options.hookfiles = [
+    transactionRunner.configuration.hookfiles = [
       './hooks-glob/f*/*.js',
       './hooks.js',
     ];
 
     addHooks(transactionRunner, [], (err) => {
-      assert.deepEqual(transactionRunner.configuration.options.hookfiles, [
+      assert.deepEqual(transactionRunner.configuration.hookfiles, [
         path.join(WORKING_DIRECTORY, 'hooks-glob/foo/a.js'),
         path.join(WORKING_DIRECTORY, 'hooks.js'),
         path.join(WORKING_DIRECTORY, 'hooks-glob/foo/o.js'),
@@ -62,7 +61,7 @@ describe('addHooks()', () => {
 
   it('propagates errors when resolving hookfiles is not possible', (done) => {
     const transactionRunner = createTransactionRunner();
-    transactionRunner.configuration.options.hookfiles = [
+    transactionRunner.configuration.hookfiles = [
       './__non-existing-directory__/non-existing-file.js',
     ];
 

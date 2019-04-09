@@ -26,13 +26,11 @@ describe('TransactionRunner', () => {
     server: 'http://127.0.0.1:3000',
     emitter: new EventEmitter(),
     custom: { cwd: process.cwd() },
-    options: {
-      'dry-run': false,
-      method: [],
-      only: [],
-      header: [],
-      reporter: [],
-    },
+    'dry-run': false,
+    method: [],
+    only: [],
+    header: [],
+    reporter: [],
   };
 
   let transaction;
@@ -65,13 +63,11 @@ describe('TransactionRunner', () => {
         emitter: new EventEmitter(),
         apiDescriptions: [{ location: 'filename.api', content: '...' }],
         custom: { cwd: process.cwd() },
-        options: {
-          'dry-run': false,
-          method: [],
-          only: [],
-          header: [],
-          reporter: [],
-        },
+        'dry-run': false,
+        method: [],
+        only: [],
+        header: [],
+        reporter: [],
       };
 
       runner = new Runner(configuration);
@@ -89,13 +85,11 @@ describe('TransactionRunner', () => {
           { location: 'filename2.api', content: '...' },
         ],
         custom: { cwd: process.cwd() },
-        options: {
-          'dry-run': false,
-          method: [],
-          only: [],
-          header: [],
-          reporter: [],
-        },
+        'dry-run': false,
+        method: [],
+        only: [],
+        header: [],
+        reporter: [],
       };
       runner = new Runner(configuration);
       runner.config(configuration);
@@ -320,7 +314,7 @@ describe('TransactionRunner', () => {
     describe('when an additional header has a colon', () => {
       beforeEach(() => {
         const conf = clone(configuration);
-        conf.options.header = ['MyCustomDate:Wed, 10 Sep 2014 12:34:26 GMT'];
+        conf.header = ['MyCustomDate:Wed, 10 Sep 2014 12:34:26 GMT'];
         runner = new Runner(conf);
       });
 
@@ -401,13 +395,13 @@ describe('TransactionRunner', () => {
     describe('when printing the names', () => {
       beforeEach(() => {
         sinon.spy(loggerStub, 'debug');
-        configuration.options.names = true;
+        configuration.names = true;
         runner = new Runner(configuration);
       });
 
       afterEach(() => {
         loggerStub.debug.restore();
-        configuration.options.names = false;
+        configuration.names = false;
       });
 
       it('should print the names and return', done => runner.executeTransaction(transaction, () => {
@@ -418,14 +412,14 @@ describe('TransactionRunner', () => {
 
     describe('when a dry run', () => {
       beforeEach(() => {
-        configuration.options['dry-run'] = true;
+        configuration['dry-run'] = true;
         runner = new Runner(configuration);
         sinon.spy(runner, 'performRequestAndValidate');
       });
 
 
       afterEach(() => {
-        configuration.options['dry-run'] = false;
+        configuration['dry-run'] = false;
         runner.performRequestAndValidate.restore();
       });
 
@@ -437,13 +431,13 @@ describe('TransactionRunner', () => {
 
     describe('when only certain methods are allowed by the configuration', () => {
       beforeEach(() => {
-        configuration.options.method = ['GET'];
+        configuration.method = ['GET'];
         runner = new Runner(configuration);
         sinon.spy(runner, 'skipTransaction');
       });
 
       afterEach(() => {
-        configuration.options.method = [];
+        configuration.method = [];
         runner.skipTransaction.restore();
       });
 
@@ -461,14 +455,14 @@ describe('TransactionRunner', () => {
             transaction.expected.body,
             { 'Content-Type': 'application/json' });
 
-        configuration.options.only = ['Group Machine > Machine > Delete Message > Bogus example name'];
+        configuration.only = ['Group Machine > Machine > Delete Message > Bogus example name'];
         runner = new Runner(configuration);
         sinon.spy(runner, 'skipTransaction');
       });
 
       afterEach(() => {
         runner.skipTransaction.restore();
-        configuration.options.only = [];
+        configuration.only = [];
         nock.cleanAll();
       });
 

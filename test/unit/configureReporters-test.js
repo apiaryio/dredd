@@ -49,11 +49,9 @@ function resetStubs() {
 describe('configureReporters()', () => {
   const configuration = {
     emitter: emitterStub,
-    options: {
-      reporter: [],
-      output: [],
-      'inline-errors': false,
-    },
+    reporter: [],
+    output: [],
+    'inline-errors': false,
   };
 
   before(() => loggerStub.transports.console.silent = true);
@@ -70,9 +68,9 @@ describe('configureReporters()', () => {
     });
 
     describe('when silent', () => {
-      before(() => configuration.options.loglevel = 'silent');
+      before(() => configuration.loglevel = 'silent');
 
-      after(() => configuration.options.loglevel = 'silent');
+      after(() => configuration.loglevel = 'silent');
 
       beforeEach(() => resetStubs());
 
@@ -85,9 +83,9 @@ describe('configureReporters()', () => {
   });
 
   describe('when there are only cli-based reporters', () => {
-    before(() => configuration.options.reporter = ['dot', 'nyan']);
+    before(() => configuration.reporter = ['dot', 'nyan']);
 
-    after(() => configuration.options.reporter = []);
+    after(() => configuration.reporter = []);
 
     beforeEach(() => resetStubs());
 
@@ -106,9 +104,9 @@ describe('configureReporters()', () => {
 
 
   describe('when there are only file-based reporters', () => {
-    before(() => configuration.options.reporter = ['xunit', 'markdown']);
+    before(() => configuration.reporter = ['xunit', 'markdown']);
 
-    after(() => configuration.options.reporter = []);
+    after(() => configuration.reporter = []);
 
     beforeEach(() => resetStubs());
 
@@ -119,9 +117,9 @@ describe('configureReporters()', () => {
     });
 
     describe('when the number of outputs is greater than or equals the number of reporters', () => {
-      before(() => configuration.options.output = ['file1', 'file2', 'file3']);
+      before(() => configuration.output = ['file1', 'file2', 'file3']);
 
-      after(() => configuration.options.output = []);
+      after(() => configuration.output = []);
 
       beforeEach(() => resetStubs());
 
@@ -134,9 +132,9 @@ describe('configureReporters()', () => {
     });
 
     describe('when the number of outputs is less than the number of reporters', () => {
-      before(() => configuration.options.output = ['file1']);
+      before(() => configuration.output = ['file1']);
 
-      after(() => configuration.options.output = []);
+      after(() => configuration.output = []);
 
       beforeEach(() => resetStubs());
 
@@ -150,9 +148,9 @@ describe('configureReporters()', () => {
   });
 
   describe('when there are both cli-based and file-based reporters', () => {
-    before(() => configuration.options.reporter = ['nyan', 'markdown', 'html']);
+    before(() => configuration.reporter = ['nyan', 'markdown', 'html']);
 
-    after(() => configuration.options.reporter = []);
+    after(() => configuration.reporter = []);
 
     beforeEach(() => resetStubs());
 
@@ -170,9 +168,9 @@ describe('configureReporters()', () => {
     });
 
     describe('when the number of outputs is greather than or equals the number of file-based reporters', () => {
-      before(() => configuration.options.output = ['file1', 'file2']);
+      before(() => configuration.output = ['file1', 'file2']);
 
-      after(() => configuration.options.output = []);
+      after(() => configuration.output = []);
 
       beforeEach(() => resetStubs());
 
@@ -185,9 +183,9 @@ describe('configureReporters()', () => {
     });
 
     describe('when the number of outputs is less than the number of file-based reporters', () => {
-      before(() => configuration.options.output = ['file1']);
+      before(() => configuration.output = ['file1']);
 
-      after(() => configuration.options.output = []);
+      after(() => configuration.output = []);
 
       beforeEach(() => resetStubs());
 

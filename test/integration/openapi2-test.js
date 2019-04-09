@@ -1,3 +1,4 @@
+const R = require('ramda');
 const { assert } = require('chai');
 
 const logger = require('../../lib/logger');
@@ -11,9 +12,14 @@ let output = '';
 function execCommand(options = {}, cb) {
   output = '';
   let finished = false;
-  if (!options.server) { options.server = `http://127.0.0.1:${PORT}`; }
-  if (!options.loglevel) { options.loglevel = 'warning'; }
-  new Dredd(options).run((error) => {
+  const defaultConfig = {
+    server: `http://127.0.0.1:${PORT}`,
+    loglevel: 'warning',
+  };
+
+  const dreddOptions = R.mergeDeepRight(defaultConfig, options);
+
+  new Dredd(dreddOptions).run((error) => {
     if (!finished) {
       finished = true;
       if (error ? error.message : undefined) {
@@ -54,15 +60,16 @@ describe('OpenAPI 2', () => {
     let actual;
 
     before(done => execCommand({
-      options: {
-        path: './test/fixtures/multiple-responses.yaml',
-      },
+      path: './test/fixtures/multiple-responses.yaml',
     },
     (err) => {
       let groups;
       const matches = [];
       // eslint-disable-next-line
       while (groups = reTransaction.exec(output)) { matches.push(groups); }
+
+      console.log(matches);
+
       actual = matches.map((match) => {
         const keyMap = {
           0: 'name', 1: 'action', 2: 'method', 3: 'statusCode',
@@ -90,10 +97,8 @@ describe('OpenAPI 2', () => {
     let actual;
 
     before(done => execCommand({
-      options: {
-        path: './test/fixtures/multiple-responses.yaml',
-        hookfiles: './test/fixtures/openapi2-multiple-responses.js',
-      },
+      path: './test/fixtures/multiple-responses.yaml',
+      hookfiles: './test/fixtures/openapi2-multiple-responses.js',
     },
     (err) => {
       let groups;
@@ -110,7 +115,7 @@ describe('OpenAPI 2', () => {
       done(err);
     }));
 
-    it('recognizes all 3 transactions', () => assert.equal(actual.length, 3));
+    it('recognizes all 3 transactions', () => console.log({ actual }) || assert.equal(actual.length, 3));
 
     [
       { action: 'skip', statusCode: '400' },
@@ -130,10 +135,8 @@ describe('OpenAPI 2', () => {
     let matches;
 
     before(done => execCommand({
-      options: {
-        path: './test/fixtures/multiple-responses.yaml',
-        hookfiles: './test/fixtures/openapi2-transaction-names.js',
-      },
+      path: './test/fixtures/multiple-responses.yaml',
+      hookfiles: './test/fixtures/openapi2-transaction-names.js',
     },
     (err) => {
       let groups;

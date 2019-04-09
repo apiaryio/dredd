@@ -53,8 +53,8 @@ describe('Dredd class', () => {
 
     it('should copy configuration on creation', () => {
       dredd = new Dredd(configuration);
-      assert.isOk(dredd.configuration.options.sorted);
-      assert.notOk(dredd.configuration.options['dry-run']);
+      assert.isOk(dredd.configuration.sorted);
+      assert.notOk(dredd.configuration['dry-run']);
     });
 
     it('should load the file on given path', (done) => {
@@ -212,9 +212,6 @@ describe('Dredd class', () => {
       beforeEach(() => {
         configuration = {
           server: 'http://127.0.0.1:3000/',
-          options: {
-
-          },
           data: {
             testingDirectObject: {
               filename: 'testingDirectObjectFilename',
@@ -266,11 +263,11 @@ GET /url
         done();
       }));
 
-      describe('and I also set configuration.options.path to an existing file', () => {
+      describe('and I also set configuration.path to an existing file', () => {
         let localdredd;
         beforeEach(() => {
-          if (!configuration.options) { configuration.options = {}; }
-          configuration.options.path = ['./test/fixtures/apiary.apib'];
+          // if (!configuration) { configuration = {}; }
+          configuration.path = ['./test/fixtures/apiary.apib'];
           localdredd = new Dredd(configuration);
           sinon.stub(localdredd.transactionRunner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
         });

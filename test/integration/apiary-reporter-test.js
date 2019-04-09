@@ -1,3 +1,4 @@
+const R = require('ramda');
 const bodyParser = require('body-parser');
 const clone = require('clone');
 const express = require('express');
@@ -18,9 +19,14 @@ function execCommand(options = {}, cb) {
   output = '';
   exitStatus = null;
   let finished = false;
-  if (!options.server) { options.server = `http://127.0.0.1:${PORT}`; }
-  if (!options.loglevel) { options.loglevel = 'warning'; }
-  new Dredd(options).run((error, stats = {}) => {
+
+  const defaultOptions = {
+    server: `http://127.0.0.1:${PORT}`,
+    loglevel: 'warning',
+  };
+  const dreddOptions = R.mergeDeepLeft(options, defaultOptions);
+
+  new Dredd(dreddOptions).run((error, stats = {}) => {
     if (!finished) {
       finished = true;
       if (error ? error.message : undefined) {
