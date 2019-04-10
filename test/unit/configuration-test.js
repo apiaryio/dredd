@@ -260,11 +260,11 @@ describe('configuration._coerceRemovedOptions()', () => {
       assert.notProperty(normalizedConfig, 'l');
       assert.notProperty(normalizedConfig, 'level');
     });
-    it('produces no warnings', () => {
-      assert.lengthOf(warnings, 0);
+    it('produces one warnings', () => {
+      assert.lengthOf(warnings, 1);
     });
-    it('produces one error', () => {
-      assert.lengthOf(errors, 1);
+    it('produces no errors', () => {
+    assert.lengthOf(errors, 0);
     });
   });
 
@@ -278,11 +278,11 @@ describe('configuration._coerceRemovedOptions()', () => {
       assert.notProperty(normalizedConfig, 'l');
       assert.notProperty(normalizedConfig, 'level');
     });
-    it('produces no warnings', () => {
-      assert.lengthOf(warnings, 0);
+    it('produces one warning', () => {
+      assert.lengthOf(warnings, 1);
     });
-    it('produces one error', () => {
-      assert.lengthOf(errors, 1);
+    it('produces no errors', () => {
+      assert.lengthOf(errors, 0);
     });
   });
 
@@ -296,11 +296,11 @@ describe('configuration._coerceRemovedOptions()', () => {
       assert.notProperty(normalizedConfig, 'l');
       assert.notProperty(normalizedConfig, 'level');
     });
-    it('produces no warnings', () => {
-      assert.lengthOf(warnings, 0);
+    it('produces one warning', () => {
+      assert.lengthOf(warnings, 1);
     });
-    it('produces one error', () => {
-      assert.lengthOf(errors, 1);
+    it('produces no errors', () => {
+      assert.lengthOf(errors, 0);
     });
   });
 
