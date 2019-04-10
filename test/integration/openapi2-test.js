@@ -14,7 +14,6 @@ function execCommand(options = {}, cb) {
   let finished = false;
   const defaultConfig = {
     server: `http://127.0.0.1:${PORT}`,
-    loglevel: 'warning',
   };
 
   const dreddOptions = R.mergeDeepRight(defaultConfig, options);
@@ -25,7 +24,7 @@ function execCommand(options = {}, cb) {
       if (error ? error.message : undefined) {
         output += error.message;
       }
-      cb();
+      cb(error);
     }
   });
 }
@@ -67,8 +66,6 @@ describe('OpenAPI 2', () => {
       const matches = [];
       // eslint-disable-next-line
       while (groups = reTransaction.exec(output)) { matches.push(groups); }
-
-      console.log(matches);
 
       actual = matches.map((match) => {
         const keyMap = {
@@ -112,10 +109,11 @@ describe('OpenAPI 2', () => {
         return match.reduce((result, element, i) => Object.assign(result, { [keyMap[i]]: element }),
           {});
       });
+
       done(err);
     }));
 
-    it('recognizes all 3 transactions', () => console.log({ actual }) || assert.equal(actual.length, 3));
+    it('recognizes all 3 transactions', () => assert.equal(actual.length, 3));
 
     [
       { action: 'skip', statusCode: '400' },
@@ -142,7 +140,7 @@ describe('OpenAPI 2', () => {
       let groups;
       matches = [];
       // eslint-disable-next-line
-        while (groups = reTransactionName.exec(output)) { matches.push(groups[1]); }
+      while (groups = reTransactionName.exec(output)) { matches.push(groups[1]); }
       done(err);
     }));
 
