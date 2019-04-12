@@ -22,7 +22,9 @@ function execCommand(options = {}, cb) {
 
   const defaultOptions = {
     server: `http://127.0.0.1:${PORT}`,
-    loglevel: 'warning',
+    options: {
+      loglevel: 'warning',
+    },
   };
   const dreddOptions = R.mergeDeepLeft(options, defaultOptions);
 

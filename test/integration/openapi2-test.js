@@ -24,7 +24,7 @@ function execCommand(options = {}, cb) {
       if (error ? error.message : undefined) {
         output += error.message;
       }
-      cb(error);
+      cb();
     }
   });
 }
@@ -59,7 +59,9 @@ describe('OpenAPI 2', () => {
     let actual;
 
     before(done => execCommand({
-      path: './test/fixtures/multiple-responses.yaml',
+      options: {
+        path: './test/fixtures/multiple-responses.yaml',
+      },
     },
     (err) => {
       let groups;
@@ -94,8 +96,10 @@ describe('OpenAPI 2', () => {
     let actual;
 
     before(done => execCommand({
-      path: './test/fixtures/multiple-responses.yaml',
-      hookfiles: './test/fixtures/openapi2-multiple-responses.js',
+      options: {
+        path: './test/fixtures/multiple-responses.yaml',
+        hookfiles: './test/fixtures/openapi2-multiple-responses.js',
+      },
     },
     (err) => {
       let groups;
@@ -133,8 +137,10 @@ describe('OpenAPI 2', () => {
     let matches;
 
     before(done => execCommand({
-      path: './test/fixtures/multiple-responses.yaml',
-      hookfiles: './test/fixtures/openapi2-transaction-names.js',
+      options: {
+        path: './test/fixtures/multiple-responses.yaml',
+        hookfiles: './test/fixtures/openapi2-transaction-names.js',
+      },
     },
     (err) => {
       let groups;

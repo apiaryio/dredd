@@ -11,7 +11,7 @@ describe('Regression: Issue #893 and #897', () => {
       const app = createServer();
       app.get('/resource', (req, res) => res.json({ name: 'Honza', color: 'green' }));
 
-      const dredd = new Dredd({ path: './test/fixtures/regression-893.yaml' });
+      const dredd = new Dredd({ options: { path: './test/fixtures/regression-893.yaml' } });
       runDreddWithServer(dredd, app, (...args) => {
         let err;
         // eslint-disable-next-line
@@ -33,7 +33,7 @@ describe('Regression: Issue #893 and #897', () => {
       app.get('/resource', (req, res) => res.json({ name: 'Honza', color: 'green' }));
       app.get('/resource.csv', (req, res) => res.type('text/csv').send('name,color\nHonza,green\n'));
 
-      const dredd = new Dredd({ path: './test/fixtures/regression-897-body.yaml' });
+      const dredd = new Dredd({ options: { path: './test/fixtures/regression-897-body.yaml' } });
       runDreddWithServer(dredd, app, (...args) => {
         let err;
         // eslint-disable-next-line
@@ -55,7 +55,7 @@ describe('Regression: Issue #893 and #897', () => {
       app.get('/resource', (req, res) => res.json({ name: 'Honza', color: 'green' }));
       app.get('/resource.csv', (req, res) => res.type('text/csv').send('name,color\nHonza,green\n'));
 
-      const dredd = new Dredd({ path: './test/fixtures/regression-897-schema.yaml' });
+      const dredd = new Dredd({ options: { path: './test/fixtures/regression-897-schema.yaml' } });
       runDreddWithServer(dredd, app, (...args) => {
         let err;
         // eslint-disable-next-line
