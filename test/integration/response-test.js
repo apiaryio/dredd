@@ -232,7 +232,7 @@ const Dredd = require('../../lib/Dredd');
     it('prints four warnings for each of the responses', () => assert.equal(runtimeInfo.dredd.logging.match(
       /HTTP 204 and 205 responses must not include a message body/g
     ).length, 4));
-    it('prints four failures for each non-matching status code', () => console.log(runtimeInfo) || assert.equal(runtimeInfo.dredd.logging.match(
+    it('prints four failures for each non-matching status code', () => assert.equal(runtimeInfo.dredd.logging.match(
       /fail: statusCode: Status code is '200' instead of/g
     ).length, 4));
     it('does not print any failures regarding response bodies', () => assert.isNull(runtimeInfo.dredd.logging.match(/fail: body:/g)));

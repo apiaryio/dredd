@@ -266,7 +266,6 @@ GET /url
       describe('and I also set configuration.path to an existing file', () => {
         let localdredd;
         beforeEach(() => {
-          // if (!configuration) { configuration = {}; }
           configuration.path = ['./test/fixtures/apiary.apib'];
           localdredd = new Dredd(configuration);
           sinon.stub(localdredd.transactionRunner, 'executeTransaction').callsFake((transaction, hooks, callback) => callback());
