@@ -5,6 +5,18 @@ const Dredd = require('../../lib/Dredd');
 const { createServer, runDredd, runDreddWithServer } = require('./helpers');
 
 
+const EXPECTED_STATS_KEYS = [
+  'tests',
+  'failures',
+  'errors',
+  'passes',
+  'skipped',
+  'start',
+  'end',
+  'duration',
+];
+
+
 describe('Running Dredd from JavaScript', () => {
   describe('when the testing is successful', () => {
     let runtimeInfo;
@@ -27,16 +39,7 @@ describe('Running Dredd from JavaScript', () => {
       assert.isNotOk(runtimeInfo.dredd.err);
     });
     it('passes expected stats to the callback', () => {
-      assert.hasAllKeys(runtimeInfo.dredd.stats, [
-        'tests',
-        'failures',
-        'errors',
-        'passes',
-        'skipped',
-        'start',
-        'end',
-        'duration',
-      ]);
+      assert.hasAllKeys(runtimeInfo.dredd.stats, EXPECTED_STATS_KEYS);
     });
     it('performs 1 test', () => {
       assert.equal(runtimeInfo.dredd.stats.tests, 1);
@@ -85,16 +88,7 @@ describe('Running Dredd from JavaScript', () => {
       assert.isNotOk(runtimeInfo.dredd.err);
     });
     it('passes expected stats to the callback', () => {
-      assert.hasAllKeys(runtimeInfo.dredd.stats, [
-        'tests',
-        'failures',
-        'errors',
-        'passes',
-        'skipped',
-        'start',
-        'end',
-        'duration',
-      ]);
+      assert.hasAllKeys(runtimeInfo.dredd.stats, EXPECTED_STATS_KEYS);
     });
     it('performs 1 test', () => {
       assert.equal(runtimeInfo.dredd.stats.tests, 1);
@@ -137,16 +131,7 @@ describe('Running Dredd from JavaScript', () => {
       assert.isNotOk(dreddRuntimeInfo.err);
     });
     it('passes expected stats to the callback', () => {
-      assert.hasAllKeys(dreddRuntimeInfo.stats, [
-        'tests',
-        'failures',
-        'errors',
-        'passes',
-        'skipped',
-        'start',
-        'end',
-        'duration',
-      ]);
+      assert.hasAllKeys(dreddRuntimeInfo.stats, EXPECTED_STATS_KEYS);
     });
     it('performs 1 test', () => {
       assert.equal(dreddRuntimeInfo.stats.tests, 1);
@@ -189,16 +174,7 @@ describe('Running Dredd from JavaScript', () => {
       assert.instanceOf(dreddRuntimeInfo.err, Error);
     });
     it('passes expected stats to the callback', () => {
-      assert.hasAllKeys(dreddRuntimeInfo.stats, [
-        'tests',
-        'failures',
-        'errors',
-        'passes',
-        'skipped',
-        'start',
-        'end',
-        'duration',
-      ]);
+      assert.hasAllKeys(dreddRuntimeInfo.stats, EXPECTED_STATS_KEYS);
     });
     it('performs 0 tests', () => {
       assert.equal(dreddRuntimeInfo.stats.tests, 0);
@@ -244,16 +220,7 @@ describe('Running Dredd from JavaScript', () => {
       assert.deepEqual(dreddRuntimeInfo.err, error);
     });
     it('passes expected stats to the callback', () => {
-      assert.hasAllKeys(dreddRuntimeInfo.stats, [
-        'tests',
-        'failures',
-        'errors',
-        'passes',
-        'skipped',
-        'start',
-        'end',
-        'duration',
-      ]);
+      assert.hasAllKeys(dreddRuntimeInfo.stats, EXPECTED_STATS_KEYS);
     });
     it('performs 0 tests', () => {
       assert.equal(dreddRuntimeInfo.stats.tests, 0);
