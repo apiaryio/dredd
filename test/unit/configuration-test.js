@@ -2,9 +2,10 @@ const clone = require('clone');
 const { assert } = require('chai');
 
 const configuration = require('../../lib/configuration');
+const { normalizeConfig } = require('../../lib/configuration/normalizeConfig');
+const validateConfig = require('../../lib/configuration/validateConfig');
 const logger = require('../../lib/logger');
 const reporterOutputLogger = require('../../lib/reporters/reporterOutputLogger');
-
 
 const defaultLoggerConsole = clone(logger.transports.console);
 const defaultReporterOutputLoggerConsole = clone(reporterOutputLogger.transports.console);
@@ -13,7 +14,6 @@ function resetLoggerConsoles() {
   logger.transports.console = defaultLoggerConsole;
   reporterOutputLogger.transports.console = defaultReporterOutputLoggerConsole;
 }
-
 
 describe('configuration.applyLoggingOptions()', () => {
   beforeEach(resetLoggerConsoles);
@@ -172,8 +172,8 @@ describe('configuration.applyLoggingOptions()', () => {
 describe('configuration._coerceRemovedOptions()', () => {
   describe("with -c set to string 'true'", () => {
     const config = { c: 'true' };
-    const normalizedConfig = configuration._normalizeConfig(config);
-    const { warnings, errors } = configuration._validateConfig(config);
+    const normalizedConfig = normalizeConfig(config);
+    const { warnings, errors } = validateConfig(config);
 
     it('gets removed', () => {
       assert.notProperty(normalizedConfig, 'c');
@@ -188,8 +188,8 @@ describe('configuration._coerceRemovedOptions()', () => {
 
   describe("with --color set to string 'true'", () => {
     const config = { color: 'true' };
-    const normalizedConfig = configuration._normalizeConfig(config);
-    const { warnings, errors } = configuration._validateConfig(config);
+    const normalizedConfig = normalizeConfig(config);
+    const { warnings, errors } = validateConfig(config);
 
     it('gets coerced to color set to boolean true', () => {
       assert.propertyVal(normalizedConfig, 'color', true);
@@ -204,8 +204,8 @@ describe('configuration._coerceRemovedOptions()', () => {
 
   describe("with --color set to string 'false'", () => {
     const config = { color: 'false' };
-    const normalizedConfig = configuration._normalizeConfig(config);
-    const { warnings, errors } = configuration._validateConfig(config);
+    const normalizedConfig = normalizeConfig(config);
+    const { warnings, errors } = validateConfig(config);
 
     it('gets coerced to color set to boolean false', () => {
       assert.propertyVal(normalizedConfig, 'color', false);
@@ -220,8 +220,8 @@ describe('configuration._coerceRemovedOptions()', () => {
 
   describe('with --color set to true', () => {
     const config = { color: true };
-    const normalizedConfig = configuration._normalizeConfig(config);
-    const { warnings, errors } = configuration._validateConfig(config);
+    const normalizedConfig = normalizeConfig(config);
+    const { warnings, errors } = validateConfig(config);
 
     it('gets coerced to color set to boolean true', () => {
       assert.propertyVal(normalizedConfig, 'color', true);
@@ -236,8 +236,8 @@ describe('configuration._coerceRemovedOptions()', () => {
 
   describe('with --color set to false', () => {
     const config = { color: false };
-    const normalizedConfig = configuration._normalizeConfig(config);
-    const { warnings, errors } = configuration._validateConfig(config);
+    const normalizedConfig = normalizeConfig(config);
+    const { warnings, errors } = validateConfig(config);
 
     it('gets coerced to color set to boolean false', () => {
       assert.propertyVal(normalizedConfig, 'color', false);
@@ -252,8 +252,8 @@ describe('configuration._coerceRemovedOptions()', () => {
 
   describe('with --level/-l set to a supported value', () => {
     const config = { l: 'debug', level: 'debug' };
-    const normalizedConfig = configuration._normalizeConfig(config);
-    const { warnings, errors } = configuration._validateConfig(config);
+    const normalizedConfig = normalizeConfig(config);
+    const { warnings, errors } = validateConfig(config);
 
     it('gets coerced to loglevel set to the value', () => {
       assert.propertyVal(normalizedConfig, 'loglevel', 'debug');
@@ -270,8 +270,8 @@ describe('configuration._coerceRemovedOptions()', () => {
 
   describe('with --level/-l set to a consolidated value', () => {
     const config = { l: 'verbose', level: 'verbose' };
-    const normalizedConfig = configuration._normalizeConfig(config);
-    const { warnings, errors } = configuration._validateConfig(config);
+    const normalizedConfig = normalizeConfig(config);
+    const { warnings, errors } = validateConfig(config);
 
     it('gets coerced to loglevel set to a corresponding value', () => {
       assert.propertyVal(normalizedConfig, 'loglevel', 'debug');
@@ -288,8 +288,8 @@ describe('configuration._coerceRemovedOptions()', () => {
 
   describe('with --level/-l set to a removed value', () => {
     const config = { l: 'complete', level: 'complete' };
-    const normalizedConfig = configuration._normalizeConfig(config);
-    const { warnings, errors } = configuration._validateConfig(config);
+    const normalizedConfig = normalizeConfig(config);
+    const { warnings, errors } = validateConfig(config);
 
     it('gets coerced to loglevel set to the default value', () => {
       assert.propertyVal(normalizedConfig, 'loglevel', 'warn');
@@ -306,8 +306,8 @@ describe('configuration._coerceRemovedOptions()', () => {
 
   describe("with -l set to 'silent'", () => {
     const config = { l: 'silent' };
-    const normalizedConfig = configuration._normalizeConfig(config);
-    const { warnings, errors } = configuration._validateConfig(config);
+    const normalizedConfig = normalizeConfig(config);
+    const { warnings, errors } = validateConfig(config);
 
     it('gets coerced to loglevel set to silent', () => {
       assert.propertyVal(normalizedConfig, 'loglevel', 'silent');
@@ -324,8 +324,8 @@ describe('configuration._coerceRemovedOptions()', () => {
 
   describe('with --timestamp/-t set', () => {
     const config = { timestamp: true, t: true };
-    const normalizedConfig = configuration._normalizeConfig(config);
-    const { warnings, errors } = configuration._validateConfig(config);
+    const normalizedConfig = normalizeConfig(config);
+    const { warnings, errors } = validateConfig(config);
 
     it('gets removed', () => {
       assert.notProperty(normalizedConfig, 't');
@@ -341,8 +341,8 @@ describe('configuration._coerceRemovedOptions()', () => {
 
   describe('with --silent/-q set', () => {
     const config = { silent: true, q: true };
-    const normalizedConfig = configuration._normalizeConfig(config);
-    const { warnings, errors } = configuration._validateConfig(config);
+    const normalizedConfig = normalizeConfig(config);
+    const { warnings, errors } = validateConfig(config);
 
     it('gets removed', () => {
       assert.notProperty(normalizedConfig, 'q');
@@ -358,8 +358,8 @@ describe('configuration._coerceRemovedOptions()', () => {
 
   describe('with --sandbox/-b set', () => {
     const config = { sandbox: true, b: true };
-    const normalizedConfig = configuration._normalizeConfig(config);
-    const { warnings, errors } = configuration._validateConfig(config);
+    const normalizedConfig = normalizeConfig(config);
+    const { warnings, errors } = validateConfig(config);
 
     it('gets removed', () => {
       assert.notProperty(normalizedConfig, 'b');
@@ -375,17 +375,8 @@ describe('configuration._coerceRemovedOptions()', () => {
 
   describe('with data set to { filename: apiDescription }', () => {
     const config = { data: { 'filename.api': 'FORMAT: 1A\n# Sample API\n' } };
-    const normalizedConfig = configuration._normalizeConfig(config);
-    const { warnings, errors } = configuration._validateConfig(config);
+    const { warnings, errors } = validateConfig(config);
 
-    it('gets reformatted', () => {
-      assert.deepEqual(normalizedConfig.apiDescriptions, [
-        {
-          location: 'filename.api',
-          content: 'FORMAT: 1A\n# Sample API\n',
-        },
-      ]);
-    });
     it('produces one warning', () => {
       assert.lengthOf(warnings, 1);
     });
@@ -403,17 +394,8 @@ describe('configuration._coerceRemovedOptions()', () => {
         },
       },
     };
-    const normalizedConfig = configuration._normalizeConfig(config);
-    const { warnings, errors } = configuration._validateConfig(config);
+    const { warnings, errors } = validateConfig(config);
 
-    it('gets reformatted', () => {
-      assert.deepEqual(normalizedConfig.apiDescriptions, [
-        {
-          location: 'filename.api',
-          content: 'FORMAT: 1A\n# Sample API\n',
-        },
-      ]);
-    });
     it('produces one warning', () => {
       assert.lengthOf(warnings, 1);
     });
@@ -430,49 +412,13 @@ describe('configuration._coerceRemovedOptions()', () => {
         content: 'FORMAT: 1A\n# Sample API v2\n',
       }],
     };
-    const normalizedConfig = configuration._normalizeConfig(config);
-    const { warnings, errors } = configuration._validateConfig(config);
+    const { warnings, errors } = validateConfig(config);
 
-    it('gets reformatted', () => {
-      assert.deepEqual(normalizedConfig.apiDescriptions, [
-        {
-          location: 'configuration.apiDescriptions[0]',
-          content: 'FORMAT: 1A\n# Sample API v2\n',
-        },
-        {
-          location: 'filename.api',
-          content: 'FORMAT: 1A\n# Sample API v1\n',
-        },
-      ]);
-    });
     it('produces one warning', () => {
       assert.lengthOf(warnings, 1);
     });
     it('produces no errors', () => {
       assert.lengthOf(errors, 0);
-    });
-  });
-});
-
-describe('configuration._resolveConfig()', () => {
-  it('retains class instances', () => {
-    const normalizedConfig = configuration._resolveConfig({});
-    assert.isNotNull(normalizedConfig.emitter.on);
-    assert.typeOf(normalizedConfig.emitter.on, 'Function');
-  });
-
-  describe('merges deep nested properties', () => {
-    it('custom', () => {
-      const normalizedConfig = configuration._resolveConfig({
-        custom: {
-          apiaryApiKey: 'the-key',
-          apiaryApiName: 'the-api-name',
-        },
-      });
-
-      assert.equal(normalizedConfig.custom.cwd, process.cwd());
-      assert.equal(normalizedConfig.custom.apiaryApiKey, 'the-key');
-      assert.equal(normalizedConfig.custom.apiaryApiName, 'the-api-name');
     });
   });
 });
