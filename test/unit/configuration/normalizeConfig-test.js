@@ -142,8 +142,9 @@ describe('normalizeConfig()', () => {
       });
 
       describe('coerces to "warn"', () => {
-        it('in all other cases', () => {
-          assert.propertyVal(_utils.coerceDeprecatedLevelOption({ l: null }), 'loglevel', 'warn');
+        it('when given falsy value', () => {
+          assert.propertyVal(_utils.coerceDeprecatedLevelOption({ l: false }), 'loglevel', 'warn');
+          assert.propertyVal(_utils.coerceDeprecatedLevelOption({ l: undefined }), 'loglevel', 'warn');
           assert.propertyVal(_utils.coerceDeprecatedLevelOption({ l: null }), 'loglevel', 'warn');
         });
       });
