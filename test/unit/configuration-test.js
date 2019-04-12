@@ -169,7 +169,7 @@ describe('configuration.applyLoggingOptions()', () => {
 });
 
 
-describe('configuration._coerceRemovedOptions()', () => {
+describe('configuration', () => {
   describe("with -c set to string 'true'", () => {
     const config = { c: 'true' };
     const normalizedConfig = normalizeConfig(config);
