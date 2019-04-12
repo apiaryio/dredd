@@ -2,7 +2,7 @@ const clone = require('clone');
 const { assert } = require('chai');
 
 const configuration = require('../../lib/configuration');
-const { normalizeConfig } = require('../../lib/configuration/normalizeConfig');
+const normalizeConfig = require('../../lib/configuration/normalizeConfig');
 const validateConfig = require('../../lib/configuration/validateConfig');
 const logger = require('../../lib/logger');
 const reporterOutputLogger = require('../../lib/reporters/reporterOutputLogger');

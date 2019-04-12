@@ -1,7 +1,7 @@
 const R = require('ramda');
 const { assert } = require('chai');
 const { EventEmitter } = require('events');
-const { resolveConfig, _utils } = require('../../../lib/configuration/applyConfiguration');
+const { DEFAULT_CONFIG, resolveConfig } = require('../../../lib/configuration/applyConfiguration');
 
 describe('resolveConfig()', () => {
   const withOverrides = R.mergeDeepRight({
@@ -29,7 +29,7 @@ describe('resolveConfig()', () => {
 
   describe('when merging with default options', () => {
     it('contains default options', () => {
-      assert.hasAllKeys(config, Object.keys(_utils.DEFAULT_CONFIG).concat('emitter'));
+      assert.hasAllKeys(config, Object.keys(DEFAULT_CONFIG).concat('emitter'));
     });
 
     it('overrides default options with custom ones', () => {
@@ -88,7 +88,7 @@ describe('resolveConfig()', () => {
 
     describe('deep merges "custom" properties', () => {
       it('preserves default "cwd" property', () => {
-        assert.equal(config.custom.cwd, _utils.DEFAULT_CONFIG.custom.cwd);
+        assert.equal(config.custom.cwd, DEFAULT_CONFIG.custom.cwd);
       });
 
       it('includes custom properties', () => {

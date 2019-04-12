@@ -1,10 +1,19 @@
 const { assert } = require('chai');
-const { _utils } = require('../../../lib/configuration/normalizeConfig');
+const {
+  coerceToArray,
+  coerceToBoolean,
+  removeUnsupportedOptions,
+  coerceColorOption,
+  coerceApiDescriptions,
+  coerceDeprecatedDataOption,
+  coerceDeprecatedLevelOption,
+  coerceUserOption,
+} = require('../../../lib/configuration/normalizeConfig');
 
 describe('normalizeConfig()', () => {
   describe('removeUnsupportedOptions()', () => {
     describe('removes without coercion', () => {
-      const result = _utils.removeUnsupportedOptions({
+      const result = removeUnsupportedOptions({
         q: true,
         silent: true,
         t: true,
@@ -25,45 +34,45 @@ describe('normalizeConfig()', () => {
   describe('coercion', () => {
     describe('coerceToArray', () => {
       it('when given null', () => {
-        assert.deepEqual(_utils.coerceToArray(null), []);
+        assert.deepEqual(coerceToArray(null), []);
       });
 
       it('when given a string', () => {
-        assert.deepEqual(_utils.coerceToArray('foo'), ['foo']);
+        assert.deepEqual(coerceToArray('foo'), ['foo']);
       });
 
       it('when given an array', () => {
-        assert.deepEqual(_utils.coerceToArray(['foo', 'bar']), ['foo', 'bar']);
+        assert.deepEqual(coerceToArray(['foo', 'bar']), ['foo', 'bar']);
       });
     });
 
     describe('coerceToBoolean', () => {
       it('when given a boolean', () => {
-        assert.equal(_utils.coerceToBoolean(true), true);
-        assert.equal(_utils.coerceToBoolean(false), false);
+        assert.equal(coerceToBoolean(true), true);
+        assert.equal(coerceToBoolean(false), false);
       });
 
       describe('when given a string', () => {
         it('that equals "true"', () => {
-          assert.equal(_utils.coerceToBoolean('true'), true);
+          assert.equal(coerceToBoolean('true'), true);
         });
 
         it('that equals "false"', () => {
-          assert.equal(_utils.coerceToBoolean('false'), false);
+          assert.equal(coerceToBoolean('false'), false);
         });
 
         it('that has a random value', () => {
-          assert.equal(_utils.coerceToBoolean('foo'), true);
+          assert.equal(coerceToBoolean('foo'), true);
         });
 
         it('that is empty', () => {
-          assert.equal(_utils.coerceToBoolean(''), false);
+          assert.equal(coerceToBoolean(''), false);
         });
       });
     });
 
     describe('c (color alias)', () => {
-      const result = _utils.coerceColorOption({ c: false });
+      const result = coerceColorOption({ c: false });
 
       it('coerces to boolean "color" option', () => {
         assert.propertyVal(result, 'color', false);
@@ -76,7 +85,7 @@ describe('normalizeConfig()', () => {
 
     describe('apiDescriptions', () => {
       describe('when given a string', () => {
-        const result = _utils.coerceApiDescriptions('foo');
+        const result = coerceApiDescriptions('foo');
 
         it('coerces into list of descriptions', () => {
           assert.deepEqual(result, [
@@ -89,7 +98,7 @@ describe('normalizeConfig()', () => {
       });
 
       describe('when given a list', () => {
-        const result = _utils.coerceApiDescriptions(['foo', 'bar']);
+        const result = coerceApiDescriptions(['foo', 'bar']);
 
         it('coerces into list of descriptions', () => {
           assert.deepEqual(result, [
@@ -101,7 +110,7 @@ describe('normalizeConfig()', () => {
     });
 
     describe('user', () => {
-      const result = _utils.coerceUserOption({ user: 'apiary' });
+      const result = coerceUserOption({ user: 'apiary' });
 
       it('coerces to base64 encoded "header"', () => {
         assert.deepEqual(result.header, ['Authorization: Basic YXBpYXJ5']);
@@ -117,37 +126,37 @@ describe('normalizeConfig()', () => {
     describe('level', () => {
       describe('coerces to "debug"', () => {
         it('when given "silly"', () => {
-          assert.propertyVal(_utils.coerceDeprecatedLevelOption({ l: 'silly' }), 'loglevel', 'debug');
+          assert.propertyVal(coerceDeprecatedLevelOption({ l: 'silly' }), 'loglevel', 'debug');
         });
 
         it('when given "verbose"', () => {
-          assert.propertyVal(_utils.coerceDeprecatedLevelOption({ l: 'verbose' }), 'loglevel', 'debug');
+          assert.propertyVal(coerceDeprecatedLevelOption({ l: 'verbose' }), 'loglevel', 'debug');
         });
 
         it('when given "debug"', () => {
-          assert.propertyVal(_utils.coerceDeprecatedLevelOption({ l: 'debug' }), 'loglevel', 'debug');
+          assert.propertyVal(coerceDeprecatedLevelOption({ l: 'debug' }), 'loglevel', 'debug');
         });
       });
 
       describe('coerces to "error"', () => {
         it('when given "error"', () => {
-          assert.propertyVal(_utils.coerceDeprecatedLevelOption({ l: 'error' }), 'loglevel', 'error');
+          assert.propertyVal(coerceDeprecatedLevelOption({ l: 'error' }), 'loglevel', 'error');
         });
       });
 
       describe('coerces to "silent"', () => {
         it('when given "silent"', () => {
-          assert.propertyVal(_utils.coerceDeprecatedLevelOption({ l: 'silent' }), 'loglevel', 'silent');
+          assert.propertyVal(coerceDeprecatedLevelOption({ l: 'silent' }), 'loglevel', 'silent');
         });
       });
 
       describe('coerces to "warn"', () => {
         it('when given falsy value', () => {
-          assert.propertyVal(_utils.coerceDeprecatedLevelOption({ l: 'warn' }), 'loglevel', 'warn');
-          assert.propertyVal(_utils.coerceDeprecatedLevelOption({ l: 'foobar' }), 'loglevel', 'warn');
-          assert.propertyVal(_utils.coerceDeprecatedLevelOption({ l: false }), 'loglevel', 'warn');
-          assert.propertyVal(_utils.coerceDeprecatedLevelOption({ l: undefined }), 'loglevel', 'warn');
-          assert.propertyVal(_utils.coerceDeprecatedLevelOption({ l: null }), 'loglevel', 'warn');
+          assert.propertyVal(coerceDeprecatedLevelOption({ l: 'warn' }), 'loglevel', 'warn');
+          assert.propertyVal(coerceDeprecatedLevelOption({ l: 'foobar' }), 'loglevel', 'warn');
+          assert.propertyVal(coerceDeprecatedLevelOption({ l: false }), 'loglevel', 'warn');
+          assert.propertyVal(coerceDeprecatedLevelOption({ l: undefined }), 'loglevel', 'warn');
+          assert.propertyVal(coerceDeprecatedLevelOption({ l: null }), 'loglevel', 'warn');
         });
       });
     });
@@ -155,7 +164,7 @@ describe('normalizeConfig()', () => {
     describe('data', () => {
       describe('coerces to "apiDescriptions"', () => {
         it('when given { filename: apiDescription } format', () => {
-          const result = _utils.coerceDeprecatedDataOption({
+          const result = coerceDeprecatedDataOption({
             data: {
               'filename.api': 'FORMAT: 1A\n# Sample API\n',
             },
@@ -172,7 +181,7 @@ describe('normalizeConfig()', () => {
         });
 
         it('when given { filename, raw: apiDescription } format', () => {
-          const result = _utils.coerceDeprecatedDataOption({
+          const result = coerceDeprecatedDataOption({
             data: {
               'filename.api': {
                 raw: 'FORMAT: 1A\n# Sample API\n',
@@ -192,7 +201,7 @@ describe('normalizeConfig()', () => {
         });
 
         it('with both "data" and "apiDescriptions"', () => {
-          const result = _utils.coerceDeprecatedDataOption({
+          const result = coerceDeprecatedDataOption({
             data: { 'filename.api': 'FORMAT: 1A\n# Sample API v2\n' },
             apiDescriptions: [
               {
