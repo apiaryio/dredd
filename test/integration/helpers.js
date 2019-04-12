@@ -146,7 +146,7 @@ function createServer(options = {}) {
 // instance returns as test results.
 function runDredd(dredd, serverPort, callback) {
   if (typeof serverPort === 'function') { [callback, serverPort] = Array.from([serverPort, DEFAULT_SERVER_PORT]); }
-  if (dredd.configuration.server == null) { dredd.configuration.server = `http://127.0.0.1:${serverPort}`; }
+  if (dredd.configuration.endpoint == null) { dredd.configuration.endpoint = `http://127.0.0.1:${serverPort}`; }
 
   if (dredd.configuration.options == null) { dredd.configuration.options = {}; }
   if (dredd.configuration.options.loglevel == null) { dredd.configuration.options.loglevel = 'debug'; }

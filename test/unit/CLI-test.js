@@ -228,7 +228,7 @@ describe('CLI class', () => {
 
       it('propagates configuration options to Dredd class', () => {
         assert.equal(dc.dreddInstance.configuration.path[0], './test/fixtures/single-get.apib');
-        assert.equal(dc.dreddInstance.configuration.server, `http://127.0.0.1:${PORT}`);
+        assert.equal(dc.dreddInstance.configuration.endpoint, `http://127.0.0.1:${PORT}`);
       });
     });
 
@@ -239,7 +239,7 @@ describe('CLI class', () => {
 
       it('propagates configuration options to Dredd class', () => {
         assert.equal(dc.dreddInstance.configuration.path[0], './test/fixtures/single-get.apib');
-        assert.equal(dc.dreddInstance.configuration.server, `http://127.0.0.1:${PORT}`);
+        assert.equal(dc.dreddInstance.configuration.endpoint, `http://127.0.0.1:${PORT}`);
       });
     });
   });

@@ -23,9 +23,11 @@ const Hooks = require('../../lib/Hooks');
 describe('TransactionRunner', () => {
   let server;
   let configuration = {
-    server: 'http://127.0.0.1:3000',
+    endpoint: 'http://127.0.0.1:3000',
     emitter: new EventEmitter(),
-    custom: { cwd: process.cwd() },
+    custom: {
+      cwd: process.cwd(),
+    },
     'dry-run': false,
     method: [],
     only: [],
@@ -49,7 +51,7 @@ describe('TransactionRunner', () => {
   describe('constructor', () => {
     beforeEach(() => { runner = new Runner(configuration); });
 
-    it('should copy configuration', () => assert.isOk(runner.configuration.server));
+    it('should copy configuration', () => assert.isOk(runner.configuration.endpoint));
 
     it('should have an empty hookStash object', () => assert.deepEqual(runner.hookStash, {}));
 
@@ -59,7 +61,7 @@ describe('TransactionRunner', () => {
   describe('config(config)', () => {
     describe('when single file in apiDescriptions is present', () => it('should set multiBlueprint to false', () => {
       configuration = {
-        server: 'http://127.0.0.1:3000',
+        endpoint: 'http://127.0.0.1:3000',
         emitter: new EventEmitter(),
         apiDescriptions: [{ location: 'filename.api', content: '...' }],
         custom: { cwd: process.cwd() },
@@ -78,7 +80,7 @@ describe('TransactionRunner', () => {
 
     describe('when multiple files in apiDescriptions are present', () => it('should set multiBlueprint to true', () => {
       configuration = {
-        server: 'http://127.0.0.1:3000',
+        endpoint: 'http://127.0.0.1:3000',
         emitter: new EventEmitter(),
         apiDescriptions: [
           { location: 'filename1.api', content: '...' },
@@ -232,7 +234,7 @@ describe('TransactionRunner', () => {
 
       ].forEach(({ description, input, expected }) => context(`${description}: '${input.serverUrl}' + '${input.requestPath}'`, () => {
         beforeEach(() => {
-          runner.configuration.server = input.serverUrl;
+          runner.configuration.endpoint = input.serverUrl;
           transaction.request.uri = input.requestPath;
           transaction.origin.filename = filename;
           transaction.apiDescriptionMediaType = 'text/vnd.apiblueprint';
@@ -337,7 +339,7 @@ describe('TransactionRunner', () => {
     describe('when endpoint URL contains PORT and path', () => {
       beforeEach(() => {
         const configurationWithPath = clone(configuration);
-        configurationWithPath.server = 'https://hostname.tld:9876/my/path/to/api/';
+        configurationWithPath.endpoint = 'https://hostname.tld:9876/my/path/to/api/';
         runner = new Runner(configurationWithPath);
       });
 
@@ -550,7 +552,7 @@ describe('TransactionRunner', () => {
           .reply(transaction.expected.status,
             transaction.expected.body,
             { 'Content-Type': 'application/json' });
-        configuration.server = 'https://127.0.0.1:3000';
+        configuration.endpoint = 'https://127.0.0.1:3000';
         transaction.protocol = 'https:';
         runner = new Runner(configuration);
       });
@@ -570,7 +572,7 @@ describe('TransactionRunner', () => {
           .reply(transaction.expected.status,
             transaction.expected.body,
             { 'Content-Type': 'application/json' });
-        configuration.server = 'http://127.0.0.1:3000';
+        configuration.endpoint = 'http://127.0.0.1:3000';
         transaction.protocol = 'http:';
         runner = new Runner(configuration);
       });
@@ -1190,7 +1192,7 @@ describe('TransactionRunner', () => {
 
   describe('#executeAllTransactions', () => {
     configuration = {
-      server: 'http://127.0.0.1:3000',
+      endpoint: 'http://127.0.0.1:3000',
       emitter: new EventEmitter(),
       custom: { cwd: process.cwd() },
       options: {
