@@ -10,6 +10,7 @@ node_modules
 cov.*
 *.log
 .env*
+__pycache__
 
 # Regardless the rules above, never ignore following
 !.vscode/launch.json
