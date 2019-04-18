@@ -49,8 +49,11 @@ Let’s have a look at an example configuration first. (Please also see the :ref
      apiDescriptions: ['FORMAT: 1A\n# Sample API\n']
    }
 
-.. note::
-   The usage of nested `options` key is deprecated. Please list options under the root of the configuration. 
+.. warning::
+   The usage of nested ``options`` key is deprecated. Please list options under the root of the configuration. 
+
+.. warning::
+   The top-level `server` property must be replaced by ``endpoint``. Do not confuse with the options `--server` option, that provides a server running command (i.e. ``npm start``).
 
 .. js:data:: configuration
 
