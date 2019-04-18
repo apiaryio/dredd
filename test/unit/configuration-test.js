@@ -264,7 +264,7 @@ describe('configuration', () => {
       assert.lengthOf(warnings, 1);
     });
     it('produces no errors', () => {
-    assert.lengthOf(errors, 0);
+      assert.lengthOf(errors, 0);
     });
   });
 
