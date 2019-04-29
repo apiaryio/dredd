@@ -75,7 +75,7 @@ See below how sample configuration file could look like. The structure is the sa
    blueprint: api-description.apib
    endpoint: "http://127.0.0.1:3000"
 
-.. note::
+.. warning::
    Do not get confused by Dredd using a keyword ``blueprint`` also for paths to OpenAPI 2 documents. This is for historical reasons and will be changed in the future.
 
 CLI Options Reference

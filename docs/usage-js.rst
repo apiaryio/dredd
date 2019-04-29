@@ -26,48 +26,42 @@ As you can see, ``dredd.run`` is a function receiving another function as a call
 Configuration Object for Dredd Class
 ------------------------------------
 
-Let’s have a look at an example configuration first. (Please also see the :ref:`CLI options <usage-cli>` to read detailed information about the ``options`` attributes).
+Let’s have a look at an example configuration first. (Please also see the :ref:`CLI options <usage-cli>` to read detailed information about the list of available options).
 
 .. code-block:: javascript
 
    {
-     server: 'http://127.0.0.1:3000/api', // your URL to API endpoint the tests will run against
-     options: {
-       path: [],         // Required Array if Strings; filepaths to API description documents, can use glob wildcards
-       'dry-run': false, // Boolean, do not run any real HTTP transaction
-       names: false,     // Boolean, Print Transaction names and finish, similar to dry-run
-       loglevel: 'warning', // String, logging level (debug, warning, error, silent)
-       only: [],         // Array of Strings, run only transaction that match these names
-       header: [],       // Array of Strings, these strings are then added as headers (key:value) to every transaction
-       user: null,       // String, Basic Auth credentials in the form username:password
-       hookfiles: [],    // Array of Strings, filepaths to files containing hooks (can use glob wildcards)
-       reporter: ['dot', 'html'], // Array of possible reporters, see folder lib/reporters
-       output: [],       // Array of Strings, filepaths to files used for output of file-based reporters
-       'inline-errors': false, // Boolean, If failures/errors are display immediately in Dredd run
-       require: null,    // String, When using nodejs hooks, require the given module before executing hooks
-       color: true,
-     },
+     endpoint: 'http://127.0.0.1:3000/api', // your URL to API endpoint the tests will run against
+     path: [],         // Required Array if Strings; filepaths to API description documents, can use glob wildcards
+     'dry-run': false, // Boolean, do not run any real HTTP transaction
+     names: false,     // Boolean, Print Transaction names and finish, similar to dry-run
+     loglevel: 'warning', // String, logging level (debug, warning, error, silent)
+     only: [],         // Array of Strings, run only transaction that match these names
+     header: [],       // Array of Strings, these strings are then added as headers (key:value) to every transaction
+     user: null,       // String, Basic Auth credentials in the form username:password
+     hookfiles: [],    // Array of Strings, filepaths to files containing hooks (can use glob wildcards)
+     reporter: ['dot', 'html'], // Array of possible reporters, see folder lib/reporters
+     output: [],       // Array of Strings, filepaths to files used for output of file-based reporters
+     'inline-errors': false, // Boolean, If failures/errors are display immediately in Dredd run
+     require: null,    // String, When using nodejs hooks, require the given module before executing hooks
+     color: true,
      emitter: new EventEmitter(), // listen to test progress, your own instance of EventEmitter
      apiDescriptions: ['FORMAT: 1A\n# Sample API\n']
    }
 
+.. note::
+   The usage of nested `options` key is deprecated. Please list options under the root of the configuration. 
+
 .. js:data:: configuration
 
-.. js:attribute:: configuration.server
+.. js:attribute:: configuration.endpoint
 
    The HTTP(S) address of the API server to test against the API description(s). A valid URL is expected, e.g. ``http://127.0.0.1:8000``
 
    :type: string
    :required: yes
 
-.. js:attribute:: configuration.options
-
-   Because :js:attr:`configuration.options.path` array is required, you must specify options. You’ll end with errors otherwise.
-
-   :type: object
-   :required: yes
-
-.. js:attribute:: configuration.options.path
+.. js:attribute:: configuration.path
 
    Array of paths or URLs to API description documents.
 
