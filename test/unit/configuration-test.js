@@ -322,13 +322,12 @@ describe('configuration', () => {
     });
   });
 
-  describe('with --timestamp/-t set', () => {
-    const config = { timestamp: true, t: true };
+  describe('with --timestamp set', () => {
+    const config = { timestamp: true };
     const normalizedConfig = normalizeConfig(config);
     const { warnings, errors } = validateConfig(config);
 
     it('gets removed', () => {
-      assert.notProperty(normalizedConfig, 't');
       assert.notProperty(normalizedConfig, 'timestamp');
     });
     it('produces no warnings', () => {
@@ -339,13 +338,28 @@ describe('configuration', () => {
     });
   });
 
-  describe('with --silent/-q set', () => {
-    const config = { silent: true, q: true };
+  describe('with -t set', () => {
+    const config = { t: true };
     const normalizedConfig = normalizeConfig(config);
     const { warnings, errors } = validateConfig(config);
 
     it('gets removed', () => {
-      assert.notProperty(normalizedConfig, 'q');
+      assert.notProperty(normalizedConfig, 't');
+    });
+    it('produces no warnings', () => {
+      assert.lengthOf(warnings, 0);
+    });
+    it('produces one error', () => {
+      assert.lengthOf(errors, 1);
+    });
+  });
+
+  describe('with --silent set', () => {
+    const config = { silent: true };
+    const normalizedConfig = normalizeConfig(config);
+    const { warnings, errors } = validateConfig(config);
+
+    it('gets removed', () => {
       assert.notProperty(normalizedConfig, 'silent');
     });
     it('produces no warnings', () => {
@@ -356,14 +370,45 @@ describe('configuration', () => {
     });
   });
 
+  describe('with -q set', () => {
+    const config = { q: true };
+    const normalizedConfig = normalizeConfig(config);
+    const { warnings, errors } = validateConfig(config);
+
+    it('gets removed', () => {
+      assert.notProperty(normalizedConfig, 'q');
+    });
+    it('produces no warnings', () => {
+      assert.lengthOf(warnings, 0);
+    });
+    it('produces one error', () => {
+      assert.lengthOf(errors, 1);
+    });
+  });
+
   describe('with --sandbox/-b set', () => {
-    const config = { sandbox: true, b: true };
+    const config = { sandbox: true };
+    const normalizedConfig = normalizeConfig(config);
+    const { warnings, errors } = validateConfig(config);
+
+    it('gets removed', () => {
+      assert.notProperty(normalizedConfig, 'sandbox');
+    });
+    it('produces no warnings', () => {
+      assert.lengthOf(warnings, 0);
+    });
+    it('produces one error', () => {
+      assert.lengthOf(errors, 1);
+    });
+  });
+
+  describe('with -b set', () => {
+    const config = { b: true };
     const normalizedConfig = normalizeConfig(config);
     const { warnings, errors } = validateConfig(config);
 
     it('gets removed', () => {
       assert.notProperty(normalizedConfig, 'b');
-      assert.notProperty(normalizedConfig, 'sandbox');
     });
     it('produces no warnings', () => {
       assert.lengthOf(warnings, 0);
