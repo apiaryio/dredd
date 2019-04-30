@@ -49,7 +49,7 @@ describe('Hooks worker client', () => {
     logs = [];
     runner = new TransactionRunner({});
     runner.hooks = new Hooks({ logs: [], logger: console });
-    runner.hooks.configuration = { options: {} };
+    runner.hooks.configuration = {};
 
     Array.from(logLevels).forEach(level => sinon.stub(loggerStub, level).callsFake((msg1, msg2) => {
       let text = msg1;
@@ -77,7 +77,7 @@ describe('Hooks worker client', () => {
     });
 
     it('should pipe spawned process stdout to the Dredd process stdout', (done) => {
-      runner.hooks.configuration.options.language = `${COFFEE_BIN} test/fixtures/scripts/stdout.coffee`;
+      runner.hooks.configuration.language = `${COFFEE_BIN} test/fixtures/scripts/stdout.coffee`;
       loadWorkerClient((workerError) => {
         if (workerError) { return done(workerError); }
 
@@ -100,7 +100,7 @@ describe('Hooks worker client', () => {
     });
 
     it('should pipe spawned process stderr to the Dredd process stderr', (done) => {
-      runner.hooks.configuration.options.language = `${COFFEE_BIN} test/fixtures/scripts/stderr.coffee`;
+      runner.hooks.configuration.language = `${COFFEE_BIN} test/fixtures/scripts/stderr.coffee`;
       loadWorkerClient((workerError) => {
         if (workerError) { return done(workerError); }
 
@@ -124,7 +124,7 @@ describe('Hooks worker client', () => {
 
     it('should not set the error on worker if process gets intentionally killed by Dredd '
     + 'because it can be killed after all hooks execution if SIGTERM isn\'t handled', (done) => {
-      runner.hooks.configuration.options.language = `${COFFEE_BIN} test/fixtures/scripts/endless-ignore-term.coffee`;
+      runner.hooks.configuration.language = `${COFFEE_BIN} test/fixtures/scripts/endless-ignore-term.coffee`;
       loadWorkerClient((workerError) => {
         if (workerError) { return done(workerError); }
 
@@ -142,7 +142,7 @@ describe('Hooks worker client', () => {
     });
 
     it('should include the status in the error if spawned process ends with non-zero exit status', (done) => {
-      runner.hooks.configuration.options.language = 'node test/fixtures/scripts/exit-3.js';
+      runner.hooks.configuration.language = 'node test/fixtures/scripts/exit-3.js';
       loadWorkerClient((workerError) => {
         if (workerError) { return done(workerError); }
 
@@ -163,9 +163,7 @@ describe('Hooks worker client', () => {
     describe('when --language=nodejs option is given', () => {
       beforeEach(() => {
         runner.hooks.configuration = {
-          options: {
-            language: 'nodejs',
-          },
+          language: 'nodejs',
         };
       });
 
@@ -186,10 +184,8 @@ describe('Hooks worker client', () => {
         });
 
         runner.hooks.configuration = {
-          options: {
-            language: 'ruby',
-            hookfiles: 'somefile.rb',
-          },
+          language: 'ruby',
+          hookfiles: 'somefile.rb',
         };
 
         sinon.stub(whichStub, 'which').callsFake(() => true);
@@ -232,10 +228,8 @@ describe('Hooks worker client', () => {
         sinon.stub(whichStub, 'which').callsFake(() => false);
 
         runner.hooks.configuration = {
-          options: {
-            language: 'ruby',
-            hookfiles: 'somefile.rb',
-          },
+          language: 'ruby',
+          hookfiles: 'somefile.rb',
         };
       });
 
@@ -259,10 +253,8 @@ describe('Hooks worker client', () => {
         });
 
         runner.hooks.configuration = {
-          options: {
-            language: 'python',
-            hookfiles: 'somefile.py',
-          },
+          language: 'python',
+          hookfiles: 'somefile.py',
         };
 
         sinon.stub(whichStub, 'which').callsFake(() => true);
@@ -305,10 +297,8 @@ describe('Hooks worker client', () => {
         sinon.stub(whichStub, 'which').callsFake(() => false);
 
         runner.hooks.configuration = {
-          options: {
-            language: 'python',
-            hookfiles: 'somefile.py',
-          },
+          language: 'python',
+          hookfiles: 'somefile.py',
         };
       });
 
@@ -331,10 +321,8 @@ describe('Hooks worker client', () => {
         });
 
         runner.hooks.configuration = {
-          options: {
-            language: 'php',
-            hookfiles: 'somefile.py',
-          },
+          language: 'php',
+          hookfiles: 'somefile.py',
         };
 
         sinon.stub(whichStub, 'which').callsFake(() => true);
@@ -377,10 +365,8 @@ describe('Hooks worker client', () => {
         sinon.stub(whichStub, 'which').callsFake(() => false);
 
         runner.hooks.configuration = {
-          options: {
-            language: 'php',
-            hookfiles: 'somefile.py',
-          },
+          language: 'php',
+          hookfiles: 'somefile.py',
         };
       });
 
@@ -405,10 +391,8 @@ describe('Hooks worker client', () => {
         sinon.stub(whichStub, 'which').callsFake(() => false);
 
         runner.hooks.configuration = {
-          options: {
-            language: 'go',
-            hookfiles: 'gobinary',
-          },
+          language: 'go',
+          hookfiles: 'gobinary',
         };
       });
       afterEach(() => {
@@ -442,10 +426,8 @@ describe('Hooks worker client', () => {
         });
 
         runner.hooks.configuration = {
-          options: {
-            language: 'go',
-            hookfiles: 'gobinary',
-          },
+          language: 'go',
+          hookfiles: 'gobinary',
         };
 
         sinon.stub(whichStub, 'which').callsFake(() => true);
@@ -491,10 +473,8 @@ describe('Hooks worker client', () => {
         sinon.stub(whichStub, 'which').callsFake(() => false);
 
         runner.hooks.configuration = {
-          options: {
-            language: 'rust',
-            hookfiles: 'rustbinary',
-          },
+          language: 'rust',
+          hookfiles: 'rustbinary',
         };
       });
       afterEach(() => whichStub.which.restore());
@@ -516,10 +496,8 @@ describe('Hooks worker client', () => {
         });
 
         runner.hooks.configuration = {
-          options: {
-            language: 'rust',
-            hookfiles: 'rustbinary',
-          },
+          language: 'rust',
+          hookfiles: 'rustbinary',
         };
 
         sinon.stub(whichStub, 'which').callsFake(() => true);
@@ -567,10 +545,8 @@ describe('Hooks worker client', () => {
         });
 
         runner.hooks.configuration = {
-          options: {
-            language: 'perl',
-            hookfiles: 'somefile.py',
-          },
+          language: 'perl',
+          hookfiles: 'somefile.py',
         };
 
         sinon.stub(whichStub, 'which').callsFake(() => true);
@@ -613,10 +589,8 @@ describe('Hooks worker client', () => {
         sinon.stub(whichStub, 'which').callsFake(() => false);
 
         runner.hooks.configuration = {
-          options: {
-            language: 'perl',
-            hookfiles: 'somefile.py',
-          },
+          language: 'perl',
+          hookfiles: 'somefile.py',
         };
       });
 
@@ -639,10 +613,8 @@ describe('Hooks worker client', () => {
         });
 
         runner.hooks.configuration = {
-          options: {
-            language: './my-fancy-command',
-            hookfiles: 'someotherfile',
-          },
+          language: './my-fancy-command',
+          hookfiles: 'someotherfile',
         };
 
         sinon.stub(HooksWorkerClient.prototype, 'terminateHandler').callsFake(callback => callback());
@@ -683,10 +655,8 @@ describe('Hooks worker client', () => {
     describe('after loading', () => {
       beforeEach((done) => {
         runner.hooks.configuration = {
-          options: {
-            language: 'ruby',
-            hookfiles: 'somefile.rb',
-          },
+          language: 'ruby',
+          hookfiles: 'somefile.rb',
         };
 
         sinon.stub(HooksWorkerClient.prototype, 'spawnHandler').callsFake(callback => callback());
@@ -766,7 +736,7 @@ describe('Hooks worker client', () => {
 
 
     it('should connect to the server', (done) => {
-      runner.hooks.configuration.options.language = `${COFFEE_BIN} test/fixtures/scripts/exit-0.coffee`;
+      runner.hooks.configuration.language = `${COFFEE_BIN} test/fixtures/scripts/exit-0.coffee`;
 
       loadWorkerClient((err) => {
         assert.isUndefined(err);
@@ -792,7 +762,7 @@ describe('Hooks worker client', () => {
         if (eventType.indexOf('All') > -1) {
           beforeEach((done) => {
             receivedData = '';
-            runner.hooks.configuration.options.language = `${COFFEE_BIN} test/fixtures/scripts/exit-0.coffee`;
+            runner.hooks.configuration.language = `${COFFEE_BIN} test/fixtures/scripts/exit-0.coffee`;
             sentData = clone([transaction]);
             loadWorkerClient((err) => {
               assert.isUndefined(err);
@@ -802,7 +772,7 @@ describe('Hooks worker client', () => {
         } else {
           beforeEach((done) => {
             receivedData = '';
-            runner.hooks.configuration.options.language = `${COFFEE_BIN} test/fixtures/scripts/exit-0.coffee`;
+            runner.hooks.configuration.language = `${COFFEE_BIN} test/fixtures/scripts/exit-0.coffee`;
             sentData = clone(transaction);
             loadWorkerClient((err) => {
               assert.isUndefined(err);
@@ -888,7 +858,7 @@ describe('Hooks worker client', () => {
 
         beforeEach((done) => {
           // Dummy placeholder for a real hook handler
-          runner.hooks.configuration.options.language = `${COFFEE_BIN} test/fixtures/scripts/exit-0.coffee`;
+          runner.hooks.configuration.language = `${COFFEE_BIN} test/fixtures/scripts/exit-0.coffee`;
 
           // Mock hook handler implementation, which ocuppies expected port instead
           // of a real hook handler.
@@ -992,7 +962,7 @@ describe('Hooks worker client', () => {
         });
 
         it('can be set to a different value', () => {
-          runner.hooks.configuration.options[scenario.option] = changedValue;
+          runner.hooks.configuration[scenario.option] = changedValue;
           hooksWorkerClient = new HooksWorkerClient(runner);
           assert.equal(hooksWorkerClient[scenario.property], changedValue);
         });

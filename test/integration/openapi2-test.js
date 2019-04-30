@@ -1,3 +1,4 @@
+const R = require('ramda');
 const { assert } = require('chai');
 
 const logger = require('../../lib/logger');
@@ -11,9 +12,13 @@ let output = '';
 function execCommand(options = {}, cb) {
   output = '';
   let finished = false;
-  if (!options.server) { options.server = `http://127.0.0.1:${PORT}`; }
-  if (!options.loglevel) { options.loglevel = 'warning'; }
-  new Dredd(options).run((error) => {
+  const defaultConfig = {
+    server: `http://127.0.0.1:${PORT}`,
+  };
+
+  const dreddOptions = R.mergeDeepRight(defaultConfig, options);
+
+  new Dredd(dreddOptions).run((error) => {
     if (!finished) {
       finished = true;
       if (error ? error.message : undefined) {
@@ -63,6 +68,7 @@ describe('OpenAPI 2', () => {
       const matches = [];
       // eslint-disable-next-line
       while (groups = reTransaction.exec(output)) { matches.push(groups); }
+
       actual = matches.map((match) => {
         const keyMap = {
           0: 'name', 1: 'action', 2: 'method', 3: 'statusCode',
@@ -107,6 +113,7 @@ describe('OpenAPI 2', () => {
         return match.reduce((result, element, i) => Object.assign(result, { [keyMap[i]]: element }),
           {});
       });
+
       done(err);
     }));
 
@@ -139,7 +146,7 @@ describe('OpenAPI 2', () => {
       let groups;
       matches = [];
       // eslint-disable-next-line
-        while (groups = reTransactionName.exec(output)) { matches.push(groups[1]); }
+      while (groups = reTransactionName.exec(output)) { matches.push(groups[1]); }
       done(err);
     }));
 
