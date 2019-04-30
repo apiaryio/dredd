@@ -7,7 +7,7 @@
     "dredd": "bin/dredd"
   },
   "engines": {
-    "node": "^6.9 || >=8"
+    "node": ">=8"
   },
   "scripts": {
     "docs:lint": "sphinx-build -nW -b linkcheck ./docs ./docs/_build",

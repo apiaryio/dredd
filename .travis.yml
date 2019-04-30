@@ -33,10 +33,6 @@ jobs:
         - "pip install --user -r docs/requirements.txt"
       script: "npm run ci:docs"
 
-    - env: "JOB=node6"
-      node_js: "6"
-      script: "npm run ci:test"
-
     - env: "JOB=node8"
       node_js: "8"
       script: "npm run ci:test"
