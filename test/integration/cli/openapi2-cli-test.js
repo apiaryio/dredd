@@ -38,7 +38,7 @@ describe('CLI - OpenAPI 2 Document', () => {
       });
 
       it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
-      it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr, 'Error when processing API description'));
+      it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr, 'API description processing error'));
     });
 
     describe('when OpenAPI 2 is loaded with warnings', () => {
@@ -60,7 +60,7 @@ describe('CLI - OpenAPI 2 Document', () => {
       });
 
       it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
-      it('should print warning to stdout', () => assert.include(runtimeInfo.dredd.stdout, 'warn: Parser warning'));
+      it('should print warning to stdout', () => assert.include(runtimeInfo.dredd.stdout, 'API description parser warning'));
     });
   });
 });
