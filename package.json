@@ -42,7 +42,7 @@
     "cross-spawn": "6.0.5",
     "dredd-transactions": "7.0.0",
     "gavel": "3.0.1",
-    "glob": "7.1.3",
+    "glob": "7.1.4",
     "html": "1.0.0",
     "htmlencode": "0.0.4",
     "inquirer": "6.3.1",
