@@ -167,6 +167,7 @@ Description of an error or warning which occurred during parsing of the API desc
 
 ### Deprecated Properties
 
+- name: `Hello world! > Retrieve Message` (string) - Transaction Name, non-deterministic breadcrumb location of the relevant HTTP Transaction within the API description document.
 - origin (object) - Object of references to nodes of [API Elements][api-elements] derived from the original API description document.
     - filename: `./api-description.apib` (string)
     - apiName: `My Api` (string)

@@ -112,11 +112,7 @@ function compileRequest(httpRequestElement) {
 
   annotations.forEach((annotation) => {
     /* eslint-disable no-param-reassign */
-    annotation.location = (
-      (httpRequestElement.href ? httpRequestElement.href.sourceMapValue : undefined)
-      || (httpRequestElement.parents.find('transition').href ? httpRequestElement.parents.find('transition').href.sourceMapValue : undefined)
-      || (httpRequestElement.parents.find('resource').href ? httpRequestElement.parents.find('resource').href.sourceMapValue : undefined)
-    );
+    annotation.location = null; // https://github.com/apiaryio/dredd-transactions/issues/275
     /* eslint-enable */
   });
 
@@ -152,19 +148,26 @@ function compileResponse(httpResponseElement) {
 
 function compileTransaction(mediaType, filename, httpTransactionElement, exampleNo) {
   const origin = compileOrigin(mediaType, filename, httpTransactionElement, exampleNo);
+  const name = compileTransactionName(origin);
+
   const { request, annotations } = compileRequest(httpTransactionElement.request);
-
-  annotations.forEach((annotation) => { annotation.origin = Object.assign({}, origin); }); // eslint-disable-line
-
+  annotations.forEach((annotation) => {
+    /* eslint-disable no-param-reassign */
+    annotation.name = name;
+    annotation.origin = Object.assign({}, origin);
+    /* eslint-enable */
+  });
   if (!request) { return { transaction: null, annotations }; }
 
-  const name = compileTransactionName(origin);
-  const response = compileResponse(httpTransactionElement.response);
-
-  const transaction = {
-    request, response, origin, name,
+  return {
+    transaction: {
+      request,
+      response: compileResponse(httpTransactionElement.response),
+      name,
+      origin,
+    },
+    annotations,
   };
-  return { transaction, annotations };
 }
 
 function compile(mediaType, apiElements, filename) {
