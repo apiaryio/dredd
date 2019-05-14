@@ -14,7 +14,7 @@ const COMPILE_ANNOTATION_FIXTURE = {
   type: 'error',
   message: 'Ouch!',
   component: 'uriTemplateExpansion',
-  origin: { apiName: 'Broken API', resourceName: 'Things', actionName: 'Retrieve Things' },
+  name: 'Broken API > Things > Retrieve Things',
 };
 
 
