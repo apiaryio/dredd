@@ -2,7 +2,6 @@ const createLocationSchema = require('./createLocationSchema');
 const createOriginSchema = require('./createOriginSchema');
 
 const TYPES = ['error', 'warning'];
-const COMPONENTS = ['apiDescriptionParser', 'parametersValidation', 'uriTemplateExpansion'];
 
 
 module.exports = function createAnnotationSchema(options = {}) {
@@ -13,7 +12,7 @@ module.exports = function createAnnotationSchema(options = {}) {
   const messageSchema = { type: 'string' };
   if (options.message) { messageSchema.pattern = options.message; }
 
-  return {
+  const parseAnnotationSchema = {
     type: 'object',
     properties: {
       type: {
@@ -22,22 +21,40 @@ module.exports = function createAnnotationSchema(options = {}) {
       },
       component: {
         type: 'string',
-        enum: options.component ? [options.component] : COMPONENTS,
+        enum: ['apiDescriptionParser'],
       },
       message: messageSchema,
       location: createLocationSchema(),
-      origin: createOriginSchema({ filename }),
     },
     required: ['type', 'component', 'message', 'location'],
-    dependencies: {
-      origin: {
-        properties: {
-          component: {
-            enum: ['parametersValidation', 'uriTemplateExpansion'],
-          },
-        },
-      },
-    },
     additionalProperties: false,
   };
+  if (options.component === 'apiDescriptionParser') {
+    return parseAnnotationSchema;
+  }
+
+  const compileAnnotationSchema = {
+    type: 'object',
+    properties: {
+      type: {
+        type: 'string',
+        enum: options.type ? [options.type] : TYPES,
+      },
+      component: {
+        type: 'string',
+        enum: options.component ? [options.component] : ['parametersValidation', 'uriTemplateExpansion'],
+      },
+      message: messageSchema,
+      location: { type: 'null' }, // https://github.com/apiaryio/dredd-transactions/issues/275
+      name: { type: 'string' },
+      origin: createOriginSchema({ filename }),
+    },
+    required: ['type', 'component', 'message', 'location', 'name', 'origin'],
+    additionalProperties: false,
+  };
+  if (['parametersValidation', 'uriTemplateExpansion'].includes(options.component)) {
+    return compileAnnotationSchema;
+  }
+
+  return { anyOf: [parseAnnotationSchema, compileAnnotationSchema] };
 };
