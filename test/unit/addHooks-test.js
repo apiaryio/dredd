@@ -74,12 +74,26 @@ describe('addHooks()', () => {
 
   it('sets transactionRunner.hooks.configuation', (done) => {
     const transactionRunner = createTransactionRunner();
+    transactionRunner.configuration.hookfiles = [
+      './hooks.js',
+    ];
 
     addHooks(transactionRunner, [], (err) => {
       assert.deepEqual(
         transactionRunner.hooks.configuration,
         transactionRunner.configuration
       );
+      done(err);
+    });
+  });
+
+  it('skips hooks loading when there are no hookfiles', (done) => {
+    const transactionRunner = createTransactionRunner();
+    transactionRunner.configuration.hookfiles = [];
+    transactionRunner.configuration.language = 'python';
+
+    addHooks(transactionRunner, [], (err) => {
+      assert.isUndefined(transactionRunner.hooks.configuration);
       done(err);
     });
   });
