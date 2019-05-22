@@ -58,6 +58,20 @@ describe('resolveConfig()', () => {
 
   // Options
   describe('option: server', () => {
+    describe('when no "server" set', () => {
+      const { config: nextConfig } = resolveConfig({
+        path: [],
+      });
+
+      it('has default "endpoint" option value', () => {
+        assert.propertyVal(nextConfig, 'endpoint', DEFAULT_CONFIG.endpoint);
+      });
+
+      it('has no "server" option', () => {
+        assert.notProperty(nextConfig, 'server');
+      });
+    });
+
     describe('when "server" set', () => {
       const { config: nextConfig } = resolveConfig({
         server: 'http://127.0.0.1',
