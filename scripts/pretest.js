@@ -25,7 +25,7 @@ function getJSONPath(fixturePath) {
 
 function parseFixture(fixturePath) {
   return new Promise((resolve, reject) => {
-    const fixture = fs.readFileSync(fixturePath, { encoding: 'utf8' });
+    const fixture = fs.readFileSync(fixturePath, 'utf8');
     parse(fixture, (err, result) => {
       if (err) reject(err);
       else resolve(result.apiElements);
