@@ -11,10 +11,6 @@ jobs:
       env: "JOB=quality_checks"
       script: "npm run ci:lint"
 
-    - env: "JOB=node6"
-      node_js: "6"
-      script: "npm run ci:test"
-
     - env: "JOB=node8"
       node_js: "8"
       script: "npm run ci:test"

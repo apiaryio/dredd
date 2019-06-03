@@ -12,7 +12,7 @@ const FORMATS = {
 
 
 function readAPIelements(apiElementsPath) {
-  const contents = fs.readFileSync(apiElementsPath, { encoding: 'utf8' });
+  const contents = fs.readFileSync(apiElementsPath, 'utf8');
   return fury.minim.fromRefract(JSON.parse(contents));
 }
 
@@ -36,7 +36,7 @@ function fixtures(basename) {
     // scripts/pretest.js should be ran to mitigate the issue)
     .filter(fixture => fs.existsSync(fixture.apiDescriptionPath))
     .map(fixture => Object.assign({
-      apiDescription: fs.readFileSync(fixture.apiDescriptionPath, { encoding: 'utf8' }),
+      apiDescription: fs.readFileSync(fixture.apiDescriptionPath, 'utf8'),
       apiElements: readAPIelements(fixture.apiElementsPath),
     }, fixture));
 
