@@ -65,7 +65,7 @@
     "@commitlint/travis-cli": "8.0.0",
     "body-parser": "1.19.0",
     "coffeescript": "2.4.1",
-    "coveralls": "3.0.3",
+    "coveralls": "3.0.4",
     "eslint": "5.16.0",
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "2.17.3",
