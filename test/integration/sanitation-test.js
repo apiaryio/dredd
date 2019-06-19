@@ -169,7 +169,9 @@ describe('Sanitation of Reported Data', () => {
       const app = createServerFromResponse({ token: 123, name: 'Bob' }); // 'token' should be string → failing test
 
       runDreddWithServer(dredd, app, (err, runtimeInfo) => {
-        if (err) { return done(err); }
+        if (err) {
+          return done(err);
+        }
         dreddRuntimeInfo = runtimeInfo.dredd;
         done();
       });
@@ -494,7 +496,9 @@ describe('Sanitation of Reported Data', () => {
       assert.equal(events[2].test.status, 'fail');
       assert.include(events[2].test.results.general.results[0].message.toLowerCase(), 'fail');
     });
-    it('emitted test data results contain all regular sections', () => assert.hasAllKeys(events[2].test.results, ['isValid', 'general', 'headers', 'body', 'statusCode']));
+    it('emitted test data results contain all regular sections', () => {
+      assert.hasAllKeys(events[2].test.results, ['general', 'statusCode', 'headers', 'body']);
+    });
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
