@@ -12,6 +12,8 @@ hooks.after('Resource > Update Resource', (transaction, done) => {
   transaction.test.expected.body = body.replace(tokenPattern, '--- CENSORED ---');
 
   // Sanitation of diff in the patch format
-  delete transaction.test.results.body.results.rawData;
+  // This is some dark magic, as "gavelResult.fields[name].errors" is a Error[].
+  // It must never contain "rawData" property. Somehow, this works.
+  delete transaction.test.results.body.errors.rawData;
   done();
 });

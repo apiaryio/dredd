@@ -19,12 +19,12 @@ hooks.after('Resource > Update Resource', (transaction, done) => {
   const validationOutput = transaction.test.results.headers;
 
   const errors = [];
-  for (let i = 0; i < validationOutput.results.length; i++) {
-    if (validationOutput.results[i].pointer.toLowerCase() !== '/authorization') {
-      errors.push(validationOutput.results[i]);
+  for (let i = 0; i < validationOutput.errors.length; i++) {
+    if (validationOutput.errors[i].pointer.toLowerCase() !== '/authorization') {
+      errors.push(validationOutput.errors[i]);
     }
   }
-  validationOutput.results = errors;
+  validationOutput.errors = errors;
 
   const rawData = [];
   for (let i = 0; i < validationOutput.rawData.length; i++) {

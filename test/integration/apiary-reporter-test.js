@@ -202,6 +202,11 @@ describe('Apiary reporter', () => {
         assert.isObject(receivedRequest);
         assert.nestedProperty(receivedRequest, 'resultData.request');
         assert.nestedProperty(receivedRequest, 'resultData.expectedResponse');
+        // TODO
+        // "resultData.result" contains Gavel validation result.
+        // Despite Gavel validation result not having "general" key,
+        // this test still passes. This means that the result is mutated along the way.
+        // Find out where and not do that anymore.
         assert.nestedProperty(receivedRequest, 'resultData.result.general');
       });
 

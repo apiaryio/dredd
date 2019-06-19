@@ -21,12 +21,18 @@ hooks.after('Resource > Update Resource', (transaction, done) => {
   const validationOutput = transaction.test.results.body;
 
   const errors = [];
-  for (let i = 0; i < validationOutput.results.length; i++) {
-    if (validationOutput.results[i].pointer !== '/token') {
-      errors.push(validationOutput.results[i]);
+  // TODO
+  // Why do we even assert Gavel's output here?
+  // If custom transformations are needed:
+  // 1. Create a transformer function.
+  // 2. Test is on _assumed_ Gavel output.
+  // 3. Assert transformed output in sanitization tests, if any.
+  for (let i = 0; i < validationOutput.errors.length; i++) {
+    if (validationOutput.errors[i].pointer !== '/token') {
+      errors.push(validationOutput.errors[i]);
     }
   }
-  validationOutput.results = errors;
+  validationOutput.errors = errors;
 
   const rawData = [];
   for (let i = 0; i < validationOutput.rawData.length; i++) {
