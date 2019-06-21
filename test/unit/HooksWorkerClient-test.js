@@ -702,7 +702,7 @@ describe('Hooks worker client', () => {
     });
   });
 
-  describe('when hook handler server is running and not modifying transactions', () => {
+  describe('when hooks handler server is running and not modifying transactions', () => {
     let server;
     let receivedData = '';
     let transaction;
@@ -823,7 +823,7 @@ describe('Hooks worker client', () => {
     });
   });
 
-  describe('when hook handler server is running and modifying transactions', () => {
+  describe('when hooks handler server is running and modifying transactions', () => {
     let transaction = {
       name: 'API > Hello > World',
       request: {
@@ -853,15 +853,15 @@ describe('Hooks worker client', () => {
         getFirstTransaction = transactionData => transactionData;
       }
 
-      describe(`when '${eventName}' function is triggered and the hook handler replies`, () => {
+      describe(`when '${eventName}' function is triggered and the hooks handler replies`, () => {
         let hookHandler;
 
         beforeEach((done) => {
-          // Dummy placeholder for a real hook handler
+          // Dummy placeholder for a real hooks handler
           runner.hooks.configuration.language = `${COFFEE_BIN} test/fixtures/scripts/exit-0.coffee`;
 
-          // Mock hook handler implementation, which ocuppies expected port instead
-          // of a real hook handler.
+          // Mock hooks handler implementation, which ocuppies expected port instead
+          // of a real hooks handler.
           hookHandler = net.createServer();
           hookHandler.on('connection', (socket) => {
             // -- 3 --, recieving transaction(s) from hooks worker client
@@ -876,7 +876,7 @@ describe('Hooks worker client', () => {
                 const messageIn = JSON.parse(bufferedData);
 
                 // once the hooks worker client finishes processing of data it
-                // got back from the hook handler, it triggers this event
+                // got back from the hooks handler, it triggers this event
                 hooksWorkerClient.emitter.on(messageIn.uuid, () => {
                   // -- 7 --
                   done();
@@ -893,7 +893,7 @@ describe('Hooks worker client', () => {
             });
           });
 
-          // -- 1 --, starts the mock hook handler
+          // -- 1 --, starts the mock hooks handler
           hookHandler.listen(PORT);
 
           // -- 2 --, runs hooks worker client, starts to send transaction(s),

@@ -21,7 +21,7 @@ Maintainers
 -  `@paraskakis <https://github.com/paraskakis>`__ - product decisions, feature requests
 -  `@honzajavorek <https://github.com/honzajavorek>`__ - lead of development
 
-Dredd supports many programming languages thanks to the work of several contributors. They deserve eternal praise for dedicating time to create, improve, and maintain the respective :ref:`hook handlers <hooks>`:
+Dredd supports many programming languages thanks to the work of several contributors. They deserve eternal praise for dedicating time to create, improve, and maintain the respective :ref:`hooks handlers <hooks>`:
 
 -  `@ddelnano <https://github.com/ddelnano>`__ (:ref:`PHP <hooks-php>`, :ref:`Go <hooks-go>`)
 -  `@gonzalo-bulnes <https://github.com/gonzalo-bulnes>`__ (:ref:`Ruby <hooks-ruby>`)

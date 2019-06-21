@@ -828,7 +828,7 @@ describe('TransactionRunner', () => {
         }));
       });
 
-      describe('and it crashes (hook handler error was set)', () => {
+      describe('and it crashes (hooks handler error was set)', () => {
         describe('before any hook is executed', () => {
           beforeEach((done) => {
             runner.hookHandlerError = new Error('handler died in before everything');

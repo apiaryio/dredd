@@ -145,7 +145,7 @@ Now you can start test run just by typing ``dredd``!
 Use Hooks
 ---------
 
-Dredd’s :ref:`hooks <hooks>` enable you to write some glue code in your favorite language to support enhanced scenarios in your API tests. Read the documentation about hooks to learn more on how to write them. Choose your language and install corresponding hook handler library.
+Dredd’s :ref:`hooks <hooks>` enable you to write some glue code in your favorite language to support enhanced scenarios in your API tests. Read the documentation about hooks to learn more on how to write them. Choose your language and install corresponding hooks handler library.
 
 Advanced Examples
 -----------------

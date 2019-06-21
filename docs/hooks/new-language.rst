@@ -1,7 +1,7 @@
 .. _hooks-new-language:
 
-Writing Dredd hook handler for new language
-===========================================
+Writing Dredd hooks handler for new language
+============================================
 
 Dredd hooks handler client
 --------------------------
@@ -20,7 +20,7 @@ Dredd hooks language abstraction bridge comes with `the language agnostic test s
 What to implement
 -----------------
 
-If you want to write a hook handler for your language you will have to implement:
+If you want to write a hooks handler for your language you will have to implement:
 
 -  CLI Command runnning TCP socket server
 
@@ -68,12 +68,12 @@ If you want to write a hook handler for your language you will have to implement
 Termination
 -----------
 
-When the testing is done, Dredd signals the hook handler process to terminate. This is done repeatedly with delays. When termination timeout is over, Dredd loses its patience and kills the process forcefully.
+When the testing is done, Dredd signals the hooks handler process to terminate. This is done repeatedly with delays. When termination timeout is over, Dredd loses its patience and kills the process forcefully.
 
 -  **retry delays** can be configured by :option:`--hooks-worker-term-retry`
 -  **timeout** can be configured by :option:`--hooks-worker-term-timeout`
 
-On Linux or macOS, Dredd uses the ``SIGTERM`` signal to tell the hook handler process it should terminate. On Windows, where signals do not exist, Dredd sends the ``END OF TEXT`` character (``\u0003``, which is ASCII representation of Ctrl+C) to standard input of the process.
+On Linux or macOS, Dredd uses the ``SIGTERM`` signal to tell the hooks handler process it should terminate. On Windows, where signals do not exist, Dredd sends the ``END OF TEXT`` character (``\u0003``, which is ASCII representation of Ctrl+C) to standard input of the process.
 
 .. _tcp-socket-message-format:
 
@@ -85,11 +85,11 @@ TCP Socket Message format
    -  uuid: ``234567-asdfghjkl`` (string) - Id used for event unique identification on both server and client sides
    -  event: ``event`` (enum) - Event type
 
-      -  beforeAll (string) - Signals the hook handler to run the ``beforeAll`` hooks
-      -  beforeEach (string) - Signals the hook handler to run the ``beforeEach`` and ``before`` hooks
-      -  beforeEachValidation (string) - Signals the hook handler to run the ``beforeEachValidation`` and ``beforeValidation`` hooks
-      -  afterEach (string) - Signals the hook handler to run the ``after`` and ``afterEach`` hooks
-      -  afterAll (string) - Signals the hook handler to run the ``afterAll`` hooks
+      -  beforeAll (string) - Signals the hooks handler to run the ``beforeAll`` hooks
+      -  beforeEach (string) - Signals the hooks handler to run the ``beforeEach`` and ``before`` hooks
+      -  beforeEachValidation (string) - Signals the hooks handler to run the ``beforeEachValidation`` and ``beforeValidation`` hooks
+      -  afterEach (string) - Signals the hooks handler to run the ``after`` and ``afterEach`` hooks
+      -  afterAll (string) - Signals the hooks handler to run the ``afterAll`` hooks
 
    -  data (enum) - Data passed as a argument to the function
 
@@ -115,6 +115,6 @@ Need help? No problem!
 
 If you have any questions, please:
 
--  Have a look at the `Ruby <https://github.com/apiaryio/dredd-hooks-ruby>`__, `Python <https://github.com/apiaryio/dredd-hooks-python>`__, `Perl <https://github.com/ungrim97/Dredd-Hooks>`__, and `PHP <https://github.com/ddelnano/dredd-hooks-php>`__ hook handlers codebase for inspiration
--  If you’re writing a hook handler for a compiled language, check out the `Go <https://github.com/snikch/goodman>`__ implementation
+-  Have a look at the `Ruby <https://github.com/apiaryio/dredd-hooks-ruby>`__, `Python <https://github.com/apiaryio/dredd-hooks-python>`__, `Perl <https://github.com/ungrim97/Dredd-Hooks>`__, and `PHP <https://github.com/ddelnano/dredd-hooks-php>`__ hooks handlers codebase for inspiration
+-  If you’re writing a hooks handler for a compiled language, check out the `Go <https://github.com/snikch/goodman>`__ implementation
 -  File an `issue in Dredd repository <https://github.com/apiaryio/dredd/issues/new>`__
