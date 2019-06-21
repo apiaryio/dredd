@@ -114,7 +114,7 @@ This is a cousin of the :ref:`gavel-validation-result`.
 Gavel Validation Result (object)
 --------------------------------
 
-Can be seen also `here <https://relishapp.com/apiary/gavel/docs/javascript/request-async-api#validate>`__.
+Can be seen also `here <https://relishapp.com/apiary/gavel/docs/javascript/request-validation#validate>`__ and `here <https://relishapp.com/apiary/gavel/docs/javascript/response-validation#validate>`__.
 
 -  statusCode (:ref:`gavel-validator-output`)
 -  headers (:ref:`gavel-validator-output`)

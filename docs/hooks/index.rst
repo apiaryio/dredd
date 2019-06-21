@@ -7,7 +7,7 @@
 Hooks
 =====
 
-Dredd supports *hooks*, which are blocks of arbitrary code that run before or after each test step. The concept is similar to XUnit's ``setUp`` and ``tearDown`` functions, `Cucumber hooks <https://docs.cucumber.io/cucumber/api/#hooks>`__, or `Git hooks <https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks>`__. Hooks are usually used for:
+Dredd supports *hooks*, which are blocks of arbitrary code that run before or after each test step. The concept is similar to XUnit's ``setUp`` and ``tearDown`` functions, `Cucumber hooks <https://cucumber.io/docs/cucumber/api/#hooks>`__, or `Git hooks <https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks>`__. Hooks are usually used for:
 
 -  Loading database fixtures,
 -  cleaning up after test step(s),
