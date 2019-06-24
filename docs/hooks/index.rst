@@ -178,14 +178,14 @@ Types of hooks
 
 Hooks get executed at specific points in Dredd's :ref:`execution life cycle <execution-life-cycle>`. Available types of hooks are:
 
--  ``beforeAll`` called at the beginning of the whole test run
+-  ``beforeAll`` called with all HTTP transactions before the whole test run
 -  ``beforeEach`` called before each HTTP transaction
--  ``before`` called before a specific HTTP transaction
+-  ``before`` called before a single HTTP transaction
 -  ``beforeEachValidation`` called before each HTTP transaction is validated
--  ``beforeValidation`` called before a specific HTTP transaction is validated
--  ``after`` called after a specific HTTP transaction regardless its result
+-  ``beforeValidation`` called before a single HTTP transaction is validated
+-  ``after`` called after a single HTTP transaction
 -  ``afterEach`` called after each HTTP transaction
--  ``afterAll`` called after whole test run
+-  ``afterAll`` called with all HTTP transactions after the whole test run
 
 
 .. _hooks-docker:
