@@ -45,7 +45,7 @@
     "chai": "4.2.0",
     "chai-json-schema": "1.5.1",
     "coveralls": "3.0.4",
-    "eslint": "6.0.0",
+    "eslint": "6.0.1",
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "2.17.3",
     "istanbul": "0.4.5",
