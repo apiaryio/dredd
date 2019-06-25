@@ -41,7 +41,7 @@
     "clone": "2.1.2",
     "cross-spawn": "6.0.5",
     "dredd-transactions": "9.0.2",
-    "gavel": "5.0.0",
+    "gavel": "6.1.2",
     "glob": "7.1.4",
     "html": "1.0.0",
     "htmlencode": "0.0.4",
