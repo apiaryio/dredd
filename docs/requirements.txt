@@ -11,4 +11,4 @@ sphinx-tabs==1.1.10
 
 # dev dependencies
 sphinx-autobuild==0.7.1
-sphinx-rtd-theme==0.4.2
+sphinx-rtd-theme==0.4.3
