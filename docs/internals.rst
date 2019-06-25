@@ -24,7 +24,7 @@ Maintainers
 .. _hall-of-fame:
 
 Hall of fame
-^^^^^^^^^^^^
+~~~~~~~~~~~~
 
 Dredd supports many programming languages thanks to the work of several contributors. They deserve eternal praise for dedicating time to create, improve, and maintain the respective :ref:`hooks handlers <hooks>`:
 
