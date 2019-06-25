@@ -64,7 +64,7 @@ describe('CLI', () => {
   });
 
   describe('when called with arguments', () => {
-    describe('when using language hook handler and spawning the server', () => {
+    describe('when using language hooks handler and spawning the server', () => {
       describe("and handler file doesn't exist", () => {
         let runtimeInfo;
 

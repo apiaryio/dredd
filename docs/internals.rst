@@ -18,16 +18,23 @@ Maintainers
 
 `Apiary`_ is the main author and maintainer of Dredd’s `upstream repository <https://github.com/apiaryio/dredd>`__. Currently responsible people are:
 
--  `@paraskakis <https://github.com/paraskakis>`__ - product decisions, feature requests
--  `@honzajavorek <https://github.com/honzajavorek>`__ - lead of development
+-  `@honzajavorek <https://github.com/honzajavorek>`__ - product decisions, feature requests, lead of development
+-  `@artem-zakharchenko <https://github.com/artem-zakharchenko>`__ - development
 
-Dredd supports many programming languages thanks to the work of several contributors. They deserve eternal praise for dedicating time to create, improve, and maintain the respective :ref:`hook handlers <hooks>`:
+.. _hall-of-fame:
+
+Hall of fame
+~~~~~~~~~~~~
+
+Dredd supports many programming languages thanks to the work of several contributors. They deserve eternal praise for dedicating time to create, improve, and maintain the respective :ref:`hooks handlers <hooks>`:
 
 -  `@ddelnano <https://github.com/ddelnano>`__ (:ref:`PHP <hooks-php>`, :ref:`Go <hooks-go>`)
 -  `@gonzalo-bulnes <https://github.com/gonzalo-bulnes>`__ (:ref:`Ruby <hooks-ruby>`)
 -  `@hobofan <https://github.com/hobofan>`__ (:ref:`Rust <hooks-rust>`)
 -  `@snikch <https://github.com/snikch>`__ (:ref:`Go <hooks-go>`)
 -  `@ungrim97 <https://github.com/ungrim97>`__ (:ref:`Perl <hooks-perl>`)
+
+Big thanks also to `@netmilk <https://github.com/netmilk/>`__, the original author of Dredd and Gavel!
 
 
 .. _contributing:

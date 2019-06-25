@@ -1,105 +1,120 @@
 .. _hooks-new-language:
 
-Writing Dredd hook handler for new language
-===========================================
+Writing hooks handler for a new language
+========================================
 
-Dredd hooks handler client
---------------------------
+Dredd itself is written in JavaScript, so having :ref:`hooks in JavaScript <hooks-nodejs>` is native to it. Other languages need so-called *hooks handlers*.
 
-Dredd comes with concept of hooks language abstraction bridge via simple TCP socket.
+Several hooks handlers :ref:`already exist <supported-languages>`, either maintained by Dredd authors or external contributors. If you didn't find your favorite language among them, at this place you can learn how to create a new hooks handler.
 
-When you run Dredd with :option:`--language` option, it runs the given command and tries to connect to ``http://127.0.0.1:61321``. If connection to the hook handling server wasn’t successful, it exits with exit code ``3``.
+.. note::
+   `Deserve eternal praise <hall-of-fame>`__ and contribute hooks handler for **Java**! See :ghissue:`#875`
 
-Dredd internally registers a function for each :ref:`type of hooks <types-of-hooks>` and when this function is executed it assigns execution ``uuid`` to that event, serializes received function parameters (a :ref:`Transaction object <transaction>` or an Array of it), sends it to the TCP socket to be handled (executed) in other language and waits until message with same ``uuid`` is received. After data reception it assigns received ``data`` back to the transaction, so other language can interact with transactions same way like :ref:`native Node.js hooks <hooks-nodejs>`.
 
-Language agnostic test suite
-----------------------------
+What is a hooks handler?
+------------------------
 
-Dredd hooks language abstraction bridge comes with `the language agnostic test suite <https://github.com/apiaryio/dredd-hooks-template>`__. It’s written in Gherkin - language for writing `Cucumber <https://github.com/cucumber/cucumber/wiki/A-Table-Of-Content>`__ scenarios and `Aruba CLI testing framework <https://github.com/cucumber/aruba>`__ and it tests your new language handler integration with CLI Dredd and expected behavior from user’s perspective.
+Hooks handler is a process running separately from Dredd, usually started as Dredd's child process using the :option:`--language` option. When Dredd performs testing, it communicates with the hooks handler over TCP socket. The hooks handler runs hooks for each HTTP transaction and lets Dredd know whether something got modified.
 
-What to implement
------------------
 
-If you want to write a hook handler for your language you will have to implement:
+Hooks handler life cycle
+------------------------
 
--  CLI Command runnning TCP socket server
+#. Dredd starts the command given in the :option:`--language` option as its child process (subprocess). Paths to files with hooks given in :option:`--hookfiles` are resolved to absolute paths and given to the child process as arguments.
+#. The hooks handler reads paths to hooks from arguments and loads the hooks code.
+#. The hooks handler opens a TCP socket on port 61321.
+#. Dredd waits for a moment and then tries to connect to ``http://127.0.0.1:61321``. In case the connection is not successful, it exits with status code 3.
+#. For each :ref:`type of hooks <types-of-hooks>` Dredd creates a message and sends it to the socket. The message contains UUID and serialized :ref:`transaction object <transaction>` (or an array of them, in case of `beforeAll`, `afterAll`). Individual messages are sent as UTF-8 JSON documents separated by a newline.
+#. Hooks handler reads a message, calls a corresponding hook code, and sends back a message with modified contents.
+#. Dredd awaits a message with corresponding UUID. Once it arrives, Dredd overwrites its internal HTTP transaction data with the ones from the incoming message.
 
-   -  `Must return message ``Starting`` to stdout <https://github.com/apiaryio/dredd-hooks-template/blob/master/features/tcp_server.feature#L5>`__
+.. image:: ../_static/images/hooks-handler.png
+   :align: center
 
--  Hooks API in your language for registering code being executed during the :ref:`Dredd lifecycle <execution-life-cycle>`:
 
-   -  before all transactions
-   -  before each transaction
-   -  before transaction
-   -  before each transaction validation
-   -  before transaction validation
-   -  after transaction
-   -  after each transaction
-   -  after all transactions
+Implementation guide
+--------------------
 
--  When CLI command is executed
+A hooks handler is a CLI command, which implements following:
 
-   -  It loads files passed in alphabetical order with paths resolved to absolute form
+-  It accepts paths to hook files as arguments. They are already passed resolved as absolute paths, in the right order.
+-  It allows users to register hook functions in the hook files, i.e. it provides a *hooks API* similar to those in other hooks handler implementations (see :ref:`JavaScript <hooks-nodejs>`, :ref:`Python <hooks-python>`, :ref:`Ruby <hooks-ruby>`). It allows to register :ref:`all types of hooks supported by Dredd <types-of-hooks>`.
+-  It loads the hook files and registers any hook functions found in them for later execution.
+-  It runs a TCP socket server on port ``61321`` and prints ``Starting`` to ``stdout`` when ready.
 
-      -  It exposes API similar to those in :ref:`Ruby <hooks-ruby>`, :ref:`Python <hooks-python>` and :ref:`Node.js <hooks-nodejs>` to each loaded file
-      -  It registers functions declared in files for later execution
 
-   -  starts a TCP socket server and starts listening on ``http://127.0.0.1:61321``.
+Handling hooks
+^^^^^^^^^^^^^^
 
--  When any data is received by the server
+When any data is received by the TCP server, the hooks handler:
 
-   -  Adds every received character to a buffer
-   -  When delimiting newline (``\n``) character is received
+-  Adds every received character to a buffer.
+-  When the delimiter newline character ``\n`` is received:
 
-      -  It parses the :ref:`message <tcp-socket-message-format>` in the buffer as JSON
-      -  It looks for ``event`` key in received object and executes appropriate registered hooks functions
+   -  Parses the :ref:`message <tcp-socket-message-format>` in the buffer as JSON.
+   -  Finds the hook type in the ``event`` key of the received object and executes respective registered hook function(s). Beware, ``beforeEach`` and ``afterEach`` are overloaded - read the :ref:`tcp-socket-message-format` carefully.
 
-   -  When the hook function is being executed
+-  When a hook function is being executed:
 
-      -  It passes value of ``data`` key from received object to the executed function
-      -  Hook function is able to modify data
+   -  Passes the value of the ``data`` key of the received object to the executed hook function.
+   -  Allows the hook function to modify the data.
 
-   -  When function was executed
+-  When a hook function is done:
 
-      -  It should serialize message to JSON
-      -  Send the serialized message back to the socket with same ``uuid`` as received
-      -  Send a newline character as message delimiter
+   -  Takes the modified data and serializes it back to JSON with the same ``uuid`` as it has received
+   -  Sends the JSON back as a TCP message
+   -  Sends a newline character ``\n`` as TCP message delimiter
+
+
+.. _tcp-socket-message-format:
+
+TCP socket message format
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+-  transaction (object)
+
+   -  uuid: ``234567-asdfghjkl`` (string) - ID used for unique identification of the message on both server and client sides
+   -  event: ``event`` (enum) - :ref:`Hook type <types-of-hooks>`
+
+      -  beforeAll (string) - Signals the hooks handler to run the ``beforeAll`` hooks
+      -  beforeEach (string) - Signals the hooks handler to run the ``beforeEach`` and ``before`` hooks
+      -  beforeEachValidation (string) - Signals the hooks handler to run the ``beforeEachValidation`` and ``beforeValidation`` hooks
+      -  afterEach (string) - Signals the hooks handler to run the ``after`` and ``afterEach`` hooks
+      -  afterAll (string) - Signals the hooks handler to run the ``afterAll`` hooks
+
+   -  data (enum) - Data passed as an argument to the hook function
+
+      -  (object) - Single :ref:`transaction object <transaction>`
+      -  (array) - An array of :ref:`transaction objects <transaction>`, containing all transactions Dredd currently works with; sent for ``beforeAll`` and ``afterAll`` events
+
 
 Termination
------------
+^^^^^^^^^^^
 
-When the testing is done, Dredd signals the hook handler process to terminate. This is done repeatedly with delays. When termination timeout is over, Dredd loses its patience and kills the process forcefully.
+When the testing is done, Dredd signals the hooks handler process to terminate. This is done repeatedly with delays. When termination timeout is over, Dredd loses its patience and kills the process forcefully.
 
 -  **retry delays** can be configured by :option:`--hooks-worker-term-retry`
 -  **timeout** can be configured by :option:`--hooks-worker-term-timeout`
 
-On Linux or macOS, Dredd uses the ``SIGTERM`` signal to tell the hook handler process it should terminate. On Windows, where signals do not exist, Dredd sends the ``END OF TEXT`` character (``\u0003``, which is ASCII representation of Ctrl+C) to standard input of the process.
+On Linux or macOS, Dredd uses the ``SIGTERM`` signal to tell the hooks handler process it should terminate. On Windows, where signals do not exist, Dredd sends the ``END OF TEXT`` character (``\u0003``, which is ASCII representation of Ctrl+C) to standard input of the process.
 
-.. _tcp-socket-message-format:
 
-TCP Socket Message format
--------------------------
-
--  transaction (object)
-
-   -  uuid: ``234567-asdfghjkl`` (string) - Id used for event unique identification on both server and client sides
-   -  event: ``event`` (enum) - Event type
-
-      -  beforeAll (string) - Signals the hook handler to run the ``beforeAll`` hooks
-      -  beforeEach (string) - Signals the hook handler to run the ``beforeEach`` and ``before`` hooks
-      -  beforeEachValidation (string) - Signals the hook handler to run the ``beforeEachValidation`` and ``beforeValidation`` hooks
-      -  afterEach (string) - Signals the hook handler to run the ``after`` and ``afterEach`` hooks
-      -  afterAll (string) - Signals the hook handler to run the ``afterAll`` hooks
-
-   -  data (enum) - Data passed as a argument to the function
-
-      -  (object) - Single Transaction object
-      -  (array) - An array of Transaction objects, containing all transactions in the API description. Sent for ``beforeAll`` and ``afterAll`` events
-
-Configuration Options
+End-to-end test suite
 ---------------------
 
-There are several configuration options, which can help you during development:
+There is a `BDD <https://en.wikipedia.org/wiki/Behavior-driven_development>`__ test suite called `dredd-hooks-template <https://github.com/apiaryio/dredd-hooks-template>`__, which ensures that the public interface of each hooks handler works as Dredd expects. The test suite is written in `Gherkin <https://github.com/cucumber/cucumber/wiki/Gherkin>`__ and uses `Cucumber <https://github.com/cucumber/cucumber-js>`__ as a test runner.
+
+.. image:: https://raw.githubusercontent.com/apiaryio/dredd-hooks-template/master/passing.png
+
+When developing a new hooks handler, make sure it passes the test suite. Third party hooks handlers not passing the test suite cannot be endorsed by Dredd maintainers, integrated with Dredd's :option:`--language` option, or added to Dredd's documentation.
+
+If you have any issues integrating the test suite to your project, reach out to the maintainers in `Dredd issues <https://github.com/apiaryio/dredd/issues>`__, we're happy to help!
+
+
+Configuration options
+---------------------
+
+There are several configuration options, which can help you during development of the hooks handler:
 
 -  :option:`--hooks-worker-timeout`
 -  :option:`--hooks-worker-connect-timeout`
@@ -110,11 +125,14 @@ There are several configuration options, which can help you during development:
 -  :option:`--hooks-worker-handler-host`
 -  :option:`--hooks-worker-handler-port`
 
+.. note::
+   Never mind the options mention *hooks worker* in their names. It is the same as *hooks handler*. The options are proposed to be renamed in the future - see :ghissue:`#1101`.
+
 Need help? No problem!
 ----------------------
 
 If you have any questions, please:
 
--  Have a look at the `Ruby <https://github.com/apiaryio/dredd-hooks-ruby>`__, `Python <https://github.com/apiaryio/dredd-hooks-python>`__, `Perl <https://github.com/ungrim97/Dredd-Hooks>`__, and `PHP <https://github.com/ddelnano/dredd-hooks-php>`__ hook handlers codebase for inspiration
--  If you’re writing a hook handler for a compiled language, check out the `Go <https://github.com/snikch/goodman>`__ implementation
--  File an `issue in Dredd repository <https://github.com/apiaryio/dredd/issues/new>`__
+-  Have a look at the reference `Python <https://github.com/apiaryio/dredd-hooks-python>`__ and `Ruby <https://github.com/apiaryio/dredd-hooks-ruby>`__ implementations.
+-  If your language is compiled, check out how `Go <https://github.com/snikch/goodman>`__ and `Rust <https://github.com/hobofan/dredd-hooks-rust>`__ are done.
+-  `File an issue <https://github.com/apiaryio/dredd/issues/new>`__ and get help from Dredd maintainers.

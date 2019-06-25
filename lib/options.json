@@ -109,35 +109,35 @@
     "description": "Show version number."
   },
   "hooks-worker-timeout": {
-    "description": "How long to wait for hooks worker to start. [ms]",
+    "description": "How long to wait for hooks handler to start. [ms]",
     "default": 5000
   },
   "hooks-worker-connect-timeout": {
-    "description": "Total hook worker connection timeout (includes all retries). [ms]",
+    "description": "Total hooks handler connection timeout (includes all retries). [ms]",
     "default": 1500
   },
   "hooks-worker-connect-retry": {
-    "description": "How long to wait between attempts to connect to hooks worker. [ms]",
+    "description": "How long to wait between attempts to connect to hooks handler. [ms]",
     "default": 500
   },
   "hooks-worker-after-connect-wait": {
-    "description": "How long to wait between connecting to hooks worker and start of testing. [ms]",
+    "description": "How long to wait between connecting to hooks handler and start of testing. [ms]",
     "default": 100
   },
   "hooks-worker-term-timeout": {
-    "description": "How long to wait between trying to terminate hooks worker and killing it. [ms]",
+    "description": "How long to wait between trying to terminate hooks handler and killing it. [ms]",
     "default": 5000
   },
   "hooks-worker-term-retry": {
-    "description": "How long to wait between attempts to terminate hooks worker. [ms]",
+    "description": "How long to wait between attempts to terminate hooks handler. [ms]",
     "default": 500
   },
   "hooks-worker-handler-host": {
-    "description": "Host of the hook worker.",
+    "description": "Host of the hooks handler.",
     "default": "127.0.0.1"
   },
   "hooks-worker-handler-port": {
-    "description": "Port of the hook worker.",
+    "description": "Port of the hooks handler.",
     "default": 61321
   },
   "config": {
