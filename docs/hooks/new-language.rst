@@ -1,7 +1,7 @@
 .. _hooks-new-language:
 
-Writing hooks handler for a new language
-========================================
+Writing a hooks handler for a new language
+==========================================
 
 Dredd itself is written in JavaScript, so having :ref:`hooks in JavaScript <hooks-nodejs>` is native to it. Other languages need so-called *hooks handlers*.
 
@@ -14,7 +14,7 @@ Several hooks handlers :ref:`already exist <supported-languages>`, either mainta
 What is a hooks handler?
 ------------------------
 
-Hooks handler is a process running separately from Dredd, usually started as Dredd's child process using the :option:`--language` option. When Dredd performs testing, it communicates with the hooks handler over TCP socket. The hooks handler runs hooks for each HTTP transaction and lets Dredd know whether something got modified.
+Hooks handler is a process running separately from Dredd, usually started by Dredd as a child process when invoking Dredd with the :option:`--language` option. When Dredd performs testing, it communicates with the hooks handler over TCP socket. The hooks handler runs hooks for each HTTP transaction and lets Dredd know whether something got modified.
 
 
 Hooks handler life cycle
@@ -22,9 +22,9 @@ Hooks handler life cycle
 
 #. Dredd starts the command given in the :option:`--language` option as its child process (subprocess). Paths to files with hooks given in :option:`--hookfiles` are resolved to absolute paths and given to the child process as arguments.
 #. The hooks handler reads paths to hooks from arguments and loads the hooks code.
-#. The hooks handler opens a TCP socket on port 61321.
-#. Dredd waits for a moment and then tries to connect to ``http://127.0.0.1:61321``. In case the connection is not successful, it exits with status code 3.
-#. For each :ref:`type of hooks <types-of-hooks>` Dredd creates a message and sends it to the socket. The message contains UUID and serialized :ref:`transaction object <transaction>` (or an array of them, in case of `beforeAll`, `afterAll`). Individual messages are sent as UTF-8 JSON documents separated by a newline.
+#. The hooks handler opens a TCP socket on localhost, port 61321.
+#. Dredd waits for a moment and then tries to connect to localhost, port 61321.
+#. For each :ref:`type of hooks <types-of-hooks>` Dredd creates a message and sends it to the socket. The message contains UUID and serialized :ref:`transaction object <transaction>` (or an array of them, in case of `beforeAll`, `afterAll`). Individual messages are sent as JSON documents separated by a newline.
 #. Hooks handler reads a message, calls a corresponding hook code, and sends back a message with modified contents.
 #. Dredd awaits a message with corresponding UUID. Once it arrives, Dredd overwrites its internal HTTP transaction data with the ones from the incoming message.
 
@@ -40,7 +40,7 @@ A hooks handler is a CLI command, which implements following:
 -  It accepts paths to hook files as arguments. They are already passed resolved as absolute paths, in the right order.
 -  It allows users to register hook functions in the hook files, i.e. it provides a *hooks API* similar to those in other hooks handler implementations (see :ref:`JavaScript <hooks-nodejs>`, :ref:`Python <hooks-python>`, :ref:`Ruby <hooks-ruby>`). It allows to register :ref:`all types of hooks supported by Dredd <types-of-hooks>`.
 -  It loads the hook files and registers any hook functions found in them for later execution.
--  It runs a TCP socket server on port ``61321`` and prints ``Starting`` to ``stdout`` when ready.
+-  It runs a TCP socket server on port 61321 and prints ``Starting`` to ``stdout`` when ready.
 
 
 Handling hooks
@@ -49,7 +49,7 @@ Handling hooks
 When any data is received by the TCP server, the hooks handler:
 
 -  Adds every received character to a buffer.
--  When the delimiter newline character ``\n`` is received:
+-  When the delimiter ``LINE FEED (LF)`` character encoded as UTF-8 (``0A`` hex, ``\n`` in most languages) is received:
 
    -  Parses the :ref:`message <tcp-socket-message-format>` in the buffer as JSON.
    -  Finds the hook type in the ``event`` key of the received object and executes respective registered hook function(s). Beware, ``beforeEach`` and ``afterEach`` are overloaded - read the :ref:`tcp-socket-message-format` carefully.
@@ -63,7 +63,7 @@ When any data is received by the TCP server, the hooks handler:
 
    -  Takes the modified data and serializes it back to JSON with the same ``uuid`` as it has received
    -  Sends the JSON back as a TCP message
-   -  Sends a newline character ``\n`` as TCP message delimiter
+   -  Sends a ``LINE FEED (LF)`` character encoded as UTF-8 (``0A`` hex, ``\n`` in most languages) as TCP message delimiter
 
 
 .. _tcp-socket-message-format:
@@ -91,12 +91,12 @@ TCP socket message format
 Termination
 ^^^^^^^^^^^
 
-When the testing is done, Dredd signals the hooks handler process to terminate. This is done repeatedly with delays. When termination timeout is over, Dredd loses its patience and kills the process forcefully.
+When there is an error or when the testing is done, Dredd signals the hooks handler process to terminate. This is done repeatedly with delays. When termination timeout is over, Dredd loses its patience and kills the process forcefully.
 
 -  **retry delays** can be configured by :option:`--hooks-worker-term-retry`
 -  **timeout** can be configured by :option:`--hooks-worker-term-timeout`
 
-On Linux or macOS, Dredd uses the ``SIGTERM`` signal to tell the hooks handler process it should terminate. On Windows, where signals do not exist, Dredd sends the ``END OF TEXT`` character (``\u0003``, which is ASCII representation of Ctrl+C) to standard input of the process.
+On Linux or macOS, Dredd uses the ``SIGTERM`` signal to tell the hooks handler process it should terminate. On Windows, where signals do not exist, Dredd sends the ``END OF TEXT`` character (``03`` hex, which is ASCII representation of Ctrl+C) to standard input of the process.
 
 
 End-to-end test suite
@@ -122,11 +122,15 @@ There are several configuration options, which can help you during development o
 -  :option:`--hooks-worker-after-connect-wait`
 -  :option:`--hooks-worker-term-timeout`
 -  :option:`--hooks-worker-term-retry`
--  :option:`--hooks-worker-handler-host`
--  :option:`--hooks-worker-handler-port`
+
+.. warning::
+   Behavior of the following options is currently broken (see :ghissue:`#917`) and it is recommended to stick to localhost and port 61321 until fixed:
+
+   -  :option:`--hooks-worker-handler-host`
+   -  :option:`--hooks-worker-handler-port`
 
 .. note::
-   Never mind the options mention *hooks worker* in their names. It is the same as *hooks handler*. The options are proposed to be renamed in the future - see :ghissue:`#1101`.
+   The options mention *hooks worker* in their names, but it stands for the same as *hooks handler*. There is a proposal to rename the options in the future: :ghissue:`#1101`
 
 Need help? No problem!
 ----------------------
