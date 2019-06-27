@@ -197,7 +197,7 @@ As mentioned in :ref:`supported-languages`, running hooks written in languages o
 
 If you're :ref:`running Dredd inside Docker <docker>`, you may want to use a separate container for the hooks handler and then run all your containers together as described in the :ref:`docker-compose` section.
 
-However, hooks were not originally designed with this scenario in mind. Dredd gets a name of (or path to) the hooks handler in :option:`--language` and then starts it as a child process. To work around this, `fool Dredd with a dummy script <https://github.com/apiaryio/dredd/issues/748#issuecomment-285355519>`__ and set :option:`--hooks-worker-handler-host` together with :option:`--hooks-worker-handler-port` to point Dredd's TCP communication to the other container.
+However, hooks were not originally designed with this scenario in mind. Dredd gets a name of (or path to) the hooks handler in :option:`--language` and then starts it as a child process. To work around this, `fool Dredd with a dummy script <https://github.com/apiaryio/dredd/issues/748#issuecomment-285355519>`__ and set :option:`--hooks-handler-host` together with :option:`--hooks-handler-port` to point Dredd's TCP communication to the other container.
 
 .. note::
     The issue described above is tracked in :ghissue:`#755`.

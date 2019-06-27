@@ -93,8 +93,8 @@ Termination
 
 When there is an error or when the testing is done, Dredd signals the hooks handler process to terminate. This is done repeatedly with delays. When termination timeout is over, Dredd loses its patience and kills the process forcefully.
 
--  **retry delays** can be configured by :option:`--hooks-worker-term-retry`
--  **timeout** can be configured by :option:`--hooks-worker-term-timeout`
+-  **retry delays** can be configured by :option:`--hooks-handler-term-retry`
+-  **timeout** can be configured by :option:`--hooks-handler-term-timeout`
 
 On Linux or macOS, Dredd uses the ``SIGTERM`` signal to tell the hooks handler process it should terminate. On Windows, where signals do not exist, Dredd sends the ``END OF TEXT`` character (``03`` hex, which is ASCII representation of Ctrl+C) to standard input of the process.
 
@@ -116,20 +116,17 @@ Configuration options
 
 There are several configuration options, which can help you during development of the hooks handler:
 
--  :option:`--hooks-worker-timeout`
--  :option:`--hooks-worker-connect-timeout`
--  :option:`--hooks-worker-connect-retry`
--  :option:`--hooks-worker-after-connect-wait`
--  :option:`--hooks-worker-term-timeout`
--  :option:`--hooks-worker-term-retry`
--  :option:`--hooks-worker-handler-host`
--  :option:`--hooks-worker-handler-port`
+-  :option:`--hooks-handler-timeout`
+-  :option:`--hooks-handler-connect-timeout`
+-  :option:`--hooks-handler-connect-retry`
+-  :option:`--hooks-handler-after-connect-wait`
+-  :option:`--hooks-handler-term-timeout`
+-  :option:`--hooks-handler-term-retry`
+-  :option:`--hooks-handler-host`
+-  :option:`--hooks-handler-port`
 
 .. warning::
-   Behavior of the :option:`--hooks-worker-handler-port` option is currently broken if used with the hooks handler as a child process (see :ghissue:`#917`) and it is recommended to stick to port 61321 until fixed.
-
-.. note::
-   The options mention *hooks worker* in their names, but it stands for the same as *hooks handler*. There is a proposal to rename the options in the future: :ghissue:`#1101`
+   Behavior of the :option:`--hooks-handler-port` option is currently broken if used with the hooks handler as a child process (see :ghissue:`#917`) and it is recommended to stick to port 61321 until fixed.
 
 Need help? No problem!
 ----------------------

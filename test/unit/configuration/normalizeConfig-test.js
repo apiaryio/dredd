@@ -7,6 +7,7 @@ const {
   coerceApiDescriptions,
   coerceDeprecatedDataOption,
   coerceDeprecatedLevelOption,
+  coerceDeprecatedHooksHandlerOptions,
   coerceUserOption,
 } = require('../../../lib/configuration/normalizeConfig');
 
@@ -223,6 +224,76 @@ describe('normalizeConfig()', () => {
               },
             ],
           });
+        });
+      });
+    });
+
+    describe('hooks-worker-*', () => {
+      describe('coerces "hooks-worker-handler-*" to "hooks-handler-*"', () => {
+        it('when given { hooks-worker-handler-host: foo } format', () => {
+          const result = coerceDeprecatedHooksHandlerOptions({
+            'hooks-worker-handler-host': 'foo',
+          });
+
+          assert.deepEqual(result, { 'hooks-handler-host': 'foo' });
+        });
+
+        it('when given { hooks-worker-handler-port: 1234 } format', () => {
+          const result = coerceDeprecatedHooksHandlerOptions({
+            'hooks-worker-handler-port': 1234,
+          });
+
+          assert.deepEqual(result, { 'hooks-handler-port': 1234 });
+        });
+      });
+
+      describe('coerces "hooks-worker-*" to "hooks-handler-*"', () => {
+        it('when given { hooks-worker-timeout: 1234 } format', () => {
+          const result = coerceDeprecatedHooksHandlerOptions({
+            'hooks-worker-timeout': 1234,
+          });
+
+          assert.deepEqual(result, { 'hooks-handler-timeout': 1234 });
+        });
+
+        it('when given { hooks-worker-connect-timeout: 1234 } format', () => {
+          const result = coerceDeprecatedHooksHandlerOptions({
+            'hooks-worker-connect-timeout': 1234,
+          });
+
+          assert.deepEqual(result, { 'hooks-handler-connect-timeout': 1234 });
+        });
+
+        it('when given { hooks-worker-connect-retry: 1234 } format', () => {
+          const result = coerceDeprecatedHooksHandlerOptions({
+            'hooks-worker-connect-retry': 1234,
+          });
+
+          assert.deepEqual(result, { 'hooks-handler-connect-retry': 1234 });
+        });
+
+        it('when given { hooks-worker-after-connect-wait: 1234 } format', () => {
+          const result = coerceDeprecatedHooksHandlerOptions({
+            'hooks-worker-after-connect-wait': 1234,
+          });
+
+          assert.deepEqual(result, { 'hooks-handler-after-connect-wait': 1234 });
+        });
+
+        it('when given { hooks-worker-term-timeout: 1234 } format', () => {
+          const result = coerceDeprecatedHooksHandlerOptions({
+            'hooks-worker-term-timeout': 1234,
+          });
+
+          assert.deepEqual(result, { 'hooks-handler-term-timeout': 1234 });
+        });
+
+        it('when given { hooks-worker-term-retry: 1234 } format', () => {
+          const result = coerceDeprecatedHooksHandlerOptions({
+            'hooks-worker-term-retry': 1234,
+          });
+
+          assert.deepEqual(result, { 'hooks-handler-term-retry': 1234 });
         });
       });
     });

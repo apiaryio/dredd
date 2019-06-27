@@ -108,35 +108,35 @@
   "version": {
     "description": "Show version number."
   },
-  "hooks-worker-timeout": {
+  "hooks-handler-timeout": {
     "description": "How long to wait for hooks handler to start. [ms]",
     "default": 5000
   },
-  "hooks-worker-connect-timeout": {
+  "hooks-handler-connect-timeout": {
     "description": "Total hooks handler connection timeout (includes all retries). [ms]",
     "default": 1500
   },
-  "hooks-worker-connect-retry": {
+  "hooks-handler-connect-retry": {
     "description": "How long to wait between attempts to connect to hooks handler. [ms]",
     "default": 500
   },
-  "hooks-worker-after-connect-wait": {
+  "hooks-handler-after-connect-wait": {
     "description": "How long to wait between connecting to hooks handler and start of testing. [ms]",
     "default": 100
   },
-  "hooks-worker-term-timeout": {
+  "hooks-handler-term-timeout": {
     "description": "How long to wait between trying to terminate hooks handler and killing it. [ms]",
     "default": 5000
   },
-  "hooks-worker-term-retry": {
+  "hooks-handler-term-retry": {
     "description": "How long to wait between attempts to terminate hooks handler. [ms]",
     "default": 500
   },
-  "hooks-worker-handler-host": {
+  "hooks-handler-host": {
     "description": "TCP host of the hooks handler. Useful for running the hooks handler in Docker.",
     "default": "127.0.0.1"
   },
-  "hooks-worker-handler-port": {
+  "hooks-handler-port": {
     "description": "TCP port of the hooks handler. Useful for running the hooks handler in Docker or to avoid port collisions.",
     "default": 61321
   },
