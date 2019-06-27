@@ -133,11 +133,11 @@
     "default": 500
   },
   "hooks-worker-handler-host": {
-    "description": "Host of the hooks handler.",
+    "description": "TCP host of the hooks handler. Useful for running the hooks handler in Docker.",
     "default": "127.0.0.1"
   },
   "hooks-worker-handler-port": {
-    "description": "Port of the hooks handler.",
+    "description": "TCP port of the hooks handler. Useful for running the hooks handler in Docker or to avoid port collisions.",
     "default": 61321
   },
   "config": {

@@ -122,12 +122,11 @@ There are several configuration options, which can help you during development o
 -  :option:`--hooks-worker-after-connect-wait`
 -  :option:`--hooks-worker-term-timeout`
 -  :option:`--hooks-worker-term-retry`
+-  :option:`--hooks-worker-handler-host`
+-  :option:`--hooks-worker-handler-port`
 
 .. warning::
-   Behavior of the following options is currently broken (see :ghissue:`#917`) and it is recommended to stick to localhost and port 61321 until fixed:
-
-   -  :option:`--hooks-worker-handler-host`
-   -  :option:`--hooks-worker-handler-port`
+   Behavior of the :option:`--hooks-worker-handler-port` option is currently broken if used with the hooks handler as a child process (see :ghissue:`#917`) and it is recommended to stick to port 61321 until fixed.
 
 .. note::
    The options mention *hooks worker* in their names, but it stands for the same as *hooks handler*. There is a proposal to rename the options in the future: :ghissue:`#1101`
