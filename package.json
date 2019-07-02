@@ -67,7 +67,7 @@
     "coffeescript": "2.4.1",
     "coveralls": "3.0.4",
     "eslint": "5.16.0",
-    "eslint-config-airbnb-base": "13.1.0",
+    "eslint-config-airbnb-base": "13.2.0",
     "eslint-plugin-import": "2.18.0",
     "express": "4.17.1",
     "istanbul": "0.4.5",
