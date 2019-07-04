@@ -3,15 +3,15 @@ const { expect } = require('chai');
 const { Given, When, Then } = require('cucumber');
 
 
-Given('an API description with transactions "GET /articles" and "POST /articles"', function () {
+Given('I have an API description with transactions "GET /articles" and "POST /articles"', function () {
   this.dredd.apiDescription = `test/fixtures/blog/apidesc${this.apiDescriptionExt}`;
 });
 
-Given('an implementation, which requires authorization on "POST /articles"', function () {
+Given('I have an implementation, which requires auth on "POST /articles"', function () {
   this.dredd.args.push('--server=node test/fixtures/blog/app.js');
 });
 
-Given('I have hooks adding authorization to "POST /articles"', function () {
+Given('I have hooks adding auth to "POST /articles"', function () {
   this.dredd.args.push(`--hookfiles=test/fixtures/blog/hooks${this.hooksExt}`);
 });
 
