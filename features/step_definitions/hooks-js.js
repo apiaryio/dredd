@@ -20,7 +20,7 @@ When('I run Dredd', { timeout: 10 * 1000 }, function (callback) {
     'bin/dredd',
     this.dredd.apiDescription,
     this.dredd.apiLocation,
-    '--color=false',
+    '--no-color',
   ].concat(this.dredd.args);
 
   const cli = spawn('node', args);
