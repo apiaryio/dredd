@@ -296,7 +296,7 @@ Writing documentation
 Images
 ~~~~~~
 
-Images are in the ``docs/_static/images`` directory. For images exported from sophisticated graphic formats, the source file should be commited to Git and placed in the same directory, with the same basename, just with different extension.
+Images are in the ``docs/_static/images`` directory. For images exported in sophisticated graphic formats, the source file should be committed to Git and placed in the same directory, with the same basename, just with different extension.
 
 .. note::
     The ``.key`` files are not SSH keys, they're `Keynote <https://www.apple.com/keynote/>`__ source files. It is `@honzajavorek <https://github.com/honzajavorek>`__'s deviation to draw charts in Keynote and to export them as PNGs::
