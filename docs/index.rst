@@ -4,7 +4,7 @@
 Dredd — HTTP API Testing Framework
 ==================================
 
-|npm version| |Build Status| |Windows Build Status| |Dependency Status| |devDependency Status| |Documentation Status| |Coverage Status| |Known Vulnerabilities|
+|npm version| |Build Status| |Windows Build Status| |Documentation Status| |Coverage Status| |Known Vulnerabilities|
 
 .. figure:: _static/images/dredd.png
    :alt: Dredd - HTTP API Testing Framework
@@ -80,10 +80,6 @@ Example Applications
    :target: https://travis-ci.org/apiaryio/dredd
 .. |Windows Build Status| image:: https://ci.appveyor.com/api/projects/status/n3ixfxh72qushyr4/branch/master?svg=true
    :target: https://ci.appveyor.com/project/Apiary/dredd/branch/master
-.. |Dependency Status| image:: https://david-dm.org/apiaryio/dredd.svg
-   :target: https://david-dm.org/apiaryio/dredd
-.. |devDependency Status| image:: https://david-dm.org/apiaryio/dredd/dev-status.svg
-   :target: https://david-dm.org/apiaryio/dredd?type=dev
 .. |Documentation Status| image:: https://readthedocs.org/projects/dredd/badge/?version=latest
    :target: https://readthedocs.org/projects/dredd/builds/
 .. |Coverage Status| image:: https://coveralls.io/repos/apiaryio/dredd/badge.svg?branch=master
