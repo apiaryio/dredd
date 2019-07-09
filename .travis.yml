@@ -40,13 +40,19 @@ jobs:
     - env: "JOB=node10"
       script: "npm run ci:test"
 
+    - env: "JOB=e2e_apib"
+      script: "npm run e2e:apib"
+
+    - env: "JOB=e2e_openapi2"
+      script: "npm run e2e:openapi2"
+
     - env: "JOB=smoke_tests"
       services:
         - "mongodb"
       cache: {}
       before_install: []
       install: []
-      script: "npm run ci:test:smoke"
+      script: "npm run ci:smoke"
 
     ################################# Stage 2 #################################
     # The GH_TOKEN and NPM_TOKEN environment variables are expected to be set

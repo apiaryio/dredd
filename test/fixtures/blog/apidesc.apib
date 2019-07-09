@@ -4,7 +4,7 @@ FORMAT: 1A
 ## Articles [/articles]
 ### List articles [GET]
 
-+ Response 200 (application/json)
++ Response 200 (application/json; charset=utf-8)
 
         [
           {
@@ -16,14 +16,14 @@ FORMAT: 1A
 
 ### Publish an article [POST]
 
-+ Request (application/json)
++ Request (application/json; charset=utf-8)
 
         {
           "title": "Crispy schnitzel",
           "text": "Prepare eggs…"
         }
 
-+ Response 201 (application/json)
++ Response 201 (application/json; charset=utf-8)
 
         {
           "id": 2,

@@ -3,9 +3,9 @@ info:
   title: "Blog API"
   version: "1.0"
 consumes:
-  - "application/json"
+  - "application/json; charset=utf-8"
 produces:
-  - "application/json"
+  - "application/json; charset=utf-8"
 paths:
   "/articles":
     x-summary: "Articles"
@@ -16,7 +16,7 @@ paths:
         200:
           description: "Articles list"
           examples:
-            "application/json":
+            "application/json; charset=utf-8":
               - id: 1
                 title: "Creamy cucumber salad"
                 text: "Slice cucumbers…"
@@ -34,7 +34,7 @@ paths:
         201:
           description: "New article"
           examples:
-            "application/json":
+            "application/json; charset=utf-8":
               id: 2
               title: "Crispy schnitzel"
               text: "Prepare eggs…"
