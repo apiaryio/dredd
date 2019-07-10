@@ -143,7 +143,7 @@ When dropping support for a certain Node.js version, it should be removed from t
 Dependencies
 ~~~~~~~~~~~~
 
-New versions of dependencies are monitored by `David <https://david-dm.org/apiaryio/dredd>`__ and `Greenkeeper <https://greenkeeper.io/>`__. Vulnerabilities are monitored by `Snyk <https://snyk.io/test/npm/dredd>`__.
+New versions of dependencies are monitored by `Dependabot <https://dependabot.com/>`__. Vulnerabilities are monitored by `Snyk <https://snyk.io/test/npm/dredd>`__.
 
 Dependencies should not be specified in a loose way - only exact versions are allowed. This is ensured by ``.npmrc`` and the lock file. Any changes to dependencies (version upgrades included) are a subject to internal policies and must be first checked and approved by the maintainers before merged to ``master``. This is because we are trying to be good Open Source citizens and to do our best to comply with licenses of all our dependencies.
 
