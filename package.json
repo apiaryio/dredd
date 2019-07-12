@@ -44,7 +44,7 @@
     "@commitlint/travis-cli": "8.0.0",
     "chai": "4.2.0",
     "chai-json-schema": "1.5.1",
-    "coveralls": "3.0.4",
+    "coveralls": "3.0.5",
     "eslint": "6.0.1",
     "eslint-config-airbnb-base": "13.2.0",
     "eslint-plugin-import": "2.18.0",
