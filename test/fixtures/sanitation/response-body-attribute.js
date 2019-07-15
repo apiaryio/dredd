@@ -9,8 +9,7 @@ hooks.after('Resource > Update Resource', (transaction, done) => {
   };
 
   // Removes sensitive data from the Dredd transaction
-  const nextBody = unfold(transaction.test.actual.body, deleteToken);
-  transaction.test.actual.body = nextBody;
+  transaction.test.actual.body = unfold(transaction.test.actual.body, deleteToken);
   transaction.test.expected.body = unfold(transaction.test.expected.body, deleteToken);
 
   // Sanitation of the attribute in JSON Schema
