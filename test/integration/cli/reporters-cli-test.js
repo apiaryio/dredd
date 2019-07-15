@@ -105,9 +105,9 @@ describe('CLI - Reporters', () => {
         assert.nestedProperty(stepRequest.body, 'resultData.request');
         assert.nestedProperty(stepRequest.body, 'resultData.realResponse');
         assert.nestedProperty(stepRequest.body, 'resultData.expectedResponse');
-        assert.nestedProperty(stepRequest.body, 'resultData.result.body.validator');
-        assert.nestedProperty(stepRequest.body, 'resultData.result.headers.validator');
-        assert.nestedProperty(stepRequest.body, 'resultData.result.statusCode.validator');
+        assert.nestedProperty(stepRequest.body, 'resultData.result.body.kind');
+        assert.nestedProperty(stepRequest.body, 'resultData.result.headers.kind');
+        assert.nestedProperty(stepRequest.body, 'resultData.result.statusCode.kind');
       });
     });
 

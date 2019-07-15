@@ -169,9 +169,7 @@ describe('Sanitation of Reported Data', () => {
       const app = createServerFromResponse({ token: 123, name: 'Bob' }); // 'token' should be string → failing test
 
       runDreddWithServer(dredd, app, (err, runtimeInfo) => {
-        if (err) {
-          return done(err);
-        }
+        if (err) { return done(err); }
         dreddRuntimeInfo = runtimeInfo.dredd;
         done();
       });

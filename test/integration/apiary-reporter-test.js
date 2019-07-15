@@ -146,9 +146,9 @@ describe('Apiary reporter', () => {
       assert.nestedProperty(receivedRequest, 'resultData.request');
       assert.nestedProperty(receivedRequest, 'resultData.realResponse');
       assert.nestedProperty(receivedRequest, 'resultData.expectedResponse');
-      assert.nestedProperty(receivedRequest, 'resultData.result.body.validator');
-      assert.nestedProperty(receivedRequest, 'resultData.result.headers.validator');
-      assert.nestedProperty(receivedRequest, 'resultData.result.statusCode.validator');
+      assert.nestedProperty(receivedRequest, 'resultData.result.body.kind');
+      assert.nestedProperty(receivedRequest, 'resultData.result.headers.kind');
+      assert.nestedProperty(receivedRequest, 'resultData.result.statusCode.kind');
 
       it('prints out an error message', () => assert.notEqual(exitStatus, 0));
     });
@@ -202,11 +202,6 @@ describe('Apiary reporter', () => {
         assert.isObject(receivedRequest);
         assert.nestedProperty(receivedRequest, 'resultData.request');
         assert.nestedProperty(receivedRequest, 'resultData.expectedResponse');
-        // TODO
-        // "resultData.result" contains Gavel validation result.
-        // Despite Gavel validation result not having "general" key,
-        // this test still passes. This means that the result is mutated along the way.
-        // Find out where and not do that anymore.
         assert.nestedProperty(receivedRequest, 'resultData.result.general');
       });
 
@@ -274,9 +269,9 @@ describe('Apiary reporter', () => {
         assert.nestedProperty(receivedRequest, 'resultData.request');
         assert.nestedProperty(receivedRequest, 'resultData.realResponse');
         assert.nestedProperty(receivedRequest, 'resultData.expectedResponse');
-        assert.nestedProperty(receivedRequest, 'resultData.result.body.validator');
-        assert.nestedProperty(receivedRequest, 'resultData.result.headers.validator');
-        assert.nestedProperty(receivedRequest, 'resultData.result.statusCode.validator');
+        assert.nestedProperty(receivedRequest, 'resultData.result.body.kind');
+        assert.nestedProperty(receivedRequest, 'resultData.result.headers.kind');
+        assert.nestedProperty(receivedRequest, 'resultData.result.statusCode.kind');
       });
     });
   });

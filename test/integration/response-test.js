@@ -233,7 +233,7 @@ const Dredd = require('../../lib/Dredd');
       /HTTP 204 and 205 responses must not include a message body/g
     ).length, 4));
     it('prints four failures for each non-matching status code', () => assert.equal(runtimeInfo.dredd.logging.match(
-      /fail: statusCode: Status code is '200' instead of/g
+      /fail: statusCode: Expected status code '\d+', but got '200'./g
     ).length, 4));
     it('does not print any failures regarding response bodies', () => assert.isNull(runtimeInfo.dredd.logging.match(/fail: body:/g)));
   });
@@ -262,10 +262,10 @@ const Dredd = require('../../lib/Dredd');
       /HTTP 204 and 205 responses must not include a message body/g
     ).length, 2));
     it('prints two failures for each non-matching body (and status code)', () => assert.equal(runtimeInfo.dredd.logging.match(
-      /fail: body: Real and expected data does not match.\nstatusCode: Status code is '200' instead of/g
+      /fail: body: Actual and expected data do not match.\nstatusCode: Expected status code '\d+', but got '200'./g
     ).length, 2));
     it('prints two failures for each non-matching status code', () => assert.equal(runtimeInfo.dredd.logging.match(
-      /fail: statusCode: Status code is '200' instead of/g
+      /fail: statusCode: Expected status code '\d+', but got '200'./g
     ).length, 2));
   });
 }));
