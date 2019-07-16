@@ -65,7 +65,7 @@
   "devDependencies": {
     "@commitlint/cli": "8.0.0",
     "@commitlint/config-conventional": "8.0.0",
-    "@commitlint/travis-cli": "8.0.0",
+    "@commitlint/travis-cli": "8.1.0",
     "body-parser": "1.19.0",
     "coffeescript": "2.4.1",
     "coveralls": "3.0.5",
