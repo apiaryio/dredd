@@ -51,7 +51,7 @@
     "inquirer": "6.5.0",
     "js-yaml": "3.13.1",
     "make-dir": "3.0.0",
-    "markdown-it": "8.4.2",
+    "markdown-it": "9.0.1",
     "optimist": "0.6.1",
     "proxyquire": "2.1.0",
     "ramda": "0.26.1",
