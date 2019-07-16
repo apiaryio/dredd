@@ -40,6 +40,10 @@ jobs:
     - env: "JOB=node10"
       script: "npm run ci:test"
 
+    - env: "JOB=node12"
+      node_js: "12"
+      script: "npm run ci:test"
+
     - env: "JOB=e2e_apib"
       script: "npm run e2e:apib"
 
