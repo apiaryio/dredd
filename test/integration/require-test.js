@@ -79,7 +79,7 @@ describe('Requiring user-provided modules (e.g. language compilers)', () => {
       assert.equal(dreddRuntimeInfo.err.code, 'MODULE_NOT_FOUND');
     });
     it('the error message is descriptive', () => {
-      assert.equal(dreddRuntimeInfo.err.message, 'Cannot find module \'no-such-module\'');
+      assert.include(dreddRuntimeInfo.err.message, 'Cannot find module \'no-such-module\'');
     });
   });
 });
