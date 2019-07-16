@@ -146,9 +146,9 @@ describe('Apiary reporter', () => {
       assert.nestedProperty(receivedRequest, 'resultData.request');
       assert.nestedProperty(receivedRequest, 'resultData.realResponse');
       assert.nestedProperty(receivedRequest, 'resultData.expectedResponse');
-      assert.nestedProperty(receivedRequest, 'resultData.result.body.validator');
-      assert.nestedProperty(receivedRequest, 'resultData.result.headers.validator');
-      assert.nestedProperty(receivedRequest, 'resultData.result.statusCode.validator');
+      assert.nestedProperty(receivedRequest, 'resultData.result.body.kind');
+      assert.nestedProperty(receivedRequest, 'resultData.result.headers.kind');
+      assert.nestedProperty(receivedRequest, 'resultData.result.statusCode.kind');
 
       it('prints out an error message', () => assert.notEqual(exitStatus, 0));
     });
@@ -269,9 +269,9 @@ describe('Apiary reporter', () => {
         assert.nestedProperty(receivedRequest, 'resultData.request');
         assert.nestedProperty(receivedRequest, 'resultData.realResponse');
         assert.nestedProperty(receivedRequest, 'resultData.expectedResponse');
-        assert.nestedProperty(receivedRequest, 'resultData.result.body.validator');
-        assert.nestedProperty(receivedRequest, 'resultData.result.headers.validator');
-        assert.nestedProperty(receivedRequest, 'resultData.result.statusCode.validator');
+        assert.nestedProperty(receivedRequest, 'resultData.result.body.kind');
+        assert.nestedProperty(receivedRequest, 'resultData.result.headers.kind');
+        assert.nestedProperty(receivedRequest, 'resultData.result.statusCode.kind');
       });
     });
   });

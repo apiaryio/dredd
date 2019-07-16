@@ -1,40 +1,27 @@
 const hooks = require('hooks');
 
+const unfold = (jsonString, transform) => JSON.stringify(transform(JSON.parse(jsonString)));
+
 hooks.after('Resource > Update Resource', (transaction, done) => {
-  // Sanitation of the attribute in body
-  let body;
+  const deleteToken = (obj) => {
+    delete obj.token;
+    return obj;
+  };
 
-  body = JSON.parse(transaction.test.actual.body);
-  delete body.token;
-  transaction.test.actual.body = JSON.stringify(body);
-
-  body = JSON.parse(transaction.test.expected.body);
-  delete body.token;
-  transaction.test.expected.body = JSON.stringify(body);
+  // Removes sensitive data from the Dredd transaction
+  transaction.test.actual.body = unfold(transaction.test.actual.body, deleteToken);
+  transaction.test.expected.body = unfold(transaction.test.expected.body, deleteToken);
 
   // Sanitation of the attribute in JSON Schema
   const bodySchema = JSON.parse(transaction.test.expected.bodySchema);
   delete bodySchema.properties.token;
   transaction.test.expected.bodySchema = JSON.stringify(bodySchema);
 
-  // Sanitation of the attribute in validation output
-  const validationOutput = transaction.test.results.body;
-
-  const errors = [];
-  for (let i = 0; i < validationOutput.results.length; i++) {
-    if (validationOutput.results[i].pointer !== '/token') {
-      errors.push(validationOutput.results[i]);
-    }
-  }
-  validationOutput.results = errors;
-
-  const rawData = [];
-  for (let i = 0; i < validationOutput.rawData.length; i++) {
-    if (validationOutput.rawData[i].property[0] !== 'token') {
-      rawData.push(validationOutput.rawData[i]);
-    }
-  }
-  validationOutput.rawData = rawData;
+  // Removes sensitive data from the Gavel validation result
+  const bodyResult = transaction.test.results.body;
+  bodyResult.errors = bodyResult.errors.filter(error => error.location.pointer !== '/token');
+  bodyResult.values.expected = unfold(bodyResult.values.expected, deleteToken);
+  bodyResult.values.actual = unfold(bodyResult.values.actual, deleteToken);
 
   transaction.test.message = '';
   done();

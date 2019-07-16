@@ -2,37 +2,20 @@ const caseless = require('caseless');
 const hooks = require('hooks');
 
 hooks.after('Resource > Update Resource', (transaction, done) => {
-  let headers;
-  let name;
+  const deleteSensitiveHeader = (headerName, headers) => {
+    const name = caseless(headers).has(headerName);
+    delete headers[name];
+    return headers;
+  };
 
-  headers = transaction.test.actual.headers;
-  name = caseless(headers).has('authorization');
-  delete headers[name];
-  transaction.test.actual.headers = headers;
+  // Remove sensitive data from the Dredd transaction
+  transaction.test.actual.headers = deleteSensitiveHeader('authorization', transaction.test.actual.headers);
+  transaction.test.expected.headers = deleteSensitiveHeader('authorization', transaction.test.expected.headers);
 
-  headers = transaction.test.expected.headers;
-  name = caseless(headers).has('authorization');
-  delete headers[name];
-  transaction.test.expected.headers = headers;
-
-  // Sanitation of the header in validation output
-  const validationOutput = transaction.test.results.headers;
-
-  const errors = [];
-  for (let i = 0; i < validationOutput.results.length; i++) {
-    if (validationOutput.results[i].pointer.toLowerCase() !== '/authorization') {
-      errors.push(validationOutput.results[i]);
-    }
-  }
-  validationOutput.results = errors;
-
-  const rawData = [];
-  for (let i = 0; i < validationOutput.rawData.length; i++) {
-    if (validationOutput.rawData[i].property[0].toLowerCase() !== 'authorization') {
-      rawData.push(validationOutput.rawData[i]);
-    }
-  }
-  validationOutput.rawData = rawData;
+  // Remove sensitive data from the Gavel validation result
+  const headersResult = transaction.test.results.headers;
+  headersResult.errors = headersResult.errors.filter(error => error.location.pointer.toLowerCase() !== '/authorization');
+  headersResult.values.expected = deleteSensitiveHeader('authorization', headersResult.values.expected);
 
   transaction.test.message = '';
   done();
