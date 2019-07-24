@@ -72,9 +72,9 @@ $ npm install -g dredd
 
 ## Howtos, Tutorials, Blogposts (3rd party)
 
-- [Laravel OpenAPI 3 Documentation Verification Using Dredd](https://commandz.io/snippets/laravel/laravel-dredd-openapi-v3/) *02/24/2019*
 - [Maintenir à jour sa documentation d'API avec Dredd!](https://blog.itnetwork.fr/blog-post/2019/05/06/dredd-partie-1-ecriture-documentation.html) *05/06/2019*
 - [Dredd - Language-agnostic HTTP API Testing Tool - Interview with Honza Javorek](https://survivejs.com/blog/dredd-interview/) *03/22/2019*
+- [Laravel OpenAPI 3 Documentation Verification Using Dredd](https://commandz.io/snippets/laravel/laravel-dredd-openapi-v3/) *02/24/2019*
 - [Testing your API with Dredd](https://medium.com/mop-developers/testing-your-api-with-dredd-c02e6ca151f2) *09/27/2018*
 - [Writing Testable API Documentation Using APIB and Dredd (Rails)](https://blog.rebased.pl/2018/06/29/testable-api-docs.html) *06/29/2018*
 - [Design-first API Specification Workflow Matures](https://philsturgeon.uk/api/2018/03/01/api-specification-workflow-matures/) *03/01/2018*
