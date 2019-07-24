@@ -152,6 +152,7 @@ Advanced Examples
 
 For more complex example applications, please refer to:
 
--  `Express.js example application <https://github.com/apiaryio/dredd-example>`__
--  `Ruby on Rails example application <https://gitlab.com/theodorton/dredd-test-rails>`__
--  `Laravel example application <https://github.com/ddelnano/dredd-hooks-php/wiki/Laravel-Example>`__
+-  `Express.js <https://github.com/apiaryio/dredd-example>`__
+-  `Laravel <https://github.com/ddelnano/dredd-hooks-php/wiki/Laravel-Example>`__
+-  `Laravel & OpenAPI 3 <https://github.com/AndyWendt/laravel-dredd-openapi-v3>`__
+-  `Ruby on Rails <https://gitlab.com/theodorton/dredd-test-rails/>`__

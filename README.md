@@ -72,11 +72,12 @@ $ npm install -g dredd
 
 ## Howtos, Tutorials, Blogposts (3rd party)
 
-- [Maintenir à jour sa documentation d'API avec Dredd !](https://blog.itnetwork.fr/blog-post/2019/05/06/dredd-partie-1-ecriture-documentation.html) *05/06/2019*
-- [Dredd - Language-agnostic HTTP API Testing Tool - Interview with Honza Javorek](https://survivejs.com/blog/dredd-interview/) *3/22/2019*
-- [Testing your API with Dredd](https://medium.com/mop-developers/testing-your-api-with-dredd-c02e6ca151f2) *9/27/2018*
-- [Writing Testable API Documentation Using APIB and Dredd (Rails)](https://blog.rebased.pl/2018/06/29/testable-api-docs.html) *6/29/2018*
-- [Design-first API Specification Workflow Matures](https://philsturgeon.uk/api/2018/03/01/api-specification-workflow-matures/) *3/1/2018*
+- [Laravel OpenAPI 3 Documentation Verification Using Dredd](https://commandz.io/snippets/laravel/laravel-dredd-openapi-v3/) *02/24/2019*
+- [Maintenir à jour sa documentation d'API avec Dredd!](https://blog.itnetwork.fr/blog-post/2019/05/06/dredd-partie-1-ecriture-documentation.html) *05/06/2019*
+- [Dredd - Language-agnostic HTTP API Testing Tool - Interview with Honza Javorek](https://survivejs.com/blog/dredd-interview/) *03/22/2019*
+- [Testing your API with Dredd](https://medium.com/mop-developers/testing-your-api-with-dredd-c02e6ca151f2) *09/27/2018*
+- [Writing Testable API Documentation Using APIB and Dredd (Rails)](https://blog.rebased.pl/2018/06/29/testable-api-docs.html) *06/29/2018*
+- [Design-first API Specification Workflow Matures](https://philsturgeon.uk/api/2018/03/01/api-specification-workflow-matures/) *03/01/2018*
 - [Writing and testing API specifications with API Blueprint, Dredd and Apiary](https://hackernoon.com/writing-and-testing-api-specifications-with-api-blueprint-dreed-and-apiary-df138accce5a) *12/04/2017*
 - [Testing an API Against its Documentation](https://dev.to/albertofdzm/testing-an-api-against-documentation-6cl) *11/23/2017*
 - [Keeping Documentation Honest](https://blog.apisyouwonthate.com/keeping-documentation-honest-d9ab5351ddd4) *11/21/2017*
