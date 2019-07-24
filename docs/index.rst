@@ -72,6 +72,8 @@ Example Applications
 --------------------
 
 -  `Express.js <https://github.com/apiaryio/dredd-example>`__
+-  `Laravel <https://github.com/ddelnano/dredd-hooks-php/wiki/Laravel-Example>`__
+-  `Laravel & OpenAPI 3 <https://github.com/AndyWendt/laravel-dredd-openapi-v3>`__
 -  `Ruby on Rails <https://gitlab.com/theodorton/dredd-test-rails/>`__
 
 .. |npm version| image:: https://badge.fury.io/js/dredd.svg
