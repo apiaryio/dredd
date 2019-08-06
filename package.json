@@ -54,7 +54,7 @@
     "proxyquire": "2.1.1",
     "rimraf": "2.6.3",
     "semantic-release": "15.13.19",
-    "sinon": "7.4.0"
+    "sinon": "7.4.1"
   },
   "keywords": [
     "api",
