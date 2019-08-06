@@ -14,7 +14,8 @@ jobs:
       env: "JOB=quality_checks"
       before_install:
         - "npm install npm@6 --global"
-        - "pyenv global 3.6"
+        - "pyenv install 3.6.3"
+        - "pyenv global 3.6.3"
         - "pip install pip --upgrade"
       install:
         - "npm install --no-save"
@@ -26,7 +27,8 @@ jobs:
     - env: "JOB=docs_build_dry_run"
       before_install:
         - "npm install npm@6 --global"
-        - "pyenv global 3.6"
+        - "pyenv install 3.6.3"
+        - "pyenv global 3.6.3"
         - "pip install pip --upgrade"
       install:
         - "npm install --no-save"
