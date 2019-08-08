@@ -32,7 +32,7 @@
     "fury": "3.0.0-beta.12",
     "fury-adapter-apib-parser": "0.16.0",
     "fury-adapter-oas3-parser": "0.9.0",
-    "fury-adapter-swagger": "0.27.1",
+    "fury-adapter-swagger": "0.27.2",
     "uri-template": "1.0.1"
   },
   "bundledDependencies": [
