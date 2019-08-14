@@ -185,27 +185,9 @@ Coverage
 
 Tests coverage is a metric which helps developer to see which code **is not** tested. This is useful when introducing new code in Pull Requests or when maintaining under-tested old code (coverage shows that changes to such code are without any safety net).
 
-We strive for as much test coverage as possible. `Coveralls <https://coveralls.io/github/apiaryio/dredd>`__ help us to monitor how successful we are in achieving the goal. If a Pull Request introduces drop in coverage, it won’t be accepted unless the author or reviewer provides a good reason why an exception should be made.
-
 .. note::
 
-    Currently the integration is broken and while we're sending data to Coveralls, they do not report back under Pull Requests. Multiple sessions to debug the problem were not successful and we are considering to replace the service.
-
-The Travis CI build uses following commands to deliver coverage reports:
-
--  ``npm run test:coverage`` - Tests Dredd and creates the ``./coverage/lcov.info`` file
--  ``npm run coveralls`` - Uploads the ``./coverage/lcov.info`` file to Coveralls
-
-The first mentioned command does following:
-
-#.  Uses `istanbul <https://github.com/gotwarlost/istanbul>`__ to instrument the JavaScript code
-#.  Runs the tests on the instrumented code using Mocha with a special lcov reporter, which gives us information about which lines were executed in the standard lcov format
-#. Because some integration tests execute the ``bin/dredd`` script in a subprocess, we collect the coverage stats also in this file. The results are appended to a dedicated lcov file
-#. All lcov files are then merged into one using the `lcov-result-merger <https://github.com/mweibel/lcov-result-merger>`__ utility and sent to Coveralls
-
-Hand-made combined Mocha reporter is used to achieve running tests and collecting coverage at the same time.
-
-Both Dredd code and the combined reporter decide whether to collect coverage or not according to contents of the ``COVERAGE_DIR`` environment variable, which sets the directory for temporary lcov files created during coverage collection. If the variable is set, collecting takes place.
+    Due to reoccurring service denial from Coveralls, we have decided to remove any test coverage integration from Dredd. The topic of test coverage usefulness is to be discussed, and a suitable solution to be presented.
 
 
 .. _hacking-apiary-reporter:
