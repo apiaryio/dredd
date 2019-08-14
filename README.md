@@ -3,7 +3,6 @@
 [![npm version](https://badge.fury.io/js/dredd-transactions.svg)](https://badge.fury.io/js/dredd-transactions)
 [![Build Status](https://travis-ci.org/apiaryio/dredd-transactions.svg?branch=master)](https://travis-ci.org/apiaryio/dredd-transactions)
 [![Build status](https://ci.appveyor.com/api/projects/status/hh8l50ssai3p4d3f/branch/master?svg=true)](https://ci.appveyor.com/project/Apiary/dredd-transactions/branch/master)
-[![Coverage Status](https://coveralls.io/repos/github/apiaryio/dredd-transactions/badge.svg?branch=master)](https://coveralls.io/github/apiaryio/dredd-transactions?branch=master)
 [![Known Vulnerabilities](https://snyk.io/test/npm/dredd-transactions/badge.svg)](https://snyk.io/test/npm/dredd-transactions)
 
 
