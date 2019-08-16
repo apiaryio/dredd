@@ -143,12 +143,12 @@ describe('Apiary reporter', () => {
 
     it('should send results from Gavel', () => {
       assert.isObject(receivedRequest);
-      assert.nestedProperty(receivedRequest, 'resultData.request');
-      assert.nestedProperty(receivedRequest, 'resultData.realResponse');
-      assert.nestedProperty(receivedRequest, 'resultData.expectedResponse');
-      assert.nestedProperty(receivedRequest, 'resultData.result.body.kind');
-      assert.nestedProperty(receivedRequest, 'resultData.result.headers.kind');
-      assert.nestedProperty(receivedRequest, 'resultData.result.statusCode.kind');
+      assert.nestedProperty(receivedRequest, 'results.request');
+      assert.nestedProperty(receivedRequest, 'results.realResponse');
+      assert.nestedProperty(receivedRequest, 'results.expectedResponse');
+      assert.nestedProperty(receivedRequest, 'results.validationResult.fields.body.kind');
+      assert.nestedProperty(receivedRequest, 'results.validationResult.fields.headers.kind');
+      assert.nestedProperty(receivedRequest, 'results.validationResult.fields.statusCode.kind');
 
       it('prints out an error message', () => assert.notEqual(exitStatus, 0));
     });
@@ -200,13 +200,13 @@ describe('Apiary reporter', () => {
 
       it('should send results from gavel', () => {
         assert.isObject(receivedRequest);
-        assert.nestedProperty(receivedRequest, 'resultData.request');
-        assert.nestedProperty(receivedRequest, 'resultData.expectedResponse');
-        assert.nestedProperty(receivedRequest, 'resultData.result.general');
+        assert.nestedProperty(receivedRequest, 'results.request');
+        assert.nestedProperty(receivedRequest, 'results.expectedResponse');
+        assert.nestedProperty(receivedRequest, 'results.errors');
       });
 
       it('report should have message about server being down', () => {
-        const message = receivedRequest.resultData.result.general[0].message;
+        const message = receivedRequest.results.errors[0].message;
         assert.include(message, 'connect');
       });
     });
@@ -266,12 +266,12 @@ describe('Apiary reporter', () => {
 
       it('should send results from Gavel', () => {
         assert.isObject(receivedRequest);
-        assert.nestedProperty(receivedRequest, 'resultData.request');
-        assert.nestedProperty(receivedRequest, 'resultData.realResponse');
-        assert.nestedProperty(receivedRequest, 'resultData.expectedResponse');
-        assert.nestedProperty(receivedRequest, 'resultData.result.body.kind');
-        assert.nestedProperty(receivedRequest, 'resultData.result.headers.kind');
-        assert.nestedProperty(receivedRequest, 'resultData.result.statusCode.kind');
+        assert.nestedProperty(receivedRequest, 'results.request');
+        assert.nestedProperty(receivedRequest, 'results.realResponse');
+        assert.nestedProperty(receivedRequest, 'results.expectedResponse');
+        assert.nestedProperty(receivedRequest, 'results.validationResult.fields.body.kind');
+        assert.nestedProperty(receivedRequest, 'results.validationResult.fields.headers.kind');
+        assert.nestedProperty(receivedRequest, 'results.validationResult.fields.statusCode.kind');
       });
     });
   });
