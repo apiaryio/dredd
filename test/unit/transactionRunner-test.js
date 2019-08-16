@@ -515,7 +515,7 @@ describe('TransactionRunner', () => {
       }));
 
       it('should add skip message as a warning under `general` to the results on transaction', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, (err) => {
-        const messages = clonedTransaction.results.general.results.map(value => value.message);
+        const messages = clonedTransaction.errors.map(value => value.message);
         assert.include(messages.join().toLowerCase(), 'skipped');
         done(err);
       }));
@@ -524,7 +524,7 @@ describe('TransactionRunner', () => {
         const messages = [];
         const { callCount } = configuration.emitter.emit;
         for (let callNo = 0, end = callCount - 1, asc = end >= 0; asc ? callNo <= end : callNo >= end; asc ? callNo++ : callNo--) {
-          messages.push(configuration.emitter.emit.getCall(callNo).args[1].results.general.results.map(
+          messages.push(configuration.emitter.emit.getCall(callNo).args[1].errors.map(
             value => value.message
           ));
         }
@@ -1649,7 +1649,7 @@ describe('TransactionRunner', () => {
       }));
 
       it('should add fail message as a error under `general` to the results on transaction', done => runner.executeAllTransactions([transaction], runner.hooks, () => {
-        const messages = transaction.results.general.results.map(value => value.message);
+        const messages = transaction.errors.map(value => value.message);
         assert.include(messages.join(), 'expected false to be truthy');
         done();
       }));
@@ -1658,7 +1658,7 @@ describe('TransactionRunner', () => {
         const messages = [];
         const { callCount } = configuration.emitter.emit;
         for (let callNo = 0, end = callCount - 1, asc = end >= 0; asc ? callNo <= end : callNo >= end; asc ? callNo++ : callNo--) {
-          messages.push(configuration.emitter.emit.getCall(callNo).args[1].results.general.results.map(
+          messages.push(configuration.emitter.emit.getCall(callNo).args[1].errors.map(
             value => value.message
           ));
         }
@@ -1696,7 +1696,7 @@ describe('TransactionRunner', () => {
       }));
 
       it('should add fail message as a error under `general` to the results on transaction', done => runner.executeAllTransactions([transaction], runner.hooks, () => {
-        const messages = transaction.results.general.results.map(value => value.message);
+        const messages = transaction.errors.map(value => value.message);
         assert.include(messages.join(), 'expected false to be truthy');
         done();
       }));
@@ -1705,7 +1705,7 @@ describe('TransactionRunner', () => {
         const messages = [];
         const { callCount } = configuration.emitter.emit;
         for (let callNo = 0, end = callCount - 1, asc = end >= 0; asc ? callNo <= end : callNo >= end; asc ? callNo++ : callNo--) {
-          messages.push(configuration.emitter.emit.getCall(callNo).args[1].results.general.results.map(
+          messages.push(configuration.emitter.emit.getCall(callNo).args[1].errors.map(
             value => value.message
           ));
         }
@@ -1760,7 +1760,7 @@ describe('TransactionRunner', () => {
         }));
 
         it('should add fail message as a error under `general` to the results on the transaction', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
-          const messages = clonedTransaction.results.general.results.map(value => value.message);
+          const messages = clonedTransaction.errors.map(value => value.message);
           assert.include(messages.join(), 'Message before');
           done();
         }));
@@ -1769,7 +1769,7 @@ describe('TransactionRunner', () => {
           const messages = [];
           const { callCount } = configuration.emitter.emit;
           for (let callNo = 0, end = callCount - 1, asc = end >= 0; asc ? callNo <= end : callNo >= end; asc ? callNo++ : callNo--) {
-            messages.push(configuration.emitter.emit.getCall(callNo).args[1].results.general.results.map(
+            messages.push(configuration.emitter.emit.getCall(callNo).args[1].errors.map(
               value => value.message
             ));
           }
@@ -1809,7 +1809,7 @@ describe('TransactionRunner', () => {
           }));
 
           it('should not add fail message as a error under `general` to the results on the transaction', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
-            const messages = clonedTransaction.results.general.results.map(value => value.message);
+            const messages = clonedTransaction.errors.map(value => value.message);
             assert.notInclude(messages.join(), 'Message after fail');
             done();
           }));
@@ -1818,7 +1818,7 @@ describe('TransactionRunner', () => {
             const messages = [];
             const { callCount } = configuration.emitter.emit;
             for (let callNo = 0, end = callCount - 1, asc = end >= 0; asc ? callNo <= end : callNo >= end; asc ? callNo++ : callNo--) {
-              messages.push(configuration.emitter.emit.getCall(callNo).args[1].results.general.results.map(
+              messages.push(configuration.emitter.emit.getCall(callNo).args[1].errors.map(
                 value => value.message
               ));
             }
@@ -1885,7 +1885,7 @@ describe('TransactionRunner', () => {
         }));
 
         it('should not add fail message as a error under `general` to the results on the transaction', done => runner.executeAllTransactions([modifiedTransaction], runner.hooks, () => {
-          const messages = modifiedTransaction.results.general.results.map(value => value.message);
+          const messages = modifiedTransaction.errors.map(value => value.message);
           assert.notInclude(messages.join(), 'Message after fail');
           done();
         }));
@@ -1894,7 +1894,7 @@ describe('TransactionRunner', () => {
           const messages = [];
           const { callCount } = configuration.emitter.emit;
           for (let callNo = 0, end = callCount - 1, asc = end >= 0; asc ? callNo <= end : callNo >= end; asc ? callNo++ : callNo--) {
-            messages.push(configuration.emitter.emit.getCall(callNo).args[1].results.general.results.map(
+            messages.push(configuration.emitter.emit.getCall(callNo).args[1].errors.map(
               value => value.message
             ));
           }
@@ -1961,7 +1961,7 @@ describe('TransactionRunner', () => {
         }));
 
         it('should add fail message as a error under `general` to the results', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
-          const messages = clonedTransaction.results.general.results.map(value => value.message);
+          const messages = clonedTransaction.errors.map(value => value.message);
           assert.include(messages.join(), 'Message after pass');
           done();
         }));
@@ -1970,7 +1970,7 @@ describe('TransactionRunner', () => {
           const messages = [];
           const { callCount } = configuration.emitter.emit;
           for (let callNo = 0, end = callCount - 1, asc = end >= 0; asc ? callNo <= end : callNo >= end; asc ? callNo++ : callNo--) {
-            messages.push(configuration.emitter.emit.getCall(callNo).args[1].results.general.results.map(
+            messages.push(configuration.emitter.emit.getCall(callNo).args[1].errors.map(
               value => value.message
             ));
           }
