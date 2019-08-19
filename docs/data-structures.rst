@@ -98,19 +98,23 @@ Transaction Test (object)
 .. _transaction-results:
 
 Transaction Results (object)
---------------------------------
+----------------------------
 
 Transaction result equals to the result of the `Gavel <https://github.com/apiaryio/gavel.js>`__ validation library.
 
 -  valid (boolean) - Indicates whether the transaction is valid.
 -  fields (object)
-
-   - [fieldName: string]: :ref:`gavel-validator-output`
+   -  *uri* - :ref:`gavel-validation-result-field`
+   -  *method* - :ref:`gavel-validation-result-field`
+   -  *statusCode* - :ref:`gavel-validation-result-field`
+   -  *headers* - :ref:`gavel-validation-result-field`
+   -  *body* - :ref:`gavel-validation-result-field`
 
 .. _gavel-validator-output:
+.. _gavel-validation-result-field:
 
-Gavel Validator Output (object)
--------------------------------
+Gavel Validation Result Field (object)
+--------------------------------------
 
 Can be seen also `here <https://relishapp.com/apiary/gavel/docs/data-validators-and-output-format#validators-output-format>`__.
 
@@ -139,7 +143,7 @@ Gavel Error (object)
 .. _test-runtime-error:
 
 Test Runtime Error (object)
------------------------
+---------------------------
 
 Whenever an exception occurs during a test run it's being recorded under the ``errors`` property of the test.
 
