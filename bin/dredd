@@ -1,10 +1,5 @@
 #!/usr/bin/env node
 
-/* eslint-disable global-require */
-
-const fs = require('fs');
-const path = require('path');
-
 // Ignore this block, it's pure magic, temporary fix
 // for https://github.com/nodejs/node/issues/6456
 [process.stdout, process.stderr].forEach((s) => {
@@ -21,36 +16,5 @@ const dreddCli = new CLI({
     argv: process.argv.slice(2),
   },
 });
-
-if (process.env.COVERAGE_DIR) {
-  process.on('exit', () => {
-    // Before Dredd exits, we need to collect coverage stats and save them to
-    // a file. We abuse 'mocha-lcov-reporter' to do this.
-    const LCov = require('mocha-lcov-reporter');
-
-    // Pretending there is Mocha runner
-    const EventEmitter = require('events').EventEmitter;
-    const runner = new EventEmitter();
-
-    // Monkey-patching 'LCov.prototype.write' to catch all output to a variable
-    let content = '';
-    const write = LCov.prototype.write;
-
-    LCov.prototype.write = (string) => {
-      content += string;
-    };
-
-    // Collecting the stats
-    new LCov(runner);
-    runner.emit('end');
-
-    // Undo the monkey-patching
-    LCov.prototype.write = write;
-
-    // Save stats as lcov file
-    const file = path.join(process.env.COVERAGE_DIR, 'dredd-bin.info');
-    fs.appendFileSync(file, content);
-  });
-}
 
 dreddCli.run();
