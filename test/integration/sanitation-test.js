@@ -453,9 +453,9 @@ describe('Sanitation of Reported Data', () => {
     ]));
     it('emitted test is failed', () => {
       assert.equal(events[2].test.status, 'fail');
-      assert.include(events[2].test.results.general.results[0].message.toLowerCase(), 'fail');
+      assert.include(events[2].test.errors[0].message.toLowerCase(), 'fail');
     });
-    it('emitted test data results contain just \'general\' section', () => assert.hasAllKeys(events[2].test.results, ['general']));
+    it('emitted test data results contain just \'errors\' section', () => assert.containsAllKeys(events[2].test, ['errors']));
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
       assert.notInclude(test, sensitiveKey);
@@ -492,10 +492,12 @@ describe('Sanitation of Reported Data', () => {
     it('emitted test data does not contain request body', () => assert.equal(events[2].test.request.body, ''));
     it('emitted test is failed', () => {
       assert.equal(events[2].test.status, 'fail');
-      assert.include(events[2].test.results.general.results[0].message.toLowerCase(), 'fail');
+      assert.include(events[2].test.errors[0].message.toLowerCase(), 'fail');
     });
     it('emitted test data results contain all regular sections', () => {
-      assert.hasAllKeys(events[2].test.results, ['general', 'statusCode', 'headers', 'body']);
+      assert.containsAllKeys(events[2].test, ['errors']);
+      assert.hasAllKeys(events[2].test.results, ['valid', 'fields']);
+      assert.hasAllKeys(events[2].test.results.fields, ['statusCode', 'headers', 'body']);
     });
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);
@@ -532,8 +534,8 @@ describe('Sanitation of Reported Data', () => {
     ]));
     it('emitted test is skipped', () => {
       assert.equal(events[2].test.status, 'skip');
-      assert.hasAllKeys(events[2].test.results, ['general']);
-      assert.include(events[2].test.results.general.results[0].message.toLowerCase(), 'skip');
+      assert.containsAllKeys(events[2].test, ['errors']);
+      assert.include(events[2].test.errors[0].message.toLowerCase(), 'skip');
     });
     it('sensitive data cannot be found anywhere in the emitted test data', () => {
       const test = JSON.stringify(events);

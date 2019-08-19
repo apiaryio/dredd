@@ -6,6 +6,6 @@ hooks.after('Resource > Update Resource', (transaction, done) => {
   transaction.test.expected.bodySchema = '';
 
   transaction.test.message = '';
-  delete transaction.test.results.body;
+  delete transaction.test.results.fields.body;
   done();
 });

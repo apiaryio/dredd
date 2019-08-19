@@ -10,7 +10,7 @@ hooks.after('Resource > Update Resource', (transaction, done) => {
   transaction.test.expected.body = replaceToken(transaction.test.expected.body);
 
   // Remove sensitive data from the Gavel validation result
-  const bodyResult = transaction.test.results.body;
+  const bodyResult = transaction.test.results.fields.body;
   bodyResult.values.expected = replaceToken(bodyResult.values.expected);
   bodyResult.values.actual = replaceToken(bodyResult.values.actual);
 

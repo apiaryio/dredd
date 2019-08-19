@@ -102,12 +102,12 @@ describe('CLI - Reporters', () => {
       });
       it('should send results from gavel', () => {
         assert.isObject(stepRequest.body);
-        assert.nestedProperty(stepRequest.body, 'resultData.request');
-        assert.nestedProperty(stepRequest.body, 'resultData.realResponse');
-        assert.nestedProperty(stepRequest.body, 'resultData.expectedResponse');
-        assert.nestedProperty(stepRequest.body, 'resultData.result.body.kind');
-        assert.nestedProperty(stepRequest.body, 'resultData.result.headers.kind');
-        assert.nestedProperty(stepRequest.body, 'resultData.result.statusCode.kind');
+        assert.nestedProperty(stepRequest.body, 'results.request');
+        assert.nestedProperty(stepRequest.body, 'results.realResponse');
+        assert.nestedProperty(stepRequest.body, 'results.expectedResponse');
+        assert.nestedProperty(stepRequest.body, 'results.validationResult.fields.body');
+        assert.nestedProperty(stepRequest.body, 'results.validationResult.fields.headers');
+        assert.nestedProperty(stepRequest.body, 'results.validationResult.fields.statusCode');
       });
     });
 
