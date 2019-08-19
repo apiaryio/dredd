@@ -4,7 +4,6 @@
 [![Build Status](https://travis-ci.org/apiaryio/dredd.svg?branch=master)](https://travis-ci.org/apiaryio/dredd)
 [![Build Status](https://ci.appveyor.com/api/projects/status/n3ixfxh72qushyr4/branch/master?svg=true)](https://ci.appveyor.com/project/Apiary/dredd/branch/master)
 [![Documentation Status](https://readthedocs.org/projects/dredd/badge/?version=latest)](https://readthedocs.org/projects/dredd/builds/)
-[![Coverage Status](https://coveralls.io/repos/apiaryio/dredd/badge.svg?branch=master)](https://coveralls.io/github/apiaryio/dredd)
 [![Known Vulnerabilities](https://snyk.io/test/npm/dredd/badge.svg)](https://snyk.io/test/npm/dredd)
 
 ![Dredd - HTTP API Testing Framework](docs/_static/images/dredd.png?raw=true)
