@@ -68,6 +68,7 @@ Transaction object is passed as a first argument to :ref:`hook functions <hooks>
    -  (boolean)
 
 -  test (:ref:`transaction-test`) - test data passed to Dredd’s reporters
+-  errors (:ref:`test-runtime-error`) - Transaction runtime errors
 -  results (:ref:`transaction-results`) - testing results
 
 .. _transaction-test:
@@ -99,83 +100,59 @@ Transaction Test (object)
 Transaction Results (object)
 ----------------------------
 
-This is a cousin of the :ref:`gavel-validation-result`.
+Transaction result equals to the result of the `Gavel <https://github.com/apiaryio/gavel.js>`__ validation library.
 
--  general (object) - contains Dredd’s custom messages (e.g. “test was skipped”), formatted the same way like those from Gavel
-
-   -  results (array[:ref:`gavel-error`])
-
--  statusCode (:ref:`gavel-validator-output`)
--  headers (:ref:`gavel-validator-output`)
--  body (:ref:`gavel-validator-output`)
-
-.. _gavel-validation-result:
-
-Gavel Validation Result (object)
---------------------------------
-
-Can be seen also `here <https://relishapp.com/apiary/gavel/docs/javascript/request-validation#validate>`__ and `here <https://relishapp.com/apiary/gavel/docs/javascript/response-validation#validate>`__.
-
--  statusCode (:ref:`gavel-validator-output`)
--  headers (:ref:`gavel-validator-output`)
--  body (:ref:`gavel-validator-output`)
--  version (string) - version number of the Gavel Validation Result structure
+-  valid (boolean) - Indicates whether the transaction is valid.
+-  fields (object)
+   -  *uri* - :ref:`gavel-validation-result-field`
+   -  *method* - :ref:`gavel-validation-result-field`
+   -  *statusCode* - :ref:`gavel-validation-result-field`
+   -  *headers* - :ref:`gavel-validation-result-field`
+   -  *body* - :ref:`gavel-validation-result-field`
 
 .. _gavel-validator-output:
+.. _gavel-validation-result-field:
 
-Gavel Validator Output (object)
--------------------------------
+Gavel Validation Result Field (object)
+--------------------------------------
 
 Can be seen also `here <https://relishapp.com/apiary/gavel/docs/data-validators-and-output-format#validators-output-format>`__.
 
--  results (array[:ref:`gavel-error`])
--  realType (string) - media type
--  expectedType (string) - media type
--  validator (string) - validator class name
--  rawData (enum) - raw output of the validator, has different structure for every validator and is saved and used in Apiary to render graphical diff by `gavel2html <https://github.com/apiaryio/gavel2html>`__
+-  valid (boolean) - Whether the HTTP message field is valid
+-  kind (enum[string], nullable) - The validation kind applied to the expected/actual data (how the values were compared)
+   -  json
+   -  text
+-  values (object)
 
-   -  (:ref:`jsonschema-validation-result`)
-   -  (:ref:`textdiff-validation-result`)
+   -  expected (any) - Expected value of the HTTP message field
+   -  actual (any) - Actual value of the HTTP message field
 
-.. _jsonschema-validation-result:
-
-JsonSchema Validation Result (object)
--------------------------------------
-
-The validation error is based on format provided by `Amanda <https://github.com/apiaryio/Amanda>`__ and is also “documented” `here <https://github.com/apiaryio/Amanda/blob/master/docs/json/objects/error.md>`__. Although for validation of draft4 JSON Schema Gavel uses `tv4 <https://github.com/geraintluff/tv4>`__ library, the output then gets reshaped into the structure of Amanda’s errors.
-
-This validation result is returned not only when validating against `JSON Schema`_, but also when validating against JSON example or when validating HTTP headers.
-
--  length: ``0`` (number, default) - number of error properties
--  errorMessages (object) - doesn’t seem to ever contain anything or be used for anything
--  *0* (object) - validation error details, property is always a string containing a number (0, 1, 2, …)
-
-   -  property (array[string]) - path to the problematic property in format of `json-pointer’s parse() output <https://github.com/manuelstofer/json-pointer#user-content-parsestr>`__
-   -  propertyValue (mixed) - real value of the problematic property (can be also ``undefined`` etc.)
-   -  attributeName: ``enum``, ``required`` (string) - name of the relevant JSON Schema attribute, which triggered the error
-   -  attributeValue (mixed) - value of the relevant JSON Schema attribute, which triggered the error
-   -  message (string) - error message (in case of tv4 it contains :rfc:`JSON Pointer <6901>` to the problematic property and for both Amanda and tv4 it can directly mention property names and/or values)
-   -  validator: ``enum`` (string) - the same as ``attributeName``
-   -  validatorName: ``error``, ``enum`` (string) - the same as ``attributeName``
-   -  validatorValue (mixed) - the same as ``attributeValue``
-
-.. _textdiff-validation-result:
-
-TextDiff Validation Result (string)
------------------------------------
-
-Block of text which looks extremely similar to the standard GNU diff/patch format. Result of the ``patch_toText()`` function of the ``google-diff-match-patch`` library (`docs <https://github.com/google/diff-match-patch/wiki/API#user-content-patch_totextpatches--text>`__).
+- errors (array[:ref:`gavel-error`])
 
 .. _gavel-error:
 
 Gavel Error (object)
 --------------------
 
-Can also be seen as part of Gavel Validator Output `here <https://relishapp.com/apiary/gavel/docs/data-validators-and-output-format#validators-output-format>`__.
+-  message (string) - Error message
+-  location (object, optional) - Kind-dependent extra error information
 
--  pointer (string) - :rfc:`JSON Pointer <6901>` path
--  severity (string) - severity of the error
--  message (string) - error message
+   -  pointer (string) - :rfc:`JSON Pointer <6901>` path
+   -  property (array[string]) - A deep property path
+
+.. _test-runtime-error:
+
+Test Runtime Error (object)
+---------------------------
+
+Whenever an exception occurs during a test run it's being recorded under the ``errors`` property of the test.
+
+Test run error has the following structure:
+
+-  message (string) - Error message.
+-  severity (enum[string]) - Severity of the occurred error
+   -  warning
+   -  error
 
 .. _apiary-reporter-test-data:
 
@@ -187,12 +164,13 @@ Apiary Reporter Test Data (object)
 -  duration (number) - duration of the test in milliseconds
 -  result (string) - :ref:`test <transaction-test>`.status
 -  startedAt (number) - :ref:`test <transaction-test>`.startedAt
--  resultData (object)
+-  results (object)
 
    -  request (object) - :ref:`test <transaction-test>`.request
    -  realResponse (object) - :ref:`test <transaction-test>`.actual
    -  expectedResponse (object) - :ref:`test <transaction-test>`.expected
-   -  result (:ref:`transaction-results`) - :ref:`test <transaction-test>`.results
+   -  errors (array[:ref:`test-runtime-error`]) - Test run errors (not validation errors)
+   -  validationResult (:ref:`transaction-results`) - :ref:`test <transaction-test>`.results
 
 Internal Apiary Data Structures
 -------------------------------
@@ -222,9 +200,10 @@ Also known as ``stats`` in Dredd’s code.
 Apiary Test Step (object)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  resultData
+-  results
 
    -  request (object) - :ref:`test <transaction-test>`.request
    -  realResponse (object) - :ref:`test <transaction-test>`.actual
    -  expectedResponse (object) - :ref:`test <transaction-test>`.expected
-   -  result (:ref:`transaction-results`) - :ref:`test <transaction-test>`.results
+   -  errors (array[:ref:`test-runtime-error`]) - Test runtime errors
+   -  validationResult (:ref:`transaction-results`) - :ref:`test <transaction-test>`.results

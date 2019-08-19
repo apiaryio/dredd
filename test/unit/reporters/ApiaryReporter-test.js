@@ -591,8 +591,8 @@ describe('ApiaryReporter', () => {
             const error = new Error('some error');
             error.code = errType;
             emitter.emit('test error', error, test, () => {
-              assert.isArray(JSON.parse(requestBody).resultData.result.general);
-              assert.include(JSON.parse(requestBody).resultData.result.general.map(value => JSON.stringify(value)).join(),
+              assert.isArray(JSON.parse(requestBody).results.errors);
+              assert.include(JSON.parse(requestBody).results.errors.map(value => JSON.stringify(value)).join(),
                 'Error connecting to server under test!');
               done();
             });
@@ -629,8 +629,8 @@ describe('ApiaryReporter', () => {
           apiaryReporter.remoteId = runId;
           const error = new Error('some error');
           emitter.emit('test error', error, test, () => {
-            assert.isArray(JSON.parse(requestBody).resultData.result.general);
-            assert.include(JSON.parse(requestBody).resultData.result.general.map(value => JSON.stringify(value)).join(),
+            assert.isArray(JSON.parse(requestBody).results.errors);
+            assert.include(JSON.parse(requestBody).results.errors.map(value => JSON.stringify(value)).join(),
               'Unhandled error occured when executing the transaction.');
             done();
           });
