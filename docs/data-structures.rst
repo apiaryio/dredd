@@ -68,7 +68,7 @@ Transaction object is passed as a first argument to :ref:`hook functions <hooks>
    -  (boolean)
 
 -  test (:ref:`transaction-test`) - test data passed to Dredd’s reporters
--  errors (:ref:`test-run-error`) - Transaction run errors (not validation errors)
+-  errors (:ref:`test-runtime-error`) - Transaction runtime errors
 -  results (:ref:`transaction-results`) - testing results
 
 .. _transaction-test:
@@ -100,9 +100,9 @@ Transaction Test (object)
 Transaction Results (object)
 --------------------------------
 
-Transaction result equals to the validation result of the Gavel validation result. You can read more about the `Gavel validation structure <https://github.com/apiaryio/gavel.js>`__.
+Transaction result equals to the result of the `Gavel <https://github.com/apiaryio/gavel.js>`__ validation library.
 
--  valid (boolean) - Indicates whether a transaction is valid.
+-  valid (boolean) - Indicates whether the transaction is valid.
 -  fields (object)
 
    - [fieldName: string]: :ref:`gavel-validator-output`
@@ -114,31 +114,31 @@ Gavel Validator Output (object)
 
 Can be seen also `here <https://relishapp.com/apiary/gavel/docs/data-validators-and-output-format#validators-output-format>`__.
 
--  valid (boolean) - Indicates an HTTP message field as valid
--  kind (enum: "json" | "text" | null)
+-  valid (boolean) - Whether the HTTP message field is valid
+-  kind (enum[string], nullable) - The validation kind applied to the expected/actual data (how the values were compared)
+   -  json
+   -  text
 -  values (object)
 
-   -  expected (any) - Expected value of an HTTP message field
-   -  actual (any) - Actual value of an HTTP message field
+   -  expected (any) - Expected value of the HTTP message field
+   -  actual (any) - Actual value of the HTTP message field
 
-- errors (:ref:`gavel-error`)
+- errors (array[:ref:`gavel-error`])
 
 .. _gavel-error:
 
 Gavel Error (object)
 --------------------
 
-Can also be seen as part of Gavel Validator Output `here <https://relishapp.com/apiary/gavel/docs/data-validators-and-output-format#validators-output-format>`__.
-
 -  message (string) - Error message
--  location (object) - (Optional) kind-dependent extra error information
+-  location (object, optional) - Kind-dependent extra error information
 
    -  pointer (string) - :rfc:`JSON Pointer <6901>` path
-   -  property (string[]) - A deep property path
+   -  property (array[string]) - A deep property path
 
-.. _test-run-error:
+.. _test-runtime-error:
 
-Test run error (object)
+Test Runtime Error (object)
 -----------------------
 
 Whenever an exception occurs during a test run it's being recorded under the ``errors`` property of the test.
@@ -146,6 +146,9 @@ Whenever an exception occurs during a test run it's being recorded under the ``e
 Test run error has the following structure:
 
 -  message (string) - Error message.
+-  severity (enum[string]) - Severity of the occurred error
+   -  warning
+   -  error
 
 .. _apiary-reporter-test-data:
 
@@ -162,7 +165,7 @@ Apiary Reporter Test Data (object)
    -  request (object) - :ref:`test <transaction-test>`.request
    -  realResponse (object) - :ref:`test <transaction-test>`.actual
    -  expectedResponse (object) - :ref:`test <transaction-test>`.expected
-   -  errors (:ref:`test-run-error`) - Test run errors (not validation errors)
+   -  errors (array[:ref:`test-runtime-error`]) - Test run errors (not validation errors)
    -  validationResult (:ref:`transaction-results`) - :ref:`test <transaction-test>`.results
 
 Internal Apiary Data Structures
@@ -198,5 +201,5 @@ Apiary Test Step (object)
    -  request (object) - :ref:`test <transaction-test>`.request
    -  realResponse (object) - :ref:`test <transaction-test>`.actual
    -  expectedResponse (object) - :ref:`test <transaction-test>`.expected
-   -  errors (:ref:`test-run-error`) - Test run errors (not validation errors)
+   -  errors (array[:ref:`test-runtime-error`]) - Test runtime errors
    -  validationResult (:ref:`transaction-results`) - :ref:`test <transaction-test>`.results
