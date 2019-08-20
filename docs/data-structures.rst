@@ -175,7 +175,7 @@ Apiary Reporter Test Data (object)
 Internal Apiary Data Structures
 -------------------------------
 
-These are private data structures used in Apiary internally and they are documented incompletely. They’re present in this document just to provide better insight on what and how Apiary internally saves. It is closely related to what you can see in documentation for `Apiary Tests API for anonymous test reports <https://github.com/apiaryio/dredd/blob/master/ApiaryReportingApiAnonymous.apib>`__ and `Apiary Tests API for authenticated test reports <https://github.com/apiaryio/dredd/blob/master/ApiaryReportingApi.apib>`__.
+These are private data structures used in Apiary internally and they are documented incompletely. They’re present in this document just to provide better insight on what and how Apiary internally saves. It is closely related to what you can see in documentation for `Apiary Tests API for authenticated test reports <https://github.com/apiaryio/dredd/blob/master/ApiaryReportingApi.apib>`__.
 
 .. _apiary-test-run:
 
