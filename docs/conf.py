@@ -33,6 +33,7 @@ extensions = [
     'cli_options',
     'ghissue',
     'specs',
+    'ghlink_check',
 ]
 
 # The suffix(es) of source filenames.
