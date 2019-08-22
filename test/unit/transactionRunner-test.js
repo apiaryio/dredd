@@ -514,13 +514,13 @@ describe('TransactionRunner', () => {
         done(err);
       }));
 
-      it('should add skip message as a warning under `general` to the results on transaction', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, (err) => {
+      it('should add skip message as a warning under `errors` to the results on transaction', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, (err) => {
         const messages = clonedTransaction.errors.map(value => value.message);
         assert.include(messages.join().toLowerCase(), 'skipped');
         done(err);
       }));
 
-      it('should add fail message as a warning under `general` to the results on test passed to the emitter', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, (err) => {
+      it('should add fail message as a warning under `errors` to the results on test passed to the emitter', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, (err) => {
         const messages = [];
         const { callCount } = configuration.emitter.emit;
         for (let callNo = 0, end = callCount - 1, asc = end >= 0; asc ? callNo <= end : callNo >= end; asc ? callNo++ : callNo--) {
@@ -542,6 +542,13 @@ describe('TransactionRunner', () => {
         assert.equal(tests.length, 1);
         assert.equal(tests[0].status, 'skip');
         done(err);
+      }));
+
+      it('should set transaction info on the skipped test', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
+        assert.propertyVal(clonedTransaction.test, 'request', clonedTransaction.request);
+        assert.propertyVal(clonedTransaction.test, 'expected', clonedTransaction.expected);
+        assert.propertyVal(clonedTransaction.test, 'actual', clonedTransaction.real);
+        done();
       }));
     });
 
@@ -1604,6 +1611,13 @@ describe('TransactionRunner', () => {
         assert.isOk(configuration.emitter.emit.calledWith('test error'));
         done();
       }));
+
+      it('should set transaction info on the errored test', done => runner.executeAllTransactions([transaction], runner.hooks, () => {
+        assert.propertyVal(transaction.test, 'request', transaction.request);
+        assert.propertyVal(transaction.test, 'expected', transaction.expected);
+        assert.propertyVal(transaction.test, 'actual', transaction.real);
+        done();
+      }));
     });
 
     describe('with ‘after’ hook that throws an error', () => {
@@ -1621,6 +1635,13 @@ describe('TransactionRunner', () => {
 
       it('should report an error with the test', done => runner.executeAllTransactions([transaction], runner.hooks, () => {
         assert.isOk(configuration.emitter.emit.calledWith('test error'));
+        done();
+      }));
+
+      it('should set transaction info on the errored test', done => runner.executeAllTransactions([transaction], runner.hooks, () => {
+        assert.propertyVal(transaction.test, 'request', transaction.request);
+        assert.propertyVal(transaction.test, 'expected', transaction.expected);
+        assert.propertyVal(transaction.test, 'actual', transaction.real);
         done();
       }));
     });
@@ -1648,13 +1669,13 @@ describe('TransactionRunner', () => {
         done();
       }));
 
-      it('should add fail message as a error under `general` to the results on transaction', done => runner.executeAllTransactions([transaction], runner.hooks, () => {
+      it('should add fail message as a error under `errors` to the results on transaction', done => runner.executeAllTransactions([transaction], runner.hooks, () => {
         const messages = transaction.errors.map(value => value.message);
         assert.include(messages.join(), 'expected false to be truthy');
         done();
       }));
 
-      it('should add fail message as a error under `general` to the results on test passed to the emitter', done => runner.executeAllTransactions([transaction], runner.hooks, () => {
+      it('should add fail message as a error under `errors` to the results on test passed to the emitter', done => runner.executeAllTransactions([transaction], runner.hooks, () => {
         const messages = [];
         const { callCount } = configuration.emitter.emit;
         for (let callNo = 0, end = callCount - 1, asc = end >= 0; asc ? callNo <= end : callNo >= end; asc ? callNo++ : callNo--) {
@@ -1663,6 +1684,13 @@ describe('TransactionRunner', () => {
           ));
         }
         assert.include(messages.join(), 'expected false to be truthy');
+        done();
+      }));
+
+      it('should set transaction info on the failed test', done => runner.executeAllTransactions([transaction], runner.hooks, () => {
+        assert.propertyVal(transaction.test, 'request', transaction.request);
+        assert.propertyVal(transaction.test, 'expected', transaction.expected);
+        assert.propertyVal(transaction.test, 'actual', transaction.real);
         done();
       }));
     });
@@ -1695,13 +1723,13 @@ describe('TransactionRunner', () => {
         done();
       }));
 
-      it('should add fail message as a error under `general` to the results on transaction', done => runner.executeAllTransactions([transaction], runner.hooks, () => {
+      it('should add fail message as a error under `errors` to the results on transaction', done => runner.executeAllTransactions([transaction], runner.hooks, () => {
         const messages = transaction.errors.map(value => value.message);
         assert.include(messages.join(), 'expected false to be truthy');
         done();
       }));
 
-      it('should add fail message as a error under `general` to the results on test passed to the emitter', done => runner.executeAllTransactions([transaction], runner.hooks, () => {
+      it('should add fail message as a error under `errors` to the results on test passed to the emitter', done => runner.executeAllTransactions([transaction], runner.hooks, () => {
         const messages = [];
         const { callCount } = configuration.emitter.emit;
         for (let callNo = 0, end = callCount - 1, asc = end >= 0; asc ? callNo <= end : callNo >= end; asc ? callNo++ : callNo--) {
@@ -1710,6 +1738,13 @@ describe('TransactionRunner', () => {
           ));
         }
         assert.include(messages.join(), 'expected false to be truthy');
+        done();
+      }));
+
+      it('should set transaction info on the failed test', done => runner.executeAllTransactions([transaction], runner.hooks, () => {
+        assert.propertyVal(transaction.test, 'request', transaction.request);
+        assert.propertyVal(transaction.test, 'expected', transaction.expected);
+        assert.propertyVal(transaction.test, 'actual', transaction.real);
         done();
       }));
     });
@@ -1759,13 +1794,13 @@ describe('TransactionRunner', () => {
           done();
         }));
 
-        it('should add fail message as a error under `general` to the results on the transaction', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
+        it('should add fail message as a error under `errors` to the results on the transaction', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
           const messages = clonedTransaction.errors.map(value => value.message);
           assert.include(messages.join(), 'Message before');
           done();
         }));
 
-        it('should add fail message as a error under `general` to the results on test passed to the emitter', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
+        it('should add fail message as a error under `errors` to the results on test passed to the emitter', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
           const messages = [];
           const { callCount } = configuration.emitter.emit;
           for (let callNo = 0, end = callCount - 1, asc = end >= 0; asc ? callNo <= end : callNo >= end; asc ? callNo++ : callNo--) {
@@ -1774,6 +1809,13 @@ describe('TransactionRunner', () => {
             ));
           }
           assert.include(messages.join(), 'Message before');
+          done();
+        }));
+
+        it('should set transaction info on the failed test', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
+          assert.propertyVal(clonedTransaction.test, 'request', clonedTransaction.request);
+          assert.propertyVal(clonedTransaction.test, 'expected', clonedTransaction.expected);
+          assert.propertyVal(clonedTransaction.test, 'actual', clonedTransaction.real);
           done();
         }));
 
@@ -1808,13 +1850,13 @@ describe('TransactionRunner', () => {
             done();
           }));
 
-          it('should not add fail message as a error under `general` to the results on the transaction', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
+          it('should not add fail message as a error under `errors` to the results on the transaction', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
             const messages = clonedTransaction.errors.map(value => value.message);
             assert.notInclude(messages.join(), 'Message after fail');
             done();
           }));
 
-          it('should not add fail message as a error under `general` to the results on test passed to the emitter', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
+          it('should not add fail message as a error under `errors` to the results on test passed to the emitter', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
             const messages = [];
             const { callCount } = configuration.emitter.emit;
             for (let callNo = 0, end = callCount - 1, asc = end >= 0; asc ? callNo <= end : callNo >= end; asc ? callNo++ : callNo--) {
@@ -1823,6 +1865,13 @@ describe('TransactionRunner', () => {
               ));
             }
             assert.notInclude(messages.join(), 'Message after fail');
+            done();
+          }));
+
+          it('should set transaction info on the failed test', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
+            assert.propertyVal(clonedTransaction.test, 'request', clonedTransaction.request);
+            assert.propertyVal(clonedTransaction.test, 'expected', clonedTransaction.expected);
+            assert.propertyVal(clonedTransaction.test, 'actual', clonedTransaction.real);
             done();
           }));
         });
@@ -1884,13 +1933,13 @@ describe('TransactionRunner', () => {
           done();
         }));
 
-        it('should not add fail message as a error under `general` to the results on the transaction', done => runner.executeAllTransactions([modifiedTransaction], runner.hooks, () => {
+        it('should not add fail message as a error under `errors` to the results on the transaction', done => runner.executeAllTransactions([modifiedTransaction], runner.hooks, () => {
           const messages = modifiedTransaction.errors.map(value => value.message);
           assert.notInclude(messages.join(), 'Message after fail');
           done();
         }));
 
-        it('should not add fail message as a error under `general` to the results on test passed to the emitter', done => runner.executeAllTransactions([modifiedTransaction], runner.hooks, () => {
+        it('should not add fail message as a error under `errors` to the results on test passed to the emitter', done => runner.executeAllTransactions([modifiedTransaction], runner.hooks, () => {
           const messages = [];
           const { callCount } = configuration.emitter.emit;
           for (let callNo = 0, end = callCount - 1, asc = end >= 0; asc ? callNo <= end : callNo >= end; asc ? callNo++ : callNo--) {
@@ -1899,6 +1948,13 @@ describe('TransactionRunner', () => {
             ));
           }
           assert.notInclude(messages.join(), 'Message after fail');
+          done();
+        }));
+
+        it('should set transaction info on the failed test', done => runner.executeAllTransactions([modifiedTransaction], runner.hooks, () => {
+          assert.propertyVal(modifiedTransaction.test, 'request', modifiedTransaction.request);
+          assert.propertyVal(modifiedTransaction.test, 'expected', modifiedTransaction.expected);
+          assert.propertyVal(modifiedTransaction.test, 'actual', modifiedTransaction.real);
           done();
         }));
       });
@@ -1960,13 +2016,13 @@ describe('TransactionRunner', () => {
           done();
         }));
 
-        it('should add fail message as a error under `general` to the results', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
+        it('should add fail message as a error under `errors` to the results', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
           const messages = clonedTransaction.errors.map(value => value.message);
           assert.include(messages.join(), 'Message after pass');
           done();
         }));
 
-        it('should not add fail message as a error under `general` to the results on test passed to the emitter', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
+        it('should not add fail message as a error under `errors` to the results on test passed to the emitter', done => runner.executeAllTransactions([clonedTransaction], runner.hooks, () => {
           const messages = [];
           const { callCount } = configuration.emitter.emit;
           for (let callNo = 0, end = callCount - 1, asc = end >= 0; asc ? callNo <= end : callNo >= end; asc ? callNo++ : callNo--) {
