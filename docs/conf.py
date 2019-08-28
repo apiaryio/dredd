@@ -146,6 +146,6 @@ def setup(app):
     # An extension adding the '_static/css/dredd.css' stylesheet
     app.add_css_file('css/dredd.css')
 
-    # Adding
+    # Adding lexers for rendering OpenAPI code blocks as YAML
     app.add_lexer('openapi2', OpenAPI2Lexer())
     app.add_lexer('openapi3', OpenAPI3Lexer())
