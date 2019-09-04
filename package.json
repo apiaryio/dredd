@@ -72,7 +72,7 @@
     "eslint-plugin-import": "2.18.2",
     "express": "4.17.1",
     "mocha": "6.2.0",
-    "nock": "10.0.6",
+    "nock": "11.1.0",
     "ps-node": "0.1.6",
     "semantic-release": "15.13.24",
     "sinon": "7.4.2"
