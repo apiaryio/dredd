@@ -1,0 +1,14 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es3",
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "allowJs": true,
+    "checkJs": false,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["lib/**/*.ts"],
+  "exclude": ["node_modules"]
+}

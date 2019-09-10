@@ -1,27 +1,19 @@
 module.exports = {
-  extends: 'airbnb-base',
+  extends: ['airbnb-base', 'prettier'],
   env: {
-    'node': true
+    node: true
   },
   rules: {
     // Using 'console' is perfectly okay for a Node.js CLI tool and avoiding
     // it only brings unnecessary complexity
     'no-console': 'off',
 
-    // Node 6 does not support dangling commas in function arguments
-    'comma-dangle': [
-      'error',
-      {
-        'arrays': 'always-multiline',
-        'objects': 'always-multiline',
-        'functions': 'never'
-      }
-    ],
-
     // This is to allow a convention for exporting functions solely for
     // the purpose of the unit tests, see
     // https://github.com/apiaryio/dredd-transactions/pull/179#discussion_r206852270
     'no-underscore-dangle': 'off',
+
+    'import/prefer-default-export': 'off',
 
     // Following rules were introduced to make the decaffeination
     // of the codebase possible and are to be removed in the future
@@ -38,6 +30,6 @@ module.exports = {
     'no-plusplus': 'off',
     'no-restricted-syntax': 'off',
     'no-use-before-define': 'off',
-    'prefer-destructuring': 'off',
+    'prefer-destructuring': 'off'
   }
-};
+}

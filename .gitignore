@@ -3,6 +3,7 @@ npm-shrinkwrap.json
 
 /coverage
 /docs/_build
+build
 node_modules
 .idea
 .vscode
