@@ -8,13 +8,13 @@
   }
 });
 
-const CLI = require('../lib/CLI');
+const CLI = require('../build/CLI').default;
 
-const dreddCli = new CLI({
+const dreddCLI = new CLI({
   custom: {
     cwd: process.cwd(),
-    argv: process.argv.slice(2),
-  },
+    argv: process.argv.slice(2)
+  }
 });
 
-dreddCli.run();
+dreddCLI.run();

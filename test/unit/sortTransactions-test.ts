@@ -1,4 +1,4 @@
-import * as R from 'ramda'
+import R from 'ramda'
 import { expect } from 'chai'
 import { RESTMethod, Transaction } from '../../lib/__general'
 import sortTransactions from '../../lib/sortTransactions'
@@ -30,9 +30,5 @@ describe('sortTransactions', () => {
 
       expect(result).to.deep.equal([optionsTransaction, getTransaction])
     })
-  })
-
-  describe('given a transactions list in the proper order', () => {
-    // ...
   })
 })

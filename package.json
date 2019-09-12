@@ -3,7 +3,7 @@
   "version": "0.0.0-semantically-released",
   "description": "HTTP API Testing Framework",
   "esnext": "lib/index.ts",
-  "main": "build/Dredd.js",
+  "main": "build/node.js",
   "bin": {
     "dredd": "bin/dredd"
   },
@@ -12,6 +12,7 @@
   },
   "scripts": {
     "start": "rollup -cw rollup.config.js",
+    "start:ts": "tsc --build tsconfig.json",
     "docs:lint": "sphinx-build -nW -b linkcheck ./docs ./docs/_build",
     "docs:test-extensions": "python -m unittest docs/_extensions/*.py --verbose",
     "docs:build": "sphinx-build -nW -b html ./docs ./docs/_build",
@@ -71,7 +72,6 @@
     "@types/proxyquire": "1.3.28",
     "@types/ramda": "0.26.21",
     "@types/which": "1.3.1",
-    "@types/winston": "2.4.4",
     "body-parser": "1.19.0",
     "coffeescript": "2.4.1",
     "commitlint-circle": "1.0.0",

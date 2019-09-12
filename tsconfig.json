@@ -1,14 +1,17 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "module": "esnext",
-    "target": "es3",
+    "target": "esnext",
+    "module": "commonjs",
+    "outDir": "build",
+    "declaration": true,
+    "declarationDir": "typings",
     "moduleResolution": "node",
-    "noEmitOnError": true,
-    "allowJs": true,
-    "checkJs": false,
-    "allowSyntheticDefaultImports": true
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "typeRoots": ["node_modules/@types"]
   },
-  "include": ["lib/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["lib/**/*.ts", "lib/**/*.js", "lib/**/*.json"],
+  "exclude": ["node_modules", "build"]
 }
