@@ -916,38 +916,38 @@ describe('Hooks worker client', () => {
     });
   });
 
-  describe("'hooks-worker-*' configuration options", () => {
+  describe("'hooks-handler-*' configuration options", () => {
     const scenarios = [{
       property: 'timeout',
-      option: 'hooks-worker-timeout',
+      option: 'hooks-handler-timeout',
     },
     {
       property: 'connectTimeout',
-      option: 'hooks-worker-connect-timeout',
+      option: 'hooks-handler-connect-timeout',
     },
     {
       property: 'connectRetry',
-      option: 'hooks-worker-connect-retry',
+      option: 'hooks-handler-connect-retry',
     },
     {
       property: 'afterConnectWait',
-      option: 'hooks-worker-after-connect-wait',
+      option: 'hooks-handler-after-connect-wait',
     },
     {
       property: 'termTimeout',
-      option: 'hooks-worker-term-timeout',
+      option: 'hooks-handler-term-timeout',
     },
     {
       property: 'termRetry',
-      option: 'hooks-worker-term-retry',
+      option: 'hooks-handler-term-retry',
     },
     {
       property: 'handlerHost',
-      option: 'hooks-worker-handler-host',
+      option: 'hooks-handler-host',
     },
     {
       property: 'handlerPort',
-      option: 'hooks-worker-handler-port',
+      option: 'hooks-handler-port',
     },
     ];
 
