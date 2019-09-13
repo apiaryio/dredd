@@ -294,6 +294,9 @@ CLI options
 GitHub issues
     Simplifies linking GitHub issues. Usage: ``:ghissue:`drafter#123```
 
+GitHub links checker
+    Fails the docs build if there's an absolute link (``github.com/apiaryio/dredd/blob/master``) to a non-existing local file
+
 API Blueprint spec
     Simplifies linking the `API Blueprint`_ spec. Usage: ``:apib:`schema-section```
 
