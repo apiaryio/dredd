@@ -38,29 +38,28 @@ commands:
             - ./venv
 
 
-jobs:
-  test-node12:
-    executor: node-latest-stable
+aliases:
+  - &test-steps
     steps:
       - checkout
       - npm-install
       - run: npm run ci:test
+
+
+jobs:
+  test-node12:
+    executor: node-latest-stable
+    <<: *test-steps
 
   test-node8:
     docker:
       - image: circleci/node:8
-    steps:
-      - checkout
-      - npm-install
-      - run: npm run ci:test
+    <<: *test-steps
 
   test-node10:
     docker:
       - image: circleci/node:10
-    steps:
-      - checkout
-      - npm-install
-      - run: npm run ci:test
+    <<: *test-steps
 
   test-e2e-apib:
     executor: node-latest-stable
