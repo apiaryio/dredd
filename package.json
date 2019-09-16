@@ -79,7 +79,7 @@
     "eslint-plugin-import": "2.18.2",
     "express": "4.17.1",
     "mocha": "6.2.0",
-    "nock": "10.0.6",
+    "nock": "11.3.4",
     "ps-node": "0.1.6",
     "rollup": "1.21.2",
     "rollup-plugin-commonjs": "10.1.0",
