@@ -1,12 +1,23 @@
 version: 2.1
 
 
+executors:
+  node-latest-stable:
+    docker:
+      - image: circleci/node:12
+
+  python-docs:
+    # using Python 3.6 as that's the version ReadTheDocs is running
+    docker:
+      - image: circleci/python:3.6-node
+
+
 commands:
   npm-install:
     steps:
-      - run: sudo npm install npm@6 --global
+      - run: echo $(node --version) > .node-version
       - restore_cache:
-          key: js-deps-{{ checksum "package.json" }}
+          key: js-deps-{{ checksum ".node-version" }}-{{ checksum "package.json" }}
       - run: npm install --no-save
       - save_cache:
           key: js-deps-{{ checksum "package.json" }}
@@ -15,9 +26,9 @@ commands:
 
   pip-install-docs:
     steps:
-      - run: sudo pip install --upgrade pip
+      - run: echo $(python --version) > .python-version
       - restore_cache:
-          key: py-deps-{{ checksum "docs/requirements.txt" }}
+          key: py-deps-{{ checksum ".python-version" }}-{{ checksum "docs/requirements.txt" }}
       - run: "if [ ! -d ./venv ]; then python -m venv ./venv; fi"
       - run: echo "source $(pwd)/venv/bin/activate" >> $BASH_ENV
       - run: pip install -r ./docs/requirements.txt
@@ -29,8 +40,7 @@ commands:
 
 jobs:
   test-node12:
-    docker:
-      - image: circleci/node:12
+    executor: node-latest-stable
     steps:
       - checkout
       - npm-install
@@ -53,25 +63,21 @@ jobs:
       - run: npm run ci:test
 
   test-e2e-apib:
-    docker:
-      - image: circleci/node:12
+    executor: node-latest-stable
     steps:
       - checkout
       - npm-install
       - run: npm run e2e:apib
 
   test-e2e-openapi2:
-    docker:
-      - image: circleci/node:12
+    executor: node-latest-stable
     steps:
       - checkout
       - npm-install
       - run: npm run e2e:openapi2
 
   quality-checks:
-    # Using Python 3.6 as that's the version ReadTheDocs is running.
-    docker:
-      - image: circleci/python:3.6-node
+    executor: python-docs
     steps:
       - checkout
       - npm-install
@@ -79,10 +85,9 @@ jobs:
       - run: npm run ci:lint
 
   docs-dry-run:
-    # Why dry run? Because production build happens directly on the ReadTheDocs
-    # infrastructure. Using Python 3.6 as that's the version RTD is running.
-    docker:
-      - image: circleci/python:3.6-node
+    # 'dry run', because production build happens directly on the ReadTheDocs
+    # infrastructure
+    executor: python-docs
     steps:
       - checkout
       - npm-install
@@ -90,6 +95,7 @@ jobs:
       - run: npm run ci:docs
 
   smoke-tests:
+    executor: node-latest-stable
     docker:
       - image: circleci/node:12
       - image: circleci/mongo:latest
@@ -99,10 +105,9 @@ jobs:
       - run: npm run ci:smoke
 
   release:
-    # The GH_TOKEN and NPM_TOKEN environment variables are expected to be set
+    # the GH_TOKEN and NPM_TOKEN environment variables are expected to be set
     # in https://circleci.com/gh/apiaryio/dredd/edit#env-vars
-    docker:
-      - image: circleci/node:12
+    executor: node-latest-stable
     steps:
       - checkout
       - npm-install
