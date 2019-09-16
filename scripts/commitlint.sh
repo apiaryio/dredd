@@ -5,7 +5,7 @@
 set -e  # aborts as soon as anything returns non-zero exit status
 
 if [ ! -z "$CIRCLECI" ]; then
-  ./node_modules/.bin/commitlint-circle
+  npx commitlint-circle
 else
-  ./node_modules/.bin/commitlint --from=master
+  npx commitlint --from=master
 fi
