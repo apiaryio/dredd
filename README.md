@@ -1,7 +1,7 @@
 # Dredd — HTTP API Testing Framework
 
 [![npm version](https://badge.fury.io/js/dredd.svg)](https://www.npmjs.com/package/dredd)
-[![Build Status](https://travis-ci.org/apiaryio/dredd.svg?branch=master)](https://travis-ci.org/apiaryio/dredd)
+[![Build Status](https://circleci.com/gh/apiaryio/dredd/tree/master.svg?style=svg)](https://circleci.com/gh/apiaryio/dredd/tree/master)
 [![Build Status](https://ci.appveyor.com/api/projects/status/n3ixfxh72qushyr4/branch/master?svg=true)](https://ci.appveyor.com/project/Apiary/dredd/branch/master)
 [![Documentation Status](https://readthedocs.org/projects/dredd/badge/?version=latest)](https://readthedocs.org/projects/dredd/builds/)
 [![Known Vulnerabilities](https://snyk.io/test/npm/dredd/badge.svg)](https://snyk.io/test/npm/dredd)

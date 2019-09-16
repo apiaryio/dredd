@@ -13,6 +13,13 @@ const SERVER_HOST = `127.0.0.1:${DEFAULT_SERVER_PORT}`;
 const DUMMY_URL = 'http://example.com';
 const REGULAR_HTTP_METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
 
+
+function unsetAllProxyEnvVars(env) {
+  Object.keys(env)
+    .filter(envName => envName.toLowerCase().includes('proxy'))
+    .forEach(envName => delete env[envName]);
+}
+
 // Normally, tests create Dredd instance and pass it to the 'runDredd'
 // helper, which captures Dredd's logging while it runs. However, in
 // this case we need to capture logging also during the instantiation.
@@ -165,8 +172,11 @@ proxy specified by environment variables: \
 ${protocol}_proxy=${PROXY_URL}\
 `;
 
-    before(() => { process.env[`${protocol}_proxy`] = PROXY_URL; });
-    after(() => delete process.env[`${protocol}_proxy`]);
+    before(() => {
+      unsetAllProxyEnvVars(process.env);
+      process.env[`${protocol}_proxy`] = PROXY_URL;
+    });
+    after(() => unsetAllProxyEnvVars(process.env));
 
     describe('Requesting Server Under Test', () => test({
       protocol,
@@ -219,13 +229,11 @@ http_proxy=${PROXY_URL}, no_proxy=${SERVER_HOST}\
 `;
 
   before(() => {
+    unsetAllProxyEnvVars(process.env);
     process.env.http_proxy = PROXY_URL;
     process.env.no_proxy = SERVER_HOST;
   });
-  after(() => {
-    delete process.env.http_proxy;
-    delete process.env.no_proxy;
-  });
+  after(() => unsetAllProxyEnvVars(process.env));
 
   describe('Requesting Server Under Test', () => test({
     protocol: 'http',

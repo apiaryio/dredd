@@ -7,7 +7,7 @@
 set -e
 
 
-if [ ! -z "$TRAVIS" ]; then
+if [ ! -z "$CIRCLECI" ]; then
   # Move everything in the current directory to a subdirectory called 'dredd'
   #
   # First we set glob to make the line with 'mv' to take dotfiles as well.

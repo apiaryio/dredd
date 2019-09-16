@@ -1,16 +1,11 @@
 #!/bin/bash
-# Validates format of the commit messages on Travis CI
+# Validates format of the commit messages on CI
 
 
 set -e  # aborts as soon as anything returns non-zero exit status
 
-
-if [ ! -z "$TRAVIS" ]; then
-  git remote set-branches origin master
-  git fetch --unshallow --quiet
-  git checkout master --quiet
-  git checkout - --quiet
-  ./node_modules/.bin/commitlint-travis
+if [ ! -z "$CIRCLECI" ]; then
+  npx commitlint-circle
 else
-  ./node_modules/.bin/commitlint --from=master
+  npx commitlint --from=master
 fi
