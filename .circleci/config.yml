@@ -1,17 +1,6 @@
 version: 2.1
 
 
-executors:
-  node-latest-stable:
-    docker:
-      - image: circleci/node:12
-
-  python-docs:
-    # using Python 3.6 as that's the version ReadTheDocs is running
-    docker:
-      - image: circleci/python:3.6-node
-
-
 commands:
   npm-install:
     steps:
@@ -39,6 +28,13 @@ commands:
 
 
 aliases:
+  - &node12
+    image: circleci/node:12
+
+  - &python-docs
+    # using Python 3.6 as that's the version ReadTheDocs is running
+    image: circleci/python:3.6-node
+
   - &test-steps
     steps:
       - checkout
@@ -48,35 +44,33 @@ aliases:
 
 jobs:
   test-node12:
-    executor: node-latest-stable
-    <<: *test-steps
-
-  test-node8:
-    docker:
-      - image: circleci/node:8
+    docker: [<<: *node12]
     <<: *test-steps
 
   test-node10:
-    docker:
-      - image: circleci/node:10
+    docker: [image: circleci/node:10]
+    <<: *test-steps
+
+  test-node8:
+    docker: [image: circleci/node:8]
     <<: *test-steps
 
   test-e2e-apib:
-    executor: node-latest-stable
+    docker: [<<: *node12]
     steps:
       - checkout
       - npm-install
       - run: npm run e2e:apib
 
   test-e2e-openapi2:
-    executor: node-latest-stable
+    docker: [<<: *node12]
     steps:
       - checkout
       - npm-install
       - run: npm run e2e:openapi2
 
   quality-checks:
-    executor: python-docs
+    docker: [<<: *python-docs]
     steps:
       - checkout
       - npm-install
@@ -86,7 +80,7 @@ jobs:
   docs-dry-run:
     # 'dry run', because production build happens directly on the ReadTheDocs
     # infrastructure
-    executor: python-docs
+    docker: [<<: *python-docs]
     steps:
       - checkout
       - npm-install
@@ -94,9 +88,8 @@ jobs:
       - run: npm run ci:docs
 
   smoke-tests:
-    executor: node-latest-stable
     docker:
-      - image: circleci/node:12
+      - <<: *node12
       - image: circleci/mongo:latest
     steps:
       - checkout
@@ -106,7 +99,7 @@ jobs:
   release:
     # the GH_TOKEN and NPM_TOKEN environment variables are expected to be set
     # in https://circleci.com/gh/apiaryio/dredd/edit#env-vars
-    executor: node-latest-stable
+    docker: [<<: *node12]
     steps:
       - checkout
       - npm-install
