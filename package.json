@@ -4,6 +4,7 @@
   "description": "HTTP API Testing Framework",
   "esnext": "lib/index.ts",
   "main": "build/node.js",
+  "typings": "typings/",
   "bin": {
     "dredd": "bin/dredd"
   },
@@ -12,7 +13,7 @@
   },
   "scripts": {
     "start": "rollup -cw rollup.config.js",
-    "start:ts": "tsc --build tsconfig.json",
+    "build": "tsc --build tsconfig.json",
     "docs:lint": "sphinx-build -nW -b linkcheck ./docs ./docs/_build",
     "docs:test-extensions": "python -m unittest docs/_extensions/*.py --verbose",
     "docs:build": "sphinx-build -nW -b html ./docs ./docs/_build",
