@@ -3,7 +3,7 @@
   "version": "0.0.0-semantically-released",
   "description": "HTTP API Testing Framework",
   "esnext": "lib/index.ts",
-  "main": "build/node.js",
+  "main": "build/index.js",
   "typings": "typings/",
   "bin": {
     "dredd": "bin/dredd"
@@ -28,7 +28,8 @@
     "ci:docs": "npm run docs:build",
     "ci:test": "npm test",
     "ci:smoke": "bash ./scripts/smoke.sh",
-    "ci:release": "semantic-release && npm dist-tag add \"dredd@$(npm view dredd version)\" stable"
+    "ci:release": "semantic-release && npm dist-tag add \"dredd@$(npm view dredd version)\" stable",
+    "prepack": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -36,7 +37,8 @@
   },
   "files": [
     "bin",
-    "lib",
+    "build",
+    "options.json",
     "README.md"
   ],
   "dependencies": {

@@ -1,3 +1,3 @@
-import Dredd from './Dredd'
+import Dredd from './Dredd';
 
-export default Dredd
+module.exports = Dredd;
