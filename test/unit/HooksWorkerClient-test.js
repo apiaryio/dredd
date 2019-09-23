@@ -11,7 +11,7 @@ import whichStub from '../../lib/which';
 import loggerStub from '../../lib/logger';
 
 import Hooks from '../../lib/Hooks';
-import * as commandLineOptions from '../../lib/options';
+import * as commandLineOptions from '../../options';
 import TransactionRunner from '../../lib/TransactionRunner';
 
 function measureExecutionDurationMs(fn) {

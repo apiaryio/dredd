@@ -1,17 +1,18 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "target": "esnext",
     "module": "commonjs",
-    "outDir": "build",
-    "declaration": true,
-    "declarationDir": "typings",
+    "target": "es2017",
+    "lib": ["es2017"],
+    "rootDir": "./lib",
+    "outDir": "./build",
     "moduleResolution": "node",
-    "resolveJsonModule": true,
+    // "resolveJsonModule": true,
     "esModuleInterop": true,
+    "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "typeRoots": ["node_modules/@types"]
   },
-  "include": ["lib/**/*.ts", "lib/**/*.js", "lib/**/*.json"],
+  "include": ["./lib/**/*.ts", "./lib/**/*.js"],
   "exclude": ["node_modules", "build"]
 }
