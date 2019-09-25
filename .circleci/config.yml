@@ -71,8 +71,6 @@ jobs:
     docker: [<<: *node12]
     steps:
       - checkout
-      - restore_cache:
-          key: build-{{ .Branch }}-{{ .Revision }}-node12
       - npm-install
       - run: npm run build
       - run: npm run e2e:openapi2
