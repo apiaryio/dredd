@@ -62,7 +62,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "8.2.0",
-    "@commitlint/config-conventional": "8.1.0",
+    "@commitlint/config-conventional": "8.2.0",
     "@types/chai": "4.2.2",
     "@types/clone": "0.1.30",
     "@types/mocha": "5.2.7",
