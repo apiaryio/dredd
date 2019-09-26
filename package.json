@@ -37,7 +37,7 @@
     "fury-adapter-apib-parser"
   ],
   "devDependencies": {
-    "@commitlint/cli": "8.1.0",
+    "@commitlint/cli": "8.2.0",
     "@commitlint/config-conventional": "8.2.0",
     "@commitlint/travis-cli": "8.2.0",
     "chai": "4.2.0",
