@@ -61,7 +61,7 @@
     "winston": "2.4.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "8.1.0",
+    "@commitlint/cli": "8.2.0",
     "@commitlint/config-conventional": "8.1.0",
     "@types/chai": "4.2.2",
     "@types/clone": "0.1.30",
