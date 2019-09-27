@@ -84,7 +84,7 @@
     "rollup": "1.21.4",
     "rollup-plugin-commonjs": "10.1.0",
     "rollup-plugin-json": "4.0.0",
-    "rollup-plugin-node-externals": "2.0.0",
+    "rollup-plugin-node-externals": "2.0.1",
     "rollup-plugin-node-resolve": "5.2.0",
     "rollup-plugin-typescript2": "0.24.2",
     "semantic-release": "15.13.24",
