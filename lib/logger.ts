@@ -5,13 +5,13 @@ const logger = new winston.Logger({
   levels: {
     debug: 2,
     warn: 1,
-    error: 0
+    error: 0,
   },
   colors: {
     debug: 'cyan',
     warn: 'yellow',
-    error: 'red'
-  }
+    error: 'red',
+  },
 })
 
 export default logger

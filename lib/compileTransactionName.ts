@@ -5,7 +5,7 @@ import { TransactionOrigin } from './__general'
 // see https://github.com/apiaryio/dredd-transactions/issues/276
 
 export default function compileTransactionName(
-  origin: TransactionOrigin
+  origin: TransactionOrigin,
 ): string {
   const segments = []
   if (origin.apiName) {

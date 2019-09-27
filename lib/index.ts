@@ -1,3 +1,3 @@
-import Dredd from './Dredd';
+import Dredd from './Dredd'
 
-module.exports = Dredd;
+module.exports = Dredd

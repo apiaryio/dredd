@@ -9,7 +9,7 @@ const sortedMethods: RESTMethod[] = [
   RESTMethod.PUT,
   RESTMethod.PATCH,
   RESTMethod.DELETE,
-  RESTMethod.TRACE
+  RESTMethod.TRACE,
 ]
 
 // Often, API description is arranged with a sequence of methods that lends
@@ -24,14 +24,14 @@ export default function sortTransactions(transactions: Transaction[]) {
   // Convert the list of transactions into a list of tuples
   // that hold each trasnaction index and details.
   const tempTransactions: Array<[number, Transaction]> = transactions.map(
-    (transaction, index) => [index, transaction]
+    (transaction, index) => [index, transaction],
   )
 
   tempTransactions.sort(
     ([leftIndex, leftTransaction], [rightIndex, rightTransaction]) => {
       const methodIndexA = sortedMethods.indexOf(leftTransaction.request.method)
       const methodIndexB = sortedMethods.indexOf(
-        rightTransaction.request.method
+        rightTransaction.request.method,
       )
 
       // Sort transactions according to the transaction's request method
@@ -46,11 +46,11 @@ export default function sortTransactions(transactions: Transaction[]) {
       // In case two transactions' request methods are the same,
       // preserve the original order of those transactions
       return leftIndex - rightIndex
-    }
+    },
   )
 
   const cleanTransactions = tempTransactions.map(
-    ([_, transaction]) => transaction
+    ([_, transaction]) => transaction,
   )
 
   return cleanTransactions
