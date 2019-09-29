@@ -78,7 +78,7 @@
     "eslint-config-prettier": "6.3.0",
     "eslint-plugin-import": "2.18.2",
     "express": "4.17.1",
-    "mocha": "6.2.0",
+    "mocha": "6.2.1",
     "nock": "10.0.6",
     "ps-node": "0.1.6",
     "rollup": "1.21.4",
