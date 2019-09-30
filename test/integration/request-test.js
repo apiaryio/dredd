@@ -6,15 +6,19 @@ const path = require('path');
 const { runDreddWithServer, createServer } = require('./helpers');
 const Dredd = require('../../lib/Dredd');
 
-describe('Sending \'application/json\' request', () => {
+describe("Sending 'application/json' request", () => {
   let runtimeInfo;
   const contentType = 'application/json';
 
   before((done) => {
-    const app = createServer({ bodyParser: bodyParser.text({ type: contentType }) });
+    const app = createServer({
+      bodyParser: bodyParser.text({ type: contentType }),
+    });
     app.post('/data', (req, res) => res.json({ test: 'OK' }));
 
-    const dredd = new Dredd({ options: { path: './test/fixtures/request/application-json.apib' } });
+    const dredd = new Dredd({
+      options: { path: './test/fixtures/request/application-json.apib' },
+    });
 
     runDreddWithServer(dredd, app, (err, info) => {
       runtimeInfo = info;
@@ -22,8 +26,13 @@ describe('Sending \'application/json\' request', () => {
     });
   });
 
-  it('results in one request being delivered to the server', () => assert.isTrue(runtimeInfo.server.requestedOnce));
-  it('the request has the expected Content-Type', () => assert.equal(runtimeInfo.server.lastRequest.headers['content-type'], contentType));
+  it('results in one request being delivered to the server', () =>
+    assert.isTrue(runtimeInfo.server.requestedOnce));
+  it('the request has the expected Content-Type', () =>
+    assert.equal(
+      runtimeInfo.server.lastRequest.headers['content-type'],
+      contentType,
+    ));
   it('the request has the expected format', () => {
     const { body } = runtimeInfo.server.lastRequest;
     assert.deepEqual(JSON.parse(body), { test: 42 });
@@ -39,9 +48,13 @@ describe("Sending 'multipart/form-data' request described in API Blueprint", () 
   const contentType = 'multipart/form-data';
 
   before((done) => {
-    const app = createServer({ bodyParser: bodyParser.text({ type: contentType }) });
+    const app = createServer({
+      bodyParser: bodyParser.text({ type: contentType }),
+    });
     app.post('/data', (req, res) => res.json({ test: 'OK' }));
-    const dredd = new Dredd({ options: { path: './test/fixtures/request/multipart-form-data.apib' } });
+    const dredd = new Dredd({
+      options: { path: './test/fixtures/request/multipart-form-data.apib' },
+    });
 
     runDreddWithServer(dredd, app, (err, info) => {
       runtimeInfo = info;
@@ -49,8 +62,13 @@ describe("Sending 'multipart/form-data' request described in API Blueprint", () 
     });
   });
 
-  it('results in one request being delivered to the server', () => assert.isTrue(runtimeInfo.server.requestedOnce));
-  it('the request has the expected Content-Type', () => assert.include(runtimeInfo.server.lastRequest.headers['content-type'], 'multipart/form-data'));
+  it('results in one request being delivered to the server', () =>
+    assert.isTrue(runtimeInfo.server.requestedOnce));
+  it('the request has the expected Content-Type', () =>
+    assert.include(
+      runtimeInfo.server.lastRequest.headers['content-type'],
+      'multipart/form-data',
+    ));
   it('the request has the expected format', () => {
     const lines = [
       '--CUSTOM-BOUNDARY',
@@ -80,9 +98,13 @@ describe("Sending 'multipart/form-data' request described in OpenAPI 2", () => {
   const contentType = 'multipart/form-data';
 
   before((done) => {
-    const app = createServer({ bodyParser: bodyParser.text({ type: contentType }) });
+    const app = createServer({
+      bodyParser: bodyParser.text({ type: contentType }),
+    });
     app.post('/data', (req, res) => res.json({ test: 'OK' }));
-    const dredd = new Dredd({ options: { path: './test/fixtures/request/multipart-form-data.yaml' } });
+    const dredd = new Dredd({
+      options: { path: './test/fixtures/request/multipart-form-data.yaml' },
+    });
 
     runDreddWithServer(dredd, app, (err, info) => {
       runtimeInfo = info;
@@ -90,8 +112,13 @@ describe("Sending 'multipart/form-data' request described in OpenAPI 2", () => {
     });
   });
 
-  it('results in one request being delivered to the server', () => assert.isTrue(runtimeInfo.server.requestedOnce));
-  it('the request has the expected Content-Type', () => assert.include(runtimeInfo.server.lastRequest.headers['content-type'], 'multipart/form-data'));
+  it('results in one request being delivered to the server', () =>
+    assert.isTrue(runtimeInfo.server.requestedOnce));
+  it('the request has the expected Content-Type', () =>
+    assert.include(
+      runtimeInfo.server.lastRequest.headers['content-type'],
+      'multipart/form-data',
+    ));
   it('the request has the expected format', () => {
     const lines = [
       '--CUSTOM-BOUNDARY',
@@ -119,9 +146,15 @@ describe("Sending 'multipart/form-data' request described as 'file' in OpenAPI 2
   const contentType = 'multipart/form-data';
 
   before((done) => {
-    const app = createServer({ bodyParser: bodyParser.text({ type: contentType }) });
+    const app = createServer({
+      bodyParser: bodyParser.text({ type: contentType }),
+    });
     app.post('/data', (req, res) => res.json({ test: 'OK' }));
-    const dredd = new Dredd({ options: { path: './test/fixtures/request/multipart-form-data-file.yaml' } });
+    const dredd = new Dredd({
+      options: {
+        path: './test/fixtures/request/multipart-form-data-file.yaml',
+      },
+    });
 
     runDreddWithServer(dredd, app, (err, info) => {
       runtimeInfo = info;
@@ -129,8 +162,13 @@ describe("Sending 'multipart/form-data' request described as 'file' in OpenAPI 2
     });
   });
 
-  it('results in one request being delivered to the server', () => assert.isTrue(runtimeInfo.server.requestedOnce));
-  it('the request has the expected Content-Type', () => assert.include(runtimeInfo.server.lastRequest.headers['content-type'], 'multipart/form-data'));
+  it('results in one request being delivered to the server', () =>
+    assert.isTrue(runtimeInfo.server.requestedOnce));
+  it('the request has the expected Content-Type', () =>
+    assert.include(
+      runtimeInfo.server.lastRequest.headers['content-type'],
+      'multipart/form-data',
+    ));
   it('the request has the expected format', () => {
     const lines = [
       '--BOUNDARY',
@@ -153,21 +191,24 @@ describe("Sending 'multipart/form-data' request described as 'file' in OpenAPI 2
   });
 });
 
-[{
-  name: 'API Blueprint',
-  path: './test/fixtures/request/application-x-www-form-urlencoded.apib',
-},
-{
-  name: 'OpenAPI 2',
-  path: './test/fixtures/request/application-x-www-form-urlencoded.yaml',
-},
+[
+  {
+    name: 'API Blueprint',
+    path: './test/fixtures/request/application-x-www-form-urlencoded.apib',
+  },
+  {
+    name: 'OpenAPI 2',
+    path: './test/fixtures/request/application-x-www-form-urlencoded.yaml',
+  },
 ].forEach((apiDescription) => {
   describe(`Sending 'application/x-www-form-urlencoded' request described in ${apiDescription.name}`, () => {
     let runtimeInfo;
     const contentType = 'application/x-www-form-urlencoded';
 
     before((done) => {
-      const app = createServer({ bodyParser: bodyParser.text({ type: contentType }) });
+      const app = createServer({
+        bodyParser: bodyParser.text({ type: contentType }),
+      });
       app.post('/data', (req, res) => res.json({ test: 'OK' }));
       const dredd = new Dredd({ options: { path: apiDescription.path } });
 
@@ -181,7 +222,10 @@ describe("Sending 'multipart/form-data' request described as 'file' in OpenAPI 2
       assert.isTrue(runtimeInfo.server.requestedOnce);
     });
     it('the request has the expected Content-Type', () => {
-      assert.equal(runtimeInfo.server.lastRequest.headers['content-type'], contentType);
+      assert.equal(
+        runtimeInfo.server.lastRequest.headers['content-type'],
+        contentType,
+      );
     });
     it('the request has the expected format', () => {
       // API Blueprint adds extra \n at the end: https://github.com/apiaryio/dredd/issues/67
@@ -194,14 +238,18 @@ describe("Sending 'multipart/form-data' request described as 'file' in OpenAPI 2
   });
 });
 
-describe('Sending \'text/plain\' request', () => {
+describe("Sending 'text/plain' request", () => {
   let runtimeInfo;
   const contentType = 'text/plain';
 
   before((done) => {
-    const app = createServer({ bodyParser: bodyParser.text({ type: contentType }) });
+    const app = createServer({
+      bodyParser: bodyParser.text({ type: contentType }),
+    });
     app.post('/data', (req, res) => res.json({ test: 'OK' }));
-    const dredd = new Dredd({ options: { path: './test/fixtures/request/text-plain.apib' } });
+    const dredd = new Dredd({
+      options: { path: './test/fixtures/request/text-plain.apib' },
+    });
 
     runDreddWithServer(dredd, app, (err, info) => {
       runtimeInfo = info;
@@ -213,7 +261,10 @@ describe('Sending \'text/plain\' request', () => {
     assert.isTrue(runtimeInfo.server.requestedOnce);
   });
   it('the request has the expected Content-Type', () => {
-    assert.equal(runtimeInfo.server.lastRequest.headers['content-type'], contentType);
+    assert.equal(
+      runtimeInfo.server.lastRequest.headers['content-type'],
+      contentType,
+    );
   });
   it('the request has the expected format', () => {
     assert.equal(runtimeInfo.server.lastRequest.body, 'test equals to 42\n');
@@ -233,37 +284,48 @@ describe('Sending \'text/plain\' request', () => {
     name: 'OpenAPI 2',
     path: './test/fixtures/request/application-octet-stream.yaml',
   },
-].forEach(apiDescription => describe(`Sending 'application/octet-stream' request described in ${apiDescription.name}`, () => {
-  let runtimeInfo;
-  const contentType = 'application/octet-stream';
+].forEach((apiDescription) =>
+  describe(`Sending 'application/octet-stream' request described in ${apiDescription.name}`, () => {
+    let runtimeInfo;
+    const contentType = 'application/octet-stream';
 
-  before((done) => {
-    const app = createServer({ bodyParser: bodyParser.raw({ type: contentType }) });
-    app.post('/binary', (req, res) => res.json({ test: 'OK' }));
+    before((done) => {
+      const app = createServer({
+        bodyParser: bodyParser.raw({ type: contentType }),
+      });
+      app.post('/binary', (req, res) => res.json({ test: 'OK' }));
 
-    const dredd = new Dredd({
-      options: {
-        path: apiDescription.path,
-        hookfiles: './test/fixtures/request/application-octet-stream-hooks.js',
-      },
+      const dredd = new Dredd({
+        options: {
+          path: apiDescription.path,
+          hookfiles:
+            './test/fixtures/request/application-octet-stream-hooks.js',
+        },
+      });
+      runDreddWithServer(dredd, app, (err, info) => {
+        runtimeInfo = info;
+        done(err);
+      });
     });
-    runDreddWithServer(dredd, app, (err, info) => {
-      runtimeInfo = info;
-      done(err);
-    });
-  });
 
-  it('results in one request being delivered to the server', () => assert.isTrue(runtimeInfo.server.requestedOnce));
-  it('the request has the expected Content-Type', () => assert.equal(runtimeInfo.server.lastRequest.headers['content-type'], contentType));
-  it('the request has the expected format', () => assert.equal(
-    runtimeInfo.server.lastRequest.body.toString('base64'),
-    Buffer.from([0xFF, 0xEF, 0xBF, 0xBE]).toString('base64')
-  ));
-  it('results in one passing test', () => {
-    assert.equal(runtimeInfo.dredd.stats.tests, 1);
-    assert.equal(runtimeInfo.dredd.stats.passes, 1);
-  });
-}));
+    it('results in one request being delivered to the server', () =>
+      assert.isTrue(runtimeInfo.server.requestedOnce));
+    it('the request has the expected Content-Type', () =>
+      assert.equal(
+        runtimeInfo.server.lastRequest.headers['content-type'],
+        contentType,
+      ));
+    it('the request has the expected format', () =>
+      assert.equal(
+        runtimeInfo.server.lastRequest.body.toString('base64'),
+        Buffer.from([0xff, 0xef, 0xbf, 0xbe]).toString('base64'),
+      ));
+    it('results in one passing test', () => {
+      assert.equal(runtimeInfo.dredd.stats.tests, 1);
+      assert.equal(runtimeInfo.dredd.stats.passes, 1);
+    });
+  }),
+);
 
 [
   {
@@ -274,34 +336,46 @@ describe('Sending \'text/plain\' request', () => {
     name: 'OpenAPI 2',
     path: './test/fixtures/request/image-png.yaml',
   },
-].forEach(apiDescription => describe(`Sending 'image/png' request described in ${apiDescription.name}`, () => {
-  let runtimeInfo;
-  const contentType = 'image/png';
+].forEach((apiDescription) =>
+  describe(`Sending 'image/png' request described in ${apiDescription.name}`, () => {
+    let runtimeInfo;
+    const contentType = 'image/png';
 
-  before((done) => {
-    const app = createServer({ bodyParser: bodyParser.raw({ type: contentType }) });
-    app.put('/image.png', (req, res) => res.json({ test: 'OK' }));
+    before((done) => {
+      const app = createServer({
+        bodyParser: bodyParser.raw({ type: contentType }),
+      });
+      app.put('/image.png', (req, res) => res.json({ test: 'OK' }));
 
-    const dredd = new Dredd({
-      options: {
-        path: apiDescription.path,
-        hookfiles: './test/fixtures/request/image-png-hooks.js',
-      },
+      const dredd = new Dredd({
+        options: {
+          path: apiDescription.path,
+          hookfiles: './test/fixtures/request/image-png-hooks.js',
+        },
+      });
+      runDreddWithServer(dredd, app, (err, info) => {
+        runtimeInfo = info;
+        done(err);
+      });
     });
-    runDreddWithServer(dredd, app, (err, info) => {
-      runtimeInfo = info;
-      done(err);
-    });
-  });
 
-  it('results in one request being delivered to the server', () => assert.isTrue(runtimeInfo.server.requestedOnce));
-  it('the request has the expected Content-Type', () => assert.equal(runtimeInfo.server.lastRequest.headers['content-type'], contentType));
-  it('the request has the expected format', () => assert.equal(
-    runtimeInfo.server.lastRequest.body.toString('base64'),
-    fs.readFileSync(path.join(__dirname, '../fixtures/image.png')).toString('base64')
-  ));
-  it('results in one passing test', () => {
-    assert.equal(runtimeInfo.dredd.stats.tests, 1);
-    assert.equal(runtimeInfo.dredd.stats.passes, 1);
-  });
-}));
+    it('results in one request being delivered to the server', () =>
+      assert.isTrue(runtimeInfo.server.requestedOnce));
+    it('the request has the expected Content-Type', () =>
+      assert.equal(
+        runtimeInfo.server.lastRequest.headers['content-type'],
+        contentType,
+      ));
+    it('the request has the expected format', () =>
+      assert.equal(
+        runtimeInfo.server.lastRequest.body.toString('base64'),
+        fs
+          .readFileSync(path.join(__dirname, '../fixtures/image.png'))
+          .toString('base64'),
+      ));
+    it('results in one passing test', () => {
+      assert.equal(runtimeInfo.dredd.stats.tests, 1);
+      assert.equal(runtimeInfo.dredd.stats.passes, 1);
+    });
+  }),
+);

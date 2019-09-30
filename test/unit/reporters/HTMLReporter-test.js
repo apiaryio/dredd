@@ -62,7 +62,8 @@ describe('HTMLReporter', () => {
         loggerStub.warn.restore();
       });
 
-      it('should warn about the existing file', () => assert.isOk(loggerStub.warn.called));
+      it('should warn about the existing file', () =>
+        assert.isOk(loggerStub.warn.called));
     });
 
     describe('when file does not exist', () => {
@@ -76,21 +77,27 @@ describe('HTMLReporter', () => {
         fsStub.unlinkSync.restore();
       });
 
-      it('should not attempt to delete a file', () => assert.isOk(fsStub.unlinkSync.notCalled));
+      it('should not attempt to delete a file', () =>
+        assert.isOk(fsStub.unlinkSync.notCalled));
     });
 
-    it('should write the prelude to the buffer', done => emitter.emit('start', '', () => {
-      assert.isOk(htmlReporter.buf.includes('Dredd'));
-      done();
-    }));
+    it('should write the prelude to the buffer', (done) =>
+      emitter.emit('start', '', () => {
+        assert.isOk(htmlReporter.buf.includes('Dredd'));
+        done();
+      }));
   });
 
   describe('when ending', () => {
-    before(() => { stats.tests = 1; });
+    before(() => {
+      stats.tests = 1;
+    });
 
     describe('when can create output directory', () => {
       beforeEach(() => {
-        sinon.stub(fsStub, 'writeFile').callsFake((path, data, callback) => callback());
+        sinon
+          .stub(fsStub, 'writeFile')
+          .callsFake((path, data, callback) => callback());
         makeDirStubImpl = sinon.spy(makeDirStubImpl);
       });
 
@@ -99,18 +106,23 @@ describe('HTMLReporter', () => {
         makeDirStubImpl = makeDirStubImplBackup;
       });
 
-      it('should write the file', done => emitter.emit('end', () => {
-        assert.isOk(makeDirStubImpl.called);
-        assert.isOk(fsStub.writeFile.called);
-        done();
-      }));
+      it('should write the file', (done) =>
+        emitter.emit('end', () => {
+          assert.isOk(makeDirStubImpl.called);
+          assert.isOk(fsStub.writeFile.called);
+          done();
+        }));
     });
 
     describe('when cannot create output directory', () => {
       beforeEach(() => {
         sinon.stub(reporterOutputLoggerStub, 'error');
-        sinon.stub(fsStub, 'writeFile').callsFake((path, data, callback) => callback());
-        makeDirStubImpl = sinon.stub().callsFake(() => Promise.reject(new Error()));
+        sinon
+          .stub(fsStub, 'writeFile')
+          .callsFake((path, data, callback) => callback());
+        makeDirStubImpl = sinon
+          .stub()
+          .callsFake(() => Promise.reject(new Error()));
       });
 
       after(() => {
@@ -119,12 +131,13 @@ describe('HTMLReporter', () => {
         makeDirStubImpl = makeDirStubImplBackup;
       });
 
-      it('should write to log', done => emitter.emit('end', () => {
-        assert.isOk(makeDirStubImpl.called);
-        assert.isOk(fsStub.writeFile.notCalled);
-        assert.isOk(reporterOutputLoggerStub.error.called);
-        done();
-      }));
+      it('should write to log', (done) =>
+        emitter.emit('end', () => {
+          assert.isOk(makeDirStubImpl.called);
+          assert.isOk(fsStub.writeFile.notCalled);
+          assert.isOk(reporterOutputLoggerStub.error.called);
+          done();
+        }));
     });
   });
 
@@ -142,11 +155,12 @@ describe('HTMLReporter', () => {
       assert.isOk(htmlReporter.buf.includes('Pass'));
     });
 
-    describe('when details=true', () => it('should write details for passing tests', () => {
-      htmlReporter.details = true;
-      emitter.emit('test pass', test);
-      assert.isOk(htmlReporter.buf.includes('Request'));
-    }));
+    describe('when details=true', () =>
+      it('should write details for passing tests', () => {
+        htmlReporter.details = true;
+        emitter.emit('test pass', test);
+        assert.isOk(htmlReporter.buf.includes('Request'));
+      }));
   });
 
   describe('when test is skipped', () => {

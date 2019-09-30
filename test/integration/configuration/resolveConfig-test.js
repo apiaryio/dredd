@@ -1,6 +1,9 @@
 const { assert } = require('chai');
 const { EventEmitter } = require('events');
-const { DEFAULT_CONFIG, resolveConfig } = require('../../../lib/configuration/applyConfiguration');
+const {
+  DEFAULT_CONFIG,
+  resolveConfig,
+} = require('../../../lib/configuration/applyConfiguration');
 
 describe('resolveConfig()', () => {
   describe('when flattening config', () => {

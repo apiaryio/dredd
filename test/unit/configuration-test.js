@@ -8,7 +8,9 @@ const logger = require('../../lib/logger');
 const reporterOutputLogger = require('../../lib/reporters/reporterOutputLogger');
 
 const defaultLoggerConsole = clone(logger.transports.console);
-const defaultReporterOutputLoggerConsole = clone(reporterOutputLogger.transports.console);
+const defaultReporterOutputLoggerConsole = clone(
+  reporterOutputLogger.transports.console,
+);
 
 function resetLoggerConsoles() {
   logger.transports.console = defaultLoggerConsole;
@@ -167,7 +169,6 @@ describe('configuration.applyLoggingOptions()', () => {
     });
   });
 });
-
 
 describe('configuration', () => {
   describe("with -c set to string 'true'", () => {
@@ -452,10 +453,12 @@ describe('configuration', () => {
   describe('with both data and apiDescriptions set', () => {
     const config = {
       data: { 'filename.api': 'FORMAT: 1A\n# Sample API v1\n' },
-      apiDescriptions: [{
-        location: 'configuration.apiDescriptions[0]',
-        content: 'FORMAT: 1A\n# Sample API v2\n',
-      }],
+      apiDescriptions: [
+        {
+          location: 'configuration.apiDescriptions[0]',
+          content: 'FORMAT: 1A\n# Sample API v2\n',
+        },
+      ],
     };
     const { warnings, errors } = validateConfig(config);
 

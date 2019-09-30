@@ -58,7 +58,9 @@ const argvData = {
 
 describe('configUtils', () => {
   let argv = null;
-  beforeEach(() => { argv = clone(argvData); });
+  beforeEach(() => {
+    argv = clone(argvData);
+  });
 
   it('it should export an object', () => assert.isObject(configUtils));
 
@@ -73,7 +75,8 @@ describe('configUtils', () => {
       yamlStub.dump.restore();
     });
 
-    it('should be a defined function', () => assert.isFunction(configUtils.save));
+    it('should be a defined function', () =>
+      assert.isFunction(configUtils.save));
 
     it('should add endpoint key', () => {
       configUtils.save(argv);
@@ -123,20 +126,22 @@ describe('configUtils', () => {
       assert.isOk(yamlStub.dump.called);
     });
 
-    describe('when path is not given', () => it('should save to ./dredd.yml', () => {
-      configUtils.save(argv);
-      const call = fsStub.writeFileSync.getCall(0);
-      const { args } = call;
-      assert.include(args[0], 'dredd.yml');
-    }));
+    describe('when path is not given', () =>
+      it('should save to ./dredd.yml', () => {
+        configUtils.save(argv);
+        const call = fsStub.writeFileSync.getCall(0);
+        const { args } = call;
+        assert.include(args[0], 'dredd.yml');
+      }));
 
-    describe('when path is given', () => it('should save to that path', () => {
-      const path = 'some-other-location.yml ';
-      configUtils.save(argv, path);
-      const call = fsStub.writeFileSync.getCall(0);
-      const { args } = call;
-      assert.include(args[0], path);
-    }));
+    describe('when path is given', () =>
+      it('should save to that path', () => {
+        const path = 'some-other-location.yml ';
+        configUtils.save(argv, path);
+        const call = fsStub.writeFileSync.getCall(0);
+        const { args } = call;
+        assert.include(args[0], path);
+      }));
   });
 
   describe('load(path)', () => {
@@ -165,26 +170,31 @@ blueprint: blueprint
 endpoint: endpoint\
 `;
 
-    beforeEach(() => sinon.stub(fsStub, 'readFileSync').callsFake(() => yamlData));
+    beforeEach(() =>
+      sinon.stub(fsStub, 'readFileSync').callsFake(() => yamlData),
+    );
 
     afterEach(() => fsStub.readFileSync.restore());
 
-    it('should be a defined function', () => assert.isFunction(configUtils.load));
+    it('should be a defined function', () =>
+      assert.isFunction(configUtils.load));
 
-    describe('if no path is given', () => it('should load from ./dredd.yml', () => {
-      configUtils.load();
-      const call = fsStub.readFileSync.getCall(0);
-      const { args } = call;
-      assert.include(args[0], 'dredd.yml');
-    }));
+    describe('if no path is given', () =>
+      it('should load from ./dredd.yml', () => {
+        configUtils.load();
+        const call = fsStub.readFileSync.getCall(0);
+        const { args } = call;
+        assert.include(args[0], 'dredd.yml');
+      }));
 
-    describe('when path is given', () => it('should load from that path', () => {
-      const path = 'some-other-location.yml ';
-      configUtils.load(path);
-      const call = fsStub.readFileSync.getCall(0);
-      const { args } = call;
-      assert.include(args[0], path);
-    }));
+    describe('when path is given', () =>
+      it('should load from that path', () => {
+        const path = 'some-other-location.yml ';
+        configUtils.load(path);
+        const call = fsStub.readFileSync.getCall(0);
+        const { args } = call;
+        assert.include(args[0], path);
+      }));
 
     it('should move blueprint and enpoint to an array under _ key', () => {
       const output = configUtils.load();

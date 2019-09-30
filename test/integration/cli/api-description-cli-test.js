@@ -2,7 +2,11 @@ const fs = require('fs');
 const os = require('os');
 const { assert } = require('chai');
 
-const { runCLIWithServer, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
+const {
+  runCLIWithServer,
+  createServer,
+  DEFAULT_SERVER_PORT,
+} = require('../helpers');
 
 const NON_EXISTENT_PORT = DEFAULT_SERVER_PORT + 1;
 
@@ -10,11 +14,16 @@ describe('CLI - API Description Document', () => {
   describe('when loaded from file', () => {
     describe('when loaded by glob pattern', () => {
       let runtimeInfo;
-      const args = ['./test/fixtures/single-g*t.apib', `http://127.0.0.1:${DEFAULT_SERVER_PORT}`];
+      const args = [
+        './test/fixtures/single-g*t.apib',
+        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
+      ];
 
       before((done) => {
         const app = createServer();
-        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
+        app.get('/machines', (req, res) =>
+          res.json([{ type: 'bulldozer', name: 'willy' }]),
+        );
 
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -22,8 +31,10 @@ describe('CLI - API Description Document', () => {
         });
       });
 
-      it('should request /machines', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
-      it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('should request /machines', () =>
+        assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1 }));
+      it('should exit with status 0', () =>
+        assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
     describe('when file not found', () => {
@@ -41,16 +52,18 @@ describe('CLI - API Description Document', () => {
         });
       });
 
-      it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
-      it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr.toLowerCase(), 'could not find'));
+      it('should exit with status 1', () =>
+        assert.equal(runtimeInfo.dredd.exitStatus, 1));
+      it('should print error message to stderr', () =>
+        assert.include(
+          runtimeInfo.dredd.stderr.toLowerCase(),
+          'could not find',
+        ));
     });
 
-    describe('when given path exists, but can\'t be read', () => {
+    describe("when given path exists, but can't be read", () => {
       let runtimeInfo;
-      const args = [
-        os.homedir(),
-        `http://127.0.0.1:${DEFAULT_SERVER_PORT}`,
-      ];
+      const args = [os.homedir(), `http://127.0.0.1:${DEFAULT_SERVER_PORT}`];
 
       before((done) => {
         const app = createServer();
@@ -60,11 +73,15 @@ describe('CLI - API Description Document', () => {
         });
       });
 
-      it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
-      it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr, 'Unable to load API description document'));
+      it('should exit with status 1', () =>
+        assert.equal(runtimeInfo.dredd.exitStatus, 1));
+      it('should print error message to stderr', () =>
+        assert.include(
+          runtimeInfo.dredd.stderr,
+          'Unable to load API description document',
+        ));
     });
   });
-
 
   describe('when loaded from URL', () => {
     describe('when successfully loaded from URL', () => {
@@ -80,7 +97,9 @@ describe('CLI - API Description Document', () => {
           res.type('text/vnd.apiblueprint');
           fs.createReadStream('./test/fixtures/single-get.apib').pipe(res);
         });
-        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
+        app.get('/machines', (req, res) =>
+          res.json([{ type: 'bulldozer', name: 'willy' }]),
+        );
 
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -88,9 +107,15 @@ describe('CLI - API Description Document', () => {
         });
       });
 
-      it('should download API Description Document from server', () => assert.equal(runtimeInfo.server.requestCounts['/single-get.apib'], 1));
-      it('should request /machines', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1, '/single-get.apib': 1 }));
-      it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('should download API Description Document from server', () =>
+        assert.equal(runtimeInfo.server.requestCounts['/single-get.apib'], 1));
+      it('should request /machines', () =>
+        assert.deepEqual(runtimeInfo.server.requestCounts, {
+          '/machines': 1,
+          '/single-get.apib': 1,
+        }));
+      it('should exit with status 0', () =>
+        assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
     describe('when URL points to non-existent server', () => {
@@ -108,11 +133,19 @@ describe('CLI - API Description Document', () => {
         });
       });
 
-      it('should not request server', () => assert.isFalse(runtimeInfo.server.requested));
-      it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
+      it('should not request server', () =>
+        assert.isFalse(runtimeInfo.server.requested));
+      it('should exit with status 1', () =>
+        assert.equal(runtimeInfo.dredd.exitStatus, 1));
       it('should print error message to stderr', () => {
-        assert.include(runtimeInfo.dredd.stderr, 'Unable to load API description document from');
-        assert.include(runtimeInfo.dredd.stderr, `http://127.0.0.1:${NON_EXISTENT_PORT}/single-get.apib`);
+        assert.include(
+          runtimeInfo.dredd.stderr,
+          'Unable to load API description document from',
+        );
+        assert.include(
+          runtimeInfo.dredd.stderr,
+          `http://127.0.0.1:${NON_EXISTENT_PORT}/single-get.apib`,
+        );
       });
     });
 
@@ -133,16 +166,26 @@ describe('CLI - API Description Document', () => {
         });
       });
 
-      it('should request server', () => assert.isTrue(runtimeInfo.server.requested));
-      it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
+      it('should request server', () =>
+        assert.isTrue(runtimeInfo.server.requested));
+      it('should exit with status 1', () =>
+        assert.equal(runtimeInfo.dredd.exitStatus, 1));
       it('should print error message to stderr', () => {
-        assert.include(runtimeInfo.dredd.stderr, 'Unable to load API description document from');
-        assert.include(runtimeInfo.dredd.stderr, "Dredd got HTTP 404 response with 'text/plain; charset=utf-8' body");
-        assert.include(runtimeInfo.dredd.stderr, `http://127.0.0.1:${DEFAULT_SERVER_PORT}/__non-existent__.apib`);
+        assert.include(
+          runtimeInfo.dredd.stderr,
+          'Unable to load API description document from',
+        );
+        assert.include(
+          runtimeInfo.dredd.stderr,
+          "Dredd got HTTP 404 response with 'text/plain; charset=utf-8' body",
+        );
+        assert.include(
+          runtimeInfo.dredd.stderr,
+          `http://127.0.0.1:${DEFAULT_SERVER_PORT}/__non-existent__.apib`,
+        );
       });
     });
   });
-
 
   describe('when loaded by -p/--path', () => {
     describe('when loaded from file', () => {
@@ -155,8 +198,12 @@ describe('CLI - API Description Document', () => {
 
       before((done) => {
         const app = createServer();
-        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
-        app.get('/machines/willy', (req, res) => res.json({ type: 'bulldozer', name: 'willy' }));
+        app.get('/machines', (req, res) =>
+          res.json([{ type: 'bulldozer', name: 'willy' }]),
+        );
+        app.get('/machines/willy', (req, res) =>
+          res.json({ type: 'bulldozer', name: 'willy' }),
+        );
 
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -164,8 +211,13 @@ describe('CLI - API Description Document', () => {
         });
       });
 
-      it('should request /machines, /machines/willy', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1, '/machines/willy': 1 }));
-      it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('should request /machines, /machines/willy', () =>
+        assert.deepEqual(runtimeInfo.server.requestCounts, {
+          '/machines': 1,
+          '/machines/willy': 1,
+        }));
+      it('should exit with status 0', () =>
+        assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
     describe('when loaded from URL', () => {
@@ -182,8 +234,12 @@ describe('CLI - API Description Document', () => {
           res.type('application/yaml');
           fs.createReadStream('./test/fixtures/single-get.yaml').pipe(res);
         });
-        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
-        app.get('/machines/willy', (req, res) => res.json({ type: 'bulldozer', name: 'willy' }));
+        app.get('/machines', (req, res) =>
+          res.json([{ type: 'bulldozer', name: 'willy' }]),
+        );
+        app.get('/machines/willy', (req, res) =>
+          res.json({ type: 'bulldozer', name: 'willy' }),
+        );
 
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -191,9 +247,16 @@ describe('CLI - API Description Document', () => {
         });
       });
 
-      it('should download API Description Document from server', () => assert.equal(runtimeInfo.server.requestCounts['/single-get.yaml'], 1));
-      it('should request /machines, /machines/willy', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1, '/machines/willy': 1, '/single-get.yaml': 1 }));
-      it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('should download API Description Document from server', () =>
+        assert.equal(runtimeInfo.server.requestCounts['/single-get.yaml'], 1));
+      it('should request /machines, /machines/willy', () =>
+        assert.deepEqual(runtimeInfo.server.requestCounts, {
+          '/machines': 1,
+          '/machines/willy': 1,
+          '/single-get.yaml': 1,
+        }));
+      it('should exit with status 0', () =>
+        assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
     describe('when used multiple times', () => {
@@ -207,9 +270,15 @@ describe('CLI - API Description Document', () => {
 
       before((done) => {
         const app = createServer();
-        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
-        app.get('/machines/willy', (req, res) => res.json({ type: 'bulldozer', name: 'willy' }));
-        app.get('/machines/caterpillar', (req, res) => res.json({ type: 'bulldozer', name: 'caterpillar' }));
+        app.get('/machines', (req, res) =>
+          res.json([{ type: 'bulldozer', name: 'willy' }]),
+        );
+        app.get('/machines/willy', (req, res) =>
+          res.json({ type: 'bulldozer', name: 'willy' }),
+        );
+        app.get('/machines/caterpillar', (req, res) =>
+          res.json({ type: 'bulldozer', name: 'caterpillar' }),
+        );
 
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -217,8 +286,14 @@ describe('CLI - API Description Document', () => {
         });
       });
 
-      it('should request /machines, /machines/willy, /machines/caterpillar', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1, '/machines/willy': 1, '/machines/caterpillar': 1 }));
-      it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('should request /machines, /machines/willy, /machines/caterpillar', () =>
+        assert.deepEqual(runtimeInfo.server.requestCounts, {
+          '/machines': 1,
+          '/machines/willy': 1,
+          '/machines/caterpillar': 1,
+        }));
+      it('should exit with status 0', () =>
+        assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
     describe('when loaded by glob pattern', () => {
@@ -231,8 +306,12 @@ describe('CLI - API Description Document', () => {
 
       before((done) => {
         const app = createServer();
-        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
-        app.get('/machines/willy', (req, res) => res.json({ type: 'bulldozer', name: 'willy' }));
+        app.get('/machines', (req, res) =>
+          res.json([{ type: 'bulldozer', name: 'willy' }]),
+        );
+        app.get('/machines/willy', (req, res) =>
+          res.json({ type: 'bulldozer', name: 'willy' }),
+        );
 
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -240,8 +319,13 @@ describe('CLI - API Description Document', () => {
         });
       });
 
-      it('should request /machines, /machines/willy', () => assert.deepEqual(runtimeInfo.server.requestCounts, { '/machines': 1, '/machines/willy': 1 }));
-      it('should exit with status 0', () => assert.equal(runtimeInfo.dredd.exitStatus, 0));
+      it('should request /machines, /machines/willy', () =>
+        assert.deepEqual(runtimeInfo.server.requestCounts, {
+          '/machines': 1,
+          '/machines/willy': 1,
+        }));
+      it('should exit with status 0', () =>
+        assert.equal(runtimeInfo.dredd.exitStatus, 0));
     });
 
     describe('when additional file not found', () => {
@@ -254,7 +338,9 @@ describe('CLI - API Description Document', () => {
 
       before((done) => {
         const app = createServer();
-        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
+        app.get('/machines', (req, res) =>
+          res.json([{ type: 'bulldozer', name: 'willy' }]),
+        );
 
         runCLIWithServer(args, app, (err, info) => {
           runtimeInfo = info;
@@ -262,9 +348,15 @@ describe('CLI - API Description Document', () => {
         });
       });
 
-      it('should not request server', () => assert.isFalse(runtimeInfo.server.requested));
-      it('should exit with status 1', () => assert.equal(runtimeInfo.dredd.exitStatus, 1));
-      it('should print error message to stderr', () => assert.include(runtimeInfo.dredd.stderr.toLowerCase(), 'could not find'));
+      it('should not request server', () =>
+        assert.isFalse(runtimeInfo.server.requested));
+      it('should exit with status 1', () =>
+        assert.equal(runtimeInfo.dredd.exitStatus, 1));
+      it('should print error message to stderr', () =>
+        assert.include(
+          runtimeInfo.dredd.stderr.toLowerCase(),
+          'could not find',
+        ));
     });
   });
 });

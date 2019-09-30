@@ -3,7 +3,6 @@ const { assert } = require('chai');
 
 const resolveLocations = require('../../lib/resolveLocations');
 
-
 describe('resolveLocations()', () => {
   const workingDirectory = path.join(__filename, '..', '..', 'fixtures');
 

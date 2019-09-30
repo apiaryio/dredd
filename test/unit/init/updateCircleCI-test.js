@@ -2,11 +2,9 @@ const { assert } = require('chai');
 
 const { _updateCircleCI: updateCircleCI } = require('../../../lib/init');
 
-
 function createOptions(contents) {
   return { editYaml: (file, update) => update(contents) };
 }
-
 
 describe('init._updateCircleCI()', () => {
   it('is able to create a new config file', () => {
@@ -16,7 +14,7 @@ describe('init._updateCircleCI()', () => {
     assert.include(JSON.stringify(contents), 'dredd');
   });
 
-  it('sets a \'dredd\' job', () => {
+  it("sets a 'dredd' job", () => {
     const contents = {};
     updateCircleCI(createOptions(contents));
 

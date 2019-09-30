@@ -2,11 +2,9 @@ const { assert } = require('chai');
 
 const { _updateWercker: updateWercker } = require('../../../lib/init');
 
-
 function createOptions(contents) {
   return { editYaml: (file, update) => update(contents) };
 }
-
 
 describe('init._updateWercker()', () => {
   it('is able to create a new config file', () => {
@@ -19,9 +17,7 @@ describe('init._updateWercker()', () => {
   it('adds commands to install and run Dredd', () => {
     const contents = {
       build: {
-        steps: [
-          { script: { name: 'pipenv-install', code: 'pipenv install' } },
-        ],
+        steps: [{ script: { name: 'pipenv-install', code: 'pipenv install' } }],
       },
     };
     updateWercker(createOptions(contents));

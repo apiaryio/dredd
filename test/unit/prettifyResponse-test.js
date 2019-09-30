@@ -11,8 +11,7 @@ describe('prettifyResponse(response)', () => {
         headers: {
           'content-type': 'application/json',
         },
-        body:
-          { a: 'b' },
+        body: { a: 'b' },
       });
 
       const expectedOutput = `\
@@ -24,13 +23,13 @@ body: \n{
       assert.equal(output, expectedOutput);
     });
 
-
     it('should print indented XML when content-type is text/html', () => {
       const output = prettifyResponse({
         headers: {
           'content-type': 'text/html',
         },
-        body: '<div>before paragraph <p>in para <i>italics</i><br /><b>bold</b> afterwords</p></div>',
+        body:
+          '<div>before paragraph <p>in para <i>italics</i><br /><b>bold</b> afterwords</p></div>',
       });
 
       const expectedOutput = `\
@@ -60,12 +59,15 @@ body: \n<div>before paragraph
 
     after(() => sinon.stub(loggerStub.debug.restore()));
 
-    it('should\'ve printed into debug', () => {
+    it("should've printed into debug", () => {
       assert.isOk(loggerStub.debug.called);
       assert.isObject(loggerStub.debug.firstCall);
       assert.isArray(loggerStub.debug.firstCall.args);
       assert.lengthOf(loggerStub.debug.firstCall.args, 1);
-      assert.equal(loggerStub.debug.firstCall.args[0], 'Could not stringify: [object Object]');
+      assert.equal(
+        loggerStub.debug.firstCall.args[0],
+        'Could not stringify: [object Object]',
+      );
     });
   });
 });

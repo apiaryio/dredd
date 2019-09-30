@@ -31,7 +31,7 @@ describe('CLIReporter', () => {
 
     it('should write starting to the console', (done) => {
       const emitter = new EventEmitter();
-      (new CLIReporter(emitter, {}, true));
+      new CLIReporter(emitter, {}, true);
       loggerStub.debug.resetHistory();
       emitter.emit('start', '', () => {
         assert.isOk(loggerStub.debug.calledOnce);
@@ -54,7 +54,7 @@ describe('CLIReporter', () => {
 
     it('should write pass to the console', () => {
       const emitter = new EventEmitter();
-      (new CLIReporter(emitter, {}, true));
+      new CLIReporter(emitter, {}, true);
       emitter.emit('test pass', test);
       assert.isOk(reporterOutputLoggerStub.pass.calledOnce);
     });
@@ -66,7 +66,7 @@ describe('CLIReporter', () => {
 
       it('should write details for passing tests', () => {
         const emitter = new EventEmitter();
-        (new CLIReporter(emitter, {}, true, true));
+        new CLIReporter(emitter, {}, true, true);
         emitter.emit('test pass', test);
         assert.isOk(reporterOutputLoggerStub.request.calledOnce);
       });
@@ -88,7 +88,7 @@ describe('CLIReporter', () => {
 
       it('should write fail to the console', () => {
         const emitter = new EventEmitter();
-        (new CLIReporter(emitter, {}, true));
+        new CLIReporter(emitter, {}, true);
         emitter.emit('test fail', test);
         assert.isOk(reporterOutputLoggerStub.fail.calledTwice);
       });
@@ -101,7 +101,7 @@ describe('CLIReporter', () => {
 
       it('should not write full failure to the console at the time of failure', () => {
         const emitter = new EventEmitter();
-        (new CLIReporter(emitter, {}, false));
+        new CLIReporter(emitter, {}, false);
         emitter.emit('test fail', test);
         assert.isOk(reporterOutputLoggerStub.fail.calledOnce);
       });
@@ -132,12 +132,11 @@ describe('CLIReporter', () => {
 
     it('should write error to the console', () => {
       const emitter = new EventEmitter();
-      (new CLIReporter(emitter, {}, false));
+      new CLIReporter(emitter, {}, false);
       emitter.emit('test error', new Error('Error'), test);
       assert.isOk(reporterOutputLoggerStub.error.calledTwice);
     });
   });
-
 
   describe('when adding error test with connection refused', () => {
     before(() => {
@@ -151,19 +150,32 @@ describe('CLIReporter', () => {
 
     afterEach(() => reporterOutputLoggerStub.error.restore());
 
-    const connectionErrors = ['ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE'];
+    const connectionErrors = [
+      'ECONNRESET',
+      'ENOTFOUND',
+      'ESOCKETTIMEDOUT',
+      'ETIMEDOUT',
+      'ECONNREFUSED',
+      'EHOSTUNREACH',
+      'EPIPE',
+    ];
 
-    Array.from(connectionErrors).forEach(errType => describe(`when error type ${errType}`, () => it('should write error to the console', () => {
-      const emitter = new EventEmitter();
-      (new CLIReporter(emitter, {}, false));
-      const error = new Error('connect');
-      error.code = errType;
-      emitter.emit('test error', error, test);
+    Array.from(connectionErrors).forEach((errType) =>
+      describe(`when error type ${errType}`, () =>
+        it('should write error to the console', () => {
+          const emitter = new EventEmitter();
+          new CLIReporter(emitter, {}, false);
+          const error = new Error('connect');
+          error.code = errType;
+          emitter.emit('test error', error, test);
 
-      const messages = Object.keys(reporterOutputLoggerStub.error.args).map((value, index) => reporterOutputLoggerStub.error.args[index][0]);
+          const messages = Object.keys(reporterOutputLoggerStub.error.args).map(
+            (value, index) => reporterOutputLoggerStub.error.args[index][0],
+          );
 
-      assert.include(messages.join(), 'Error connecting');
-    })));
+          assert.include(messages.join(), 'Error connecting');
+        })),
+    );
   });
 
   describe('when adding skipped test', () => {
@@ -180,12 +192,11 @@ describe('CLIReporter', () => {
 
     it('should write skip to the console', () => {
       const emitter = new EventEmitter();
-      (new CLIReporter(emitter, {}, false));
+      new CLIReporter(emitter, {}, false);
       emitter.emit('test skip', test);
       assert.isOk(reporterOutputLoggerStub.skip.calledOnce);
     });
   });
-
 
   describe('when creating report', () => {
     before(() => {
@@ -199,23 +210,25 @@ describe('CLIReporter', () => {
 
     afterEach(() => reporterOutputLoggerStub.complete.restore());
 
-    describe('when there is at least one test', () => it('should write to the console', (done) => {
-      const emitter = new EventEmitter();
-      const cliReporter = new CLIReporter(emitter, {}, false);
-      cliReporter.stats.tests = 1;
-      emitter.emit('end', () => {
-        assert.isOk(reporterOutputLoggerStub.complete.calledTwice);
-        done();
-      });
-    }));
+    describe('when there is at least one test', () =>
+      it('should write to the console', (done) => {
+        const emitter = new EventEmitter();
+        const cliReporter = new CLIReporter(emitter, {}, false);
+        cliReporter.stats.tests = 1;
+        emitter.emit('end', () => {
+          assert.isOk(reporterOutputLoggerStub.complete.calledTwice);
+          done();
+        });
+      }));
 
-    describe('when there are no tests', () => it('should write to the console', (done) => {
-      const emitter = new EventEmitter();
-      (new CLIReporter(emitter, {}, false));
-      emitter.emit('end', () => {
-        assert.isOk(reporterOutputLoggerStub.complete.calledOnce);
-        done();
-      });
-    }));
+    describe('when there are no tests', () =>
+      it('should write to the console', (done) => {
+        const emitter = new EventEmitter();
+        new CLIReporter(emitter, {}, false);
+        emitter.emit('end', () => {
+          assert.isOk(reporterOutputLoggerStub.complete.calledOnce);
+          done();
+        });
+      }));
   });
 });

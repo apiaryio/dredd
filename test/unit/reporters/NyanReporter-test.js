@@ -51,11 +51,12 @@ describe('NyanCatReporter', () => {
       nyanReporter.write.restore();
     });
 
-    it('should hide the cursor and draw the cat', done => emitter.emit('start', '', () => {
-      assert.isOk(nyanReporter.cursorHide.calledOnce);
-      assert.isOk(nyanReporter.draw.calledOnce);
-      done();
-    }));
+    it('should hide the cursor and draw the cat', (done) =>
+      emitter.emit('start', '', () => {
+        assert.isOk(nyanReporter.cursorHide.calledOnce);
+        assert.isOk(nyanReporter.draw.calledOnce);
+        done();
+      }));
   });
 
   describe('when ending', () => {
@@ -71,10 +72,11 @@ describe('NyanCatReporter', () => {
       nyanReporter.write.restore();
     });
 
-    it('should log that testing is complete', done => emitter.emit('end', () => {
-      assert.isOk(reporterOutputLoggerStub.complete.calledTwice);
-      done();
-    }));
+    it('should log that testing is complete', (done) =>
+      emitter.emit('end', () => {
+        assert.isOk(reporterOutputLoggerStub.complete.calledTwice);
+        done();
+      }));
 
     describe('when there are failures', () => {
       beforeEach(() => {
@@ -89,10 +91,11 @@ describe('NyanCatReporter', () => {
 
       afterEach(() => reporterOutputLoggerStub.fail.restore());
 
-      it('should log the failures at the end of testing', done => emitter.emit('end', () => {
-        assert.isOk(reporterOutputLoggerStub.fail.calledTwice);
-        done();
-      }));
+      it('should log the failures at the end of testing', (done) =>
+        emitter.emit('end', () => {
+          assert.isOk(reporterOutputLoggerStub.fail.calledTwice);
+          done();
+        }));
     });
   });
 
@@ -113,7 +116,8 @@ describe('NyanCatReporter', () => {
         nyanReporter.write.restore();
       });
 
-      it('should draw the cat', () => assert.isOk(nyanReporter.draw.calledOnce));
+      it('should draw the cat', () =>
+        assert.isOk(nyanReporter.draw.calledOnce));
     });
 
     describe('when test is skipped', () => {
@@ -132,7 +136,8 @@ describe('NyanCatReporter', () => {
         nyanReporter.write.restore();
       });
 
-      it('should draw the cat', () => assert.isOk(nyanReporter.draw.calledOnce));
+      it('should draw the cat', () =>
+        assert.isOk(nyanReporter.draw.calledOnce));
     });
 
     describe('when test fails', () => {
@@ -151,7 +156,8 @@ describe('NyanCatReporter', () => {
         nyanReporter.write.restore();
       });
 
-      it('should draw the cat', () => assert.isOk(nyanReporter.draw.calledOnce));
+      it('should draw the cat', () =>
+        assert.isOk(nyanReporter.draw.calledOnce));
     });
 
     describe('when test errors', () => {
@@ -170,7 +176,8 @@ describe('NyanCatReporter', () => {
         nyanReporter.draw.restore();
       });
 
-      it('should draw the cat', () => assert.isOk(nyanReporter.draw.calledOnce));
+      it('should draw the cat', () =>
+        assert.isOk(nyanReporter.draw.calledOnce));
     });
   });
 });

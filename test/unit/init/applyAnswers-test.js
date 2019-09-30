@@ -3,11 +3,9 @@ const sinon = require('sinon');
 
 const { _applyAnswers: applyAnswers } = require('../../../lib/init');
 
-
 function createConfig() {
   return { _: [], custom: {} };
 }
-
 
 describe('init._applyAnswers()', () => {
   const ci = {
@@ -17,7 +15,7 @@ describe('init._applyAnswers()', () => {
     wercker: sinon.spy(),
   };
 
-  beforeEach(() => Object.keys(ci).forEach(name => ci[name].resetHistory()));
+  beforeEach(() => Object.keys(ci).forEach((name) => ci[name].resetHistory()));
 
   it('applies the API description and the API host as positional CLI arguments', () => {
     const config = applyAnswers(createConfig(), {
@@ -46,7 +44,7 @@ describe('init._applyAnswers()', () => {
     const config = applyAnswers(createConfig(), {});
     assert.isUndefined(config.reporter);
   });
-  it('sets the reporter to \'apiary\' if asked', () => {
+  it("sets the reporter to 'apiary' if asked", () => {
     const config = applyAnswers(createConfig(), { apiary: true });
     assert.equal(config.reporter, 'apiary');
   });
@@ -65,27 +63,37 @@ describe('init._applyAnswers()', () => {
   it('creates selected CI configuration if asked', () => {
     applyAnswers(createConfig(), { createCI: 'wercker' }, { ci });
     assert.isTrue(ci.wercker.calledOnce);
-    assert.isFalse(ci.appveyor.called || ci.circleci.called || ci.travisci.called);
+    assert.isFalse(
+      ci.appveyor.called || ci.circleci.called || ci.travisci.called,
+    );
   });
   it('updates AppVeyor if asked', () => {
     applyAnswers(createConfig(), { appveyor: true }, { ci });
     assert.isTrue(ci.appveyor.calledOnce);
-    assert.isFalse(ci.circleci.called || ci.travisci.called || ci.wercker.called);
+    assert.isFalse(
+      ci.circleci.called || ci.travisci.called || ci.wercker.called,
+    );
   });
   it('updates CircleCI if asked', () => {
     applyAnswers(createConfig(), { circleci: true }, { ci });
     assert.isTrue(ci.circleci.calledOnce);
-    assert.isFalse(ci.appveyor.called || ci.travisci.called || ci.wercker.called);
+    assert.isFalse(
+      ci.appveyor.called || ci.travisci.called || ci.wercker.called,
+    );
   });
   it('updates Travis CI if asked', () => {
     applyAnswers(createConfig(), { travisci: true }, { ci });
     assert.isTrue(ci.travisci.calledOnce);
-    assert.isFalse(ci.appveyor.called || ci.circleci.called || ci.wercker.called);
+    assert.isFalse(
+      ci.appveyor.called || ci.circleci.called || ci.wercker.called,
+    );
   });
   it('updates Wercker if asked', () => {
     applyAnswers(createConfig(), { wercker: true }, { ci });
     assert.isTrue(ci.wercker.calledOnce);
-    assert.isFalse(ci.appveyor.called || ci.circleci.called || ci.travisci.called);
+    assert.isFalse(
+      ci.appveyor.called || ci.circleci.called || ci.travisci.called,
+    );
   });
   it('updates multiple CIs if asked', () => {
     applyAnswers(createConfig(), { wercker: true, circleci: true }, { ci });

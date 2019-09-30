@@ -4,14 +4,14 @@ const {
   _printClosingMessage: printClosingMessage,
 } = require('../../../lib/init');
 
-
 function print(s) {
   print.output += `${s}\n`;
 }
 
-
 describe('init._printClosingMessage()', () => {
-  beforeEach(() => { print.output = ''; });
+  beforeEach(() => {
+    print.output = '';
+  });
 
   it('mentions the config has been saved to dredd.yml', () => {
     printClosingMessage({ language: 'nodejs' }, print);

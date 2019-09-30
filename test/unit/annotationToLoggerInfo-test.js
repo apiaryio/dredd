@@ -2,7 +2,6 @@ const { assert } = require('chai');
 
 const annotationToLoggerInfo = require('../../lib/annotationToLoggerInfo');
 
-
 const PARSE_ANNOTATION_FIXTURE = {
   type: 'error',
   message: 'Ouch!',
@@ -14,9 +13,12 @@ const COMPILE_ANNOTATION_FIXTURE = {
   type: 'error',
   message: 'Ouch!',
   component: 'uriTemplateExpansion',
-  origin: { apiName: 'Broken API', resourceName: 'Things', actionName: 'Retrieve Things' },
+  origin: {
+    apiName: 'Broken API',
+    resourceName: 'Things',
+    actionName: 'Retrieve Things',
+  },
 };
-
 
 describe('annotationToLoggerInfo()', () => {
   describe('annotation.type', () => {
@@ -35,10 +37,14 @@ describe('annotationToLoggerInfo()', () => {
       assert.equal(loggerInfo.level, 'warn');
     });
     it('throws for invalid annotation type', () => {
-      assert.throws(() => annotationToLoggerInfo('apiary.apib', {
-        ...PARSE_ANNOTATION_FIXTURE,
-        type: 'gargamel',
-      }), 'gargamel');
+      assert.throws(
+        () =>
+          annotationToLoggerInfo('apiary.apib', {
+            ...PARSE_ANNOTATION_FIXTURE,
+            type: 'gargamel',
+          }),
+        'gargamel',
+      );
     });
     it('propagates the type to the message for parse annotation', () => {
       const loggerInfo = annotationToLoggerInfo('apiary.apib', {
@@ -69,14 +75,20 @@ describe('annotationToLoggerInfo()', () => {
         ...COMPILE_ANNOTATION_FIXTURE,
         component: 'parametersValidation',
       });
-      assert.match(loggerInfo.message, /^API description URI parameters validation error/);
+      assert.match(
+        loggerInfo.message,
+        /^API description URI parameters validation error/,
+      );
     });
     it('formats uriTemplateExpansion', () => {
       const loggerInfo = annotationToLoggerInfo('apiary.apib', {
         ...COMPILE_ANNOTATION_FIXTURE,
         component: 'uriTemplateExpansion',
       });
-      assert.match(loggerInfo.message, /^API description URI template expansion error/);
+      assert.match(
+        loggerInfo.message,
+        /^API description URI template expansion error/,
+      );
     });
     it('formats unexpected component with a generic name', () => {
       const loggerInfo = annotationToLoggerInfo('apiary.apib', {
@@ -95,7 +107,7 @@ describe('annotationToLoggerInfo()', () => {
       });
       assert.include(
         loggerInfo.message,
-        'error in apiary.apib (Broken API > Things > Retrieve Things): Ouch!'
+        'error in apiary.apib (Broken API > Things > Retrieve Things): Ouch!',
       );
     });
   });
@@ -108,7 +120,7 @@ describe('annotationToLoggerInfo()', () => {
       });
       assert.include(
         loggerInfo.message,
-        'error in apiary.apib:1 (from line 1 column 2 to line 3 column 4): Ouch!'
+        'error in apiary.apib:1 (from line 1 column 2 to line 3 column 4): Ouch!',
       );
     });
     it('formats location without end line if it is the same as the start line', () => {
@@ -118,7 +130,7 @@ describe('annotationToLoggerInfo()', () => {
       });
       assert.include(
         loggerInfo.message,
-        'error in apiary.apib:1 (from line 1 column 2 to column 4): Ouch!'
+        'error in apiary.apib:1 (from line 1 column 2 to column 4): Ouch!',
       );
     });
     it('formats location without range if the start and the end are the same', () => {
@@ -128,7 +140,7 @@ describe('annotationToLoggerInfo()', () => {
       });
       assert.include(
         loggerInfo.message,
-        'error in apiary.apib:1 (line 1 column 2): Ouch!'
+        'error in apiary.apib:1 (line 1 column 2): Ouch!',
       );
     });
     it('formats missing location', () => {
@@ -136,10 +148,7 @@ describe('annotationToLoggerInfo()', () => {
         ...PARSE_ANNOTATION_FIXTURE,
         location: null,
       });
-      assert.include(
-        loggerInfo.message,
-        'error in apiary.apib: Ouch!'
-      );
+      assert.include(loggerInfo.message, 'error in apiary.apib: Ouch!');
     });
   });
 });
