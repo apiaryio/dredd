@@ -1,22 +1,12 @@
 module.exports = {
-  extends: 'airbnb-base',
+  extends: ['airbnb-base', 'prettier'],
   env: {
-    'node': true
+    node: true
   },
   rules: {
     // Using 'console' is perfectly okay for a Node.js CLI tool and avoiding
     // it only brings unnecessary complexity
     'no-console': 'off',
-
-    // Node 6 does not support dangling commas in function arguments
-    'comma-dangle': [
-      'error',
-      {
-        'arrays': 'always-multiline',
-        'objects': 'always-multiline',
-        'functions': 'never'
-      }
-    ],
 
     // This is to allow a convention for exporting functions solely for
     // the purpose of the unit tests, see
