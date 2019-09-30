@@ -77,6 +77,13 @@ jobs:
       - pip-install-docs
       - run: npm run ci:lint
 
+  format-check:
+    docker: [<<: *node12]
+    steps:
+      - checkout
+      - npm-install
+      - run: npm run prettify:check
+
   docs-dry-run:
     # 'dry run', because production build happens directly on the ReadTheDocs
     # infrastructure
@@ -110,6 +117,7 @@ workflows:
   version: 2
   test-and-release:
     jobs:
+      - format-check
       - quality-checks
       - test-node12
       - test-node10
