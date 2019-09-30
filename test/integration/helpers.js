@@ -24,7 +24,8 @@ const DREDD_BIN = require.resolve('../../bin/dredd');
 // - logging (string) - the recorded logging output
 function recordLogging(fn, callback) {
   const loggerSilent = !!logger.transports.console.silent;
-  const reporterOutputLoggerSilent = !!reporterOutputLogger.transports.console.silent;
+  const reporterOutputLoggerSilent = !!reporterOutputLogger.transports.console
+    .silent;
 
   // Supress Dredd's console output (remove if debugging)
   logger.transports.console.silent = true;
@@ -67,10 +68,14 @@ function recordServerRequest(serverRuntimeInfo, req) {
 
   serverRuntimeInfo.lastRequest = recordedReq;
 
-  if (!serverRuntimeInfo.requests[req.url]) { serverRuntimeInfo.requests[req.url] = []; }
+  if (!serverRuntimeInfo.requests[req.url]) {
+    serverRuntimeInfo.requests[req.url] = [];
+  }
   serverRuntimeInfo.requests[req.url].push(recordedReq);
 
-  if (!serverRuntimeInfo.requestCounts[req.url]) { serverRuntimeInfo.requestCounts[req.url] = 0; }
+  if (!serverRuntimeInfo.requestCounts[req.url]) {
+    serverRuntimeInfo.requestCounts[req.url] = 0;
+  }
   serverRuntimeInfo.requestCounts[req.url] += 1;
 }
 
@@ -101,7 +106,8 @@ function getSSLCredentials() {
 //     - *endpointUrl*: 0 (number, default) - number of requests to the endpoint
 function createServer(options = {}) {
   const protocol = options.protocol || 'http';
-  const bodyParserInstance = options.bodyParser || bodyParser.json({ size: '5mb' });
+  const bodyParserInstance =
+    options.bodyParser || bodyParser.json({ size: '5mb' });
 
   const serverRuntimeInfo = {
     requestedOnce: false,
@@ -125,7 +131,9 @@ function createServer(options = {}) {
     res.type('json').status(200); // sensible defaults, can be overriden
     next();
   });
-  if (protocol === 'https') { app = https.createServer(getSSLCredentials(), app); }
+  if (protocol === 'https') {
+    app = https.createServer(getSSLCredentials(), app);
+  }
 
   // Monkey-patching the app.listen() function. The 'port' argument
   // is made optional, defaulting to the 'DEFAULT_SERVER_PORT' value.
@@ -133,8 +141,12 @@ function createServer(options = {}) {
   // runtime info about the server (what requests it got etc.).
   const originalListen = app.listen;
   app.listen = function listen(port, callback) {
-    if (typeof port === 'function') { [callback, port] = Array.from([port, DEFAULT_SERVER_PORT]); }
-    return originalListen.call(this, port, err => callback(err, serverRuntimeInfo));
+    if (typeof port === 'function') {
+      [callback, port] = Array.from([port, DEFAULT_SERVER_PORT]);
+    }
+    return originalListen.call(this, port, (err) =>
+      callback(err, serverRuntimeInfo),
+    );
   };
   return app;
 }
@@ -145,32 +157,52 @@ function createServer(options = {}) {
 // tests. Except of 'err' and 'logging' returns also 'stats' which is what the Dredd
 // instance returns as test results.
 function runDredd(dredd, serverPort, callback) {
-  if (typeof serverPort === 'function') { [callback, serverPort] = Array.from([serverPort, DEFAULT_SERVER_PORT]); }
-  if (dredd.configuration.endpoint == null) { dredd.configuration.endpoint = `http://127.0.0.1:${serverPort}`; }
+  if (typeof serverPort === 'function') {
+    [callback, serverPort] = Array.from([serverPort, DEFAULT_SERVER_PORT]);
+  }
+  if (dredd.configuration.endpoint == null) {
+    dredd.configuration.endpoint = `http://127.0.0.1:${serverPort}`;
+  }
 
-  if (dredd.configuration.options == null) { dredd.configuration.options = {}; }
-  if (dredd.configuration.options.loglevel == null) { dredd.configuration.options.loglevel = 'debug'; }
+  if (dredd.configuration.options == null) {
+    dredd.configuration.options = {};
+  }
+  if (dredd.configuration.options.loglevel == null) {
+    dredd.configuration.options.loglevel = 'debug';
+  }
 
   let stats;
 
-  recordLogging(next => dredd.run(next),
+  recordLogging(
+    (next) => dredd.run(next),
     (err, args, logging) => {
-      if (err) { return callback(err); }
+      if (err) {
+        return callback(err);
+      }
 
       [err, stats] = Array.from(args);
       callback(null, { err, stats, logging });
-    });
+    },
+  );
 }
 
 // Runs given Express.js server instance and then runs given Dredd class instance.
 // Collects their runtime information and provides it to the callback.
 function runDreddWithServer(dredd, app, serverPort, callback) {
-  if (typeof serverPort === 'function') { [callback, serverPort] = Array.from([serverPort, DEFAULT_SERVER_PORT]); }
+  if (typeof serverPort === 'function') {
+    [callback, serverPort] = Array.from([serverPort, DEFAULT_SERVER_PORT]);
+  }
 
   const server = app.listen(serverPort, (err, serverRuntimeInfo) => {
-    if (err) { return callback(err); }
+    if (err) {
+      return callback(err);
+    }
 
-    runDredd(dredd, serverPort, (error, dreddRuntimeInfo) => server.close(() => callback(error, { server: serverRuntimeInfo, dredd: dreddRuntimeInfo })));
+    runDredd(dredd, serverPort, (error, dreddRuntimeInfo) =>
+      server.close(() =>
+        callback(error, { server: serverRuntimeInfo, dredd: dreddRuntimeInfo }),
+      ),
+    );
   });
 }
 
@@ -178,7 +210,9 @@ function runDreddWithServer(dredd, app, serverPort, callback) {
 // and also 'output', which is the two combined. Also provides 'exitStatus'
 // of the process.
 function runCommand(command, args, spawnOptions = {}, callback) {
-  if (typeof spawnOptions === 'function') { [callback, spawnOptions] = Array.from([spawnOptions, undefined]); }
+  if (typeof spawnOptions === 'function') {
+    [callback, spawnOptions] = Array.from([spawnOptions, undefined]);
+  }
 
   let stdout = '';
   let stderr = '';
@@ -195,29 +229,45 @@ function runCommand(command, args, spawnOptions = {}, callback) {
     output += data;
   });
 
-  cli.on('exit', exitStatus => callback(null, {
-    stdout, stderr, output, exitStatus,
-  }));
+  cli.on('exit', (exitStatus) =>
+    callback(null, {
+      stdout,
+      stderr,
+      output,
+      exitStatus,
+    }),
+  );
 }
 
 // Runs Dredd as a CLI command, with given arguments.
-const runCLI = (args, spawnOptions, callback) => runCommand('node', [DREDD_BIN].concat(args), spawnOptions, callback);
+const runCLI = (args, spawnOptions, callback) =>
+  runCommand('node', [DREDD_BIN].concat(args), spawnOptions, callback);
 
 // Runs given Express.js server instance and then runs Dredd command with given
 // arguments. Collects their runtime information and provides it to the callback.
 function runCLIWithServer(args, app, serverPort, callback) {
-  if (typeof serverPort === 'function') { [callback, serverPort] = Array.from([serverPort, DEFAULT_SERVER_PORT]); }
+  if (typeof serverPort === 'function') {
+    [callback, serverPort] = Array.from([serverPort, DEFAULT_SERVER_PORT]);
+  }
 
   const server = app.listen(serverPort, (err, serverRuntimeInfo) => {
-    if (err) { return callback(err); }
+    if (err) {
+      return callback(err);
+    }
 
-    runCLI(args, (error, cliInfo) => server.close(() => callback(error, { server: serverRuntimeInfo, dredd: cliInfo })));
+    runCLI(args, (error, cliInfo) =>
+      server.close(() =>
+        callback(error, { server: serverRuntimeInfo, dredd: cliInfo }),
+      ),
+    );
   });
 }
 
 // Checks whether there's a process with name matching given pattern.
 function isProcessRunning(pattern, callback) {
-  return ps.lookup({ arguments: pattern }, (err, processList) => callback(err, !!(processList ? processList.length : undefined)));
+  return ps.lookup({ arguments: pattern }, (err, processList) =>
+    callback(err, !!(processList ? processList.length : undefined)),
+  );
 }
 
 // Kills process with given PID if the process exists. Otherwise
@@ -230,20 +280,24 @@ function kill(pid, callback) {
   }
   try {
     process.kill(pid, 'SIGKILL');
-  } catch (error) { }
+  } catch (error) {}
   // If the PID doesn't exist, process.kill() throws - we do not care
   process.nextTick(callback);
 }
-
 
 // Kills processes which have names matching given pattern. Does
 // nothing if there are no matching processes.
 function killAll(pattern, callback) {
   return ps.lookup({ arguments: pattern }, (err, processList) => {
-    if (err || !processList.length) { return callback(err); }
+    if (err || !processList.length) {
+      return callback(err);
+    }
 
-    async.each(processList, (processListItem, next) => kill(processListItem.pid, next),
-      callback);
+    async.each(
+      processList,
+      (processListItem, next) => kill(processListItem.pid, next),
+      callback,
+    );
   });
 }
 

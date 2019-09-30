@@ -2,11 +2,9 @@ const { assert } = require('chai');
 
 const { _updateAppVeyor: updateAppVeyor } = require('../../../lib/init');
 
-
 function createOptions(contents) {
   return { editYaml: (file, update) => update(contents) };
 }
-
 
 describe('init._updateAppVeyor()', () => {
   it('is able to create a new config file', () => {

@@ -1,20 +1,24 @@
 const clone = require('clone');
 const { assert } = require('chai');
 
-const { runCLIWithServer, createServer, DEFAULT_SERVER_PORT } = require('../helpers');
-
+const {
+  runCLIWithServer,
+  createServer,
+  DEFAULT_SERVER_PORT,
+} = require('../helpers');
 
 // Helper, tries to parse given HTTP body and in case it can be parsed as JSON,
 // it returns the resulting JS object, otherwise it returns whatever came in.
 function parseIfJson(body) {
-  if (!body) { return undefined; }
+  if (!body) {
+    return undefined;
+  }
   try {
     return JSON.parse(body);
   } catch (error) {
     return body;
   }
 }
-
 
 // This can be removed once https://github.com/apiaryio/dredd/issues/341 is done
 function parseDreddStdout(stdout) {
@@ -41,7 +45,7 @@ function parseDreddStdout(stdout) {
   // body: At '/shoeSize' Invalid type: string (expected number)
   entries = entries.filter((item, i) => {
     const previousEntry = entries[i - 1];
-    if ((item.label === 'body') && (previousEntry.label === 'fail')) {
+    if (item.label === 'body' && previousEntry.label === 'fail') {
       previousEntry.body += `\n${item.body}`;
       return false;
     }
@@ -50,15 +54,27 @@ function parseDreddStdout(stdout) {
 
   // Re-arrange data from entries
   const results = {
-    summary: '', failures: [], bodies: [], schemas: [],
+    summary: '',
+    failures: [],
+    bodies: [],
+    schemas: [],
   };
   for (entry of entries) {
     switch (entry.label) {
-      case 'body': results.bodies.push(parseIfJson(entry.body)); break;
-      case 'bodySchema': results.schemas.push(parseIfJson(entry.body)); break;
-      case 'complete': results.summary = entry.body; break;
-      case 'fail': results.failures.push(entry.body); break;
-      default: continue;
+      case 'body':
+        results.bodies.push(parseIfJson(entry.body));
+        break;
+      case 'bodySchema':
+        results.schemas.push(parseIfJson(entry.body));
+        break;
+      case 'complete':
+        results.summary = entry.body;
+        break;
+      case 'fail':
+        results.failures.push(entry.body);
+        break;
+      default:
+        continue;
     }
   }
   return results;
@@ -95,10 +111,7 @@ describe('Regression: Issues #319 and #354', () => {
             type: 'object',
             properties: {
               city: {
-                anyOf: [
-                  { type: 'null' },
-                  { type: 'string' },
-                ],
+                anyOf: [{ type: 'null' }, { type: 'string' }],
               },
               street: { type: 'string' },
             },
@@ -130,10 +143,7 @@ describe('Regression: Issues #319 and #354', () => {
         type: 'object',
         properties: {
           city: {
-            anyOf: [
-              { type: 'null' },
-              { type: 'string' },
-            ],
+            anyOf: [{ type: 'null' }, { type: 'string' }],
           },
           street: { type: 'string' },
         },
@@ -141,9 +151,7 @@ describe('Regression: Issues #319 and #354', () => {
     },
   };
 
-  const userArrayPayload = [
-    userPayload,
-  ];
+  const userArrayPayload = [userPayload];
 
   const userArraySchema = {
     $schema: 'http://json-schema.org/draft-04/schema#',
@@ -169,7 +177,9 @@ describe('Regression: Issues #319 and #354', () => {
         '--no-color',
       ];
       runCLIWithServer(args, app, (err, info) => {
-        if (info) { results = parseDreddStdout(info.dredd.stdout); }
+        if (info) {
+          results = parseDreddStdout(info.dredd.stdout);
+        }
         done(err);
       });
     });
@@ -178,35 +188,51 @@ describe('Regression: Issues #319 and #354', () => {
       // Intentionally not testing just '.length' as this approach will output the difference
       assert.deepEqual(results.failures, []);
     });
-    it('results in exactly four tests', () => assert.include(results.summary, '4 total'));
-    it('results in four passing tests', () => assert.include(results.summary, '4 passing'));
+    it('results in exactly four tests', () =>
+      assert.include(results.summary, '4 total'));
+    it('results in four passing tests', () =>
+      assert.include(results.summary, '4 passing'));
 
     describe('Attributes defined in resource are referenced from payload [GET /bricks/XYZ42]', () => {
       it('has no request body', () => assert.isUndefined(results.bodies[0]));
-      it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[1], brickTypePayload));
-      it('has correct ‘actual’ response body', () => assert.deepEqual(results.bodies[2], brickTypePayload));
-      it('has correct schema', () => assert.deepEqual(results.schemas[0], brickTypeSchema));
+      it('has correct ‘expected’ response body', () =>
+        assert.deepEqual(results.bodies[1], brickTypePayload));
+      it('has correct ‘actual’ response body', () =>
+        assert.deepEqual(results.bodies[2], brickTypePayload));
+      it('has correct schema', () =>
+        assert.deepEqual(results.schemas[0], brickTypeSchema));
     });
 
     describe('Attributes defined in resource are referenced from action [POST /bricks]', () => {
-      it('has correct request body', () => assert.deepEqual(results.bodies[3], brickTypePayload));
-      it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[4], brickTypePayload));
-      it('has correct ‘actual’ response body', () => assert.deepEqual(results.bodies[5], brickTypePayload));
-      it('has correct schema', () => assert.deepEqual(results.schemas[1], brickTypeSchema));
+      it('has correct request body', () =>
+        assert.deepEqual(results.bodies[3], brickTypePayload));
+      it('has correct ‘expected’ response body', () =>
+        assert.deepEqual(results.bodies[4], brickTypePayload));
+      it('has correct ‘actual’ response body', () =>
+        assert.deepEqual(results.bodies[5], brickTypePayload));
+      it('has correct schema', () =>
+        assert.deepEqual(results.schemas[1], brickTypeSchema));
     });
 
     describe('Attributes defined as data structure are referenced from payload [GET /customers]', () => {
       it('has no request body', () => assert.isUndefined(results.bodies[6]));
-      it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[7], userArrayPayload));
-      it('has correct ‘actual’ response body', () => assert.deepEqual(results.bodies[8], userArrayPayload));
-      it('has correct schema', () => assert.deepEqual(results.schemas[2], userArraySchema));
+      it('has correct ‘expected’ response body', () =>
+        assert.deepEqual(results.bodies[7], userArrayPayload));
+      it('has correct ‘actual’ response body', () =>
+        assert.deepEqual(results.bodies[8], userArrayPayload));
+      it('has correct schema', () =>
+        assert.deepEqual(results.schemas[2], userArraySchema));
     });
 
     describe('Attributes defined as data structure are referenced from action [POST /customers]', () => {
-      it('has correct request body', () => assert.deepEqual(results.bodies[9], userPayload));
-      it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[10], userPayload));
-      it('has correct ‘actual’ response body', () => assert.deepEqual(results.bodies[11], userPayload));
-      it('has correct schema', () => assert.deepEqual(results.schemas[3], userSchema));
+      it('has correct request body', () =>
+        assert.deepEqual(results.bodies[9], userPayload));
+      it('has correct ‘expected’ response body', () =>
+        assert.deepEqual(results.bodies[10], userPayload));
+      it('has correct ‘actual’ response body', () =>
+        assert.deepEqual(results.bodies[11], userPayload));
+      it('has correct schema', () =>
+        assert.deepEqual(results.schemas[3], userSchema));
     });
   });
 
@@ -228,7 +254,9 @@ describe('Regression: Issues #319 and #354', () => {
       const app = createServer();
 
       // Attaching endpoint for each testing scenario
-      app.get('/bricks/XYZ42', (req, res) => res.json(incorrectBrickTypePayload));
+      app.get('/bricks/XYZ42', (req, res) =>
+        res.json(incorrectBrickTypePayload),
+      );
       app.post('/bricks', (req, res) => res.json(incorrectBrickTypePayload));
       app.get('/customers', (req, res) => res.json(incorrectUserArrayPayload));
       app.post('/customers', (req, res) => res.json(incorrectUserPayload));
@@ -242,14 +270,18 @@ describe('Regression: Issues #319 and #354', () => {
         '--no-color',
       ];
       runCLIWithServer(args, app, (err, info) => {
-        if (info) { results = parseDreddStdout(info.dredd.stdout); }
+        if (info) {
+          results = parseDreddStdout(info.dredd.stdout);
+        }
         done(err);
       });
     });
 
     it('outputs failures', () => assert.isOk(results.failures.length));
-    it('results in exactly four tests', () => assert.include(results.summary, '4 total'));
-    it('results in four failing tests', () => assert.include(results.summary, '4 failing'));
+    it('results in exactly four tests', () =>
+      assert.include(results.summary, '4 total'));
+    it('results in four failing tests', () =>
+      assert.include(results.summary, '4 failing'));
 
     describe('Attributes defined in resource are referenced from payload [GET /bricks/XYZ42]', () => {
       it('fails on missing required property and invalid type', () => {
@@ -258,9 +290,12 @@ describe('Regression: Issues #319 and #354', () => {
         assert.include(results.failures[1], 'Invalid type: number');
       });
       it('has no request body', () => assert.isUndefined(results.bodies[0]));
-      it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[1], brickTypePayload));
-      it('has incorrect ‘actual’ response body', () => assert.deepEqual(results.bodies[2], incorrectBrickTypePayload));
-      it('has correct schema', () => assert.deepEqual(results.schemas[0], brickTypeSchema));
+      it('has correct ‘expected’ response body', () =>
+        assert.deepEqual(results.bodies[1], brickTypePayload));
+      it('has incorrect ‘actual’ response body', () =>
+        assert.deepEqual(results.bodies[2], incorrectBrickTypePayload));
+      it('has correct schema', () =>
+        assert.deepEqual(results.schemas[0], brickTypeSchema));
     });
 
     describe('Attributes defined in resource are referenced from action [POST /bricks]', () => {
@@ -269,10 +304,14 @@ describe('Regression: Issues #319 and #354', () => {
         assert.include(results.failures[3], 'Missing required property: name');
         assert.include(results.failures[3], 'Invalid type: number');
       });
-      it('has correct request body', () => assert.deepEqual(results.bodies[3], brickTypePayload));
-      it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[4], brickTypePayload));
-      it('has incorrect ‘actual’ response body', () => assert.deepEqual(results.bodies[5], incorrectBrickTypePayload));
-      it('has correct schema', () => assert.deepEqual(results.schemas[1], brickTypeSchema));
+      it('has correct request body', () =>
+        assert.deepEqual(results.bodies[3], brickTypePayload));
+      it('has correct ‘expected’ response body', () =>
+        assert.deepEqual(results.bodies[4], brickTypePayload));
+      it('has incorrect ‘actual’ response body', () =>
+        assert.deepEqual(results.bodies[5], incorrectBrickTypePayload));
+      it('has correct schema', () =>
+        assert.deepEqual(results.schemas[1], brickTypeSchema));
     });
 
     describe('Attributes defined as data structure are referenced from payload [GET /customers]', () => {
@@ -281,9 +320,12 @@ describe('Regression: Issues #319 and #354', () => {
         assert.include(results.failures[5], 'Invalid type: object');
       });
       it('has no request body', () => assert.isUndefined(results.bodies[6]));
-      it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[7], userArrayPayload));
-      it('has incorrect ‘actual’ response body', () => assert.deepEqual(results.bodies[8], incorrectUserArrayPayload));
-      it('has correct schema', () => assert.deepEqual(results.schemas[2], userArraySchema));
+      it('has correct ‘expected’ response body', () =>
+        assert.deepEqual(results.bodies[7], userArrayPayload));
+      it('has incorrect ‘actual’ response body', () =>
+        assert.deepEqual(results.bodies[8], incorrectUserArrayPayload));
+      it('has correct schema', () =>
+        assert.deepEqual(results.schemas[2], userArraySchema));
     });
 
     describe('Attributes defined as data structure are referenced from action [POST /customers]', () => {
@@ -292,10 +334,14 @@ describe('Regression: Issues #319 and #354', () => {
         assert.include(results.failures[7], 'Invalid type: null');
         assert.include(results.failures[7], 'Invalid type: string');
       });
-      it('has correct request body', () => assert.deepEqual(results.bodies[9], userPayload));
-      it('has correct ‘expected’ response body', () => assert.deepEqual(results.bodies[10], userPayload));
-      it('has incorrect ‘actual’ response body', () => assert.deepEqual(results.bodies[11], incorrectUserPayload));
-      it('has correct schema', () => assert.deepEqual(results.schemas[3], userSchema));
+      it('has correct request body', () =>
+        assert.deepEqual(results.bodies[9], userPayload));
+      it('has correct ‘expected’ response body', () =>
+        assert.deepEqual(results.bodies[10], userPayload));
+      it('has incorrect ‘actual’ response body', () =>
+        assert.deepEqual(results.bodies[11], incorrectUserPayload));
+      it('has correct schema', () =>
+        assert.deepEqual(results.schemas[3], userSchema));
     });
   });
 });

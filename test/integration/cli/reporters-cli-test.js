@@ -12,15 +12,16 @@ describe('CLI - Reporters', () => {
   before((done) => {
     const app = createServer();
 
-    app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
+    app.get('/machines', (req, res) =>
+      res.json([{ type: 'bulldozer', name: 'willy' }]),
+    );
 
     server = app.listen((err) => {
       done(err);
     });
   });
 
-  after(done => server.close(done));
-
+  after((done) => server.close(done));
 
   describe('when -r/--reporter is provided to use additional reporters', () => {
     let cliInfo;
@@ -42,7 +43,6 @@ describe('CLI - Reporters', () => {
       assert.include(cliInfo.stdout, '/\\_/\\');
     });
   });
-
 
   describe('when apiary reporter is used', () => {
     let apiary;
@@ -70,7 +70,7 @@ describe('CLI - Reporters', () => {
       });
     });
 
-    after(done => apiary.close(done));
+    after((done) => apiary.close(done));
 
     describe('when Dredd successfully performs requests to Apiary', () => {
       let cliInfo;
@@ -85,14 +85,23 @@ describe('CLI - Reporters', () => {
         apiaryRuntimeInfo.reset();
         runCLI(args, { env }, (err, info) => {
           cliInfo = info;
-          stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
+          stepRequest =
+            apiaryRuntimeInfo.requests[
+              '/apis/public/tests/steps?testRunId=1234_id'
+            ][0];
           done(err);
         });
       });
 
-      it('should print URL of the test report', () => assert.include(cliInfo.stdout, 'http://example.com/test/run/1234_id'));
-      it('should print warning about missing Apiary API settings', () => assert.include(cliInfo.stdout, 'Apiary API Key or API Project Subdomain were not provided.'));
-      it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
+      it('should print URL of the test report', () =>
+        assert.include(cliInfo.stdout, 'http://example.com/test/run/1234_id'));
+      it('should print warning about missing Apiary API settings', () =>
+        assert.include(
+          cliInfo.stdout,
+          'Apiary API Key or API Project Subdomain were not provided.',
+        ));
+      it('should exit with status 0', () =>
+        assert.equal(cliInfo.exitStatus, 0));
       it('should perform 3 requests to Apiary', () => {
         assert.deepEqual(apiaryRuntimeInfo.requestCounts, {
           '/apis/public/tests/runs': 1,
@@ -105,9 +114,18 @@ describe('CLI - Reporters', () => {
         assert.nestedProperty(stepRequest.body, 'results.request');
         assert.nestedProperty(stepRequest.body, 'results.realResponse');
         assert.nestedProperty(stepRequest.body, 'results.expectedResponse');
-        assert.nestedProperty(stepRequest.body, 'results.validationResult.fields.body');
-        assert.nestedProperty(stepRequest.body, 'results.validationResult.fields.headers');
-        assert.nestedProperty(stepRequest.body, 'results.validationResult.fields.statusCode');
+        assert.nestedProperty(
+          stepRequest.body,
+          'results.validationResult.fields.body',
+        );
+        assert.nestedProperty(
+          stepRequest.body,
+          'results.validationResult.fields.headers',
+        );
+        assert.nestedProperty(
+          stepRequest.body,
+          'results.validationResult.fields.statusCode',
+        );
       });
     });
 
@@ -127,8 +145,12 @@ describe('CLI - Reporters', () => {
         apiaryRuntimeInfo.reset();
         runCLI(args, { env }, (err, info) => {
           cliInfo = info;
-          updateRequest = apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0];
-          stepRequest = apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0];
+          updateRequest =
+            apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0];
+          stepRequest =
+            apiaryRuntimeInfo.requests[
+              '/apis/public/tests/steps?testRunId=1234_id'
+            ][0];
           return done(err);
         });
       });
@@ -136,20 +158,45 @@ describe('CLI - Reporters', () => {
       it('hooks.log should print also to console', () => {
         assert.include(cliInfo.output, 'using hooks.log to debug');
       });
-      it('hooks.log should use toString on objects', () => assert.include(cliInfo.output, 'Error object!'));
-      it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0));
+      it('hooks.log should use toString on objects', () =>
+        assert.include(cliInfo.output, 'Error object!'));
+      it('should exit with status 0', () =>
+        assert.equal(cliInfo.exitStatus, 0));
 
       it('should request Apiary API to start a test run', () => {
-        assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/runs'], 1);
-        assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/runs'][0].method, 'POST');
+        assert.equal(
+          apiaryRuntimeInfo.requestCounts['/apis/public/tests/runs'],
+          1,
+        );
+        assert.equal(
+          apiaryRuntimeInfo.requests['/apis/public/tests/runs'][0].method,
+          'POST',
+        );
       });
       it('should request Apiary API to create a test step', () => {
-        assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/steps?testRunId=1234_id'], 1);
-        assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/steps?testRunId=1234_id'][0].method, 'POST');
+        assert.equal(
+          apiaryRuntimeInfo.requestCounts[
+            '/apis/public/tests/steps?testRunId=1234_id'
+          ],
+          1,
+        );
+        assert.equal(
+          apiaryRuntimeInfo.requests[
+            '/apis/public/tests/steps?testRunId=1234_id'
+          ][0].method,
+          'POST',
+        );
       });
       it('should request Apiary API to update the test run', () => {
-        assert.equal(apiaryRuntimeInfo.requestCounts['/apis/public/tests/run/1234_id'], 1);
-        assert.equal(apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0].method, 'PATCH');
+        assert.equal(
+          apiaryRuntimeInfo.requestCounts['/apis/public/tests/run/1234_id'],
+          1,
+        );
+        assert.equal(
+          apiaryRuntimeInfo.requests['/apis/public/tests/run/1234_id'][0]
+            .method,
+          'PATCH',
+        );
       });
 
       context('the update request', () => {
@@ -163,9 +210,17 @@ describe('CLI - Reporters', () => {
           assert.property(updateRequest.body.logs[0], 'timestamp');
           assert.include(updateRequest.body.logs[0].content, 'Error object!');
           assert.property(updateRequest.body.logs[1], 'timestamp');
-          assert.nestedPropertyVal(updateRequest.body.logs[1], 'content', 'true');
+          assert.nestedPropertyVal(
+            updateRequest.body.logs[1],
+            'content',
+            'true',
+          );
           assert.property(updateRequest.body.logs[2], 'timestamp');
-          assert.nestedPropertyVal(updateRequest.body.logs[2], 'content', 'using hooks.log to debug');
+          assert.nestedPropertyVal(
+            updateRequest.body.logs[2],
+            'content',
+            'using hooks.log to debug',
+          );
           assert.nestedProperty(updateRequest.body, 'result.tests');
           assert.nestedProperty(updateRequest.body, 'result.failures');
           assert.nestedProperty(updateRequest.body, 'result.errors');
@@ -173,16 +228,28 @@ describe('CLI - Reporters', () => {
           assert.nestedProperty(updateRequest.body, 'result.start');
           assert.nestedProperty(updateRequest.body, 'result.end');
         });
-        it('should have startedAt larger than \'before\' hook log timestamp', () => {
+        it("should have startedAt larger than 'before' hook log timestamp", () => {
           assert.isObject(stepRequest.body);
           assert.isNumber(stepRequest.body.startedAt);
-          assert.operator(stepRequest.body.startedAt, '>=', updateRequest.body.logs[0].timestamp);
-          assert.operator(stepRequest.body.startedAt, '>=', updateRequest.body.logs[1].timestamp);
+          assert.operator(
+            stepRequest.body.startedAt,
+            '>=',
+            updateRequest.body.logs[0].timestamp,
+          );
+          assert.operator(
+            stepRequest.body.startedAt,
+            '>=',
+            updateRequest.body.logs[1].timestamp,
+          );
         });
-        it('should have startedAt smaller than \'after\' hook log timestamp', () => {
+        it("should have startedAt smaller than 'after' hook log timestamp", () => {
           assert.isObject(stepRequest.body);
           assert.isNumber(stepRequest.body.startedAt);
-          assert.operator(stepRequest.body.startedAt, '<=', updateRequest.body.logs[2].timestamp);
+          assert.operator(
+            stepRequest.body.startedAt,
+            '<=',
+            updateRequest.body.logs[2].timestamp,
+          );
         });
       });
     });
@@ -196,13 +263,16 @@ describe('CLI - Reporters', () => {
       '--output=__test_file_output__.xml',
     ];
 
-    before(done => runCLI(args, (err) => {
-      done(err);
-    }));
+    before((done) =>
+      runCLI(args, (err) => {
+        done(err);
+      }),
+    );
 
     after(() => fs.unlinkSync(`${process.cwd()}/__test_file_output__.xml`));
 
-    it('should create given file', () => assert.isOk(fs.existsSync(`${process.cwd()}/__test_file_output__.xml`)));
+    it('should create given file', () =>
+      assert.isOk(fs.existsSync(`${process.cwd()}/__test_file_output__.xml`)));
   });
 
   describe('when -o/--output is used multiple times to specify output files', () => {
@@ -215,9 +285,11 @@ describe('CLI - Reporters', () => {
       '--output=__test_file_output2__.xml',
     ];
 
-    before(done => runCLI(args, (err) => {
-      done(err);
-    }));
+    before((done) =>
+      runCLI(args, (err) => {
+        done(err);
+      }),
+    );
 
     after(() => {
       fs.unlinkSync(`${process.cwd()}/__test_file_output1__.xml`);
@@ -240,7 +312,9 @@ describe('CLI - Reporters', () => {
 
     before((done) => {
       try {
-        fs.unlinkSync(`${process.cwd()}/__test_directory/__test_file_output__.xml`);
+        fs.unlinkSync(
+          `${process.cwd()}/__test_directory/__test_file_output__.xml`,
+        );
       } catch (error) {
         // Do nothing
       }
@@ -251,14 +325,21 @@ describe('CLI - Reporters', () => {
     });
 
     after(() => {
-      fs.unlinkSync(`${process.cwd()}/__test_directory/__test_file_output__.xml`);
+      fs.unlinkSync(
+        `${process.cwd()}/__test_directory/__test_file_output__.xml`,
+      );
       fs.rmdirSync(`${process.cwd()}/__test_directory`);
     });
 
-    it('should create given file', () => assert.isOk(fs.existsSync(`${process.cwd()}/__test_directory/__test_file_output__.xml`)));
+    it('should create given file', () =>
+      assert.isOk(
+        fs.existsSync(
+          `${process.cwd()}/__test_directory/__test_file_output__.xml`,
+        ),
+      ));
   });
 
-  describe('when the \'apiary\' reporter fails', () => {
+  describe("when the 'apiary' reporter fails", () => {
     let apiaryApiUrl;
     let cliInfo;
     const args = [
@@ -278,9 +359,15 @@ describe('CLI - Reporters', () => {
         done(err);
       });
     });
-    after(() => { process.env.APIARY_API_URL = apiaryApiUrl; });
+    after(() => {
+      process.env.APIARY_API_URL = apiaryApiUrl;
+    });
 
     it('ends successfully', () => assert.equal(cliInfo.exitStatus, 0));
-    it('prints error about Apiary API connection issues', () => assert.include(cliInfo.stderr, 'Apiary reporter could not connect to Apiary API'));
+    it('prints error about Apiary API connection issues', () =>
+      assert.include(
+        cliInfo.stderr,
+        'Apiary reporter could not connect to Apiary API',
+      ));
   });
 });

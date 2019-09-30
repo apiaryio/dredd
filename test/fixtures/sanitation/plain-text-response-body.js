@@ -3,7 +3,7 @@ const hooks = require('hooks');
 const tokenPattern = /([0-9]|[a-f]){24,}/g;
 
 hooks.after('Resource > Update Resource', (transaction, done) => {
-  const replaceToken = body => body.replace(tokenPattern, '--- CENSORED ---');
+  const replaceToken = (body) => body.replace(tokenPattern, '--- CENSORED ---');
 
   // Remove sensitive data from Dredd transaction
   transaction.test.actual.body = replaceToken(transaction.test.actual.body);

@@ -2,7 +2,6 @@ const { assert } = require('chai');
 
 const isURL = require('../../lib/isURL');
 
-
 describe('isURL()', () => {
   it('recognizes HTTP URL', () => {
     assert.isTrue(isURL('http://example.com'));

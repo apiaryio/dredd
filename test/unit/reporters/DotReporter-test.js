@@ -17,9 +17,13 @@ describe('DotReporter', () => {
   let emitter;
   let dotReporter;
 
-  before(() => { loggerStub.transports.console.silent = true; });
+  before(() => {
+    loggerStub.transports.console.silent = true;
+  });
 
-  after(() => { loggerStub.transports.console.silent = false; });
+  after(() => {
+    loggerStub.transports.console.silent = false;
+  });
 
   beforeEach(() => {
     stats = {
@@ -41,7 +45,8 @@ describe('DotReporter', () => {
 
     afterEach(() => loggerStub.debug.restore());
 
-    it('should log that testing has begun', () => emitter.emit('start', '', () => assert.isOk(loggerStub.debug.called)));
+    it('should log that testing has begun', () =>
+      emitter.emit('start', '', () => assert.isOk(loggerStub.debug.called)));
   });
 
   describe('when ending', () => {
@@ -56,7 +61,10 @@ describe('DotReporter', () => {
       dotReporter.write.restore();
     });
 
-    it('should log that testing is complete', () => emitter.emit('end', () => assert.isOk(reporterOutputLoggerStub.complete.calledTwice)));
+    it('should log that testing is complete', () =>
+      emitter.emit('end', () =>
+        assert.isOk(reporterOutputLoggerStub.complete.calledTwice),
+      ));
 
     describe('when there are failures', () => {
       before(() => {
@@ -75,10 +83,11 @@ describe('DotReporter', () => {
 
       afterEach(() => reporterOutputLoggerStub.fail.restore());
 
-      it('should log the failures at the end of testing', done => emitter.emit('end', () => {
-        assert.isOk(reporterOutputLoggerStub.fail.called);
-        done();
-      }));
+      it('should log the failures at the end of testing', (done) =>
+        emitter.emit('end', () => {
+          assert.isOk(reporterOutputLoggerStub.fail.called);
+          done();
+        }));
     });
   });
 
@@ -98,7 +107,8 @@ describe('DotReporter', () => {
 
     after(() => dotReporter.write.restore());
 
-    it('should write a .', () => assert.isOk(dotReporter.write.calledWith('.')));
+    it('should write a .', () =>
+      assert.isOk(dotReporter.write.calledWith('.')));
   });
 
   describe('when test is skipped', () => {
@@ -117,7 +127,8 @@ describe('DotReporter', () => {
 
     after(() => dotReporter.write.restore());
 
-    it('should write a -', () => assert.isOk(dotReporter.write.calledWith('-')));
+    it('should write a -', () =>
+      assert.isOk(dotReporter.write.calledWith('-')));
   });
 
   describe('when test fails', () => {
@@ -136,7 +147,8 @@ describe('DotReporter', () => {
 
     after(() => dotReporter.write.restore());
 
-    it('should write an F', () => assert.isOk(dotReporter.write.calledWith('F')));
+    it('should write an F', () =>
+      assert.isOk(dotReporter.write.calledWith('F')));
   });
 
   describe('when test errors', () => {
@@ -155,6 +167,7 @@ describe('DotReporter', () => {
 
     after(() => dotReporter.write.restore());
 
-    it('should write an E', () => assert.isOk(dotReporter.write.calledWith('E')));
+    it('should write an E', () =>
+      assert.isOk(dotReporter.write.calledWith('E')));
   });
 });

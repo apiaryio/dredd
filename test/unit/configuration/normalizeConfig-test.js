@@ -23,7 +23,15 @@ describe('normalizeConfig()', () => {
         sandbox: true,
       });
 
-      ['q', 'silent', 't', 'timestamp', 'blueprintPath', 'b', 'sandbox'].forEach((optionName) => {
+      [
+        'q',
+        'silent',
+        't',
+        'timestamp',
+        'blueprintPath',
+        'b',
+        'sandbox',
+      ].forEach((optionName) => {
         it(`removes "${optionName}"`, () => {
           assert.notProperty(result, optionName);
         });
@@ -126,37 +134,77 @@ describe('normalizeConfig()', () => {
     describe('level', () => {
       describe('coerces to "debug"', () => {
         it('when given "silly"', () => {
-          assert.propertyVal(coerceDeprecatedLevelOption({ l: 'silly' }), 'loglevel', 'debug');
+          assert.propertyVal(
+            coerceDeprecatedLevelOption({ l: 'silly' }),
+            'loglevel',
+            'debug',
+          );
         });
 
         it('when given "verbose"', () => {
-          assert.propertyVal(coerceDeprecatedLevelOption({ l: 'verbose' }), 'loglevel', 'debug');
+          assert.propertyVal(
+            coerceDeprecatedLevelOption({ l: 'verbose' }),
+            'loglevel',
+            'debug',
+          );
         });
 
         it('when given "debug"', () => {
-          assert.propertyVal(coerceDeprecatedLevelOption({ l: 'debug' }), 'loglevel', 'debug');
+          assert.propertyVal(
+            coerceDeprecatedLevelOption({ l: 'debug' }),
+            'loglevel',
+            'debug',
+          );
         });
       });
 
       describe('coerces to "error"', () => {
         it('when given "error"', () => {
-          assert.propertyVal(coerceDeprecatedLevelOption({ l: 'error' }), 'loglevel', 'error');
+          assert.propertyVal(
+            coerceDeprecatedLevelOption({ l: 'error' }),
+            'loglevel',
+            'error',
+          );
         });
       });
 
       describe('coerces to "silent"', () => {
         it('when given "silent"', () => {
-          assert.propertyVal(coerceDeprecatedLevelOption({ l: 'silent' }), 'loglevel', 'silent');
+          assert.propertyVal(
+            coerceDeprecatedLevelOption({ l: 'silent' }),
+            'loglevel',
+            'silent',
+          );
         });
       });
 
       describe('coerces to "warn"', () => {
         it('when given falsy value', () => {
-          assert.propertyVal(coerceDeprecatedLevelOption({ l: 'warn' }), 'loglevel', 'warn');
-          assert.propertyVal(coerceDeprecatedLevelOption({ l: 'foobar' }), 'loglevel', 'warn');
-          assert.propertyVal(coerceDeprecatedLevelOption({ l: false }), 'loglevel', 'warn');
-          assert.propertyVal(coerceDeprecatedLevelOption({ l: undefined }), 'loglevel', 'warn');
-          assert.propertyVal(coerceDeprecatedLevelOption({ l: null }), 'loglevel', 'warn');
+          assert.propertyVal(
+            coerceDeprecatedLevelOption({ l: 'warn' }),
+            'loglevel',
+            'warn',
+          );
+          assert.propertyVal(
+            coerceDeprecatedLevelOption({ l: 'foobar' }),
+            'loglevel',
+            'warn',
+          );
+          assert.propertyVal(
+            coerceDeprecatedLevelOption({ l: false }),
+            'loglevel',
+            'warn',
+          );
+          assert.propertyVal(
+            coerceDeprecatedLevelOption({ l: undefined }),
+            'loglevel',
+            'warn',
+          );
+          assert.propertyVal(
+            coerceDeprecatedLevelOption({ l: null }),
+            'loglevel',
+            'warn',
+          );
         });
       });
     });

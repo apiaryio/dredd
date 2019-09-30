@@ -32,7 +32,11 @@ describe('getGoBinary()', () => {
       });
     });
 
-    it('resolves as $GOBIN', () => assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gobin', 'path')]));
+    it('resolves as $GOBIN', () =>
+      assert.deepEqual(callbackArgs, [
+        null,
+        path.join('dummy', 'gobin', 'path'),
+      ]));
   });
 
   describe('when $GOPATH is set', () => {
@@ -46,7 +50,11 @@ describe('getGoBinary()', () => {
       });
     });
 
-    it('resolves as $GOPATH + /bin', () => assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gopath', 'path', 'bin')]));
+    it('resolves as $GOPATH + /bin', () =>
+      assert.deepEqual(callbackArgs, [
+        null,
+        path.join('dummy', 'gopath', 'path', 'bin'),
+      ]));
   });
 
   describe('when both $GOBIN and $GOPATH are set', () => {
@@ -61,14 +69,22 @@ describe('getGoBinary()', () => {
       });
     });
 
-    it('resolves as $GOBIN', () => assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gobin', 'path')]));
+    it('resolves as $GOBIN', () =>
+      assert.deepEqual(callbackArgs, [
+        null,
+        path.join('dummy', 'gobin', 'path'),
+      ]));
   });
 
   describe('when neither $GOBIN nor $GOPATH are set', () => {
     let callbackArgs;
 
     beforeEach((done) => {
-      sinon.stub(childProcess, 'exec').callsFake((command, callback) => callback(null, path.join('dummy', 'gopath', 'path')));
+      sinon
+        .stub(childProcess, 'exec')
+        .callsFake((command, callback) =>
+          callback(null, path.join('dummy', 'gopath', 'path')),
+        );
       getGoBinary((...args) => {
         callbackArgs = args;
         done();
@@ -76,15 +92,21 @@ describe('getGoBinary()', () => {
     });
     after(() => childProcess.exec.restore());
 
-    it('calls \'go env GOPATH\' + /bin', () => assert.deepEqual(callbackArgs, [null, path.join('dummy', 'gopath', 'path', 'bin')]));
+    it("calls 'go env GOPATH' + /bin", () =>
+      assert.deepEqual(callbackArgs, [
+        null,
+        path.join('dummy', 'gopath', 'path', 'bin'),
+      ]));
   });
 
-  describe('when \'go env GOPATH\' fails', () => {
+  describe("when 'go env GOPATH' fails", () => {
     const error = new Error('Ouch!');
     let callbackArgs;
 
     beforeEach((done) => {
-      sinon.stub(childProcess, 'exec').callsFake((command, callback) => callback(error));
+      sinon
+        .stub(childProcess, 'exec')
+        .callsFake((command, callback) => callback(error));
       getGoBinary((...args) => {
         callbackArgs = args;
         done();

@@ -50,27 +50,30 @@ function execCommand(custom = {}, cb) {
   stdout = '';
   stderr = '';
   let finished = false;
-  (new CLIStub({
-    custom,
-  }, ((code) => {
-    if (!finished) {
-      finished = true;
-      exitStatus = code || 0;
-      return cb();
-    }
-  })).run());
+  new CLIStub(
+    {
+      custom,
+    },
+    (code) => {
+      if (!finished) {
+        finished = true;
+        exitStatus = code || 0;
+        return cb();
+      }
+    },
+  ).run();
 }
 
 describe('CLI class', () => {
   before(() => {
     ['warn', 'error', 'debug'].forEach((method) => {
-      sinon
-        .stub(loggerStub, method)
-        .callsFake((chunk) => { stderr += `\n${method}: ${chunk}`; });
+      sinon.stub(loggerStub, method).callsFake((chunk) => {
+        stderr += `\n${method}: ${chunk}`;
+      });
     });
-    sinon
-      .stub(loggerStub, 'log')
-      .callsFake((chunk) => { stdout += chunk; });
+    sinon.stub(loggerStub, 'log').callsFake((chunk) => {
+      stdout += chunk;
+    });
   });
 
   after(() => {
@@ -81,7 +84,9 @@ describe('CLI class', () => {
 
   describe('when initialized without "new" keyword', () => {
     let dc = null;
-    before(() => { dc = new CLIStub(); });
+    before(() => {
+      dc = new CLIStub();
+    });
 
     it('sets finished to false', () => assert.isFalse(dc.finished));
 
@@ -99,7 +104,6 @@ describe('CLI class', () => {
 
     it('returns an instanceof CLI', () => assert.instanceOf(dc, CLIStub));
   });
-
 
   describe('when initialized with options containing exit callback', () => {
     let dc = null;
@@ -120,15 +124,17 @@ describe('CLI class', () => {
       assert.isArray(dc.argv._);
     });
 
-    it('should set finished to true (keeps false)', () => assert.isTrue(dc.finished));
+    it('should set finished to true (keeps false)', () =>
+      assert.isTrue(dc.finished));
 
-    it('ends with an error message about missing blueprint-file', () => assert.include(stderr, 'Must specify path to API description document.'));
+    it('ends with an error message about missing blueprint-file', () =>
+      assert.include(stderr, 'Must specify path to API description document.'));
 
-    it('ends with an error message about missing api endpoint.', () => assert.include(stderr, 'Must specify URL of the tested API instance.'));
+    it('ends with an error message about missing api endpoint.', () =>
+      assert.include(stderr, 'Must specify URL of the tested API instance.'));
 
     it('calls exit callback', () => assert.isNotNull(hasCalledExit));
   });
-
 
   describe('run', () => {
     let dc;
@@ -222,43 +228,60 @@ describe('CLI class', () => {
     });
 
     describe('with server returning good things', () => {
-      before(() => { returnGood = true; });
+      before(() => {
+        returnGood = true;
+      });
 
       it('returns exit code 0', () => assert.equal(exitStatus, 0));
 
       it('propagates configuration options to Dredd class', () => {
-        assert.equal(dc.dreddInstance.configuration.path[0], './test/fixtures/single-get.apib');
-        assert.equal(dc.dreddInstance.configuration.endpoint, `http://127.0.0.1:${PORT}`);
+        assert.equal(
+          dc.dreddInstance.configuration.path[0],
+          './test/fixtures/single-get.apib',
+        );
+        assert.equal(
+          dc.dreddInstance.configuration.endpoint,
+          `http://127.0.0.1:${PORT}`,
+        );
       });
     });
 
     describe('with server returning wrong things', () => {
-      before(() => { returnGood = false; });
+      before(() => {
+        returnGood = false;
+      });
 
       it('returns exit code 1', () => assert.equal(exitStatus, 1));
 
       it('propagates configuration options to Dredd class', () => {
-        assert.equal(dc.dreddInstance.configuration.path[0], './test/fixtures/single-get.apib');
-        assert.equal(dc.dreddInstance.configuration.endpoint, `http://127.0.0.1:${PORT}`);
+        assert.equal(
+          dc.dreddInstance.configuration.path[0],
+          './test/fixtures/single-get.apib',
+        );
+        assert.equal(
+          dc.dreddInstance.configuration.endpoint,
+          `http://127.0.0.1:${PORT}`,
+        );
       });
     });
   });
 
-
   describe('when called w/ OR wo/ exiting arguments', () => {
     describe('--help', () => {
-      before(done => execCommand({ argv: ['--help'] }, done));
+      before((done) => execCommand({ argv: ['--help'] }, done));
 
       it('prints out some really nice help text with all options descriptions', () => {
         assert.include(stderr, 'Usage:');
         assert.include(stderr, 'Example:');
         assert.include(stderr, '[OPTIONS]');
-        Array.from(Object.keys(options)).forEach(optionKey => assert.include(stderr, optionKey));
+        Array.from(Object.keys(options)).forEach((optionKey) =>
+          assert.include(stderr, optionKey),
+        );
       });
     });
 
     describe('--version', () => {
-      before(done => execCommand({ argv: ['--version'] }, done));
+      before((done) => execCommand({ argv: ['--version'] }, done));
 
       it('prints out version', () => {
         assert.include(stdout, `${packageData.name} v${packageData.version}`);
@@ -276,32 +299,40 @@ describe('CLI class', () => {
       });
 
       it('should run interactive config', () => assert.isTrue(initStub.called));
-      it('should save configuration', () => assert.isTrue(configUtilsStub.save.called));
+      it('should save configuration', () =>
+        assert.isTrue(configUtilsStub.save.called));
     });
 
     describe('without argv', () => {
-      before(done => execCommand({ argv: [] }, done));
+      before((done) => execCommand({ argv: [] }, done));
 
-      it('prints out an error message', () => assert.include(stderr, 'Error: Must specify'));
+      it('prints out an error message', () =>
+        assert.include(stderr, 'Error: Must specify'));
     });
   });
 
   describe('when using --server', () => {
     before((done) => {
       sinon.stub(crossSpawnStub, 'spawn').callsFake();
-      sinon.stub(transactionRunner.prototype, 'executeAllTransactions').callsFake((transactions, hooks, cb) => cb());
-      execCommand({
-        argv: [
-          './test/fixtures/single-get.apib',
-          `http://127.0.0.1:${PORT}`,
-          '--server',
-          'foo/bar',
-        ],
-      }, done);
+      sinon
+        .stub(transactionRunner.prototype, 'executeAllTransactions')
+        .callsFake((transactions, hooks, cb) => cb());
+      execCommand(
+        {
+          argv: [
+            './test/fixtures/single-get.apib',
+            `http://127.0.0.1:${PORT}`,
+            '--server',
+            'foo/bar',
+          ],
+        },
+        done,
+      );
     });
 
     after(() => crossSpawnStub.spawn.restore());
 
-    it('should run child process', () => assert.isTrue(crossSpawnStub.spawn.called));
+    it('should run child process', () =>
+      assert.isTrue(crossSpawnStub.spawn.called));
   });
 });

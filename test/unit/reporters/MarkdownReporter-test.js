@@ -50,7 +50,6 @@ describe('MarkdownReporter', () => {
     mdReporter = new MarkdownReporter(emitter, stats, 'test.md');
   });
 
-
   describe('when creating', () => {
     describe('when file exists', () => {
       before(() => {
@@ -63,7 +62,8 @@ describe('MarkdownReporter', () => {
         loggerStub.warn.restore();
       });
 
-      it('should warn about the existing file', () => assert.isOk(loggerStub.warn.called));
+      it('should warn about the existing file', () =>
+        assert.isOk(loggerStub.warn.called));
     });
 
     describe('when file does not exist', () => {
@@ -84,15 +84,19 @@ describe('MarkdownReporter', () => {
     });
   });
 
-  describe('when starting', () => it('should write the title to the buffer', done => emitter.emit('start', '', () => {
-    assert.isOk(mdReporter.buf.includes('Dredd'));
-    done();
-  })));
+  describe('when starting', () =>
+    it('should write the title to the buffer', (done) =>
+      emitter.emit('start', '', () => {
+        assert.isOk(mdReporter.buf.includes('Dredd'));
+        done();
+      })));
 
   describe('when ending', () => {
     describe('when can create output directory', () => {
       beforeEach(() => {
-        sinon.stub(fsStub, 'writeFile').callsFake((path, data, callback) => callback());
+        sinon
+          .stub(fsStub, 'writeFile')
+          .callsFake((path, data, callback) => callback());
         makeDirStubImpl = sinon.spy(makeDirStubImpl);
       });
 
@@ -101,19 +105,24 @@ describe('MarkdownReporter', () => {
         makeDirStubImpl = makeDirStubImplBackup;
       });
 
-      it('should write buffer to file', done => emitter.emit('end', () => {
-        emitter.emit('end', () => {});
-        assert.isOk(makeDirStubImpl.called);
-        assert.isOk(fsStub.writeFile.called);
-        done();
-      }));
+      it('should write buffer to file', (done) =>
+        emitter.emit('end', () => {
+          emitter.emit('end', () => {});
+          assert.isOk(makeDirStubImpl.called);
+          assert.isOk(fsStub.writeFile.called);
+          done();
+        }));
     });
 
     describe('when cannot create output directory', () => {
       beforeEach(() => {
-        sinon.stub(fsStub, 'writeFile').callsFake((path, data, callback) => callback());
+        sinon
+          .stub(fsStub, 'writeFile')
+          .callsFake((path, data, callback) => callback());
         sinon.stub(reporterOutputLoggerStub, 'error');
-        makeDirStubImpl = sinon.stub().callsFake(() => Promise.reject(new Error()));
+        makeDirStubImpl = sinon
+          .stub()
+          .callsFake(() => Promise.reject(new Error()));
       });
 
       after(() => {
@@ -122,12 +131,13 @@ describe('MarkdownReporter', () => {
         makeDirStubImpl = makeDirStubImplBackup;
       });
 
-      it('should write to log', done => emitter.emit('end', () => {
-        assert.isOk(makeDirStubImpl.called);
-        assert.isOk(fsStub.writeFile.notCalled);
-        assert.isOk(reporterOutputLoggerStub.error.called);
-        done();
-      }));
+      it('should write to log', (done) =>
+        emitter.emit('end', () => {
+          assert.isOk(makeDirStubImpl.called);
+          assert.isOk(fsStub.writeFile.notCalled);
+          assert.isOk(reporterOutputLoggerStub.error.called);
+          done();
+        }));
     });
   });
 
@@ -146,12 +156,13 @@ describe('MarkdownReporter', () => {
       done();
     });
 
-    describe('when details=true', () => it('should write details for passing tests', (done) => {
-      mdReporter.details = true;
-      emitter.emit('test pass', test);
-      assert.isOk(mdReporter.buf.includes('Request'));
-      done();
-    }));
+    describe('when details=true', () =>
+      it('should write details for passing tests', (done) => {
+        mdReporter.details = true;
+        emitter.emit('test pass', test);
+        assert.isOk(mdReporter.buf.includes('Request'));
+        done();
+      }));
   });
 
   describe('when test is skipped', () => {

@@ -3,7 +3,6 @@ const { assert } = require('chai');
 
 const performRequest = require('../../../lib/performRequest');
 
-
 describe('performRequest()', () => {
   const uri = 'http://example.com/42';
   const uriS = 'https://example.com/42';
@@ -13,10 +12,14 @@ describe('performRequest()', () => {
     body: 'Hello',
   };
   const res = { statusCode: 200, headers: { 'Content-Type': 'text/plain' } };
-  const request = sinon.stub().callsArgWithAsync(1, null, res, Buffer.from('Bye'));
+  const request = sinon
+    .stub()
+    .callsArgWithAsync(1, null, res, Buffer.from('Bye'));
   const logger = { debug: sinon.spy() };
 
-  beforeEach(() => { logger.debug.resetHistory(); });
+  beforeEach(() => {
+    logger.debug.resetHistory();
+  });
 
   it('does not modify the original HTTP options object', (done) => {
     const httpOptions = { json: true };
@@ -26,10 +29,15 @@ describe('performRequest()', () => {
     });
   });
   it('does not allow to override the hardcoded HTTP options', (done) => {
-    performRequest(uri, transactionReq, { http: { proxy: true }, request }, () => {
-      assert.isFalse(request.firstCall.args[0].proxy);
-      done();
-    });
+    performRequest(
+      uri,
+      transactionReq,
+      { http: { proxy: true }, request },
+      () => {
+        assert.isFalse(request.firstCall.args[0].proxy);
+        done();
+      },
+    );
   });
   it('forbids the HTTP client library to respect proxy settings', (done) => {
     performRequest(uri, transactionReq, { request }, () => {
@@ -64,7 +72,7 @@ describe('performRequest()', () => {
   it('handles exceptions when preparing the HTTP request body', (done) => {
     const invalidTransactionReq = Object.assign(
       { bodyEncoding: 'latin2' },
-      transactionReq
+      transactionReq,
     );
     performRequest(uri, invalidTransactionReq, { request }, (err) => {
       assert.instanceOf(err, Error);
@@ -75,7 +83,7 @@ describe('performRequest()', () => {
     performRequest(uri, transactionReq, { request, logger }, () => {
       assert.equal(
         logger.debug.firstCall.args[0],
-        `Performing HTTP request to the server under test: POST ${uri}`
+        `Performing HTTP request to the server under test: POST ${uri}`,
       );
       done();
     });
@@ -84,7 +92,7 @@ describe('performRequest()', () => {
     performRequest(uriS, transactionReq, { request, logger }, () => {
       assert.equal(
         logger.debug.firstCall.args[0],
-        `Performing HTTPS request to the server under test: POST ${uriS}`
+        `Performing HTTPS request to the server under test: POST ${uriS}`,
       );
       done();
     });
@@ -93,7 +101,7 @@ describe('performRequest()', () => {
     performRequest(uri, transactionReq, { request, logger }, () => {
       assert.equal(
         logger.debug.lastCall.args[0],
-        'Handling HTTP response from the server under test'
+        'Handling HTTP response from the server under test',
       );
       done();
     });
@@ -102,7 +110,7 @@ describe('performRequest()', () => {
     performRequest(uriS, transactionReq, { request, logger }, () => {
       assert.equal(
         logger.debug.lastCall.args[0],
-        'Handling HTTPS response from the server under test'
+        'Handling HTTPS response from the server under test',
       );
       done();
     });

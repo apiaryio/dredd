@@ -4,9 +4,7 @@ const { assert } = require('chai');
 const Hooks = require('../../lib/Hooks');
 const addHooks = require('../../lib/addHooks');
 
-
 const WORKING_DIRECTORY = path.join(__dirname, '..', 'fixtures');
-
 
 function createTransactionRunner() {
   return {
@@ -15,7 +13,6 @@ function createTransactionRunner() {
     },
   };
 }
-
 
 describe('addHooks()', () => {
   it('sets transactionRunner.hooks', (done) => {
@@ -74,14 +71,12 @@ describe('addHooks()', () => {
 
   it('sets transactionRunner.hooks.configuation', (done) => {
     const transactionRunner = createTransactionRunner();
-    transactionRunner.configuration.hookfiles = [
-      './hooks.js',
-    ];
+    transactionRunner.configuration.hookfiles = ['./hooks.js'];
 
     addHooks(transactionRunner, [], (err) => {
       assert.deepEqual(
         transactionRunner.hooks.configuration,
-        transactionRunner.configuration
+        transactionRunner.configuration,
       );
       done(err);
     });

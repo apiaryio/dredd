@@ -25,7 +25,7 @@ describe('BaseReporter', () => {
       duration: 0,
     };
     emitter = new EventEmitter();
-    (new BaseReporter(emitter, stats));
+    new BaseReporter(emitter, stats);
   });
 
   describe('when starting', () => {
@@ -33,10 +33,11 @@ describe('BaseReporter', () => {
       stats = { start: null };
     });
 
-    it('should set the start date', done => emitter.emit('start', '', () => {
-      assert.isOk(stats.start);
-      done();
-    }));
+    it('should set the start date', (done) =>
+      emitter.emit('start', '', () => {
+        assert.isOk(stats.start);
+        done();
+      }));
   });
 
   describe('when ending', () => {
@@ -44,10 +45,11 @@ describe('BaseReporter', () => {
       stats = { start: null };
     });
 
-    it('should set the end date', done => emitter.emit('end', () => {
-      assert.isOk(stats.end);
-      done();
-    }));
+    it('should set the end date', (done) =>
+      emitter.emit('end', () => {
+        assert.isOk(stats.end);
+        done();
+      }));
   });
 
   describe('when test starts', () => {
