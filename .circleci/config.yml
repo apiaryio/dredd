@@ -1,6 +1,5 @@
 version: 2.1
 
-
 commands:
   npm-install:
     steps:
@@ -18,7 +17,7 @@ commands:
       - run: echo $(python --version) > .python-version
       - restore_cache:
           key: py-deps-{{ checksum ".python-version" }}-{{ checksum "docs/requirements.txt" }}
-      - run: "if [ ! -d ./venv ]; then python -m venv ./venv; fi"
+      - run: 'if [ ! -d ./venv ]; then python -m venv ./venv; fi'
       - run: echo "source $(pwd)/venv/bin/activate" >> $BASH_ENV
       - run: pip install -r ./docs/requirements.txt
       - save_cache:
@@ -26,21 +25,19 @@ commands:
           paths:
             - ./venv
 
-
 aliases:
   - &node12
     image: circleci/node:12
 
-  - &python-docs
-    # using Python 3.6 as that's the version ReadTheDocs is running
+  - &python-docs # using Python 3.6 as that's the version ReadTheDocs is running
     image: circleci/python:3.6-node
 
   - &test-steps
     steps:
       - checkout
       - npm-install
+      - run: npm run build
       - run: npm run ci:test
-
 
 jobs:
   test-node12:
@@ -60,6 +57,7 @@ jobs:
     steps:
       - checkout
       - npm-install
+      - run: npm run build
       - run: npm run e2e:apib
 
   test-e2e-openapi2:
@@ -67,6 +65,7 @@ jobs:
     steps:
       - checkout
       - npm-install
+      - run: npm run build
       - run: npm run e2e:openapi2
 
   quality-checks:
@@ -111,7 +110,6 @@ jobs:
       - checkout
       - npm-install
       - run: npm run ci:release
-
 
 workflows:
   version: 2

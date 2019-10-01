@@ -8,7 +8,7 @@
   }
 });
 
-const CLI = require('../lib/CLI');
+const CLI = require('../build/CLI');
 
 const dreddCli = new CLI({
   custom: {
