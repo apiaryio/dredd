@@ -47,9 +47,14 @@ describe('compileAnnotation()', () => {
   });
   it('sets location to the extreme positions for multiple ranges', () => {
     const { apiElements } = fixtures('annotation-sourcemap-ranges').apib;
-    const annotation = compileAnnotation(apiElements.annotations.first);
+    const annotationElement = apiElements.annotations.first;
 
-    assert.deepPropertyVal(annotation, 'location', [[8, 9], [9, 20]]);
+    // verify that there truly are multiple ranges - the parser could change implementation
+    assert.isAbove(annotationElement.attributes.get('sourceMap').first.toValue().length, 1);
+
+    const annotation = compileAnnotation(annotationElement);
+
+    assert.deepPropertyVal(annotation, 'location', [[7, 5], [13, 19]]);
   });
 
   fixtures('parser-warning').forEachDescribe(({ apiElements }) => {
