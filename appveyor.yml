@@ -1,7 +1,7 @@
 environment:
-  nodejs_version: "10"
+  nodejs_version: "12"
 install:
-  - ps: Install-Product node 10
+  - ps: Install-Product node 12
   - "npm -g install npm@6"
   - "set PATH=%APPDATA%\\npm;%PATH%"
   - "npm install"
