@@ -7,7 +7,7 @@ const { assert } = require('chai');
 
 const configUtilsStub = require('../../lib/configUtils');
 const loggerStub = require('../../lib/logger');
-const options = require('../../lib/options');
+const options = require('../../options.json');
 const packageData = require('../../package.json');
 
 const PORT = 9876;

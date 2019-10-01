@@ -35,6 +35,7 @@
   "files": [
     "bin",
     "lib",
+    "options.json",
     "README.md"
   ],
   "dependencies": {

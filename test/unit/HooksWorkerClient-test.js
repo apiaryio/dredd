@@ -11,7 +11,7 @@ const whichStub = require('../../lib/which');
 const loggerStub = require('../../lib/logger');
 
 const Hooks = require('../../lib/Hooks');
-const commandLineOptions = require('../../lib/options');
+const commandLineOptions = require('../../options.json');
 
 function measureExecutionDurationMs(fn) {
   const time = process.hrtime();
