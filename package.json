@@ -2,7 +2,7 @@
   "name": "dredd",
   "version": "0.0.0-semantically-released",
   "description": "HTTP API Testing Framework",
-  "main": "build/Dredd.js",
+  "main": "build/index.js",
   "bin": {
     "dredd": "bin/dredd"
   },
