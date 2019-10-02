@@ -1,7 +1,7 @@
-const sinon = require('sinon');
-const { assert } = require('chai');
+import sinon from 'sinon';
+import { assert } from 'chai';
 
-const Dredd = require('../../lib/Dredd');
+import Dredd from '../../lib/Dredd';
 
 function compileTransactions(apiDescription, logger, callback) {
   const dredd = new Dredd({ apiDescriptions: [apiDescription] });

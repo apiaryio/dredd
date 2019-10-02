@@ -1,10 +1,10 @@
-const { assert } = require('chai');
-const path = require('path');
+import { assert } from 'chai';
+import * as path from 'path';
 
-const { runDreddWithServer, createServer } = require('./helpers');
-const Dredd = require('../../lib/Dredd');
+import { runDreddWithServer, createServer } from './helpers';
+import Dredd from '../../lib/Dredd';
 
-[
+const files = [
   {
     name: 'API Blueprint',
     path: './test/fixtures/response/empty-body-empty-schema.apib',
@@ -13,7 +13,9 @@ const Dredd = require('../../lib/Dredd');
     name: 'OpenAPI 2',
     path: './test/fixtures/response/empty-body-empty-schema.yaml',
   },
-].forEach((apiDescription) =>
+];
+
+files.forEach((apiDescription) =>
   describe(`Specifying neither response body nor schema in the ${apiDescription.name}`, () => {
     describe('when the server returns non-empty responses', () => {
       let runtimeInfo;
@@ -54,7 +56,6 @@ const Dredd = require('../../lib/Dredd');
     });
   }),
 );
-
 [
   {
     name: 'API Blueprint',
@@ -106,7 +107,6 @@ const Dredd = require('../../lib/Dredd');
     });
   }),
 );
-
 [
   {
     name: 'API Blueprint',
@@ -172,7 +172,6 @@ const Dredd = require('../../lib/Dredd');
     });
   }),
 );
-
 [
   {
     name: 'API Blueprint',
@@ -238,7 +237,6 @@ const Dredd = require('../../lib/Dredd');
     });
   }),
 );
-
 [
   {
     name: 'API Blueprint',
@@ -333,7 +331,6 @@ const Dredd = require('../../lib/Dredd');
     });
   }),
 );
-
 [
   {
     name: 'API Blueprint',

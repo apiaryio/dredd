@@ -1,9 +1,9 @@
-const clone = require('clone');
-const { assert } = require('chai');
-const { EventEmitter } = require('events');
+import clone from 'clone';
+import { assert } from 'chai';
+import { EventEmitter } from 'events';
 
-const { runDredd, createServer, runDreddWithServer } = require('./helpers');
-const Dredd = require('../../lib/Dredd');
+import { runDredd, createServer, runDreddWithServer } from './helpers';
+import Dredd from '../../lib/Dredd';
 
 describe('Sanitation of Reported Data', () => {
   // Sample sensitive data (this value is used in API Blueprint fixtures as well)

@@ -1,9 +1,9 @@
-const clone = require('clone');
-const fsStub = require('fs');
-const proxyquire = require('proxyquire');
-const sinon = require('sinon');
-const yamlStub = require('js-yaml');
-const { assert } = require('chai');
+import clone from 'clone';
+import fsStub from 'fs';
+import proxyquire from 'proxyquire';
+import sinon from 'sinon';
+import * as yamlStub from 'js-yaml';
+import { assert } from 'chai';
 
 const configUtils = proxyquire('../../lib/configUtils', {
   fs: fsStub,

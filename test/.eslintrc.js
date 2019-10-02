@@ -1,6 +1,6 @@
 module.exports = {
   env: {
-    mocha: true,
-    node: true,
+    'mocha': true,
+    'node': true
   },
 };

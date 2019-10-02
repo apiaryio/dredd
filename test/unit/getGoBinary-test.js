@@ -1,9 +1,9 @@
-const childProcess = require('child_process');
-const path = require('path');
-const sinon = require('sinon');
-const { assert } = require('chai');
+import childProcess from 'child_process';
+import path from 'path';
+import sinon from 'sinon';
+import { assert } from 'chai';
 
-const getGoBinary = require('../../lib/getGoBinary');
+import getGoBinary from '../../lib/getGoBinary';
 
 describe('getGoBinary()', () => {
   let goBin;

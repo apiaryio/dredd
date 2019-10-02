@@ -1,42 +1,40 @@
-const { assert } = require('chai');
+import { assert } from 'chai'
 
-const {
-  _createTransactionResponse: createTransactionResponse,
-} = require('../../../lib/performRequest');
+import { createTransactionResponse } from '../../../lib/performRequest'
 
 describe('performRequest._createTransactionResponse()', () => {
-  const res = { statusCode: 200, headers: {} };
+  const res = { statusCode: 200, headers: {} }
 
   it('sets the status code', () =>
     assert.deepEqual(createTransactionResponse(res), {
       statusCode: 200,
-      headers: {},
-    }));
+      headers: {}
+    }))
   it('copies the headers', () => {
-    const headers = { 'Content-Type': 'application/json' };
+    const headers = { 'Content-Type': 'application/json' }
     const transactionRes = createTransactionResponse({
       statusCode: 200,
-      headers,
-    });
-    headers['X-Header'] = 'abcd';
+      headers
+    })
+    headers['X-Header'] = 'abcd'
 
     assert.deepEqual(transactionRes, {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  });
+      headers: { 'Content-Type': 'application/json' }
+    })
+  })
   it('does not set empty body', () =>
     assert.deepEqual(createTransactionResponse(res, Buffer.from([])), {
       statusCode: 200,
-      headers: {},
-    }));
+      headers: {}
+    }))
   it('sets textual body as a string with UTF-8 encoding', () =>
     assert.deepEqual(createTransactionResponse(res, Buffer.from('řeřicha')), {
       statusCode: 200,
       headers: {},
       body: 'řeřicha',
-      bodyEncoding: 'utf-8',
-    }));
+      bodyEncoding: 'utf-8'
+    }))
   it('sets binary body as a string with Base64 encoding', () =>
     assert.deepEqual(
       createTransactionResponse(res, Buffer.from([0xff, 0xbe])),
@@ -44,7 +42,7 @@ describe('performRequest._createTransactionResponse()', () => {
         statusCode: 200,
         headers: {},
         body: Buffer.from([0xff, 0xbe]).toString('base64'),
-        bodyEncoding: 'base64',
-      },
-    ));
-});
+        bodyEncoding: 'base64'
+      }
+    ))
+})

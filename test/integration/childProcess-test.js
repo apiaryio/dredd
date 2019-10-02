@@ -1,8 +1,8 @@
-const sinon = require('sinon');
-const { assert } = require('chai');
+import sinon from 'sinon';
+import { assert } from 'chai';
 
-const helpers = require('./helpers');
-const { spawn, signalTerm, signalKill } = require('../../lib/childProcess');
+import * as helpers from './helpers';
+import { spawn, signalTerm, signalKill } from '../../lib/childProcess';
 
 const COFFEE_BIN = 'node_modules/.bin/coffee';
 const WAIT_AFTER_COMMAND_SPAWNED_MS = 500;
@@ -118,7 +118,6 @@ describe('Babysitting Child Processes', () => {
       it('does not emit an error', () => assert.isUndefined(processInfo.error));
     });
   });
-
   ['signalTerm', 'terminate'].forEach((functionName) =>
     describe(`when gracefully terminated by childProcess.${functionName}()`, () => {
       describe('process with support for graceful termination', () => {

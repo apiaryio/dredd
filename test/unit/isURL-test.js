@@ -1,6 +1,6 @@
-const { assert } = require('chai');
+import { assert } from 'chai';
 
-const isURL = require('../../lib/isURL');
+import isURL from '../../lib/isURL';
 
 describe('isURL()', () => {
   it('recognizes HTTP URL', () => {

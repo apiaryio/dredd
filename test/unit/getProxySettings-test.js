@@ -1,6 +1,6 @@
-const { assert } = require('chai');
+import { assert } from 'chai';
 
-const getProxySettings = require('../../lib/getProxySettings');
+import getProxySettings from '../../lib/getProxySettings';
 
 describe('getProxySettings()', () => {
   it('detects HTTP_PROXY', () => {

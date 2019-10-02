@@ -1,13 +1,13 @@
-const R = require('ramda');
-const bodyParser = require('body-parser');
-const clone = require('clone');
-const express = require('express');
-const fs = require('fs');
-const { assert } = require('chai');
+import R from 'ramda';
+import bodyParser from 'body-parser';
+import clone from 'clone';
+import express from 'express';
+import fs from 'fs';
+import { assert } from 'chai';
 
-const logger = require('../../lib/logger');
-const reporterOutputLogger = require('../../lib/reporters/reporterOutputLogger');
-const Dredd = require('../../lib/Dredd');
+import logger from '../../lib/logger';
+import reporterOutputLogger from '../../lib/reporters/reporterOutputLogger';
+import Dredd from '../../lib/Dredd';
 
 const PORT = 9876;
 
@@ -73,64 +73,68 @@ describe('Apiary reporter', () => {
     exitStatus = null;
 
     before((done) => {
-      const cmd = {
-        options: {
-          path: ['./test/fixtures/single-get.apib'],
-          reporter: ['apiary'],
-          loglevel: 'debug',
-        },
-        custom: {
-          apiaryApiUrl: `http://127.0.0.1:${PORT + 1}`,
-          apiaryApiKey: 'the-key',
-          apiaryApiName: 'the-api-name',
-        },
-      };
+      try {
+        const cmd = {
+          options: {
+            path: ['./test/fixtures/single-get.apib'],
+            reporter: ['apiary'],
+            loglevel: 'debug',
+          },
+          custom: {
+            apiaryApiUrl: `http://127.0.0.1:${PORT + 1}`,
+            apiaryApiKey: 'the-key',
+            apiaryApiName: 'the-api-name',
+          },
+        };
 
-      receivedHeaders = {};
-      receivedHeadersRuns = {};
+        receivedHeaders = {};
+        receivedHeadersRuns = {};
 
-      const apiary = express();
-      const app = express();
+        const apiary = express();
+        const app = express();
 
-      apiary.use(bodyParser.json({ size: '5mb' }));
+        apiary.use(bodyParser.json({ size: '5mb' }));
 
-      apiary.post('/apis/*', (req, res) => {
-        if (req.body && req.url.indexOf('/tests/steps') > -1) {
-          if (!receivedRequest) {
-            receivedRequest = clone(req.body);
+        apiary.post('/apis/*', (req, res) => {
+          if (req.body && req.url.indexOf('/tests/steps') > -1) {
+            if (!receivedRequest) {
+              receivedRequest = clone(req.body);
+            }
+            Object.keys(req.headers).forEach((name) => {
+              receivedHeaders[name.toLowerCase()] = req.headers[name];
+            });
           }
-          Object.keys(req.headers).forEach((name) => {
-            receivedHeaders[name.toLowerCase()] = req.headers[name];
-          });
-        }
-        if (req.body && req.url.indexOf('/tests/runs') > -1) {
-          if (!receivedRequestTestRuns) {
-            receivedRequestTestRuns = clone(req.body);
+          if (req.body && req.url.indexOf('/tests/runs') > -1) {
+            if (!receivedRequestTestRuns) {
+              receivedRequestTestRuns = clone(req.body);
+            }
+            Object.keys(req.headers).forEach((name) => {
+              receivedHeadersRuns[name.toLowerCase()] = req.headers[name];
+            });
           }
-          Object.keys(req.headers).forEach((name) => {
-            receivedHeadersRuns[name.toLowerCase()] = req.headers[name];
+          res.status(201).json({
+            _id: '1234_id',
+            testRunId: '6789_testRunId',
+            reportUrl: 'http://url.me/test/run/1234_id',
           });
-        }
-        res.status(201).json({
-          _id: '1234_id',
-          testRunId: '6789_testRunId',
-          reportUrl: 'http://url.me/test/run/1234_id',
         });
-      });
 
-      apiary.all('*', (req, res) => res.json({}));
+        apiary.all('*', (req, res) => res.json({}));
 
-      app.get('/machines', (req, res) =>
-        res.json([{ type: 'bulldozer', name: 'willy' }]),
-      );
+        app.get('/machines', (req, res) =>
+          res.json([{ type: 'bulldozer', name: 'willy' }]),
+        );
 
-      server = app.listen(PORT, () => {
-        server2 = apiary.listen(PORT + 1, () => {
-          execCommand(cmd, () =>
-            server2.close(() => server.close(() => done())),
-          );
+        server = app.listen(PORT, () => {
+          server2 = apiary.listen(PORT + 1, () => {
+            execCommand(cmd, () =>
+              server2.close(() => server.close(() => done())),
+            );
+          });
         });
-      });
+      } catch (error) {
+        throw error;
+      }
     });
 
     it('should not print warning about missing Apiary API settings', () =>
