@@ -1,13 +1,10 @@
 package-lock.json
 npm-shrinkwrap.json
 
-/build
-/coverage
-/docs/_build
-node_modules
 .idea
 .vscode
 .DS_Store
+node_modules
 cov.*
 *.log
 .env*
