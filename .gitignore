@@ -9,6 +9,7 @@ cov.*
 *.log
 .env*
 __pycache__
+/docs/_build
 
 # Regardless the rules above, never ignore following
 !.vscode/launch.json

@@ -28,12 +28,12 @@ Let's have a description of a blog API, which allows to list all articles, and t
 
    .. group-tab:: API Blueprint
 
-      .. literalinclude:: ../../test/fixtures/blog/apidesc.apib
+      .. literalinclude:: ../../packages/dredd/test/fixtures/blog/apidesc.apib
          :language: apiblueprint
 
    .. group-tab:: OpenAPI 2
 
-      .. literalinclude:: ../../test/fixtures/blog/apidesc.openapi2.yaml
+      .. literalinclude:: ../../packages/dredd/test/fixtures/blog/apidesc.openapi2.yaml
          :language: openapi2
 
 Now let's say the real instance of the API has the POST request protected so it is not possible for everyone to publish new articles. We do not want to hardcode secret tokens in our API description, but we want to get Dredd to pass the auth. This is where the hooks can help.
@@ -52,7 +52,7 @@ Dredd supports :ref:`writing hooks in multiple programming languages <supported-
 
       Let's create a file called ``hooks.js`` with the following content:
 
-      .. literalinclude:: ../../test/fixtures/blog/hooks.apib.js
+      .. literalinclude:: ../../packages/dredd/test/fixtures/blog/hooks.apib.js
          :language: javascript
 
       As you can see, we're registering the hook function to be executed **before** the HTTP transaction ``Articles > Publish an article``. This path-like identifier is a :ref:`transaction name <transaction-names>`.
@@ -61,7 +61,7 @@ Dredd supports :ref:`writing hooks in multiple programming languages <supported-
 
       Let's create a file called ``hooks.js`` with the following content:
 
-      .. literalinclude:: ../../test/fixtures/blog/hooks.openapi2.js
+      .. literalinclude:: ../../packages/dredd/test/fixtures/blog/hooks.openapi2.js
          :language: javascript
 
       As you can see, we're registering the hook function to be executed **before** the HTTP transaction ``Articles > Publish an article > 201 > application/json``. This path-like identifier is a :ref:`transaction name <transaction-names>`.
