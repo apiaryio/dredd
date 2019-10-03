@@ -1,17 +1,18 @@
-const clone = require('clone');
-const crossSpawnStub = require('cross-spawn');
-const net = require('net');
-const path = require('path');
-const proxyquire = require('proxyquire');
-const sinon = require('sinon');
-const { assert } = require('chai');
-const { EventEmitter } = require('events');
+import clone from 'clone';
+import crossSpawnStub from 'cross-spawn';
+import net from 'net';
+import path from 'path';
+import proxyquire from 'proxyquire';
+import sinon from 'sinon';
+import { assert } from 'chai';
+import { EventEmitter } from 'events';
 
-const whichStub = require('../../lib/which');
-const loggerStub = require('../../lib/logger');
+import whichStub from '../../lib/which';
+import loggerStub from '../../lib/logger';
 
-const Hooks = require('../../lib/Hooks');
-const commandLineOptions = require('../../lib/options');
+import Hooks from '../../lib/Hooks';
+import * as commandLineOptions from '../../options';
+import TransactionRunner from '../../lib/TransactionRunner';
 
 function measureExecutionDurationMs(fn) {
   const time = process.hrtime();
@@ -35,9 +36,7 @@ const HooksWorkerClient = proxyquire('../../lib/HooksWorkerClient', {
   'cross-spawn': crossSpawnStub,
   './which': whichStub,
   './logger': loggerStub,
-});
-
-const TransactionRunner = require('../../lib/TransactionRunner');
+}).default;
 
 let hooksWorkerClient;
 
@@ -168,6 +167,7 @@ describe('Hooks worker client', () => {
                 if (stopError) {
                   return done(stopError);
                 }
+
                 assert.isNull(runner.hookHandlerError);
                 done();
               }),

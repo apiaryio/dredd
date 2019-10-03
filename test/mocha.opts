@@ -1,2 +1,3 @@
 --timeout=120000
 --recursive
+--require ./test/ts-node.js

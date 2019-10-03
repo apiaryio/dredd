@@ -1,10 +1,10 @@
-const sinon = require('sinon');
-const path = require('path');
-const express = require('express');
-const { assert } = require('chai');
+import sinon from 'sinon';
+import * as path from 'path';
+import express from 'express';
+import { assert } from 'chai';
 
-const { DEFAULT_SERVER_PORT } = require('./helpers');
-const Dredd = require('../../lib/Dredd');
+import { DEFAULT_SERVER_PORT } from './helpers';
+import Dredd from '../../lib/Dredd';
 
 const EXPECTED_API_DESCRIPTION_PROPS = [
   'location',

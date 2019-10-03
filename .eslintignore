@@ -1,5 +1,6 @@
 .github
 .vscode
+build
 coverage
 docs
 

@@ -2,7 +2,7 @@
   "name": "dredd",
   "version": "0.0.0-semantically-released",
   "description": "HTTP API Testing Framework",
-  "main": "lib/Dredd.js",
+  "main": "build/index.js",
   "bin": {
     "dredd": "bin/dredd"
   },
@@ -10,13 +10,15 @@
     "node": ">=8"
   },
   "scripts": {
+    "start": "npm run build -- --watch",
+    "build": "tsc --build tsconfig.json",
     "docs:lint": "sphinx-build -nW -b linkcheck ./docs ./docs/_build",
     "docs:test-extensions": "python -m unittest docs/_extensions/*.py --verbose",
     "docs:build": "sphinx-build -nW -b html ./docs ./docs/_build",
     "docs:serve": "sphinx-autobuild ./docs ./docs/_build",
     "lint": "./scripts/commitlint.sh && eslint . bin/dredd",
-    "prettify": "prettier --write 'lib/**/*.js' 'test/**/*.js'",
-    "prettify:check": "prettier --check 'lib/**/*.js' 'test/**/*.js'",
+    "prettify": "prettier --write lib/**/*.js test/**/*.js",
+    "prettify:check": "prettier --check lib/**/*.js test/**/*.js",
     "test": "mocha \"./test/**/*-test.js\"",
     "test:debug": "mocha --debug-brk \"./test/**/*-test.js\"",
     "e2e": "npm run e2e:apib && npm run e2e:openapi2",
@@ -26,7 +28,8 @@
     "ci:docs": "npm run docs:build",
     "ci:test": "npm test",
     "ci:smoke": "bash ./scripts/smoke.sh",
-    "ci:release": "semantic-release && npm dist-tag add \"dredd@$(npm view dredd version)\" stable"
+    "ci:release": "semantic-release && npm dist-tag add \"dredd@$(npm view dredd version)\" stable",
+    "prepack": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -34,7 +37,8 @@
   },
   "files": [
     "bin",
-    "lib",
+    "build",
+    "options.json",
     "README.md"
   ],
   "dependencies": {

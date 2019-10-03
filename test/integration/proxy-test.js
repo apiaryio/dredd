@@ -1,14 +1,14 @@
-const http = require('http');
-const url = require('url');
-const { assert } = require('chai');
+import http from 'http';
+import url from 'url';
+import { assert } from 'chai';
 
-const {
+import {
   runDredd,
   recordLogging,
   createServer,
   DEFAULT_SERVER_PORT,
-} = require('./helpers');
-const Dredd = require('../../lib/Dredd');
+} from './helpers';
+import Dredd from '../../lib/Dredd';
 
 const PROXY_PORT = DEFAULT_SERVER_PORT + 1;
 const PROXY_URL = `http://127.0.0.1:${PROXY_PORT}`;

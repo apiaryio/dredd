@@ -3,29 +3,31 @@
 */
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
-const { EventEmitter } = require('events');
+import { EventEmitter } from 'events';
 
-const { assert } = require('chai');
-const sinon = require('sinon');
-const proxyquire = require('proxyquire').noCallThru();
+import { assert } from 'chai';
+import sinon from 'sinon';
+import { noCallThru } from 'proxyquire';
 
-const loggerStub = require('../../lib/logger');
-const BaseReporterStub = sinon.spy(require('../../lib/reporters/BaseReporter'));
-const XUnitReporterStub = sinon.spy(
-  require('../../lib/reporters/XUnitReporter'),
-);
-const CliReporterStub = sinon.spy(require('../../lib/reporters/CLIReporter'));
-const DotReporterStub = sinon.spy(require('../../lib/reporters/DotReporter'));
-const NyanCatReporterStub = sinon.spy(
-  require('../../lib/reporters/NyanReporter'),
-);
-const HtmlReporterStub = sinon.spy(require('../../lib/reporters/HTMLReporter'));
-const MarkdownReporterStub = sinon.spy(
-  require('../../lib/reporters/MarkdownReporter'),
-);
-const ApiaryReporterStub = sinon.spy(
-  require('../../lib/reporters/ApiaryReporter'),
-);
+import loggerStub from '../../lib/logger';
+import BaseReporter from '../../lib/reporters/BaseReporter';
+import XUnitReporter from '../../lib/reporters/XUnitReporter';
+import CLIReporter from '../../lib/reporters/CLIReporter';
+import DotReporter from '../../lib/reporters/DotReporter';
+import NyanReporter from '../../lib/reporters/NyanReporter';
+import HTMLReporter from '../../lib/reporters/HTMLReporter';
+import MarkdownReporter from '../../lib/reporters/MarkdownReporter';
+import ApiaryReporter from '../../lib/reporters/ApiaryReporter';
+
+const proxyquire = noCallThru();
+const BaseReporterStub = sinon.spy(BaseReporter);
+const XUnitReporterStub = sinon.spy(XUnitReporter);
+const CliReporterStub = sinon.spy(CLIReporter);
+const DotReporterStub = sinon.spy(DotReporter);
+const NyanCatReporterStub = sinon.spy(NyanReporter);
+const HtmlReporterStub = sinon.spy(HTMLReporter);
+const MarkdownReporterStub = sinon.spy(MarkdownReporter);
+const ApiaryReporterStub = sinon.spy(ApiaryReporter);
 
 const emitterStub = new EventEmitter();
 
@@ -39,7 +41,7 @@ const configureReporters = proxyquire('../../lib/configureReporters', {
   './reporters/HTMLReporter': HtmlReporterStub,
   './reporters/MarkdownReporter': MarkdownReporterStub,
   './reporters/ApiaryReporter': ApiaryReporterStub,
-});
+}).default;
 
 function resetStubs() {
   emitterStub.removeAllListeners();

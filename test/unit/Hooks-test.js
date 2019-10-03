@@ -1,7 +1,7 @@
-const sinon = require('sinon');
-const { assert } = require('chai');
+import sinon from 'sinon';
+import { assert } from 'chai';
 
-const Hooks = require('../../lib/Hooks');
+import Hooks from '../../lib/Hooks';
 
 describe('Hooks', () => {
   describe('constructor', () => {

@@ -1,7 +1,7 @@
-const path = require('path');
-const { assert } = require('chai');
+import * as path from 'path';
+import { assert } from 'chai';
 
-const resolveLocations = require('../../lib/resolveLocations');
+import resolveLocations from '../../lib/resolveLocations';
 
 describe('resolveLocations()', () => {
   const workingDirectory = path.join(__filename, '..', '..', 'fixtures');

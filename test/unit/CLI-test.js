@@ -1,14 +1,17 @@
-const crossSpawnStub = require('cross-spawn');
-const express = require('express');
-const fsStub = require('fs');
-const proxyquire = require('proxyquire').noCallThru();
-const sinon = require('sinon');
-const { assert } = require('chai');
+import crossSpawnStub from 'cross-spawn';
+import express from 'express';
+import fsStub from 'fs';
+import { noCallThru } from 'proxyquire';
 
-const configUtilsStub = require('../../lib/configUtils');
-const loggerStub = require('../../lib/logger');
-const options = require('../../lib/options');
-const packageData = require('../../package.json');
+import sinon from 'sinon';
+import { assert } from 'chai';
+
+import * as configUtilsStub from '../../lib/configUtils';
+import loggerStub from '../../lib/logger';
+import options from '../../options';
+import * as packageData from '../../package.json';
+
+const proxyquire = noCallThru();
 
 const PORT = 9876;
 
@@ -19,17 +22,17 @@ let stdout = '';
 
 const addHooksStub = proxyquire('../../lib/addHooks', {
   './logger': loggerStub,
-});
+}).default;
 
 const transactionRunner = proxyquire('../../lib/TransactionRunner', {
   './addHooks': addHooksStub,
   './logger': loggerStub,
-});
+}).default;
 
 const DreddStub = proxyquire('../../lib/Dredd', {
   './TransactionRunner': transactionRunner,
   './logger': loggerStub,
-});
+}).default;
 
 const initStub = sinon.stub().callsFake((config, save, callback) => {
   save(config);
@@ -44,7 +47,7 @@ const CLIStub = proxyquire('../../lib/CLI', {
   './configUtils': configUtilsStub,
   fs: fsStub,
   'cross-spawn': crossSpawnStub,
-});
+}).default;
 
 function execCommand(custom = {}, cb) {
   stdout = '';
@@ -66,7 +69,8 @@ function execCommand(custom = {}, cb) {
 
 describe('CLI class', () => {
   before(() => {
-    ['warn', 'error', 'debug'].forEach((method) => {
+    const logLevels = ['warn', 'error', 'debug'];
+    logLevels.forEach((method) => {
       sinon.stub(loggerStub, method).callsFake((chunk) => {
         stderr += `\n${method}: ${chunk}`;
       });
@@ -77,7 +81,8 @@ describe('CLI class', () => {
   });
 
   after(() => {
-    ['warn', 'error', 'debug', 'log'].forEach((method) => {
+    const logLevels = ['warn', 'error', 'debug', 'log'];
+    logLevels.forEach((method) => {
       loggerStub[method].restore();
     });
   });

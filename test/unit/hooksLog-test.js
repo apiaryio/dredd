@@ -1,11 +1,11 @@
-const clone = require('clone');
-const sinon = require('sinon');
-const util = require('util');
+import clone from 'clone';
+import sinon from 'sinon';
+import util from 'util';
 
-const { assert } = require('chai');
+import { assert } from 'chai';
 
-const hooksLog = require('../../lib/hooksLog');
-const reporterOutputLoggerStub = require('../../lib/reporters/reporterOutputLogger');
+import hooksLog from '../../lib/hooksLog';
+import reporterOutputLoggerStub from '../../lib/reporters/reporterOutputLogger';
 
 describe('hooksLog()', () => {
   const exampleLogs = [{ content: 'some text' }];

@@ -1,7 +1,7 @@
-const { assert } = require('chai');
+import { assert } from 'chai';
 
-const Dredd = require('../../lib/Dredd');
-const { runDredd } = require('./helpers');
+import Dredd from '../../lib/Dredd';
+import { runDredd } from './helpers';
 
 describe('Requiring user-provided modules (e.g. language compilers)', () => {
   describe('when provided with a local module', () => {

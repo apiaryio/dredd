@@ -1,8 +1,8 @@
-const sinon = require('sinon');
-const { assert } = require('chai');
+import sinon from 'sinon';
+import { assert } from 'chai';
 
-const Dredd = require('../../lib/Dredd');
-const { createServer, runDredd, runDreddWithServer } = require('./helpers');
+import Dredd from '../../lib/Dredd';
+import { createServer, runDredd, runDreddWithServer } from './helpers';
 
 const EXPECTED_STATS_KEYS = [
   'tests',

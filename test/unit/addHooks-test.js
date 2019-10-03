@@ -1,8 +1,8 @@
-const path = require('path');
-const { assert } = require('chai');
+import path from 'path';
+import { assert } from 'chai';
 
-const Hooks = require('../../lib/Hooks');
-const addHooks = require('../../lib/addHooks');
+import Hooks from '../../lib/Hooks';
+import addHooks from '../../lib/addHooks';
 
 const WORKING_DIRECTORY = path.join(__dirname, '..', 'fixtures');
 

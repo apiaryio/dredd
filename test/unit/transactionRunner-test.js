@@ -1,24 +1,22 @@
-const bodyParser = require('body-parser');
-const clone = require('clone');
-const express = require('express');
-const htmlStub = require('html');
-const nock = require('nock');
-const sinon = require('sinon');
-const proxyquire = require('proxyquire');
-const { assert } = require('chai');
-const { EventEmitter } = require('events');
+import bodyParser from 'body-parser';
+import clone from 'clone';
+import express from 'express';
+import htmlStub from 'html';
+import nock from 'nock';
+import sinon from 'sinon';
+import proxyquire from 'proxyquire';
+import { assert } from 'chai';
+import { EventEmitter } from 'events';
+import addHooks from '../../lib/addHooks';
+import loggerStub from '../../lib/logger';
+import Hooks from '../../lib/Hooks';
 
 nock.enableNetConnect();
-
-const addHooks = require('../../lib/addHooks');
-const loggerStub = require('../../lib/logger');
 
 const Runner = proxyquire('../../lib/TransactionRunner', {
   html: htmlStub,
   './logger': loggerStub,
-});
-
-const Hooks = require('../../lib/Hooks');
+}).default;
 
 describe('TransactionRunner', () => {
   let server;

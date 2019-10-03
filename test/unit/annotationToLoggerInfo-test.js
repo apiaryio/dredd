@@ -1,6 +1,6 @@
-const { assert } = require('chai');
+import { assert } from 'chai';
 
-const annotationToLoggerInfo = require('../../lib/annotationToLoggerInfo');
+import annotationToLoggerInfo from '../../lib/annotationToLoggerInfo';
 
 const PARSE_ANNOTATION_FIXTURE = {
   type: 'error',

@@ -1,10 +1,10 @@
-const bodyParser = require('body-parser');
-const { assert } = require('chai');
-const fs = require('fs');
-const path = require('path');
+import * as bodyParser from 'body-parser';
+import { assert } from 'chai';
+import fs from 'fs';
+import * as path from 'path';
 
-const { runDreddWithServer, createServer } = require('./helpers');
-const Dredd = require('../../lib/Dredd');
+import { runDreddWithServer, createServer } from './helpers';
+import Dredd from '../../lib/Dredd';
 
 describe("Sending 'application/json' request", () => {
   let runtimeInfo;
@@ -190,7 +190,6 @@ describe("Sending 'multipart/form-data' request described as 'file' in OpenAPI 2
     assert.equal(runtimeInfo.dredd.stats.passes, 1);
   });
 });
-
 [
   {
     name: 'API Blueprint',
@@ -274,7 +273,6 @@ describe("Sending 'text/plain' request", () => {
     assert.equal(runtimeInfo.dredd.stats.passes, 1);
   });
 });
-
 [
   {
     name: 'API Blueprint',
@@ -326,7 +324,6 @@ describe("Sending 'text/plain' request", () => {
     });
   }),
 );
-
 [
   {
     name: 'API Blueprint',

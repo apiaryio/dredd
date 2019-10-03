@@ -1,7 +1,7 @@
 module.exports = {
   extends: ['airbnb-base', 'prettier'],
   env: {
-    node: true
+    node: true,
   },
   rules: {
     // Using 'console' is perfectly okay for a Node.js CLI tool and avoiding
@@ -19,6 +19,7 @@ module.exports = {
     'consistent-return': 'off',
     'import/no-extraneous-dependencies': 'off',
     'import/no-unresolved': 'off',
+    'import/prefer-default-export': 'off',
     'max-len': 'off',
     'no-continue': 'off',
     'no-empty': 'off',
@@ -29,5 +30,5 @@ module.exports = {
     'no-restricted-syntax': 'off',
     'no-use-before-define': 'off',
     'prefer-destructuring': 'off',
-  }
+  },
 };

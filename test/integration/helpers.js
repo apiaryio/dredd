@@ -1,17 +1,17 @@
-const async = require('async');
-const bodyParser = require('body-parser');
-const clone = require('clone');
-const express = require('express');
-const fs = require('fs');
-const https = require('https');
-const path = require('path');
-const ps = require('ps-node');
-const spawn = require('cross-spawn');
+import async from 'async';
+import bodyParser from 'body-parser';
+import clone from 'clone';
+import express from 'express';
+import fs from 'fs';
+import https from 'https';
+import path from 'path';
+import ps from 'ps-node';
+import spawn from 'cross-spawn';
 
-const logger = require('../../lib/logger');
-const reporterOutputLogger = require('../../lib/reporters/reporterOutputLogger');
+import logger from '../../lib/logger';
+import reporterOutputLogger from '../../lib/reporters/reporterOutputLogger';
 
-const DEFAULT_SERVER_PORT = 9876;
+export const DEFAULT_SERVER_PORT = 9876;
 const DREDD_BIN = require.resolve('../../bin/dredd');
 
 // Records logging during runtime of a given function. Given function
@@ -22,7 +22,7 @@ const DREDD_BIN = require.resolve('../../bin/dredd');
 // - args (array) - array of all arguments the 'next' callback obtained
 //                  from the 'fn' function
 // - logging (string) - the recorded logging output
-function recordLogging(fn, callback) {
+export const recordLogging = (fn, callback) => {
   const loggerSilent = !!logger.transports.console.silent;
   const reporterOutputLoggerSilent = !!reporterOutputLogger.transports.console
     .silent;
@@ -48,7 +48,7 @@ function recordLogging(fn, callback) {
 
     callback(null, args, logging);
   });
-}
+};
 
 // Helper function which records incoming server request to given
 // server runtime info object.
@@ -104,7 +104,7 @@ function getSSLCredentials() {
 //             - body (string)
 // - requestCounts (object)
 //     - *endpointUrl*: 0 (number, default) - number of requests to the endpoint
-function createServer(options = {}) {
+export const createServer = (options = {}) => {
   const protocol = options.protocol || 'http';
   const bodyParserInstance =
     options.bodyParser || bodyParser.json({ size: '5mb' });
@@ -149,14 +149,14 @@ function createServer(options = {}) {
     );
   };
   return app;
-}
+};
 
 // Runs given Dredd class instance against localhost server on given (or default)
 // server port. Automatically records all Dredd logging ouput. The error isn't passed
 // as the first argument, but as part of the result, which is convenient in
 // tests. Except of 'err' and 'logging' returns also 'stats' which is what the Dredd
 // instance returns as test results.
-function runDredd(dredd, serverPort, callback) {
+export const runDredd = (dredd, serverPort, callback) => {
   if (typeof serverPort === 'function') {
     [callback, serverPort] = Array.from([serverPort, DEFAULT_SERVER_PORT]);
   }
@@ -184,11 +184,11 @@ function runDredd(dredd, serverPort, callback) {
       callback(null, { err, stats, logging });
     },
   );
-}
+};
 
 // Runs given Express.js server instance and then runs given Dredd class instance.
 // Collects their runtime information and provides it to the callback.
-function runDreddWithServer(dredd, app, serverPort, callback) {
+export const runDreddWithServer = (dredd, app, serverPort, callback) => {
   if (typeof serverPort === 'function') {
     [callback, serverPort] = Array.from([serverPort, DEFAULT_SERVER_PORT]);
   }
@@ -204,7 +204,7 @@ function runDreddWithServer(dredd, app, serverPort, callback) {
       ),
     );
   });
-}
+};
 
 // Runs CLI command with given arguments. Records and provides stdout, stderr
 // and also 'output', which is the two combined. Also provides 'exitStatus'
@@ -240,12 +240,12 @@ function runCommand(command, args, spawnOptions = {}, callback) {
 }
 
 // Runs Dredd as a CLI command, with given arguments.
-const runCLI = (args, spawnOptions, callback) =>
+export const runCLI = (args, spawnOptions, callback) =>
   runCommand('node', [DREDD_BIN].concat(args), spawnOptions, callback);
 
 // Runs given Express.js server instance and then runs Dredd command with given
 // arguments. Collects their runtime information and provides it to the callback.
-function runCLIWithServer(args, app, serverPort, callback) {
+export const runCLIWithServer = (args, app, serverPort, callback) => {
   if (typeof serverPort === 'function') {
     [callback, serverPort] = Array.from([serverPort, DEFAULT_SERVER_PORT]);
   }
@@ -261,18 +261,18 @@ function runCLIWithServer(args, app, serverPort, callback) {
       ),
     );
   });
-}
+};
 
 // Checks whether there's a process with name matching given pattern.
-function isProcessRunning(pattern, callback) {
+export const isProcessRunning = (pattern, callback) => {
   return ps.lookup({ arguments: pattern }, (err, processList) =>
     callback(err, !!(processList ? processList.length : undefined)),
   );
-}
+};
 
 // Kills process with given PID if the process exists. Otherwise
 // does nothing.
-function kill(pid, callback) {
+export const kill = (pid, callback) => {
   if (process.platform === 'win32') {
     const taskkill = spawn('taskkill', ['/F', '/T', '/PID', pid]);
     return taskkill.on('exit', () => callback());
@@ -283,11 +283,11 @@ function kill(pid, callback) {
   } catch (error) {}
   // If the PID doesn't exist, process.kill() throws - we do not care
   process.nextTick(callback);
-}
+};
 
 // Kills processes which have names matching given pattern. Does
 // nothing if there are no matching processes.
-function killAll(pattern, callback) {
+export const killAll = (pattern, callback) => {
   return ps.lookup({ arguments: pattern }, (err, processList) => {
     if (err || !processList.length) {
       return callback(err);
@@ -299,17 +299,4 @@ function killAll(pattern, callback) {
       callback,
     );
   });
-}
-
-module.exports = {
-  DEFAULT_SERVER_PORT,
-  recordLogging,
-  createServer,
-  runDredd,
-  runDreddWithServer,
-  runCLI,
-  runCLIWithServer,
-  isProcessRunning,
-  kill,
-  killAll,
 };

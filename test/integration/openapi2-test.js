@@ -1,9 +1,9 @@
-const R = require('ramda');
-const { assert } = require('chai');
+import R from 'ramda';
+import { assert } from 'chai';
 
-const logger = require('../../lib/logger');
-const reporterOutputLogger = require('../../lib/reporters/reporterOutputLogger');
-const Dredd = require('../../lib/Dredd');
+import logger from '../../lib/logger';
+import reporterOutputLogger from '../../lib/reporters/reporterOutputLogger';
+import Dredd from '../../lib/Dredd';
 
 const PORT = 9876;
 
@@ -19,6 +19,10 @@ function execCommand(options = {}, cb) {
   const dreddOptions = R.mergeDeepRight(defaultConfig, options);
 
   new Dredd(dreddOptions).run((error) => {
+    if (error) {
+      throw error;
+    }
+
     if (!finished) {
       finished = true;
       if (error ? error.message : undefined) {
@@ -90,7 +94,6 @@ describe('OpenAPI 2', () => {
     );
 
     it('recognizes all 3 transactions', () => assert.equal(actual.length, 3));
-
     [
       { action: 'skip', statusCode: '400' },
       { action: 'skip', statusCode: '500' },
@@ -111,7 +114,7 @@ describe('OpenAPI 2', () => {
     const reTransaction = /(skip|fail): (\w+) \((\d+)\) \/honey/g;
     let actual;
 
-    before((done) =>
+    before((done) => {
       execCommand(
         {
           options: {
@@ -120,6 +123,10 @@ describe('OpenAPI 2', () => {
           },
         },
         (err) => {
+          if (err) {
+            throw err;
+          }
+
           let groups;
           const matches = [];
           // eslint-disable-next-line
@@ -139,14 +146,12 @@ describe('OpenAPI 2', () => {
               {},
             );
           });
-
           done(err);
         },
-      ),
-    );
+      );
+    });
 
     it('recognizes all 3 transactions', () => assert.equal(actual.length, 3));
-
     [
       { action: 'skip', statusCode: '400' },
       { action: 'fail', statusCode: '200' },

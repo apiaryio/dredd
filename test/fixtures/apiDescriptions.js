@@ -1,4 +1,4 @@
-module.exports = [
+export default [
   {
     content:
       'FORMAT: 1A\n\n# Machines API\n\n# Group Machines\n\n# Machines collection [/machines/{id}]\n  + Parameters\n    - id (number, `1`)\n\n## Get Machines [GET]\n\n- Request (application/json)\n  + Parameters\n    - id (number, `2`)\n\n- Response 200 (application/json; charset=utf-8)\n\n    [\n      {\n        "type": "bulldozer",\n        "name": "willy"\n      }\n    ]\n\n- Request (application/json)\n  + Parameters\n    - id (number, `3`)\n\n- Response 200 (application/json; charset=utf-8)\n\n    [\n      {\n        "type": "bulldozer",\n        "name": "willy"\n      }\n    ]\n',
