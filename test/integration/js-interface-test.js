@@ -1,9 +1,8 @@
-const sinon = require('sinon');
-const { assert } = require('chai');
+import sinon from 'sinon';
+import { assert } from 'chai';
 
-const Dredd = require('../../lib/Dredd');
-const { createServer, runDredd, runDreddWithServer } = require('./helpers');
-
+import Dredd from '../../lib/Dredd';
+import { createServer, runDredd, runDreddWithServer } from './helpers';
 
 const EXPECTED_STATS_KEYS = [
   'tests',
@@ -16,16 +15,19 @@ const EXPECTED_STATS_KEYS = [
   'duration',
 ];
 
-
 describe('Running Dredd from JavaScript', () => {
   describe('when the testing is successful', () => {
     let runtimeInfo;
 
     before((done) => {
       const app = createServer();
-      app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
+      app.get('/machines', (req, res) =>
+        res.json([{ type: 'bulldozer', name: 'willy' }]),
+      );
 
-      const dredd = new Dredd({ options: { path: './test/fixtures/single-get.apib' } });
+      const dredd = new Dredd({
+        options: { path: './test/fixtures/single-get.apib' },
+      });
       runDreddWithServer(dredd, app, (err, info) => {
         runtimeInfo = info;
         done(err);
@@ -74,7 +76,9 @@ describe('Running Dredd from JavaScript', () => {
       const app = createServer();
       app.get('/machines', (req, res) => res.json([{ foo: 'bar' }]));
 
-      const dredd = new Dredd({ options: { path: './test/fixtures/single-get.apib' } });
+      const dredd = new Dredd({
+        options: { path: './test/fixtures/single-get.apib' },
+      });
       runDreddWithServer(dredd, app, (err, info) => {
         runtimeInfo = info;
         done(err);
@@ -120,7 +124,9 @@ describe('Running Dredd from JavaScript', () => {
     let dreddRuntimeInfo;
 
     before((done) => {
-      const dredd = new Dredd({ options: { path: './test/fixtures/single-get.apib' } });
+      const dredd = new Dredd({
+        options: { path: './test/fixtures/single-get.apib' },
+      });
       runDredd(dredd, (err, info) => {
         dreddRuntimeInfo = info;
         done(err);
@@ -207,7 +213,9 @@ describe('Running Dredd from JavaScript', () => {
     const error = new Error('Ouch!');
 
     before((done) => {
-      const dredd = new Dredd({ options: { path: './test/fixtures/single-get.apib' } });
+      const dredd = new Dredd({
+        options: { path: './test/fixtures/single-get.apib' },
+      });
       sinon.stub(dredd.transactionRunner, 'run').callsArgWithAsync(1, error);
 
       runDredd(dredd, (err, info) => {

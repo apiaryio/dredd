@@ -1,13 +1,13 @@
-const R = require('ramda');
-const bodyParser = require('body-parser');
-const clone = require('clone');
-const express = require('express');
-const fs = require('fs');
-const { assert } = require('chai');
+import R from 'ramda';
+import bodyParser from 'body-parser';
+import clone from 'clone';
+import express from 'express';
+import fs from 'fs';
+import { assert } from 'chai';
 
-const logger = require('../../lib/logger');
-const reporterOutputLogger = require('../../lib/reporters/reporterOutputLogger');
-const Dredd = require('../../lib/Dredd');
+import logger from '../../lib/logger';
+import reporterOutputLogger from '../../lib/reporters/reporterOutputLogger';
+import Dredd from '../../lib/Dredd';
 
 const PORT = 9876;
 
@@ -34,17 +34,15 @@ function execCommand(options = {}, cb) {
       if (error ? error.message : undefined) {
         output += error.message;
       }
-      exitStatus = (error || (((1 * stats.failures) + (1 * stats.errors)) > 0)) ? 1 : 0;
+      exitStatus = error || 1 * stats.failures + 1 * stats.errors > 0 ? 1 : 0;
       cb();
     }
   });
 }
 
-
 function record(transport, level, message) {
   output += `\n${level}: ${message}`;
 }
-
 
 // These tests were separated out from a larger file. They deserve a rewrite,
 // see https://github.com/apiaryio/dredd/issues/1288
@@ -75,63 +73,83 @@ describe('Apiary reporter', () => {
     exitStatus = null;
 
     before((done) => {
-      const cmd = {
-        options: {
-          path: ['./test/fixtures/single-get.apib'],
-          reporter: ['apiary'],
-          loglevel: 'debug',
-        },
-        custom: {
-          apiaryApiUrl: `http://127.0.0.1:${PORT + 1}`,
-          apiaryApiKey: 'the-key',
-          apiaryApiName: 'the-api-name',
-        },
-      };
+      try {
+        const cmd = {
+          options: {
+            path: ['./test/fixtures/single-get.apib'],
+            reporter: ['apiary'],
+            loglevel: 'debug',
+          },
+          custom: {
+            apiaryApiUrl: `http://127.0.0.1:${PORT + 1}`,
+            apiaryApiKey: 'the-key',
+            apiaryApiName: 'the-api-name',
+          },
+        };
 
-      receivedHeaders = {};
-      receivedHeadersRuns = {};
+        receivedHeaders = {};
+        receivedHeadersRuns = {};
 
-      const apiary = express();
-      const app = express();
+        const apiary = express();
+        const app = express();
 
-      apiary.use(bodyParser.json({ size: '5mb' }));
+        apiary.use(bodyParser.json({ size: '5mb' }));
 
-      apiary.post('/apis/*', (req, res) => {
-        if (req.body && (req.url.indexOf('/tests/steps') > -1)) {
-          if (!receivedRequest) { receivedRequest = clone(req.body); }
-          Object.keys(req.headers).forEach((name) => {
-            receivedHeaders[name.toLowerCase()] = req.headers[name];
+        apiary.post('/apis/*', (req, res) => {
+          if (req.body && req.url.indexOf('/tests/steps') > -1) {
+            if (!receivedRequest) {
+              receivedRequest = clone(req.body);
+            }
+            Object.keys(req.headers).forEach((name) => {
+              receivedHeaders[name.toLowerCase()] = req.headers[name];
+            });
+          }
+          if (req.body && req.url.indexOf('/tests/runs') > -1) {
+            if (!receivedRequestTestRuns) {
+              receivedRequestTestRuns = clone(req.body);
+            }
+            Object.keys(req.headers).forEach((name) => {
+              receivedHeadersRuns[name.toLowerCase()] = req.headers[name];
+            });
+          }
+          res.status(201).json({
+            _id: '1234_id',
+            testRunId: '6789_testRunId',
+            reportUrl: 'http://url.me/test/run/1234_id',
           });
-        }
-        if (req.body && (req.url.indexOf('/tests/runs') > -1)) {
-          if (!receivedRequestTestRuns) { receivedRequestTestRuns = clone(req.body); }
-          Object.keys(req.headers).forEach((name) => {
-            receivedHeadersRuns[name.toLowerCase()] = req.headers[name];
+        });
+
+        apiary.all('*', (req, res) => res.json({}));
+
+        app.get('/machines', (req, res) =>
+          res.json([{ type: 'bulldozer', name: 'willy' }]),
+        );
+
+        server = app.listen(PORT, () => {
+          server2 = apiary.listen(PORT + 1, () => {
+            execCommand(cmd, () =>
+              server2.close(() => server.close(() => done())),
+            );
           });
-        }
-        res.status(201).json({
-          _id: '1234_id',
-          testRunId: '6789_testRunId',
-          reportUrl: 'http://url.me/test/run/1234_id',
         });
-      });
-
-      apiary.all('*', (req, res) => res.json({}));
-
-      app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
-
-      server = app.listen(PORT, () => {
-        server2 = apiary.listen((PORT + 1), () => {
-          execCommand(cmd, () => server2.close(() => server.close(() => done())));
-        });
-      });
+      } catch (error) {
+        throw error;
+      }
     });
 
-    it('should not print warning about missing Apiary API settings', () => assert.notInclude(output, 'Apiary API Key or API Project Subdomain were not provided.'));
+    it('should not print warning about missing Apiary API settings', () =>
+      assert.notInclude(
+        output,
+        'Apiary API Key or API Project Subdomain were not provided.',
+      ));
 
     it('should contain Authentication header thanks to apiaryApiKey and apiaryApiName configuration', () => {
       assert.propertyVal(receivedHeaders, 'authentication', 'Token the-key');
-      assert.propertyVal(receivedHeadersRuns, 'authentication', 'Token the-key');
+      assert.propertyVal(
+        receivedHeadersRuns,
+        'authentication',
+        'Token the-key',
+      );
     });
 
     it('should send the test-run as a non-public one', () => {
@@ -139,16 +157,26 @@ describe('Apiary reporter', () => {
       assert.propertyVal(receivedRequestTestRuns, 'public', false);
     });
 
-    it('should print using the new reporter', () => assert.include(output, 'http://url.me/test/run/1234_id'));
+    it('should print using the new reporter', () =>
+      assert.include(output, 'http://url.me/test/run/1234_id'));
 
     it('should send results from Gavel', () => {
       assert.isObject(receivedRequest);
       assert.nestedProperty(receivedRequest, 'results.request');
       assert.nestedProperty(receivedRequest, 'results.realResponse');
       assert.nestedProperty(receivedRequest, 'results.expectedResponse');
-      assert.nestedProperty(receivedRequest, 'results.validationResult.fields.body.kind');
-      assert.nestedProperty(receivedRequest, 'results.validationResult.fields.headers.kind');
-      assert.nestedProperty(receivedRequest, 'results.validationResult.fields.statusCode.kind');
+      assert.nestedProperty(
+        receivedRequest,
+        'results.validationResult.fields.body.kind',
+      );
+      assert.nestedProperty(
+        receivedRequest,
+        'results.validationResult.fields.headers.kind',
+      );
+      assert.nestedProperty(
+        receivedRequest,
+        'results.validationResult.fields.statusCode.kind',
+      );
 
       it('prints out an error message', () => assert.notEqual(exitStatus, 0));
     });
@@ -179,8 +207,10 @@ describe('Apiary reporter', () => {
         apiary.use(bodyParser.json({ size: '5mb' }));
 
         apiary.post('/apis/*', (req, res) => {
-          if (req.body && (req.url.indexOf('/tests/steps') > -1)) {
-            if (!receivedRequest) { receivedRequest = clone(req.body); }
+          if (req.body && req.url.indexOf('/tests/steps') > -1) {
+            if (!receivedRequest) {
+              receivedRequest = clone(req.body);
+            }
           }
           res.status(201).json({
             _id: '1234_id',
@@ -191,12 +221,15 @@ describe('Apiary reporter', () => {
 
         apiary.all('*', (req, res) => res.json({}));
 
-        server2 = apiary.listen((PORT + 1), () => execCommand(cmd, () => server2.close(() => {})));
+        server2 = apiary.listen(PORT + 1, () =>
+          execCommand(cmd, () => server2.close(() => {})),
+        );
 
         server2.on('close', done);
       });
 
-      it('should print using the reporter', () => assert.include(output, 'http://url.me/test/run/1234_id'));
+      it('should print using the reporter', () =>
+        assert.include(output, 'http://url.me/test/run/1234_id'));
 
       it('should send results from gavel', () => {
         assert.isObject(receivedRequest);
@@ -237,8 +270,10 @@ describe('Apiary reporter', () => {
         apiary.use(bodyParser.json({ size: '5mb' }));
 
         apiary.post('/apis/*', (req, res) => {
-          if (req.body && (req.url.indexOf('/tests/steps') > -1)) {
-            if (!receivedRequest) { receivedRequest = clone(req.body); }
+          if (req.body && req.url.indexOf('/tests/steps') > -1) {
+            if (!receivedRequest) {
+              receivedRequest = clone(req.body);
+            }
           }
           res.status(201).json({
             _id: '1234_id',
@@ -249,29 +284,51 @@ describe('Apiary reporter', () => {
 
         apiary.all('*', (req, res) => res.json({}));
 
-        app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
+        app.get('/machines', (req, res) =>
+          res.json([{ type: 'bulldozer', name: 'willy' }]),
+        );
 
-        server = app.listen(PORT, () => { server2 = apiary.listen((PORT + 1), () => {}); });
+        server = app.listen(PORT, () => {
+          server2 = apiary.listen(PORT + 1, () => {});
+        });
 
         execCommand(cmd, () => server2.close(() => server.close(() => {})));
 
         server.on('close', done);
       });
 
-      it('should print warning about missing Apiary API settings', () => assert.include(output, 'Apiary API Key or API Project Subdomain were not provided.'));
+      it('should print warning about missing Apiary API settings', () =>
+        assert.include(
+          output,
+          'Apiary API Key or API Project Subdomain were not provided.',
+        ));
 
-      it('should print link to documentation', () => assert.include(output, 'https://dredd.org/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests'));
+      it('should print link to documentation', () =>
+        assert.include(
+          output,
+          'https://dredd.org/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests',
+        ));
 
-      it('should print using the new reporter', () => assert.include(output, 'http://url.me/test/run/1234_id'));
+      it('should print using the new reporter', () =>
+        assert.include(output, 'http://url.me/test/run/1234_id'));
 
       it('should send results from Gavel', () => {
         assert.isObject(receivedRequest);
         assert.nestedProperty(receivedRequest, 'results.request');
         assert.nestedProperty(receivedRequest, 'results.realResponse');
         assert.nestedProperty(receivedRequest, 'results.expectedResponse');
-        assert.nestedProperty(receivedRequest, 'results.validationResult.fields.body.kind');
-        assert.nestedProperty(receivedRequest, 'results.validationResult.fields.headers.kind');
-        assert.nestedProperty(receivedRequest, 'results.validationResult.fields.statusCode.kind');
+        assert.nestedProperty(
+          receivedRequest,
+          'results.validationResult.fields.body.kind',
+        );
+        assert.nestedProperty(
+          receivedRequest,
+          'results.validationResult.fields.headers.kind',
+        );
+        assert.nestedProperty(
+          receivedRequest,
+          'results.validationResult.fields.statusCode.kind',
+        );
       });
     });
   });
@@ -302,7 +359,9 @@ describe('Apiary reporter', () => {
       },
     };
 
-    afterEach(() => { connectedToServer = null; });
+    afterEach(() => {
+      connectedToServer = null;
+    });
 
     before((done) => {
       app = express();
@@ -320,7 +379,9 @@ describe('Apiary reporter', () => {
         fs.createReadStream('./test/fixtures/single-get.apib').pipe(res);
       });
 
-      app.get('/machines', (req, res) => res.json([{ type: 'bulldozer', name: 'willy' }]));
+      app.get('/machines', (req, res) =>
+        res.json([{ type: 'bulldozer', name: 'willy' }]),
+      );
 
       app.get('/not-found.apib', (req, res) => {
         notFound = true;
@@ -330,18 +391,23 @@ describe('Apiary reporter', () => {
       server = app.listen(PORT, () => done());
     });
 
-    after(done => server.close(() => {
-      app = null;
-      server = null;
-      done();
-    }));
+    after((done) =>
+      server.close(() => {
+        app = null;
+        server = null;
+        done();
+      }),
+    );
 
     describe('and I try to load a file from bad hostname at all', () => {
-      before(done => execCommand(errorCmd, () => done()));
+      before((done) => execCommand(errorCmd, () => done()));
 
-      after(() => { connectedToServer = null; });
+      after(() => {
+        connectedToServer = null;
+      });
 
-      it('should not send a GET to the server', () => assert.isNull(connectedToServer));
+      it('should not send a GET to the server', () =>
+        assert.isNull(connectedToServer));
 
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
@@ -352,13 +418,17 @@ describe('Apiary reporter', () => {
     });
 
     describe('and I try to load a file that does not exist from an existing server', () => {
-      before(done => execCommand(wrongCmd, () => done()));
+      before((done) => execCommand(wrongCmd, () => done()));
 
-      after(() => { connectedToServer = null; });
+      after(() => {
+        connectedToServer = null;
+      });
 
-      it('should connect to the right server', () => assert.isTrue(connectedToServer));
+      it('should connect to the right server', () =>
+        assert.isTrue(connectedToServer));
 
-      it('should send a GET to server at wrong URL', () => assert.isTrue(notFound));
+      it('should send a GET to server at wrong URL', () =>
+        assert.isTrue(notFound));
 
       it('should exit with status 1', () => assert.equal(exitStatus, 1));
 
@@ -370,11 +440,13 @@ describe('Apiary reporter', () => {
     });
 
     describe('and I try to load a file that actually is there', () => {
-      before(done => execCommand(goodCmd, () => done()));
+      before((done) => execCommand(goodCmd, () => done()));
 
-      it('should send a GET to the right server', () => assert.isTrue(connectedToServer));
+      it('should send a GET to the right server', () =>
+        assert.isTrue(connectedToServer));
 
-      it('should send a GET to server at good URL', () => assert.isTrue(fileFound));
+      it('should send a GET to server at good URL', () =>
+        assert.isTrue(fileFound));
 
       it('should exit with status 0', () => assert.equal(exitStatus, 0));
     });

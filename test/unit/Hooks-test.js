@@ -1,7 +1,7 @@
-const sinon = require('sinon');
-const { assert } = require('chai');
+import sinon from 'sinon';
+import { assert } from 'chai';
 
-const Hooks = require('../../lib/Hooks');
+import Hooks from '../../lib/Hooks';
 
 describe('Hooks', () => {
   describe('constructor', () => {
@@ -66,7 +66,8 @@ describe('Hooks', () => {
       hooks.before('beforeHook', () => '');
     });
 
-    it('should add to hook collection', () => assert.property(hooks.beforeHooks, 'beforeHook'));
+    it('should add to hook collection', () =>
+      assert.property(hooks.beforeHooks, 'beforeHook'));
   });
 
   describe('#beforeValidation', () => {
@@ -77,7 +78,8 @@ describe('Hooks', () => {
       hooks.beforeValidation('beforeValidationHook', () => '');
     });
 
-    it('should add to hook collection', () => assert.property(hooks.beforeValidationHooks, 'beforeValidationHook'));
+    it('should add to hook collection', () =>
+      assert.property(hooks.beforeValidationHooks, 'beforeValidationHook'));
   });
 
   describe('#after', () => {
@@ -88,7 +90,8 @@ describe('Hooks', () => {
       hooks.after('afterHook', () => '');
     });
 
-    it('should add to hook collection', () => assert.property(hooks.afterHooks, 'afterHook'));
+    it('should add to hook collection', () =>
+      assert.property(hooks.afterHooks, 'afterHook'));
   });
 
   describe('#beforeAll', () => {
@@ -99,7 +102,8 @@ describe('Hooks', () => {
       hooks.beforeAll(() => '');
     });
 
-    it('should add to hook collection', () => assert.lengthOf(hooks.beforeAllHooks, 1));
+    it('should add to hook collection', () =>
+      assert.lengthOf(hooks.beforeAllHooks, 1));
   });
 
   describe('#afterAll', () => {
@@ -110,7 +114,8 @@ describe('Hooks', () => {
       hooks.afterAll(() => '');
     });
 
-    it('should add to hook collection', () => assert.lengthOf(hooks.afterAllHooks, 1));
+    it('should add to hook collection', () =>
+      assert.lengthOf(hooks.afterAllHooks, 1));
   });
 
   describe('#beforeEach', () => {
@@ -121,7 +126,8 @@ describe('Hooks', () => {
       hooks.beforeEach(() => '');
     });
 
-    it('should add to hook collection', () => assert.lengthOf(hooks.beforeEachHooks, 1));
+    it('should add to hook collection', () =>
+      assert.lengthOf(hooks.beforeEachHooks, 1));
   });
 
   describe('#beforeEachValidation', () => {
@@ -132,9 +138,9 @@ describe('Hooks', () => {
       hooks.beforeEachValidation(() => '');
     });
 
-    it('should add to hook collection', () => assert.lengthOf(hooks.beforeEachValidationHooks, 1));
+    it('should add to hook collection', () =>
+      assert.lengthOf(hooks.beforeEachValidationHooks, 1));
   });
-
 
   describe('#afterEach', () => {
     let hooks;
@@ -144,6 +150,7 @@ describe('Hooks', () => {
       hooks.afterEach(() => '');
     });
 
-    it('should add to hook collection', () => assert.lengthOf(hooks.afterEachHooks, 1));
+    it('should add to hook collection', () =>
+      assert.lengthOf(hooks.afterEachHooks, 1));
   });
 });

@@ -1,8 +1,7 @@
-const path = require('path');
-const { assert } = require('chai');
+import path from 'path';
+import { assert } from 'chai';
 
-const resolvePaths = require('../../lib/resolvePaths');
-
+import resolvePaths from '../../lib/resolvePaths';
 
 describe('resolvePaths()', () => {
   const workingDirectory = path.join(__filename, '..', '..', 'fixtures');
@@ -29,7 +28,10 @@ describe('resolvePaths()', () => {
 
   describe('when given existing relative filenames', () => {
     it('resolves them into absolute paths', () => {
-      const paths = resolvePaths(workingDirectory, ['./hooks.js', './non-js-hooks.rb']);
+      const paths = resolvePaths(workingDirectory, [
+        './hooks.js',
+        './non-js-hooks.rb',
+      ]);
       assert.deepEqual(paths, [
         path.join(workingDirectory, 'hooks.js'),
         path.join(workingDirectory, 'non-js-hooks.rb'),
@@ -48,23 +50,27 @@ describe('resolvePaths()', () => {
   describe('when given glob pattern resolving to existing files', () => {
     it('resolves them into absolute paths', () => {
       const paths = resolvePaths(workingDirectory, ['./**/hooks.js']);
-      assert.deepEqual(paths, [
-        path.join(workingDirectory, 'hooks.js'),
-      ]);
+      assert.deepEqual(paths, [path.join(workingDirectory, 'hooks.js')]);
     });
   });
 
   describe('when given glob pattern resolving to no files', () => {
     it('throws an error', () => {
       assert.throws(() => {
-        resolvePaths(workingDirectory, ['./**/hooks.js', './**/foo/bar/foobar.js']);
+        resolvePaths(workingDirectory, [
+          './**/hooks.js',
+          './**/foo/bar/foobar.js',
+        ]);
       }, './**/foo/bar/foobar.js');
     });
   });
 
   describe('when given both globs and filenames', () => {
     it('resolves them into absolute paths', () => {
-      const paths = resolvePaths(workingDirectory, ['./non-js-hooks.rb', './**/hooks.js']);
+      const paths = resolvePaths(workingDirectory, [
+        './non-js-hooks.rb',
+        './**/hooks.js',
+      ]);
       assert.deepEqual(paths, [
         path.join(workingDirectory, 'hooks.js'),
         path.join(workingDirectory, 'non-js-hooks.rb'),
@@ -79,7 +85,10 @@ describe('resolvePaths()', () => {
 
     it('throws an error on globs resolving to no files', () => {
       assert.throws(() => {
-        resolvePaths(workingDirectory, ['./hooks.js', './**/foo/bar/foobar.js']);
+        resolvePaths(workingDirectory, [
+          './hooks.js',
+          './**/foo/bar/foobar.js',
+        ]);
       }, './**/foo/bar/foobar.js');
     });
 

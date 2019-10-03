@@ -5,7 +5,10 @@ hooks.beforeAll((done) => {
   done();
 });
 
-hooks.before('Machines > Machines collection > Get Machines', (transaction, done) => {
-  console.log('*** before');
-  done();
-});
+hooks.before(
+  'Machines > Machines collection > Get Machines',
+  (transaction, done) => {
+    console.log('*** before');
+    done();
+  },
+);

@@ -1,27 +1,29 @@
-const clone = require('clone');
-const { assert } = require('chai');
+import clone from 'clone';
+import { assert } from 'chai';
 
-const configuration = require('../../lib/configuration');
-const normalizeConfig = require('../../lib/configuration/normalizeConfig');
-const validateConfig = require('../../lib/configuration/validateConfig');
-const logger = require('../../lib/logger');
-const reporterOutputLogger = require('../../lib/reporters/reporterOutputLogger');
+import { applyLoggingOptions } from '../../lib/configuration';
+import normalizeConfig from '../../lib/configuration/normalizeConfig';
+import validateConfig from '../../lib/configuration/validateConfig';
+import logger from '../../lib/logger';
+import reporterOutputLogger from '../../lib/reporters/reporterOutputLogger';
 
 const defaultLoggerConsole = clone(logger.transports.console);
-const defaultReporterOutputLoggerConsole = clone(reporterOutputLogger.transports.console);
+const defaultReporterOutputLoggerConsole = clone(
+  reporterOutputLogger.transports.console,
+);
 
 function resetLoggerConsoles() {
   logger.transports.console = defaultLoggerConsole;
   reporterOutputLogger.transports.console = defaultReporterOutputLoggerConsole;
 }
 
-describe('configuration.applyLoggingOptions()', () => {
+describe('applyLoggingOptions()', () => {
   beforeEach(resetLoggerConsoles);
   afterEach(resetLoggerConsoles);
 
   describe('with color not set', () => {
     beforeEach(() => {
-      configuration.applyLoggingOptions({});
+      applyLoggingOptions({});
     });
 
     it('the application logger should be set to colorize', () => {
@@ -34,7 +36,7 @@ describe('configuration.applyLoggingOptions()', () => {
 
   describe('with color set to true', () => {
     beforeEach(() => {
-      configuration.applyLoggingOptions({ color: true });
+      applyLoggingOptions({ color: true });
     });
 
     it('the application logger should be set to colorize', () => {
@@ -47,7 +49,7 @@ describe('configuration.applyLoggingOptions()', () => {
 
   describe('with color set to false', () => {
     beforeEach(() => {
-      configuration.applyLoggingOptions({ color: false });
+      applyLoggingOptions({ color: false });
     });
 
     it('the application logger should be set not to colorize', () => {
@@ -60,7 +62,7 @@ describe('configuration.applyLoggingOptions()', () => {
 
   describe('with loglevel not set', () => {
     beforeEach(() => {
-      configuration.applyLoggingOptions({});
+      applyLoggingOptions({});
     });
 
     it('the application logger level is set to warn', () => {
@@ -74,7 +76,7 @@ describe('configuration.applyLoggingOptions()', () => {
 
   describe('with loglevel set to a valid value', () => {
     beforeEach(() => {
-      configuration.applyLoggingOptions({ loglevel: 'error' });
+      applyLoggingOptions({ loglevel: 'error' });
     });
 
     it('the application logger level is set', () => {
@@ -88,7 +90,7 @@ describe('configuration.applyLoggingOptions()', () => {
 
   describe('with loglevel set to a valid value using uppercase', () => {
     beforeEach(() => {
-      configuration.applyLoggingOptions({ loglevel: 'ERROR' });
+      applyLoggingOptions({ loglevel: 'ERROR' });
     });
 
     it('the value is understood', () => {
@@ -99,14 +101,14 @@ describe('configuration.applyLoggingOptions()', () => {
   describe('with loglevel set to an invalid value', () => {
     it('throws an exception', () => {
       assert.throws(() => {
-        configuration.applyLoggingOptions({ loglevel: 'verbose' });
+        applyLoggingOptions({ loglevel: 'verbose' });
       }, /verbose.+unsupported/i);
     });
   });
 
   describe('with loglevel set to silent', () => {
     beforeEach(() => {
-      configuration.applyLoggingOptions({ loglevel: 'silent' });
+      applyLoggingOptions({ loglevel: 'silent' });
     });
 
     it('the application logger gets silenced', () => {
@@ -120,7 +122,7 @@ describe('configuration.applyLoggingOptions()', () => {
 
   describe('with loglevel set to warning', () => {
     beforeEach(() => {
-      configuration.applyLoggingOptions({ loglevel: 'warning' });
+      applyLoggingOptions({ loglevel: 'warning' });
     });
 
     it('the value is understood as warn', () => {
@@ -130,7 +132,7 @@ describe('configuration.applyLoggingOptions()', () => {
 
   describe('with loglevel set to warn', () => {
     beforeEach(() => {
-      configuration.applyLoggingOptions({ loglevel: 'warn' });
+      applyLoggingOptions({ loglevel: 'warn' });
     });
 
     it('the application logger level is set to warn', () => {
@@ -143,7 +145,7 @@ describe('configuration.applyLoggingOptions()', () => {
 
   describe('with loglevel set to error', () => {
     beforeEach(() => {
-      configuration.applyLoggingOptions({ loglevel: 'error' });
+      applyLoggingOptions({ loglevel: 'error' });
     });
 
     it('the application logger level is set to error', () => {
@@ -156,7 +158,7 @@ describe('configuration.applyLoggingOptions()', () => {
 
   describe('with loglevel set to debug', () => {
     beforeEach(() => {
-      configuration.applyLoggingOptions({ loglevel: 'debug' });
+      applyLoggingOptions({ loglevel: 'debug' });
     });
 
     it('the application logger level is set to debug', () => {
@@ -167,7 +169,6 @@ describe('configuration.applyLoggingOptions()', () => {
     });
   });
 });
-
 
 describe('configuration', () => {
   describe("with -c set to string 'true'", () => {
@@ -452,10 +453,12 @@ describe('configuration', () => {
   describe('with both data and apiDescriptions set', () => {
     const config = {
       data: { 'filename.api': 'FORMAT: 1A\n# Sample API v1\n' },
-      apiDescriptions: [{
-        location: 'configuration.apiDescriptions[0]',
-        content: 'FORMAT: 1A\n# Sample API v2\n',
-      }],
+      apiDescriptions: [
+        {
+          location: 'configuration.apiDescriptions[0]',
+          content: 'FORMAT: 1A\n# Sample API v2\n',
+        },
+      ],
     };
     const { warnings, errors } = validateConfig(config);
 
