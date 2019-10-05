@@ -88,7 +88,7 @@
     "nock": "10.0.6",
     "prettier": "1.18.2",
     "ps-node": "0.1.6",
-    "rollup": "1.22.0",
+    "rollup": "1.23.1",
     "rollup-plugin-commonjs": "10.1.0",
     "rollup-plugin-json": "4.0.0",
     "rollup-plugin-node-externals": "2.0.1",
