@@ -81,7 +81,7 @@
     "cucumber": "5.1.0",
     "eslint": "5.16.0",
     "eslint-config-airbnb-base": "13.2.0",
-    "eslint-config-prettier": "6.3.0",
+    "eslint-config-prettier": "6.4.0",
     "eslint-plugin-import": "2.18.2",
     "express": "4.17.1",
     "mocha": "6.2.1",
