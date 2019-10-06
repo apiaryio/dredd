@@ -78,7 +78,7 @@
     "body-parser": "1.19.0",
     "coffeescript": "2.4.1",
     "commitlint-circle": "1.0.0",
-    "cucumber": "5.1.0",
+    "cucumber": "6.0.0",
     "eslint": "5.16.0",
     "eslint-config-airbnb-base": "13.2.0",
     "eslint-config-prettier": "6.3.0",
