@@ -2,7 +2,6 @@ environment:
   nodejs_version: '12'
 install:
   - ps: Install-Product node 12
-  - 'npm -g install npm@6'
   - 'npm install -g yarn'
   - "set PATH=%APPDATA%\\npm;%PATH%"
   - 'yarn install'
