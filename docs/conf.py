@@ -117,7 +117,7 @@ html_show_copyright = False
 linkcheck_ignore = [
     'https://crates.io/crates/dredd-hooks',  # https://github.com/sphinx-doc/sphinx/pull/5140
     # Exclude Dredd repository links, because they are checked
-    # as a part of another script.
+    # by "_extensions/ghlink_check.py".
     r'https?://github\.com/apiaryio/dredd/.+',
 ]
 
