@@ -1,17 +1,15 @@
 package-lock.json
 npm-shrinkwrap.json
 
-/build
-/coverage
-/docs/_build
-node_modules
 .idea
 .vscode
 .DS_Store
+node_modules
 cov.*
 *.log
 .env*
 __pycache__
+/docs/_build
 
 # Regardless the rules above, never ignore following
 !.vscode/launch.json

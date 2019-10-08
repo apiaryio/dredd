@@ -1,31 +1,23 @@
 version: 2.1
 
 commands:
-  npm-install:
-    steps:
-      - run: echo $(node --version) > .node-version
-      - restore_cache:
-          key: js-deps-{{ checksum ".node-version" }}-{{ checksum "package.json" }}
-      - run: npm install --no-save
-      - save_cache:
-          key: js-deps-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-
   pip-install-docs:
     steps:
       - run: echo $(python --version) > .python-version
       - restore_cache:
-          key: py-deps-{{ checksum ".python-version" }}-{{ checksum "docs/requirements.txt" }}
+          key: py-deps-{{ checksum ".python-version" }}-{{ checksum "./docs/requirements.txt" }}
       - run: 'if [ ! -d ./venv ]; then python -m venv ./venv; fi'
       - run: echo "source $(pwd)/venv/bin/activate" >> $BASH_ENV
       - run: pip install -r ./docs/requirements.txt
       - save_cache:
-          key: py-deps-{{ checksum "docs/requirements.txt" }}
+          key: py-deps-{{ checksum "./docs/requirements.txt" }}
           paths:
             - ./venv
 
 aliases:
+  - &install
+    - run: sudo npm i -g yarn && yarn install --frozen-lockfile
+
   - &node12
     image: circleci/node:12
 
@@ -35,9 +27,9 @@ aliases:
   - &test-steps
     steps:
       - checkout
-      - npm-install
-      - run: npm run build
-      - run: npm run ci:test
+      - <<: *install
+      - run: yarn build
+      - run: yarn ci:test
 
 jobs:
   test-node12:
@@ -56,32 +48,32 @@ jobs:
     docker: [<<: *node12]
     steps:
       - checkout
-      - npm-install
-      - run: npm run build
-      - run: npm run e2e:apib
+      - <<: *install
+      - run: yarn build
+      - run: yarn e2e:apib
 
   test-e2e-openapi2:
     docker: [<<: *node12]
     steps:
       - checkout
-      - npm-install
-      - run: npm run build
-      - run: npm run e2e:openapi2
+      - <<: *install
+      - run: yarn build
+      - run: yarn e2e:openapi2
 
   quality-checks:
     docker: [<<: *python-docs]
     steps:
       - checkout
-      - npm-install
+      - <<: *install
       - pip-install-docs
-      - run: npm run ci:lint
+      - run: yarn ci:lint
 
   format-check:
     docker: [<<: *node12]
     steps:
       - checkout
-      - npm-install
-      - run: npm run prettify:check
+      - <<: *install
+      - run: yarn prettify:check
 
   docs-dry-run:
     # 'dry run', because production build happens directly on the ReadTheDocs
@@ -89,9 +81,9 @@ jobs:
     docker: [<<: *python-docs]
     steps:
       - checkout
-      - npm-install
+      - <<: *install
       - pip-install-docs
-      - run: npm run ci:docs
+      - run: yarn ci:docs
 
   smoke-tests:
     docker:
@@ -99,8 +91,8 @@ jobs:
       - image: circleci/mongo:latest
     steps:
       - checkout
-      - npm-install
-      - run: npm run ci:smoke
+      - <<: *install
+      - run: yarn ci:smoke
 
   release:
     # the GH_TOKEN and NPM_TOKEN environment variables are expected to be set
@@ -108,8 +100,8 @@ jobs:
     docker: [<<: *node12]
     steps:
       - checkout
-      - npm-install
-      - run: npm run ci:release
+      - <<: *install
+      - run: yarn ci:release
 
 workflows:
   version: 2

@@ -196,7 +196,7 @@ Hacking Apiary reporter
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 If you want to build something on top of the Apiary Reporter, note that
-it uses a public API described in `Apiary Tests API for authenticated test reports <https://github.com/apiaryio/dredd/blob/master/ApiaryReportingApi.apib>`__
+it uses a public API described in `Apiary Tests API for authenticated test reports <https://github.com/apiaryio/dredd/blob/master/packages/dredd/ApiaryReportingApi.apib>`__
 
 Following data are sent over the wire to Apiary:
 

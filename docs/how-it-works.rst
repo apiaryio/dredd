@@ -190,7 +190,7 @@ If there is no body example or schema specified for the response in your API des
 
 If you want to enforce the incoming body is empty, you can use :ref:`hooks <hooks>`:
 
-.. literalinclude:: ../test/fixtures/response/empty-body-hooks.js
+.. literalinclude:: ../packages/dredd/test/fixtures/response/empty-body-hooks.js
    :language: javascript
 
 In case of responses with 204 or 205 status codes Dredd still behaves the same way, but it warns about violating the :rfc:`7231` when the responses have non-empty bodies.
