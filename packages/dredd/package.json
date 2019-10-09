@@ -1,6 +1,6 @@
 {
   "name": "dredd",
-  "version": "0.0.0-semantically-released",
+  "version": "12.1.0",
   "description": "HTTP API Testing Framework",
   "main": "build/index.js",
   "bin": {
@@ -21,7 +21,6 @@
     "e2e": "yarn e2e:apib && yarn e2e:openapi2",
     "e2e:apib": "cucumber-js",
     "e2e:openapi2": "cucumber-js --world-parameters=\"{\\\"apiDescriptionFormat\\\": \\\"application/swagger+yaml\\\"}\"",
-    "ci:release": "semantic-release && npm dist-tag add \"dredd@$(npm view dredd version)\" stable",
     "prepack": "npm run build"
   },
   "repository": {
@@ -84,7 +83,6 @@
     "rollup-plugin-node-externals": "2.0.1",
     "rollup-plugin-node-resolve": "5.2.0",
     "rollup-plugin-typescript2": "0.24.3",
-    "semantic-release": "15.13.24",
     "sinon": "7.5.0",
     "ts-node": "8.4.1",
     "typescript": "3.6.3"

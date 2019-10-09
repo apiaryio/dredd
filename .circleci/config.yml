@@ -97,22 +97,9 @@ jobs:
       - <<: *install
       - run: yarn test:smoke
 
-  release:
-    # the GH_TOKEN and NPM_TOKEN environment variables are expected to be set
-    # in https://circleci.com/gh/apiaryio/dredd/edit#env-vars
-    docker: [<<: *node12]
-    steps:
-      - checkout
-      # Disable semantic release during CI.
-      # Reason: Adding packages to monorepo via Git subtree keeps commits
-      # of the added packages. Prevent attempts to release any packages
-      # because of that. Also, need to figure out proper release lifecycle.
-      # - <<: *install
-      # - run: yarn ci:release
-
 workflows:
   version: 2
-  test-and-release:
+  test:
     jobs:
       - format-check
       - quality-checks
@@ -123,16 +110,3 @@ workflows:
       - test-e2e-openapi2
       - smoke-tests
       - docs-dry-run
-      - release:
-          requires:
-            - quality-checks
-            - test-node12
-            - test-node10
-            - test-node8
-            - test-e2e-apib
-            - test-e2e-openapi2
-            - smoke-tests
-            - docs-dry-run
-          filters:
-            branches:
-              only: master

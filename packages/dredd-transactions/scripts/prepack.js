@@ -5,11 +5,14 @@
 const fs = require('fs');
 const path = require('path');
 
-
-const drafterPackageData = require('../node_modules/drafter/package');
+const drafterPackageData = require('../../../node_modules/drafter/package');
 
 delete drafterPackageData.dependencies.protagonist;
 delete drafterPackageData.optionalDependencies.protagonist;
 const json = JSON.stringify(drafterPackageData, null, 2);
 
-fs.writeFileSync(`${path.dirname(__filename)}/../node_modules/drafter/package.json`, json);
+// prettier-ignore
+fs.writeFileSync(
+  `${path.dirname(__filename)}/../../../node_modules/drafter/package.json`,
+  json
+);

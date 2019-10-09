@@ -5,8 +5,7 @@
 # Aborts as soon as anything returns non-zero exit status
 set -e
 
-
-if [ ! -z "$TRAVIS" ]; then
+if [ ! -z "$CIRCLECI" ]; then
   echo "======================================================================"
   echo "SMOKE TEST"
   echo "======================================================================"
@@ -80,5 +79,5 @@ if [ ! -z "$TRAVIS" ]; then
   echo "SUCCESS"
   echo "======================================================================"
 else
-  exit 1
+  exit 1;
 fi
