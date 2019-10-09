@@ -1,5 +1,2 @@
-/smoke
-/coverage
-node_modules
 dredd-transactions-*.tgz
 /test/fixtures/**/*.json

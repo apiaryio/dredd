@@ -9,17 +9,15 @@
   "scripts": {
     "prepack": "node ./scripts/prepack.js",
     "clean": "rimraf ./coverage",
-    "lint": "bash ./scripts/commitlint.sh && eslint --ignore-path .gitignore .",
+    "lint": "eslint --ignore-path .gitignore .",
     "pretest": "node ./scripts/pretest.js",
     "test": "npm run clean && mocha ./test",
-    "ci:lint": "npm run lint",
-    "ci:test": "npm run test",
-    "ci:test:smoke": "bash ./scripts/smoke.sh",
+    "test:smoke": "bash ./scripts/smoke.sh",
     "ci:release": "semantic-release"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/apiaryio/dredd-transactions"
+    "url": "https://github.com/apiaryio/dredd"
   },
   "files": [
     "parse",
@@ -37,9 +35,6 @@
     "fury-adapter-apib-parser"
   ],
   "devDependencies": {
-    "@commitlint/cli": "8.2.0",
-    "@commitlint/config-conventional": "8.2.0",
-    "@commitlint/travis-cli": "8.2.0",
     "chai": "4.2.0",
     "chai-json-schema": "1.5.1",
     "eslint": "6.5.1",
@@ -61,5 +56,6 @@
     "acceptance"
   ],
   "author": "Apiary Czech Republic, s.r.o. <support@apiary.io>",
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/apiaryio/dredd/tree/master/packages/dredd-transactions"
 }

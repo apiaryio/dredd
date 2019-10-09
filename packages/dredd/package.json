@@ -98,5 +98,6 @@
     "acceptance"
   ],
   "author": "Apiary Czech Republic, s.r.o. <support@apiary.io>",
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/apiaryio/dredd/tree/master/packages/dredd"
 }
