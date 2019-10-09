@@ -1,0 +1,15 @@
+environment:
+  nodejs_version: "10"
+install:
+  - ps: Install-Product node 10
+  - "npm -g install npm@6"
+  - "set PATH=%APPDATA%\\npm;%PATH%"
+  - "npm install --no-optional"
+cache:
+  - "node_modules -> package.json"
+  - "%APPDATA%\\npm-cache -> package.json"
+build: off
+test_script:
+  - "node --version"
+  - "npm --version"
+  - "npm test"

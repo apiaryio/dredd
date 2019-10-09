@@ -1,0 +1,26 @@
+swagger: "2.0"
+
+info:
+  version: '1'
+  title: test
+
+host: petstore.swagger.io
+basePath: /api
+
+schemes:
+  - http
+
+consumes:
+  - application/json
+
+paths:
+  /pets:
+    get:
+      description: Get
+      parameters:
+        - in: query
+          name: filter.dotted
+          type: string
+      responses:
+        '200':
+          description: OK

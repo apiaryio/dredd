@@ -1,0 +1,29 @@
+language: "node_js"
+node_js: "10"
+before_install:
+  - "npm install npm@6 --global"
+install:
+  - "npm install --no-optional --no-save"
+jobs:
+  include:
+    ################################# Stage 1 #################################
+    - stage: "quality checks & tests"
+      env: "JOB=quality_checks"
+      script: "npm run ci:lint"
+
+    - env: "JOB=node8"
+      node_js: "8"
+      script: "npm run ci:test"
+
+    - env: "JOB=node10"
+      script: "npm run ci:test"
+
+    - env: "JOB=smoke_tests"
+      script: "npm run ci:test:smoke"
+
+    ################################# Stage 2 #################################
+    # The GH_TOKEN and NPM_TOKEN environment variables are expected to be set
+    # in https://travis-ci.org/apiaryio/dredd/settings
+    - stage: "semantic release"
+      script: "npm run ci:release"
+      if: fork = false AND branch = master AND type = push

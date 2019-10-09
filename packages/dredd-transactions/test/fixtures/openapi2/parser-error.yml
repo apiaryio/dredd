@@ -1,0 +1,5 @@
+swagger: "2.0"
+info:
+  title: Sample API
+  version: "0.1"
+paths: {/pets:
