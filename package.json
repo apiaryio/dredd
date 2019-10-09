@@ -1,16 +1,13 @@
 {
   "private": true,
   "scripts": {
-    "build": "lerna exec --scope=\"dredd\" yarn build",
-    "prettify:check": "lerna exec --scope='dredd' yarn prettify:check",
+    "build": "lerna exec --scope=\"*\" yarn build",
+    "prettify:check": "lerna exec --scope=\"*\" yarn prettify:check",
     "docs:lint": "sphinx-build -nW -b linkcheck ./docs ./docs/_build",
     "docs:test-extensions": "python -m unittest docs/_extensions/*.py --verbose",
     "docs:build": "sphinx-build -nW -b html ./docs ./docs/_build",
     "docs:serve": "sphinx-autobuild ./docs ./docs/_build",
-    "e2e:apib": "lerna exec --scope='dredd' yarn e2e:apib",
-    "e2e:openapi2": "lerna exec --scope='dredd' yarn e2e:openapi2",
     "ci:release": "lerna exec --scope='dredd' yarn ci:release",
-    "ci:docs": "yarn docs:build",
     "commit:lint": "./scripts/commitlint.sh",
     "lint": "lerna exec --scope=\"*\" --concurrency=1 --no-bail yarn lint",
     "test:smoke": "lerna exec --scope=\"*\" --concurrency=1 --no-bail yarn test:smoke",

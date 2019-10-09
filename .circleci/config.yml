@@ -50,7 +50,7 @@ jobs:
       - checkout
       - <<: *install
       - run: yarn build
-      - run: yarn e2e:apib
+      - run: npx lerna exec --scope="dredd" yarn e2e:apib
 
   test-e2e-openapi2:
     docker: [<<: *node12]
@@ -58,7 +58,7 @@ jobs:
       - checkout
       - <<: *install
       - run: yarn build
-      - run: yarn e2e:openapi2
+      - run: npx lerna exec --scope="dredd" yarn e2e:openapi2
 
   quality-checks:
     docker: [<<: *python-docs]
@@ -86,7 +86,7 @@ jobs:
       - checkout
       - <<: *install
       - pip-install-docs
-      - run: yarn ci:docs
+      - run: yarn docs:build
 
   smoke-tests:
     docker:
@@ -103,6 +103,10 @@ jobs:
     docker: [<<: *node12]
     steps:
       - checkout
+      # Disable semantic release during CI.
+      # Reason: Adding packages to monorepo via Git subtree keeps commits
+      # of the added packages. Prevent attempts to release any packages
+      # because of that. Also, need to figure out proper release lifecycle.
       # - <<: *install
       # - run: yarn ci:release
 
