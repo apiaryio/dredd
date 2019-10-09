@@ -29,7 +29,7 @@ aliases:
       - checkout
       - <<: *install
       - run: yarn build
-      - run: yarn ci:test
+      - run: yarn test
 
 jobs:
   test-node12:
@@ -50,7 +50,7 @@ jobs:
       - checkout
       - <<: *install
       - run: yarn build
-      - run: yarn e2e:apib
+      - run: npx lerna exec --scope="dredd" yarn e2e:apib
 
   test-e2e-openapi2:
     docker: [<<: *node12]
@@ -58,7 +58,7 @@ jobs:
       - checkout
       - <<: *install
       - run: yarn build
-      - run: yarn e2e:openapi2
+      - run: npx lerna exec --scope="dredd" yarn e2e:openapi2
 
   quality-checks:
     docker: [<<: *python-docs]
@@ -66,7 +66,10 @@ jobs:
       - checkout
       - <<: *install
       - pip-install-docs
-      - run: yarn ci:lint
+      - run: yarn lint
+      - run: yarn commit:lint
+      - run: yarn docs:lint
+      - run: yarn docs:test-extensions
 
   format-check:
     docker: [<<: *node12]
@@ -83,7 +86,7 @@ jobs:
       - checkout
       - <<: *install
       - pip-install-docs
-      - run: yarn ci:docs
+      - run: yarn docs:build
 
   smoke-tests:
     docker:
@@ -92,7 +95,7 @@ jobs:
     steps:
       - checkout
       - <<: *install
-      - run: yarn ci:smoke
+      - run: yarn test:smoke
 
   release:
     # the GH_TOKEN and NPM_TOKEN environment variables are expected to be set
@@ -100,8 +103,12 @@ jobs:
     docker: [<<: *node12]
     steps:
       - checkout
-      - <<: *install
-      - run: yarn ci:release
+      # Disable semantic release during CI.
+      # Reason: Adding packages to monorepo via Git subtree keeps commits
+      # of the added packages. Prevent attempts to release any packages
+      # because of that. Also, need to figure out proper release lifecycle.
+      # - <<: *install
+      # - run: yarn ci:release
 
 workflows:
   version: 2

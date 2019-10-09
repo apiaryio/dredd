@@ -14,4 +14,4 @@ test_script:
   - 'npm --version'
   - 'yarn --version'
   - 'yarn build'
-  - 'yarn ci:test'
+  - 'yarn test'
