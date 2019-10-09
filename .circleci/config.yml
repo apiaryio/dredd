@@ -100,8 +100,8 @@ jobs:
     docker: [<<: *node12]
     steps:
       - checkout
-      - <<: *install
-      - run: yarn ci:release
+      # - <<: *install
+      # - run: yarn ci:release
 
 workflows:
   version: 2
