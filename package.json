@@ -11,11 +11,15 @@
     "e2e:openapi2": "lerna exec --scope='dredd' yarn e2e:openapi2",
     "ci:release": "lerna exec --scope='dredd' yarn ci:release",
     "ci:docs": "yarn docs:build",
-    "ci:lint": "lerna exec --scope=\"dredd\" yarn ci:lint && yarn docs:lint && yarn docs:test-extensions",
-    "ci:smoke": "lerna exec --scope=\"dredd\" yarn ci:smoke",
-    "ci:test": "lerna exec --scope=\"dredd\" yarn ci:test"
+    "commit:lint": "./scripts/commitlint.sh",
+    "lint": "lerna exec --scope=\"*\" --concurrency=1 --no-bail yarn lint",
+    "test:smoke": "lerna exec --scope=\"*\" --concurrency=1 --no-bail yarn test:smoke",
+    "test": "lerna exec --scope=\"*\" --concurrency=1 --no-bail yarn test"
   },
   "devDependencies": {
+    "@commitlint/cli": "8.2.0",
+    "@commitlint/config-conventional": "8.2.0",
+    "commitlint-circle": "1.0.0",
     "lerna": "^3.16.4"
   },
   "workspaces": {

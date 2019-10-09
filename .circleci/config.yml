@@ -29,7 +29,7 @@ aliases:
       - checkout
       - <<: *install
       - run: yarn build
-      - run: yarn ci:test
+      - run: yarn test
 
 jobs:
   test-node12:
@@ -66,7 +66,10 @@ jobs:
       - checkout
       - <<: *install
       - pip-install-docs
-      - run: yarn ci:lint
+      - run: yarn lint
+      - run: yarn commit:lint
+      - run: yarn docs:lint
+      - run: yarn docs:test-extensions
 
   format-check:
     docker: [<<: *node12]
@@ -92,7 +95,7 @@ jobs:
     steps:
       - checkout
       - <<: *install
-      - run: yarn ci:smoke
+      - run: yarn test:smoke
 
   release:
     # the GH_TOKEN and NPM_TOKEN environment variables are expected to be set
