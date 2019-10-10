@@ -11,8 +11,7 @@ delete drafterPackageData.dependencies.protagonist;
 delete drafterPackageData.optionalDependencies.protagonist;
 const json = JSON.stringify(drafterPackageData, null, 2);
 
+const drafterPackageJsonPath = path.resolve(path.dirname(__filename), '../../../', 'node_modules/drafter/package.json')
+
 // prettier-ignore
-fs.writeFileSync(
-  `${path.dirname(__filename)}/../../../node_modules/drafter/package.json`,
-  json
-);
+fs.writeFileSync(drafterPackageJsonPath, json);
