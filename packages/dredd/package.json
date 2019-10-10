@@ -87,7 +87,7 @@
     "semantic-release": "15.13.24",
     "sinon": "7.5.0",
     "ts-node": "8.4.1",
-    "typescript": "3.6.3"
+    "typescript": "3.6.4"
   },
   "keywords": [
     "api",
