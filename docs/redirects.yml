@@ -31,6 +31,7 @@ redirects:
   "/hooks-new-language.html": "/hooks/new-language.html"
   "/hooks-perl.html": "/hooks/perl.html"
   "/hooks-ruby.html": "/hooks/ruby.html"
+  "/hooks-rust.html": "/hooks/rust.html"
   "/hooks-php.html": "/hooks/php.html"
   "/hooks-python.html": "/hooks/python.html"
 
@@ -48,5 +49,6 @@ redirects:
   "/hooks-new-language/": "/hooks/new-language.html"
   "/hooks-perl/": "/hooks/perl.html"
   "/hooks-ruby/": "/hooks/ruby.html"
+  "/hooks-rust/": "/hooks/rust.html"
   "/hooks-php/": "/hooks/php.html"
   "/hooks-python/": "/hooks/python.html"
