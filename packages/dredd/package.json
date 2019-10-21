@@ -83,7 +83,6 @@
     "rollup-plugin-node-externals": "2.0.1",
     "rollup-plugin-node-resolve": "5.2.0",
     "rollup-plugin-typescript2": "0.24.3",
-    "semantic-release": "15.13.27",
     "sinon": "7.5.0",
     "ts-node": "8.4.1",
     "typescript": "3.6.4"
