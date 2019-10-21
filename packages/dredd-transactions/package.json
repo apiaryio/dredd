@@ -8,6 +8,7 @@
   },
   "scripts": {
     "prepack": "node ./scripts/prepack.js",
+    "postpack": "node ./scripts/postpack.js",
     "build": "exit 0",
     "clean": "rimraf ./coverage",
     "lint": "eslint --ignore-path .gitignore .",
