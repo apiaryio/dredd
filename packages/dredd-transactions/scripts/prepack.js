@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const rimraf = require('rimraf');
 
-const PACKAGE_DIR = path.resolve(path.dirname(__filename), '..');
+const PACKAGE_DIR = path.resolve(__dirname, '..');
 const SYMLINKS_LOG = path.join(PACKAGE_DIR, 'prepack-symlinks.log');
 const DRAFTER_PATH = path.join(PACKAGE_DIR, 'node_modules', 'drafter');
 
@@ -44,7 +44,7 @@ function symlinkDependencyTreeToLocalNodeModules(dependencyName) {
 
 
 // make sure all bundled deps are accessible in the local 'node_modules' dir
-const packageData = readPackageJson(PACKAGE_DIR, 'package.json');
+const packageData = readPackageJson(PACKAGE_DIR);
 const { bundledDependencies } = packageData;
 bundledDependencies.forEach(symlinkDependencyTreeToLocalNodeModules);
 
