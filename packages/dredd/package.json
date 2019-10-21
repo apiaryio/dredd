@@ -16,7 +16,6 @@
     "prettify": "prettier --write lib/**/*.js test/**/*.js",
     "prettify:check": "prettier --check lib/**/*.js test/**/*.js",
     "test": "mocha \"./test/**/*-test.js\"",
-    "test:debug": "mocha --debug-brk \"./test/**/*-test.js\"",
     "test:smoke": "bash ./scripts/smoke.sh",
     "e2e": "yarn e2e:apib && yarn e2e:openapi2",
     "e2e:apib": "cucumber-js",
