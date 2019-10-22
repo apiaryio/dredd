@@ -6,7 +6,7 @@ import glob from 'glob';
 const basename =
   process.platform === 'win32' ? path.win32.basename : path.basename;
 
-function resolveGlob(workingDirectory, pattern) {
+function resolveGlob(workingDirectory: string, pattern: string): string[] {
   // 'glob.sync()' does not resolve paths, only glob patterns
   if (glob.hasMagic(pattern)) {
     return glob
@@ -23,7 +23,10 @@ function resolveGlob(workingDirectory, pattern) {
  * Resolves glob patterns and sorts the files alphabetically by their basename.
  * Throws in case there's a pattern which doesn't resolve to any existing files.
  */
-export default function resolvePaths(workingDirectory, patterns) {
+export default function resolvePaths(
+  workingDirectory: string,
+  patterns: string[],
+) {
   if (!patterns || patterns.length < 1) {
     return [];
   }
