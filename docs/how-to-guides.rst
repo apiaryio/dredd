@@ -685,7 +685,7 @@ Command-line output of complex HTTP responses and expectations can be hard to re
 ::
 
    $ dredd apiary.apib http://127.0.0.1 --reporter=apiary
-   warn: Apiary API Key or API Project Subdomain were not provided. Configure Dredd to be able to save test reports alongside your Apiary API project: https://dredd.org/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests
+   warn: Apiary API Key or API Project Name were not provided. Configure Dredd to be able to save test reports alongside your Apiary API project: https://dredd.org/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests
    pass: DELETE /honey duration: 884ms
    complete: 1 passing, 0 failing, 0 errors, 0 skipped, 1 total
    complete: Tests took 1631ms
@@ -712,12 +712,12 @@ As you can see, the parameters go like this:
 
 ::
 
-   $ dredd -j apiaryApiKey:<Apiary API Key> -j apiaryApiName:<API Project Subdomain>
+   $ dredd -j apiaryApiKey:<Apiary API Key> -j apiaryApiName:<API Project Name>
 
 In addition to using parameters and ``dredd.yml``, you can also use environment variables:
 
 -  ``APIARY_API_KEY=<Apiary API Key>`` - Alternative way to pass credentials to Apiary Reporter.
--  ``APIARY_API_NAME=<API Project Subdomain>`` - Alternative way to pass credentials to Apiary Reporter.
+-  ``APIARY_API_NAME=<API Project Name>`` - Alternative way to pass credentials to Apiary Reporter.
 
 When sending test reports to Apiary, Dredd inspects the environment where it was executed and sends some information about it alongside test results. Those are used mainly for detection whether the environment is Continuous Integration and also, they help you to identify individual test reports on the *Tests* page. You can use the following variables to tell Dredd what to send:
 
