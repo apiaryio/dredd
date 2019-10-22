@@ -140,7 +140,7 @@ describe('Apiary reporter', () => {
     it('should not print warning about missing Apiary API settings', () =>
       assert.notInclude(
         output,
-        'Apiary API Key or API Project Subdomain were not provided.',
+        'Apiary API Key or API Project Name were not provided.',
       ));
 
     it('should contain Authentication header thanks to apiaryApiKey and apiaryApiName configuration', () => {
@@ -300,7 +300,7 @@ describe('Apiary reporter', () => {
       it('should print warning about missing Apiary API settings', () =>
         assert.include(
           output,
-          'Apiary API Key or API Project Subdomain were not provided.',
+          'Apiary API Key or API Project Name were not provided.',
         ));
 
       it('should print link to documentation', () =>

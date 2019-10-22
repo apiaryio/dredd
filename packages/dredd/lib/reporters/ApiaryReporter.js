@@ -45,7 +45,7 @@ function ApiaryReporter(emitter, stats, config, runner) {
 
   if (!this.configuration.apiToken && !this.configuration.apiSuite) {
     logger.warn(`
-Apiary API Key or API Project Subdomain were not provided.
+Apiary API Key or API Project Name were not provided.
 Configure Dredd to be able to save test reports alongside your Apiary API project:
 https://dredd.org/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-tests
 `);

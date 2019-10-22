@@ -98,7 +98,7 @@ describe('CLI - Reporters', () => {
       it('should print warning about missing Apiary API settings', () =>
         assert.include(
           cliInfo.stdout,
-          'Apiary API Key or API Project Subdomain were not provided.'
+          'Apiary API Key or API Project Name were not provided.'
         ))
       it('should exit with status 0', () => assert.equal(cliInfo.exitStatus, 0))
       it('should perform 3 requests to Apiary', () => {
