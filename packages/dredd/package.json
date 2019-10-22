@@ -59,7 +59,7 @@
     "winston": "2.4.0"
   },
   "devDependencies": {
-    "@types/chai": "4.2.3",
+    "@types/chai": "4.2.4",
     "@types/clone": "0.1.30",
     "@types/mocha": "5.2.7",
     "@types/proxyquire": "1.3.28",
