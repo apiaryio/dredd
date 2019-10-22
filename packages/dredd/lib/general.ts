@@ -1,4 +1,4 @@
-export enum RESTMethod {
+export enum HTTPMethod {
   CONNECT = 'CONNECT',
   OPTIONS = 'OPTIONS',
   POST = 'POST',
@@ -49,7 +49,7 @@ export interface Transaction {
 }
 
 export interface TransactionRequest {
-  method: RESTMethod;
+  method: HTTPMethod;
   url: string;
   body?: string;
   bodyEncoding?: BodyEncoding;

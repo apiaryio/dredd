@@ -1,7 +1,7 @@
 import R from 'ramda';
 import { expect } from 'chai';
 import sortTransactions from '../../lib/sortTransactions';
-import { Transaction, RESTMethod } from '../../lib/general';
+import { Transaction, HTTPMethod } from '../../lib/general';
 
 const createTransaction = (transaction: Partial<Transaction>) => {
   return R.mergeDeepRight<Partial<Transaction>>({
@@ -10,10 +10,10 @@ const createTransaction = (transaction: Partial<Transaction>) => {
   })(transaction);
 };
 
-const transactions = Object.keys(RESTMethod).reduce<
-  Record<RESTMethod, Transaction>
+const transactions = Object.keys(HTTPMethod).reduce<
+  Record<HTTPMethod, Transaction>
 >(
-  (acc, method: RESTMethod) => {
+  (acc, method: HTTPMethod) => {
     return R.assoc(
       method,
       createTransaction({
@@ -61,7 +61,7 @@ describe('sortTransactions', () => {
     const getOne = createTransaction({
       id: 'one',
       request: {
-        method: RESTMethod.GET,
+        method: HTTPMethod.GET,
         url: '/endpoint',
       },
     });
@@ -69,7 +69,7 @@ describe('sortTransactions', () => {
     const getTwo = createTransaction({
       id: 'two',
       request: {
-        method: RESTMethod.GET,
+        method: HTTPMethod.GET,
         url: '/endpoint',
       },
     });

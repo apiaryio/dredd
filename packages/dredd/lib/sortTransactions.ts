@@ -1,15 +1,15 @@
-import { RESTMethod, Transaction } from './general';
+import { HTTPMethod, Transaction } from './general';
 
-const sortedMethods: RESTMethod[] = [
-  RESTMethod.CONNECT,
-  RESTMethod.OPTIONS,
-  RESTMethod.POST,
-  RESTMethod.GET,
-  RESTMethod.HEAD,
-  RESTMethod.PUT,
-  RESTMethod.PATCH,
-  RESTMethod.DELETE,
-  RESTMethod.TRACE,
+const sortedMethods: HTTPMethod[] = [
+  HTTPMethod.CONNECT,
+  HTTPMethod.OPTIONS,
+  HTTPMethod.POST,
+  HTTPMethod.GET,
+  HTTPMethod.HEAD,
+  HTTPMethod.PUT,
+  HTTPMethod.PATCH,
+  HTTPMethod.DELETE,
+  HTTPMethod.TRACE,
 ];
 
 // Often, API description is arranged with a sequence of methods that lends
