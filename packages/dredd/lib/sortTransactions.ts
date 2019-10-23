@@ -8,6 +8,8 @@ const sortedMethods: HTTPMethod[] = [
   HTTPMethod.HEAD,
   HTTPMethod.PUT,
   HTTPMethod.PATCH,
+  HTTPMethod.LINK,
+  HTTPMethod.UNLINK,
   HTTPMethod.DELETE,
   HTTPMethod.TRACE,
 ];

@@ -6,8 +6,10 @@ export enum HTTPMethod {
   HEAD = 'HEAD',
   PUT = 'PUT',
   PATCH = 'PATCH',
+  LINK = 'LINK',
+  UNLINK = 'UNLINK',
   DELETE = 'DELETE',
-  TRACE = 'TRACE',
+  TRACE = 'TRACE'
 }
 
 export enum BodyEncoding {
