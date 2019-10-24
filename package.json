@@ -10,7 +10,8 @@
     "commit:lint": "./scripts/commitlint.sh",
     "lint": "lerna exec --scope=\"*\" --concurrency=1 --no-bail yarn lint",
     "test:smoke": "lerna exec --scope=\"*\" --concurrency=1 --no-bail yarn test:smoke",
-    "test": "lerna exec --scope=\"*\" --concurrency=1 --no-bail yarn test"
+    "test": "lerna exec --scope=\"*\" --concurrency=1 --no-bail yarn test",
+    "release": "git checkout -b release && lerna version --conventional-commits --exact --no-push --no-changelog --no-git-tag-version && git commit -am 'chore(release): publish'"
   },
   "devDependencies": {
     "@commitlint/cli": "8.2.0",
