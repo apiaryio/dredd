@@ -64,7 +64,7 @@
   },
   "sorted": {
     "alias": "s",
-    "description": "Sorts requests in a sensible way so that objects are not modified before they are created. Order: CONNECT, OPTIONS, POST, GET, HEAD, PUT, PATCH, DELETE, TRACE.",
+    "description": "Sorts requests in a sensible way so that objects are not modified before they are created. Order: CONNECT, OPTIONS, POST, GET, HEAD, PUT, PATCH, LINK, UNLINK, DELETE, TRACE.",
     "default": false
   },
   "user": {

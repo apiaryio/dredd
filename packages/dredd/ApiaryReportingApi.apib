@@ -19,7 +19,7 @@ with [Gavel](https://github.com/apiaryio/gavel.js).
 ### Test Runs [/apis/{apiProject}/tests/runs]
 
 + Parameters
-    + apiProject: exampleapi (required) - API project subdomain
+    + apiProject: exampleapi (required) - API Project Name
 
 #### Create a Test Run [POST]
 
@@ -47,7 +47,7 @@ with [Gavel](https://github.com/apiaryio/gavel.js).
 ### Test Run [/apis/{apiProject}/tests/run/{id}]
 
 + Parameters
-    + apiProject: exampleapi (required) - API project subdomain
+    + apiProject: exampleapi (required) - API Project Name
     + id: 507f1f77bcf86cd799439011 (required) - unique ID of the test report
 
 #### Retrieve a Test Run [GET]
@@ -87,7 +87,7 @@ with [Gavel](https://github.com/apiaryio/gavel.js).
 ### Test Steps [/apis/{apiProject}/tests/steps{?testRunId}]
 
 + Parameters
-    + apiProject: exampleapi (required) - API project subdomain
+    + apiProject: exampleapi (required) - API Project Name
     + testRunId: 507f1f77bcf86cd799439011 (required) - filter by test report ID
 
 #### Create a Test Step [POST]
@@ -118,7 +118,7 @@ with [Gavel](https://github.com/apiaryio/gavel.js).
 #### Retreive a Test Step [GET]
 
 + Parameters
-    + apiProject: exampleapi (required) - API project subdomain
+    + apiProject: exampleapi (required) - API Project Name
     + id: 508c7f79bcf86cd7994f6c0e (required) - Unique identifier of test step in Apiary
 
 + Request (application/json)
