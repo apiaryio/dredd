@@ -1,6 +1,6 @@
 {
   "name": "dredd",
-  "version": "12.1.0",
+  "version": "12.2.0",
   "description": "HTTP API Testing Framework",
   "main": "build/index.js",
   "bin": {
@@ -38,7 +38,7 @@
     "chai": "4.2.0",
     "clone": "2.1.2",
     "cross-spawn": "7.0.0",
-    "dredd-transactions": "9.0.6",
+    "dredd-transactions": "9.0.7",
     "gavel": "8.1.1",
     "glob": "7.1.5",
     "html": "1.0.0",
