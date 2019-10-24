@@ -10,6 +10,9 @@ cov.*
 .env*
 __pycache__
 /docs/_build
+coverage
+smoke
+build
 
 # Regardless the rules above, never ignore following
 !.vscode/launch.json

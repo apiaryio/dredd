@@ -1,0 +1,43 @@
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: Petstore
+  description: A sample API that uses a petstore as an example to demonstrate features in the swagger-2.0 specification
+securityDefinitions:
+  apiKeyAuth:
+    type: apiKey
+    in: header
+    name: api_key
+host: petstore.swagger.io
+basePath: /
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /secured-honey:
+    get:
+      security: 
+        - apiKeyAuth: []
+      responses:
+        200:
+          description: pet response
+          schema:
+            $ref: '#/definitions/Pet'
+        500:
+          description: server error
+definitions:
+  Pet:
+    required:
+      - id
+      - name
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+      tag:
+        type: string

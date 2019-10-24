@@ -1,0 +1,3 @@
+dredd-transactions-*.tgz
+prepack-symlinks.log
+/test/fixtures/**/*.json

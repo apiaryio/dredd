@@ -1,0 +1,43 @@
+swagger: '2.0'
+info:
+  title: Action
+  version: '1.0'
+paths:
+  '/test':
+    head:
+      summary: Test head
+      responses:
+        204:
+          description: Test response
+    options:
+      summary: Test options
+      responses:
+        204:
+          description: Test response
+    get:
+      summary: Test get
+      description: Test description
+      operationId: test
+      responses:
+        204:
+          description: Test response
+    post:
+      summary: Test post
+      responses:
+        204:
+          description: Test response
+    put:
+      summary: Test put
+      responses:
+        204:
+          description: Test response
+    patch:
+      summary: Test patch
+      responses:
+        204:
+          description: Test response
+    delete:
+      summary: Test delete
+      responses:
+        204:
+          description: Test response

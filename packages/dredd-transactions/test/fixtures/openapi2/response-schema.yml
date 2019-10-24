@@ -1,0 +1,44 @@
+swagger: '2.0'
+info:
+  title: Schema Reference
+  version: '1.0'
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  '/test':
+    post:
+      parameters:
+        - name: title
+          in: body
+          description: Body argument
+          required: true
+          schema:
+            type: string
+            example: Hello
+      responses:
+        200:
+          description: Test description
+          schema:
+            $ref: '#/definitions/Item'
+  '/test-without-produces':
+    get:
+      produces: []
+      responses:
+        200:
+          description: Test description without produces
+          schema:
+            $ref: '#/definitions/Item'
+definitions:
+  Item:
+    type: object
+    properties:
+      id:
+        type: number
+        enum: [123]
+        default: 456
+      name:
+        type: string
+        default: Item name
+    required: ['id', 'name']

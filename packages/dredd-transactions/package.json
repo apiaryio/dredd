@@ -1,0 +1,61 @@
+{
+  "name": "dredd-transactions",
+  "version": "9.0.6",
+  "description": "Compiles HTTP Transactions (Request-Response pairs) from an API description document",
+  "main": "index.js",
+  "engines": {
+    "node": ">= 8"
+  },
+  "scripts": {
+    "prepack": "node ./scripts/prepack.js",
+    "postpack": "node ./scripts/postpack.js",
+    "build": "exit 0",
+    "clean": "rimraf ./coverage",
+    "lint": "eslint --ignore-path .gitignore .",
+    "pretest": "node ./scripts/pretest.js",
+    "test": "npm run clean && mocha ./test",
+    "test:smoke": "bash ./scripts/smoke.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/apiaryio/dredd"
+  },
+  "files": [
+    "parse",
+    "compile",
+    "README.md"
+  ],
+  "dependencies": {
+    "fury": "3.0.0-beta.12",
+    "fury-adapter-apib-parser": "0.16.0",
+    "fury-adapter-oas3-parser": "0.9.1",
+    "fury-adapter-swagger": "0.27.2",
+    "uri-template": "1.0.1"
+  },
+  "bundledDependencies": [
+    "fury-adapter-apib-parser"
+  ],
+  "devDependencies": {
+    "chai": "4.2.0",
+    "chai-json-schema": "1.5.1",
+    "eslint": "6.5.1",
+    "eslint-config-airbnb-base": "13.2.0",
+    "eslint-plugin-import": "2.18.2",
+    "mocha": "6.2.1",
+    "mocha-lcov-reporter": "1.3.0",
+    "proxyquire": "2.1.3",
+    "rimraf": "3.0.0",
+    "sinon": "7.5.0"
+  },
+  "keywords": [
+    "api",
+    "test",
+    "testing",
+    "documenation",
+    "integration",
+    "acceptance"
+  ],
+  "author": "Apiary Czech Republic, s.r.o. <support@apiary.io>",
+  "license": "MIT",
+  "homepage": "https://github.com/apiaryio/dredd/tree/master/packages/dredd-transactions"
+}

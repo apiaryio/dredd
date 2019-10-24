@@ -1,0 +1,24 @@
+swagger: '2.0'
+info:
+  version: '1.0.0'
+  title: Swagger Oauth2 Implicit
+securityDefinitions:
+  customOauth2:
+    type: oauth2
+    flow: implicit
+    authorizationUrl: "http://example.com/oauth/authorize"
+    scopes:
+      scope1: Test Scope 1
+      scope2: Test Scope 2
+paths:
+  /endpoint:
+    get:
+      security:
+        - customOauth2:
+          - scope1
+          - scope2
+      responses:
+        200:
+          description: With Security
+          schema:
+            type: string

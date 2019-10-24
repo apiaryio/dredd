@@ -1,0 +1,24 @@
+swagger: "2.0"
+info:
+  title: Beehive API
+  version: "1.0"
+paths:
+  "/honey":
+    parameters:
+      - name: beekeeper
+        in: query
+        default: Adam
+        type: string
+    get:
+      parameters:
+        - name: beekeeper
+          in: query
+          default: Honza
+          type: string
+        - name: amount
+          in: query
+          default: 42
+          type: number
+      responses:
+        204:
+          description: Sample description
