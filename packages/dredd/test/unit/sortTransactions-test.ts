@@ -35,10 +35,12 @@ describe('sortTransactions', () => {
       transactions.TRACE,
       transactions.OPTIONS,
       transactions.HEAD,
+      transactions.LINK,
       transactions.DELETE,
       transactions.POST,
       transactions.PATCH,
       transactions.PUT,
+      transactions.UNLINK,
       transactions.CONNECT,
     ]);
 
@@ -51,6 +53,8 @@ describe('sortTransactions', () => {
         transactions.HEAD,
         transactions.PUT,
         transactions.PATCH,
+        transactions.LINK,
+        transactions.UNLINK,
         transactions.DELETE,
         transactions.TRACE,
       ]);
@@ -92,6 +96,8 @@ describe('sortTransactions', () => {
       transactions.HEAD,
       transactions.PUT,
       transactions.PATCH,
+      transactions.LINK,
+      transactions.UNLINK,
       transactions.DELETE,
       transactions.TRACE,
     ];
