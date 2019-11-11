@@ -2066,10 +2066,10 @@ cross-spawn@^6.0.0, cross-spawn@^6.0.5:
     shebang-command "^1.2.0"
     which "^1.2.9"
 
-cucumber-expressions@^8.0.1:
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/cucumber-expressions/-/cucumber-expressions-8.0.2.tgz#cfb905fcaaed3fabe835c848f805bd4676f77dc8"
-  integrity sha512-gETBdn2wJJC5jJkYbvPsgEPp6dnIHcq0UaN1YNAOyVvrbkeeB2D1X3or3LsYOGxsgj5LH0/Ty9fHZQx+QnoKIQ==
+cucumber-expressions@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/cucumber-expressions/-/cucumber-expressions-8.1.0.tgz#4ae919e094981f071a88d23b54896ff6dc986847"
+  integrity sha512-mOrAa/i/8uc6guMbrEqftt3FiXgpCngwQpqQmoPAYWNLNttSpXz5JwwLNTk99bTlHhJIMdGe3QR2v3tu6kBHLA==
   dependencies:
     becke-ch--regex--s0-0-v1--base--pl--lib "^1.4.0"
     xregexp "^4.2.4"
@@ -2079,17 +2079,17 @@ cucumber-tag-expressions@^2.0.2:
   resolved "https://registry.yarnpkg.com/cucumber-tag-expressions/-/cucumber-tag-expressions-2.0.2.tgz#aac27aae3690818ec15235bd056282dad8a2d2b8"
   integrity sha512-DohmT4X641KX/sb96bdb7J2kXNcQBPrYmf3Oc5kiHCLfzFMWx/o2kB4JvjvQPZnYuA9lRt6pqtArM5gvUn4uzw==
 
-cucumber@6.0.3:
-  version "6.0.3"
-  resolved "https://registry.yarnpkg.com/cucumber/-/cucumber-6.0.3.tgz#bf69ecc992772e580dabe265b2ed06ddab13d076"
-  integrity sha512-FSx7xdAQfFjcxp/iRBAuCFSXp2iJP1tF2Q5k/a67YgHiYbnwsD9F+UNv9ZG90LFHNsNQhb+67AmVxHkp4JRDpg==
+cucumber@6.0.4:
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/cucumber/-/cucumber-6.0.4.tgz#d89f99d6c50da81731b6431b4bbfbddda25d5e35"
+  integrity sha512-+pMlrkk61Vd8O9K0wY3II5VC6zVIxFUpsgWNzsD4bJ4jnJJHXjOw/HdDsLwI8e+pJSp6pvr2Gr2rEQRmJD1yRQ==
   dependencies:
     assertion-error-formatter "^3.0.0"
     bluebird "^3.4.1"
     cli-table3 "^0.5.1"
     colors "^1.1.2"
     commander "^3.0.1"
-    cucumber-expressions "^8.0.1"
+    cucumber-expressions "^8.1.0"
     cucumber-tag-expressions "^2.0.2"
     duration "^0.2.1"
     escape-string-regexp "^2.0.0"
