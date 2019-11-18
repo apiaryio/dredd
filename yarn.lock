@@ -1066,12 +1066,12 @@
   resolved "https://registry.yarnpkg.com/@types/proxyquire/-/proxyquire-1.3.28.tgz#05a647bb0d8fe48fc8edcc193e43cc79310faa7d"
   integrity sha512-SQaNzWQ2YZSr7FqAyPPiA3FYpux2Lqh3HWMZQk47x3xbMCqgC/w0dY3dw9rGqlweDDkrySQBcaScXWeR+Yb11Q==
 
-"@types/ramda@0.26.33":
-  version "0.26.33"
-  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.26.33.tgz#5fd1f22381ccf913a3627beb16f468fb57f82d94"
-  integrity sha512-sUCQmKfAWmlbb6PpFqvndbGgTf0bCcmHLJqMYw8ErVS0UoZTTiz952aFedJhV+JERiVH7poh33358c7p0AAN8A==
+"@types/ramda@0.26.35":
+  version "0.26.35"
+  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.26.35.tgz#7f047d5a4fc55470f9fa32876dc066fb7a2c7266"
+  integrity sha512-vbzC2BzFn8hE80JG11O0QLoruvtqRIMB7eRpsfMI3pJk6p9zgGi+FEs49m/xvHW1IgibnhEUo8g6rBo0U/xZJg==
   dependencies:
-    ts-toolbelt "^4.7.7"
+    ts-toolbelt "^4.10.7"
 
 "@types/semver@^6.0.1":
   version "6.0.2"
@@ -6733,10 +6733,10 @@ ts-node@8.4.1:
     source-map-support "^0.5.6"
     yn "^3.0.0"
 
-ts-toolbelt@^4.7.7:
-  version "4.8.22"
-  resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-4.8.22.tgz#d7f15a5d35594af629ca10ae890c1ededc10d662"
-  integrity sha512-CQXoGSEOlNP0XQ1OsXVjLVzErc8LQBaAe6HHFLRpqdm0ZvZEd1q1noAle2J3DSc33LL+DaxwJzstps/AQGXH4Q==
+ts-toolbelt@^4.10.7:
+  version "4.10.13"
+  resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-4.10.13.tgz#c4f14c5feadec54f66ca91851800561ebf805f40"
+  integrity sha512-GsbacJF1pH8D9uWicfFfNLHyFlxmtbKDEmXjdZoFUON5jlc6x51ofMyw8c/99zYDaCnx9+Y/oo+jxLKUI56sUg==
 
 tslib@^1.9.0, tslib@^1.9.3:
   version "1.10.0"
