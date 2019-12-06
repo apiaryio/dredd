@@ -1144,7 +1144,7 @@ agentkeepalive@^3.4.1:
   dependencies:
     humanize-ms "^1.2.1"
 
-ajv@^6.10.0, ajv@^6.10.2, ajv@^6.5.5:
+ajv@6.10.2, ajv@^6.10.0, ajv@^6.10.2, ajv@^6.5.5:
   version "6.10.2"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.10.2.tgz#d3cea04d6b017b2894ad69040fec8b623eb4bd52"
   integrity sha512-TXtUUEYHuaTEbLZWIKUr5pmBuhDLy+8KYtPYdcV8qC+pOZL+NKqYwvWSRrVXHn+ZmRRAu8vJTAznH7Oag6RVRw==
@@ -3167,11 +3167,12 @@ gauge@~2.7.3:
     strip-ansi "^3.0.1"
     wide-align "^1.1.0"
 
-gavel@8.1.1:
-  version "8.1.1"
-  resolved "https://registry.yarnpkg.com/gavel/-/gavel-8.1.1.tgz#c3f82e5ef468661bda9ff7800c58c51e979b3477"
-  integrity sha512-TgMghBKUOL7/zaNvn71X+e7jg16fL1lycDtltrfiSgGhHKNQHN9+77kkEpBVkwCl5kERId3kFlhjqU9W7l4ODw==
+gavel@^8.2.0:
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/gavel/-/gavel-8.2.0.tgz#404f016cf123ac403e7ebc895b72cbc80d3abb47"
+  integrity sha512-vzdyl98UO5TXJ9wytocbLq56AlG21lAUJgKIXTMN+UZnZcEpX5vMXw7Lbxs2gfdm/iz3U0M+vUWjl/N2mqgoMA==
   dependencies:
+    ajv "6.10.2"
     amanda "1.0.1"
     caseless "0.12.0"
     clone "2.1.2"
