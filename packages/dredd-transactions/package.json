@@ -26,10 +26,10 @@
     "README.md"
   ],
   "dependencies": {
-    "fury": "3.0.0-beta.12",
-    "fury-adapter-apib-parser": "0.16.0",
-    "fury-adapter-oas3-parser": "0.9.1",
-    "fury-adapter-swagger": "0.27.2",
+    "fury": "3.0.0-beta.13",
+    "fury-adapter-apib-parser": "0.17.0",
+    "fury-adapter-oas3-parser": "0.10.0",
+    "fury-adapter-swagger": "0.28.0",
     "uri-template": "1.0.1"
   },
   "bundledDependencies": [
