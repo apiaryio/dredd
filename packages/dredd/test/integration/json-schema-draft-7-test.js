@@ -5,6 +5,8 @@ import { runDreddWithServer, createServer } from './helpers';
 
 describe('Given API Blueprint with JSON Schema Draft 7', () => {
   describe('given explicit version of JSON Schema', () => {
+    const FIXTURE_PATH = './test/fixtures/json-schema-draft-7.apib';
+
     describe('given actual data matches the schema', () => {
       let runtimeInfo;
 
@@ -15,12 +17,11 @@ describe('Given API Blueprint with JSON Schema Draft 7', () => {
         });
 
         const dredd = new Dredd({
-          path: './test/fixtures/json-schema-draft-7.apib',
+          path: FIXTURE_PATH,
         });
 
-        runDreddWithServer(dredd, app, (...args) => {
-          let error;
-          [error, runtimeInfo] = Array.from(args);
+        runDreddWithServer(dredd, app, (error, info) => {
+          runtimeInfo = info;
           done(error);
         });
       });
@@ -47,12 +48,11 @@ describe('Given API Blueprint with JSON Schema Draft 7', () => {
         });
 
         const dredd = new Dredd({
-          path: './test/fixtures/json-schema-draft-7.apib',
+          path: FIXTURE_PATH,
         });
 
-        runDreddWithServer(dredd, app, (...args) => {
-          let error;
-          [error, runtimeInfo] = Array.from(args);
+        runDreddWithServer(dredd, app, (error, info) => {
+          runtimeInfo = info;
           done(error);
         });
       });
@@ -71,24 +71,25 @@ describe('Given API Blueprint with JSON Schema Draft 7', () => {
   });
 
   describe('given a single Boolean value as a JSON Schema', () => {
+    const FIXTURE_PATH = './test/fixtures/json-schema-draft-7-boolean.apib';
+
     describe('given schema equals "true"', () => {
       let runtimeInfo;
 
       before((done) => {
         const app = createServer();
         app.get('/machines/:id', (req, res) => {
-          const { id } = req.params
-          const machines = [{ type: 'bulldozer', name: 'willy' }]
+          const { id } = req.params;
+          const machines = [{ type: 'bulldozer', name: 'willy' }];
           res.json(machines[id] || {});
         });
 
         const dredd = new Dredd({
-          path: './test/fixtures/json-schema-draft-7-boolean.apib',
+          path: FIXTURE_PATH,
         });
 
-        runDreddWithServer(dredd, app, (...args) => {
-          let error;
-          [error, runtimeInfo] = Array.from(args);
+        runDreddWithServer(dredd, app, (error, info) => {
+          runtimeInfo = info;
           done(error);
         });
       });
