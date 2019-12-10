@@ -64,7 +64,7 @@ describe('Given API Blueprint with JSON Schema Draft 7', () => {
       it('should output an error about unknown "type" enum value', () => {
         assert.match(
           runtimeInfo.dredd.logging,
-          /data\/0\/type should be equal to one of the allowed values/,
+          /data\/0\/type should be equal to constant/,
         );
       });
     });
