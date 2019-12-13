@@ -15,7 +15,6 @@
   "devDependencies": {
     "@commitlint/cli": "8.2.0",
     "@commitlint/config-conventional": "8.2.0",
-    "commitlint-circle": "1.0.0",
     "lerna": "^3.16.4"
   },
   "workspaces": {
