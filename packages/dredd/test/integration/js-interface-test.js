@@ -22,7 +22,7 @@ describe('Running Dredd from JavaScript', () => {
     before((done) => {
       const app = createServer();
       app.get('/machines', (req, res) =>
-        res.json([{ type: 'bulldozer', name: 'willy' }]),
+        res.json([{ type: 'bulldozer', name: 'willy' }])
       );
 
       const dredd = new Dredd({

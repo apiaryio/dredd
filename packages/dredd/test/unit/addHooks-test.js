@@ -76,7 +76,7 @@ describe('addHooks()', () => {
     addHooks(transactionRunner, [], (err) => {
       assert.deepEqual(
         transactionRunner.hooks.configuration,
-        transactionRunner.configuration,
+        transactionRunner.configuration
       );
       done(err);
     });

@@ -43,7 +43,7 @@ function createAndRunDredd(configuration, done) {
       runDredd(dredd, (error, info) => {
         info.logging = `${dreddInitLogging}\n${info.logging}`;
         done(error, info);
-      }),
+      })
   );
 }
 

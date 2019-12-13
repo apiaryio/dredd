@@ -66,7 +66,7 @@ body: \n<div>before paragraph
       assert.lengthOf(loggerStub.debug.firstCall.args, 1);
       assert.equal(
         loggerStub.debug.firstCall.args[0],
-        'Could not stringify: [object Object]',
+        'Could not stringify: [object Object]'
       );
     });
   });

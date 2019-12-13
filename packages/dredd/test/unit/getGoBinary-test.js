@@ -83,7 +83,7 @@ describe('getGoBinary()', () => {
       sinon
         .stub(childProcess, 'exec')
         .callsFake((command, callback) =>
-          callback(null, path.join('dummy', 'gopath', 'path')),
+          callback(null, path.join('dummy', 'gopath', 'path'))
         );
       getGoBinary((...args) => {
         callbackArgs = args;

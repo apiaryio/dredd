@@ -44,7 +44,7 @@ describe('hooksLog()', () => {
       const data = hooksLog(
         originLogs,
         reporterOutputLoggerStub,
-        'one message',
+        'one message'
       );
       assert.isArray(data);
       assert.lengthOf(data, 1);
@@ -58,7 +58,7 @@ describe('hooksLog()', () => {
       const data = hooksLog(
         originLogs,
         reporterOutputLoggerStub,
-        'another message',
+        'another message'
       );
       assert.isArray(data);
       assert.lengthOf(data, 1);
@@ -72,7 +72,7 @@ describe('hooksLog()', () => {
       const data = hooksLog(
         originLogs,
         reporterOutputLoggerStub,
-        'some other idea',
+        'some other idea'
       );
       assert.isArray(data);
       assert.lengthOf(data, 2);
@@ -89,7 +89,7 @@ describe('hooksLog()', () => {
 
       assert.equal(
         reporterOutputLoggerStub.hook.getCall(0).args[0],
-        'there is a log',
+        'there is a log'
       );
     });
   });

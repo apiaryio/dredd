@@ -25,12 +25,12 @@ DotReporter.prototype.configureEmitter = function configureEmitter(emitter) {
         reporterOutputLogger.info('Displaying failed tests...');
         for (const test of this.errors) {
           reporterOutputLogger.fail(
-            `${test.title} duration: ${test.duration}ms`,
+            `${test.title} duration: ${test.duration}ms`
           );
           reporterOutputLogger.fail(test.message);
           reporterOutputLogger.request(`\n${prettifyResponse(test.request)}\n`);
           reporterOutputLogger.expected(
-            `\n${prettifyResponse(test.expected)}\n`,
+            `\n${prettifyResponse(test.expected)}\n`
           );
           reporterOutputLogger.actual(`\n${prettifyResponse(test.actual)}\n\n`);
         }

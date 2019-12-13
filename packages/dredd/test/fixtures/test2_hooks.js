@@ -6,5 +6,5 @@ hooks.before(
     transaction.request.headers.header = '123232323';
     console.log('before');
     done();
-  },
+  }
 );

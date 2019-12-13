@@ -145,7 +145,7 @@ export const createServer = (options = {}) => {
       [callback, port] = Array.from([port, DEFAULT_SERVER_PORT]);
     }
     return originalListen.call(this, port, (err) =>
-      callback(err, serverRuntimeInfo),
+      callback(err, serverRuntimeInfo)
     );
   };
   return app;
@@ -182,7 +182,7 @@ export const runDredd = (dredd, serverPort, callback) => {
 
       [err, stats] = Array.from(args);
       callback(null, { err, stats, logging });
-    },
+    }
   );
 };
 
@@ -200,8 +200,8 @@ export const runDreddWithServer = (dredd, app, serverPort, callback) => {
 
     runDredd(dredd, serverPort, (error, dreddRuntimeInfo) =>
       server.close(() =>
-        callback(error, { server: serverRuntimeInfo, dredd: dreddRuntimeInfo }),
-      ),
+        callback(error, { server: serverRuntimeInfo, dredd: dreddRuntimeInfo })
+      )
     );
   });
 };
@@ -235,7 +235,7 @@ function runCommand(command, args, spawnOptions = {}, callback) {
       stderr,
       output,
       exitStatus,
-    }),
+    })
   );
 }
 
@@ -257,8 +257,8 @@ export const runCLIWithServer = (args, app, serverPort, callback) => {
 
     runCLI(args, (error, cliInfo) =>
       server.close(() =>
-        callback(error, { server: serverRuntimeInfo, dredd: cliInfo }),
-      ),
+        callback(error, { server: serverRuntimeInfo, dredd: cliInfo })
+      )
     );
   });
 };
@@ -266,7 +266,7 @@ export const runCLIWithServer = (args, app, serverPort, callback) => {
 // Checks whether there's a process with name matching given pattern.
 export const isProcessRunning = (pattern, callback) => {
   return ps.lookup({ arguments: pattern }, (err, processList) =>
-    callback(err, !!(processList ? processList.length : undefined)),
+    callback(err, !!(processList ? processList.length : undefined))
   );
 };
 
@@ -296,7 +296,7 @@ export const killAll = (pattern, callback) => {
     async.each(
       processList,
       (processListItem, next) => kill(processListItem.pid, next),
-      callback,
+      callback
     );
   });
 };

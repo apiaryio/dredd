@@ -37,7 +37,7 @@ function NyanCatReporter(emitter, stats) {
 }
 
 NyanCatReporter.prototype.configureEmitter = function configureEmitter(
-  emitter,
+  emitter
 ) {
   emitter.on('start', (apiDescriptions, callback) => {
     this.cursorHide();
@@ -67,7 +67,7 @@ NyanCatReporter.prototype.configureEmitter = function configureEmitter(
     }
 
     reporterOutputLogger.complete(
-      `${this.stats.passes} passing, ${this.stats.failures} failing, ${this.stats.errors} errors, ${this.stats.skipped} skipped`,
+      `${this.stats.passes} passing, ${this.stats.failures} failing, ${this.stats.errors} errors, ${this.stats.skipped} skipped`
     );
     reporterOutputLogger.complete(`Tests took ${this.stats.duration}ms`);
     callback();

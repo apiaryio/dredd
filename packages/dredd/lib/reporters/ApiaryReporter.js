@@ -33,7 +33,7 @@ function ApiaryReporter(emitter, stats, config, runner) {
     apiUrl: this._get(
       'apiaryApiUrl',
       'APIARY_API_URL',
-      'https://api.apiary.io',
+      'https://api.apiary.io'
     ).replace(/\/$/, ''),
     apiToken: this._get('apiaryApiKey', 'APIARY_API_KEY', null),
     apiSuite: this._get('apiaryApiName', 'APIARY_API_NAME', null),
@@ -59,7 +59,7 @@ https://dredd.org/en/latest/how-to-guides/#using-apiary-reporter-and-apiary-test
 ApiaryReporter.prototype._get = function _get(
   customProperty,
   envProperty,
-  defaultVal,
+  defaultVal
 ) {
   let returnVal = defaultVal;
 
@@ -99,8 +99,8 @@ ApiaryReporter.prototype._getKeys = function _getKeys() {
   let returnKeys = [];
   returnKeys = returnKeys.concat(
     Object.keys(
-      (this.config.custom && this.config.custom.apiaryReporterEnv) || {},
-    ),
+      (this.config.custom && this.config.custom.apiaryReporterEnv) || {}
+    )
   );
   return returnKeys.concat(Object.keys(process.env));
 };
@@ -163,7 +163,7 @@ ApiaryReporter.prototype.configureEmitter = function configureEmitter(emitter) {
           }
           callback();
         }
-      },
+      }
     );
   });
 
@@ -249,7 +249,7 @@ ApiaryReporter.prototype._performRequestAsync = function _performRequestAsync(
   path,
   method,
   reqBody,
-  callback,
+  callback
 ) {
   const handleRequest = (err, res, resBody) => {
     let parsedBody;
@@ -259,7 +259,7 @@ ApiaryReporter.prototype._performRequestAsync = function _performRequestAsync(
 
       if (Array.from(CONNECTION_ERRORS).includes(err.code)) {
         return callback(
-          new Error('Apiary reporter could not connect to Apiary API'),
+          new Error('Apiary reporter could not connect to Apiary API')
         );
       }
       return callback(err);
@@ -315,7 +315,7 @@ to Apiary API: ${options.method} ${options.uri} \
 `);
     logger.debug(
       'Request details:',
-      JSON.stringify({ options, body }, null, 2),
+      JSON.stringify({ options, body }, null, 2)
     );
     return request(options, handleRequest);
   } catch (error) {
@@ -326,7 +326,7 @@ to Apiary API: ${options.method} ${options.uri} \
 };
 
 ApiaryReporter.prototype._transformTestToReporter = function _transformTestToReporter(
-  test,
+  test
 ) {
   return {
     testRunId: this.remoteId,

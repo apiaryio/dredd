@@ -11,19 +11,19 @@ export const removeUnsupportedOptions = R.compose(
   R.dissoc('timestamp'),
   R.dissoc('blueprintPath'),
   R.dissoc('b'),
-  R.dissoc('sandbox'),
+  R.dissoc('sandbox')
 );
 
 const getUserHeader = R.compose(
   (token) => `Authorization: Basic ${token}`,
-  (user) => Buffer.from(user).toString('base64'),
+  (user) => Buffer.from(user).toString('base64')
 );
 
 const updateHeaderWithUser = R.compose(
   R.unnest,
   R.adjust(0, getUserHeader),
   R.values,
-  R.pick(['user', 'header']),
+  R.pick(['user', 'header'])
 );
 
 export const coerceToArray = R.cond([
@@ -46,8 +46,8 @@ export const coerceUserOption = R.when(
   R.propSatisfies(R.complement(R.isNil), 'user'),
   R.compose(
     R.dissoc('user'),
-    R.over(R.lens(updateHeaderWithUser, R.assoc('header')), R.identity),
-  ),
+    R.over(R.lens(updateHeaderWithUser, R.assoc('header')), R.identity)
+  )
 );
 
 const mapIndexed = R.addIndex(R.map);
@@ -57,7 +57,7 @@ export const coerceApiDescriptions = R.compose(
     location: `configuration.apiDescriptions[${index}]`,
     content: R.when(R.has('content'), R.prop('content'), content),
   })),
-  coerceToArray,
+  coerceToArray
 );
 
 const coerceLevel = R.compose(
@@ -67,7 +67,7 @@ const coerceLevel = R.compose(
     [R.equals('silent'), R.always('silent')],
     [R.T, R.always('warn')],
   ]),
-  R.either(R.prop('l'), R.prop('level')),
+  R.either(R.prop('l'), R.prop('level'))
 );
 
 /**
@@ -79,8 +79,8 @@ export const coerceDeprecatedLevelOption = R.when(
   R.compose(
     R.dissoc('l'),
     R.dissoc('level'),
-    R.over(R.lens(coerceLevel, R.assoc('loglevel')), R.identity),
-  ),
+    R.over(R.lens(coerceLevel, R.assoc('loglevel')), R.identity)
+  )
 );
 
 const coerceDataToApiDescriptions = R.compose(
@@ -99,10 +99,10 @@ const coerceDataToApiDescriptions = R.compose(
 
         return apiDescription;
       }),
-      R.toPairs,
+      R.toPairs
     ),
   }),
-  R.pick(['apiDescriptions', 'data']),
+  R.pick(['apiDescriptions', 'data'])
 );
 
 export const coerceDeprecatedDataOption = R.when(
@@ -111,23 +111,23 @@ export const coerceDeprecatedDataOption = R.when(
     R.dissoc('data'),
     R.over(
       R.lens(coerceDataToApiDescriptions, R.assoc('apiDescriptions')),
-      R.identity,
-    ),
-  ),
+      R.identity
+    )
+  )
 );
 
 export const coerceColorOption = R.when(
   R.has('c'),
   R.compose(
     R.dissoc('c'),
-    R.over(R.lens(R.prop('c'), R.assoc('color')), coerceToBoolean),
-  ),
+    R.over(R.lens(R.prop('c'), R.assoc('color')), coerceToBoolean)
+  )
 );
 
 const coerceDeprecatedOptions = R.compose(
   coerceColorOption,
   coerceDeprecatedDataOption,
-  coerceDeprecatedLevelOption,
+  coerceDeprecatedLevelOption
 );
 
 const coerceOptions = R.compose(
@@ -141,17 +141,17 @@ const coerceOptions = R.compose(
     header: coerceToArray,
     method: R.compose(
       R.map(R.toUpper),
-      coerceToArray,
+      coerceToArray
     ),
     only: coerceToArray,
     path: coerceToArray,
     hookfiles: coerceToArray,
-  }),
+  })
 );
 
 const normalizeConfig = R.compose(
   coerceOptions,
-  removeUnsupportedOptions,
+  removeUnsupportedOptions
 );
 
 export default normalizeConfig;

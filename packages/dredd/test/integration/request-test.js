@@ -31,7 +31,7 @@ describe("Sending 'application/json' request", () => {
   it('the request has the expected Content-Type', () =>
     assert.equal(
       runtimeInfo.server.lastRequest.headers['content-type'],
-      contentType,
+      contentType
     ));
   it('the request has the expected format', () => {
     const { body } = runtimeInfo.server.lastRequest;
@@ -67,7 +67,7 @@ describe("Sending 'multipart/form-data' request described in API Blueprint", () 
   it('the request has the expected Content-Type', () =>
     assert.include(
       runtimeInfo.server.lastRequest.headers['content-type'],
-      'multipart/form-data',
+      'multipart/form-data'
     ));
   it('the request has the expected format', () => {
     const lines = [
@@ -117,7 +117,7 @@ describe("Sending 'multipart/form-data' request described in OpenAPI 2", () => {
   it('the request has the expected Content-Type', () =>
     assert.include(
       runtimeInfo.server.lastRequest.headers['content-type'],
-      'multipart/form-data',
+      'multipart/form-data'
     ));
   it('the request has the expected format', () => {
     const lines = [
@@ -167,7 +167,7 @@ describe("Sending 'multipart/form-data' request described as 'file' in OpenAPI 2
   it('the request has the expected Content-Type', () =>
     assert.include(
       runtimeInfo.server.lastRequest.headers['content-type'],
-      'multipart/form-data',
+      'multipart/form-data'
     ));
   it('the request has the expected format', () => {
     const lines = [
@@ -223,7 +223,7 @@ describe("Sending 'multipart/form-data' request described as 'file' in OpenAPI 2
     it('the request has the expected Content-Type', () => {
       assert.equal(
         runtimeInfo.server.lastRequest.headers['content-type'],
-        contentType,
+        contentType
       );
     });
     it('the request has the expected format', () => {
@@ -262,7 +262,7 @@ describe("Sending 'text/plain' request", () => {
   it('the request has the expected Content-Type', () => {
     assert.equal(
       runtimeInfo.server.lastRequest.headers['content-type'],
-      contentType,
+      contentType
     );
   });
   it('the request has the expected format', () => {
@@ -311,18 +311,18 @@ describe("Sending 'text/plain' request", () => {
     it('the request has the expected Content-Type', () =>
       assert.equal(
         runtimeInfo.server.lastRequest.headers['content-type'],
-        contentType,
+        contentType
       ));
     it('the request has the expected format', () =>
       assert.equal(
         runtimeInfo.server.lastRequest.body.toString('base64'),
-        Buffer.from([0xff, 0xef, 0xbf, 0xbe]).toString('base64'),
+        Buffer.from([0xff, 0xef, 0xbf, 0xbe]).toString('base64')
       ));
     it('results in one passing test', () => {
       assert.equal(runtimeInfo.dredd.stats.tests, 1);
       assert.equal(runtimeInfo.dredd.stats.passes, 1);
     });
-  }),
+  })
 );
 [
   {
@@ -361,18 +361,18 @@ describe("Sending 'text/plain' request", () => {
     it('the request has the expected Content-Type', () =>
       assert.equal(
         runtimeInfo.server.lastRequest.headers['content-type'],
-        contentType,
+        contentType
       ));
     it('the request has the expected format', () =>
       assert.equal(
         runtimeInfo.server.lastRequest.body.toString('base64'),
         fs
           .readFileSync(path.join(__dirname, '../fixtures/image.png'))
-          .toString('base64'),
+          .toString('base64')
       ));
     it('results in one passing test', () => {
       assert.equal(runtimeInfo.dredd.stats.tests, 1);
       assert.equal(runtimeInfo.dredd.stats.passes, 1);
     });
-  }),
+  })
 );

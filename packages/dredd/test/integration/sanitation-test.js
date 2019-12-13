@@ -21,19 +21,19 @@ describe('Sanitation of Reported Data', () => {
     // modifications of the 'test' object (Dredd can change the data after they're
     // reported and by reference they would change also here in the 'events' array).
     emitter.on('test start', (test) =>
-      events.push({ name: 'test start', test: clone(test) }),
+      events.push({ name: 'test start', test: clone(test) })
     );
     emitter.on('test pass', (test) =>
-      events.push({ name: 'test pass', test: clone(test) }),
+      events.push({ name: 'test pass', test: clone(test) })
     );
     emitter.on('test skip', (test) =>
-      events.push({ name: 'test skip', test: clone(test) }),
+      events.push({ name: 'test skip', test: clone(test) })
     );
     emitter.on('test fail', (test) =>
-      events.push({ name: 'test fail', test: clone(test) }),
+      events.push({ name: 'test fail', test: clone(test) })
     );
     emitter.on('test error', (err, test) =>
-      events.push({ name: 'test error', test: clone(test), err }),
+      events.push({ name: 'test error', test: clone(test), err })
     );
 
     // 'start' and 'end' events are asynchronous and they do not carry any data
@@ -248,7 +248,7 @@ describe('Sanitation of Reported Data', () => {
     before((done) => {
       const dredd = createDreddFromFixture(events, 'plain-text-response-body');
       const app = createServerFromResponse(
-        `${sensitiveKey}=42${sensitiveValue}`,
+        `${sensitiveKey}=42${sensitiveValue}`
       ); // should be without '42' → failing test
 
       runDreddWithServer(dredd, app, (err, runtimeInfo) => {
@@ -311,7 +311,7 @@ describe('Sanitation of Reported Data', () => {
       ]));
     it('emitted test data does not contain confidential header', () => {
       const names = Object.keys(events[2].test.request.headers).map((name) =>
-        name.toLowerCase(),
+        name.toLowerCase()
       );
       assert.notInclude(names, sensitiveHeaderName);
     });
@@ -357,12 +357,12 @@ describe('Sanitation of Reported Data', () => {
       ]));
     it('emitted test data does not contain confidential header', () => {
       let names = Object.keys(events[2].test.actual.headers).map((name) =>
-        name.toLowerCase(),
+        name.toLowerCase()
       );
       assert.notInclude(names, sensitiveHeaderName);
 
       names = Object.keys(events[2].test.expected.headers).map((name) =>
-        name.toLowerCase(),
+        name.toLowerCase()
       );
       assert.notInclude(names, sensitiveHeaderName);
     });
@@ -423,7 +423,7 @@ describe('Sanitation of Reported Data', () => {
     before((done) => {
       const dredd = createDreddFromFixture(
         events,
-        'any-content-pattern-matching',
+        'any-content-pattern-matching'
       );
       const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
@@ -462,7 +462,7 @@ describe('Sanitation of Reported Data', () => {
     before((done) => {
       const dredd = createDreddFromFixture(
         events,
-        'any-content-guard-pattern-matching',
+        'any-content-guard-pattern-matching'
       );
       const app = createServerFromResponse({ name: 123 }); // 'name' should be string → failing test
 
@@ -495,7 +495,7 @@ describe('Sanitation of Reported Data', () => {
     it('custom error message is printed', () =>
       assert.include(
         dreddRuntimeInfo.logging,
-        'Sensitive data would be sent to Dredd reporter',
+        'Sensitive data would be sent to Dredd reporter'
       ));
   });
 
@@ -547,7 +547,7 @@ describe('Sanitation of Reported Data', () => {
     before((done) => {
       const dredd = createDreddFromFixture(
         events,
-        'transaction-marked-failed-before',
+        'transaction-marked-failed-before'
       );
 
       runDredd(dredd, (...args) => {
@@ -593,7 +593,7 @@ describe('Sanitation of Reported Data', () => {
     before((done) => {
       const dredd = createDreddFromFixture(
         events,
-        'transaction-marked-failed-after',
+        'transaction-marked-failed-after'
       );
       const app = createServerFromResponse({ name: 'Bob' }); // Passing test
 
@@ -650,7 +650,7 @@ describe('Sanitation of Reported Data', () => {
     before((done) => {
       const dredd = createDreddFromFixture(
         events,
-        'transaction-marked-skipped',
+        'transaction-marked-skipped'
       );
 
       runDredd(dredd, (...args) => {
@@ -695,7 +695,7 @@ describe('Sanitation of Reported Data', () => {
     before((done) => {
       const dredd = createDreddFromFixture(
         events,
-        'transaction-erroring-hooks',
+        'transaction-erroring-hooks'
       );
       const app = createServerFromResponse({ name: 'Bob' }); // passing test
 
@@ -737,7 +737,7 @@ describe('Sanitation of Reported Data', () => {
     before((done) => {
       const dredd = createDreddFromFixture(
         events,
-        'transaction-secured-erroring-hooks',
+        'transaction-secured-erroring-hooks'
       );
       const app = createServerFromResponse({ name: 'Bob' }); // passing test
 
@@ -773,7 +773,7 @@ describe('Sanitation of Reported Data', () => {
     it('custom error message is printed', () =>
       assert.include(
         dreddRuntimeInfo.logging,
-        'Unexpected exception in hooks',
+        'Unexpected exception in hooks'
       ));
   });
 });

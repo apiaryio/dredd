@@ -9,7 +9,7 @@ import reporterOutputLogger from '../../lib/reporters/reporterOutputLogger';
 
 const defaultLoggerConsole = clone(logger.transports.console);
 const defaultReporterOutputLoggerConsole = clone(
-  reporterOutputLogger.transports.console,
+  reporterOutputLogger.transports.console
 );
 
 function resetLoggerConsoles() {

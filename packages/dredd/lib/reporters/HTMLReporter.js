@@ -29,7 +29,7 @@ function HTMLReporter(emitter, stats, path, details) {
 }
 
 HTMLReporter.prototype.sanitizedPath = function sanitizedPath(
-  path = './report.html',
+  path = './report.html'
 ) {
   const filePath = pathmodule.resolve(untildify(path));
   if (fs.existsSync(filePath)) {
@@ -84,13 +84,13 @@ HTMLReporter.prototype.configureEmitter = function configureEmitter(emitter) {
     if (this.details) {
       this.level++;
       this.buf += `${title('Request')}\n\`\`\`\n${prettifyResponse(
-        test.request,
+        test.request
       )}\n\`\`\`\n\n`;
       this.buf += `${title('Expected')}\n\`\`\`\n${prettifyResponse(
-        test.expected,
+        test.expected
       )}\n\`\`\`\n\n`;
       this.buf += `${title('Actual')}\n\`\`\`\n${prettifyResponse(
-        test.actual,
+        test.actual
       )}\n\`\`\`\n\n`;
       this.level--;
     }
@@ -109,13 +109,13 @@ HTMLReporter.prototype.configureEmitter = function configureEmitter(emitter) {
     this.level++;
     this.buf += `${title('Message')}\n\`\`\`\n${test.message}\n\`\`\`\n\n`;
     this.buf += `${title('Request')}\n\`\`\`\n${prettifyResponse(
-      test.request,
+      test.request
     )}\n\`\`\`\n\n`;
     this.buf += `${title('Expected')}\n\`\`\`\n${prettifyResponse(
-      test.expected,
+      test.expected
     )}\n\`\`\`\n\n`;
     this.buf += `${title('Actual')}\n\`\`\`\n${prettifyResponse(
-      test.actual,
+      test.actual
     )}\n\`\`\`\n\n`;
     this.level--;
 

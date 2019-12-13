@@ -27,7 +27,7 @@ function applyLoggingOptions(config) {
       logger.transports.console.level = 'warn';
       throw new Error(
         `The logging level '${loglevel}' is unsupported, ` +
-          'supported are: silent, error, warning, debug',
+          'supported are: silent, error, warning, debug'
       );
     }
   } else {

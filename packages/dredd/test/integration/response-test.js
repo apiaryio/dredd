@@ -24,7 +24,7 @@ files.forEach((apiDescription) =>
         const app = createServer();
         app.get('/resource.json', (req, res) => res.json({ test: 'OK' }));
         app.get('/resource.csv', (req, res) =>
-          res.type('text/csv').send('test,OK\n'),
+          res.type('text/csv').send('test,OK\n')
         );
         const dredd = new Dredd({ options: { path: apiDescription.path } });
         runDreddWithServer(dredd, app, (err, info) => {
@@ -54,7 +54,7 @@ files.forEach((apiDescription) =>
       it('evaluates the responses as valid', () =>
         assert.deepInclude(runtimeInfo.dredd.stats, { tests: 2, passes: 2 }));
     });
-  }),
+  })
 );
 [
   {
@@ -85,7 +85,7 @@ files.forEach((apiDescription) =>
       it('prints JSON Schema validation error', () =>
         assert.include(
           runtimeInfo.dredd.logging,
-          "At '/name' Invalid type: number (expected string)",
+          "At '/name' Invalid type: number (expected string)"
         ));
     });
 
@@ -105,7 +105,7 @@ files.forEach((apiDescription) =>
       it('evaluates the response as valid', () =>
         assert.deepInclude(runtimeInfo.dredd.stats, { tests: 1, passes: 1 }));
     });
-  }),
+  })
 );
 [
   {
@@ -125,7 +125,7 @@ files.forEach((apiDescription) =>
         const app = createServer();
         app.get('/resource.json', (req, res) => res.json({ test: 'OK' }));
         app.get('/resource.csv', (req, res) =>
-          res.type('text/csv').send('test,OK\n'),
+          res.type('text/csv').send('test,OK\n')
         );
         const dredd = new Dredd({
           options: {
@@ -144,7 +144,7 @@ files.forEach((apiDescription) =>
       it('prints the error message from hooks', () =>
         assert.include(
           runtimeInfo.dredd.logging,
-          'The response body must be empty',
+          'The response body must be empty'
         ));
     });
 
@@ -170,7 +170,7 @@ files.forEach((apiDescription) =>
       it('evaluates the responses as valid', () =>
         assert.deepInclude(runtimeInfo.dredd.stats, { tests: 2, passes: 2 }));
     });
-  }),
+  })
 );
 [
   {
@@ -190,7 +190,7 @@ files.forEach((apiDescription) =>
         const app = createServer();
         app.get('/resource.json', (req, res) => res.json({ test: 'OK' }));
         app.get('/resource.csv', (req, res) =>
-          res.type('text/csv').send('test,OK\n'),
+          res.type('text/csv').send('test,OK\n')
         );
         const dredd = new Dredd({
           options: {
@@ -209,7 +209,7 @@ files.forEach((apiDescription) =>
       it('prints the error message from hooks', () =>
         assert.include(
           runtimeInfo.dredd.logging,
-          'The response body must be empty',
+          'The response body must be empty'
         ));
     });
 
@@ -235,7 +235,7 @@ files.forEach((apiDescription) =>
       it('evaluates the responses as valid', () =>
         assert.deepInclude(runtimeInfo.dredd.stats, { tests: 2, passes: 2 }));
     });
-  }),
+  })
 );
 [
   {
@@ -271,16 +271,16 @@ files.forEach((apiDescription) =>
       it('prints four warnings for each of the responses', () =>
         assert.equal(
           runtimeInfo.dredd.logging.match(
-            /HTTP 204 and 205 responses must not include a message body/g,
+            /HTTP 204 and 205 responses must not include a message body/g
           ).length,
-          4,
+          4
         ));
       it('prints four failures for each non-matching status code', () =>
         assert.equal(
           runtimeInfo.dredd.logging.match(
-            /fail: statusCode: Expected status code '\d+', but got '200'./g,
+            /fail: statusCode: Expected status code '\d+', but got '200'./g
           ).length,
-          4,
+          4
         ));
       it('does not print any failures regarding response bodies', () =>
         assert.isNull(runtimeInfo.dredd.logging.match(/fail: body:/g)));
@@ -310,26 +310,26 @@ files.forEach((apiDescription) =>
       it('prints two warnings for each of the non-empty expectations', () =>
         assert.equal(
           runtimeInfo.dredd.logging.match(
-            /HTTP 204 and 205 responses must not include a message body/g,
+            /HTTP 204 and 205 responses must not include a message body/g
           ).length,
-          2,
+          2
         ));
       it('prints two failures for each non-matching body (and status code)', () =>
         assert.equal(
           runtimeInfo.dredd.logging.match(
-            /fail: body: Actual and expected data do not match.\nstatusCode: Expected status code '\d+', but got '200'./g,
+            /fail: body: Actual and expected data do not match.\nstatusCode: Expected status code '\d+', but got '200'./g
           ).length,
-          2,
+          2
         ));
       it('prints two failures for each non-matching status code', () =>
         assert.equal(
           runtimeInfo.dredd.logging.match(
-            /fail: statusCode: Expected status code '\d+', but got '200'./g,
+            /fail: statusCode: Expected status code '\d+', but got '200'./g
           ).length,
-          2,
+          2
         ));
     });
-  }),
+  })
 );
 [
   {
@@ -345,7 +345,7 @@ files.forEach((apiDescription) =>
     const imagePath = path.join(__dirname, '../fixtures/image.png');
     const app = createServer();
     app.get('/image.png', (req, res) =>
-      res.type('image/png').sendFile(imagePath),
+      res.type('image/png').sendFile(imagePath)
     );
 
     describe('when the body is described as empty and there are hooks to remove the real body', () => {
@@ -387,5 +387,5 @@ files.forEach((apiDescription) =>
       it('evaluates the response as valid', () =>
         assert.deepInclude(runtimeInfo.dredd.stats, { tests: 1, passes: 1 }));
     });
-  }),
+  })
 );

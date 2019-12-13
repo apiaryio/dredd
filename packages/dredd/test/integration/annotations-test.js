@@ -27,7 +27,7 @@ FORMAT: 1A
         (compileError) => {
           error = compileError;
           done();
-        },
+        }
       );
     });
 
@@ -40,7 +40,7 @@ FORMAT: 1A
     it('logs the warnings with line numbers', () => {
       assert.match(
         logger.log.getCall(0).args[1],
-        /parser warning in configuration\.apiDescriptions\[0\]:5 \(from line 5 column 3 to column 11\)/i,
+        /parser warning in configuration\.apiDescriptions\[0\]:5 \(from line 5 column 3 to column 11\)/i
       );
     });
   });
@@ -62,7 +62,7 @@ FORMAT: 1A
         (compileError) => {
           error = compileError;
           done();
-        },
+        }
       );
     });
 
@@ -75,7 +75,7 @@ FORMAT: 1A
     it('logs the errors with line numbers', () => {
       assert.match(
         logger.log.getCall(0).args[1],
-        /parser error in configuration\.apiDescriptions\[0\]:6 \(line 6 column 1\)/i,
+        /parser error in configuration\.apiDescriptions\[0\]:6 \(line 6 column 1\)/i
       );
     });
   });
@@ -96,7 +96,7 @@ FORMAT: 1A
         (compileError) => {
           error = compileError;
           done();
-        },
+        }
       );
     });
 
@@ -109,7 +109,7 @@ FORMAT: 1A
     it('logs the warnings with a transaction path', () => {
       assert.match(
         logger.log.getCall(0).args[1],
-        /uri template expansion warning in configuration\.apiDescriptions\[0\] \(Dummy API > Index > Index\)/i,
+        /uri template expansion warning in configuration\.apiDescriptions\[0\] \(Dummy API > Index > Index\)/i
       );
     });
   });
@@ -132,7 +132,7 @@ FORMAT: 1A
         (compileError) => {
           error = compileError;
           done();
-        },
+        }
       );
     });
 
@@ -145,7 +145,7 @@ FORMAT: 1A
     it('logs the errors with a transaction path', () => {
       assert.match(
         logger.log.getCall(0).args[1],
-        /uri parameters validation error in configuration\.apiDescriptions\[0\] \(Dummy API > Index > Index\)/i,
+        /uri parameters validation error in configuration\.apiDescriptions\[0\] \(Dummy API > Index > Index\)/i
       );
     });
   });

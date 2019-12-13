@@ -85,12 +85,12 @@ describe('OpenAPI 2', () => {
             return match.reduce(
               (result, element, i) =>
                 Object.assign(result, { [keyMap[i]]: element }),
-              {},
+              {}
             );
           });
           done(err);
-        },
-      ),
+        }
+      )
     );
 
     it('recognizes all 3 transactions', () => assert.equal(actual.length, 3));
@@ -106,7 +106,7 @@ describe('OpenAPI 2', () => {
           expected.action === 'skip' ? '' : 'not '
         }skipped by default`, () =>
           assert.equal(expected.action, actual[i].action));
-      }),
+      })
     );
   });
 
@@ -143,11 +143,11 @@ describe('OpenAPI 2', () => {
             return match.reduce(
               (result, element, i) =>
                 Object.assign(result, { [keyMap[i]]: element }),
-              {},
+              {}
             );
           });
           done(err);
-        },
+        }
       );
     });
 
@@ -168,7 +168,7 @@ describe('OpenAPI 2', () => {
         it(`${
           expected.statusCode === '500' ? unskippedMessage : defaultMessage
         }`, () => assert.equal(expected.action, actual[i].action));
-      }),
+      })
     );
   });
 
@@ -192,8 +192,8 @@ describe('OpenAPI 2', () => {
             matches.push(groups[1]);
           }
           done(err);
-        },
-      ),
+        }
+      )
     );
 
     it('transaction names contain status code and content type', () =>
