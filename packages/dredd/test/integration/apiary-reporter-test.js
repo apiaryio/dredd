@@ -73,7 +73,6 @@ describe('Apiary reporter', () => {
     exitStatus = null;
 
     before((done) => {
-      try {
         const cmd = {
           options: {
             path: ['./test/fixtures/single-get.apib'],
@@ -132,9 +131,6 @@ describe('Apiary reporter', () => {
             );
           });
         });
-      } catch (error) {
-        throw error;
-      }
     });
 
     it('should not print warning about missing Apiary API settings', () =>

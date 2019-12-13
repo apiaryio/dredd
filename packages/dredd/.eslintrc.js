@@ -30,5 +30,6 @@ module.exports = {
     'no-restricted-syntax': 'off',
     'no-use-before-define': 'off',
     'prefer-destructuring': 'off',
+    'prefer-object-spread': 'off'
   },
 };
