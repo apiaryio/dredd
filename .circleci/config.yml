@@ -16,7 +16,7 @@ commands:
 
 aliases:
   - &install
-    - run: sudo npm i -g yarn && yarn install --frozen-lockfile
+    - run: yarn install --frozen-lockfile
 
   - &node12
     image: circleci/node:12
