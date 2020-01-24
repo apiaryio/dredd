@@ -1,0 +1,45 @@
+swagger: "2.0"
+info:
+  title: "Blog API"
+  version: "1.0"
+consumes:
+  - "application/hal+json; charset=utf-8"
+produces:
+  - "application/hal+json; charset=utf-8"
+paths:
+  "/articles":
+    x-summary: "Articles"
+    get:
+      summary: "List articles"
+      description: "Retrieve a list of all articles"
+      responses:
+        200:
+          description: "Articles list"
+          examples:
+            "application/hal+json; charset=utf-8":
+              - id: 1
+                title: "Creamy cucumber salad"
+                text: "Slice cucumbers…"
+                _links: {
+                  self: {
+                    href: "/articles/1"
+                  }
+                }
+    post:
+      summary: "Publish an article"
+      description: "Create and publish a new article"
+      parameters:
+        - name: "body"
+          in: "body"
+          schema:
+            example:
+              title: "Crispy schnitzel"
+              text: "Prepare eggs…"
+      responses:
+        201:
+          description: "New article"
+          examples:
+            "application/hal+json; charset=utf-8":
+              id: 2
+              title: "Crispy schnitzel"
+              text: "Prepare eggs…"
