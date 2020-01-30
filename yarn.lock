@@ -3100,20 +3100,20 @@ fury-adapter-apib-parser@0.17.0:
     deckardcain "^1.0.0"
     drafter "2.0.0-pre.1"
 
-fury-adapter-oas3-parser@0.10.0:
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/fury-adapter-oas3-parser/-/fury-adapter-oas3-parser-0.10.0.tgz#390abf272fa37a348f9e7dbbbe0a5a872af557e2"
-  integrity sha512-2y3OX55eaHXP43uS9N5oIq++F8WiTO1pSMdKZ5uXCJMtyR7sxA482DSwYb4JJxrdLGeNTcqLPf5IUz6JWmAF7w==
+fury-adapter-oas3-parser@0.10.1:
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/fury-adapter-oas3-parser/-/fury-adapter-oas3-parser-0.10.1.tgz#d08dd9003147bedfb509ae6c731f92ca7e249c6d"
+  integrity sha512-WjwSVvLPzCraiow0nGIN3zCWkxvx5aoolh/gMsL/Jarv/mPS5tgguhlpqLamTv9CYzF0DuMzD6O2kI11zQBwGg==
   dependencies:
     content-type "^1.0.4"
     media-typer "^1.0.1"
     ramda "0.26.1"
     yaml-js "^0.2.3"
 
-fury-adapter-swagger@0.28.0:
-  version "0.28.0"
-  resolved "https://registry.yarnpkg.com/fury-adapter-swagger/-/fury-adapter-swagger-0.28.0.tgz#fd8c25ef02456219522c187759aeeb68cb003f63"
-  integrity sha512-M12SuBDlRgug2W9Py7XqpCgL2laiRkXmZF4yslvRQqXWfhAEN6MxCpN2HA6G7TSmwOHNmHs2E2l6iEi80fmGiQ==
+fury-adapter-swagger@0.28.1:
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/fury-adapter-swagger/-/fury-adapter-swagger-0.28.1.tgz#0cfe53d0a469103e9f2c05ee7ddc38d6b315d803"
+  integrity sha512-jc9NnpqjN6d5N8a63Snxjj4GUTblGyCu0K+CIA3HDx3YxhWpgAH9BMLlJprYVA9/Ix+gX9DAjlVK6zM4oYrRgA==
   dependencies:
     content-type "^1.0.4"
     js-yaml "^3.12.0"
