@@ -100,7 +100,7 @@ To validate the structure Dredd uses `JSON Schema`_ inferred from the API descri
 API Blueprint
 ^^^^^^^^^^^^^
 
-1. :apib:`Schema <def-schema-section>` section - provided custom JSON Schema (`Draft 4 <JSON Schema Draft 4_>`__, `Draft 3 <JSON Schema Draft 3_>`__, `Draft 6 <JSON Schema Draft 6_>`__, and `Draft 7 <JSON Schema Draft 7_>`__) will be used.
+1. :apib:`Schema <def-schema-section>` section - provided custom JSON Schema (`Draft 4 <JSON Schema Draft 4_>`__, `Draft 6 <JSON Schema Draft 6_>`__, and `Draft 7 <JSON Schema Draft 7_>`__) will be used.
 2. :apib:`Attributes <def-attributes-section>` section with data structure description in `MSON`_ - API Blueprint parser automatically generates JSON Schema from MSON.
 3. :apib:`Body <def-body-section>` section with sample JSON payload - `Gavel`_, which is responsible for validation in Dredd, automatically infers some basic expectations described below.
 

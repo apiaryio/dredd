@@ -19,7 +19,6 @@
 .. JSON Schema
 
 .. _JSON Schema: https://json-schema.org
-.. _JSON Schema Draft 3: https://tools.ietf.org/html/draft-zyp-json-schema-03
 .. _JSON Schema Draft 4: https://tools.ietf.org/html/draft-zyp-json-schema-04
 .. _JSON Schema Draft 5: https://tools.ietf.org/html/draft-wright-json-schema-00
 .. _JSON Schema Draft 6: https://tools.ietf.org/html/draft-wright-json-schema-01
