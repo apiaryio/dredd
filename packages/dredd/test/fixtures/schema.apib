@@ -23,19 +23,17 @@ Demonstrates dredd schema test issue [#46](https://github.com/apiaryio/dredd/iss
 
             {
                 "type":"object",
-                "required":true,
+                "required":["data"],
                 "properties":{
                     "data": {
                         "type":"object",
-                        "required":true,
+                        "required":["expires","token"],
                         "properties":{
                             "expires": {
-                                "type":"number",
-                                "required":true
+                                "type":"number"
                             },
                             "token": {
-                                "type":"string",
-                                "required":true
+                                "type":"string"
                             }
                         }
                     }

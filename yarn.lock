@@ -1154,11 +1154,6 @@ ajv@6.10.2, ajv@^6.10.0, ajv@^6.10.2, ajv@^6.5.5:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
-amanda@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/amanda/-/amanda-1.0.1.tgz#0929f3ce0dcd4a74d28d054e2b2e712cbc8ce582"
-  integrity sha512-DJZMA1t7skqQgH5yq4NxBfqun+jDQUSYJRYGg+AqnKc3I0/hs8eX3PDdlfgiADkHgo4HlesD5QuoqFcCYA280Q==
-
 ansi-colors@3.2.3:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-3.2.3.tgz#57d35b8686e851e2cc04c403f1c00203976a1813"
@@ -2233,7 +2228,19 @@ deep-eql@^3.0.1:
   dependencies:
     type-detect "^4.0.0"
 
-deep-equal@1.1.0, deep-equal@^1.0.0:
+deep-equal@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-1.1.1.tgz#b5c98c942ceffaf7cb051e24e1434a25a2e6076a"
+  integrity sha512-yd9c5AdiqVcR+JjcwUQb9DkhJc8ngNr0MahEBGvDiJw8puWab2yZlh+nkasOnZP+EGTAP6rRp2JzJhJZzvNF8g==
+  dependencies:
+    is-arguments "^1.0.4"
+    is-date-object "^1.0.1"
+    is-regex "^1.0.4"
+    object-is "^1.0.1"
+    object-keys "^1.1.1"
+    regexp.prototype.flags "^1.2.0"
+
+deep-equal@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-1.1.0.tgz#3103cdf8ab6d32cf4a8df7865458f2b8d33f3745"
   integrity sha512-ZbfWJq/wN1Z273o7mUSjILYqehAktR2NVoSrOukDkU9kg2v/Uv89yU4Cvz8seJeAmtN5oqiefKq8FPuXOboqLw==
@@ -3145,19 +3152,18 @@ gauge@~2.7.3:
     strip-ansi "^3.0.1"
     wide-align "^1.1.0"
 
-gavel@^8.2.0:
-  version "8.2.0"
-  resolved "https://registry.yarnpkg.com/gavel/-/gavel-8.2.0.tgz#404f016cf123ac403e7ebc895b72cbc80d3abb47"
-  integrity sha512-vzdyl98UO5TXJ9wytocbLq56AlG21lAUJgKIXTMN+UZnZcEpX5vMXw7Lbxs2gfdm/iz3U0M+vUWjl/N2mqgoMA==
+gavel@^9.1.1:
+  version "9.1.1"
+  resolved "https://registry.yarnpkg.com/gavel/-/gavel-9.1.1.tgz#4107fa9a21b78ef6d9ee0e6381030829620986f6"
+  integrity sha512-cCNY+LzQsW5uFLUABFreV+7lI8R/6FGpMpKl7eY/SltlDYU1Mdg+xFHgYITX4f1tgJJ8g07yVHW8jGao7IHlUg==
   dependencies:
     ajv "6.10.2"
-    amanda "1.0.1"
     caseless "0.12.0"
     clone "2.1.2"
     commander "3.0.2"
     content-type "1.0.4"
     curl-trace-parser "0.0.10"
-    deep-equal "1.1.0"
+    deep-equal "1.1.1"
     http-string-parser "0.0.6"
     json-pointer "0.6.0"
     media-typer "1.1.0"

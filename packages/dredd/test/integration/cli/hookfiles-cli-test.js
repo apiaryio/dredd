@@ -800,8 +800,9 @@ describe('CLI', () => {
         })
       })
 
-      it('exit status should be 0 (success)', () =>
-        assert.equal(runtimeInfo.dredd.exitStatus, 0))
+      it('exit status should be 0 (success)', () => {
+        assert.equal(runtimeInfo.dredd.exitStatus, 0)
+      })
     })
 
     describe('and server is NOT responding in accordance with the schema', () => {
