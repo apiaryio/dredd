@@ -73,7 +73,7 @@
     "eslint-plugin-import": "2.18.2",
     "express": "4.17.1",
     "mocha": "6.2.2",
-    "nock": "10.0.6",
+    "nock": "11.7.2",
     "prettier": "1.18.2",
     "ps-node": "0.1.6",
     "sinon": "7.5.0",
