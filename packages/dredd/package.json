@@ -1,6 +1,6 @@
 {
   "name": "dredd",
-  "version": "12.2.1",
+  "version": "13.0.0",
   "description": "HTTP API Testing Framework",
   "main": "build/index.js",
   "bin": {
