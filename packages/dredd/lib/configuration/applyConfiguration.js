@@ -64,8 +64,8 @@ function flattenConfig(config) {
     R.has('server'),
     R.compose(
       R.dissoc('server'),
-      R.assoc('endpoint', R.prop('server', config)),
-    ),
+      R.assoc('endpoint', R.prop('server', config))
+    )
   )(config);
 
   const rootOptions = R.omit(['options'], aliasedConfig);
@@ -84,7 +84,7 @@ export function resolveConfig(config) {
     // During deep merge Ramda omits prototypes, breaking emitter.
     R.assoc('emitter', R.propOr(new EventEmitter(), 'emitter', config)),
     R.mergeDeepRight(DEFAULT_CONFIG),
-    flattenConfig,
+    flattenConfig
   )(config);
 
   // Validate Dredd configuration
@@ -114,10 +114,10 @@ function applyConfiguration(config) {
   if (proxySettings.length) {
     logger.warn(
       `HTTP(S) proxy specified by environment variables: ${proxySettings.join(
-        ', ',
+        ', '
       )}. ` +
         'Please read documentation on how Dredd works with proxies: ' +
-        'https://dredd.org/en/latest/how-it-works/#using-https-proxy',
+        'https://dredd.org/en/latest/how-it-works/#using-https-proxy'
     );
   }
 

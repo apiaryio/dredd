@@ -80,7 +80,7 @@ describe('Requiring user-provided modules (e.g. language compilers)', () => {
     it('the error message is descriptive', () => {
       assert.include(
         dreddRuntimeInfo.err.message,
-        "Cannot find module 'no-such-module'",
+        "Cannot find module 'no-such-module'"
       );
     });
   });

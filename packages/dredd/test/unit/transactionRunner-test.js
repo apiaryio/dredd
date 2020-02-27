@@ -306,10 +306,10 @@ describe('TransactionRunner', () => {
                   protocol: configuredTransaction.protocol,
                   fullPath: configuredTransaction.fullPath,
                 },
-                expected,
+                expected
               ));
-          },
-        ),
+          }
+        )
       );
     });
 
@@ -330,7 +330,7 @@ describe('TransactionRunner', () => {
 
           it('skips the transaction by default', () =>
             assert.isTrue(configuredTransaction.skip));
-        }),
+        })
       );
     });
 
@@ -351,7 +351,7 @@ describe('TransactionRunner', () => {
 
           it('does not skip the transaction by default', () =>
             assert.isFalse(configuredTransaction.skip));
-        }),
+        })
       );
     });
 
@@ -401,7 +401,7 @@ describe('TransactionRunner', () => {
         const configuredTransaction = runner.configureTransaction(transaction);
         assert.equal(
           configuredTransaction.request.headers.MyCustomDate,
-          'Wed, 10 Sep 2014 12:34:26 GMT',
+          'Wed, 10 Sep 2014 12:34:26 GMT'
         );
       });
     });
@@ -411,7 +411,7 @@ describe('TransactionRunner', () => {
         const configuredTransaction = runner.configureTransaction(transaction);
         assert.equal(
           configuredTransaction.name,
-          'Group Machine > Machine > Delete Message > Bogus example name',
+          'Group Machine > Machine > Delete Message > Bogus example name'
         );
         assert.equal(configuredTransaction.id, 'POST (202) /machines');
         assert.isOk(configuredTransaction.host);
@@ -436,7 +436,7 @@ describe('TransactionRunner', () => {
         assert.strictEqual(configuredTransaction.protocol, 'https:');
         assert.strictEqual(
           configuredTransaction.fullPath,
-          '/my/path/to/api/machines',
+          '/my/path/to/api/machines'
         );
       });
 
@@ -446,7 +446,7 @@ describe('TransactionRunner', () => {
         assert.equal(configuredTransaction.id, 'POST (202) /machines/');
         assert.strictEqual(
           configuredTransaction.fullPath,
-          '/my/path/to/api/machines/',
+          '/my/path/to/api/machines/'
         );
       });
     });
@@ -618,7 +618,7 @@ describe('TransactionRunner', () => {
           (err) => {
             assert.isOk(configuration.emitter.emit.calledWith('test skip'));
             done(err);
-          },
+          }
         ));
 
       it('should add skip message as a warning under `errors` to the results on transaction', (done) =>
@@ -627,11 +627,11 @@ describe('TransactionRunner', () => {
           runner.hooks,
           (err) => {
             const messages = clonedTransaction.errors.map(
-              (value) => value.message,
+              (value) => value.message
             );
             assert.include(messages.join().toLowerCase(), 'skipped');
             done(err);
-          },
+          }
         ));
 
       it('should add fail message as a warning under `errors` to the results on test passed to the emitter', (done) =>
@@ -649,12 +649,12 @@ describe('TransactionRunner', () => {
               messages.push(
                 configuration.emitter.emit
                   .getCall(callNo)
-                  .args[1].errors.map((value) => value.message),
+                  .args[1].errors.map((value) => value.message)
               );
             }
             assert.include(messages.join().toLowerCase(), 'skipped');
             done(err);
-          },
+          }
         ));
 
       it('should set status `skip` on test passed to the emitter', (done) =>
@@ -673,7 +673,7 @@ describe('TransactionRunner', () => {
             assert.equal(tests.length, 1);
             assert.equal(tests[0].status, 'skip');
             done(err);
-          },
+          }
         ));
 
       it('should set transaction info on the skipped test', (done) =>
@@ -681,17 +681,17 @@ describe('TransactionRunner', () => {
           assert.propertyVal(
             clonedTransaction.test,
             'request',
-            clonedTransaction.request,
+            clonedTransaction.request
           );
           assert.propertyVal(
             clonedTransaction.test,
             'expected',
-            clonedTransaction.expected,
+            clonedTransaction.expected
           );
           assert.propertyVal(
             clonedTransaction.test,
             'actual',
-            clonedTransaction.real,
+            clonedTransaction.real
           );
           done();
         }));
@@ -841,7 +841,7 @@ describe('TransactionRunner', () => {
         runner.executeTransaction(transaction, () => {
           assert.isOk(configuration.emitter.emit.called);
           const events = Object.keys(configuration.emitter.emit.args).map(
-            (value) => configuration.emitter.emit.args[value][0],
+            (value) => configuration.emitter.emit.args[value][0]
           );
           assert.include(events, 'test error');
           done();
@@ -1016,7 +1016,7 @@ describe('TransactionRunner', () => {
         describe('before any hook is executed', () => {
           beforeEach((done) => {
             runner.hookHandlerError = new Error(
-              'handler died in before everything',
+              'handler died in before everything'
             );
             runner.executeAllTransactions(transactions, hooks, (error) => {
               // Setting expectation for this error below in each describe block
@@ -1172,7 +1172,7 @@ describe('TransactionRunner', () => {
         describe('after ‘beforeEachValidation’ hook is executed', () => {
           beforeEach((done) => {
             const hookHandlerError = new Error(
-              'handler died in before each validation',
+              'handler died in before each validation'
             );
 
             hooks.beforeEachValidation((data, callback) => {
@@ -1229,7 +1229,7 @@ describe('TransactionRunner', () => {
         describe('after ‘beforeValidation’ hook is executed', () => {
           beforeEach((done) => {
             const hookHandlerError = new Error(
-              'handler died in before validation 1',
+              'handler died in before validation 1'
             );
 
             hooks.beforeValidation('1', (data, callback) => {
@@ -1763,7 +1763,7 @@ describe('TransactionRunner', () => {
             .reply(
               transactionsForExecution[0].expected.statusCode,
               transactionsForExecution[0].expected.body,
-              { 'Content-Type': 'application/json' },
+              { 'Content-Type': 'application/json' }
             );
         });
 
@@ -1779,7 +1779,7 @@ describe('TransactionRunner', () => {
             () => {
               assert.isOk(beforeEachStub.called);
               done();
-            },
+            }
           ));
 
         it('should run the hook for each transaction', (done) =>
@@ -1789,10 +1789,10 @@ describe('TransactionRunner', () => {
             () => {
               assert.equal(
                 beforeEachStub.callCount,
-                transactionsForExecution.length,
+                transactionsForExecution.length
               );
               done();
-            },
+            }
           ));
       });
 
@@ -1812,7 +1812,7 @@ describe('TransactionRunner', () => {
             .reply(
               transactionsForExecution[0].expected.statusCode,
               transactionsForExecution[0].expected.body,
-              { 'Content-Type': 'application/json' },
+              { 'Content-Type': 'application/json' }
             );
         });
 
@@ -1846,10 +1846,10 @@ describe('TransactionRunner', () => {
             () => {
               assert.equal(
                 beforeEachValidationStub.callCount,
-                transactionsForExecution.length,
+                transactionsForExecution.length
               );
               done();
-            },
+            }
           ));
       });
 
@@ -1866,7 +1866,7 @@ describe('TransactionRunner', () => {
             .reply(
               transactionsForExecution[0].expected.statusCode,
               transactionsForExecution[0].expected.body,
-              { 'Content-Type': 'application/json' },
+              { 'Content-Type': 'application/json' }
             );
         });
 
@@ -1882,7 +1882,7 @@ describe('TransactionRunner', () => {
             () => {
               assert.isOk(afterEachStub.called);
               done();
-            },
+            }
           ));
 
         it('should run the hook for each transaction', (done) =>
@@ -1892,10 +1892,10 @@ describe('TransactionRunner', () => {
             () => {
               assert.equal(
                 afterEachStub.callCount,
-                transactionsForExecution.length,
+                transactionsForExecution.length
               );
               done();
-            },
+            }
           ));
       });
 
@@ -1951,7 +1951,7 @@ describe('TransactionRunner', () => {
           assert.propertyVal(
             transaction.test,
             'expected',
-            transaction.expected,
+            transaction.expected
           );
           assert.propertyVal(transaction.test, 'actual', transaction.real);
           done();
@@ -1983,7 +1983,7 @@ describe('TransactionRunner', () => {
           assert.propertyVal(
             transaction.test,
             'expected',
-            transaction.expected,
+            transaction.expected
           );
           assert.propertyVal(transaction.test, 'actual', transaction.real);
           done();
@@ -2034,7 +2034,7 @@ describe('TransactionRunner', () => {
             messages.push(
               configuration.emitter.emit
                 .getCall(callNo)
-                .args[1].errors.map((value) => value.message),
+                .args[1].errors.map((value) => value.message)
             );
           }
           assert.include(messages.join(), 'expected false to be truthy');
@@ -2047,7 +2047,7 @@ describe('TransactionRunner', () => {
           assert.propertyVal(
             transaction.test,
             'expected',
-            transaction.expected,
+            transaction.expected
           );
           assert.propertyVal(transaction.test, 'actual', transaction.real);
           done();
@@ -2104,7 +2104,7 @@ describe('TransactionRunner', () => {
             messages.push(
               configuration.emitter.emit
                 .getCall(callNo)
-                .args[1].errors.map((value) => value.message),
+                .args[1].errors.map((value) => value.message)
             );
           }
           assert.include(messages.join(), 'expected false to be truthy');
@@ -2117,7 +2117,7 @@ describe('TransactionRunner', () => {
           assert.propertyVal(
             transaction.test,
             'expected',
-            transaction.expected,
+            transaction.expected
           );
           assert.propertyVal(transaction.test, 'actual', transaction.real);
           done();
@@ -2148,7 +2148,7 @@ describe('TransactionRunner', () => {
             () => {
               assert.isOk(configuration.emitter.emit.calledWith('test fail'));
               done();
-            },
+            }
           ));
 
         it('should not run the transaction', (done) =>
@@ -2158,7 +2158,7 @@ describe('TransactionRunner', () => {
             () => {
               assert.notOk(server.isDone());
               done();
-            },
+            }
           ));
 
         it('should pass the failing message to the emitter', (done) =>
@@ -2174,12 +2174,12 @@ describe('TransactionRunner', () => {
                 asc ? callNo++ : callNo--
               ) {
                 messages.push(
-                  configuration.emitter.emit.getCall(callNo).args[1].message,
+                  configuration.emitter.emit.getCall(callNo).args[1].message
                 );
               }
               assert.include(messages.join(), 'Message before');
               done();
-            },
+            }
           ));
 
         it('should mention before hook in the error message', (done) =>
@@ -2195,12 +2195,12 @@ describe('TransactionRunner', () => {
                 asc ? callNo++ : callNo--
               ) {
                 messages.push(
-                  configuration.emitter.emit.getCall(callNo).args[1].message,
+                  configuration.emitter.emit.getCall(callNo).args[1].message
                 );
               }
               assert.include(messages.join(), 'Failed in before hook:');
               done();
-            },
+            }
           ));
 
         it('should add fail message as a error under `errors` to the results on the transaction', (done) =>
@@ -2209,11 +2209,11 @@ describe('TransactionRunner', () => {
             runner.hooks,
             () => {
               const messages = clonedTransaction.errors.map(
-                (value) => value.message,
+                (value) => value.message
               );
               assert.include(messages.join(), 'Message before');
               done();
-            },
+            }
           ));
 
         it('should add fail message as a error under `errors` to the results on test passed to the emitter', (done) =>
@@ -2231,12 +2231,12 @@ describe('TransactionRunner', () => {
                 messages.push(
                   configuration.emitter.emit
                     .getCall(callNo)
-                    .args[1].errors.map((value) => value.message),
+                    .args[1].errors.map((value) => value.message)
                 );
               }
               assert.include(messages.join(), 'Message before');
               done();
-            },
+            }
           ));
 
         it('should set transaction info on the failed test', (done) =>
@@ -2247,20 +2247,20 @@ describe('TransactionRunner', () => {
               assert.propertyVal(
                 clonedTransaction.test,
                 'request',
-                clonedTransaction.request,
+                clonedTransaction.request
               );
               assert.propertyVal(
                 clonedTransaction.test,
                 'expected',
-                clonedTransaction.expected,
+                clonedTransaction.expected
               );
               assert.propertyVal(
                 clonedTransaction.test,
                 'actual',
-                clonedTransaction.real,
+                clonedTransaction.real
               );
               done();
-            },
+            }
           ));
 
         describe('when message is set to fail also in ‘after’ hook', () => {
@@ -2289,12 +2289,12 @@ describe('TransactionRunner', () => {
                   asc ? callNo++ : callNo--
                 ) {
                   messages.push(
-                    configuration.emitter.emit.getCall(callNo).args[1].message,
+                    configuration.emitter.emit.getCall(callNo).args[1].message
                   );
                 }
                 assert.notInclude(messages.join(), 'Message after fail');
                 done();
-              },
+              }
             ));
 
           it('should not mention after hook in the error message', (done) =>
@@ -2310,12 +2310,12 @@ describe('TransactionRunner', () => {
                   asc ? callNo++ : callNo--
                 ) {
                   messages.push(
-                    configuration.emitter.emit.getCall(callNo).args[1].message,
+                    configuration.emitter.emit.getCall(callNo).args[1].message
                   );
                 }
                 assert.notInclude(messages.join(), 'Failed in after hook:');
                 done();
-              },
+              }
             ));
 
           it('should not add fail message as a error under `errors` to the results on the transaction', (done) =>
@@ -2324,11 +2324,11 @@ describe('TransactionRunner', () => {
               runner.hooks,
               () => {
                 const messages = clonedTransaction.errors.map(
-                  (value) => value.message,
+                  (value) => value.message
                 );
                 assert.notInclude(messages.join(), 'Message after fail');
                 done();
-              },
+              }
             ));
 
           it('should not add fail message as a error under `errors` to the results on test passed to the emitter', (done) =>
@@ -2346,12 +2346,12 @@ describe('TransactionRunner', () => {
                   messages.push(
                     configuration.emitter.emit
                       .getCall(callNo)
-                      .args[1].errors.map((value) => value.message),
+                      .args[1].errors.map((value) => value.message)
                   );
                 }
                 assert.notInclude(messages.join(), 'Message after fail');
                 done();
-              },
+              }
             ));
 
           it('should set transaction info on the failed test', (done) =>
@@ -2362,20 +2362,20 @@ describe('TransactionRunner', () => {
                 assert.propertyVal(
                   clonedTransaction.test,
                   'request',
-                  clonedTransaction.request,
+                  clonedTransaction.request
                 );
                 assert.propertyVal(
                   clonedTransaction.test,
                   'expected',
-                  clonedTransaction.expected,
+                  clonedTransaction.expected
                 );
                 assert.propertyVal(
                   clonedTransaction.test,
                   'actual',
-                  clonedTransaction.real,
+                  clonedTransaction.real
                 );
                 done();
-              },
+              }
             ));
         });
       });
@@ -2408,7 +2408,7 @@ describe('TransactionRunner', () => {
             () => {
               assert.isOk(server.isDone());
               done();
-            },
+            }
           ));
 
         it('should not fail again', (done) =>
@@ -2431,12 +2431,12 @@ describe('TransactionRunner', () => {
                   failCount++;
                 }
                 messages.push(
-                  configuration.emitter.emit.getCall(callNo).args[1].message,
+                  configuration.emitter.emit.getCall(callNo).args[1].message
                 );
               }
               assert.equal(failCount, 1);
               done();
-            },
+            }
           ));
 
         it('should not pass the hook message to the emitter', (done) =>
@@ -2452,12 +2452,12 @@ describe('TransactionRunner', () => {
                 asc ? callNo++ : callNo--
               ) {
                 messages.push(
-                  configuration.emitter.emit.getCall(callNo).args[1].message,
+                  configuration.emitter.emit.getCall(callNo).args[1].message
                 );
               }
               assert.notInclude(messages, 'Message after fail');
               done();
-            },
+            }
           ));
 
         it('should not mention after hook in the error message', (done) =>
@@ -2473,12 +2473,12 @@ describe('TransactionRunner', () => {
                 asc ? callNo++ : callNo--
               ) {
                 messages.push(
-                  configuration.emitter.emit.getCall(callNo).args[1].message,
+                  configuration.emitter.emit.getCall(callNo).args[1].message
                 );
               }
               assert.notInclude(messages, 'Failed in after hook:');
               done();
-            },
+            }
           ));
 
         it('should not add fail message as a error under `errors` to the results on the transaction', (done) =>
@@ -2487,11 +2487,11 @@ describe('TransactionRunner', () => {
             runner.hooks,
             () => {
               const messages = modifiedTransaction.errors.map(
-                (value) => value.message,
+                (value) => value.message
               );
               assert.notInclude(messages.join(), 'Message after fail');
               done();
-            },
+            }
           ));
 
         it('should not add fail message as a error under `errors` to the results on test passed to the emitter', (done) =>
@@ -2509,12 +2509,12 @@ describe('TransactionRunner', () => {
                 messages.push(
                   configuration.emitter.emit
                     .getCall(callNo)
-                    .args[1].errors.map((value) => value.message),
+                    .args[1].errors.map((value) => value.message)
                 );
               }
               assert.notInclude(messages.join(), 'Message after fail');
               done();
-            },
+            }
           ));
 
         it('should set transaction info on the failed test', (done) =>
@@ -2525,20 +2525,20 @@ describe('TransactionRunner', () => {
               assert.propertyVal(
                 modifiedTransaction.test,
                 'request',
-                modifiedTransaction.request,
+                modifiedTransaction.request
               );
               assert.propertyVal(
                 modifiedTransaction.test,
                 'expected',
-                modifiedTransaction.expected,
+                modifiedTransaction.expected
               );
               assert.propertyVal(
                 modifiedTransaction.test,
                 'actual',
-                modifiedTransaction.real,
+                modifiedTransaction.real
               );
               done();
-            },
+            }
           ));
       });
 
@@ -2568,7 +2568,7 @@ describe('TransactionRunner', () => {
             () => {
               assert.isOk(server.isDone());
               done();
-            },
+            }
           ));
 
         it('it should fail the test', (done) =>
@@ -2578,7 +2578,7 @@ describe('TransactionRunner', () => {
             () => {
               assert.isOk(configuration.emitter.emit.calledWith('test fail'));
               done();
-            },
+            }
           ));
 
         it('it should not pass the test', (done) =>
@@ -2588,7 +2588,7 @@ describe('TransactionRunner', () => {
             () => {
               assert.notOk(configuration.emitter.emit.calledWith('test pass'));
               done();
-            },
+            }
           ));
 
         it('it should pass the failing message to the emitter', (done) =>
@@ -2604,12 +2604,12 @@ describe('TransactionRunner', () => {
                 asc ? callNo++ : callNo--
               ) {
                 messages.push(
-                  configuration.emitter.emit.getCall(callNo).args[1].message,
+                  configuration.emitter.emit.getCall(callNo).args[1].message
                 );
               }
               assert.include(messages.join(), 'Message after pass');
               done();
-            },
+            }
           ));
 
         it('should mention after hook in the error message', (done) =>
@@ -2625,12 +2625,12 @@ describe('TransactionRunner', () => {
                 asc ? callNo++ : callNo--
               ) {
                 messages.push(
-                  configuration.emitter.emit.getCall(callNo).args[1].message,
+                  configuration.emitter.emit.getCall(callNo).args[1].message
                 );
               }
               assert.include(messages.join(), 'Failed in after hook:');
               done();
-            },
+            }
           ));
 
         it('should set transaction test status to failed', (done) =>
@@ -2640,7 +2640,7 @@ describe('TransactionRunner', () => {
             () => {
               assert.equal(clonedTransaction.test.status, 'fail');
               done();
-            },
+            }
           ));
 
         it('should add fail message as a error under `errors` to the results', (done) =>
@@ -2649,11 +2649,11 @@ describe('TransactionRunner', () => {
             runner.hooks,
             () => {
               const messages = clonedTransaction.errors.map(
-                (value) => value.message,
+                (value) => value.message
               );
               assert.include(messages.join(), 'Message after pass');
               done();
-            },
+            }
           ));
 
         it('should not add fail message as a error under `errors` to the results on test passed to the emitter', (done) =>
@@ -2671,12 +2671,12 @@ describe('TransactionRunner', () => {
                 messages.push(
                   configuration.emitter.emit
                     .getCall(callNo)
-                    .args[1].errors.map((value) => value.message),
+                    .args[1].errors.map((value) => value.message)
                 );
               }
               assert.include(messages.join(), 'Message after pass');
               done();
-            },
+            }
           ));
       });
     });
@@ -2691,7 +2691,7 @@ describe('TransactionRunner', () => {
 
       it('should not run the hooks', (done) =>
         runner.executeAllTransactions([transaction], runner.hooks, () =>
-          done(),
+          done()
         ));
 
       it('should pass the transactions', (done) =>
@@ -2740,7 +2740,7 @@ describe('TransactionRunner', () => {
             // Should not hang here
             assert.isOk(true);
             server.close();
-          }),
+          })
         );
 
         server.on('close', () => {

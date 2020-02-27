@@ -2,7 +2,6 @@ const compileParams = require('./compileParams');
 const validateParams = require('./validateParams');
 const expandUriTemplate = require('./expandURItemplate');
 
-
 module.exports = function compileURI(httpRequestElement) {
   const annotations = [];
   const cascade = [
@@ -28,7 +27,7 @@ module.exports = function compileURI(httpRequestElement) {
       const value = element.href ? element.href.toValue() : undefined;
       return value;
     })
-    .filter(hrefParam => !!hrefParam)
+    .filter((hrefParam) => !!hrefParam)
     .pop();
 
   // Support for 'httpRequest' parameters is experimental. The element does
@@ -36,18 +35,26 @@ module.exports = function compileURI(httpRequestElement) {
   // the future, '.attributes.get('hrefVariables')' can be replaced
   // with '.hrefVariables'.
   const params = cascade
-    .map(element => compileParams(element.attributes.get('hrefVariables')))
+    .map((element) => compileParams(element.attributes.get('hrefVariables')))
     .reduce(overrideParams, {});
 
   let result = validateParams(params);
   let component = 'parametersValidation';
-  result.errors.forEach(error => annotations.push({ type: 'error', component, message: error }));
-  result.warnings.forEach(warning => annotations.push({ type: 'warning', component, message: warning }));
+  result.errors.forEach((error) =>
+    annotations.push({ type: 'error', component, message: error })
+  );
+  result.warnings.forEach((warning) =>
+    annotations.push({ type: 'warning', component, message: warning })
+  );
 
   result = expandUriTemplate(href, params);
   component = 'uriTemplateExpansion';
-  result.errors.forEach(error => annotations.push({ type: 'error', component, message: error }));
-  result.warnings.forEach(warning => annotations.push({ type: 'warning', component, message: warning }));
+  result.errors.forEach((error) =>
+    annotations.push({ type: 'error', component, message: error })
+  );
+  result.warnings.forEach((warning) =>
+    annotations.push({ type: 'warning', component, message: warning })
+  );
 
   return { uri: result.uri, annotations };
 };

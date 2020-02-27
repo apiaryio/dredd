@@ -1,5 +1,5 @@
 module.exports = {
-  extends: 'airbnb-base',
+  extends: ['airbnb-base', 'prettier'],
   env: {
     mocha: true,
     node: true,
@@ -19,5 +19,6 @@ module.exports = {
     // the purpose of the unit tests, see
     // https://github.com/apiaryio/dredd-transactions/pull/179#discussion_r206852270
     'no-underscore-dangle': 'off',
+    'prefer-object-spread': 'off'
   },
 };

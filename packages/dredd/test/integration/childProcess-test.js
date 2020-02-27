@@ -70,8 +70,8 @@ describe('Babysitting Child Processes', () => {
           (err, info) => {
             processInfo = info;
             done(err);
-          },
-        ),
+          }
+        )
       );
       after((done) => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -99,8 +99,8 @@ describe('Babysitting Child Processes', () => {
           (err, info) => {
             processInfo = info;
             done(err);
-          },
-        ),
+          }
+        )
       );
       after((done) => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -130,8 +130,8 @@ describe('Babysitting Child Processes', () => {
             (err, info) => {
               processInfo = info;
               done(err);
-            },
-          ),
+            }
+          )
         );
         after((done) => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -159,8 +159,8 @@ describe('Babysitting Child Processes', () => {
             (err, info) => {
               processInfo = info;
               done(err);
-            },
-          ),
+            }
+          )
         );
         after((done) => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -174,10 +174,10 @@ describe('Babysitting Child Processes', () => {
         it('the error has a message about unsuccessful termination', () =>
           assert.equal(
             processInfo.error.message,
-            `Unable to gracefully terminate process ${processInfo.childProcess.pid}`,
+            `Unable to gracefully terminate process ${processInfo.childProcess.pid}`
           ));
       });
-    }),
+    })
   );
 
   describe("when gracefully terminated by childProcess.terminate({'force': true})", () => {
@@ -191,8 +191,8 @@ describe('Babysitting Child Processes', () => {
           (err, info) => {
             processInfo = info;
             done(err);
-          },
-        ),
+          }
+        )
       );
       after((done) => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -219,8 +219,8 @@ describe('Babysitting Child Processes', () => {
           (err, info) => {
             processInfo = info;
             done(err);
-          },
-        ),
+          }
+        )
       );
       after((done) => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -253,8 +253,8 @@ describe('Babysitting Child Processes', () => {
           (err, info) => {
             processInfo = info;
             done(err);
-          },
-        ),
+          }
+        )
       );
       after((done) => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -281,8 +281,8 @@ describe('Babysitting Child Processes', () => {
           (err, info) => {
             processInfo = info;
             done(err);
-          },
-        ),
+          }
+        )
       );
       after((done) => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -312,8 +312,8 @@ describe('Babysitting Child Processes', () => {
           (err, info) => {
             processInfo = info;
             done(err);
-          },
-        ),
+          }
+        )
       );
       after((done) => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -339,8 +339,8 @@ describe('Babysitting Child Processes', () => {
           (err, info) => {
             processInfo = info;
             done(err);
-          },
-        ),
+          }
+        )
       );
       after((done) => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -366,8 +366,8 @@ describe('Babysitting Child Processes', () => {
           (err, info) => {
             processInfo = info;
             done(err);
-          },
-        ),
+          }
+        )
       );
       after((done) => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -404,8 +404,8 @@ describe('Babysitting Child Processes', () => {
           (err, info) => {
             processInfo = info;
             done(err);
-          },
-        ),
+          }
+        )
       );
       after((done) => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -436,8 +436,8 @@ describe('Babysitting Child Processes', () => {
           (err, info) => {
             processInfo = info;
             done(err);
-          },
-        ),
+          }
+        )
       );
       after((done) => helpers.kill(processInfo.childProcess.pid, done));
 
@@ -472,8 +472,8 @@ describe('Babysitting Child Processes', () => {
           (err, info) => {
             processInfo = info;
             done(err);
-          },
-        ),
+          }
+        )
       );
       after((done) => helpers.kill(processInfo.childProcess.pid, done));
 

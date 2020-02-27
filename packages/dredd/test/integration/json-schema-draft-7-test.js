@@ -29,7 +29,7 @@ describe('Given API Blueprint with JSON Schema Draft 7', () => {
       it('should output no failures or errors', () => {
         assert.equal(
           runtimeInfo.dredd.stats.failures + runtimeInfo.dredd.stats.errors,
-          0,
+          0
         );
       });
 
@@ -64,7 +64,7 @@ describe('Given API Blueprint with JSON Schema Draft 7', () => {
       it('should output an error about unknown "type" enum value', () => {
         assert.match(
           runtimeInfo.dredd.logging,
-          /data\/0\/type should be equal to constant/,
+          /data\/0\/type should be equal to constant/
         );
       });
     });
@@ -100,7 +100,7 @@ describe('Given API Blueprint with JSON Schema Draft 7', () => {
         assert.notMatch(runtimeInfo.dredd.logging, /not a valid draft/);
         assert.equal(
           runtimeInfo.dredd.stats.failures + runtimeInfo.dredd.stats.errors,
-          0,
+          0
         );
       });
 

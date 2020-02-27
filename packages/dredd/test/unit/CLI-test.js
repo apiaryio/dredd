@@ -63,7 +63,7 @@ function execCommand(custom = {}, cb) {
         exitStatus = code || 0;
         return cb();
       }
-    },
+    }
   ).run();
 }
 
@@ -242,11 +242,11 @@ describe('CLI class', () => {
       it('propagates configuration options to Dredd class', () => {
         assert.equal(
           dc.dreddInstance.configuration.path[0],
-          './test/fixtures/single-get.apib',
+          './test/fixtures/single-get.apib'
         );
         assert.equal(
           dc.dreddInstance.configuration.endpoint,
-          `http://127.0.0.1:${PORT}`,
+          `http://127.0.0.1:${PORT}`
         );
       });
     });
@@ -261,11 +261,11 @@ describe('CLI class', () => {
       it('propagates configuration options to Dredd class', () => {
         assert.equal(
           dc.dreddInstance.configuration.path[0],
-          './test/fixtures/single-get.apib',
+          './test/fixtures/single-get.apib'
         );
         assert.equal(
           dc.dreddInstance.configuration.endpoint,
-          `http://127.0.0.1:${PORT}`,
+          `http://127.0.0.1:${PORT}`
         );
       });
     });
@@ -280,7 +280,7 @@ describe('CLI class', () => {
         assert.include(stderr, 'Example:');
         assert.include(stderr, '[OPTIONS]');
         Array.from(Object.keys(options)).forEach((optionKey) =>
-          assert.include(stderr, optionKey),
+          assert.include(stderr, optionKey)
         );
       });
     });
@@ -331,7 +331,7 @@ describe('CLI class', () => {
             'foo/bar',
           ],
         },
-        done,
+        done
       );
     });
 

@@ -68,7 +68,7 @@
     "coffeescript": "2.4.1",
     "cucumber": "6.0.3",
     "eslint": "6.6.0",
-    "eslint-config-airbnb-base": "13.2.0",
+    "eslint-config-airbnb-base": "14.0.0",
     "eslint-config-prettier": "6.5.0",
     "eslint-plugin-import": "2.18.2",
     "express": "4.17.1",

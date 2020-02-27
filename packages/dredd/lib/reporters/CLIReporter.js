@@ -42,7 +42,7 @@ CLIReporter.prototype.configureEmitter = function configureEmitter(emitter) {
           reporterOutputLogger.request(`\n${prettifyResponse(test.request)}\n`);
         if (test.expected)
           reporterOutputLogger.expected(
-            `\n${prettifyResponse(test.expected)}\n`,
+            `\n${prettifyResponse(test.expected)}\n`
           );
         if (test.actual)
           reporterOutputLogger.actual(`\n${prettifyResponse(test.actual)}\n\n`);
@@ -55,7 +55,7 @@ CLIReporter.prototype.configureEmitter = function configureEmitter(emitter) {
           `${this.stats.failures} failing, ` +
           `${this.stats.errors} errors, ` +
           `${this.stats.skipped} skipped, ` +
-          `${this.stats.tests} total`,
+          `${this.stats.tests} total`
       );
     }
 

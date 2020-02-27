@@ -10,7 +10,7 @@ describe('getProxySettings()', () => {
         USER: 'honza',
         HTTP_PROXY: 'http://proxy.example.com:8080',
       }),
-      ['HTTP_PROXY=http://proxy.example.com:8080'],
+      ['HTTP_PROXY=http://proxy.example.com:8080']
     );
   });
 
@@ -21,7 +21,7 @@ describe('getProxySettings()', () => {
         USER: 'honza',
         HTTPS_PROXY: 'https://proxy.example.com:8080',
       }),
-      ['HTTPS_PROXY=https://proxy.example.com:8080'],
+      ['HTTPS_PROXY=https://proxy.example.com:8080']
     );
   });
 
@@ -32,7 +32,7 @@ describe('getProxySettings()', () => {
         USER: 'honza',
         NO_PROXY: '*',
       }),
-      ['NO_PROXY=*'],
+      ['NO_PROXY=*']
     );
   });
 
@@ -44,7 +44,7 @@ describe('getProxySettings()', () => {
         http_proxy: 'http://proxy.example.com:8080',
         NO_PROXY: '*',
       }),
-      ['http_proxy=http://proxy.example.com:8080', 'NO_PROXY=*'],
+      ['http_proxy=http://proxy.example.com:8080', 'NO_PROXY=*']
     );
   });
 
@@ -56,7 +56,7 @@ describe('getProxySettings()', () => {
         http_proxy: 'http://proxy.example.com:8080',
         NO_PROXY: '',
       }),
-      ['http_proxy=http://proxy.example.com:8080'],
+      ['http_proxy=http://proxy.example.com:8080']
     );
   });
 });

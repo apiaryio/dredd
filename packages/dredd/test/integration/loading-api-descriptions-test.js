@@ -46,42 +46,42 @@ FORMAT: 1A
     it('the API description has all expected data', () => {
       assert.hasAllKeys(
         dredd.configuration.apiDescriptions[0],
-        EXPECTED_API_DESCRIPTION_PROPS,
+        EXPECTED_API_DESCRIPTION_PROPS
       );
     });
     it('the location is set to the configuration', () => {
       assert.propertyVal(
         dredd.configuration.apiDescriptions[0],
         'location',
-        'configuration.apiDescriptions[0]',
+        'configuration.apiDescriptions[0]'
       );
     });
     it('the content is set', () => {
       assert.propertyVal(
         dredd.configuration.apiDescriptions[0],
         'content',
-        content,
+        content
       );
     });
     it('the media type is set', () => {
       assert.propertyVal(
         dredd.configuration.apiDescriptions[0],
         'mediaType',
-        'text/vnd.apiblueprint',
+        'text/vnd.apiblueprint'
       );
     });
     it('the transactions are set', () => {
       assert.lengthOf(dredd.configuration.apiDescriptions[0].transactions, 1);
       assert.equal(
         dredd.configuration.apiDescriptions[0].transactions[0].name,
-        'Machines API > /machines > GET',
+        'Machines API > /machines > GET'
       );
     });
     it('the transaction runner is called with the transactions', () => {
       assert.lengthOf(dredd.transactionRunner.run.firstCall.args[0], 1);
       assert.equal(
         dredd.transactionRunner.run.firstCall.args[0][0].name,
-        'Machines API > /machines > GET',
+        'Machines API > /machines > GET'
       );
     });
   });
@@ -102,43 +102,43 @@ FORMAT: 1A
     it('the API description has all expected data', () => {
       assert.hasAllKeys(
         dredd.configuration.apiDescriptions[0],
-        EXPECTED_API_DESCRIPTION_PROPS,
+        EXPECTED_API_DESCRIPTION_PROPS
       );
     });
     it('the location is set to the path', () => {
       assert.match(
         dredd.configuration.apiDescriptions[0].location,
-        /single-get\.apib$/,
+        /single-get\.apib$/
       );
       assert.isTrue(
-        path.isAbsolute(dredd.configuration.apiDescriptions[0].location),
+        path.isAbsolute(dredd.configuration.apiDescriptions[0].location)
       );
     });
     it('the content is set', () => {
       assert.include(
         dredd.configuration.apiDescriptions[0].content,
-        '# Machines collection [/machines]',
+        '# Machines collection [/machines]'
       );
     });
     it('the media type is set', () => {
       assert.propertyVal(
         dredd.configuration.apiDescriptions[0],
         'mediaType',
-        'text/vnd.apiblueprint',
+        'text/vnd.apiblueprint'
       );
     });
     it('the transactions are set', () => {
       assert.lengthOf(dredd.configuration.apiDescriptions[0].transactions, 1);
       assert.equal(
         dredd.configuration.apiDescriptions[0].transactions[0].name,
-        'Machines API > Machines > Machines collection > Get Machines',
+        'Machines API > Machines > Machines collection > Get Machines'
       );
     });
     it('the transaction runner is called with the transactions', () => {
       assert.lengthOf(dredd.transactionRunner.run.firstCall.args[0], 1);
       assert.equal(
         dredd.transactionRunner.run.firstCall.args[0][0].name,
-        'Machines API > Machines > Machines collection > Get Machines',
+        'Machines API > Machines > Machines collection > Get Machines'
       );
     });
   });
@@ -161,7 +161,7 @@ FORMAT: 1A
     it('the error is descriptive', () => {
       assert.equal(
         error.message,
-        "Could not find any files on path: '__non-existing__.apib'",
+        "Could not find any files on path: '__non-existing__.apib'"
       );
     });
     it('aborts Dredd', () => {
@@ -185,69 +185,69 @@ FORMAT: 1A
     it('the API descriptions have all expected data', () => {
       assert.hasAllKeys(
         dredd.configuration.apiDescriptions[0],
-        EXPECTED_API_DESCRIPTION_PROPS,
+        EXPECTED_API_DESCRIPTION_PROPS
       );
       assert.hasAllKeys(
         dredd.configuration.apiDescriptions[1],
-        EXPECTED_API_DESCRIPTION_PROPS,
+        EXPECTED_API_DESCRIPTION_PROPS
       );
       assert.hasAllKeys(
         dredd.configuration.apiDescriptions[2],
-        EXPECTED_API_DESCRIPTION_PROPS,
+        EXPECTED_API_DESCRIPTION_PROPS
       );
     });
     it('the locations are set to the absolute paths', () => {
       assert.match(
         dredd.configuration.apiDescriptions[0].location,
-        /greeting\.apib$/,
+        /greeting\.apib$/
       );
       assert.match(
         dredd.configuration.apiDescriptions[1].location,
-        /message\.apib$/,
+        /message\.apib$/
       );
       assert.match(
         dredd.configuration.apiDescriptions[2].location,
-        /name\.apib$/,
+        /name\.apib$/
       );
       assert.isTrue(
-        path.isAbsolute(dredd.configuration.apiDescriptions[0].location),
+        path.isAbsolute(dredd.configuration.apiDescriptions[0].location)
       );
       assert.isTrue(
-        path.isAbsolute(dredd.configuration.apiDescriptions[1].location),
+        path.isAbsolute(dredd.configuration.apiDescriptions[1].location)
       );
       assert.isTrue(
-        path.isAbsolute(dredd.configuration.apiDescriptions[2].location),
+        path.isAbsolute(dredd.configuration.apiDescriptions[2].location)
       );
     });
     it('the contents are set', () => {
       assert.include(
         dredd.configuration.apiDescriptions[0].content,
-        '# Greeting API',
+        '# Greeting API'
       );
       assert.include(
         dredd.configuration.apiDescriptions[1].content,
-        '# Message API',
+        '# Message API'
       );
       assert.include(
         dredd.configuration.apiDescriptions[2].content,
-        '# Name API',
+        '# Name API'
       );
     });
     it('the media types are set', () => {
       assert.propertyVal(
         dredd.configuration.apiDescriptions[0],
         'mediaType',
-        'text/vnd.apiblueprint',
+        'text/vnd.apiblueprint'
       );
       assert.propertyVal(
         dredd.configuration.apiDescriptions[1],
         'mediaType',
-        'text/vnd.apiblueprint',
+        'text/vnd.apiblueprint'
       );
       assert.propertyVal(
         dredd.configuration.apiDescriptions[2],
         'mediaType',
-        'text/vnd.apiblueprint',
+        'text/vnd.apiblueprint'
       );
     });
     it('the transactions are set', () => {
@@ -256,15 +256,15 @@ FORMAT: 1A
       assert.lengthOf(dredd.configuration.apiDescriptions[2].transactions, 1);
       assert.equal(
         dredd.configuration.apiDescriptions[0].transactions[0].name,
-        'Greeting API > /greeting > GET',
+        'Greeting API > /greeting > GET'
       );
       assert.equal(
         dredd.configuration.apiDescriptions[1].transactions[0].name,
-        'Message API > /message > GET',
+        'Message API > /message > GET'
       );
       assert.equal(
         dredd.configuration.apiDescriptions[2].transactions[0].name,
-        'Name API > /name > GET',
+        'Name API > /name > GET'
       );
     });
     it('the transaction runner is called with the transactions', () => {
@@ -296,7 +296,7 @@ FORMAT: 1A
     it('the error is descriptive', () => {
       assert.equal(
         error.message,
-        "Could not find any files on path: '__non-existing-*-glob__.apib'",
+        "Could not find any files on path: '__non-existing-*-glob__.apib'"
       );
     });
     it('aborts Dredd', () => {
@@ -344,13 +344,13 @@ FORMAT: 1A
     it('the API description has all expected data', () => {
       assert.hasAllKeys(
         dredd.configuration.apiDescriptions[0],
-        EXPECTED_API_DESCRIPTION_PROPS,
+        EXPECTED_API_DESCRIPTION_PROPS
       );
     });
     it('the location is set to the URL', () => {
       assert.equal(
         dredd.configuration.apiDescriptions[0].location,
-        `http://127.0.0.1:${DEFAULT_SERVER_PORT}/file.apib`,
+        `http://127.0.0.1:${DEFAULT_SERVER_PORT}/file.apib`
       );
     });
     it('the content is set', () => {
@@ -360,21 +360,21 @@ FORMAT: 1A
       assert.propertyVal(
         dredd.configuration.apiDescriptions[0],
         'mediaType',
-        'text/vnd.apiblueprint',
+        'text/vnd.apiblueprint'
       );
     });
     it('the transactions are set', () => {
       assert.lengthOf(dredd.configuration.apiDescriptions[0].transactions, 1);
       assert.equal(
         dredd.configuration.apiDescriptions[0].transactions[0].name,
-        'Machines API > /machines > GET',
+        'Machines API > /machines > GET'
       );
     });
     it('the transaction runner is called with the transactions', () => {
       assert.lengthOf(dredd.transactionRunner.run.firstCall.args[0], 1);
       assert.equal(
         dredd.transactionRunner.run.firstCall.args[0][0].name,
-        'Machines API > /machines > GET',
+        'Machines API > /machines > GET'
       );
     });
   });
@@ -399,7 +399,7 @@ FORMAT: 1A
     it('the error is descriptive', () => {
       assert.include(
         error.message,
-        "Unable to load API description document from 'http://example.example:1234/file.apib': ",
+        "Unable to load API description document from 'http://example.example:1234/file.apib': "
       );
       assert.include(error.message, 'ENOTFOUND');
     });
@@ -437,7 +437,7 @@ FORMAT: 1A
     it('the error is descriptive', () => {
       assert.include(
         error.message,
-        `Unable to load API description document from 'http://127.0.0.1:${DEFAULT_SERVER_PORT}/file.apib': `,
+        `Unable to load API description document from 'http://127.0.0.1:${DEFAULT_SERVER_PORT}/file.apib': `
       );
       assert.include(error.message, 'Dredd got HTTP 404 response');
     });
@@ -480,7 +480,7 @@ FORMAT: 1A
       assert.propertyVal(
         dredd.configuration.apiDescriptions[0],
         'mediaType',
-        'text/vnd.apiblueprint',
+        'text/vnd.apiblueprint'
       );
     });
     it('the transactions are set', () => {

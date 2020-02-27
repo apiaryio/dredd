@@ -25,7 +25,7 @@ const COFFEE_BIN = 'node_modules/.bin/coffee';
 const MIN_COMMAND_EXECUTION_DURATION_MS =
   2 *
   measureExecutionDurationMs(() =>
-    crossSpawnStub.sync(COFFEE_BIN, ['test/fixtures/scripts/exit-0.coffee']),
+    crossSpawnStub.sync(COFFEE_BIN, ['test/fixtures/scripts/exit-0.coffee'])
   );
 const PORT = 61321;
 
@@ -64,7 +64,7 @@ describe('Hooks worker client', () => {
         // Uncomment to enable logging for debug
         // console.log text
         logs.push(text);
-      }),
+      })
     );
   });
 
@@ -107,7 +107,7 @@ describe('Hooks worker client', () => {
                 }
                 assert.include(
                   logs,
-                  'Hooks handler stdout: standard output text\n',
+                  'Hooks handler stdout: standard output text\n'
                 );
                 done();
               });
@@ -137,7 +137,7 @@ describe('Hooks worker client', () => {
                 }
                 assert.include(
                   logs,
-                  'Hooks handler stderr: error output text\n',
+                  'Hooks handler stderr: error output text\n'
                 );
                 done();
               });
@@ -171,10 +171,10 @@ describe('Hooks worker client', () => {
                 assert.isNull(runner.hookHandlerError);
                 done();
               }),
-            MIN_COMMAND_EXECUTION_DURATION_MS,
+            MIN_COMMAND_EXECUTION_DURATION_MS
           );
         });
-      },
+      }
     );
 
     it('should include the status in the error if spawned process ends with non-zero exit status', (done) => {
@@ -199,7 +199,7 @@ describe('Hooks worker client', () => {
               assert.include(runner.hookHandlerError.message, '3');
               done();
             }),
-          MIN_COMMAND_EXECUTION_DURATION_MS,
+          MIN_COMMAND_EXECUTION_DURATION_MS
         );
       });
     });
@@ -257,7 +257,7 @@ describe('Hooks worker client', () => {
             assert.isTrue(crossSpawnStub.spawn.called);
             assert.equal(
               crossSpawnStub.spawn.getCall(0).args[0],
-              'dredd-hooks-ruby',
+              'dredd-hooks-ruby'
             );
             done();
           });
@@ -271,7 +271,7 @@ describe('Hooks worker client', () => {
             assert.isUndefined(error);
             assert.equal(
               crossSpawnStub.spawn.getCall(0).args[1][0],
-              'somefile.rb',
+              'somefile.rb'
             );
             done();
           });
@@ -336,7 +336,7 @@ describe('Hooks worker client', () => {
             assert.isTrue(crossSpawnStub.spawn.called);
             assert.equal(
               crossSpawnStub.spawn.getCall(0).args[0],
-              'dredd-hooks-python',
+              'dredd-hooks-python'
             );
             done();
           });
@@ -350,7 +350,7 @@ describe('Hooks worker client', () => {
             assert.isUndefined(error);
             assert.equal(
               crossSpawnStub.spawn.getCall(0).args[1][0],
-              'somefile.py',
+              'somefile.py'
             );
             done();
           });
@@ -415,7 +415,7 @@ describe('Hooks worker client', () => {
             assert.isTrue(crossSpawnStub.spawn.called);
             assert.equal(
               crossSpawnStub.spawn.getCall(0).args[0],
-              'dredd-hooks-php',
+              'dredd-hooks-php'
             );
             done();
           });
@@ -429,7 +429,7 @@ describe('Hooks worker client', () => {
             assert.isUndefined(error);
             assert.equal(
               crossSpawnStub.spawn.getCall(0).args[1][0],
-              'somefile.py',
+              'somefile.py'
             );
             done();
           });
@@ -453,7 +453,7 @@ describe('Hooks worker client', () => {
           assert.isOk(err);
           assert.include(
             err.message,
-            'composer require ddelnano/dredd-hooks-php --dev',
+            'composer require ddelnano/dredd-hooks-php --dev'
           );
           done();
         }));
@@ -486,7 +486,7 @@ describe('Hooks worker client', () => {
           assert.isOk(err);
           assert.include(
             err.message,
-            'go get github.com/snikch/goodman/cmd/goodman',
+            'go get github.com/snikch/goodman/cmd/goodman'
           );
           done();
         }));
@@ -541,7 +541,7 @@ describe('Hooks worker client', () => {
             assert.isTrue(crossSpawnStub.spawn.called);
             assert.equal(
               crossSpawnStub.spawn.getCall(0).args[0],
-              path.join(dummyPath, 'goodman'),
+              path.join(dummyPath, 'goodman')
             );
             done();
           });
@@ -555,7 +555,7 @@ describe('Hooks worker client', () => {
             assert.isUndefined(error);
             assert.equal(
               crossSpawnStub.spawn.getCall(0).args[1][0],
-              'gobinary',
+              'gobinary'
             );
             done();
           });
@@ -619,7 +619,7 @@ describe('Hooks worker client', () => {
             assert.isTrue(crossSpawnStub.spawn.called);
             assert.equal(
               crossSpawnStub.spawn.getCall(0).args[0],
-              'dredd-hooks-rust',
+              'dredd-hooks-rust'
             );
             done();
           });
@@ -633,7 +633,7 @@ describe('Hooks worker client', () => {
             assert.isUndefined(error);
             assert.equal(
               crossSpawnStub.spawn.getCall(0).args[1][0],
-              'rustbinary',
+              'rustbinary'
             );
             done();
           });
@@ -678,7 +678,7 @@ describe('Hooks worker client', () => {
             assert.isTrue(crossSpawnStub.spawn.called);
             assert.equal(
               crossSpawnStub.spawn.getCall(0).args[0],
-              'dredd-hooks-perl',
+              'dredd-hooks-perl'
             );
             done();
           });
@@ -692,7 +692,7 @@ describe('Hooks worker client', () => {
             assert.isUndefined(error);
             assert.equal(
               crossSpawnStub.spawn.getCall(0).args[1][0],
-              'somefile.py',
+              'somefile.py'
             );
             done();
           });
@@ -757,7 +757,7 @@ describe('Hooks worker client', () => {
             assert.isTrue(crossSpawnStub.spawn.called);
             assert.equal(
               crossSpawnStub.spawn.getCall(0).args[0],
-              './my-fancy-command',
+              './my-fancy-command'
             );
             done();
           });
@@ -771,7 +771,7 @@ describe('Hooks worker client', () => {
             assert.isUndefined(error);
             assert.equal(
               crossSpawnStub.spawn.getCall(0).args[1][0],
-              'someotherfile',
+              'someotherfile'
             );
             done();
           });

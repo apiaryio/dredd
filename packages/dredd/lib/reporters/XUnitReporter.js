@@ -27,7 +27,7 @@ function XUnitReporter(emitter, stats, path, details) {
 XUnitReporter.prototype.updateSuiteStats = function updateSuiteStats(
   path,
   stats,
-  callback,
+  callback
 ) {
   fs.readFile(path, (err, data) => {
     if (!err) {
@@ -46,7 +46,7 @@ XUnitReporter.prototype.updateSuiteStats = function updateSuiteStats(
             timestamp: new Date().toUTCString(),
             time: stats.duration / 1000,
           },
-          false,
+          false
         );
         const xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>';
         fs.writeFile(
@@ -57,7 +57,7 @@ XUnitReporter.prototype.updateSuiteStats = function updateSuiteStats(
               reporterOutputLogger.error(error);
             }
             callback();
-          },
+          }
         );
       } else {
         callback();
@@ -91,7 +91,7 @@ XUnitReporter.prototype.toTag = function toTag(name, attrs, close, content) {
 };
 
 XUnitReporter.prototype.sanitizedPath = function sanitizedPath(
-  path = './report.xml',
+  path = './report.xml'
 ) {
   const filePath = pathmodule.resolve(untildify(path));
   if (fs.existsSync(filePath)) {
@@ -118,8 +118,8 @@ XUnitReporter.prototype.configureEmitter = function configureEmitter(emitter) {
               timestamp: new Date().toUTCString(),
               time: this.stats.duration / 1000,
             },
-            false,
-          ),
+            false
+          )
         );
         callback();
       })
@@ -154,8 +154,8 @@ ${prettifyResponse(test.actual)}\
           'testcase',
           attrs,
           false,
-          this.toTag('system-out', null, false, this.cdata(deets)),
-        ),
+          this.toTag('system-out', null, false, this.cdata(deets))
+        )
       );
     } else {
       this.appendLine(this.path, this.toTag('testcase', attrs, true));
@@ -169,7 +169,7 @@ ${prettifyResponse(test.actual)}\
     };
     this.appendLine(
       this.path,
-      this.toTag('testcase', attrs, false, this.toTag('skipped', null, true)),
+      this.toTag('testcase', attrs, false, this.toTag('skipped', null, true))
     );
   });
 
@@ -194,8 +194,8 @@ ${prettifyResponse(test.actual)}\
         'testcase',
         attrs,
         false,
-        this.toTag('failure', null, false, this.cdata(diff)),
-      ),
+        this.toTag('failure', null, false, this.cdata(diff))
+      )
     );
   });
 
@@ -211,8 +211,8 @@ ${prettifyResponse(test.actual)}\
         'testcase',
         attrs,
         false,
-        this.toTag('failure', null, false, this.cdata(errorMessage)),
-      ),
+        this.toTag('failure', null, false, this.cdata(errorMessage))
+      )
     );
   });
 };

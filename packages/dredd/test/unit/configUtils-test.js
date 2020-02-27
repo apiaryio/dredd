@@ -171,7 +171,7 @@ endpoint: endpoint\
 `;
 
     beforeEach(() =>
-      sinon.stub(fsStub, 'readFileSync').callsFake(() => yamlData),
+      sinon.stub(fsStub, 'readFileSync').callsFake(() => yamlData)
     );
 
     afterEach(() => fsStub.readFileSync.restore());

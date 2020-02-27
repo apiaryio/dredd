@@ -137,15 +137,15 @@ describe('configureReporters()', () => {
           XUnitReporterStub.calledWith(
             emitterStub,
             { fileBasedReporters: 2 },
-            'file1',
-          ),
+            'file1'
+          )
         );
         assert.isOk(
           MarkdownReporterStub.calledWith(
             emitterStub,
             { fileBasedReporters: 2 },
-            'file2',
-          ),
+            'file2'
+          )
         );
         return done();
       });
@@ -164,15 +164,15 @@ describe('configureReporters()', () => {
           XUnitReporterStub.calledWith(
             emitterStub,
             { fileBasedReporters: 2 },
-            'file1',
-          ),
+            'file1'
+          )
         );
         assert.isOk(
           MarkdownReporterStub.calledWith(
             emitterStub,
             { fileBasedReporters: 2 },
-            undefined,
-          ),
+            undefined
+          )
         );
         return done();
       });
@@ -212,15 +212,15 @@ describe('configureReporters()', () => {
           MarkdownReporterStub.calledWith(
             emitterStub,
             { fileBasedReporters: 2 },
-            'file1',
-          ),
+            'file1'
+          )
         );
         assert.isOk(
           HtmlReporterStub.calledWith(
             emitterStub,
             { fileBasedReporters: 2 },
-            'file2',
-          ),
+            'file2'
+          )
         );
         return done();
       });
@@ -239,15 +239,15 @@ describe('configureReporters()', () => {
           MarkdownReporterStub.calledWith(
             emitterStub,
             { fileBasedReporters: 2 },
-            'file1',
-          ),
+            'file1'
+          )
         );
         assert.isOk(
           HtmlReporterStub.calledWith(
             emitterStub,
             { fileBasedReporters: 2 },
-            undefined,
-          ),
+            undefined
+          )
         );
         return done();
       });

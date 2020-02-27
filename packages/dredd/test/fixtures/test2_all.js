@@ -10,5 +10,5 @@ hooks.before(
   (transaction, done) => {
     console.log('*** before');
     done();
-  },
+  }
 );
