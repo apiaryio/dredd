@@ -3242,10 +3242,10 @@ fury-adapter-oas3-parser@0.10.2:
     ramda "0.26.1"
     yaml-js "^0.2.3"
 
-fury-adapter-swagger@0.28.2:
-  version "0.28.2"
-  resolved "https://registry.yarnpkg.com/fury-adapter-swagger/-/fury-adapter-swagger-0.28.2.tgz#78cbbac000adecb3d12dccd1bcb06d3587982ca4"
-  integrity sha512-qe9MzfDK1AP/9DEbhUeC9b4mDGKAS0NGnJfLN+2Rb/iqrTvmhQO2QjGmJxCYrI1wlnS8kHJLnovqBLiILkN8uA==
+fury-adapter-swagger@0.28.3:
+  version "0.28.3"
+  resolved "https://registry.yarnpkg.com/fury-adapter-swagger/-/fury-adapter-swagger-0.28.3.tgz#21cccd820f3c547532bb08e6c6a0384543de7e93"
+  integrity sha512-puOfB6N2bbd4dp3r5oGNXQBun5A8soHY4Y+fkSVf5OfaXwbduPbvAqCqeRxG5CEkpEZWbPhOZh3eXEMz/CmHzw==
   dependencies:
     content-type "^1.0.4"
     js-yaml "^3.12.0"
