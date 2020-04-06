@@ -74,7 +74,7 @@
     "express": "4.17.1",
     "mocha": "7.1.1",
     "nock": "10.0.6",
-    "prettier": "1.18.2",
+    "prettier": "2.0.4",
     "ps-node": "0.1.6",
     "sinon": "9.0.1",
     "ts-node": "8.7.0",
