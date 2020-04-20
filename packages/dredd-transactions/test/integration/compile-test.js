@@ -49,11 +49,12 @@ describe('compile() · all API description formats', () => {
 
       it('produces some annotations and no transactions', () => {
         assert.jsonSchema(compileResult, createCompileResultSchema({
-          annotations: [1, 2],
+          annotations: [1, 2, 3],
           transactions: 0,
         }));
       });
-      it('produces maximum one warning from parser and exactly one error from URI expansion', () => {
+
+      it('produces maximum of two warnings from parser and exactly one error from URI expansion', () => {
         const warning = createAnnotationSchema({
           type: 'warning',
           component: 'apiDescriptionParser',
@@ -66,7 +67,9 @@ describe('compile() · all API description formats', () => {
 
         assert.jsonSchema(compileResult.annotations, {
           oneOf: [
-            { type: 'array', items: [warning, error] },
+            // warning 1: "URI template variable ''"
+            // warning 2: 'URI Template expression is missing closing bracket }'
+            { type: 'array', items: [warning, warning, error] },
             { type: 'array', items: [error] },
           ],
         });
