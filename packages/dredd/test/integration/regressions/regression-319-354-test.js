@@ -93,7 +93,7 @@ describe('Regression: Issues #319 and #354', () => {
   }
 
   const brickTypeSchema = {
-    $schema: 'http://json-schema.org/draft-04/schema#',
+    $schema: 'http://json-schema.org/draft-07/schema#',
     type: 'object',
     properties: {
       id: { type: 'string' },
@@ -129,7 +129,7 @@ describe('Regression: Issues #319 and #354', () => {
   }
 
   const userSchema = {
-    $schema: 'http://json-schema.org/draft-04/schema#',
+    $schema: 'http://json-schema.org/draft-07/schema#',
     type: 'object',
     properties: {
       id: { type: 'string' },
@@ -150,7 +150,7 @@ describe('Regression: Issues #319 and #354', () => {
   const userArrayPayload = [userPayload]
 
   const userArraySchema = {
-    $schema: 'http://json-schema.org/draft-04/schema#',
+    $schema: 'http://json-schema.org/draft-07/schema#',
     type: 'array'
   }
 
