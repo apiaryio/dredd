@@ -2336,22 +2336,10 @@ deep-eql@^3.0.1:
   dependencies:
     type-detect "^4.0.0"
 
-deep-equal@1.1.1:
+deep-equal@1.1.1, deep-equal@^1.0.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-1.1.1.tgz#b5c98c942ceffaf7cb051e24e1434a25a2e6076a"
   integrity sha512-yd9c5AdiqVcR+JjcwUQb9DkhJc8ngNr0MahEBGvDiJw8puWab2yZlh+nkasOnZP+EGTAP6rRp2JzJhJZzvNF8g==
-  dependencies:
-    is-arguments "^1.0.4"
-    is-date-object "^1.0.1"
-    is-regex "^1.0.4"
-    object-is "^1.0.1"
-    object-keys "^1.1.1"
-    regexp.prototype.flags "^1.2.0"
-
-deep-equal@^1.0.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-1.1.0.tgz#3103cdf8ab6d32cf4a8df7865458f2b8d33f3745"
-  integrity sha512-ZbfWJq/wN1Z273o7mUSjILYqehAktR2NVoSrOukDkU9kg2v/Uv89yU4Cvz8seJeAmtN5oqiefKq8FPuXOboqLw==
   dependencies:
     is-arguments "^1.0.4"
     is-date-object "^1.0.1"
@@ -3278,9 +3266,9 @@ gauge@~2.7.3:
     wide-align "^1.1.0"
 
 gavel@^9.1.1:
-  version "9.1.1"
-  resolved "https://registry.yarnpkg.com/gavel/-/gavel-9.1.1.tgz#4107fa9a21b78ef6d9ee0e6381030829620986f6"
-  integrity sha512-cCNY+LzQsW5uFLUABFreV+7lI8R/6FGpMpKl7eY/SltlDYU1Mdg+xFHgYITX4f1tgJJ8g07yVHW8jGao7IHlUg==
+  version "9.1.2"
+  resolved "https://registry.yarnpkg.com/gavel/-/gavel-9.1.2.tgz#c12ef1be7308185f681954f131ec40001ee8262b"
+  integrity sha512-NdP9TGXRe+gAae0e/ow9lnL/KQcIYHb1LepS/7jzOB2a8zxE7kGL53hua3y5sFE/vwfwDFBn182PQmQdklyDyw==
   dependencies:
     ajv "6.10.2"
     caseless "0.12.0"
