@@ -3220,10 +3220,10 @@ fury-adapter-apib-parser@0.18.0:
     deckardcain "^1.0.0"
     drafter "2.0.0"
 
-fury-adapter-oas3-parser@0.11.0:
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/fury-adapter-oas3-parser/-/fury-adapter-oas3-parser-0.11.0.tgz#d7bde66c228e25d397652109eb44105d58190e07"
-  integrity sha512-j1hoE78Yph+bnFDiumZuTffkIywMaCN4Y49d+QaMW4OTqrBaGfSwwTawm6RMr4UZr08Ly0BJdTexBAOdL5SbIQ==
+fury-adapter-oas3-parser@0.11.1:
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/fury-adapter-oas3-parser/-/fury-adapter-oas3-parser-0.11.1.tgz#18be4a673e6a3ab3544cf0529baa1ca44f8ee320"
+  integrity sha512-UqacuC1B4EIr5UNfPDyf88aczNtISZqQXt2ytUtSC07gKdQoqzJUqvjCgFKzSVN0V5Fq1u5OiKNglJiIqfZt4A==
   dependencies:
     content-type "^1.0.4"
     media-typer "^1.0.1"
