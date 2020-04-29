@@ -53,6 +53,8 @@ Example usage of all methods in
 
 .. code-block:: ruby
 
+   require 'dredd_hooks/methods'
+   
    include DreddHooks::Methods
 
    before_all do |transactions|
@@ -97,6 +99,8 @@ Any test step can be skipped by setting ``skip`` property of the ``transaction``
 
 .. code-block:: ruby
 
+   require 'dredd_hooks/methods'
+   
    include DreddHooks::Methods
 
    before "Machines > Machines collection > Get Machines" do |transaction|
@@ -110,7 +114,9 @@ If you want to test some API workflow, you may pass data between test steps usin
 
 .. code-block:: ruby
 
+   require 'dredd_hooks/methods'
    require 'json'
+   
    include DreddHooks::Methods
 
    response_stash = {}
@@ -118,7 +124,7 @@ If you want to test some API workflow, you may pass data between test steps usin
    after "Machines > Machines collection > Create Machine" do |transaction|
      # saving HTTP response to the stash
      response_stash[transaction['name']] = transaction['real']
-   do
+   end
 
    before "Machines > Machine > Delete a machine" do |transaction|
      #reusing data from previous response here
@@ -136,6 +142,8 @@ You can fail any step by setting ``fail`` property on ``transaction`` object to 
 
 .. code-block:: ruby
 
+   require 'dredd_hooks/methods'
+   
    include DreddHooks::Methods
 
    before "Machines > Machines collection > Get Machines" do |transaction|
@@ -147,7 +155,9 @@ Modifying Transaction Request Body Prior to Execution
 
 .. code-block:: ruby
 
+   require 'dredd_hooks/methods'
    require 'json'
+   
    include DreddHooks::Methods
 
    before "Machines > Machines collection > Get Machines" do |transaction|
@@ -166,6 +176,8 @@ Adding or Changing URI Query Parameters to All Requests
 
 .. code-block:: ruby
 
+   require 'dredd_hooks/methods'
+   
    include DreddHooks::Methods
 
    hooks.before_each do |transaction|
@@ -185,7 +197,9 @@ Handling sessions
 
 .. code-block:: ruby
 
+   require 'dredd_hooks/methods'
    require 'json'
+   
    include DreddHooks::Methods
 
    stash = {}
@@ -208,6 +222,8 @@ Remove trailing newline character for in expected plain text bodies
 
 .. code-block:: ruby
 
+   require 'dredd_hooks/methods'
+   
    include DreddHooks::Methods
 
    before_each do |transaction|
