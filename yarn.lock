@@ -2473,19 +2473,10 @@ dot-prop@^4.2.0:
   dependencies:
     is-obj "^1.0.0"
 
-drafter.js@^3.0.2:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/drafter.js/-/drafter.js-3.1.0.tgz#f810f63be3464bbaf1cf689b3f2721ce9c5a6ba0"
-  integrity sha512-05E5x8oVPSq0WqYHv2VQ16uNnF9gP10FrFwZgBFimRm+72baLSuOUSH4C2R26phaVCnoZj62ohyE7CdpNthsaA==
-
-drafter@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/drafter/-/drafter-2.0.0.tgz#a3c66e242775732405179f568f493086038ce9d9"
-  integrity sha512-dguGHbBkCRaan26eyGb0eEaCYdO6wtA7I+EuUVzte5EU46j9x0W98GThUBxsKzUfbvPaS6TR8wcPymfZUoeplg==
-  dependencies:
-    drafter.js "^3.0.2"
-  optionalDependencies:
-    protagonist "^2.0.2"
+drafter.js@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/drafter.js/-/drafter.js-3.2.0.tgz#3403b31cac84b2e7c8ee93fac12cd82c5ba538a3"
+  integrity sha512-ThDDh8bTK0p9JJsP2TqqmiOKLqTkdnOF205hc1MF+axfCjXWyRzrNNiPLEUXQrHJJ+bPbkevWjjn5e9x0g0tqA==
 
 drange@^1.0.2:
   version "1.1.1"
@@ -3212,13 +3203,15 @@ functional-red-black-tree@^1.0.1:
   resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
 
-fury-adapter-apib-parser@0.18.0:
-  version "0.18.0"
-  resolved "https://registry.yarnpkg.com/fury-adapter-apib-parser/-/fury-adapter-apib-parser-0.18.0.tgz#c1c3f603abb7f2a7dfff1f95981d7aade433e8f3"
-  integrity sha512-OZql7zeKI+hyHkw2+ZqyD5eizCys8p4fQk5ULhuoQYVPxn5uNm66EYGh/lC43s3n+dPhsF3wO/pmqhAyFXU2BA==
+fury-adapter-apib-parser@0.18.1:
+  version "0.18.1"
+  resolved "https://registry.yarnpkg.com/fury-adapter-apib-parser/-/fury-adapter-apib-parser-0.18.1.tgz#23d1842c184b84ee9e238fce6d8ec902cde58a5c"
+  integrity sha512-wKFnUgVJ5/mGNs8rCCu1cVVhfZl1nvgKBwj4z/JXTW6PQuwI8Rp+bn5CGWAyJCXwrElIsfrACnHaJFnHPh0nnQ==
   dependencies:
     deckardcain "^1.0.0"
-    drafter "2.0.0"
+    drafter.js "^3.2.0"
+  optionalDependencies:
+    protagonist "^2.1.0"
 
 fury-adapter-oas3-parser@0.11.1:
   version "0.11.1"
@@ -5603,10 +5596,10 @@ propagate@^1.0.0:
   resolved "https://registry.yarnpkg.com/propagate/-/propagate-1.0.0.tgz#00c2daeedda20e87e3782b344adba1cddd6ad709"
   integrity sha1-AMLa7t2iDofjeCs0Stuhzd1q1wk=
 
-protagonist@^2.0.2:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/protagonist/-/protagonist-2.1.0.tgz#15815dfd3574e466e92d5a1780dec29b54625e9b"
-  integrity sha512-NZMBG7S/5r44b9q8IDcYxAzvRCiOxd2VLZsCjuOfeZ6bNlc+U9WDoba9lHt6BJJRh77iaBb4WIRLKR55gcHgLw==
+protagonist@^2.1.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/protagonist/-/protagonist-2.2.0.tgz#28036c57ae85a3936e6d3442da1059f4472e381d"
+  integrity sha512-oqHVxpjMZgOk4J99MYfTDrgHM6N5m4ATnKlgxJS3wd8aGFkYat9lakB1VEEr5Kb+rDSZUFmr2yp5o2xRfYG2YQ==
   dependencies:
     nan "^2.13.2"
 
