@@ -9,7 +9,7 @@ const rimraf = require('rimraf');
 
 const PACKAGE_DIR = path.resolve(__dirname, '..');
 const SYMLINKS_LOG = path.join(PACKAGE_DIR, 'prepack-symlinks.log');
-const DRAFTER_PATH = path.join(PACKAGE_DIR, 'node_modules', 'drafter');
+const APIB_PARSER_PATH = path.join(PACKAGE_DIR, 'node_modules', 'fury-adapter-apib-parser');
 
 
 function readPackageJson(packageDir) {
@@ -49,11 +49,11 @@ const packageData = readPackageJson(PACKAGE_DIR);
 const { bundledDependencies } = packageData;
 bundledDependencies.forEach(symlinkDependencyTreeToLocalNodeModules);
 
-// alter drafter's package.json so it doesn't depend on protagonist
-const drafterPackageData = readPackageJson(DRAFTER_PATH);
-delete drafterPackageData.dependencies.protagonist;
-delete drafterPackageData.optionalDependencies.protagonist;
-writePackageJson(DRAFTER_PATH, drafterPackageData);
+// alter fury-adapter-apib-parser's package.json so it doesn't depend on protagonist
+const apibParserPackageData = readPackageJson(APIB_PARSER_PATH);
+delete apibParserPackageData.dependencies.protagonist;
+delete apibParserPackageData.optionalDependencies.protagonist;
+writePackageJson(APIB_PARSER_PATH, apibParserPackageData);
 
 // get rid of protagonist everywhere
 [
