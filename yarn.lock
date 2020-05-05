@@ -2,6 +2,16 @@
 # yarn lockfile v1
 
 
+"@apielements/apib-parser@0.19.0":
+  version "0.19.0"
+  resolved "https://registry.yarnpkg.com/@apielements/apib-parser/-/apib-parser-0.19.0.tgz#c22baf760f14afa9bc6547066170af4f1d72a5ac"
+  integrity sha512-1GA00KxzCSWFeaw2D+i9Zz/e4Jck67XyZAnv8y18F0o8ZANrGhukJSRggjmrGSxLcrbeqe/4CKhf/PQOC14NZA==
+  dependencies:
+    deckardcain "^1.0.0"
+    drafter.js "^3.2.0"
+  optionalDependencies:
+    protagonist "^2.1.0"
+
 "@babel/code-frame@^7.0.0":
   version "7.5.5"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.5.5.tgz#bc0782f6d69f7b7d49531219699b988f669a8f9d"
@@ -3202,16 +3212,6 @@ functional-red-black-tree@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
-
-fury-adapter-apib-parser@0.18.1:
-  version "0.18.1"
-  resolved "https://registry.yarnpkg.com/fury-adapter-apib-parser/-/fury-adapter-apib-parser-0.18.1.tgz#23d1842c184b84ee9e238fce6d8ec902cde58a5c"
-  integrity sha512-wKFnUgVJ5/mGNs8rCCu1cVVhfZl1nvgKBwj4z/JXTW6PQuwI8Rp+bn5CGWAyJCXwrElIsfrACnHaJFnHPh0nnQ==
-  dependencies:
-    deckardcain "^1.0.0"
-    drafter.js "^3.2.0"
-  optionalDependencies:
-    protagonist "^2.1.0"
 
 fury-adapter-oas3-parser@0.11.1:
   version "0.11.1"
