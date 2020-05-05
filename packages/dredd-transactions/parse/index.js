@@ -3,7 +3,7 @@ const fury = require('fury');
 
 fury.use(require('@apielements/apib-parser'));
 fury.use(require('fury-adapter-swagger'));
-fury.use(require('fury-adapter-oas3-parser'));
+fury.use(require('@apielements/openapi3-parser'));
 
 const { Annotation, SourceMap, ParseResult } = fury.minim.elements;
 
