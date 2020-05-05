@@ -12,6 +12,20 @@
   optionalDependencies:
     protagonist "^2.1.0"
 
+"@apielements/openapi2-parser@0.30.0":
+  version "0.30.0"
+  resolved "https://registry.yarnpkg.com/@apielements/openapi2-parser/-/openapi2-parser-0.30.0.tgz#ff5d820fa90fec17c5ec726b7be4e33aeeb5fdf9"
+  integrity sha512-yXPdgTUiIhC8Gg3Q4rDfuFs8i4WD139Tn8qFIWocHSbKHLZ36VNox15lWZKGUMKZ67u6cXTtKHyS4cwHILFflQ==
+  dependencies:
+    content-type "^1.0.4"
+    js-yaml "^3.12.0"
+    json-schema-faker "0.5.0-rc23"
+    lodash "^4.17.0"
+    media-typer "^1.0.1"
+    swagger-parser "^8.0.0"
+    yaml-js "^0.2.3"
+    z-schema "^4.1.0"
+
 "@apielements/openapi3-parser@0.12.0":
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/@apielements/openapi3-parser/-/openapi3-parser-0.12.0.tgz#6e1607b42648b6e102753f8f52d62c7f141eaaa5"
@@ -3222,20 +3236,6 @@ functional-red-black-tree@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
-
-fury-adapter-swagger@0.29.0:
-  version "0.29.0"
-  resolved "https://registry.yarnpkg.com/fury-adapter-swagger/-/fury-adapter-swagger-0.29.0.tgz#36f486c9579a302058806e1641c83593653c8926"
-  integrity sha512-ssbYmqSBgx3VOc6lOpf9xr4ZwsFOdbVAF26XVuezlzo3nXInSGf3PGQ7tmRfVfk5MAZmeGvTc+Fzys9U+ouJ5A==
-  dependencies:
-    content-type "^1.0.4"
-    js-yaml "^3.12.0"
-    json-schema-faker "0.5.0-rc23"
-    lodash "^4.17.0"
-    media-typer "^1.0.1"
-    swagger-parser "^8.0.0"
-    yaml-js "^0.2.3"
-    z-schema "^4.1.0"
 
 fury@3.0.0-beta.14:
   version "3.0.0-beta.14"

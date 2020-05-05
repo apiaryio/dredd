@@ -592,7 +592,7 @@ OpenAPI 2
   :language: openapi2
 
 .. note::
-   Do not use the explicit ``binary`` or ``bytes`` formats with response bodies, as Dredd is not able to properly work with those (:ghissue:`fury-adapter-swagger#193`).
+   Do not use the explicit ``binary`` or ``bytes`` formats with response bodies, as Dredd is not able to properly work with those (:ghissue:`api-elements.js#269`).
 
 Hooks
 ~~~~~
