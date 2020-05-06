@@ -175,7 +175,7 @@ OpenAPI 2
 
 The effective request body is inferred from ``"in": "body"`` and ``"in": "formData"`` parameters (:openapi2:`parameterobject`).
 
-If body parameter has ``schema.example`` (:openapi2:`schemaexample`), it is used as a raw JSON sample for the request body. If it’s not present, Dredd’s `OpenAPI 2 adapter <https://github.com/apiaryio/fury-adapter-swagger/>`__ generates sample values from the JSON Schema provided in the ``schema`` (:openapi2:`parameterschema`) property. Following rules apply when the adapter fills values of the properties, ordered by precedence:
+If body parameter has ``schema.example`` (:openapi2:`schemaexample`), it is used as a raw JSON sample for the request body. If it’s not present, Dredd’s `OpenAPI 2 adapter <https://github.com/apiaryio/api-elements.js/tree/master/packages/openapi2-parser>`__ generates sample values from the JSON Schema provided in the ``schema`` (:openapi2:`parameterschema`) property. Following rules apply when the adapter fills values of the properties, ordered by precedence:
 
 1. Value of ``default``.
 2. First value from ``enum``.

@@ -9,7 +9,7 @@ const rimraf = require('rimraf');
 
 const PACKAGE_DIR = path.resolve(__dirname, '..');
 const SYMLINKS_LOG = path.join(PACKAGE_DIR, 'prepack-symlinks.log');
-const APIB_PARSER_PATH = path.join(PACKAGE_DIR, 'node_modules', 'fury-adapter-apib-parser');
+const APIB_PARSER_PATH = path.join(PACKAGE_DIR, 'node_modules', '@apielements', 'apib-parser');
 
 
 function readPackageJson(packageDir) {
@@ -34,10 +34,18 @@ function writePackageJson(packageDir, packageData) {
  */
 function symlinkDependencyTreeToLocalNodeModules(dependencyName) {
   const localDependencyPath = path.join(PACKAGE_DIR, 'node_modules', dependencyName);
+
   if (!fs.existsSync(localDependencyPath)) {
-    fs.symlinkSync(`../../../node_modules/${dependencyName}`, localDependencyPath);
+    const localDependencyPathDir = path.dirname(localDependencyPath);
+    if (!fs.existsSync(localDependencyPathDir)) {
+      fs.mkdirSync(localDependencyPathDir);
+    }
+
+    const source = path.relative(localDependencyPathDir, path.resolve(`../../node_modules/${dependencyName}`));
+    fs.symlinkSync(source, localDependencyPath);
     fs.appendFileSync(SYMLINKS_LOG, `${dependencyName}\n`);
   }
+
   const packageData = readPackageJson(localDependencyPath);
   const dependencies = Object.keys(packageData.dependencies || {});
   dependencies.forEach(symlinkDependencyTreeToLocalNodeModules);
@@ -49,7 +57,7 @@ const packageData = readPackageJson(PACKAGE_DIR);
 const { bundledDependencies } = packageData;
 bundledDependencies.forEach(symlinkDependencyTreeToLocalNodeModules);
 
-// alter fury-adapter-apib-parser's package.json so it doesn't depend on protagonist
+// alter @apielements/apib-parser's package.json so it doesn't depend on protagonist
 const apibParserPackageData = readPackageJson(APIB_PARSER_PATH);
 delete apibParserPackageData.dependencies.protagonist;
 delete apibParserPackageData.optionalDependencies.protagonist;

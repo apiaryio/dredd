@@ -23,7 +23,7 @@ Supported API Description Formats
 
 -  `API Blueprint`_
 -  `OpenAPI 2`_ (formerly known as Swagger)
--  `OpenAPI 3`_ (`experimental <https://github.com/apiaryio/api-elements.js/blob/master/packages/fury-adapter-oas3-parser/STATUS.md>`__, contributions welcome!)
+-  `OpenAPI 3`_ (`experimental <https://github.com/apiaryio/api-elements.js/blob/master/packages/openapi3-parser/STATUS.md>`__, contributions welcome!)
 
 Supported Hooks Languages
 ~~~~~~~~~~~~~~~~~~~~~~~~~
