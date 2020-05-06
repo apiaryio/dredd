@@ -26,10 +26,10 @@
     yaml-js "^0.2.3"
     z-schema "^4.1.0"
 
-"@apielements/openapi3-parser@0.12.0":
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/@apielements/openapi3-parser/-/openapi3-parser-0.12.0.tgz#6e1607b42648b6e102753f8f52d62c7f141eaaa5"
-  integrity sha512-zFMfKnSuUNjokIfiEPJHCpneuEiE5fgef5d+bKapivUo0/fh2i8oqAda93GpEHWXXVtxCQOrmalwyEiBxJuF5w==
+"@apielements/openapi3-parser@0.12.1":
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/@apielements/openapi3-parser/-/openapi3-parser-0.12.1.tgz#1d8b3b84f61577bf4ccdf57f8d0fcd6f53d5ab5f"
+  integrity sha512-o0bY9MViRlWrY7VHLF+U9O5/EDvsdayICdtuJ0XIN/7IL/13c+dsBDASa5TbHXiifYlvaZSHeABpD/qPd0jD5A==
   dependencies:
     content-type "^1.0.4"
     media-typer "^1.0.1"
