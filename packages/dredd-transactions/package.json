@@ -27,7 +27,7 @@
   ],
   "dependencies": {
     "@apielements/apib-parser": "0.19.0",
-    "@apielements/openapi2-parser": "0.30.0",
+    "@apielements/openapi2-parser": "0.31.0",
     "@apielements/openapi3-parser": "0.12.1",
     "fury": "3.0.0-beta.14",
     "uri-template": "1.0.1"
