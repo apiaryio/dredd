@@ -12,10 +12,10 @@
   optionalDependencies:
     protagonist "^2.1.0"
 
-"@apielements/openapi2-parser@0.30.0":
-  version "0.30.0"
-  resolved "https://registry.yarnpkg.com/@apielements/openapi2-parser/-/openapi2-parser-0.30.0.tgz#ff5d820fa90fec17c5ec726b7be4e33aeeb5fdf9"
-  integrity sha512-yXPdgTUiIhC8Gg3Q4rDfuFs8i4WD139Tn8qFIWocHSbKHLZ36VNox15lWZKGUMKZ67u6cXTtKHyS4cwHILFflQ==
+"@apielements/openapi2-parser@0.31.0":
+  version "0.31.0"
+  resolved "https://registry.yarnpkg.com/@apielements/openapi2-parser/-/openapi2-parser-0.31.0.tgz#b5a27921dbc36a5c484ef67fe051212f900ce924"
+  integrity sha512-1+4SIjtLfLiP5e2ew/kEVjhkcw5bAzWPx46Cls8c4JAlQNyNXfDAKmnxZk3fxWtW0BjBj+UafhVuiu3QHEoiwQ==
   dependencies:
     content-type "^1.0.4"
     js-yaml "^3.12.0"
