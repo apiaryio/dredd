@@ -23,7 +23,7 @@ documentation.
 
 - [API Blueprint][]
 - [OpenAPI 2][] (formerly known as Swagger)
-- [OpenAPI 3][] ([experimental](https://github.com/apiaryio/api-elements.js/blob/master/packages/openapi-parser/STATUS.md), contributions welcome!)
+- [OpenAPI 3][] ([experimental](https://github.com/apiaryio/api-elements.js/blob/master/packages/openapi3-parser/STATUS.md), contributions welcome!)
 
 ### Supported Hooks Languages
 
