@@ -2,20 +2,27 @@
 # yarn lockfile v1
 
 
-"@apielements/apib-parser@0.19.0":
-  version "0.19.0"
-  resolved "https://registry.yarnpkg.com/@apielements/apib-parser/-/apib-parser-0.19.0.tgz#c22baf760f14afa9bc6547066170af4f1d72a5ac"
-  integrity sha512-1GA00KxzCSWFeaw2D+i9Zz/e4Jck67XyZAnv8y18F0o8ZANrGhukJSRggjmrGSxLcrbeqe/4CKhf/PQOC14NZA==
+"@apielements/apib-parser@0.20.0":
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/@apielements/apib-parser/-/apib-parser-0.20.0.tgz#8aa71e907bfa0aae0ee09a8ea1da3fed800d600a"
+  integrity sha512-h12ogZpZmUlNO5kIrB16ND4ygSA6lmSKUvk850L3i6aHRnhTcBjMUQdxg2srhP0pMNhE52S3EWpdIAKX7AD8YQ==
   dependencies:
     deckardcain "^1.0.0"
     drafter.js "^3.2.0"
   optionalDependencies:
     protagonist "^2.1.0"
 
-"@apielements/openapi2-parser@0.31.0":
-  version "0.31.0"
-  resolved "https://registry.yarnpkg.com/@apielements/openapi2-parser/-/openapi2-parser-0.31.0.tgz#b5a27921dbc36a5c484ef67fe051212f900ce924"
-  integrity sha512-1+4SIjtLfLiP5e2ew/kEVjhkcw5bAzWPx46Cls8c4JAlQNyNXfDAKmnxZk3fxWtW0BjBj+UafhVuiu3QHEoiwQ==
+"@apielements/core@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@apielements/core/-/core-0.1.0.tgz#60426a84e991aef17b4f1177da6a78399cebb916"
+  integrity sha512-v/NMQrCkkxpVzEVONZ0ONQLqZfiTQSB8y2up5YqXkqFy078oDHDp7X8olbsGMQ5kXhLGyHNE4B7QfHOUaDGMGA==
+  dependencies:
+    api-elements "^0.2.4"
+
+"@apielements/openapi2-parser@0.32.0":
+  version "0.32.0"
+  resolved "https://registry.yarnpkg.com/@apielements/openapi2-parser/-/openapi2-parser-0.32.0.tgz#82e1d4100df67a6adcd07b481bb6c3ca8c5e1734"
+  integrity sha512-+/d5/kd6jS0WCk8qhIgEwGF2MldAfYfW30UaAayeFh5zf0kxs039TDXgqP5o9SOA1X959+7OWS+VpAwl1UXUpA==
   dependencies:
     content-type "^1.0.4"
     js-yaml "^3.12.0"
@@ -26,10 +33,10 @@
     yaml-js "^0.2.3"
     z-schema "^4.1.0"
 
-"@apielements/openapi3-parser@0.12.2":
-  version "0.12.2"
-  resolved "https://registry.yarnpkg.com/@apielements/openapi3-parser/-/openapi3-parser-0.12.2.tgz#3af16b7b8bb3121ae4f41e885853a84f47855d29"
-  integrity sha512-pk1Jb3MwEaEl/XE4Zsr4n6tOGLRTuT0NqEjLaewKuStn/11ex48gO1LXncOf5a7RBXQ9enm9dK+DZf7bzNwJ6Q==
+"@apielements/openapi3-parser@0.13.0":
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/@apielements/openapi3-parser/-/openapi3-parser-0.13.0.tgz#63c600d0a22470c0d06d8c4ed434187fc0ca048f"
+  integrity sha512-X94ybR9Psqu1+Xlo0gbLJxUTk9AOccbFdI2UOlN0379cFq91J63Gjfvlh47i566Els7IeIjk8cdaTCU4DHbR6Q==
   dependencies:
     content-type "^1.0.4"
     media-typer "^1.0.1"
@@ -3236,13 +3243,6 @@ functional-red-black-tree@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
-
-fury@3.0.0-beta.14:
-  version "3.0.0-beta.14"
-  resolved "https://registry.yarnpkg.com/fury/-/fury-3.0.0-beta.14.tgz#cdb0e93a0a8c7a6824c07ab6826123b471ff451c"
-  integrity sha512-89vhbTQZ6Q7h4ihD8JwfF92MdWRl9MBMeAvejMYkDFUFYrp+qsudVam2L2/nVgTloIB5DzN1RsCFvsFutGP/Xg==
-  dependencies:
-    api-elements "^0.2.4"
 
 gauge@~2.7.3:
   version "2.7.4"
