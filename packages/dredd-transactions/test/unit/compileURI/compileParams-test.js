@@ -1,5 +1,5 @@
 const { assert } = require('chai');
-const fury = require('fury');
+const fury = require('@apielements/core');
 
 const compileParams = require('../../../compile/compileURI/compileParams');
 

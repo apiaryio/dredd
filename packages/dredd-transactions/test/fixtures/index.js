@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const fury = require('fury');
+const fury = require('@apielements/core');
 
 
 const FORMATS = {

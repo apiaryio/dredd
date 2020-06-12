@@ -1,4 +1,4 @@
-const fury = require('fury');
+const fury = require('@apielements/core');
 
 
 fury.use(require('@apielements/apib-parser'));

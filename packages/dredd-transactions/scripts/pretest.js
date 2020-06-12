@@ -3,7 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 
-const fury = require('fury');
+const fury = require('@apielements/core');
 
 const parse = require('../parse');
 

@@ -1,4 +1,4 @@
-const fury = require('fury');
+const fury = require('@apielements/core');
 
 const parse = require('../../parse');
 
