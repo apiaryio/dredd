@@ -19,10 +19,10 @@
   dependencies:
     api-elements "^0.2.4"
 
-"@apielements/openapi2-parser@0.32.0":
-  version "0.32.0"
-  resolved "https://registry.yarnpkg.com/@apielements/openapi2-parser/-/openapi2-parser-0.32.0.tgz#82e1d4100df67a6adcd07b481bb6c3ca8c5e1734"
-  integrity sha512-+/d5/kd6jS0WCk8qhIgEwGF2MldAfYfW30UaAayeFh5zf0kxs039TDXgqP5o9SOA1X959+7OWS+VpAwl1UXUpA==
+"@apielements/openapi2-parser@0.32.1":
+  version "0.32.1"
+  resolved "https://registry.yarnpkg.com/@apielements/openapi2-parser/-/openapi2-parser-0.32.1.tgz#9934cebdc32ec9acddbe71ba1cea5e4e822ac204"
+  integrity sha512-nm/i6rTZp6d0+l3Uyvzb2jdbmoDex59QYUBDCWVdbwwT3/dbHtFvpKzuGpfb3yJ3HEUHIZ5bXWztOsnH37jwAw==
   dependencies:
     content-type "^1.0.4"
     js-yaml "^3.12.0"
@@ -33,10 +33,10 @@
     yaml-js "^0.2.3"
     z-schema "^4.1.0"
 
-"@apielements/openapi3-parser@0.13.0":
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/@apielements/openapi3-parser/-/openapi3-parser-0.13.0.tgz#63c600d0a22470c0d06d8c4ed434187fc0ca048f"
-  integrity sha512-X94ybR9Psqu1+Xlo0gbLJxUTk9AOccbFdI2UOlN0379cFq91J63Gjfvlh47i566Els7IeIjk8cdaTCU4DHbR6Q==
+"@apielements/openapi3-parser@0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@apielements/openapi3-parser/-/openapi3-parser-0.14.0.tgz#65eab2be2db769870ad9317994ad377134f54f07"
+  integrity sha512-ujaVwxj+FdiwYB2YV2MeAraC7nx/qPH08ziRHUKL0uXJCw1CAHnWfv5S67k1ZKkhE1JACrrq/7QLT8nMzDRQaw==
   dependencies:
     content-type "^1.0.4"
     media-typer "^1.0.1"

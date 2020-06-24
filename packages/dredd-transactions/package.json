@@ -1,6 +1,6 @@
 {
   "name": "dredd-transactions",
-  "version": "9.2.1",
+  "version": "9.2.2",
   "description": "Compiles HTTP Transactions (Request-Response pairs) from an API description document",
   "main": "index.js",
   "engines": {
@@ -28,8 +28,8 @@
   "dependencies": {
     "@apielements/apib-parser": "0.20.0",
     "@apielements/core": "^0.1.0",
-    "@apielements/openapi2-parser": "0.32.0",
-    "@apielements/openapi3-parser": "0.13.0",
+    "@apielements/openapi2-parser": "0.32.1",
+    "@apielements/openapi3-parser": "0.14.0",
     "uri-template": "1.0.1"
   },
   "bundledDependencies": [
