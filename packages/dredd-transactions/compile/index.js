@@ -46,7 +46,7 @@ function findRelevantTransactions(mediaType, apiElements) {
 
 function compileHeaders(httpHeadersElement) {
   if (!httpHeadersElement) { return []; }
-  return httpHeadersElement.toValue().map(({ key, value }) => ({ name: key, value }));
+  return httpHeadersElement.toValue().map(({ key, value }) => ({ name: key, value: value || '' }));
 }
 
 function compileOriginExampleName(mediaType, httpResponseElement, exampleNo) {
