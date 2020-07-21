@@ -29,7 +29,7 @@ body: \n{
           'content-type': 'text/html',
         },
         body:
-            '<div>before paragraph <p>in para <i>italics</i><br /><b>bold</b> afterwords</p></div>',
+          '<div>before paragraph <p>in para <i>italics</i><br /><b>bold</b> afterwords</p></div>',
       });
 
       const expectedOutput = `\
@@ -65,15 +65,15 @@ body: \n<div>before paragraph
       assert.isArray(loggerStub.debug.firstCall.args);
       assert.lengthOf(loggerStub.debug.firstCall.args, 1);
       assert.equal(
-          loggerStub.debug.firstCall.args[0],
-          'Could not stringify: [object Object]',
+        loggerStub.debug.firstCall.args[0],
+        'Could not stringify: [object Object]',
       );
     });
   });
 
   describe('with base64 body encoding', () => {
     it("should've printed into debug with decode", () => {
-      const body = Buffer.from(JSON.stringify({a: 'b'})).toString('base64');
+      const body = Buffer.from(JSON.stringify({ a: 'b' })).toString('base64');
 
       const output = prettifyResponse({
         headers: {
@@ -90,16 +90,13 @@ body: \n{
   "a": "b"
 }\n\
 `;
-      assert.equal(
-          output,
-          expectedOutput,
-      );
+      assert.equal(output, expectedOutput);
     });
   });
 
   describe('without base64 body encoding', () => {
     it("should've printed into debug without decode", () => {
-      const body = Buffer.from(JSON.stringify({a: 'b'})).toString('base64');
+      const body = Buffer.from(JSON.stringify({ a: 'b' })).toString('base64');
 
       const output = prettifyResponse({
         headers: {
@@ -113,10 +110,7 @@ headers: \n    content-type: application/json\n
 body: 
 eyJhIjoiYiJ9\n\
 `;
-      assert.equal(
-          output,
-          expectedOutput,
-      );
+      assert.equal(output, expectedOutput);
     });
-  })
+  });
 });
