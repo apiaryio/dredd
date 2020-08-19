@@ -1,0 +1,62 @@
+
+name: run-docs-test
+
+on: push
+    # here add directory listing on push to test
+    # paths:
+      # - /docs/*.rst
+      # - /docs/**/*.rst
+
+jobs:
+
+  quality-checks:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.python-version }}
+
+    # venv
+    - run: echo $(python --version) > .python-version
+    - run: 'if [ ! -d ./venv ]; then python -m venv ./venv; fi'
+    - run: echo "source $(pwd)/venv/bin/activate" >> $BASH_ENV
+    - run: pip install -r ./docs/requirements.txt
+
+    # install
+    - run: yarn lint
+    - run: yarn commit:lint
+    - run: yarn docs:lint
+    - run: yarn docs:test-extensions
+
+  docs-dry-run:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    # venv
+    - run: echo $(python --version) > .python-version
+    - run: 'if [ ! -d ./venv ]; then python -m venv ./venv; fi'
+    - run: echo "source $(pwd)/venv/bin/activate" >> $BASH_ENV
+    - run: pip install -r ./docs/requirements.txt
+
+    - run: yarn docs:build
