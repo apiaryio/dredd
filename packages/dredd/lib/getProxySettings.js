@@ -1,4 +1,4 @@
-const PROXY_ENV_VARIABLES = /HTTP_PROXY|HTTPS_PROXY|NO_PROXY/;
+const PROXY_ENV_VARIABLES = /HTTP_PROXY|HTTPS_PROXY|NO_PROXY/i;
 
 /**
  * Expects an environment variables object (typically process.env)
