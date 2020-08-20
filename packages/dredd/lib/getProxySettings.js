@@ -1,4 +1,4 @@
-const PROXY_ENV_VARIABLES = ['HTTP_PROXY', 'HTTPS_PROXY', 'NO_PROXY'];
+const PROXY_ENV_VARIABLES = /HTTP_PROXY|HTTPS_PROXY|NO_PROXY/;
 
 /**
  * Expects an environment variables object (typically process.env)
@@ -15,7 +15,6 @@ const PROXY_ENV_VARIABLES = ['HTTP_PROXY', 'HTTPS_PROXY', 'NO_PROXY'];
  */
 export default function getProxySettings(env) {
   return Object.entries(env)
-    .filter((entry) => PROXY_ENV_VARIABLES.includes(entry[0].toUpperCase()))
-    .filter((entry) => entry[1] !== '')
-    .map((entry) => `${entry[0]}=${entry[1]}`);
+    .filter((entry) => PROXY_ENV_VARIABLES.test(entry[0]) && entry[1])
+    .map((entry) => entry.join('='));
 }
