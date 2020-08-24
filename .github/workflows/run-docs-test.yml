@@ -9,6 +9,22 @@ on: push
 
 jobs:
 
+  commitlint:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        node-version: [12.x]
+
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          configFile: ./commitlint.config.js
+      - uses: wagoid/commitlint-github-action@v2 
+
   quality-checks:
 
     runs-on: ${{ matrix.os }}
@@ -35,7 +51,6 @@ jobs:
     # install
     - run: yarn install
     - run: yarn lint
-    - run: yarn commit:lint
     - run: yarn docs:lint
     - run: yarn docs:test-extensions
 
