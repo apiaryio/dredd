@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
         node-version: [8.x, 10.x, 12.x, 14.x]
 
     steps:
