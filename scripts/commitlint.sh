@@ -4,8 +4,4 @@
 
 set -e  # aborts as soon as anything returns non-zero exit status
 
-if [ ! -z "$CIRCLECI" ]; then
-  npx commitlint-circle
-else
-  npx commitlint --from=master
-fi
+npx commitlint --from=master
