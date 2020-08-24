@@ -27,13 +27,13 @@ jobs:
         python-version: '3.x'
 
     # venv
-    - run: py-deps-{{ checksum ".python-version" }}-{{ checksum "./docs/requirements.txt" }}
+    - run: pip install -r ./docs/requirements.txt
     - run: echo $(python --version) > .python-version
     - run: 'if [ ! -d ./venv ]; then python -m venv ./venv; fi'
-    - run: echo "source $(pwd)/venv/bin/activate" >> $BASH_ENV
-    - run: pip install -r ./docs/requirements.txt
+    - run: source $(pwd)/venv/bin/activate
 
     # install
+    - run: yarn install
     - run: yarn lint
     - run: yarn commit:lint
     - run: yarn docs:lint
@@ -57,9 +57,10 @@ jobs:
         python-version: '3.x'
 
     # venv
+    - run: pip install -r ./docs/requirements.txt
     - run: echo $(python --version) > .python-version
     - run: 'if [ ! -d ./venv ]; then python -m venv ./venv; fi'
-    - run: echo "source $(pwd)/venv/bin/activate" >> $BASH_ENV
-    - run: pip install -r ./docs/requirements.txt
+    - run: source $(pwd)/venv/bin/activate
 
+    - run: yarn install
     - run: yarn docs:build
