@@ -89,7 +89,7 @@ Installing Node.js and npm
       - Node.js needs to be at least version 8
 
 .. note::
-   If your internet connection is restricted (VPN, firewall, proxy), you need to `configure npm <https://docs.npmjs.com/misc/config#https-proxy>`__:
+   If your internet connection is restricted (VPN, firewall, proxy), you need to `configure npm <https://docs.npmjs.com/cli/v6/using-npm/config#https-proxy>`__:
 
    .. code-block:: text
 
