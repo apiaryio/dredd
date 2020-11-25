@@ -53,7 +53,7 @@
     "request": "2.88.2",
     "spawn-args": "0.2.0",
     "untildify": "4.0.0",
-    "uuid": "7.0.3",
+    "uuid": "8.3.1",
     "which": "2.0.2",
     "winston": "2.4.0"
   },
