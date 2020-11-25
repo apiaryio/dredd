@@ -32,16 +32,16 @@ aliases:
       - run: yarn test
 
 jobs:
+  test-node14:
+    docker: [image: circleci/node:14]
+    <<: *test-steps
+
   test-node12:
     docker: [<<: *node12]
     <<: *test-steps
 
   test-node10:
     docker: [image: circleci/node:10]
-    <<: *test-steps
-
-  test-node8:
-    docker: [image: circleci/node:8]
     <<: *test-steps
 
   test-e2e-apib:
@@ -103,9 +103,9 @@ workflows:
     jobs:
       - format-check
       - quality-checks
+      - test-node14
       - test-node12
       - test-node10
-      - test-node8
       - test-e2e-apib
       - test-e2e-openapi2
       - smoke-tests
