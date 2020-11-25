@@ -4,7 +4,7 @@
   "description": "Compiles HTTP Transactions (Request-Response pairs) from an API description document",
   "main": "index.js",
   "engines": {
-    "node": ">= 8"
+    "node": ">=10"
   },
   "scripts": {
     "prepack": "node ./scripts/prepack.js",

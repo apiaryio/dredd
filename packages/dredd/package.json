@@ -7,7 +7,7 @@
     "dredd": "bin/dredd"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=10"
   },
   "scripts": {
     "start": "npm run build -- --watch",
