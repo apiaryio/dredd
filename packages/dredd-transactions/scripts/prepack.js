@@ -9,7 +9,10 @@ const rimraf = require('rimraf');
 
 const PACKAGE_DIR = path.resolve(__dirname, '..');
 const SYMLINKS_LOG = path.join(PACKAGE_DIR, 'prepack-symlinks.log');
-const APIB_PARSER_PATH = path.join(PACKAGE_DIR, 'node_modules', '@apielements', 'apib-parser');
+const APIB_PARSER_PATH = [
+  path.join(PACKAGE_DIR, 'node_modules', '@apielements', 'apib-parser'),
+  path.join(PACKAGE_DIR, '../..', 'node_modules', '@apielements', 'apib-parser'),
+].find(modulePath => fs.existsSync(modulePath));
 
 
 function readPackageJson(packageDir) {
