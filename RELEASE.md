@@ -23,9 +23,9 @@ $ git pull
 # Publish the packages respecting their versions from "package.json".
 $ npx lerna publish from-package
 
-# Tag the packages manually.
-$ git tag -a -m dredd@12.2.0 dredd@12.2.0 
-$ git tag -a -m dredd-transactions@9.1.0 dredd-transactions@9.1.0
+# Tag the packages manually with the corresponding next versions.
+$ git tag -a -m dredd@14.0.0 dredd@14.0.0
+$ git tag -a -m dredd-transactions@10.0.0 dredd-transactions@10.0.0
 
 # Push the new tags to master.
 $ git push --tags
