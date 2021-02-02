@@ -10,5 +10,5 @@ pygments-apiblueprint==0.2.0
 sphinx-tabs==2.0.0
 
 # dev dependencies
-sphinx-autobuild==0.7.1
+sphinx-autobuild==2020.9.1
 sphinx-rtd-theme==0.5.0
