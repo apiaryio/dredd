@@ -8,7 +8,7 @@ Dredd itself is written in JavaScript, so having :ref:`hooks in JavaScript <hook
 Several hooks handlers :ref:`already exist <supported-languages>`, either maintained by Dredd authors or external contributors. If you didn't find your favorite language among them, at this place you can learn how to create a new hooks handler.
 
 .. note::
-   `Deserve eternal praise <hall-of-fame>`__ and contribute hooks handler for **Java**! See :ghissue:`#875`
+   :ref:`Deserve eternal praise <hall-of-fame>` and contribute hooks handler for **Java**! See :ghissue:`#875`
 
 
 What is a hooks handler?
