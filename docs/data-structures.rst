@@ -4,7 +4,7 @@
 Data Structures
 ===============
 
-Documentation of various data structures in both `Gavel`_ and Dredd. `MSON notation <mson>`__ is used to describe the data structures.
+Documentation of various data structures in both `Gavel`_ and Dredd. `MSON`_ notation is used to describe the data structures.
 
 .. _transaction:
 
