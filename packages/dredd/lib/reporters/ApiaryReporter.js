@@ -1,5 +1,5 @@
 import clone from 'clone';
-import generateUuid from 'uuid/v4';
+import { v4 as generateUuid } from 'uuid';
 import os from 'os';
 import request from 'request';
 
