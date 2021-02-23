@@ -2,22 +2,22 @@
 # yarn lockfile v1
 
 
-"@apielements/apib-parser@0.20.0":
-  version "0.20.0"
-  resolved "https://registry.yarnpkg.com/@apielements/apib-parser/-/apib-parser-0.20.0.tgz#8aa71e907bfa0aae0ee09a8ea1da3fed800d600a"
-  integrity sha512-h12ogZpZmUlNO5kIrB16ND4ygSA6lmSKUvk850L3i6aHRnhTcBjMUQdxg2srhP0pMNhE52S3EWpdIAKX7AD8YQ==
+"@apielements/apib-parser@0.20.1":
+  version "0.20.1"
+  resolved "https://registry.yarnpkg.com/@apielements/apib-parser/-/apib-parser-0.20.1.tgz#acf292119960152eecb76037b35fcbbcf6923287"
+  integrity sha512-Sfx5hS+6Mn3+vxqkZ/8vC44M/K6vkL50e5cemdZeuUpFVrBH5CGaQqAyFWdqSLVn3UR2nh1x2oDy5deliZKQRw==
   dependencies:
     deckardcain "^1.0.0"
     drafter.js "^3.2.0"
   optionalDependencies:
     protagonist "^2.1.0"
 
-"@apielements/core@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@apielements/core/-/core-0.1.0.tgz#60426a84e991aef17b4f1177da6a78399cebb916"
-  integrity sha512-v/NMQrCkkxpVzEVONZ0ONQLqZfiTQSB8y2up5YqXkqFy078oDHDp7X8olbsGMQ5kXhLGyHNE4B7QfHOUaDGMGA==
+"@apielements/core@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@apielements/core/-/core-0.2.1.tgz#faca09f242702ef922fd7d897d6d7fe09deebd45"
+  integrity sha512-pI7hlAzXmceQjox10n+huOsYkSEunegHVMYl+7cq8WOO107CqGSuv1K8ERnKGQeAT4ZAacDnlo1Py/7WNtU+rQ==
   dependencies:
-    api-elements "^0.2.4"
+    api-elements "^0.3.0"
 
 "@apielements/openapi2-parser@0.32.4":
   version "0.32.4"
@@ -33,10 +33,10 @@
     yaml-js "^0.2.3"
     z-schema "^4.1.0"
 
-"@apielements/openapi3-parser@0.14.0":
-  version "0.14.0"
-  resolved "https://registry.yarnpkg.com/@apielements/openapi3-parser/-/openapi3-parser-0.14.0.tgz#65eab2be2db769870ad9317994ad377134f54f07"
-  integrity sha512-ujaVwxj+FdiwYB2YV2MeAraC7nx/qPH08ziRHUKL0uXJCw1CAHnWfv5S67k1ZKkhE1JACrrq/7QLT8nMzDRQaw==
+"@apielements/openapi3-parser@0.16.0":
+  version "0.16.0"
+  resolved "https://registry.yarnpkg.com/@apielements/openapi3-parser/-/openapi3-parser-0.16.0.tgz#507aa6fca135bd21c5a7e2366406cc018c40c33b"
+  integrity sha512-ZvDbp4kXz2FP7q5MIdQasks93tKsGun7kDL1De01gHKH6c43oicmELtxwqKpad8Vv0yBTceLNzXcVH+xZEuG3g==
   dependencies:
     content-type "^1.0.4"
     media-typer "^1.0.1"
@@ -1328,12 +1328,12 @@ api-blueprint-http-formatter@0.0.1:
   resolved "https://registry.yarnpkg.com/api-blueprint-http-formatter/-/api-blueprint-http-formatter-0.0.1.tgz#2a7eb3cf82dec17da3622fedb7ea0b2d3069c9b7"
   integrity sha1-Kn6zz4LewX2jYi/tt+oLLTBpybc=
 
-api-elements@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/api-elements/-/api-elements-0.2.4.tgz#1d3ca6b43d8b29a36e9b8ddde502284c26d30ae2"
-  integrity sha512-IaHWJJA6kXDtiLFdhO20qVIZ7roPGyXIbpN0aYMwI0ZdwgqAN+Ki6w8wGhzMPlvmXcb7X26o8rP2i7qlD1i4PA==
+api-elements@^0.3.0:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/api-elements/-/api-elements-0.3.2.tgz#7d2a3160100a67173f0f7bab979607e349a93c6f"
+  integrity sha512-J+XavcNXxW5Qb7lQjpFAIB0RGwntn96lsU2xLAa4GmwWY99IpPE8+GhdvzQu3NIC9mpxlCeVmVTYBzFZrtLkjA==
   dependencies:
-    minim "^0.23.5"
+    minim "^0.23.8"
     ramda "^0.27.0"
 
 aproba@^1.0.3, aproba@^1.1.1:
@@ -4829,10 +4829,10 @@ min-indent@^1.0.0:
   resolved "https://registry.yarnpkg.com/min-indent/-/min-indent-1.0.1.tgz#a63f681673b30571fbe8bc25686ae746eefa9869"
   integrity sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==
 
-minim@^0.23.5:
-  version "0.23.6"
-  resolved "https://registry.yarnpkg.com/minim/-/minim-0.23.6.tgz#70650017c26aaa6b029435461e6609798172a00c"
-  integrity sha512-DblDp/6TZWAUtVAkzZwWz6SFamq9huwA/jzI1NCFYhBFddAdflUa1+9HBtHcr7jqkqnLvJ4FOeH7s2nmQrzarg==
+minim@^0.23.8:
+  version "0.23.8"
+  resolved "https://registry.yarnpkg.com/minim/-/minim-0.23.8.tgz#a529837afe1654f119dfb68ce7487dd8d4866b9c"
+  integrity sha512-bjdr2xW1dBCMsMGGsUeqM4eFI60m94+szhxWys+B1ztIt6gWSfeGBdSVCIawezeHYLYn0j6zrsXdQS/JllBzww==
   dependencies:
     lodash "^4.15.0"
 

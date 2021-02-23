@@ -26,10 +26,10 @@
     "README.md"
   ],
   "dependencies": {
-    "@apielements/apib-parser": "0.20.0",
-    "@apielements/core": "^0.1.0",
+    "@apielements/apib-parser": "0.20.1",
+    "@apielements/core": "^0.2.1",
     "@apielements/openapi2-parser": "0.32.4",
-    "@apielements/openapi3-parser": "0.14.0",
+    "@apielements/openapi3-parser": "0.16.0",
     "uri-template": "1.0.1"
   },
   "bundledDependencies": [
