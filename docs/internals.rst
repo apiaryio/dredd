@@ -323,12 +323,6 @@ Redirects are documented in the ``docs/redirects.yml`` file. They need to be man
 You can use the `rtd-redirects <https://github.com/honzajavorek/rtd-redirects>`__ tool to programmatically upload the redirects from ``docs/redirects.yml`` to the ReadTheDocs admin interface.
 
 
-Windows support
----------------
-
-Dredd is tested on the `AppVeyor <https://www.appveyor.com/>`__, a Windows-based CI. There are still `several known issues <https://github.com/apiaryio/dredd/labels/Context%3A%20Windows>`__ when using Dredd on Windows, but the long-term intention is to support it without any compromises.
-
-
 API description parsing
 -----------------------
 
