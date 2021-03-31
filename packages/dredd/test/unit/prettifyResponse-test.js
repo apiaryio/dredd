@@ -70,4 +70,47 @@ body: \n<div>before paragraph
       );
     });
   });
+
+  describe('with base64 body encoding', () => {
+    it("should've printed into debug with decode", () => {
+      const body = Buffer.from(JSON.stringify({ a: 'b' })).toString('base64');
+
+      const output = prettifyResponse({
+        headers: {
+          'content-type': 'application/json',
+        },
+        bodyEncoding: 'base64',
+        body,
+      });
+
+      const expectedOutput = `\
+headers: \n    content-type: application/json\n
+bodyEncoding: base64
+body: \n{
+  "a": "b"
+}\n\
+`;
+      assert.equal(output, expectedOutput);
+    });
+  });
+
+  describe('without base64 body encoding', () => {
+    it("should've printed into debug without decode", () => {
+      const body = Buffer.from(JSON.stringify({ a: 'b' })).toString('base64');
+
+      const output = prettifyResponse({
+        headers: {
+          'content-type': 'application/json',
+        },
+        body,
+      });
+
+      const expectedOutput = `\
+headers: \n    content-type: application/json\n
+body: 
+eyJhIjoiYiJ9\n\
+`;
+      assert.equal(output, expectedOutput);
+    });
+  });
 });
