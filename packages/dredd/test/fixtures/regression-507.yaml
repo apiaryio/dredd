@@ -1,0 +1,40 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: nullable enum
+paths:
+  /test:
+    get:
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/NullableEnum'
+        # 201:
+        #   description: Created
+        #   schema:
+        #     $ref: '#/definitions/NullableEnumPlus'
+definitions:
+  NullableEnum:
+    type: object
+    additionalProperties: false
+    properties:
+      color:
+        type: string
+        x-nullable: true
+        enum:
+          - red
+          - blue
+          - green
+  NullableEnumPlus:
+    type: object
+    additionalProperties: false
+    properties:
+      color:
+        type: string
+        x-nullable: true
+        enum:
+          - red
+          - blue
+          - green
+          - null
