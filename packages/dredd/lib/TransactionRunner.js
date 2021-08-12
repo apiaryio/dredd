@@ -347,6 +347,7 @@ class TransactionRunner {
     if (
       transaction.apiDescription &&
       transaction.apiDescription.mediaType.includes('swagger')
+      || transaction.apiDescription.mediaType.includes('openapi')
     ) {
       const status = parseInt(response.status, 10);
       if (status < 200 || status >= 300) {
