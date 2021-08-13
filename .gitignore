@@ -13,6 +13,6 @@ __pycache__
 coverage
 smoke
 build
-
+.npmrc
 # Regardless the rules above, never ignore following
 !.vscode/launch.json
