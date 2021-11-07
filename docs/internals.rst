@@ -234,7 +234,7 @@ The documentation is built by `Sphinx <http://www.sphinx-doc.org/>`__. To render
 
    .. note::
 
-      We are not using `pipenv <https://pipenv.readthedocs.io/>`__ as it is not yet properly supported by ReadTheDocs.
+      We are not using `pipenv <https://github.com/pypa/pipenv>`__ as it is not yet properly supported by ReadTheDocs.
 
 Now you can use following commands:
 
