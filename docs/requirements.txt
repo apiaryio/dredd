@@ -7,7 +7,7 @@ sphinx==3.5.4
 jinja2==3.0.1
 git+https://github.com/jhermann/pygments-markdown-lexer.git@e651a9a3f664285b01451eb39232b1ad9af65956#egg=pygments-markdown-lexer
 pygments-apiblueprint==0.2.0
-sphinx-tabs==3.1.0
+sphinx-tabs==3.2.0
 
 # dev dependencies
 sphinx-autobuild==2021.3.14
