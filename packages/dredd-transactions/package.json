@@ -28,7 +28,7 @@
   "dependencies": {
     "@apielements/apib-parser": "0.20.1",
     "@apielements/core": "^0.2.1",
-    "@apielements/openapi2-parser": "0.32.4",
+    "@apielements/openapi2-parser": "0.32.6",
     "@apielements/openapi3-parser": "0.16.0",
     "uri-template": "1.0.1"
   },
