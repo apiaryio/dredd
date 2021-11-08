@@ -129,7 +129,7 @@ C++ dependencies
 
 Dredd uses `Drafter <https://github.com/apiaryio/drafter>`__ for parsing `API Blueprint`_ documents. Drafter is written in C++ and needs to be compiled during installation. Because that can cause a lot of problems in some environments, there’s also pure JavaScript version of the parser, `drafter.js <https://github.com/apiaryio/drafter.js>`__. Drafter.js is fully equivalent, but it can have slower performance. Therefore there’s `drafter-npm <https://github.com/apiaryio/drafter-npm/>`__ package, which tries to compile the C++ version of the parser and in case of failure it falls back to the JavaScript equivalent. Dredd depends on the `drafter-npm <https://github.com/apiaryio/drafter-npm/>`__ package.
 
-That still proved problematic for Dredd though. The current solution is to provide an `npm-shrinkwrap.json <https://docs.npmjs.com/files/shrinkwrap.json>`__ file with the `Dredd Transactions`_ library, which completely excludes `protagonist <https://github.com/apiaryio/protagonist>`__, i.e. the compiled C++ binding. Unlike ``package-lock.json``, the file can be distributed inside an npm package. The exclusion is performed by a ``postshrinkwrap`` npm script. This didn't work well with Dredd's ``package-lock.json``, so currently Dredd's dependency tree is not locked for local or CI installations.
+That still proved problematic for Dredd though. The current solution is to provide an `npm-shrinkwrap.json <https://docs.npmjs.com/cli/v6/configuring-npm/shrinkwrap-json>`__ file with the `Dredd Transactions`_ library, which completely excludes `protagonist <https://github.com/apiaryio/protagonist>`__, i.e. the compiled C++ binding. Unlike ``package-lock.json``, the file can be distributed inside an npm package. The exclusion is performed by a ``postshrinkwrap`` npm script. This didn't work well with Dredd's ``package-lock.json``, so currently Dredd's dependency tree is not locked for local or CI installations.
 
 
 Supported Node.js versions
@@ -234,7 +234,7 @@ The documentation is built by `Sphinx <http://www.sphinx-doc.org/>`__. To render
 
    .. note::
 
-      We are not using `pipenv <https://pipenv.readthedocs.io/>`__ as it is not yet properly supported by ReadTheDocs.
+      We are not using `pipenv <https://github.com/pypa/pipenv>`__ as it is not yet properly supported by ReadTheDocs.
 
 Now you can use following commands:
 
