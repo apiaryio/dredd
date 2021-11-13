@@ -5,6 +5,8 @@ import path from 'path';
 import inquirer from 'inquirer';
 import yaml from 'js-yaml';
 
+import logger from './logger';
+
 import packageData from '../package.json';
 
 const INSTALL_DREDD = `npm install dredd@${packageData.version} --global`;
@@ -29,7 +31,12 @@ function init(config, save, callback) {
       callback(error);
     }
 
-    const updatedConfig = applyAnswers(config, answers);
+    let updatedConfig;
+    try {
+      updatedConfig = applyAnswers(config, answers);
+    } catch (err) {
+      callback(err);
+    }
     save(updatedConfig);
     printClosingMessage(updatedConfig);
 
@@ -200,7 +207,12 @@ export function applyAnswers(config, answers, options = {}) {
   } else {
     Object.keys(ci).forEach((name) => {
       if (answers[name]) {
-        ci[name]();
+        try {
+          ci[name]();
+        } catch (error) {
+          logger.error(`Failed to update ${name}`);
+          throw error;
+        }
       }
     });
   }
