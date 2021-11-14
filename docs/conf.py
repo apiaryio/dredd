@@ -7,7 +7,6 @@ import urllib.request
 from sphinx.errors import SphinxError
 from pygments.lexers.data import YamlLexer
 
-
 ###########################################################################
 #                                                                         #
 #    Dredd documentation build configuration file                         #
@@ -150,5 +149,5 @@ def setup(app):
     app.add_css_file('css/dredd.css')
 
     # Adding lexers for rendering OpenAPI code blocks as YAML
-    app.add_lexer('openapi2', OpenAPI2Lexer())
-    app.add_lexer('openapi3', OpenAPI3Lexer())
+    app.add_lexer('openapi2', OpenAPI2Lexer)
+    app.add_lexer('openapi3', OpenAPI3Lexer)
