@@ -7,7 +7,7 @@
 
 ```bash
 $ git checkout -b <user>/dredd-14.0.0
-$ npx lerna version --no-push --no-git-tag-version 
+$ npx lerna version --no-push --no-git-tag-version
 $ git add .
 $ git push -u origin <user>/dredd-14.0.0
 ```
