@@ -5,6 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 /* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable no-console */
 const rimraf = require('rimraf');
 
 const PACKAGE_DIR = path.resolve(__dirname, '..');
@@ -35,19 +36,32 @@ function writePackageJson(packageDir, packageData) {
 function symlinkDependencyTreeToLocalNodeModules(dependencyName) {
   const localDependencyPath = path.join(PACKAGE_DIR, 'node_modules', dependencyName);
 
+  console.log('\nlinking dependency tree for "%s"', dependencyName);
+  console.log('%s: %s', dependencyName, localDependencyPath);
+
   if (!fs.existsSync(localDependencyPath)) {
+    console.log('dependency does not exist!');
     const localDependencyPathDir = path.dirname(localDependencyPath);
+
     if (!fs.existsSync(localDependencyPathDir)) {
+      console.log('dependency does not have parent directory, creating...');
       fs.mkdirSync(localDependencyPathDir);
     }
 
     const source = path.relative(localDependencyPathDir, path.resolve(`../../node_modules/${dependencyName}`));
+    console.log('creating a symlink from "%s" to "%s"', localDependencyPath);
+
     fs.symlinkSync(source, localDependencyPath);
+    console.log('successfully linked "%s" at "%s"!', dependencyName, localDependencyPath);
+    console.log('updating symlink configuration...');
     fs.appendFileSync(SYMLINKS_LOG, `${dependencyName}\n`);
+  } else {
+    console.log('%s exists, skipping...', dependencyName);
   }
 
   const packageData = readPackageJson(localDependencyPath);
   const dependencies = Object.keys(packageData.dependencies || {});
+  console.log('linking dependencies of "%s":\n', dependencyName, dependencies);
   dependencies.forEach(symlinkDependencyTreeToLocalNodeModules);
 }
 
