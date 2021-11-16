@@ -1,6 +1,6 @@
 {
   "name": "dredd-transactions",
-  "version": "10.0.0",
+  "version": "10.1.0",
   "description": "Compiles HTTP Transactions (Request-Response pairs) from an API description document",
   "main": "index.js",
   "engines": {
