@@ -4,7 +4,7 @@ import fs from 'fs';
 import optimist from 'optimist';
 import os from 'os';
 import spawnArgs from 'spawn-args';
-import { spawn as spawnSync } from 'cross-spawn';
+import { spawnSync } from 'cross-spawn';
 
 import * as configUtils from './configUtils';
 import Dredd from './Dredd';
