@@ -9,7 +9,7 @@ git+https://github.com/jhermann/pygments-markdown-lexer.git@e651a9a3f664285b0145
 pygments-apiblueprint==0.2.0
 sphinx-tabs==3.2.0
 sphinx-panels==0.6.0
-myst-parser==0.15.2
+myst-parser==0.18.1
 
 # dev dependencies
 sphinx-autobuild==2021.3.14
