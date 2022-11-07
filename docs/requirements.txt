@@ -13,4 +13,4 @@ myst-parser==0.15.2
 
 # dev dependencies
 sphinx-autobuild==2021.3.14
-sphinx-rtd-theme==1.0.0
+sphinx-rtd-theme==1.1.1
