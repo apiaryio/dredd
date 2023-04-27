@@ -317,7 +317,7 @@ to Apiary API: ${options.method} ${options.uri} \
       'Request details:',
       JSON.stringify({ options, body }, null, 2),
     );
-    return axios(options, handleRequest);
+    return axios(options, handleRequest); // replace request call with axios
 
   } catch (error) {
     this.serverError = true;

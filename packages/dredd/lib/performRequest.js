@@ -22,7 +22,7 @@ function performRequest(uri, transactionReq, options, callback) {
     [options, callback] = [{}, options];
   }
   const logger = options.logger || defaultLogger;
-  const request = options.request || axios;
+  const request = options.request || axios; // choose whether to use existing request information or use a new axios configuration
 
   const httpOptions = Object.assign({}, options.http || {});
   httpOptions.proxy = false;
