@@ -33,7 +33,8 @@
     "README.md"
   ],
   "dependencies": {
-    "async": "3.2.0",
+    "async": "3.2.4",
+    "axios":"1.3.6",
     "caseless": "0.12.0",
     "chai": "4.3.4",
     "clone": "2.1.2",
@@ -46,11 +47,10 @@
     "inquirer": "7.1.0",
     "js-yaml": "3.14.0",
     "make-dir": "3.1.0",
-    "markdown-it": "12.2.0",
+    "markdown-it": "13.0.1",
     "optimist": "0.6.1",
     "proxyquire": "2.1.3",
-    "ramda": "0.27.0",
-    "request": "2.88.2",
+    "ramda": "0.29.0",
     "spawn-args": "0.2.0",
     "untildify": "4.0.0",
     "uuid": "7.0.3",

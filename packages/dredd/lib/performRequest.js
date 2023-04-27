@@ -1,4 +1,4 @@
-import defaultRequest from 'request';
+import axios from 'axios';
 import caseless from 'caseless';
 
 import defaultLogger from './logger';
@@ -22,7 +22,7 @@ function performRequest(uri, transactionReq, options, callback) {
     [options, callback] = [{}, options];
   }
   const logger = options.logger || defaultLogger;
-  const request = options.request || defaultRequest;
+  const request = options.request || axios;
 
   const httpOptions = Object.assign({}, options.http || {});
   httpOptions.proxy = false;

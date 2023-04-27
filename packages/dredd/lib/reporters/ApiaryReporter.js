@@ -1,7 +1,7 @@
 import clone from 'clone';
 import { v4 as generateUuid } from 'uuid';
 import os from 'os';
-import request from 'request';
+import axios from 'axios';
 
 import logger from '../logger';
 import reporterOutputLogger from './reporterOutputLogger';
@@ -317,7 +317,8 @@ to Apiary API: ${options.method} ${options.uri} \
       'Request details:',
       JSON.stringify({ options, body }, null, 2),
     );
-    return request(options, handleRequest);
+    return axios(options, handleRequest);
+
   } catch (error) {
     this.serverError = true;
     logger.debug('Requesting Apiary API errored:', error);

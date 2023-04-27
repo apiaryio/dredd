@@ -1,5 +1,6 @@
 import fs from 'fs';
 import defaultRequest from 'request';
+import axios from 'axios';
 
 import isURL from './isURL';
 
@@ -22,7 +23,7 @@ function readRemoteFile(uri, options, callback) {
   if (typeof options === 'function') {
     [options, callback] = [{}, options];
   }
-  const request = options.request || defaultRequest;
+  const request = options.request || axios;
 
   const httpOptions = Object.assign({}, options.http || {});
   httpOptions.uri = uri;
