@@ -29,20 +29,20 @@ function readRemoteFile(uri, options, callback) {
   httpOptions.timeout = 5000; // ms, limits both connection time and server response time
 
   try {
-    request(httpOptions, (error, response, responseBody) => {
-      if (error) {
-        callback(error);
-      } else if (!response) {
+    //Reconfigure request to follow axios formatting
+    request(httpOptions).then((response) => {
+      if(!response){
         callback(new Error('Unexpected error'));
       } else if (
-        !responseBody ||
-        response.statusCode < 200 ||
-        response.statusCode >= 300
-      ) {
-        callback(getErrorFromResponse(response, !!responseBody));
+        !response.data || 
+        response.status < 200 || 
+        response.status >= 300) {
+          callback(getErrorFromResponse(response, !!response.data));
       } else {
-        callback(null, responseBody);
+        callback(null, response.data);
       }
+    }).catch((error) => {
+      callback(error);
     });
   } catch (error) {
     process.nextTick(() => callback(error));

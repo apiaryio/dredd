@@ -46,14 +46,13 @@ function performRequest(uri, transactionReq, options, callback) {
       `Performing ${protocol} request to the server under test: ` +
         `${httpOptions.method} ${httpOptions.uri}`,
     );
-
-    request(httpOptions, (error, response, responseBody) => {
+      //Reconfigure function to follow axios formatting
+    request(options).then((response) => {
       logger.debug(`Handling ${protocol} response from the server under test`);
-      if (error) {
-        callback(error);
-      } else {
-        callback(null, createTransactionResponse(response, responseBody));
-      }
+      callback(null, createTransactionResponse(response, response.data));
+
+    }).catch((error) => {
+      callback(error);
     });
   } catch (error) {
     process.nextTick(() => callback(error));

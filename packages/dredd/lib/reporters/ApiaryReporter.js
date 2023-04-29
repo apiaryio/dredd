@@ -251,44 +251,6 @@ ApiaryReporter.prototype._performRequestAsync = function _performRequestAsync(
   reqBody,
   callback,
 ) {
-  const handleRequest = (err, res, resBody) => {
-    let parsedBody;
-    if (err) {
-      this.serverError = true;
-      logger.debug('Requesting Apiary API errored:', `${err}` || err.code);
-
-      if (Array.from(CONNECTION_ERRORS).includes(err.code)) {
-        return callback(
-          new Error('Apiary reporter could not connect to Apiary API'),
-        );
-      }
-      return callback(err);
-    }
-
-    logger.debug('Handling HTTP response from Apiary API');
-
-    try {
-      parsedBody = JSON.parse(resBody);
-    } catch (error) {
-      this.serverError = true;
-      err = new Error(`
-Apiary reporter failed to parse Apiary API response body:
-${error.message}\n${resBody}
-`);
-      return callback(err);
-    }
-
-    const info = {
-      headers: res.headers,
-      statusCode: res.statusCode,
-      body: parsedBody,
-    };
-
-    logger.debug('Apiary reporter response:', JSON.stringify(info, null, 2));
-
-    callback(null, res, parsedBody);
-  };
-
   const body = reqBody ? JSON.stringify(reqBody) : '';
   const system = `${os.type()} ${os.release()}; ${os.arch()}`;
   const headers = {
@@ -317,7 +279,41 @@ to Apiary API: ${options.method} ${options.uri} \
       'Request details:',
       JSON.stringify({ options, body }, null, 2),
     );
-    return axios(options, handleRequest); // replace request call with axios
+    //Reintegrating handleResponse function as component of axios request
+    axios(options).then((res) => {
+      let resBody = res.data;
+      let parsedBody;
+      logger.debug('Handling HTTP response from Apiary API');
+      try {
+        parsedBody = JSON.parse(resBody);
+      } catch (error) {
+        this.serverError = true;
+        err = new Error(`
+        Apiary reporter failed to parse Apiary API response body:
+        ${error.message}\n${resBody}
+        `);
+        return callback(err);
+      }
+      const info = {
+        headers: res.headers,
+        statusCode: res.status,
+        body: parsedBody,
+      };
+  
+      logger.debug('Apiary reporter response:', JSON.stringify(info, null, 2));
+  
+      return callback(null, res, parsedBody);
+    }).catch((err) => {
+      this.serverError = true;
+      logger.debug('Requesting Apiary API errored:', `${err}` || err.code);
+
+      if (Array.from(CONNECTION_ERRORS).includes(err.code)) {
+        return callback(
+          new Error('Apiary reporter could not connect to Apiary API'),
+        );
+      }
+      return callback(err);
+    });
 
   } catch (error) {
     this.serverError = true;
