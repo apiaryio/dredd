@@ -248,10 +248,10 @@ ApiaryReporter.prototype._createStep = function _createStep(test, callback) {
 ApiaryReporter.prototype._performRequestAsync = function _performRequestAsync(
   path,
   method,
-  reqBody,
+  reqData,
   callback,
 ) {
-  const body = reqBody ? JSON.stringify(reqBody) : '';
+  const data = reqData ? JSON.stringify(reqData) : '';
   const system = `${os.type()} ${os.release()}; ${os.arch()}`;
   const headers = {
     'User-Agent': `Dredd Apiary Reporter/${packageData.version} (${system})`,
@@ -260,9 +260,9 @@ ApiaryReporter.prototype._performRequestAsync = function _performRequestAsync(
 
   const options = clone(this.config.http || {});
   options.uri = this.configuration.apiUrl + path;
-  options.method = method;
+  options.method = method.toLowerCase();
   options.headers = headers;
-  options.body = body;
+  options.data = data;
 
   if (this.configuration.apiToken) {
     options.headers.Authentication = `Token ${this.configuration.apiToken}`;
@@ -273,11 +273,11 @@ ApiaryReporter.prototype._performRequestAsync = function _performRequestAsync(
     logger.debug(`
 About to perform an ${protocol} request from Apiary reporter
 to Apiary API: ${options.method} ${options.uri} \
-(${body ? 'with' : 'without'} body)
+(${data ? 'with' : 'without'} data)
 `);
     logger.debug(
       'Request details:',
-      JSON.stringify({ options, body }, null, 2),
+      JSON.stringify({ options, data }, null, 2),
     );
     //Reintegrating handleResponse function as component of axios request
     axios(options).then((res) => {
@@ -296,8 +296,8 @@ to Apiary API: ${options.method} ${options.uri} \
       }
       const info = {
         headers: res.headers,
-        statusCode: res.status,
-        body: parsedBody,
+        status: res.status,
+        data: parsedBody,
       };
   
       logger.debug('Apiary reporter response:', JSON.stringify(info, null, 2));

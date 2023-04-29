@@ -28,17 +28,17 @@ function performRequest(uri, transactionReq, options, callback) {
   httpOptions.proxy = false;
   httpOptions.followRedirect = false;
   httpOptions.encoding = null;
-  httpOptions.method = transactionReq.method;
+  httpOptions.method = transactionReq.method.toLowerCase();
   httpOptions.uri = uri;
 
   try {
-    httpOptions.body = getBodyAsBuffer(
+    httpOptions.data = getBodyAsBuffer(
       transactionReq.body,
       transactionReq.bodyEncoding,
     );
     httpOptions.headers = normalizeContentLengthHeader(
       transactionReq.headers,
-      httpOptions.body,
+      httpOptions.data,
     );
 
     const protocol = httpOptions.uri.split(':')[0].toUpperCase();
@@ -135,7 +135,7 @@ export function normalizeContentLengthHeader(headers, body, options = {}) {
  */
 export function createTransactionResponse(response, body) {
   const transactionRes = {
-    statusCode: response.statusCode,
+    statusCode: response.status,
     headers: Object.assign({}, response.headers),
   };
   if (Buffer.byteLength(body || '')) {
