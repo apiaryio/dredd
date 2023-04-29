@@ -33,13 +33,13 @@ export interface Transaction {
   fullPath: string;
   request: TransactionRequest;
   expected: {
-    statusCode: number;
+    status: number;
     headers: Record<string, string>;
     body: string;
     bodySchema: Record<string, any>;
   };
   real: {
-    statusCode: string;
+    status: string;
     headers: Record<string, string>;
     body: string;
     bodyEncoding: BodyEncoding;

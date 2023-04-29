@@ -11,7 +11,7 @@ describe('performRequest()', () => {
     headers: { 'Content-Type': 'text/plain' },
     body: 'Hello'
   }
-  const res = { statusCode: 200, headers: { 'Content-Type': 'text/plain' } }
+  const res = { status: 200, headers: { 'Content-Type': 'text/plain' } }
   const request = sinon
     .stub()
     .callsArgWithAsync(1, null, res, Buffer.from('Bye'))
@@ -134,7 +134,7 @@ describe('performRequest()', () => {
   it('provides the real HTTP response object', (done) => {
     performRequest(uri, transactionReq, { request }, (err, real) => {
       assert.deepEqual(real, {
-        statusCode: 200,
+        status: 200,
         headers: { 'Content-Type': 'text/plain' },
         body: 'Bye',
         bodyEncoding: 'utf-8'

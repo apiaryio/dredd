@@ -46,7 +46,7 @@ function performRequest(uri, transactionReq, options, callback) {
       `Performing ${protocol} request to the server under test: ` +
         `${httpOptions.method} ${httpOptions.uri}`,
     );
-      //Reconfigure function to follow axios formatting
+      // Reconfigure function to follow axios formatting
     request(options).then((response) => {
       logger.debug(`Handling ${protocol} response from the server under test`);
       callback(null, createTransactionResponse(response, response.data));
@@ -135,7 +135,7 @@ export function normalizeContentLengthHeader(headers, body, options = {}) {
  */
 export function createTransactionResponse(response, body) {
   const transactionRes = {
-    statusCode: response.status,
+    status: response.status,
     headers: Object.assign({}, response.headers),
   };
   if (Buffer.byteLength(body || '')) {

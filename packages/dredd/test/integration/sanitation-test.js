@@ -627,7 +627,7 @@ describe('Sanitation of Reported Data', () => {
       assert.containsAllKeys(events[2].test, ['errors']);
       assert.hasAllKeys(events[2].test.results, ['valid', 'fields']);
       assert.hasAllKeys(events[2].test.results.fields, [
-        'statusCode',
+        'status',
         'headers',
         'body',
       ]);

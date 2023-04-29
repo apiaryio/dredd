@@ -326,7 +326,7 @@ class TransactionRunner {
       expected.body = response.body;
     }
     if (response.status) {
-      expected.statusCode = response.status;
+      expected.status = response.status;
     }
     if (response.schema) {
       expected.bodySchema = response.schema;
@@ -357,7 +357,7 @@ class TransactionRunner {
 
     const configuredTransaction = {
       name: transaction.name,
-      id: `${request.method} (${expected.statusCode}) ${request.uri}`,
+      id: `${request.method} (${expected.status}) ${request.uri}`,
       host: this.parsedUrl.hostname,
       port: this.parsedUrl.port,
       request,
@@ -717,17 +717,17 @@ Not performing HTTP request for '${transaction.name}'.\
 
     // Warn about empty responses
     // Expected is as string, actual is as integer :facepalm:
-    const isExpectedResponseStatusCodeEmpty = ['204', '205'].includes(
-      test.expected.statusCode
-        ? test.expected.statusCode.toString()
+    const isExpectedResponsestatusEmpty = ['204', '205'].includes(
+      test.expected.status
+        ? test.expected.status.toString()
         : undefined,
     );
-    const isActualResponseStatusCodeEmpty = ['204', '205'].includes(
-      test.actual.statusCode ? test.actual.statusCode.toString() : undefined,
+    const isActualResponsestatusEmpty = ['204', '205'].includes(
+      test.actual.status ? test.actual.status.toString() : undefined,
     );
     const hasBody = test.expected.body || test.actual.body;
     if (
-      (isExpectedResponseStatusCodeEmpty || isActualResponseStatusCodeEmpty) &&
+      (isExpectedResponsestatusEmpty || isActualResponsestatusEmpty) &&
       hasBody
     ) {
       logger.warn(`\
@@ -741,7 +741,7 @@ include a message body: https://tools.ietf.org/html/rfc7231#section-6.3\
 
     // Order-sensitive list of Gavel validation fields to output in the log
     // Note that Dredd asserts EXACTLY this order. Make sure to adjust tests upon change.
-    const loggedFields = ['headers', 'body', 'statusCode'].filter((fieldName) =>
+    const loggedFields = ['headers', 'body', 'status'].filter((fieldName) =>
       Object.prototype.hasOwnProperty.call(gavelResult.fields, fieldName),
     );
 

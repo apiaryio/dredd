@@ -57,7 +57,7 @@ function compileOriginExampleName(mediaType, httpResponseElement, exampleNo) {
       exampleName = `Example ${exampleNo}`;
     }
   } else {
-    const statusCode = (httpResponseElement.statusCode ? httpResponseElement.statusCode.toValue() : undefined) || '200';
+    const status = (httpResponseElement.status ? httpResponseElement.status.toValue() : undefined) || '200';
     const headers = compileHeaders(httpResponseElement.headers);
 
     const contentType = headers
@@ -65,7 +65,7 @@ function compileOriginExampleName(mediaType, httpResponseElement, exampleNo) {
       .map(header => header.value)[0];
 
     const segments = [];
-    if (statusCode) { segments.push(statusCode); }
+    if (status) { segments.push(status); }
     if (contentType) { segments.push(contentType); }
     exampleName = segments.join(' > ');
   }
@@ -132,7 +132,7 @@ function compileRequest(httpRequestElement) {
 }
 
 function compileResponse(httpResponseElement) {
-  const status = (httpResponseElement.statusCode ? httpResponseElement.statusCode.toValue() : undefined) || '200';
+  const status = (httpResponseElement.status ? httpResponseElement.status.toValue() : undefined) || '200';
   const headers = compileHeaders(httpResponseElement.headers);
   const response = { status, headers };
 

@@ -80,7 +80,7 @@ describe('OpenAPI 2', () => {
               0: 'name',
               1: 'action',
               2: 'method',
-              3: 'statusCode',
+              3: 'status',
             };
             return match.reduce(
               (result, element, i) =>
@@ -95,13 +95,13 @@ describe('OpenAPI 2', () => {
 
     it('recognizes all 3 transactions', () => assert.equal(actual.length, 3));
     [
-      { action: 'skip', statusCode: '400' },
-      { action: 'skip', statusCode: '500' },
-      { action: 'fail', statusCode: '200' },
+      { action: 'skip', status: '400' },
+      { action: 'skip', status: '500' },
+      { action: 'fail', status: '200' },
     ].forEach((expected, i) =>
       context(`the transaction #${i + 1}`, () => {
-        it(`has status code ${expected.statusCode}`, () =>
-          assert.equal(expected.statusCode, actual[i].statusCode));
+        it(`has status code ${expected.status}`, () =>
+          assert.equal(expected.status, actual[i].status));
         it(`is ${
           expected.action === 'skip' ? '' : 'not '
         }skipped by default`, () =>
@@ -138,7 +138,7 @@ describe('OpenAPI 2', () => {
               0: 'name',
               1: 'action',
               2: 'method',
-              3: 'statusCode',
+              3: 'status',
             };
             return match.reduce(
               (result, element, i) =>
@@ -153,20 +153,20 @@ describe('OpenAPI 2', () => {
 
     it('recognizes all 3 transactions', () => assert.equal(actual.length, 3));
     [
-      { action: 'skip', statusCode: '400' },
-      { action: 'fail', statusCode: '200' },
-      { action: 'fail', statusCode: '500' }, // Unskipped in hooks
+      { action: 'skip', status: '400' },
+      { action: 'fail', status: '200' },
+      { action: 'fail', status: '500' }, // Unskipped in hooks
     ].forEach((expected, i) =>
       context(`the transaction #${i + 1}`, () => {
-        it(`has status code ${expected.statusCode}`, () =>
-          assert.equal(expected.statusCode, actual[i].statusCode));
+        it(`has status code ${expected.status}`, () =>
+          assert.equal(expected.status, actual[i].status));
 
         const defaultMessage = `is ${
           expected.action === 'skip' ? '' : 'not '
         }skipped by default`;
         const unskippedMessage = 'is unskipped in hooks';
         it(`${
-          expected.statusCode === '500' ? unskippedMessage : defaultMessage
+          expected.status === '500' ? unskippedMessage : defaultMessage
         }`, () => assert.equal(expected.action, actual[i].action));
       }),
     );

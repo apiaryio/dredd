@@ -10,11 +10,11 @@ function getErrorFromResponse(response, hasBody) {
       ? `'${contentType}' body`
       : 'body without Content-Type';
     return new Error(
-      `Dredd got HTTP ${response.statusCode} response with ${bodyDescription}`,
+      `Dredd got HTTP ${response.status} response with ${bodyDescription}`,
     );
   }
   return new Error(
-    `Dredd got HTTP ${response.statusCode} response without body`,
+    `Dredd got HTTP ${response.status} response without body`,
   );
 }
 
@@ -29,7 +29,7 @@ function readRemoteFile(uri, options, callback) {
   httpOptions.timeout = 5000; // ms, limits both connection time and server response time
 
   try {
-    //Reconfigure request to follow axios formatting
+    // Reconfigure request to follow axios formatting
     request(httpOptions).then((response) => {
       if(!response){
         callback(new Error('Unexpected error'));

@@ -800,7 +800,7 @@ describe('TransactionRunner', () => {
 
       it('should not follow the redirect', (done) =>
         runner.executeTransaction(transaction, () => {
-          assert.equal(transaction.real.statusCode, 303);
+          assert.equal(transaction.real.status, 303);
           assert.notOk(server.isDone());
           done();
         }));
@@ -823,7 +823,7 @@ describe('TransactionRunner', () => {
 
       it('should not follow the redirect', (done) =>
         runner.executeTransaction(transaction, () => {
-          assert.equal(transaction.real.statusCode, 303);
+          assert.equal(transaction.real.status, 303);
           assert.notOk(server.isDone());
           done();
         }));
@@ -882,7 +882,7 @@ describe('TransactionRunner', () => {
             headers: { 'content-type': 'application/json' },
             body:
               '{\n  "type": "bulldozer",\n  "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n',
-            statusCode: '202',
+            status: '202',
           },
           origin: {
             resourceGroupName: 'Group Machine',
@@ -935,13 +935,13 @@ describe('TransactionRunner', () => {
 
       serverNock1 = nock('http://127.0.0.1:3000')
         .post('/machines1', { type: 'bulldozer', name: 'willy' })
-        .reply(transaction.expected.statusCode, transaction.expected.body, {
+        .reply(transaction.expected.status, transaction.expected.body, {
           'Content-Type': 'application/json',
         });
 
       serverNock2 = nock('http://127.0.0.1:3000')
         .post('/machines2', { type: 'bulldozer', name: 'willy' })
-        .reply(transaction.expected.statusCode, transaction.expected.body, {
+        .reply(transaction.expected.status, transaction.expected.body, {
           'Content-Type': 'application/json',
         });
     });
@@ -1520,7 +1520,7 @@ describe('TransactionRunner', () => {
           headers: { 'content-type': 'application/json' },
           body:
             '{\n  "type": "bulldozer",\n "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n',
-          statusCode: '202',
+          status: '202',
         },
         origin: {
           resourceGroupName: 'Group Machine',
@@ -1534,7 +1534,7 @@ describe('TransactionRunner', () => {
 
       server = nock('http://127.0.0.1:3000')
         .post('/machines', { type: 'bulldozer', name: 'willy' })
-        .reply(transaction.expected.statusCode, transaction.expected.body, {
+        .reply(transaction.expected.status, transaction.expected.body, {
           'Content-Type': 'application/json',
         });
 
@@ -1731,7 +1731,7 @@ describe('TransactionRunner', () => {
             headers: { 'content-type': 'application/json' },
             body:
               '{\n  "type": "bulldozer",\n  "name": "willy",\n  "id": "5229c6e8e4b0bd7dbb07e29c"\n}\n',
-            statusCode: '202',
+            status: '202',
           },
           origin: {
             resourceGroupName: 'Group Machine',
@@ -1761,7 +1761,7 @@ describe('TransactionRunner', () => {
           server = nock('http://127.0.0.1:3000')
             .post('/machines', { type: 'bulldozer', name: 'willy' })
             .reply(
-              transactionsForExecution[0].expected.statusCode,
+              transactionsForExecution[0].expected.status,
               transactionsForExecution[0].expected.body,
               { 'Content-Type': 'application/json' },
             );
@@ -1799,7 +1799,7 @@ describe('TransactionRunner', () => {
       describe('with a ‘beforeEachValidation’ hook', () => {
         // eslint-disable-next-line
         const hook = function(transaction, callback) {
-          transaction.real.statusCode = '403';
+          transaction.real.status = '403';
           callback();
         };
 
@@ -1810,7 +1810,7 @@ describe('TransactionRunner', () => {
           server = nock('http://127.0.0.1:3000')
             .post('/machines', { type: 'bulldozer', name: 'willy' })
             .reply(
-              transactionsForExecution[0].expected.statusCode,
+              transactionsForExecution[0].expected.status,
               transactionsForExecution[0].expected.body,
               { 'Content-Type': 'application/json' },
             );
@@ -1832,7 +1832,7 @@ describe('TransactionRunner', () => {
 
         it('should run before gavel', (done) => {
           transaction = clone(transactionsForExecution[0]);
-          transaction.expected.statusCode = '403';
+          transaction.expected.status = '403';
           runner.executeAllTransactions([transaction], runner.hooks, () => {
             assert.equal(transaction.test.status, 'pass');
             done();
@@ -1864,7 +1864,7 @@ describe('TransactionRunner', () => {
           server = nock('http://127.0.0.1:3000')
             .post('/machines', { type: 'bulldozer', name: 'willy' })
             .reply(
-              transactionsForExecution[0].expected.statusCode,
+              transactionsForExecution[0].expected.status,
               transactionsForExecution[0].expected.body,
               { 'Content-Type': 'application/json' },
             );
@@ -2384,7 +2384,7 @@ describe('TransactionRunner', () => {
         let modifiedTransaction = {};
         beforeEach(() => {
           modifiedTransaction = clone(transaction);
-          modifiedTransaction.expected.statusCode = '303';
+          modifiedTransaction.expected.status = '303';
 
           runner.hooks.afterHooks = {
             'Group Machine > Machine > Delete Message > Bogus example name': [

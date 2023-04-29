@@ -141,15 +141,15 @@ describe('compile() · OpenAPI 2', () => {
     const { mediaType, apiElements } = fixtures('multiple-responses').openapi2;
     const compileResult = stubbedCompile(mediaType, apiElements, filename);
 
-    const expectedStatusCodes = [200, 400, 500];
+    const expectedstatuss = [200, 400, 500];
 
     it('does not call the detection of transaction examples', () => {
       assert.isFalse(detectTransactionExampleNumbersStub.called);
     });
 
-    it(`produces ${expectedStatusCodes.length} transactions`, () => {
+    it(`produces ${expectedstatuss.length} transactions`, () => {
       assert.jsonSchema(compileResult, createCompileResultSchema({
-        transactions: expectedStatusCodes.length,
+        transactions: expectedstatuss.length,
       }));
     });
     it('skips non-JSON media types in \'produces\'', () => compileResult.transactions.forEach((transaction) => {
@@ -159,7 +159,7 @@ describe('compile() · OpenAPI 2', () => {
       assert.equal(contentType, 'application/json');
     }));
 
-    Array.from(expectedStatusCodes).map((statusCode, i) => context(`origin of transaction #${i + 1}`, () => {
+    Array.from(expectedstatuss).map((status, i) => context(`origin of transaction #${i + 1}`, () => {
       it('uses URI as resource name', () => {
         assert.equal(compileResult.transactions[i].origin.resourceName, '/honey');
       });
@@ -169,7 +169,7 @@ describe('compile() · OpenAPI 2', () => {
       it('uses status code and response\'s Content-Type as example name', () => {
         assert.equal(
           compileResult.transactions[i].origin.exampleName,
-          `${statusCode} > application/json`
+          `${status} > application/json`
         );
       });
     }));

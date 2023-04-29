@@ -279,20 +279,20 @@ to Apiary API: ${options.method} ${options.uri} \
       'Request details:',
       JSON.stringify({ options, data }, null, 2),
     );
-    //Reintegrating handleResponse function as component of axios request
+    // Reintegrating handleResponse function as component of axios request
     axios(options).then((res) => {
-      let resBody = res.data;
+      const resBody = res.data;
       let parsedBody;
       logger.debug('Handling HTTP response from Apiary API');
       try {
         parsedBody = JSON.parse(resBody);
       } catch (error) {
         this.serverError = true;
-        err = new Error(`
+        error = new Error(`
         Apiary reporter failed to parse Apiary API response body:
         ${error.message}\n${resBody}
         `);
-        return callback(err);
+        return callback(error);
       }
       const info = {
         headers: res.headers,

@@ -46,14 +46,14 @@ Transaction object is passed as a first argument to :ref:`hook functions <hooks>
 
 -  expected (object) - the HTTP response Dredd expects to get from the tested server
 
-   -  statusCode: ``200`` (string)
+   -  status: ``200`` (string)
    -  headers (object) - keys are HTTP header names, values are HTTP header contents
    -  body (string)
    -  bodySchema (object) - JSON Schema of the response body
 
 -  real (object) - the HTTP response Dredd gets from the tested server (present only in ``after`` hooks)
 
-   -  statusCode: ``200`` (string)
+   -  status: ``200`` (string)
    -  headers (object) - keys are HTTP header names, values are HTTP header contents
    -  body (string)
    -  bodyEncoding (enum)
@@ -106,7 +106,7 @@ Transaction result equals to the result of the `Gavel <https://github.com/apiary
 -  fields (object)
    -  *uri* - :ref:`gavel-validation-result-field`
    -  *method* - :ref:`gavel-validation-result-field`
-   -  *statusCode* - :ref:`gavel-validation-result-field`
+   -  *status* - :ref:`gavel-validation-result-field`
    -  *headers* - :ref:`gavel-validation-result-field`
    -  *body* - :ref:`gavel-validation-result-field`
 

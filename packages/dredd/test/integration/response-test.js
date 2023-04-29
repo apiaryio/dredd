@@ -278,7 +278,7 @@ files.forEach((apiDescription) =>
       it('prints four failures for each non-matching status code', () =>
         assert.equal(
           runtimeInfo.dredd.logging.match(
-            /fail: statusCode: Expected status code '\d+', but got '200'./g,
+            /fail: status: Expected status code '\d+', but got '200'./g,
           ).length,
           4,
         ));
@@ -317,14 +317,14 @@ files.forEach((apiDescription) =>
       it('prints two failures for each non-matching body (and status code)', () =>
         assert.equal(
           runtimeInfo.dredd.logging.match(
-            /fail: body: Actual and expected data do not match.\nstatusCode: Expected status code '\d+', but got '200'./g,
+            /fail: body: Actual and expected data do not match.\nstatus: Expected status code '\d+', but got '200'./g,
           ).length,
           2,
         ));
       it('prints two failures for each non-matching status code', () =>
         assert.equal(
           runtimeInfo.dredd.logging.match(
-            /fail: statusCode: Expected status code '\d+', but got '200'./g,
+            /fail: status: Expected status code '\d+', but got '200'./g,
           ).length,
           2,
         ));

@@ -48,7 +48,7 @@ describe('ApiaryReporter', () => {
         status: 'fail',
         title: 'POST /machines',
         message:
-          "headers: Value of the ‘content-type’ must be application/json.\nbody: No validator found for real data media type 'text/plain' and expected data media type 'application/json'.\nstatusCode: Real and expected data does not match.\n",
+          "headers: Value of the ‘content-type’ must be application/json.\nbody: No validator found for real data media type 'text/plain' and expected data media type 'application/json'.\nstatus: Real and expected data does not match.\n",
 
         startedAt: 1234567890 * 1000, // JavaScript Date.now() timestamp (UNIX-like timestamp * 1000 precision)
 
@@ -62,7 +62,7 @@ describe('ApiaryReporter', () => {
         },
 
         actual: {
-          statusCode: 400,
+          status: 400,
           headers: {
             'content-type': 'text/plain'
           },
@@ -135,7 +135,7 @@ describe('ApiaryReporter', () => {
             rawData: null
           },
 
-          statusCode: {
+          status: {
             realType: 'text/vnd.apiary.status-code',
             expectedType: 'text/vnd.apiary.status-code',
             validator: 'TextDiff',
@@ -935,12 +935,12 @@ describe('ApiaryReporter', () => {
         status: 'fail',
         title: 'POST /machines',
         message:
-          "headers: Value of the ‘content-type’ must be application/json.\nbody: No validator found for real data media type 'text/plain' and expected data media type 'application/json'.\nstatusCode: Real and expected data does not match.\n",
+          "headers: Value of the ‘content-type’ must be application/json.\nbody: No validator found for real data media type 'text/plain' and expected data media type 'application/json'.\nstatus: Real and expected data does not match.\n",
 
         startedAt: 1234567890 * 1000, // JavaScript Date.now() timestamp (UNIX-like timestamp * 1000 precision)
 
         actual: {
-          statusCode: 400,
+          status: 400,
           headers: {
             'content-type': 'text/plain'
           },
@@ -1013,7 +1013,7 @@ describe('ApiaryReporter', () => {
             rawData: null
           },
 
-          statusCode: {
+          status: {
             realType: 'text/vnd.apiary.status-code',
             expectedType: 'text/vnd.apiary.status-code',
             validator: 'TextDiff',

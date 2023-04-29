@@ -39,10 +39,10 @@ function execCommand(custom = {}, cb) {
   stderr = '';
   exitStatus = null;
   let finished = false;
-  const cli = new CLIStub({ custom }, (exitStatusCode) => {
+  const cli = new CLIStub({ custom }, (exitstatus) => {
     if (!finished) {
       finished = true;
-      exitStatus = exitStatusCode != null ? exitStatusCode : 0;
+      exitStatus = exitstatus != null ? exitstatus : 0;
       cb();
     }
   });

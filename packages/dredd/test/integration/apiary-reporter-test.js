@@ -175,7 +175,7 @@ describe('Apiary reporter', () => {
       );
       assert.nestedProperty(
         receivedRequest,
-        'results.validationResult.fields.statusCode.kind',
+        'results.validationResult.fields.status.kind',
       );
 
       it('prints out an error message', () => assert.notEqual(exitStatus, 0));
@@ -327,7 +327,7 @@ describe('Apiary reporter', () => {
         );
         assert.nestedProperty(
           receivedRequest,
-          'results.validationResult.fields.statusCode.kind',
+          'results.validationResult.fields.status.kind',
         );
       });
     });

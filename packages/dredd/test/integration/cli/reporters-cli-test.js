@@ -123,7 +123,7 @@ describe('CLI - Reporters', () => {
         )
         assert.nestedProperty(
           stepRequest.body,
-          'results.validationResult.fields.statusCode'
+          'results.validationResult.fields.status'
         )
       })
     })

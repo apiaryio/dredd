@@ -59,9 +59,9 @@ describe('compile() · API Blueprint', () => {
     const compileResult = stubbedCompile(mediaType, apiElements);
 
     const expected = [
-      { exampleName: '', requestContentType: 'application/json', responseStatusCode: 200 },
-      { exampleName: 'Example 1', requestContentType: 'application/json', responseStatusCode: 200 },
-      { exampleName: 'Example 2', requestContentType: 'text/plain', responseStatusCode: 415 },
+      { exampleName: '', requestContentType: 'application/json', responsestatus: 200 },
+      { exampleName: 'Example 1', requestContentType: 'application/json', responsestatus: 200 },
+      { exampleName: 'Example 2', requestContentType: 'text/plain', responsestatus: 415 },
     ];
 
     it('calls the detection of transaction examples', () => {
@@ -73,7 +73,7 @@ describe('compile() · API Blueprint', () => {
       }));
     });
     Array.from(expected).map((expectations, i) => context(`transaction #${i + 1}`, () => {
-      const { exampleName, requestContentType, responseStatusCode } = expectations;
+      const { exampleName, requestContentType, responsestatus } = expectations;
 
       it(`is identified as part of ${JSON.stringify(exampleName)}`, () => {
         assert.equal(
@@ -88,10 +88,10 @@ describe('compile() · API Blueprint', () => {
           .map(header => header.value)[0];
         assert.equal(contentType, requestContentType);
       });
-      it(`has response with status code ${responseStatusCode}`, () => {
+      it(`has response with status code ${responsestatus}`, () => {
         assert.equal(
           compileResult.transactions[i].response.status,
-          responseStatusCode
+          responsestatus
         );
       });
     }));
