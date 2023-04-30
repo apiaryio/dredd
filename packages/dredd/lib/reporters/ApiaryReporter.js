@@ -288,11 +288,11 @@ to Apiary API: ${options.method} ${options.uri} \
         parsedBody = JSON.parse(resBody);
       } catch (error) {
         this.serverError = true;
-        error = new Error(`
+        const err = new Error(`
         Apiary reporter failed to parse Apiary API response body:
         ${error.message}\n${resBody}
         `);
-        return callback(error);
+        return callback(err);
       }
       const info = {
         headers: res.headers,
