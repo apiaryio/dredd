@@ -7,7 +7,7 @@ describe('performRequest()', () => {
   const uri = 'http://example.com/42'
   const uriS = 'https://example.com/42'
   const transactionReq = {
-    method: 'POST',
+    method: 'post',
     headers: { 'Content-Type': 'text/plain' },
     body: 'Hello'
   }
@@ -65,7 +65,7 @@ describe('performRequest()', () => {
   })
   it('propagates the HTTP request body as a Buffer', (done) => {
     performRequest(uri, transactionReq, { request }, () => {
-      assert.deepEqual(request.firstCall.args[0].body, Buffer.from('Hello'))
+      assert.deepEqual(request.firstCall.args[0].data, Buffer.from('Hello'))
       done()
     })
   })
