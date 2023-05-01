@@ -47,7 +47,7 @@ function performRequest(uri, transactionReq, options, callback) {
         `${httpOptions.method} ${httpOptions.uri}`,
     );
       // Reconfigure function to follow axios formatting
-    request(options).then((response) => {
+    request(httpOptions).then((response) => {
       logger.debug(`Handling ${protocol} response from the server under test`);
       callback(null, createTransactionResponse(response, response.data));
 
