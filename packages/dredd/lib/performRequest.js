@@ -44,7 +44,7 @@ function performRequest(uri, transactionReq, options, callback) {
     const protocol = httpOptions.uri.split(':')[0].toUpperCase();
     logger.debug(
       `Performing ${protocol} request to the server under test: ` +
-        `${httpOptions.method} ${httpOptions.uri}`,
+        `${httpOptions.method.toUpperCase()} ${httpOptions.uri}`,
     );
       // Reconfigure function to follow axios formatting
     request(httpOptions).then((response) => {

@@ -136,7 +136,7 @@ describe('performRequest()', () => {
       assert.deepEqual(real, {
         status: 200,
         headers: { 'Content-Type': 'text/plain' },
-        body: 'Bye',
+        data: 'Bye',
         bodyEncoding: 'utf-8'
       })
       done()
