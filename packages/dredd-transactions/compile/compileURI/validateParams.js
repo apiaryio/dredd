@@ -33,6 +33,14 @@ module.exports = function validateParams(params) {
         result.errors.push(text);
       }
     }
+
+    // throws error for example-to-schema inconsistency
+    const example = param.schema.example;
+    if (param.example !== example) {
+      text = `URI parameter '${paramName}' example value does not match schema's example value`;
+      result.errors.push(text);
+    }
+
   });
 
   return result;
