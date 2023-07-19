@@ -36,7 +36,7 @@ function compileParams(hrefVariablesElement) {
     .map((valueElement, keyElement, memberElement) => {
       const name = keyElement.toValue();
       return {
-        [name]: {
+        [decodeURI(name)]: {
           required: getRequired(memberElement),
           default: getDefault(valueElement),
           example: getExample(valueElement),
