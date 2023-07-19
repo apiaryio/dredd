@@ -30,7 +30,7 @@
     "@apielements/core": "^0.2.1",
     "@apielements/openapi2-parser": "0.32.4",
     "@apielements/openapi3-parser": "0.16.0",
-    "uri-template": "1.0.1"
+    "uri-template": "2.0.0"
   },
   "bundledDependencies": [
     "@apielements/apib-parser"
