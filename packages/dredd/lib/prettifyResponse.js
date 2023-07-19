@@ -17,7 +17,14 @@ export default function prettifyResponse(response) {
     return obj;
   }
 
-  function prettifyBody(body, contentKind) {
+  function prettifyBody(body, contentKind, bodyEncoding) {
+    switch (bodyEncoding) {
+      case 'base64':
+        body = Buffer.from(body, 'base64').toString()
+        break;
+      default:
+    }
+
     switch (contentKind) {
       case 'text/html':
         body = html.prettyPrint(body, { indent_size: 2 });
@@ -30,14 +37,14 @@ export default function prettifyResponse(response) {
 
   if (response && response.headers) {
     contentType =
-      response.headers['content-type'] || response.headers['Content-Type'];
+        response.headers['content-type'] || response.headers['Content-Type'];
   }
 
   let stringRepresentation = '';
   for (const key of Object.keys(response || {})) {
     let value = response[key];
     if (key === 'body') {
-      value = `\n${prettifyBody(value, contentType)}`;
+      value = `\n${prettifyBody(value, contentType, response.bodyEncoding)}`;
     } else if (key === 'schema') {
       value = `\n${stringify(value)}`;
     } else if (key === 'headers') {
