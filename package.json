@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "11.0.0",
-    "@commitlint/config-conventional": "11.0.0",
+    "@commitlint/config-conventional": "17.7.0",
     "commitlint-circle": "1.0.0",
     "lerna": "^3.22.1"
   },
